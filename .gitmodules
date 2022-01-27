@@ -1,0 +1,3 @@
+[submodule "r-utilities"]
+	path = psycop_r_utils
+	url = https://github.com/Aarhus-Psychiatry-Research/r-utilities.git
