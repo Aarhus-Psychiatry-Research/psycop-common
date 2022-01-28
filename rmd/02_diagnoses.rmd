@@ -3,7 +3,6 @@ library("pacman")
 
 p_load(tidyverse, here, future)
 source(here("psycop_r_utils", "import_from_sql.r"))
-plan(multisession)
 
 ```
 
