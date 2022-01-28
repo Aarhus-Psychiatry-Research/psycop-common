@@ -1,0 +1,11 @@
+# Get first date of hba1c above threshold
+## Filter function
+```{r}
+df_first_diabetes_combined <- df_first_date_of_diabetes_medication_prescription %>% 
+  bind_rows(df_first_diabetes_blood_sample) %>% 
+  bind_rows(df_diabetes_diagnoses_combined) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start == max(datotid_start)) %>% 
+  filter(row_number() == 1) %>% 
+  select(dw_ek_borger, datotid_start)
+```

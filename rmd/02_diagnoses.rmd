@@ -1,0 +1,126 @@
+```{r}
+library("pacman")
+
+p_load(tidyverse, here, future)
+source(here("psycop_r_utils", "import_from_sql.r"))
+plan(multisession)
+
+```
+
+```{r}
+con <- DBI::dbConnect(
+        odbc::odbc(),
+        Driver = "SQL Server",
+        Server = "BI-DPA-PROD",
+        database = "USR_PS_Forsk",
+        Trusted_Connection = "TRUE"
+)
+```
+
+# Get first date of hba1c above threshold
+## Filter function
+```{r}
+diag_str_is_diabetes <- function(str) {
+  diabetes_regex_patterns <- list(
+    "E1[0-5].*",
+    "E16$", # $ marks end-of-string, avoiding matching e.g. E164
+    "E16[0-2].*",
+    "O24.*",
+    "T383A.*",
+    "M142.*",
+    "DG590.*",
+    "DG632*",
+		"DH280.*",
+		"DH334.*",
+		"DH360.*",
+  	"DH450.*",
+		"DN083.*"
+  )
+  
+  for (pattern in diabetes_regex_patterns) {
+    if (isTRUE(grepl(pattern, str))) {
+      return(TRUE)
+    }
+  }
+  
+  return(FALSE)
+}
+```
+
+```{r}
+keep_only_first_diabetes_record <- function(df, date_col_string) {
+  df %>% 
+    format_sql_import() %>% 
+    rowwise() %>% 
+    filter(diag_str_is_diabetes(adiagnosekode)) %>% 
+    group_by(dw_ek_borger) %>% 
+    filter(date_col_string == min(date_col_string)) %>% 
+    filter(row_number() == 1) %>% 
+    ungroup()
+}
+```
+
+
+## LPR3
+```{r}
+df_lpr3_diagnoses_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_LPR3kontakter_psyk_somatik_inkl_2021")) %>% 
+  filter(substr(adiagnosekode,2,2) == "D"|
+         substr(adiagnosekode,2,2) == "E"|
+         substr(adiagnosekode,2,2) == "M"|
+         substr(adiagnosekode,2,2) == "O"|
+         substr(adiagnosekode,2,2) == "T") %>%# Filter roughly by diagnoses to avoid having to pull the entire dataset
+  select(dw_ek_borger, datotid_lpr3kontaktstart, adiagnosekode) %>% 
+  collect
+
+df_first_lpr3_diabetes_diagnosis <- df_lpr3_diagnoses_roughly_selected %>% 
+    keep_only_first_diabetes_record(date_col_string = "datotid_lpr3kontaktstart") %>% 
+  rename(datotid_start = datotid_lpr3kontaktstart)
+
+```
+
+## LPR2
+### Inpatient visits
+```{r}
+df_lpr2_diagnoses_inpatient_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021")) %>% 
+  filter(substr(adiagnosekode,2,2) == "D"|
+         substr(adiagnosekode,2,2) == "E"|
+         substr(adiagnosekode,2,2) == "M"|
+         substr(adiagnosekode,2,2) == "O"|
+         substr(adiagnosekode,2,2) == "T") %>%# Filter roughly by diagnoses to avoid having to pull the entire dataset
+  select(dw_ek_borger, datotid_indlaeggelse, adiagnosekode) %>% 
+  rename(datotid_start = datotid_indlaeggelse) %>% 
+  collect
+
+df_inpatient_lpr2_first_diabetes_diagnosis <- df_lpr2_diagnoses_inpatient_roughly_selected %>% 
+   keep_only_first_diabetes_record(date_col_string="datotid_start")
+```
+
+### Outpatient visits
+```{r}
+df_lpr2_diagnoses_outpatient_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_besoeg_psyk_somatik_LPR2_inkl_2021")) %>% 
+  rename(adiagnosekode = diagnoseKode) %>% 
+  filter(substr(adiagnosekode,2,2) == "D"|
+         substr(adiagnosekode,2,2) == "E"|
+         substr(adiagnosekode,2,2) == "M"|
+         substr(adiagnosekode,2,2) == "O"|
+         substr(adiagnosekode,2,2) == "T") %>%# Filter roughly by diagnoses to avoid having to pull the entire dataset
+  select(dw_ek_borger, datotid_start, adiagnosekode) %>%
+  collect
+  
+df_outpatient_lpr2_first_diabetes_diagnosis <- df_lpr2_diagnoses_outpatient_roughly_selected %>% 
+  keep_only_first_diabetes_record(date_col_string="datotid_start")
+```
+
+## Combined
+```{r}
+df_diabetes_diagnoses_combined <- df_first_lpr3_diabetes_diagnosis %>% 
+  bind_rows(df_inpatient_lpr2_first_diabetes_diagnosis) %>% 
+  bind_rows(df_outpatient_lpr2_first_diabetes_diagnosis) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start == min(datotid_start)) %>% 
+  filter(row_number() == 1)
+```
+
