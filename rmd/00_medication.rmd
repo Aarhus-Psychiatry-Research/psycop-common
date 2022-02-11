@@ -22,7 +22,7 @@ con <- DBI::dbConnect(
 df_first_administered_diabetes_medication <- con %>% 
   tbl(sql("SELECT * FROM [fct].FOR_Medicin_administreret_inkl_2021")) %>% 
   select(dw_ek_borger, datotid_ordination_start, atc) %>% 
-  filter(substr(atc, 1, 3) == "A10") %>% 
+  filter(substr(atc, 1, 3) == "A10") %>% # A10 is all antidiabetic medication
   group_by(dw_ek_borger) %>% 
   filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
   collect %>% 
@@ -53,7 +53,7 @@ df_first_prescribed_diabetes_medication <- con %>%
 df_first_date_of_diabetes_medication_prescription <- df_first_administered_diabetes_medication %>% 
   bind_rows(df_first_prescribed_diabetes_medication) %>% 
   group_by(dw_ek_borger) %>% 
-  filter(datotid_ordination_start == max(datotid_ordination_start)) %>% 
+  filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
   filter(row_number() == 1) %>% 
   rename(datotid_start=datotid_ordination_start)
 ```
