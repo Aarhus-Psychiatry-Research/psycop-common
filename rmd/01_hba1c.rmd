@@ -1,3 +1,5 @@
+Find the first date where a patient gets a diabetic hba1c-blood-sample.
+
 ```{r}
 library("pacman")
 
@@ -32,3 +34,6 @@ df_first_diabetes_blood_sample <- con %>%
   format_sql_import() %>% 
   rename(datotid_start = datotid_proevemodtagelse)
 ```
+
+# Wash-in
+We don't know whether a patient has had diabetes before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".

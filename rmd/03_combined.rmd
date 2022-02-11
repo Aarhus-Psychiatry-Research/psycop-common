@@ -1,4 +1,6 @@
-# Get first date of hba1c above threshold
+Combine medication, hba1c and diagnoses to find first date where the patient has diabetes.
+
+
 ## Filter function
 ```{r}
 df_first_diabetes_combined <- df_first_date_of_diabetes_medication_prescription %>% 
@@ -9,3 +11,13 @@ df_first_diabetes_combined <- df_first_date_of_diabetes_medication_prescription 
   filter(row_number() == 1) %>% 
   select(dw_ek_borger, datotid_start)
 ```
+
+
+# Wash-in
+We don't know whether a patient has had diabetes before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".
+
+```{r}
+df_exclude_for_wash_in <- df_first_date_of_diabetes_medication_prescription %>% 
+  filter(datotid_start < ymd("01-01-2013"))
+```
+

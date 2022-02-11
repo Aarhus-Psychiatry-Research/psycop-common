@@ -1,3 +1,5 @@
+Find the first date where a patient gets a diabetes-diagnosis in the hospital system.
+
 ```{r}
 library("pacman")
 
