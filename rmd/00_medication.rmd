@@ -25,12 +25,13 @@ df_first_administered_diabetes_medication <- con %>%
   tbl(sql("SELECT * FROM [fct].FOR_Medicin_administreret_inkl_2021")) %>% 
   select(dw_ek_borger, datotid_ordination_start, atc) %>% 
   filter(substr(atc, 1, 3) == "A10") %>% # A10 is all antidiabetic medication
+  filter(datotid_ordination_start > event_start_date_str) %>% 
   group_by(dw_ek_borger) %>% 
   filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
   collect %>% 
   format_sql_import() %>% 
   group_by(dw_ek_borger) %>% 
-  filter(row_number() == 1) %>% 
+  distinct(dw_ek_borger, datotid_ordination_start) %>%  # Drop if two diabetes medications were started on the same day
   ungroup()
 ```
 
@@ -40,13 +41,14 @@ df_first_prescribed_diabetes_medication <- con %>%
   tbl(sql("SELECT * FROM [fct].FOR_Medicin_ordineret_inkl_2021")) %>% 
   filter(substr(atc, 1, 3) == "A10") %>% 
   select(dw_ek_borger, datotid_ordinationstart, atc) %>% 
+  filter(datotid_ordinationstart > event_start_date_str) %>% 
   rename(datotid_ordination_start = datotid_ordinationstart) %>% 
   group_by(dw_ek_borger) %>% 
   filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
   collect %>%   
   format_sql_import() %>% 
   group_by(dw_ek_borger) %>% 
-  filter(row_number() == 1) %>% 
+  distinct(dw_ek_borger, datotid_ordination_start) %>% 
   ungroup()
 ```
 
