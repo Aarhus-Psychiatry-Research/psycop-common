@@ -26,7 +26,6 @@ df_first_diabetes_blood_sample <- con %>%
   tbl(sql("SELECT * FROM [fct].FOR_LABKA_NPU27300_HbA1c_inkl_2021")) %>% 
   select(dw_ek_borger, datotid_proevemodtagelse, numerisksvar, analysenavn) %>% 
   filter(numerisksvar >= 48) %>% 
-  filter(datotid_proevemodtagelse > event_start_date_str) %>% 
   group_by(dw_ek_borger) %>% 
   filter(datotid_proevemodtagelse == min(datotid_proevemodtagelse)) %>% 
   collect %>% 
