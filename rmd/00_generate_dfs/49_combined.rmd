@@ -1,4 +1,4 @@
-Combine medication, hba1c and diagnoses to find first date where the patient has diabetes.
+Combine medication, hba1c and diagnoses to find first date where the patient has t2d.
 
 ```{r}
 source(here("src", "functions.r"))
@@ -7,35 +7,43 @@ source(here("src", "functions.r"))
 
 ## Filter function
 ```{r}
-df_first_diabetes_combined <- df_first_date_of_diabetes_medication_prescription %>% 
-  bind_rows(df_first_diabetes_blood_sample) %>% 
-  bind_rows(df_diabetes_diagnoses_combined) %>% 
+df_first_t2d_combined <- df_first_date_of_t2d_medication_prescription %>% 
+  bind_rows(df_first_t2d_blood_sample) %>% 
+  bind_rows(df_t2d_diagnoses_combined) %>% 
   group_by(dw_ek_borger) %>% 
   filter(datotid_start == min(datotid_start)) %>% 
   select(dw_ek_borger, datotid_start) %>% 
   distinct(dw_ek_borger, datotid_start) %>% 
-  rename(datotid_first_diabetes = datotid_start)
+  rename(datotid_first_t2d = datotid_start)
 ```
 
+```{r}
+write_csv(here("csv", "df_first_t2d_combined.csv"))
+```
+
+
 # Wash-in
-We don't know whether a patient has had diabetes before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".
+We don't know whether a patient has had t2d before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".
 
 ```{r}
-df_exclude_for_wash_in <- df_first_date_of_diabetes_medication_prescription %>% 
+df_exclude_for_wash_in <- df_first_date_of_t2d_medication_prescription %>% 
   filter(datotid_start < ymd(event_start_date_str))
 ```
 
 # Finish processing
 ```{r}
-df_first_diabetes_processed <- df_first_diabetes_combined %>% 
+df_first_t2d_processed <- df_first_t2d_combined %>% 
   right_join(df_first_psych_visit) %>%
-  filter(datotid_first_diabetes > datotid_first_psych_visit) %>% # Exclude if after first psychiatric visit
-  filter(datotid_first_diabetes > ymd(event_start_date_str))
+  filter(datotid_first_t2d > datotid_first_psych_visit) %>% # Exclude if after first psychiatric visit
+  filter(datotid_first_t2d > ymd(event_start_date_str)) %>% # Exclude if after start date
+  anti_join(df_first_t1d_diagnoses_combined, by = "dw_ek_borger") # Exclude if previous T1D - removes 120
+
+write_csv(df_first_t2d_processed, here("csv", "df_first_t2d_processed.csv"))
 ```
 
 # PNRs for stratification
 ```{r}
-df_for_strat <- df_first_diabetes_processed %>% 
+df_for_strat <- df_first_t2d_processed %>% 
   select(dw_ek_borger)
 ```
 
