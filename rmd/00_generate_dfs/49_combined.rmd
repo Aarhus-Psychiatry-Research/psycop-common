@@ -30,6 +30,12 @@ df_exclude_for_wash_in <- df_first_date_of_diabetes_medication_prescription %>%
 df_first_diabetes_processed <- df_first_diabetes_combined %>% 
   right_join(df_first_psych_visit) %>%
   filter(datotid_first_diabetes > datotid_first_psych_visit) %>% # Exclude if after first psychiatric visit
-  filter(datotid_first_diabetes > ymd(event_start_date_str)) %>% # Exclude if before wash-in period
+  filter(datotid_first_diabetes > ymd(event_start_date_str))
+```
+
+# PNRs for stratification
+```{r}
+df_for_strat <- df_first_diabetes_processed %>% 
   select(dw_ek_borger)
 ```
+

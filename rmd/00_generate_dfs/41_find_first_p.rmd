@@ -1,3 +1,8 @@
+```{r}
+source(here("psycop_r_utils", "import_from_sql.r"))
+p_load(tidyverse)
+```
+
 # Remove patients with incidence before first psych-contact
 ## LPR3, both in and outpatient
 ```{r}
