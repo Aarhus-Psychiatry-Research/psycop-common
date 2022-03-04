@@ -1,0 +1,77 @@
+Find the first date where a patient gets a diabetes-diagnosis in the hospital system.
+
+```{r}
+library("pacman")
+
+p_load(tidyverse, here, future)
+source(here("psycop_r_utils", "import_from_sql.r"))
+source(here("src", "functions.r"))
+
+```
+
+```{r}
+con <- DBI::dbConnect(
+        odbc::odbc(),
+        Driver = "SQL Server",
+        Server = "BI-DPA-PROD",
+        database = "USR_PS_Forsk",
+        Trusted_Connection = "TRUE"
+)
+```
+
+# A-diagnoses
+## LPR3
+```{r}
+df_lpr3_diagnoses_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_LPR3kontakter_psyk_somatik_inkl_2021")) %>% 
+  select(dw_ek_borger, datotid_lpr3kontaktstart, diagnosegruppestreng) %>% 
+  collect %>% 
+  format_sql_import()
+
+df_first_lpr3_diabetes_diagnosis <- df_lpr3_diagnoses_roughly_selected %>%
+  keep_only_first_diabetes_by_diag(date_col_string="datotid_lpr3kontaktstart") %>% 
+  rename(datotid_start = datotid_lpr3kontaktstart)
+  
+
+```
+
+## LPR2
+### Inpatient visits
+```{r}
+df_lpr2_diagnoses_inpatient_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021")) %>% 
+  select(dw_ek_borger, datotid_indlaeggelse, diagnosegruppestreng) %>% 
+  rename(datotid_start = datotid_indlaeggelse) %>% 
+  collect %>% 
+  format_sql_import()
+
+df_inpatient_lpr2_first_diabetes_diagnosis <- df_lpr2_diagnoses_inpatient_roughly_selected %>% 
+   keep_only_first_diabetes_by_diag(date_col_string="datotid_start")
+```
+
+### Outpatient visits
+```{r}
+df_lpr2_diagnoses_outpatient_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_besoeg_psyk_somatik_LPR2_inkl_2021")) %>% 
+  select(dw_ek_borger, datotid_start, diagnosegruppestreng) %>%
+  collect %>% 
+  format_sql_import()
+  
+df_outpatient_lpr2_first_diabetes_diagnosis <- df_lpr2_diagnoses_outpatient_roughly_selected %>% 
+  keep_only_first_diabetes_by_diag(date_col_string="datotid_start")
+```
+
+## Combined
+```{r}
+df_diabetes_diagnoses_combined <- df_first_lpr3_diabetes_diagnosis %>% 
+  bind_rows(df_inpatient_lpr2_first_diabetes_diagnosis) %>% 
+  bind_rows(df_outpatient_lpr2_first_diabetes_diagnosis) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start == min(datotid_start)) %>% 
+  filter(row_number() == 1)
+```
+
+```{r}
+write_csv(df_diabetes_diagnoses_combined, here("first_diabetes_diagnosis.csv"))
+```
+

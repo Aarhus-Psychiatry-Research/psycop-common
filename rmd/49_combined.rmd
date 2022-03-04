@@ -1,0 +1,35 @@
+Combine medication, hba1c and diagnoses to find first date where the patient has diabetes.
+
+```{r}
+source(here("src", "functions.r"))
+```
+
+
+## Filter function
+```{r}
+df_first_diabetes_combined <- df_first_date_of_diabetes_medication_prescription %>% 
+  bind_rows(df_first_diabetes_blood_sample) %>% 
+  bind_rows(df_diabetes_diagnoses_combined) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start == min(datotid_start)) %>% 
+  select(dw_ek_borger, datotid_start) %>% 
+  distinct(dw_ek_borger, datotid_start) %>% 
+  rename(datotid_first_diabetes = datotid_start)
+```
+
+# Wash-in
+We don't know whether a patient has had diabetes before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".
+
+```{r}
+df_exclude_for_wash_in <- df_first_date_of_diabetes_medication_prescription %>% 
+  filter(datotid_start < ymd(event_start_date_str))
+```
+
+# Finish processing
+```{r}
+df_first_diabetes_processed <- df_first_diabetes_combined %>% 
+  right_join(df_first_psych_visit) %>%
+  filter(datotid_first_diabetes > datotid_first_psych_visit) %>% # Exclude if after first psychiatric visit
+  filter(datotid_first_diabetes > ymd(event_start_date_str)) %>% # Exclude if before wash-in period
+  select(dw_ek_borger)
+```
