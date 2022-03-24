@@ -1,0 +1,72 @@
+Combine medication, hba1c and diagnoses to find first date where the patient has t2d.
+
+```{r}
+source(here("src", "functions.r"))
+```
+
+
+## Include from BS only
+```{r}
+df_first_t2d_bs_only <- df_first_t2d_blood_sample %>% 
+  rename(datotid_first_t2d_bs = datotid_start) %>% # Add BS
+  left_join(df_first_date_of_t2d_medication_prescription) %>% 
+  filter(datotid_first_t2d_bs < datotid_first_t2d_medication) %>% 
+  left_join(df_first_t2d_diagnoses_combined) %>% 
+  filter(datotid_first_t2d_bs < datotid_first_t2d_diagnosis) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_first_t2d_bs == min(datotid_first_t2d_bs)) %>% # Make sure to only have one record per patient
+  select(dw_ek_borger, datotid_first_t2d_bs) %>% 
+  distinct(dw_ek_borger, datotid_first_t2d_bs) %>% 
+  left_join(df_first_psych_visit) %>% # 3010
+  filter(datotid_first_psych_visit < datotid_first_t2d_bs) %>% # Keep only if diabetes is diagnosed after first psych visit: 810
+  filter(!(event_start_date > datotid_first_t2d_bs)) %>% # Keep only after cohort start date: 606
+  left_join(rename(df_first_t1d_diagnoses_combined, datotid_first_t1d_diagnosis = datotid_start), by = "dw_ek_borger") %>% 
+  mutate(!(datotid_first_t1d_diagnosis < datotid_first_t2d_bs)) %>% 
+  filter(is.na(datotid_first_t1d_diagnosis) | !(datotid_first_t1d_diagnosis < datotid_first_t2d_bs)) # Keep only if no t1d diagnosis before t2d: 601
+
+dim(df_first_t2d_bs_only)
+```
+
+```{r}
+write_csv(df_first_t2d_bs_only, here("csv", "df_first_t2d_bs_only.csv"))
+```
+
+## Include from all sources
+```{r}
+df_first_t2d_all_three <- df_first_t2d_blood_sample %>% 
+  bind_rows(rename(df_first_date_of_t2d_medication_prescription, datotid_start = datotid_first_t2d_medication)) %>% 
+  bind_rows(rename(df_first_t2d_diagnoses_combined, datotid_start = datotid_first_t2d_diagnosis)) %>% 
+  group_by(dw_ek_borger) %>% 
+  bind_rows(df_first_t2d_diagnoses_combined) %>% 
+  filter(datotid_start == min(datotid_start)) %>% 
+  select(dw_ek_borger, datotid_start) %>% 
+  distinct(dw_ek_borger, datotid_start) %>% 
+  rename(datotid_first_t2d = datotid_start) %>% 
+  left_join(df_first_psych_visit) %>%
+  filter(datotid_first_t2d > datotid_first_psych_visit) %>% # Exclude if after first psychiatric visit
+  filter(datotid_first_t2d > event_start_date) %>% # Exclude if after start date
+  anti_join(df_first_t1d_diagnoses_combined, by = "dw_ek_borger") # Exclude if previous T1D - removes 120
+
+dim(df_first_t2d_all_three)
+```
+
+# Wash-in
+We don't know whether a patient has had t2d before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".
+
+```{r}
+df_exclude_for_wash_in <- df_first_date_of_t2d_medication_prescription %>% 
+  filter(datotid_start < event_start_date)
+```
+
+
+
+# PNRs for stratification
+```{r}
+df_for_strat <- df_first_t2d_processed %>% 
+  select(dw_ek_borger)
+```
+
+```{r}
+
+```
+

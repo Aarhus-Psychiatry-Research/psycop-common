@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "E:\\ProgramData\\Anaconda3\\envs\\martin-test\\python.exe",
+    "python.formatting.provider": "black",
+    "esbonio.server.enabled": true
+}
