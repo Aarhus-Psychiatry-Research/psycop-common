@@ -34,5 +34,6 @@ df_first_t2d_blood_sample <- con %>%
   format_sql_import()
 ```
 
+
 # Wash-in
 We don't know whether a patient has had t2d before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".

@@ -62,12 +62,19 @@ write_csv(df_all_visits_combined, here("csv", "all_visits_combined.csv"))
 ### T2D
 ```{r}
 df_first_t2d_diagnoses_combined <- df_all_visits_combined %>% 
-  keep_only_first_t2d_by_diag(date_col_string="datotid_start")
+  keep_only_first_t2d_by_diag(date_col_string="datotid_start") %>% 
+  rename(datotid_first_t2d_diagnosis = datotid_start)
 ```
 
 ```{r}
 write_csv(df_first_t2d_diagnoses_combined, here("csv", "first_t2d_diagnosis.csv"))
 ```
+
+```{r}
+df_first_t2d_diagnoses_combined <- read_csv(here("csv", "first_t2d_diagnosis.csv"))
+```
+```
+
 
 ### T1D
 ```{r}
@@ -78,6 +85,10 @@ df_first_t1d_diagnoses_combined <- df_all_visits_combined %>%
 
 ```{r}
 write_csv(df_first_t1d_diagnoses_combined, here("csv", "first_t1d_diagnosis.csv"))
+```
+
+```{r}
+df_first_t1d_diagnoses_combined <- read_csv(here("csv", "first_t1d_diagnosis.csv"))
 ```
 
 

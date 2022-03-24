@@ -54,6 +54,5 @@ df_first_date_of_t2d_medication_prescription <- df_first_administered_t2d_medica
   group_by(dw_ek_borger) %>% 
   filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
   filter(row_number() == 1) %>% 
-  rename(datotid_start=datotid_ordination_start)
+  rename(datotid_first_t2d_medication=datotid_ordination_start)
 ```
-

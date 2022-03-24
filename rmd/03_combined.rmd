@@ -18,7 +18,7 @@ We don't know whether a patient has had t2d before our follow-up time starts. To
 
 ```{r}
 df_exclude_for_wash_in <- df_first_date_of_t2d_medication_prescription %>% 
-  filter(datotid_start < ymd(event_start_date))
+  filter(datotid_start < event_start_date)
 ```
 
 # Remove patients with incidence before first psych-contact

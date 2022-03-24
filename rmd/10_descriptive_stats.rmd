@@ -1,6 +1,6 @@
 ```{r}
 library(pacman)
-p_load(ggplot2, ggbeeswarm, tidyverse, here)
+p_load(ggplot2, ggbeeswarm, tidyverse, here, ggbeeswarm)
 
 source(here("psycop_r_utils", "import_from_sql.r"))
 ```
@@ -13,7 +13,7 @@ df_demographics <- get_fct("FOR_kohorte_demografi_inkl_2021") %>%
 ```
 
 ```{r}
-df_first_t2d_processed <- read_csv(here("csv", "df_first_t2d_processed.csv"))
+df_first_t2d_processed <- read_csv(here("csv", "df_first_t2d_bs_only.csv"))
 
 df_first_psych_visit <- read_csv(here("csv", "df_first_psych_visit.csv"))
 ```
