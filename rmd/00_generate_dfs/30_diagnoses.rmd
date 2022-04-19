@@ -73,7 +73,6 @@ write_csv(df_first_t2d_diagnoses_combined, here("csv", "first_t2d_diagnosis.csv"
 ```{r}
 df_first_t2d_diagnoses_combined <- read_csv(here("csv", "first_t2d_diagnosis.csv"))
 ```
-```
 
 
 ### T1D

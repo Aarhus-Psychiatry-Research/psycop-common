@@ -12,13 +12,15 @@ from imblearn.over_sampling import RandomOverSampler, SMOTE
 
 
 def get_clf(clf, calibrate=False, calibrate_cv=5, **kwargs):
-    clf_dict = {"nb": MultinomialNB,
-                "rf": RandomForestClassifier,
-                "en": ElasticNet,
-                'ab': AdaBoostClassifier
-                }
+    clf_dict = {
+        "nb": MultinomialNB,
+        "rf": RandomForestClassifier,
+        "en": ElasticNet,
+        "ab": AdaBoostClassifier,
+    }
     if clf == "xg":
         from xgboost import XGBClassifier
+
         clf_dict["xg"] = XGBClassifier
     if clf in clf_dict:
         clf = clf_dict[clf]
@@ -61,7 +63,9 @@ def add_def_args(func, def_args):
     >>> add3(2)
     5
     """
+
     def func_wrapper(*args, **kwargs):
         value = func(*args, **def_args, **kwargs)
         return value
+
     return func_wrapper
