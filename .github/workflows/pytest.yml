@@ -1,0 +1,67 @@
+name: CI Pytest
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  pytest:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+            os: [ubuntu-latest]
+            python-version: ['3.7']
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install --editable .
+    - name: Run and write pytest
+      run: |
+        pytest --cov=src --cov-report term-missing
+  
+  pytest-coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install --editable .
+    - name: Run and write pytest
+      run: |
+        set -o pipefail
+        python -m pytest --cov=src --cov-report term-missing | tee pytest-coverage.txt
+    - name: Pytest coverage comment
+      id: coverage-comment
+      uses: MishaKav/pytest-coverage-comment@v1.1.24
+      with:
+        pytest-coverage-path: ./pytest-coverage.txt
+    - name: Check the output coverage
+      run: |
+        echo "Coverage Report - ${{ steps.coverage-comment.outputs.coverage }}"
+        echo "Coverage Color - ${{ steps.coverage-comment.outputs.color }}"
+    - name: Create the Badge
+      uses: schneegans/dynamic-badges-action@v1.1.0
+      with:
+        auth: ${{ secrets.PYTEST_COVERAGE }}
+        gistID: a55a5aab938808fb590375808c87f7a2
+        filename: badge-psycop-ml-utils-pytest-coverage.json
+        label: Coverage
+        message: ${{ steps.coverage-comment.outputs.coverage }}
+        color: ${{ steps.coverage-comment.outputs.color }}
+        namedLogo: python
