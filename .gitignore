@@ -109,3 +109,4 @@ About
 figures/
 *.csv
 .vscode
+wandb

@@ -1,4 +1,6 @@
 import datetime as dt
+from statistics import mode
+from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +9,7 @@ from sklearn.metrics import roc_auc_score
 from src.features.load_features import *
 from wasabi import Printer
 from xgboost import XGBClassifier
+import wandb
 
 
 def impute(
@@ -33,13 +36,6 @@ def generate_predictions(train_y, train_X, val_X):
     return preds, pred_probs, model
 
 
-def print_auc(val_y, pred_probs):
-    auc_predictions = pred_probs[:, 1]
-
-    roc_auc = round(roc_auc_score(val_y, auc_predictions), 4)
-    msg.info(f"auc: {roc_auc}")
-
-
 def difference_in_days(start_date_series: pd.Series, end_date_series: pd.Series):
     """Calculate difference in days between two pandas datetime series
     Args:
@@ -60,7 +56,7 @@ def round_floats_to_edge(series: pd.Series, bins: List[float]):
     return pd.cut(series, bins=bins, labels=labels)
 
 
-def plot_tpr_by_time_to_event(
+def log_tpr_by_time_to_event(
     df: pd.DataFrame,
     outcome_col_name: str,
     predicted_outcome_col_name: str,
@@ -108,7 +104,7 @@ def plot_tpr_by_time_to_event(
     plt.xticks(rotation=45)
 
     plt.subplots_adjust(left=0.1, bottom=0.171, right=0.92, top=0.92)
-    plt.show()
+    wandb.log({"TPR by time to event": plt})
 
 
 def plot_xgb_feature_importances(val_X_column_names, model):
@@ -116,20 +112,30 @@ def plot_xgb_feature_importances(val_X_column_names, model):
     plt.barh(val_X_column_names[sorted_idx], model.feature_importances_[sorted_idx])
     plt.autoscale()
     plt.subplots_adjust(left=0.5, bottom=0.171, right=0.92, top=0.92)
-    plt.show()
 
 
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
 
-    IMPUTE = False
-    LOAD_ALL = True
-    FORCE_ALL_BINARY = False
+    run = wandb.init(project="psycop-t2d", reinit=True)
+
+    PARAMS = {
+        "impute_all": False,
+        "load_all": True,
+        "force_all_binary": False,
+        "lookahead_days": 1826.25,
+        "lookbehind_days": 9999,
+        "drop_with_insufficient_lookahead": False,
+        "drop_with_insufficient_lookbehind": False,
+        "washin_days": 0,
+    }
+
+    run.config.update(PARAMS)
 
     OUTCOME_COL_NAME = "t2d_within_1826.25_days_max_fallback_0"
     PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
 
-    if LOAD_ALL:
+    if PARAMS["load_all"]:
         n_to_load = None
     else:
         n_to_load = 5_000
@@ -143,20 +149,20 @@ if __name__ == "__main__":
     ]
 
     # Val set
-    val_X, val_y = load_val(outcome_col_name=OUTCOME_COL_NAME, n_to_load=n_to_load)
-    eval_X = val_X.copy()
+    X_val, y_val = load_val(outcome_col_name=OUTCOME_COL_NAME, n_to_load=n_to_load)
+    eval_X = X_val.copy()
 
     # Train set
-    train_X, train_y = load_train(
+    X_train, y_train = load_train(
         outcome_col_name=OUTCOME_COL_NAME, n_to_load=n_to_load
     )
 
     # Prep for training
-    for ds in train_X, val_X:
+    for ds in X_train, X_val:
         msg.info("Dropping columns that won't generalise")
         ds.drop(cols_to_drop_before_training, axis=1, errors="ignore", inplace=True)
 
-        if FORCE_ALL_BINARY:
+        if PARAMS["force_all_binary"]:
             msg.info("Rounding all to binary")
             cols_to_round = [
                 colname
@@ -175,26 +181,36 @@ if __name__ == "__main__":
             ds[colname] = ds[colname].map(dt.datetime.toordinal)
 
     # Make a copy of the datasets so you can inspect during debugging
-    if IMPUTE:
-        train_X_processed, val_X_processed = impute(train_X=train_X, val_X=val_X)
+    if PARAMS["impute_all"]:
+        train_X_processed, val_X_processed = impute(train_X=X_train, val_X=X_val)
     else:
-        train_X_processed, val_X_processed = train_X, val_X
+        train_X_processed, val_X_processed = X_train, X_val
 
-    preds, pred_probs, model = generate_predictions(
-        train_y, train_X_processed, val_X_processed
+    y_preds, y_probas, model = generate_predictions(
+        y_train, train_X_processed, val_X_processed
     )
 
-    print_auc(val_y, pred_probs)
-
     # Evaluation
-    ## Feature importance
-    plot_xgb_feature_importances(val_X.columns, model)
+    wandb.sklearn.plot_classifier(
+        model,
+        X_train=X_train,
+        X_test=X_val,
+        y_train=y_train,
+        y_test=y_val,
+        y_pred=y_preds,
+        y_probas=y_probas,
+        labels=[0, 1],
+        model_name="XGB",
+        feature_names=train_X_processed.columns,
+    )
+
+    run.log({"roc_auc_unweighted": round(roc_auc_score(y_val, y_probas[:, 1]), 3)})
 
     eval_df = eval_X
-    eval_df[OUTCOME_COL_NAME] = val_y
-    eval_df[PREDICTED_OUTCOME_COL_NAME] = preds
+    eval_df[OUTCOME_COL_NAME] = y_val
+    eval_df[PREDICTED_OUTCOME_COL_NAME] = y_preds
 
-    plot_tpr_by_time_to_event(
+    log_tpr_by_time_to_event(
         df=eval_df,
         outcome_col_name=OUTCOME_COL_NAME,
         predicted_outcome_col_name=PREDICTED_OUTCOME_COL_NAME,
@@ -202,3 +218,5 @@ if __name__ == "__main__":
         prediction_timestamp_col_name="timestamp",
         bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
     )
+
+    run.finish()

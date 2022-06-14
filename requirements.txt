@@ -22,6 +22,10 @@ furo
 sphinx-copybutton
 sphinxext-opengraph
 myst-parser
+wandb
+
+# model evaluation
+plotly
 
 # external requirements
 click
