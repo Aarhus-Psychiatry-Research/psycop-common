@@ -7,8 +7,9 @@ from wasabi import Printer
 msg = Printer(timestamp=True)
 
 
-def load_combined(
+def load_dataset(
     split_name: str,
+    outcome_col_name: str,
     n_to_load: Union[None, int] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
@@ -26,19 +27,19 @@ def load_combined(
         format_timestamp_cols_to_datetime=False,
     )
 
+    timestamp_colnames = [col for col in df_combined.columns if "timestamp" in col]
+
+    for colname in timestamp_colnames:
+        if df_combined[colname].dtype != "datetime64[ns]":
+            # Convert all 0s in colname to NaT
+            df_combined[colname] = df_combined[colname].apply(
+                lambda x: pd.NaT if x == "0" else x
+            )
+
+            df_combined[colname] = pd.to_datetime(df_combined[colname])
+
+    _X = df_combined.drop(outcome_col_name, axis=1)
+    _y = df_combined[outcome_col_name]
+
     msg.good(f"{split_name}: Returning!")
-    return df_combined
-
-
-def load_train(outcome_col_name, n_to_load: Union[None, int] = None):
-    return load_combined(
-        "train", outcome_col_name=outcome_col_name, n_to_load=n_to_load
-    )
-
-
-def load_test(outcome_col_name, n_to_load: Union[None, int] = None):
-    return load_combined("test", outcome_col_name=outcome_col_name, n_to_load=n_to_load)
-
-
-def load_val(outcome_col_name, n_to_load: Union[None, int] = None):
-    return load_combined("val", outcome_col_name=outcome_col_name, n_to_load=n_to_load)
+    return _X, _y

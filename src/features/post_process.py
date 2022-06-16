@@ -6,25 +6,17 @@ from src.utils import convert_all_to_binary, drop_records_if_datediff_days_small
 from wasabi import msg
 
 
-def process_combined(
-    df_combined: pd.DataFrame,
+def combined(
+    X: pd.DataFrame,
+    y: pd.Series,
     outcome_col_name: str,
     min_lookahead_days: Union[int, None] = None,
     min_lookbehind_days: Union[int, None] = None,
-    cols_to_drop_before_training: List[str] = None,
     convert_all_cols_to_binary: bool = False,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    # Convert timestamps to dt., and then to ordinal
-    timestamp_colnames = [col for col in df_combined.columns if "timestamp" in col]
-
-    for colname in timestamp_colnames:
-        if df_combined[colname].dtype != "datetime64[ns]":
-            # Convert all 0s in colname to NaT
-            df_combined[colname] = df_combined[colname].apply(
-                lambda x: pd.NaT if x == "0" else x
-            )
-
-            df_combined[colname] = pd.to_datetime(df_combined[colname])
+    cols_to_drop: List[str] = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    df_combined = X
+    df_combined[outcome_col_name] = y
 
     if min_lookahead_days is not None:
         drop_if_not_fulfilling_lookahead_days(df_combined, min_lookahead_days)
@@ -32,27 +24,30 @@ def process_combined(
     if min_lookbehind_days is not None:
         drop_if_not_fulfilling_lookbehind_days(df_combined, min_lookbehind_days)
 
-    # Drop cols that won't generalise
-    msg.info("Dropping columns that won't generalise")
+    # Dataframe for eval, make copies before making transformations
+    # that make interpretation more difficult
+    _X_eval = df_combined.copy().drop(outcome_col_name, axis=1)
+    _y_eval = df_combined.copy()[outcome_col_name]
 
-    if convert_all_cols_to_binary:
-        convert_all_to_binary(df_combined, skip=["age_in_years", "male"])
-
+    ## Transformations that make eval harder
+    # Convert timestamps to ordinal
+    timestamp_colnames = [col for col in df_combined.columns if "timestamp" in col]
     msg.info("Converting timestamps to ordinal")
     for colname in timestamp_colnames:
         df_combined[colname] = df_combined[colname].map(dt.datetime.toordinal)
 
-    df_combined.drop(
-        cols_to_drop_before_training=cols_to_drop_before_training,
-        axis=1,
-        errors="ignore",
-        inplace=True,
-    )
+    if cols_to_drop is not None:
+        df_combined.drop(columns=cols_to_drop, inplace=True, axis=1)
+
+    if convert_all_cols_to_binary:
+        convert_all_to_binary(
+            df_combined, skip=["age_in_years", "male", outcome_col_name]
+        )
 
     _X = df_combined.drop(outcome_col_name, axis=1)
     _y = df_combined[outcome_col_name]
 
-    return _X, _y
+    return _X, _y, _X_eval, _y_eval
 
 
 def drop_if_not_fulfilling_lookbehind_days(df_combined, min_lookbehind_days):
@@ -83,43 +78,3 @@ def drop_if_not_fulfilling_lookahead_days(df_combined, min_lookahead_days):
     )
 
     df_combined.drop(_last_prediction_time_col_name, inplace=True, axis=1)
-
-
-def train(
-    train_combined: pd.DataFrame,
-    outcome_col_name: str,
-    min_lookahead_days: Union[int, None] = None,
-    min_lookbehind_days: Union[int, None] = None,
-    cols_to_drop_before_training: List[str] = None,
-    convert_all_cols_to_binary: bool = False,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    df = process_combined(
-        df_combined=train_combined,
-        outcome_col_name=outcome_col_name,
-        min_lookahead_days=min_lookahead_days,
-        min_lookbehind_days=min_lookbehind_days,
-        cols_to_drop_before_training=cols_to_drop_before_training,
-        convert_all_cols_to_binary=convert_all_cols_to_binary,
-    )
-
-    return df
-
-
-def val(
-    val_combined: pd.DataFrame,
-    outcome_col_name: str,
-    min_lookahead_days: Union[int, None] = None,
-    min_lookbehind_days: Union[int, None] = None,
-    cols_to_drop_before_training: List[str] = None,
-    convert_all_cols_to_binary: bool = False,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    df = process_combined(
-        df_combined=val_combined,
-        outcome_col_name=outcome_col_name,
-        min_lookahead_days=min_lookahead_days,
-        min_lookbehind_days=min_lookbehind_days,
-        cols_to_drop_before_training=cols_to_drop_before_training,
-        convert_all_cols_to_binary=convert_all_cols_to_binary,
-    )
-
-    return df
