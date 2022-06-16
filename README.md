@@ -5,6 +5,9 @@ psycop-t2d
 
 Prediction of type 2 diabetes among patients with visits to psychiatric hospital departments.
 
+## Installing pre-commit hooks
+`pre-commit install`
+
 Project Organization
 ------------
 
