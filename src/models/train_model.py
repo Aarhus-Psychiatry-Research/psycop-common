@@ -1,18 +1,16 @@
 import datetime as dt
+
+import wandb
 from sklearn.metrics import roc_auc_score
 from src.features.load_features import *
-from wasabi import Printer
-import wandb
-
 from src.utils import (
     convert_all_to_binary,
     drop_records_if_datediff_days_smaller_than,
-    difference_in_days,
     generate_predictions,
     impute,
     log_tpr_by_time_to_event,
 )
-
+from wasabi import Printer
 
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
@@ -32,6 +30,11 @@ if __name__ == "__main__":
         "min_lookbehind_days": 5,
         "washin_days": 0,
     }
+
+    # lookahead_days: How far the model looks ahead from prediction time
+    # lookbehind_days: The furthest interval the model looks behind from prediction time
+    # min_lookahead_days: Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
+    # min_lookbehind_days: Drop all prediction times where (current timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
 
     if LOG:
         run.config.update(PARAMS)
@@ -67,7 +70,7 @@ if __name__ == "__main__":
         if PARAMS["min_lookahead_days"] is not False:
             drop_records_if_datediff_days_smaller_than(
                 df=ds,
-                t2_col_name=f"timestamp_t2d_within_{PARAMS['lookahead_days']}_days_max_fallback_0",
+                t2_col_name=ds["timestamp"].max(),
                 t1_col_name="timestamp",
                 threshold_days=PARAMS["lookahead_days"],
                 inplace=True,
@@ -75,23 +78,13 @@ if __name__ == "__main__":
 
         # Handle minimum lookahead
         if PARAMS["min_lookbehind_days"] is not False:
-            _first_pred_time_col_name = "timestamp_first_prediction_time"
-
-            ds[_first_pred_time_col_name] = ds["timestamp"].min()
-
-            ds["difference_in_days"] = difference_in_days(
-                ds["timestamp"], ds[_first_pred_time_col_name]
-            )
-
             drop_records_if_datediff_days_smaller_than(
                 df=ds,
                 t2_col_name=f"timestamp",
-                t1_col_name=_first_pred_time_col_name,
+                t1_col_name=ds["timestamp"].min(),
                 threshold_days=PARAMS["min_lookahead_days"],
                 inplace=True,
             )
-
-            ds.drop([_first_pred_time_col_name], inplace=True, axis=1)
 
         # Drop columns that won't generalize
         msg.info("Dropping columns that won't generalise")
