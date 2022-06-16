@@ -1,3 +1,51 @@
+from typing import List, Union
+
+import numpy as np
+import pandas as pd
+import wandb
+from matplotlib import pyplot as plt
+from sklearn.impute import SimpleImputer
+from wasabi import msg
+from xgboost import XGBClassifier
+
+
+def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
+    """Calculate difference in days between two pandas datetime series (start_date - end_date).
+
+    Args:
+        end_date_series (pd.Series): First datetime64[ns] series
+        start_date_series (pd.Series): Second datetime64[ns] series
+    """
+    return (start_date_series - end_date_series) / np.timedelta64(1, "D")
+
+
+def drop_records_if_datediff_days_smaller_than(
+    df: pd.DataFrame,
+    t2_col_name: str,
+    t1_col_name: str,
+    threshold_days: Union[float, int],
+    inplace: bool = True,
+):
+    """Drop rows where datediff is smaller than threshold_days.
+
+    Args:
+        df (pd.DataFrame): Dataframe.
+        t2_col_name (str): _description_
+        t1_col_name (str): _description_
+        threshold_days (Union[float, int]): _description_
+        inplace (bool, optional): _description_. Defaults to True.
+    """
+    if inplace:
+        df.drop(
+            df[
+                difference_in_days(df[t2_col_name], df[t1_col_name]) < threshold_days
+            ].index,
+            inplace=True,
+        )
+    else:
+        return df[difference_in_days(df[t2_col_name], df[t1_col_name]) < threshold_days]
+
+
 def impute(
     train_X,
     val_X,
@@ -20,16 +68,6 @@ def generate_predictions(train_y, train_X, val_X):
     pred_probs = model.predict_proba(val_X)
     preds = model.predict(val_X)
     return preds, pred_probs, model
-
-
-def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
-    """Calculate difference in days between two pandas datetime series (start_date - end_date).
-
-    Args:
-        end_date_series (pd.Series): First datetime64[ns] series
-        start_date_series (pd.Series): Second datetime64[ns] series
-    """
-    return (start_date_series - end_date_series) / np.timedelta64(1, "D")
 
 
 def round_floats_to_edge(series: pd.Series, bins: List[float]):
@@ -111,30 +149,3 @@ def convert_all_to_binary(ds, skip):
 
     for col in cols_to_round:
         ds[col] = ds[col].map(lambda x: 1 if x > 0 else np.NaN)
-
-
-def drop_records_if_datediff_smaller_than(
-    df: pd.DataFrame,
-    t2_col_name: str,
-    t1_col_name: str,
-    threshold_days: Union[float, int],
-    inplace: bool = True,
-):
-    """Drop rows where datediff is smaller than threshold_days.
-
-    Args:
-        df (pd.DataFrame): Dataframe.
-        t2_col_name (str): _description_
-        t1_col_name (str): _description_
-        threshold_days (Union[float, int]): _description_
-        inplace (bool, optional): _description_. Defaults to True.
-    """
-    if inplace:
-        df.drop(
-            df[
-                difference_in_days(df[t2_col_name], df[t1_col_name]) < threshold_days
-            ].index,
-            inplace=True,
-        )
-    else:
-        return df[difference_in_days(df[t2_col_name], df[t1_col_name]) < threshold_days]
