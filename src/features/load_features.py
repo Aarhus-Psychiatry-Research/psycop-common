@@ -1,6 +1,6 @@
 import datetime as dt
 from pathlib import Path
-from typing import Union
+from typing import Tuple, Union
 
 import pandas as pd
 from psycopmlutils.loaders import sql_load
@@ -13,7 +13,7 @@ def load_datasets(
     dataset_name: str,
     outcome_col_name: str,
     n_to_load: Union[None, int] = None,
-) -> (pd.DataFrame, pd.DataFrame):
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
     sql_table_name = f"psycop_t2d_{dataset_name}"
 
