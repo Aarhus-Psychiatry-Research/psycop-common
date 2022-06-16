@@ -110,5 +110,4 @@ figures/
 *.csv
 .vscode
 wandb
-.vscode/settings.json
-.vscode/settings.json
+outputs

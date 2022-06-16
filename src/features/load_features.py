@@ -1,5 +1,3 @@
-import datetime as dt
-from pathlib import Path
 from typing import Tuple, Union
 
 import pandas as pd
@@ -9,13 +7,13 @@ from wasabi import Printer
 msg = Printer(timestamp=True)
 
 
-def load_datasets(
-    dataset_name: str,
+def load_dataset(
+    split_name: str,
     outcome_col_name: str,
     n_to_load: Union[None, int] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
-    sql_table_name = f"psycop_t2d_{dataset_name}"
+    sql_table_name = f"psycop_t2d_{split_name}"
 
     if n_to_load is not None:
         msg.info(f"{sql_table_name}: Loading {n_to_load} rows from")
@@ -29,9 +27,6 @@ def load_datasets(
         format_timestamp_cols_to_datetime=False,
     )
 
-    msg.info(f"{sql_table_name}: Finished loading row_")
-
-    # Convert timestamps
     timestamp_colnames = [col for col in df_combined.columns if "timestamp" in col]
 
     for colname in timestamp_colnames:
@@ -46,19 +41,5 @@ def load_datasets(
     _X = df_combined.drop(outcome_col_name, axis=1)
     _y = df_combined[outcome_col_name]
 
-    msg.good(f"{dataset_name}: Returning!")
+    msg.good(f"{split_name}: Returning!")
     return _X, _y
-
-
-def load_train(outcome_col_name, n_to_load: Union[None, int] = None):
-    return load_datasets(
-        "train", outcome_col_name=outcome_col_name, n_to_load=n_to_load
-    )
-
-
-def load_test(outcome_col_name, n_to_load: Union[None, int] = None):
-    return load_datasets("test", outcome_col_name=outcome_col_name, n_to_load=n_to_load)
-
-
-def load_val(outcome_col_name, n_to_load: Union[None, int] = None):
-    return load_datasets("val", outcome_col_name=outcome_col_name, n_to_load=n_to_load)

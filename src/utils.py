@@ -82,33 +82,33 @@ def round_floats_to_edge(series: pd.Series, bins: List[float]):
 
 
 def log_tpr_by_time_to_event(
-    df: pd.DataFrame,
+    eval_df_combined: pd.DataFrame,
     outcome_col_name: str,
     predicted_outcome_col_name: str,
     outcome_timestamp_col_name: str,
     prediction_timestamp_col_name: str = "timestamp",
     bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
 ):
-    eval_pos_df = df[df[outcome_timestamp_col_name].notnull()]
+    df_positives_only = eval_df_combined[eval_df_combined[outcome_col_name].notnull()]
 
     # Calculate difference in days between columns
-    eval_pos_df["days_to_outcome"] = difference_in_days(
-        eval_pos_df[outcome_timestamp_col_name],
-        eval_pos_df[prediction_timestamp_col_name],
+    df_positives_only["days_to_outcome"] = difference_in_days(
+        df_positives_only[outcome_timestamp_col_name],
+        df_positives_only[prediction_timestamp_col_name],
     )
 
-    true_vals = eval_pos_df[outcome_col_name]
-    pred_vals = eval_pos_df[predicted_outcome_col_name]
+    true_vals = df_positives_only[outcome_col_name]
+    pred_vals = df_positives_only[predicted_outcome_col_name]
 
-    eval_pos_df["true_positive"] = (true_vals == 1) & (pred_vals == 1)
-    eval_pos_df["false_negative"] = (true_vals == 1) & (pred_vals == 0)
+    df_positives_only["true_positive"] = (true_vals == 1) & (pred_vals == 1)
+    df_positives_only["false_negative"] = (true_vals == 1) & (pred_vals == 0)
 
-    eval_pos_df["days_to_outcome_binned"] = round_floats_to_edge(
-        eval_pos_df["days_to_outcome"], bins=bins
+    df_positives_only["days_to_outcome_binned"] = round_floats_to_edge(
+        df_positives_only["days_to_outcome"], bins=bins
     )
 
     tpr_by_time_to_outcome_df = (
-        eval_pos_df[["days_to_outcome_binned", "true_positive", "false_negative"]]
+        df_positives_only[["days_to_outcome_binned", "true_positive", "false_negative"]]
         .groupby("days_to_outcome_binned")
         .sum()
     )
