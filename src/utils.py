@@ -10,13 +10,13 @@ from xgboost import XGBClassifier
 
 
 def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
-    """Calculate difference in days between two pandas datetime series (start_date - end_date).
+    """Calculate difference in days between two pandas datetime series (end_date - start_date).
 
     Args:
         end_date_series (pd.Series): First datetime64[ns] series
         start_date_series (pd.Series): Second datetime64[ns] series
     """
-    return (start_date_series - end_date_series) / np.timedelta64(1, "D")
+    return (end_date_series - start_date_series) / np.timedelta64(1, "D")
 
 
 def drop_records_if_datediff_days_smaller_than(
@@ -26,7 +26,7 @@ def drop_records_if_datediff_days_smaller_than(
     threshold_days: Union[float, int],
     inplace: bool = True,
 ):
-    """Drop rows where datediff is smaller than threshold_days.
+    """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
     Args:
         df (pd.DataFrame): Dataframe.

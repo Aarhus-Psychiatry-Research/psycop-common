@@ -1,22 +1,26 @@
 import datetime as dt
-from statistics import mode
-from typing import List
-from black import maybe_install_uvloop
-
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from src.features.load_features import *
 from wasabi import Printer
-from xgboost import XGBClassifier
 import wandb
+
+from src.utils import (
+    convert_all_to_binary,
+    drop_records_if_datediff_days_smaller_than,
+    difference_in_days,
+    generate_predictions,
+    impute,
+    log_tpr_by_time_to_event,
+)
 
 
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
 
-    run = wandb.init(project="psycop-t2d", reinit=True)
+    LOG = False
+
+    if LOG:
+        run = wandb.init(project="psycop-t2d", reinit=True)
 
     PARAMS = {
         "impute_all": False,
@@ -24,12 +28,13 @@ if __name__ == "__main__":
         "force_all_binary": False,
         "lookahead_days": 1826.25,
         "lookbehind_days": 9999,
-        "min_lookahead_days": False,
-        "min_lookbehind_days": False,
+        "min_lookahead_days": 5,
+        "min_lookbehind_days": 5,
         "washin_days": 0,
     }
 
-    run.config.update(PARAMS)
+    if LOG:
+        run.config.update(PARAMS)
 
     OUTCOME_COL_NAME = f"t2d_within_{PARAMS['lookahead_days']}_days_max_fallback_0"
     PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
@@ -58,6 +63,36 @@ if __name__ == "__main__":
 
     # Prep for training
     for ds in X_train, X_val:
+        # Handle minimum lookahead
+        if PARAMS["min_lookahead_days"] is not False:
+            drop_records_if_datediff_days_smaller_than(
+                df=ds,
+                t2_col_name=f"timestamp_t2d_within_{PARAMS['lookahead_days']}_days_max_fallback_0",
+                t1_col_name="timestamp",
+                threshold_days=PARAMS["lookahead_days"],
+                inplace=True,
+            )
+
+        # Handle minimum lookahead
+        if PARAMS["min_lookbehind_days"] is not False:
+            _first_pred_time_col_name = "timestamp_first_prediction_time"
+
+            ds[_first_pred_time_col_name] = ds["timestamp"].min()
+
+            ds["difference_in_days"] = difference_in_days(
+                ds["timestamp"], ds[_first_pred_time_col_name]
+            )
+
+            drop_records_if_datediff_days_smaller_than(
+                df=ds,
+                t2_col_name=f"timestamp",
+                t1_col_name=_first_pred_time_col_name,
+                threshold_days=PARAMS["min_lookahead_days"],
+                inplace=True,
+            )
+
+            ds.drop([_first_pred_time_col_name], inplace=True, axis = 1)
+
         # Drop columns that won't generalize
         msg.info("Dropping columns that won't generalise")
         ds.drop(cols_to_drop_before_training, axis=1, errors="ignore", inplace=True)
@@ -70,16 +105,6 @@ if __name__ == "__main__":
         msg.info("Converting timestamps to ordinal")
         for colname in timestamp_cols:
             ds[colname] = ds[colname].map(dt.datetime.toordinal)
-
-        # Handle minimum lookahead
-        if PARAMS["min_lookahead_days"] is not False:
-            drop_records_if_datediff_smaller_than(
-                df=ds,
-                t2_col_name=f"timestamp_t2d_within_{PARAMS['lookahead_days']}_days_max_fallback_0",
-                t1_col_name="timestamp",
-                threshold_days=PARAMS["lookahead_days"],
-                inplace=True,
-            )
 
     # Make a copy of the datasets so you can inspect during debugging
     if PARAMS["impute_all"]:
@@ -105,7 +130,8 @@ if __name__ == "__main__":
         feature_names=train_X_processed.columns,
     )
 
-    run.log({"roc_auc_unweighted": round(roc_auc_score(y_val, y_probas[:, 1]), 3)})
+    if LOG:
+        run.log({"roc_auc_unweighted": round(roc_auc_score(y_val, y_probas[:, 1]), 3)})
 
     eval_df = eval_X
     eval_df[OUTCOME_COL_NAME] = y_val
@@ -120,4 +146,5 @@ if __name__ == "__main__":
         bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
     )
 
-    run.finish()
+    if LOG:
+        run.finish()
