@@ -4,6 +4,9 @@
 # remote package
 git+https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils.git
 
+# Package management
+precommit
+
 # exploration
 skimpy
 
