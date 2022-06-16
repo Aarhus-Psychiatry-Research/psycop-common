@@ -91,7 +91,7 @@ if __name__ == "__main__":
                 inplace=True,
             )
 
-            ds.drop([_first_pred_time_col_name], inplace=True, axis = 1)
+            ds.drop([_first_pred_time_col_name], inplace=True, axis=1)
 
         # Drop columns that won't generalize
         msg.info("Dropping columns that won't generalise")
