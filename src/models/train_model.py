@@ -33,12 +33,6 @@ def main(cfg):
 
     outcome_timestamp_col_name = f"timestamp_{OUTCOME_COL_NAME}"
 
-    cols_to_drop_before_training = [
-        "dw_ek_borger",
-        "prediction_time_uuid",
-        outcome_timestamp_col_name,
-    ]
-
     # Val set
     X_val, y_val = load_val(outcome_col_name=OUTCOME_COL_NAME, n_to_load=n_to_load)
     eval_X = X_val.copy()
@@ -50,30 +44,6 @@ def main(cfg):
 
     # Prep for training
     for ds in X_train, X_val:
-        # Handle minimum lookahead
-        if cfg.preprocessing.min_lookahead_days is not False:
-            drop_records_if_datediff_days_smaller_than(
-                df=ds,
-                t2_col_name=ds["timestamp"].max(),
-                t1_col_name="timestamp",
-                threshold_days=cfg.preprocessing.min_lookahead_days,
-                inplace=True,
-            )
-
-        # Handle minimum lookahead
-        if cfg.preprocessing.min_lookbehind_days is not False:
-            drop_records_if_datediff_days_smaller_than(
-                df=ds,
-                t2_col_name=f"timestamp",
-                t1_col_name=ds["timestamp"].min(),
-                threshold_days=cfg.preprocessing.min_lookbehind_days,
-                inplace=True,
-            )
-
-        # Drop columns that won't generalize
-        msg.info("Dropping columns that won't generalise")
-        ds.drop(cols_to_drop_before_training, axis=1, errors="ignore", inplace=True)
-
         # Handle making binary
         if cfg.preprocessing.force_all_binary:
             convert_all_to_binary(ds, skip=["age_in_years", "male"])
