@@ -33,7 +33,7 @@ def drop_records_if_datediff_days_smaller_than(
         t2_col_name (str): _description_
         t1_col_name (str): _description_
         threshold_days (Union[float, int]): _description_
-        inplace (bool, optional): _description_. Defaults to True.
+        inplace (bool, optional): Defaults to True.
     """
     if inplace:
         df.drop(

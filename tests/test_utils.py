@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 from src.utils import difference_in_days, drop_records_if_datediff_days_smaller_than
 
 from utils_for_testing import str_to_df
@@ -12,8 +14,12 @@ def test_difference_in_days():
     """
     )
 
+    test_df = test_df.append(
+        pd.DataFrame({"timestamp_2": pd.NaT, "timestamp_1": "2021-01-01"}, index=[4]),
+    )
+
     differences = difference_in_days(test_df["timestamp_2"], test_df["timestamp_1"])
-    expected = [30.0, -30.0, 0.0]
+    expected = [30.0, -30.0, 0.0, np.nan]
 
     for i in range(len(differences)):
         assert differences[i] == expected[i]
@@ -24,8 +30,12 @@ def test_drop_records_if_datediff_days_smaller_than():
         """timestamp_2,timestamp_1
     2021-01-01, 2021-01-31,
     2021-01-31, 2021-01-01,
-    2021-01-01, 2021-01-01
+    2021-01-01, 2021-01-01,
     """
+    )
+
+    test_df = test_df.append(
+        pd.DataFrame({"timestamp_2": pd.NaT, "timestamp_1": "2021-01-01"}, index=[1])
     )
 
     drop_records_if_datediff_days_smaller_than(
@@ -37,7 +47,7 @@ def test_drop_records_if_datediff_days_smaller_than():
     )
 
     differences = difference_in_days(test_df["timestamp_2"], test_df["timestamp_1"])
-    expected = [30.0]
+    expected = [30.0, np.nan]
 
     for i in range(len(differences)):
         assert differences[i] == expected[i]
