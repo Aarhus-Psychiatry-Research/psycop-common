@@ -1,5 +1,7 @@
 import datetime as dt
+from pathlib import Path
 
+import hydra
 import wandb
 from sklearn.metrics import roc_auc_score
 from src.features.load_features import *
@@ -12,37 +14,19 @@ from src.utils import (
 )
 from wasabi import Printer
 
-if __name__ == "__main__":
-    msg = Printer(timestamp=True)
 
-    LOG = False
+@hydra.main(
+    version_base=None, config_path=Path(".") / "conf", config_name="train_config"
+)
+def main(cfg):
+    if cfg.evaluation.wandb:
+        run = cfg.evaluation.wandb.init(project="psycop-t2d", reinit=True)
+        run.config.update(cfg)
 
-    if LOG:
-        run = wandb.init(project="psycop-t2d", reinit=True)
-
-    PARAMS = {
-        "impute_all": False,
-        "load_all": False,
-        "force_all_binary": False,
-        "lookahead_days": 1826.25,
-        "lookbehind_days": 9999,
-        "min_lookahead_days": 5,
-        "min_lookbehind_days": 5,
-        "washin_days": 0,
-    }
-
-    # lookahead_days: How far the model looks ahead from prediction time
-    # lookbehind_days: The furthest interval the model looks behind from prediction time
-    # min_lookahead_days: Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
-    # min_lookbehind_days: Drop all prediction times where (current timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
-
-    if LOG:
-        run.config.update(PARAMS)
-
-    OUTCOME_COL_NAME = f"t2d_within_{PARAMS['lookahead_days']}_days_max_fallback_0"
+    OUTCOME_COL_NAME = f"t2d_within_{cfg.training.lookahead_days}_days_max_fallback_0"
     PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
 
-    if PARAMS["load_all"]:
+    if cfg.preprocessing.load_all:
         n_to_load = None
     else:
         n_to_load = 5_000
@@ -67,22 +51,22 @@ if __name__ == "__main__":
     # Prep for training
     for ds in X_train, X_val:
         # Handle minimum lookahead
-        if PARAMS["min_lookahead_days"] is not False:
+        if cfg.preprocessing.min_lookahead_days is not False:
             drop_records_if_datediff_days_smaller_than(
                 df=ds,
                 t2_col_name=ds["timestamp"].max(),
                 t1_col_name="timestamp",
-                threshold_days=PARAMS["lookahead_days"],
+                threshold_days=cfg.preprocessing.min_lookahead_days,
                 inplace=True,
             )
 
         # Handle minimum lookahead
-        if PARAMS["min_lookbehind_days"] is not False:
+        if cfg.preprocessing.min_lookbehind_days is not False:
             drop_records_if_datediff_days_smaller_than(
                 df=ds,
                 t2_col_name=f"timestamp",
                 t1_col_name=ds["timestamp"].min(),
-                threshold_days=PARAMS["min_lookahead_days"],
+                threshold_days=cfg.preprocessing.min_lookbehind_days,
                 inplace=True,
             )
 
@@ -91,7 +75,7 @@ if __name__ == "__main__":
         ds.drop(cols_to_drop_before_training, axis=1, errors="ignore", inplace=True)
 
         # Handle making binary
-        if PARAMS["force_all_binary"]:
+        if cfg.preprocessing.force_all_binary:
             convert_all_to_binary(ds, skip=["age_in_years", "male"])
 
         timestamp_cols = [col for col in ds.columns if "timestamp" in col]
@@ -100,7 +84,7 @@ if __name__ == "__main__":
             ds[colname] = ds[colname].map(dt.datetime.toordinal)
 
     # Make a copy of the datasets so you can inspect during debugging
-    if PARAMS["impute_all"]:
+    if cfg.preprocessing.impute_all:
         train_X_processed, val_X_processed = impute(train_X=X_train, val_X=X_val)
     else:
         train_X_processed, val_X_processed = X_train, X_val
@@ -123,7 +107,7 @@ if __name__ == "__main__":
         feature_names=train_X_processed.columns,
     )
 
-    if LOG:
+    if cfg.evaluation.wandb:
         run.log({"roc_auc_unweighted": round(roc_auc_score(y_val, y_probas[:, 1]), 3)})
 
     eval_df = eval_X
@@ -139,5 +123,11 @@ if __name__ == "__main__":
         bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
     )
 
-    if LOG:
+    if cfg.evaluation.wandb:
         run.finish()
+
+
+if __name__ == "__main__":
+    msg = Printer(timestamp=True)
+
+    main()
