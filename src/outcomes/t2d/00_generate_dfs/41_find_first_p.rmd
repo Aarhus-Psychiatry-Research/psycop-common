@@ -1,5 +1,5 @@
 ```{r}
-source(here("psycop_r_utils", "import_from_sql.r"))
+source(here("psycop-r-utils", "import_from_sql.r"))
 p_load(tidyverse)
 ```
 
