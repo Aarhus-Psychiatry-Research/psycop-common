@@ -26,7 +26,6 @@ def main(cfg):
     else:
         n_to_load = 5_000
 
-    # Drop cols that won't generalise
     cols_to_drop_before_training = cfg.training.cols_to_drop_before_training + [
         OUTCOME_TIMESTAMP_COL_NAME
     ]
@@ -40,10 +39,11 @@ def main(cfg):
         X=X_val,
         y=y_val,
         outcome_col_name=OUTCOME_COL_NAME,
-        min_lookahead_days=cfg.post_processing.min_lookahead_days,
-        min_lookbehind_days=cfg.post_processing.min_lookbehind_days,
+        min_lookahead_days=cfg.post_processing.val.min_lookahead_days,
+        min_lookbehind_days=cfg.post_processing.val.min_lookbehind_days,
         convert_all_cols_to_binary=cfg.post_processing.force_all_binary,
         cols_to_drop=cols_to_drop_before_training,
+        drop_if_any_diabetes_before_date=cfg.post_processing.val.drop_if_any_diabetes_before_date,
     )
 
     # Train set
@@ -57,10 +57,11 @@ def main(cfg):
         X=X_train,
         y=y_train,
         outcome_col_name=OUTCOME_COL_NAME,
-        min_lookahead_days=cfg.post_processing.min_lookahead_days,
-        min_lookbehind_days=cfg.post_processing.min_lookbehind_days,
+        min_lookahead_days=cfg.post_processing.train.min_lookahead_days,
+        min_lookbehind_days=cfg.post_processing.train.min_lookbehind_days,
         convert_all_cols_to_binary=cfg.post_processing.force_all_binary,
         cols_to_drop=cols_to_drop_before_training,
+        drop_if_any_diabetes_before_date=cfg.post_processing.val.drop_if_any_diabetes_before_date,
     )
 
     # Consider moving impute to post_process
