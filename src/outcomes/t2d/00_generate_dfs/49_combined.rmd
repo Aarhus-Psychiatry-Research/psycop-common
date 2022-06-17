@@ -23,9 +23,6 @@ df_first_diabetes_any <- df_first_t2d_blood_sample %>%
 
 copy_to(con, df_first_diabetes_any, name = in_schema("fct", "psycop_t2d_first_diabetes_any"), overwrite = TRUE, temporary = FALSE)
 
-test_load <- con %>% 
-  tbl(sql("SELECT * FROM [fct].psycop_t2d_first_diabetes_any")) 
-
 dim(df_first_diabetes_any)
 ```
 
@@ -43,10 +40,13 @@ df_first_t2d_bs_only <- df_first_t2d_blood_sample %>%
   distinct(dw_ek_borger, datotid_first_t2d_bs) %>% 
   left_join(df_first_psych_visit) %>% # 3010
   filter(datotid_first_psych_visit < datotid_first_t2d_bs) %>% # Keep only if diabetes is diagnosed after first psych visit: 810
-  filter(!(event_start_date > datotid_first_t2d_bs)) %>% # Keep only after cohort start date: 606
   left_join(rename(df_first_t1d_diagnoses_combined, datotid_first_t1d_diagnosis = datotid_start), by = "dw_ek_borger") %>% 
   mutate(!(datotid_first_t1d_diagnosis < datotid_first_t2d_bs)) %>% 
-  filter(is.na(datotid_first_t1d_diagnosis) | !(datotid_first_t1d_diagnosis < datotid_first_t2d_bs)) # Keep only if no t1d diagnosis before t2d: 601
+  filter(is.na(datotid_first_t1d_diagnosis) | !(datotid_first_t1d_diagnosis < datotid_first_t2d_bs)) %>% # Keep only if no t1d diagnosis before t2d: 601
+  select(dw_ek_borger, datotid_first_t2d_bs) %>% 
+  rename(timestamp = datotid_first_t2d_bs)
+
+copy_to(con, df_first_t2d_bs_only, name = in_schema("fct", "psycop_t2d_first_diabetes_t2d"), overwrite = TRUE, temporary = FALSE)
 
 dim(df_first_t2d_bs_only)
 ```
