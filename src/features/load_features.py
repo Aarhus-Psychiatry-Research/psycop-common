@@ -27,6 +27,21 @@ def load_dataset(
         format_timestamp_cols_to_datetime=False,
     )
 
+    # Add "any diabetes" column for wash-in
+    timestamp_any_diabetes = sql_load(
+        query=f"SELECT * FROM [fct].[psycop_t2d_first_diabetes_any]",
+        format_timestamp_cols_to_datetime=False,
+    )[["dw_ek_borger", "datotid_first_diabetes_any"]]
+
+    timestamp_any_diabetes = timestamp_any_diabetes.rename(
+        columns={"datotid_first_diabetes_any": "timestamp_first_diabetes_any"}
+    )
+
+    df_combined = df_combined.merge(
+        timestamp_any_diabetes, on="dw_ek_borger", how="left"
+    )
+
+    # Convert all timestamp cols to datetime64[ns]
     timestamp_colnames = [col for col in df_combined.columns if "timestamp" in col]
 
     for colname in timestamp_colnames:
