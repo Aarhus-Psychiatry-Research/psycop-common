@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 import numpy as np
 import pandas as pd
@@ -7,6 +7,21 @@ from matplotlib import pyplot as plt
 from sklearn.impute import SimpleImputer
 from wasabi import msg
 from xgboost import XGBClassifier
+
+
+def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
+    """Flatten a nested dict.
+
+    E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes {"level1.level2.level3.level4": 5}.
+
+    Args:
+        dict (Dict): Dict to flatten.
+        separator (str, optional): How to separate each level in the dict. Defaults to ".".
+
+    Returns:
+        Dict: The flattened dict.
+    """
+    return pd.json_normalize(dict, sep=sep).to_dict(orient="records")[0]
 
 
 def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
