@@ -35,7 +35,6 @@ df_lpr2_outp_preproc <- con %>%
   select(dw_ek_borger, datotid_start) %>% 
   collect %>% 
   format_sql_import()
-  
 ```
 
 # Combine all
@@ -48,12 +47,3 @@ df_first_psych_visit <- df_lpr2_inp_preproc %>%
   rename(datotid_first_psych_visit = datotid_start) %>% 
   select(dw_ek_borger, datotid_first_psych_visit)
 ```
-
-```{r}
-write_csv(df_first_psych_visit, here("csv", "df_first_psych_visit.csv"))
-```
-
-```{r}
-df_first_psych_visit <- read_csv(here("csv", "df_first_psych_visit.csv"))
-```
-

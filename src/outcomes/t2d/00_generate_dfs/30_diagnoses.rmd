@@ -2,11 +2,6 @@ Find the first date where a patient gets a t2d-diagnosis in the hospital system.
 
 ```{r}
 library("pacman")
-
-p_load(tidyverse, here, future)
-source(here("psycop_r_utils", "import_from_sql.r"))
-source(here("src", "functions.r"))
-
 ```
 
 ```{r}
@@ -55,8 +50,6 @@ df_lpr2_diagnoses_outpatient_roughly_selected <- con %>%
 df_all_visits_combined <- df_lpr3_diagnoses_roughly_selected %>% 
   bind_rows(df_lpr2_diagnoses_inpatient_roughly_selected) %>% 
   bind_rows(df_lpr2_diagnoses_outpatient_roughly_selected)
-
-write_csv(df_all_visits_combined, here("csv", "all_visits_combined.csv"))
 ```
 
 ### T2D
@@ -66,28 +59,9 @@ df_first_t2d_diagnoses_combined <- df_all_visits_combined %>%
   rename(datotid_first_t2d_diagnosis = datotid_start)
 ```
 
-```{r}
-write_csv(df_first_t2d_diagnoses_combined, here("csv", "first_t2d_diagnosis.csv"))
-```
-
-```{r}
-df_first_t2d_diagnoses_combined <- read_csv(here("csv", "first_t2d_diagnosis.csv"))
-```
-
-
 ### T1D
 ```{r}
 df_first_t1d_diagnoses_combined <- df_all_visits_combined %>% 
   keep_only_first_t1d_by_diag(date_col_string="datotid_start") %>% 
   select(dw_ek_borger, datotid_start)
 ```
-
-```{r}
-write_csv(df_first_t1d_diagnoses_combined, here("csv", "first_t1d_diagnosis.csv"))
-```
-
-```{r}
-df_first_t1d_diagnoses_combined <- read_csv(here("csv", "first_t1d_diagnosis.csv"))
-```
-
-

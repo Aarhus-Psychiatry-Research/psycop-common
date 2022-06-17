@@ -2,10 +2,34 @@ Combine medication, hba1c and diagnoses to find first date where the patient has
 
 ```{r}
 source(here("src", "functions.r"))
+p_load(odbc, dbplyr, DBI)
 ```
 
+## Find "any" diabetes incidence (maximise sensitivity). For use in wash-in (i.e. exclusion).
+```{r}
+df_first_diabetes_any <- df_first_t2d_blood_sample %>% 
+  rename(datotid_first_t2d_bs = datotid_start) %>% # Add BS
+  left_join(df_first_date_of_t2d_medication_prescription) %>% 
+  left_join(df_first_t2d_diagnoses_combined) %>% 
+  mutate(datotid_first_diabetes_any = pmin(datotid_first_t2d_medication, datotid_first_t2d_diagnosis, datotid_first_t2d_bs)) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_first_diabetes_any == min(datotid_first_diabetes_any)) %>% # Make sure to only have one record per patient
+  select(dw_ek_borger, datotid_first_diabetes_any) %>% 
+  distinct(dw_ek_borger, datotid_first_diabetes_any) %>% 
+  left_join(df_first_t1d_diagnoses_combined, by = "dw_ek_borger") %>% 
+  rename(datotid_first_t1d_diagnosis = datotid_start) %>% 
+  mutate(datotid_first_diabetes_any = if_else(is.na(datotid_first_t1d_diagnosis), datotid_first_diabetes_any, min(datotid_first_t1d_diagnosis, datotid_first_diabetes_any))) %>% 
+  select(dw_ek_borger, datotid_first_diabetes_any) # Keep only if no t1d diagnosis before t2d: 601
 
-## Include from BS only
+copy_to(con, df_first_diabetes_any, name = in_schema("fct", "psycop_t2d_first_diabetes_any"), overwrite = TRUE, temporary = FALSE)
+
+test_load <- con %>% 
+  tbl(sql("SELECT * FROM [fct].psycop_t2d_first_diabetes_any")) 
+
+dim(df_first_diabetes_any)
+```
+
+## Find "true" incidences (maximise specificity.). For use when training and evaluating model. Try to exclude anyone that is incident due to other causes. See issue #12 regarding reasoning.
 ```{r}
 df_first_t2d_bs_only <- df_first_t2d_blood_sample %>% 
   rename(datotid_first_t2d_bs = datotid_start) %>% # Add BS
@@ -27,6 +51,3 @@ df_first_t2d_bs_only <- df_first_t2d_blood_sample %>%
 dim(df_first_t2d_bs_only)
 ```
 
-```{r}
-write_csv(select(df_first_t2d_bs_only, dw_ek_borger), here("csv", "df_first_t2d_bs_only.csv"))
-```
