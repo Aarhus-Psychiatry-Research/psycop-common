@@ -4,8 +4,6 @@ Find the first date where a patient gets a diabetic hba1c-blood-sample.
 library("pacman")
 
 p_load(tidyverse, here, future)
-source(here("psycop_r_utils", "import_from_sql.r"))
-source(here("src", "functions.r"))
 
 ```
 
@@ -33,7 +31,3 @@ df_first_t2d_blood_sample <- con %>%
   distinct(dw_ek_borger, datotid_start) %>% 
   format_sql_import()
 ```
-
-
-# Wash-in
-We don't know whether a patient has had t2d before our follow-up time starts. To avoid false-positives (i.e. where both doctor and patient already knew the patient was diabetic), exclude all incident cases within the first year of follow-up starting. I call this "wash-in".
