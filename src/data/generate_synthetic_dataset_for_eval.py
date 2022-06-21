@@ -5,7 +5,7 @@ import pandas as pd
 from wasabi import Printer
 
 
-def s_in_years(years):
+def years_to_seconds(years):
     """Calculates number of seconds in a number of years.
 
     Args:
@@ -73,7 +73,9 @@ if __name__ == "__main__":
     msg.info("Adding differences")
     df["time_differences"] = [
         dt.timedelta(
-            seconds=np.random.randint(s_in_years(years=5), s_in_years(years=10))
+            seconds=np.random.randint(
+                years_to_seconds(years=5), years_to_seconds(years=10)
+            )
         )
         for n in range(n_patients)
     ]
@@ -92,7 +94,9 @@ if __name__ == "__main__":
     msg.info("Generating T2D-timestamps")
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
-    ].transform("min") + dt.timedelta(seconds=np.random.randint(0, s_in_years(years=5)))
+    ].transform("min") + dt.timedelta(
+        seconds=np.random.randint(0, years_to_seconds(years=5))
+    )
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_t2d_diag"].apply(
         lambda x: null_series_with_prob(x, prob=0.95)
     )
@@ -101,7 +105,9 @@ if __name__ == "__main__":
     msg.info("Generating HbA1c timestamps")
     df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
-    ].transform("min") + dt.timedelta(seconds=np.random.randint(0, s_in_years(years=4)))
+    ].transform("min") + dt.timedelta(
+        seconds=np.random.randint(0, years_to_seconds(years=4))
+    )
     df["timestamp_hba1c_copy"] = df["timestamp_first_hba1c"]
 
     # Replace most with null
@@ -122,3 +128,10 @@ if __name__ == "__main__":
 
     # True label
     df["label"] = df["timestamp_t2d_diag"].notnull()
+
+    # Round off datetimes to whole minutes
+    for col in df.columns:
+        if "timestamp" in col:
+            df[col] = df[col].dt.round("min")
+
+    df.to_csv("df_synth_for_eval.csv")
