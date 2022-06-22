@@ -68,7 +68,7 @@ if __name__ == "__main__":
     df["dw_ek_borger"] = [np.random.randint(0, 100_000) for n in range(n_rows)]
 
     # Generate timestamps
-    df["timestamp"] = [base] * n_patients
+    df["timestamp"] = [base] * n_rows
 
     msg.info("Adding differences")
     df["time_differences"] = [
@@ -77,12 +77,12 @@ if __name__ == "__main__":
                 years_to_seconds(years=5), years_to_seconds(years=10)
             )
         )
-        for n in range(n_patients)
+        for n in range(n_rows)
     ]
     df["timestamp"] = df["timestamp"] + df["time_differences"]
     df.drop("time_differences", axis=1, inplace=True)
 
-    df["pred_prob"] = [(np.random.random() - 0.45) for n in range(n_patients)]
+    df["pred_prob"] = [(np.random.random() - 0.45) for n in range(n_rows)]
     df["pred_prob"] = df["pred_prob"].clip(0, 1)
     df["pred"] = df["pred_prob"].clip(0, 1).round()
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     df.drop("timestamp_hba1c_copy", axis=1, inplace=True)
 
     # True label
-    df["label"] = df["timestamp_t2d_diag"].notnull()
+    df["label"] = df["timestamp_t2d_diag"].notnull().astype(int)
 
     # Round off datetimes to whole minutes
     for col in df.columns:
