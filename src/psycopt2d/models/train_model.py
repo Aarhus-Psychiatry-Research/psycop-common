@@ -118,6 +118,7 @@ def main(cfg):
             prediction_timestamp_col_name="timestamp",
             bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
         )
+
         run.finish()
 
 

@@ -111,3 +111,5 @@ figures/
 .vscode
 wandb
 outputs
+
+.venv/

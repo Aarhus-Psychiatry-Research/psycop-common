@@ -8,6 +8,8 @@ from sklearn.impute import SimpleImputer
 from wasabi import msg
 from xgboost import XGBClassifier
 
+from psycopmlutils.model_performance import ModelPerformance
+
 
 def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
     """Flatten a nested dict.
@@ -166,3 +168,34 @@ def convert_all_to_binary(ds, skip):
 
     for col in cols_to_round:
         ds[col] = ds[col].map(lambda x: 1 if x > 0 else np.NaN)
+
+
+def log_performance_metrics(
+    eval_df: pd.DataFrame,
+    outcome_col_name: str,
+    prediction_probabilities_col_name: str,
+    id_col_name: str,
+):
+    """Log performance metrics to WandB
+
+    Args:
+        eval_df (pd.DataFrame): DataFrame with predictions, labels, and id
+        outcome_col_name (str): Name of the column containing the outcome (label)
+        prediction_probabilities_col_name (str): Name of the column containing predicted
+            probabilities
+        id_col_name (str): Name of the id column
+    """
+    performance_metrics = ModelPerformance.performance_metrics_from_df(
+        eval_df,
+        prediction_col_name=prediction_probabilities_col_name,
+        label_col_name=outcome_col_name,
+        aggregate_by_id=True,
+        id_col_name=id_col_name,
+        metadata_col_names=None,
+        to_wide=False,
+    )
+
+    # to_dict("records") returns a list of dicts with one element per row.
+    # Only 1 row, so taking it out
+    performance_metrics = performance_metrics.to_dict("records")[0]
+    wandb.log(performance_metrics)
