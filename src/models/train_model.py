@@ -5,7 +5,12 @@ import src.features.post_process as post_process
 import wandb
 from sklearn.metrics import roc_auc_score
 from src.features.load_features import *
-from src.utils import generate_predictions, impute, log_tpr_by_time_to_event
+from src.utils import (
+    flatten_nested_dict,
+    generate_predictions,
+    impute,
+    log_tpr_by_time_to_event,
+)
 from wasabi import Printer
 
 
@@ -15,7 +20,9 @@ from wasabi import Printer
 def main(cfg):
     if cfg.evaluation.wandb:
         run = wandb.init(project="psycop-t2d", reinit=True)
-        run.config.update(cfg)
+
+        # Flatten nested dict to support wandb filtering
+        run.config.update(flatten_nested_dict(cfg, sep="."))
 
     OUTCOME_COL_NAME = f"t2d_within_{cfg.training.lookahead_days}_days_max_fallback_0"
     PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"

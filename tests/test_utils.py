@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
 from black import diff
-from src.utils import difference_in_days, drop_records_if_datediff_days_smaller_than
+from src.utils import (
+    difference_in_days,
+    drop_records_if_datediff_days_smaller_than,
+    flatten_nested_dict,
+)
 
 from utils_for_testing import str_to_df
 
@@ -60,3 +64,12 @@ def test_drop_records_if_datediff_days_smaller_than():
             assert np.isnan(expected[i])
         else:
             assert differences[i] == expected[i]
+
+
+def test_flatten_nested_dict():
+    input_dict = {"level1": {"level2": 3}}
+    expected_dict = {"level1.level2": 3}
+
+    output_dict = flatten_nested_dict(input_dict)
+
+    assert expected_dict == output_dict
