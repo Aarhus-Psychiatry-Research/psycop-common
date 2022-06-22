@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    df["dw_ek_borger"] = [np.random.randint(0, 100_000) for n in range(n_patients)]
+    df["dw_ek_borger"] = [np.random.randint(0, 100_000) for n in range(n_rows)]
 
     # Generate timestamps
     df["timestamp"] = [base] * n_patients
