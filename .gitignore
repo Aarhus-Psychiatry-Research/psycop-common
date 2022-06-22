@@ -112,4 +112,4 @@ figures/
 wandb
 outputs
 
-*.venv
+.venv

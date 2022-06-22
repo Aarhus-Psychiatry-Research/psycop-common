@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import hydra
-import src.features.post_process as post_process
+import psycopt2d.features.post_process as post_process
 import wandb
 from sklearn.metrics import roc_auc_score
-from src.features.load_features import *
-from src.utils import (
+from psycopt2d.features.load_features import *
+from psycopt2d.utils import (
     flatten_nested_dict,
     generate_predictions,
     impute,
