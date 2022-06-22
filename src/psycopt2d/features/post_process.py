@@ -3,11 +3,12 @@ from typing import List, Tuple, Union
 
 import pandas as pd
 from psycopmlutils.loaders import sql_load
+from wasabi import msg
+
 from psycopt2d.utils import (
     convert_all_to_binary,
     drop_records_if_datediff_days_smaller_than,
 )
-from wasabi import msg
 
 
 def combined(
@@ -26,7 +27,8 @@ def combined(
 
     if drop_if_any_diabetes_before_date is not None:
         df_combined = drop_ids_if_any_outcome_before_date(
-            date_str=drop_if_any_diabetes_before_date, df=df_combined
+            date_str=drop_if_any_diabetes_before_date,
+            df=df_combined,
         )
 
     if min_lookahead_days is not None:
@@ -52,7 +54,8 @@ def combined(
 
     if convert_all_cols_to_binary:
         convert_all_to_binary(
-            df_combined, skip=["age_in_years", "male", outcome_col_name]
+            df_combined,
+            skip=["age_in_years", "male", outcome_col_name],
         )
 
     _X = df_combined.drop(outcome_col_name, axis=1)
@@ -66,7 +69,7 @@ def drop_ids_if_any_outcome_before_date(df, date_str):
     date_str = dt.datetime.strptime(date_str, "%Y-%m-%d")
 
     df_any_diab = sql_load(
-        query=f"SELECT dw_ek_borger, datotid_first_diabetes_any FROM [fct].[psycop_t2d_first_diabetes_any]",
+        query="SELECT dw_ek_borger, datotid_first_diabetes_any FROM [fct].[psycop_t2d_first_diabetes_any]",
         format_timestamp_cols_to_datetime=True,
     )
 

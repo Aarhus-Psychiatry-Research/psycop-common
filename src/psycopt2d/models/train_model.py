@@ -1,9 +1,11 @@
 from pathlib import Path
 
 import hydra
-import psycopt2d.features.post_process as post_process
 import wandb
 from sklearn.metrics import roc_auc_score
+from wasabi import Printer
+
+import psycopt2d.features.post_process as post_process
 from psycopt2d.features.load_features import *
 from psycopt2d.utils import (
     flatten_nested_dict,
@@ -11,11 +13,12 @@ from psycopt2d.utils import (
     impute,
     log_tpr_by_time_to_event,
 )
-from wasabi import Printer
 
 
 @hydra.main(
-    version_base=None, config_path=Path(".") / "conf", config_name="train_config"
+    version_base=None,
+    config_path=Path(".") / "conf",
+    config_name="train_config",
 )
 def main(cfg):
     if cfg.evaluation.wandb:
@@ -34,15 +37,17 @@ def main(cfg):
         n_to_load = 5_000
 
     cols_to_drop_before_training = cfg.training.cols_to_drop_before_training + [
-        OUTCOME_TIMESTAMP_COL_NAME
+        OUTCOME_TIMESTAMP_COL_NAME,
     ]
 
     # Val set
     X_val, y_val = load_dataset(
-        split_name="val", n_to_load=n_to_load, outcome_col_name=OUTCOME_COL_NAME
+        split_name="val",
+        n_to_load=n_to_load,
+        outcome_col_name=OUTCOME_COL_NAME,
     )
 
-    (X_val, y_val, X_val_eval, y_val_eval,) = post_process.combined(
+    (X_val, y_val, X_val_eval, y_val_eval) = post_process.combined(
         X=X_val,
         y=y_val,
         outcome_col_name=OUTCOME_COL_NAME,
@@ -60,7 +65,7 @@ def main(cfg):
         n_to_load=n_to_load,
     )
 
-    (X_train, y_train, X_train_eval, y_train_eval,) = post_process.combined(
+    (X_train, y_train, X_train_eval, y_train_eval) = post_process.combined(
         X=X_train,
         y=y_train,
         outcome_col_name=OUTCOME_COL_NAME,
@@ -78,7 +83,9 @@ def main(cfg):
         train_X_imputed, val_X_imputed = X_train, X_val
 
     y_preds, y_probas, model = generate_predictions(
-        y_train, train_X_imputed, val_X_imputed
+        y_train,
+        train_X_imputed,
+        val_X_imputed,
     )
 
     # Evaluation

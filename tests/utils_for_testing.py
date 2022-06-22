@@ -14,7 +14,8 @@ def str_to_df(str, convert_timestamp_to_datetime: bool = True) -> pd.DataFrame:
 
 
 def convert_cols_with_matching_colnames_to_datetime(
-    df: pd.DataFrame, colname_substr: str
+    df: pd.DataFrame,
+    colname_substr: str,
 ) -> pd.DataFrame:
     """Convert columns that contain colname_substr in their name to datetimes
     Args:
@@ -22,7 +23,8 @@ def convert_cols_with_matching_colnames_to_datetime(
         colname_substr (str): Substring to match on.
     """
     df.loc[:, df.columns.str.contains(colname_substr)] = df.loc[
-        :, df.columns.str.contains(colname_substr)
+        :,
+        df.columns.str.contains(colname_substr),
     ].apply(pd.to_datetime)
 
     return df

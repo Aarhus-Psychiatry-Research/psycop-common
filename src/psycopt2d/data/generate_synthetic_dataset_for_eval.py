@@ -22,7 +22,9 @@ def return_0_with_prob(prob):
 
 
 def null_series_with_prob(
-    series: pd.Series, prob: float, null_value=np.NaN
+    series: pd.Series,
+    prob: float,
+    null_value=np.NaN,
 ) -> pd.Series:
     """Overwrite all values in series with null_value with a given probability.
 
@@ -43,9 +45,12 @@ def null_series_with_prob(
 
 
 def overwrite_prop_with_null(
-    series: pd.Series, prop: float, null_value=np.NaN
+    series: pd.Series,
+    prop: float,
+    null_value=np.NaN,
 ) -> pd.Series:
-    """Overwrite a proportion of all values in a series with a null value (NaN or NaT).
+    """Overwrite a proportion of all values in a series with a null value (NaN
+    or NaT).
 
     Args:
         series (pd.Series): The series to overwrite in.
@@ -74,8 +79,9 @@ if __name__ == "__main__":
     df["time_differences"] = [
         dt.timedelta(
             seconds=np.random.randint(
-                years_to_seconds(years=5), years_to_seconds(years=10)
-            )
+                years_to_seconds(years=5),
+                years_to_seconds(years=10),
+            ),
         )
         for n in range(n_patients)
     ]
@@ -87,7 +93,7 @@ if __name__ == "__main__":
     df["pred"] = df["pred_prob"].clip(0, 1).round()
 
     df["timestamp_first_pred_time"] = df.groupby("dw_ek_borger")["timestamp"].transform(
-        "min"
+        "min",
     )
 
     # Generate t2d timestamps
@@ -95,10 +101,10 @@ if __name__ == "__main__":
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
     ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, years_to_seconds(years=5))
+        seconds=np.random.randint(0, years_to_seconds(years=5)),
     )
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_t2d_diag"].apply(
-        lambda x: null_series_with_prob(x, prob=0.95)
+        lambda x: null_series_with_prob(x, prob=0.95),
     )
 
     # Generate first HbA1c timestmaps
@@ -106,7 +112,7 @@ if __name__ == "__main__":
     df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
     ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, years_to_seconds(years=4))
+        seconds=np.random.randint(0, years_to_seconds(years=4)),
     )
     df["timestamp_hba1c_copy"] = df["timestamp_first_hba1c"]
 

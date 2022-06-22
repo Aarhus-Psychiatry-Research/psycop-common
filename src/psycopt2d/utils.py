@@ -87,6 +87,7 @@ def generate_predictions(train_y, train_X, val_X):
 
 def round_floats_to_edge(series: pd.Series, bins: List[float]):
     """Rounds a float to the lowest value it is larger than.
+
     Args:
         edges (List[floats]): Values to round to.
     """
@@ -119,7 +120,8 @@ def log_tpr_by_time_to_event(
     df_positives_only["false_negative"] = (true_vals == 1) & (pred_vals == 0)
 
     df_positives_only["days_to_outcome_binned"] = round_floats_to_edge(
-        df_positives_only["days_to_outcome"], bins=bins
+        df_positives_only["days_to_outcome"],
+        bins=bins,
     )
 
     tpr_by_time_to_outcome_df = (
