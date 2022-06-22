@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-from black import diff
-from src.utils import (
+from psycopt2d.utils import (
     difference_in_days,
     drop_records_if_datediff_days_smaller_than,
     flatten_nested_dict,
