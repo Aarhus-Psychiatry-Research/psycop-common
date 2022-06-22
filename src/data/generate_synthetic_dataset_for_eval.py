@@ -61,7 +61,7 @@ def overwrite_prop_with_null(
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
     base = pd.Timestamp.today()
-    n_patients = 100_000
+    n_rows = 100_000
 
     df = pd.DataFrame()
 
