@@ -62,7 +62,7 @@ python-versions = ">=3.6"
 name = "certifi"
 version = "2022.6.15"
 description = "Python package for providing Mozilla's CA Bundle."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -78,7 +78,7 @@ python-versions = ">=3.6.1"
 name = "charset-normalizer"
 version = "2.0.12"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5.0"
 
@@ -89,7 +89,7 @@ unicode_backport = ["unicodedata2"]
 name = "click"
 version = "8.1.3"
 description = "Composable command line interface toolkit"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -100,7 +100,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 name = "colorama"
 version = "0.4.5"
 description = "Cross-platform colored terminal text."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -138,7 +138,7 @@ python-versions = "*"
 name = "docker-pycreds"
 version = "0.4.0"
 description = "Python bindings for the docker credentials store API"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -183,7 +183,7 @@ woff = ["zopfli (>=0.1.4)", "brotlicffi (>=0.8.0)", "brotli (>=1.0.1)"]
 name = "gitdb"
 version = "4.0.9"
 description = "Git Object Database"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -194,7 +194,7 @@ smmap = ">=3.0.1,<6"
 name = "gitpython"
 version = "3.1.27"
 description = "GitPython is a python library used to interact with Git repositories"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -241,7 +241,7 @@ license = ["ukkonen"]
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -383,7 +383,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 name = "pathtools"
 version = "0.1.2"
 description = "File system general utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -454,7 +454,7 @@ virtualenv = ">=20.0.8"
 name = "promise"
 version = "2.3"
 description = "Promises/A+ implementation for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -468,7 +468,7 @@ test = ["pytest (>=2.7.3)", "pytest-cov", "coveralls", "futures", "pytest-benchm
 name = "protobuf"
 version = "3.20.1"
 description = "Protocol Buffers"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -476,7 +476,7 @@ python-versions = ">=3.7"
 name = "psutil"
 version = "5.9.1"
 description = "Cross-platform lib for process and system monitoring in Python."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -506,7 +506,7 @@ wasabi = "^0.9.1"
 type = "git"
 url = "https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils.git"
 reference = "main"
-resolved_reference = "4a772371eb73ca82cd366e6c7c28dba3799f7188"
+resolved_reference = "b332fdcdc2176cf28889a221f51c59182b5e4c9e"
 
 [[package]]
 name = "py"
@@ -602,7 +602,7 @@ python-versions = ">=3.6"
 name = "requests"
 version = "2.28.0"
 description = "Python HTTP for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7, <4"
 
@@ -651,7 +651,7 @@ numpy = ">=1.17.3,<1.25.0"
 name = "sentry-sdk"
 version = "1.6.0"
 description = "Python client for Sentry (https://sentry.io)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -681,7 +681,7 @@ tornado = ["tornado (>=5)"]
 name = "setproctitle"
 version = "1.2.3"
 description = "A Python module to customize the process title"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -709,7 +709,7 @@ toml = ["setuptools (>=42)"]
 name = "shortuuid"
 version = "1.0.9"
 description = "A generator library for concise, unambiguous and URL-safe UUIDs."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -725,7 +725,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "smmap"
 version = "5.0.0"
 description = "A pure Python implementation of a sliding window memory map manager"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -808,7 +808,7 @@ python-versions = ">=3.7"
 name = "urllib3"
 version = "1.26.9"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
@@ -839,7 +839,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 name = "wandb"
 version = "0.12.18"
 description = "A CLI and library for interacting with the Weights and Biases API."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -910,7 +910,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8, <3.11"
-content-hash = "7f9c093bc3eda85311de2f4beebdd5a3a9c33fbac19ef59a0ed8bb8fe70bd627"
+content-hash = "ecfe26df5cc6ef179326eedb09d6a8cb566c128e7f232faf155e22ec51f774d3"
 
 [metadata.files]
 antlr4-python3-runtime = [

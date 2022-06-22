@@ -1,13 +1,14 @@
 from pathlib import Path
 
 import hydra
-import wandb
 from sklearn.metrics import roc_auc_score
 from wasabi import Printer
 
 import psycopt2d.features.post_process as post_process
-from psycopt2d.features.load_features import *
+import wandb
+from psycopt2d.features.load_features import load_dataset
 from psycopt2d.utils import (
+    calculate_performance_metrics,
     flatten_nested_dict,
     generate_predictions,
     impute,
@@ -30,6 +31,7 @@ def main(cfg):
     OUTCOME_COL_NAME = f"t2d_within_{cfg.training.lookahead_days}_days_max_fallback_0"
     PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
     OUTCOME_TIMESTAMP_COL_NAME = f"timestamp_{OUTCOME_COL_NAME}"
+    PREDICTED_PROBABILITY_COL_NAME = f"pred_prob_{OUTCOME_COL_NAME}"
 
     if cfg.post_processing.load_all:
         n_to_load = None
@@ -108,6 +110,7 @@ def main(cfg):
     eval_df = X_val_eval
     eval_df[OUTCOME_COL_NAME] = y_val_eval
     eval_df[PREDICTED_OUTCOME_COL_NAME] = y_preds
+    eval_df[PREDICTED_PROBABILITY_COL_NAME] = y_probas
 
     if cfg.evaluation.wandb:
         log_tpr_by_time_to_event(
@@ -118,7 +121,14 @@ def main(cfg):
             prediction_timestamp_col_name="timestamp",
             bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
         )
+        performance_metrics = calculate_performance_metrics(
+            eval_df,
+            outcome_col_name=OUTCOME_COL_NAME,
+            prediction_probabilities_col_name=PREDICTED_PROBABILITY_COL_NAME,
+            id_col_name="dw_ek_borger",
+        )
 
+        run.log(performance_metrics)
         run.finish()
 
 
