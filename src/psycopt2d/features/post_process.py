@@ -2,11 +2,12 @@ import datetime as dt
 from typing import List, Tuple, Union
 
 import pandas as pd
-from src.utils import convert_all_to_binary, drop_records_if_datediff_days_smaller_than
-from wasabi import msg
-import datetime as dt
-
 from psycopmlutils.loaders import sql_load
+from psycopt2d.utils import (
+    convert_all_to_binary,
+    drop_records_if_datediff_days_smaller_than,
+)
+from wasabi import msg
 
 
 def combined(
