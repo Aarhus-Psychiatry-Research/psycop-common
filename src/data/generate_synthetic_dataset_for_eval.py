@@ -68,7 +68,7 @@ if __name__ == "__main__":
     df["dw_ek_borger"] = [np.random.randint(0, 100_000) for n in range(n_patients)]
 
     # Generate timestamps
-    df["timestamp"] = [base for n in range(n_patients)]
+    df["timestamp"] = [base] * n_patients
 
     msg.info("Adding differences")
     df["time_differences"] = [
