@@ -59,4 +59,28 @@ Project Organization
 
 --------
 
+
+## Logging Altair to WandB
+Minimal example
+```py
+run = wandb.init()
+
+source = pd.DataFrame(
+    {
+        "a": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+        "b": [28, 55, 43, 91, 81, 53, 19, 87, 52],
+    }
+)
+
+chart = alt.Chart(source).mark_bar().encode(x="a", y="b")
+
+tmp_filename = "chart.png"
+chart.save(tmp_filename)
+
+run.log({"dummy_chart" : wandb.Image(tmp_filename)})
+```
+
+
+
+
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
