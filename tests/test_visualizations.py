@@ -18,5 +18,5 @@ def test_prob_over_time():
         pred_prob=df["pred_prob"],
         outcome_timestamp=df["timestamp_t2d_diag"],
         label=df["label"],
-        look_behind=500,
+        look_behind_distance=500,
     )

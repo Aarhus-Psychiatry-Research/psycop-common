@@ -17,7 +17,7 @@ def plot_prob_over_time(
     x_axis: str = "Time from outcome",
     y_axis: str = "Model Predictive Probability",
     legend: str = "Highest Predictive Probability",
-    look_behind: Optional[int] = None,
+    look_behind_distance: Optional[int] = None,
 ) -> alt.Chart:
     """Plot probabilities over time for a given outcome. Each element passed (e.g. timestamp, pred_prob etc.) must have the same length, and for each iterable, the i'th item must correspond to the same patient.
 
@@ -34,7 +34,7 @@ def plot_prob_over_time(
             Probability".
         legend (str, optional): Label on legend. Defaults to "Highest Predictive
             Probability".
-        look_behind (Optional[int], optional): Look-behind window. Defaults to None in
+        look_behind_distance (Optional[int], optional): Look-behind window. Defaults to None in
             which case no shaded areas is plotted.
 
     Returns:
@@ -96,9 +96,13 @@ def plot_prob_over_time(
         )
     )
 
-    if look_behind:
+    if look_behind_distance:
         areas_cutoffs = pd.DataFrame(
-            {"start": [0 - look_behind], "stop": [0], "Predictive Window": "Positive"}
+            {
+                "start": [0 - look_behind_distance],
+                "stop": [0],
+                "Predictive Window": "Positive",
+            }
         ).reset_index()
 
         areas = (
@@ -131,7 +135,7 @@ if __name__ == "__main__":
         pred_prob=df["pred_prob"],
         outcome_timestamp=df["timestamp_t2d_diag"],
         label=df["label"],
-        look_behind=500,
+        look_behind_distance=500,
     )
 
 # cold to hot color
