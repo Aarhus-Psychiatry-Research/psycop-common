@@ -24,6 +24,7 @@ def generate_performance_by_threshold_table(
             Calculated so that the Xth percentile of predictions are classified as the positive class.
         ids (Iterable[Union[int, float]]): Ids to group on.
         pred_timestamps (Iterable[ pd.Timestamp ]): Timestamp for each prediction time.
+        output_format (str, optional): Format to output - either "df" or "html". Defaults to "df".
 
     Returns:
         pd.DataFrame
@@ -145,7 +146,7 @@ def days_from_positive_to_diagnosis(
     positive_threshold: float = 0.5,
 ) -> float:
     """Calculate number of days from the first positive prediction to the
-    patient.
+    patient's outcome timestamp.
 
     Args:
         ids (Iterable[Union[float, str]]): _description_
@@ -166,7 +167,7 @@ def days_from_positive_to_diagnosis(
         },
     )
 
-    timestamp_cols = [col for col in df.columns if "timestamp" in col]
+    timestamp_cols = ["pred_timestamps", "outcome_timestamps"]
 
     for col in timestamp_cols:
         df[col] = pd.to_datetime(df[col])
