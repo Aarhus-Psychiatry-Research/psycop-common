@@ -22,20 +22,20 @@ def plot_prob_over_time(
     """Plot probabilities over time for a given outcome. Each element passed (e.g. timestamp, pred_prob etc.) must have the same length, and for each iterable, the i'th item must correspond to the same patient.
 
     Args:
-        timestamp (Iterable[datetime]): Timestamps, matching the prediction time
-        pred_prob (Iterable[float]): The predictive probabilities of the model.
-        label (Iterable[Union[int, str]]): True label.
-        outcome_timestamp (Iterable[Union[datetime, None]]): The timestamp of the
+        timestamp (Iterable[datetime]): Timestamps for each prediction time.
+        pred_prob (Iterable[float]): The predictive probabilities of the model for each prediction time.
+        label (Iterable[Union[int, str]]): True labels for each prediction time.
+        outcome_timestamp (Iterable[Union[datetime, None]]): Timestamp of the
             positive outcome.
-        patient_id (Iterable[Union[int, str]]): patient ID. Used for plotting one line
-            pr. patient.
+        patient_id (Iterable[Union[int, str]]): Patient ID for each prediction time. Used for 
+            connecting timestamp/pred-prob points into one line pr. patient.
         x_axis (str, optional): Label on x-axis. Defaults to "Time from outcome".
         y_axis (str, optional): Label of y-axis. Defaults to "Model Predictive
             Probability".
         legend (str, optional): Label on legend. Defaults to "Highest Predictive
             Probability".
-        look_behind (Optional[int], optional): Look-behind window. Defaults to None in
-            which case no shaded areas is plotted.
+        look_behind (Optional[int], optional): How far behind the outcome timestamp to color. 
+            Defaults to None, in which case no shaded area is plotted.
 
     Returns:
         alt.Chart: An altair chart object.
