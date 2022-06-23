@@ -1,6 +1,6 @@
 from functools import partial
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Union
 
 import pandas as pd
 from sklearn.metrics import roc_auc_score
@@ -12,9 +12,7 @@ def auc_by_group_table(
     df: pd.DataFrame,
     pred_probs_col_name: str,
     outcome_col_name: str,
-    categorical_groups: Union[List[str], str],
-    age_col_name: Optional[str] = None,
-    age_bins: Optional[List[int]] = [0, 18, 30, 50, 70, 120],
+    groups: Union[List[str], str],
 ) -> pd.DataFrame:
     """Create table with AUC per group.
 
@@ -23,23 +21,14 @@ def auc_by_group_table(
             and groups to stratify by.
         pred_probs_col_name (str): The column containing the predicted probabilities
         outcome_col_name (str): The column containing the labels
-        categorical_groups (Union[List[str], str]): The categorical groups to
+        groups (Union[List[str], str]): The (categorical) groups to
             stratify the table by.
-        age_col_name (Optional[str], optional): The column containing age.
-            Defaults to None.
-        age_bins (Optional[List[int]], optional): Which age bins to create.
-            Defaults to [0, 18, 30, 50, 70, 120].
 
     Returns:
         pd.DataFrame: DataFrame with results
     """
-    if isinstance(categorical_groups, str):
-        categorical_groups = [categorical_groups]
-    # Create age bin
-    if age_col_name:
-        age = bin_age(df[age_col_name], bins=age_bins)
-        categorical_groups.append("Age group")
-        df["Age group"] = age
+    if isinstance(groups, str):
+        groups = [groups]
 
     # Group by the groups/bins
     summarize_performance_fn = partial(
@@ -49,7 +38,7 @@ def auc_by_group_table(
     )
 
     groups_df = []
-    for group in categorical_groups:
+    for group in groups:
         table = df.groupby(group).apply(summarize_performance_fn)
         # Rename index for consistent naming
         table = table.rename_axis("Value")
@@ -78,41 +67,3 @@ def _calc_auc_and_n(
     auc = roc_auc_score(df[outcome_col_name], df[pred_probs_col_name])
     n = len(df)
     return pd.Series([auc, n], index=["AUC", "N"])
-
-
-def bin_age(series: pd.Series, bins: List[int]) -> pd.Series:
-    """For prettier formatting of continuous bins.
-
-    Args:
-        series (pd.Series): Series with continuous data such as age
-        bins (List[int]): Desired bins
-
-    Returns:
-        pd.Series: Binned data
-
-    Example:
-    >>> ages = pd.Series([15, 18, 20, 30, 32, 40, 50, 60, 61])
-    >>> age_bins = [0, 18, 30, 50, 110]
-    >>> bin_Age(ages, age_bins)
-    0     0-18
-    1     0-18
-    2    19-30
-    3    19-30
-    4    31-50
-    5    31-50
-    6    31-50
-    7      51+
-    8      51+
-    """
-    labels = []
-    for i, bin in enumerate(bins):
-        if i == 0:
-            labels.append(f"{bin}-{bins[i+1]}")
-        elif i < len(bins) - 2:
-            labels.append(f"{bin+1}-{bins[i+1]}")
-        elif i == len(bins) - 2:
-            labels.append(f"{bin+1}+")
-        else:
-            continue
-
-    return pd.cut(series, bins=bins, labels=labels)
