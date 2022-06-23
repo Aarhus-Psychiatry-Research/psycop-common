@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -28,3 +29,11 @@ def convert_cols_with_matching_colnames_to_datetime(
     ].apply(pd.to_datetime)
 
     return df
+
+
+def add_age_gender(df):
+    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
+    ids["age"] = np.random.randint(17, 95, len(ids))
+    ids["gender"] = np.where(ids["dw_ek_borger"] > 30_000, "F", "M")
+
+    return df.merge(ids)
