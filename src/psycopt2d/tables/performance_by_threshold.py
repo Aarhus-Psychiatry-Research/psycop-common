@@ -12,8 +12,10 @@ def generate_performance_by_threshold_table(
     ids: Iterable[Union[int, float]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
-) -> pd.DataFrame:
-    """Generates a performance_by_threshold table.
+    output_format: str = "df",
+) -> Union[pd.DataFrame, str]:
+    """Generates a performance_by_threshold table as either a DataFrame or html
+    object.
 
     Args:
         labels (Iterable[int, float]): True labels.
@@ -37,7 +39,9 @@ def generate_performance_by_threshold_table(
 
     # For each percentile, calculate relevant performance metrics
     for i, threshold_value in enumerate(thresholds):
-        threshold_metrics = pd.DataFrame({"threshold": [threshold_percentiles[i]]})
+        threshold_metrics = pd.DataFrame(
+            {"threshold_percentile": [threshold_percentiles[i]]},
+        )
 
         threshold_metrics = pd.concat(
             [
@@ -67,10 +71,30 @@ def generate_performance_by_threshold_table(
         2,
     )
 
-    return df.reset_index(drop=True)
+    if output_format == "html":
+        return df.reset_index(drop=True).to_html()
+    elif output_format == "df":
+        return df.reset_index(drop=True)
+    else:
+        raise ValueError("Output format is neither html nor df")
 
 
-def performance_by_threshold(labels, pred_probs, positive_threshold):
+def performance_by_threshold(
+    labels: Iterable[int],
+    pred_probs: Iterable[float],
+    positive_threshold: float,
+) -> pd.DataFrame:
+    """Generates a row for a performance_by_threshold table.
+
+    Args:
+        labels (Iterable[int]): True labels.
+        pred_probs (Iterable[float]): Model prediction probabilities.
+        positive_threshold (float): Threshold for a probability to be
+            labelled as "positive".
+
+    Returns:
+        pd.DataFrame
+    """
     preds = np.where(pred_probs > positive_threshold, 1, 0)
 
     CM = confusion_matrix(labels, preds)
@@ -120,6 +144,19 @@ def days_from_positive_to_diagnosis(
     outcome_timestamps: Iterable[pd.Timestamp],
     positive_threshold: float = 0.5,
 ) -> float:
+    """Calculate number of days from the first positive prediction to the
+    patient.
+
+    Args:
+        ids (Iterable[Union[float, str]]): _description_
+        pred_probs (Iterable[Union[float, str]]): _description_
+        pred_timestamps (Iterable[pd.Timestamp]): _description_
+        outcome_timestamps (Iterable[pd.Timestamp]): _description_
+        positive_threshold (float, optional): _description_. Defaults to 0.5.
+
+    Returns:
+        float: _description_
+    """
     df = pd.DataFrame(
         {
             "id": ids,

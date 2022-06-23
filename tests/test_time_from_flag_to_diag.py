@@ -29,6 +29,7 @@ def test_generate_performance_by_threshold_table(synth_data):
         ],
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
+        output_format="df",
     )
 
     expected_df = pd.DataFrame(
