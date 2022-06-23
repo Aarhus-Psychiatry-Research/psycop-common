@@ -15,8 +15,26 @@ def auc_by_group_table(
     categorical_groups: Union[List[str], str],
     age_col_name: Optional[str] = None,
     age_bins: Optional[List[int]] = [0, 18, 30, 50, 70, 120],
-):
+) -> pd.DataFrame:
+    """Create table with AUC per group.
 
+    Args:
+        df (pd.DataFrame): DataFrame containing predicted probabilities, labels,
+            and groups to stratify by.
+        pred_probs_col_name (str): The column containing the predicted probabilities
+        outcome_col_name (str): The column containing the labels
+        categorical_groups (Union[List[str], str]): The categorical groups to
+            stratify the table by.
+        age_col_name (Optional[str], optional): The column containing age.
+            Defaults to None.
+        age_bins (Optional[List[int]], optional): Which age bins to create.
+            Defaults to [0, 18, 30, 50, 70, 120].
+
+    Returns:
+        pd.DataFrame: DataFrame with results
+    """
+    if isinstance(categorical_groups, str):
+        categorical_groups = [categorical_groups]
     # Create age bin
     if age_col_name:
         age = bin_age(df[age_col_name], bins=age_bins)
@@ -46,7 +64,17 @@ def _calc_auc_and_n(
     df: pd.DataFrame,
     pred_probs_col_name: str,
     outcome_col_name: str,
-) -> pd.DataFrame:
+) -> pd.Series:
+    """Calculate auc and number of data points per group.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing predicted probabilities and labels
+        pred_probs_col_name (str): The column containing predicted probabilities
+        outcome_col_name (str): THe containing the labels
+
+    Returns:
+        pd.Series: Series containing AUC and N
+    """
     auc = roc_auc_score(df[outcome_col_name], df[pred_probs_col_name])
     n = len(df)
     return pd.Series([auc, n], index=["AUC", "N"])
