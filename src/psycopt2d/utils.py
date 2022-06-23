@@ -2,13 +2,12 @@ from typing import Dict, List, Union
 
 import numpy as np
 import pandas as pd
+import wandb
 from matplotlib import pyplot as plt
 from psycopmlutils.model_performance import ModelPerformance
 from sklearn.impute import SimpleImputer
 from wasabi import msg
 from xgboost import XGBClassifier
-
-import wandb
 
 
 def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
@@ -194,7 +193,5 @@ def calculate_performance_metrics(
         to_wide=True,
     )
 
-    # to_dict("records") returns a list of dicts with one element per row.
-    # Only 1 row, so taking it out
     performance_metrics = performance_metrics.to_dict("records")[0]
     return performance_metrics
