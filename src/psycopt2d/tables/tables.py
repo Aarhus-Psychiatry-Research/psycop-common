@@ -2,63 +2,58 @@ from functools import partial
 from pathlib import Path
 from typing import List, Optional, Union
 
-import numpy as np
 import pandas as pd
+from sklearn.metrics import roc_auc_score
 
 df = pd.read_csv(Path("tests") / "test_data" / "synth_data.csv")
 
 
-def add_age_gender(df):
-    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
-    ids["age"] = np.random.randint(17, 95, len(ids))
-    ids["gender"] = np.where(ids["dw_ek_borger"] > 30_000, "F", "M")
-
-    return df.merge(ids)
-
-
-def grouped_performance_table(
+def auc_by_group_table(
     df: pd.DataFrame,
-    predictions_col_name: str,
-    prediction_probabilities_col_name: str,
+    pred_probs_col_name: str,
     outcome_col_name: str,
-    groups: Union[List[str], str],
+    categorical_groups: Union[List[str], str],
     age_col_name: Optional[str] = None,
-    age_bins: Optional[List[int]] = None,
+    age_bins: Optional[List[int]] = [0, 18, 30, 50, 70, 120],
 ):
 
     # Create age bin
     if age_col_name:
         age = bin_age(df[age_col_name], bins=age_bins)
-        groups = groups.append("age")
-        df["age"] = age
+        categorical_groups.append("Age group")
+        df["Age group"] = age
 
     # Group by the groups/bins
     summarize_performance_fn = partial(
-        summarize_performance,
-        predictions_col_name=predictions_col_name,
-        prediction_probabilities_col_name=prediction_probabilities_col_name,
+        _calc_auc_and_n,
+        pred_probs_col_name=pred_probs_col_name,
         outcome_col_name=outcome_col_name,
     )
 
-    df.groupby(groups).apply(summarize_performance_fn)
+    groups_df = []
+    for group in categorical_groups:
+        table = df.groupby(group).apply(summarize_performance_fn)
+        # Rename index for consistent naming
+        table = table.rename_axis("Value")
+        # Add group as index
+        table = pd.concat({group: table}, names=["Group"])
+        groups_df.append(table)
 
-    # Calculate auc, sens, spec, ppv, npv
-
-    # Rows groups, columns are metrics
-    pass
+    return pd.concat(groups_df)
 
 
-def summarize_performance(
+def _calc_auc_and_n(
     df: pd.DataFrame,
-    predictions_col_name: str,
-    prediction_probabilities_col_name: str,
+    pred_probs_col_name: str,
     outcome_col_name: str,
 ) -> pd.DataFrame:
-    pass
+    auc = roc_auc_score(df[outcome_col_name], df[pred_probs_col_name])
+    n = len(df)
+    return pd.Series([auc, n], index=["AUC", "N"])
 
 
 def bin_age(series: pd.Series, bins: List[int]) -> pd.Series:
-    """Maybe use for prettier formatting. Otherwise, just use default.
+    """For prettier formatting of continuous bins.
 
     Args:
         series (pd.Series): Series with continuous data such as age
@@ -66,6 +61,20 @@ def bin_age(series: pd.Series, bins: List[int]) -> pd.Series:
 
     Returns:
         pd.Series: Binned data
+
+    Example:
+    >>> ages = pd.Series([15, 18, 20, 30, 32, 40, 50, 60, 61])
+    >>> age_bins = [0, 18, 30, 50, 110]
+    >>> bin_Age(ages, age_bins)
+    0     0-18
+    1     0-18
+    2    19-30
+    3    19-30
+    4    31-50
+    5    31-50
+    6    31-50
+    7      51+
+    8      51+
     """
     labels = []
     for i, bin in enumerate(bins):
@@ -79,15 +88,3 @@ def bin_age(series: pd.Series, bins: List[int]) -> pd.Series:
             continue
 
     return pd.cut(series, bins=bins, labels=labels)
-
-
-if __name__ == "__main__":
-
-    df = pd.read_csv(Path("tests") / "test_data" / "synth_data.csv")
-    df = add_age_gender(df)
-
-    age_bins = [0, 18, 30, 50, 70, 100]
-    age_labels = ["0-18", "19-30", "31-50", "51-70", "71-99"]
-    df["age_bins__"] = bin_age(df["age"], age_bins)
-
-    df["age_bins"] = pd.cut(df["age"], bins=age_bins)

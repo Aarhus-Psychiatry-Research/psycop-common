@@ -1,15 +1,5 @@
-from pathlib import Path
-
-import pandas as pd
-import pytest
-
 # import wandb
 from psycopt2d.utils import calculate_performance_metrics
-
-
-@pytest.fixture(scope="function")
-def synth_data():
-    return pd.read_csv(Path("tests") / "test_data" / "synth_data.csv")
 
 
 def test_log_performance_metrics(synth_data):
