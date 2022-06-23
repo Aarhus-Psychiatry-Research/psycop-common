@@ -19,7 +19,7 @@ def plot_prob_over_time(
     legend: str = "Highest Predictive Probability",
     look_behind: Optional[int] = None,
 ) -> alt.Chart:
-    """Plot probabilities over time for a given outcome
+    """Plot probabilities over time for a given outcome. Each element passed (e.g. timestamp, pred_prob etc.) must have the same length, and for each iterable, the i'th item must correspond to the same patient.
 
     Args:
         timestamp (Iterable[datetime]): Timestamps, matching the prediction time
