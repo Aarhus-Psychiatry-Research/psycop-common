@@ -34,7 +34,7 @@ def test_generate_performance_by_threshold_table(synth_data):
 
     expected_df = pd.DataFrame(
         {
-            "threshold": {0: 0.99, 1: 0.95},
+            "threshold_percentile": {0: 0.99, 1: 0.95},
             "prevalence": {0: 0.01, 1: 0.05},
             "PPV": {0: 0.06, 1: 0.05},
             "NPV": {0: 0.95, 1: 0.95},
