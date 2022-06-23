@@ -13,8 +13,9 @@ hydra-core = "^1.2.0"
 plotly = "^5.8.2"
 matplotlib = "^3.5.2"
 wandb = "^0.12.18"
-altair = "^4.2.0"
 psycopmlutils = {git = "https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils.git", rev = "main"}
+altair = "^4.2.0"
+altair-saver = "^0.5.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.19.0"
