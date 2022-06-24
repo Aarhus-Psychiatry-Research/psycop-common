@@ -20,9 +20,9 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wandb.sdk import wandb_run
 
-from psycopt2d.features.load import load_dataset
-from psycopt2d.models.models import MODELS
-from psycopt2d.models.transformers import ConvertToBoolean, DateTimeConverter
+from psycopt2d.load import load_dataset
+from psycopt2d.models import MODELS
+from psycopt2d.transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
