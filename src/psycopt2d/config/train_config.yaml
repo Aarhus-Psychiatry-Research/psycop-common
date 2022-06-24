@@ -1,5 +1,4 @@
-post_processing:
-  load_all: False
+training:
   impute_all: False
   force_all_binary: False
   train:
@@ -11,11 +10,19 @@ post_processing:
     min_lookahead_days: 365 # Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
     min_lookbehind_days: 365 # Drop all prediction times where (current timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
   washin_days: 0
-
-training:
   lookahead_days: 1826.25 # The furthest interval the model looks behind from prediction time
   lookbehind_days: 9999 # How far the model looks ahead from prediction time
   cols_to_drop_before_training: [dw_ek_borger, prediction_time_uuid, datotid_first_diabetes_any]
+
+data:
+  drop_if_outcome_before_date
+  force_all_binary
+  min_lookahead_days
+
+model:
+
+training:
+  n_training_samples: None  # Number of training samples to use, defaults to None in which cases it uses all samples.
 
 evaluation:
   wandb: False
