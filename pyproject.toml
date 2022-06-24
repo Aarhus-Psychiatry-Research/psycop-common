@@ -16,6 +16,8 @@ wandb = "^0.12.18"
 psycopmlutils = {git = "https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils.git", rev = "main"}
 altair = "^4.2.0"
 altair-saver = "^0.5.0"
+tabulate = "^0.8.10"
+pandoc = "^2.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.19.0"
