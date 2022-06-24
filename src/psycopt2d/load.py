@@ -39,7 +39,13 @@ def load_dataset(
     if isinstance(split_names, list):
         return pd.concat(
             [
-                load_dataset(split, drop_if_outcome_before_date, n_training_samples)
+                load_dataset(
+                    split,
+                    drop_if_outcome_before_date,
+                    min_lookahead_days,
+                    datetime_column,
+                    n_training_samples,
+                )
                 for split in split_names
             ],
         )
