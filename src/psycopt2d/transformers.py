@@ -1,6 +1,4 @@
-"""
-Contains custom transformers for data preprocessing.
-"""
+"""Contains custom transformers for data preprocessing."""
 from datetime import datetime
 from typing import List, Optional
 
@@ -15,7 +13,8 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
         columns_to_include: Optional[List[str]] = None,
         ignore_dtypes: set = {"datetime64[ns]"},
     ) -> None:
-        """Convert variables to boolean, used for checking whether a column has a value.
+        """Convert variables to boolean, used for checking whether a column has
+        a value.
 
         Args:
             columns_to_skip (List[str], optional): Columns to not convert to boolean.
@@ -53,7 +52,7 @@ class DateTimeConverter(BaseEstimator, TransformerMixin):
     datetime_dtypes = {"datetime64[ns]"}
 
     def __init__(self, convert_to="ordinal"):
-        """Convert datetimes to integers
+        """Convert datetimes to integers.
 
         Args:
             convert_to (str, optional): What should the datetime be converted to?
@@ -65,7 +64,7 @@ class DateTimeConverter(BaseEstimator, TransformerMixin):
         if convert_to not in self.valid_types:
             raise ValueError(
                 f"{convert_to} is not a valid type, valid types include "
-                + f"'{self.valid_types}'"
+                + f"'{self.valid_types}'",
             )
 
         self.convert_to = convert_to

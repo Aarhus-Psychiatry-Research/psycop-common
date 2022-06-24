@@ -1,5 +1,4 @@
-"""
-Training script for training a single model for predicting t2d
+"""Training script for training a single model for predicting t2d.
 
 TODO:
 add split for using pre-defined train-val split
@@ -19,6 +18,7 @@ import wandb
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
+from wandb.sdk import wandb_run
 
 from psycopt2d.features.load import load_dataset
 from psycopt2d.models.models import MODELS
@@ -28,11 +28,9 @@ from psycopt2d.utils import flatten_nested_dict
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
 
-from wandb.sdk import wandb_run
-
 
 def create_preprocessing_pipelines(cfg):
-    "create preprocessing pipeline based on config."
+    """create preprocessing pipeline based on config."""
     steps = []
     dtconverter = DateTimeConverter(convert_to=cfg.data.convert_datetimes_to)
     steps.append("DateTimeConverter", dtconverter)
@@ -49,7 +47,10 @@ def create_model(cfg):
 
 
 def evaluate(
-    X, y: Iterable[int], y_hat_prob: Iterable[float], wandb_run: Optional[wandb_run.Run]
+    X,
+    y: Iterable[int],
+    y_hat_prob: Iterable[float],
+    wandb_run: Optional[wandb_run.Run],
 ):
     if wandb_run:
         wandb_run.log({"roc_auc_unweighted": round(roc_auc_score(y, y_hat_prob), 3)})
@@ -96,18 +97,21 @@ def evaluate(
 def main(cfg):
     if cfg.evaluation.wandb:
         run = wandb.init(
-            project="psycop-t2d", reinit=True, config=flatten_nested_dict(cfg, sep=".")
+            project="psycop-t2d",
+            reinit=True,
+            config=flatten_nested_dict(cfg, sep="."),
         )
     else:
         run = None
 
     OUTCOME_COL_NAME = f"t2d_within_{cfg.training.lookahead_days}_days_max_fallback_0"
-    PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
-    OUTCOME_TIMESTAMP_COL_NAME = f"timestamp_{OUTCOME_COL_NAME}"
-    PREDICTED_PROBABILITY_COL_NAME = f"pred_prob_{OUTCOME_COL_NAME}"
+    # PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
+    # OUTCOME_TIMESTAMP_COL_NAME = f"timestamp_{OUTCOME_COL_NAME}"
+    # PREDICTED_PROBABILITY_COL_NAME = f"pred_prob_{OUTCOME_COL_NAME}"
 
     dataset = load_dataset(
-        split_names=["train", "val"], n_training_samples=cfg.training.n_training_samples
+        split_names=["train", "val"],
+        n_training_samples=cfg.training.n_training_samples,
     )
 
     # extract training data
@@ -121,7 +125,9 @@ def main(cfg):
 
     # create stratified groups kfold
     folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
-        X, y, X["dw_ek_borger"]
+        X,
+        y,
+        X["dw_ek_borger"],
     )
 
     # perform CV, obtaining out of fold predictions
@@ -133,7 +139,10 @@ def main(cfg):
 
     # Calculate performance metrics and log to wandb_run
     evaluate(
-        X, y=dataset[[OUTCOME_COL_NAME]], y_hat_prob=dataset["oof_y_hat"], wandb_run=run
+        X,
+        y=dataset[[OUTCOME_COL_NAME]],
+        y_hat_prob=dataset["oof_y_hat"],
+        wandb_run=run,
     )
 
     # finish run

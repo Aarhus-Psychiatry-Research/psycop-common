@@ -1,5 +1,5 @@
 from xgboost import XGBClassifier
 
 MODELS = {
-    "xgboost": XGBClassifier
+    "xgboost": XGBClassifier,
 }
