@@ -20,9 +20,9 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wandb.sdk import wandb_run
 
+from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
 from psycopt2d.models import MODELS
-from psycopt2d.transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
@@ -32,7 +32,7 @@ TRAINING_COL_NAME_PREFIX = "pred_"
 def create_preprocessing_pipelines(cfg):
     """create preprocessing pipeline based on config."""
     steps = []
-    dtconverter = DateTimeConverter(convert_to=cfg.data.convert_datetimes_to)
+    dtconverter = DateTimeConverter(convert_to=cfg.training.convert_datetimes_to)
     steps.append("DateTimeConverter", dtconverter)
 
     if cfg.training.convert_to_boolean:
@@ -41,8 +41,10 @@ def create_preprocessing_pipelines(cfg):
 
 
 def create_model(cfg):
-    training_arguments = cfg.getattr(cfg.training)
-    mdl = MODELS[cfg.training.model_name](**training_arguments)
+    model_args = MODELS[cfg.training.model_name]["static_hyperparameters"]
+    training_arguments = cfg.getattr(cfg.training, cfg.training.model_name)
+    model_args.update(training_arguments)
+    mdl = MODELS[cfg.training.model_name](**model_args)
     return mdl
 
 
@@ -104,14 +106,16 @@ def main(cfg):
     else:
         run = None
 
-    OUTCOME_COL_NAME = f"t2d_within_{cfg.training.lookahead_days}_days_max_fallback_0"
+    OUTCOME_COL_NAME = f"t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     # PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
     # OUTCOME_TIMESTAMP_COL_NAME = f"timestamp_{OUTCOME_COL_NAME}"
     # PREDICTED_PROBABILITY_COL_NAME = f"pred_prob_{OUTCOME_COL_NAME}"
 
     dataset = load_dataset(
         split_names=["train", "val"],
-        n_training_samples=cfg.training.n_training_samples,
+        n_training_samples=cfg.data.n_training_samples,
+        drop_if_outcome_before_date=cfg.data.min_lookahead_days,
+        min_lookahead_days=cfg.data.min_lookahead_days,
     )
 
     # extract training data
@@ -127,7 +131,7 @@ def main(cfg):
     folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
         X,
         y,
-        X["dw_ek_borger"],
+        dataset["dw_ek_borger"],
     )
 
     # perform CV, obtaining out of fold predictions

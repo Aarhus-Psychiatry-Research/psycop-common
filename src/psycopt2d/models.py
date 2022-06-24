@@ -1,5 +1,5 @@
+import numpy as np
 from xgboost import XGBClassifier
 
-MODELS = {
-    "xgboost": XGBClassifier,
-}
+xgboost = {"model": XGBClassifier, "static_hyperparameters": {"missing": np.nan}}
+MODELS = {"xgboost": xgboost}
