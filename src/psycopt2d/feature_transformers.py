@@ -2,8 +2,6 @@
 from datetime import datetime
 from typing import List, Optional
 
-import numpy as np
-import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
@@ -46,13 +44,13 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
         ]
 
         for col in cols_to_round:
-            X[col] = X[col].map(lambda x: 1 if not pd.isnull(x) else np.NaN)
+            X[col] = X[col].isnull()
         return X, y
 
 
 class DateTimeConverter(BaseEstimator, TransformerMixin):
     valid_types = {"ordinal"}
-    datetime_dtypes = {"datetime64[ns]"}
+    datetime_dtypes = {"datetime64[ns]", "<M8[ns]"}
 
     def __init__(self, convert_to="ordinal"):
         """Convert datetimes to integers.
