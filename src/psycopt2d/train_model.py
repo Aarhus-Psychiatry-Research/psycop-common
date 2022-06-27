@@ -2,7 +2,7 @@
 
 TODO:
 add split for using pre-defined train-val split
-multiple CV
+add dynamic hyperparams for hydra optimisation
 
 Features:
 # fix impute
@@ -33,10 +33,10 @@ def create_preprocessing_pipelines(cfg):
     """create preprocessing pipeline based on config."""
     steps = []
     dtconverter = DateTimeConverter(convert_to=cfg.training.convert_datetimes_to)
-    steps.append("DateTimeConverter", dtconverter)
+    steps.append(("DateTimeConverter", dtconverter))
 
     if cfg.training.convert_to_boolean:
-        steps.append(ConvertToBoolean())
+        steps.append(("ConvertToBoolean", ConvertToBoolean))
     return Pipeline(steps)
 
 
@@ -99,7 +99,7 @@ def evaluate(
 def main(cfg):
     if cfg.evaluation.wandb:
         run = wandb.init(
-            project="psycop-t2d",
+            project=cfg.project,
             reinit=True,
             config=flatten_nested_dict(cfg, sep="."),
         )

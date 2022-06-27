@@ -20,16 +20,17 @@ def load_dataset(
     Args:
         split_names (Union[List[str], str]): Names of splits, includes "train", "val",
             "test".
-        drop_if_outcome_before_date (Union[datetime, str]): Remove patient which have
-            had their outcome before the specified day. Also removed all visits before
-            this date as otherwise the model will learn that all visit before this date
-            does not lead to diabetes.
-            limit the dataset to. Defaults to None.
-        min_lookahead_days (int): Minimum amount of days to required for lookahead.
+        drop_if_outcome_before_date (Union[datetime, str]): Remove patients which 
+            experienced an outcome prior to the date. Also removes all visits prior to
+            this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome. 
+            Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
+        min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included. 
+        Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
             Defined as days from the last days.
-        pred_datetime_column (str, optional): Column with prediction time timestamps. 
-            Defaults to "pred_timestamp".   
-        n_training_samples (Union[None, int], optional): Number of training samples to
+        pred_timestamp_column (str, optional): Column with prediction time timestamps. 
+        Defaults to "pred_timestamp".
+        n_training_samples (Union[None, int], optional): Number of training samples to load. 
+        Defaults to None, in which case all training samples are loaded.
     Returns:
         pd.DataFrame: The filtered dataset
     """
@@ -54,7 +55,7 @@ def load_dataset(
     sql_table_name = f"psycop_t2d_{split_names}"
 
     if n_training_samples is not None:
-        msg.info(f"{sql_table_name}: Loading {n_training_samples} rows from")
+        msg.info(f"{sql_table_name}: Loading {n_training_samples} rows")
         select = f"SELECT TOP {n_training_samples}"
     else:
         msg.info(f"{sql_table_name}: Loading all rows")
@@ -94,7 +95,7 @@ def load_dataset(
 
     outcome_before_date = dataset["timestamp_t2d_diag"] < drop_if_outcome_before_date
     patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
-    dataset = dataset[dataset["dw_ek_borger"].isin(patients_to_drop)]
+    dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
 
     # Removed dates before min_datetime
     dataset = dataset[dataset[pred_datetime_column]> drop_if_outcome_before_date]
