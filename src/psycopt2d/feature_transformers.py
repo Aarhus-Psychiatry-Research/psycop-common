@@ -3,26 +3,29 @@ from datetime import datetime
 from typing import List, Optional
 
 import numpy as np
+import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class ConvertToBoolean(BaseEstimator, TransformerMixin):
     def __init__(
         self,
-        columns_to_skip: Optional[List[str]] = ["age_in_years", "sex_female"],
         columns_to_include: Optional[List[str]] = None,
+        columns_to_skip: Optional[List[str]] = ["age_in_years", "sex_female"],
         ignore_dtypes: set = {"datetime64[ns]"},
     ) -> None:
         """Convert variables to boolean, used for checking whether a column has
         a value.
 
         Args:
+            columns_to_include (List[str], optional): Columns to convert to boolean.
+                Acts as a whitelist, skipping all columns not in the list.
             columns_to_skip (List[str], optional): Columns to not convert to boolean.
+                Acts as a blacklist.
                 Defaults to ["age_in_years", "male"].
-            columns_to_include (List[str], optional): Columns to columns_to_include.
                 Default to None in which case all columns are included.
-            ignore_dtypes (set, optional): Data type to not convert. Defaults to
-                {"datetime64[ns]"}.
+            ignore_dtypes (set, optional): Skip columns with these data types. Defaults
+                to {"datetime64[ns]"}.
         """
         self.columns_to_skip = columns_to_skip
         self.columns_to_include = columns_to_include
@@ -38,17 +41,17 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
             columns = [c for c in columns if c in self.columns_to_include]
         cols_to_round = [
             c
-            for c in X.columns
+            for c in columns
             if (X[c].dtype not in self.ignore_dtype) or c in self.columns_to_skip
         ]
 
         for col in cols_to_round:
-            X[col] = X[col].map(lambda x: 1 if x > 0 else np.NaN)
+            X[col] = X[col].map(lambda x: 1 if not pd.isnull(x) else np.NaN)
         return X, y
 
 
 class DateTimeConverter(BaseEstimator, TransformerMixin):
-    valid_types = {"ordinial"}
+    valid_types = {"ordinal"}
     datetime_dtypes = {"datetime64[ns]"}
 
     def __init__(self, convert_to="ordinal"):

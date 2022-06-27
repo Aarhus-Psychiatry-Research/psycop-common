@@ -5,10 +5,10 @@ data:
   min_lookahead_days: 365 # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
   lookahead_days: 365 # (float): 
 preprocessing:
-  convert_to_boolean: False # (Boolean): defaults to False
+  convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
   convert_datetimes_to: "ordinal" # (str): Options include "ordinal" 
 model:
-  model_name: "xgboost" # (str): Model include "xgboost"
+  model_name: "xgboost" # (str): Model, can currently take "xgboost"
   xgboost: # Hyperparameters for xgboost: See more here: https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.XGBClassifier
     n_estimators: 100
 training:

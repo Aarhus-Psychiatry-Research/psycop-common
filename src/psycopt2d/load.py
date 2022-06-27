@@ -12,7 +12,7 @@ def load_dataset(
     split_names: Union[List[str], str],
     drop_if_outcome_before_date: Union[datetime, str],
     min_lookahead_days: int,
-    datetime_column: str = "pred_timestamp",
+    pred_datetime_column: str = "pred_timestamp",
     n_training_samples: Union[None, int] = None,
 ) -> pd.DataFrame:
     """load dataset for t2d.
@@ -27,8 +27,8 @@ def load_dataset(
             limit the dataset to. Defaults to None.
         min_lookahead_days (int): Minimum amount of days to required for lookahead.
             Defined as days from the last days.
-        datetime_column (str, optional): Datetime columns. Defaults to
-            "pred_timestamp".
+        pred_datetime_column (str, optional): Column with prediction time timestamps. 
+            Defaults to "pred_timestamp".   
         n_training_samples (Union[None, int], optional): Number of training samples to
     Returns:
         pd.DataFrame: The filtered dataset
@@ -43,7 +43,7 @@ def load_dataset(
                     split,
                     drop_if_outcome_before_date,
                     min_lookahead_days,
-                    datetime_column,
+                    pred_datetime_column,
                     n_training_samples,
                 )
                 for split in split_names
@@ -97,14 +97,12 @@ def load_dataset(
     dataset = dataset[dataset["dw_ek_borger"].isin(patients_to_drop)]
 
     # Removed dates before min_datetime
-    dates = dataset[datetime_column]
-    above_dt = dates > drop_if_outcome_before_date
-    dataset = dataset[above_dt]
+    dataset = dataset[dataset[pred_datetime_column]> drop_if_outcome_before_date]
 
     # remove dates min_lookahead_days before last recorded timestep
     max_datetime = dates.max() - min_lookahead
-    below_dt = dates < max_datetime
-    dataset = dataset[below_dt]
+    before_max_dt = dates < max_datetime
+    dataset = dataset[before_max_dt]
 
     msg.good(f"{split_names}: Returning!")
     return dataset
