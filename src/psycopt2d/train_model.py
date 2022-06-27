@@ -119,7 +119,9 @@ def main(cfg):
     )
 
     # extract training data
-    X = dataset[[c for c in dataset.columns if c.startswith(cfg.data.pred_col_name_prefix)]]
+    X = dataset[
+        [c for c in dataset.columns if c.startswith(cfg.data.pred_col_name_prefix)]
+    ]
     y = dataset[[OUTCOME_COL_NAME]]
 
     # construct sklearn pipeline

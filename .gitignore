@@ -100,16 +100,28 @@ Training
 Blog
 About
 
-
+# R prog
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+# figures
 *.png
 figures/
+
+# data files
 *.csv
+
+#VS code
 .vscode
+
+# wandb
 wandb
 outputs
 
+# virtual env
 .venv/
+
+# MacOS
+.DS_Store

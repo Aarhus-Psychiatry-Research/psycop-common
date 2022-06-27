@@ -233,4 +233,3 @@ def bin_continuous_data(series: pd.Series, bins: List[int]) -> pd.Series:
             continue
 
     return pd.cut(series, bins=bins, labels=labels)
-

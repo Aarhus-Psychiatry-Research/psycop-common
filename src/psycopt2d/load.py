@@ -20,16 +20,16 @@ def load_dataset(
     Args:
         split_names (Union[List[str], str]): Names of splits, includes "train", "val",
             "test".
-        drop_if_outcome_before_date (Union[datetime, str]): Remove patients which 
+        drop_if_outcome_before_date (Union[datetime, str]): Remove patients which
             experienced an outcome prior to the date. Also removes all visits prior to
-            this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome. 
+            this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
             Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
-        min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included. 
+        min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included.
         Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
             Defined as days from the last days.
-        pred_timestamp_column (str, optional): Column with prediction time timestamps. 
+        pred_timestamp_column (str, optional): Column with prediction time timestamps.
         Defaults to "pred_timestamp".
-        n_training_samples (Union[None, int], optional): Number of training samples to load. 
+        n_training_samples (Union[None, int], optional): Number of training samples to load.
         Defaults to None, in which case all training samples are loaded.
     Returns:
         pd.DataFrame: The filtered dataset
@@ -98,11 +98,11 @@ def load_dataset(
     dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
 
     # Removed dates before min_datetime
-    dataset = dataset[dataset[pred_datetime_column]> drop_if_outcome_before_date]
+    dataset = dataset[dataset[pred_datetime_column] > drop_if_outcome_before_date]
 
     # remove dates min_lookahead_days before last recorded timestep
-    max_datetime = dates.max() - min_lookahead
-    before_max_dt = dates < max_datetime
+    max_datetime = dataset[pred_datetime_column].max() - min_lookahead
+    before_max_dt = dataset[pred_datetime_column] < max_datetime
     dataset = dataset[before_max_dt]
 
     msg.good(f"{split_names}: Returning!")
