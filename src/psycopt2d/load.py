@@ -97,7 +97,7 @@ def load_dataset(
     patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
     dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
 
-    # Removed dates before min_datetime
+    # Removed dates before drop_if_outcome_before_date
     dataset = dataset[dataset[pred_datetime_column] > drop_if_outcome_before_date]
 
     # remove dates min_lookahead_days before last recorded timestep
