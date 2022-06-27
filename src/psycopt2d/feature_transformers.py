@@ -10,7 +10,7 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
         self,
         columns_to_include: Optional[List[str]] = None,
         columns_to_skip: Optional[List[str]] = ["age_in_years", "sex_female"],
-        ignore_dtypes: set = {"datetime64[ns]"},
+        ignore_dtypes: set = {"datetime64[ns]", "<M8[ns]"},
     ) -> None:
         """Convert variables to boolean, used for checking whether a column has
         a value.
