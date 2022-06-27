@@ -125,3 +125,6 @@ outputs
 
 # MacOS
 .DS_Store
+
+# Poetry
+poetry.lock
