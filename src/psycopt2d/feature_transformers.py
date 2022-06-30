@@ -12,8 +12,7 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
         columns_to_skip: Optional[List[str]] = ["age_in_years", "sex_female"],
         ignore_dtypes: set = {"datetime64[ns]", "<M8[ns]"},
     ) -> None:
-        """Convert variables to boolean, used for checking whether a column has
-        a value.
+        """Convert all cells with a value to True, otherwise False.
 
         Args:
             columns_to_include (List[str], optional): Columns to convert to boolean.
@@ -37,6 +36,7 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
 
         if self.columns_to_include:
             columns = [c for c in columns if c in self.columns_to_include]
+
         cols_to_round = [
             c
             for c in columns
@@ -44,7 +44,8 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
         ]
 
         for col in cols_to_round:
-            X[col] = X[col].isnull()
+            X[col] = X[col].notnull()
+
         return X
 
 
