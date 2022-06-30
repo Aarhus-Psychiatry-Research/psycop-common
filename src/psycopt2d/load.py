@@ -49,6 +49,7 @@ def load_dataset(
                 )
                 for split in split_names
             ],
+            ignore_index=True,
         )
 
     min_lookahead = timedelta(days=min_lookahead_days)

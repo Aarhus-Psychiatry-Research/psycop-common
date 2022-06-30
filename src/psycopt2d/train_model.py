@@ -23,7 +23,7 @@ from wandb.sdk import wandb_run
 
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
-from psycopt2d.models import MODELS
+from psycopt2d.models import model_catalogue
 from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
@@ -33,19 +33,23 @@ TRAINING_COL_NAME_PREFIX = "pred_"
 def create_preprocessing_pipelines(cfg):
     """create preprocessing pipeline based on config."""
     steps = []
-    dtconverter = DateTimeConverter(convert_to=cfg.training.convert_datetimes_to)
+    dtconverter = DateTimeConverter(convert_to=cfg.preprocessing.convert_datetimes_to)
     steps.append(("DateTimeConverter", dtconverter))
 
-    if cfg.training.convert_to_boolean:
-        steps.append(("ConvertToBoolean", ConvertToBoolean))
+    if cfg.preprocessing.convert_to_boolean:
+        steps.append(("ConvertToBoolean", ConvertToBoolean()))
+
+    # steps.append(("ConvertToNumpyArray", ConvertToNumpyArray()))
     return Pipeline(steps)
 
 
 def create_model(cfg):
-    model_args = MODELS[cfg.training.model_name]["static_hyperparameters"]
-    training_arguments = cfg.getattr(cfg.training, cfg.training.model_name)
-    model_args.update(training_arguments)
-    mdl = MODELS[cfg.training.model_name](**model_args)
+    model_config_dict = model_catalogue.get(cfg.model.model_name)
+
+    model_args = model_config_dict["static_hyperparameters"]
+    # training_arguments = getattr(cfg.model, cfg.model.model_name)
+    # model_args.update(training_arguments)
+    mdl = model_config_dict["model"](**model_args)
     return mdl
 
 
@@ -112,10 +116,14 @@ def main(cfg):
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     )
 
+    preprocessing_pipe = create_preprocessing_pipelines(cfg)
+    mdl = create_model(cfg)
+    pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
+
     if cfg.training.n_splits is not None:
-        y, y_hat_prob = cross_validated_performance(cfg, OUTCOME_COL_NAME)
+        y, y_hat_prob = cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe)
     else:
-        y, y_hat_prob = pre_defined_split_performance(cfg, OUTCOME_COL_NAME)
+        y, y_hat_prob = pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe)
 
     # Calculate performance metrics and log to wandb_run
     evaluate(
@@ -126,10 +134,11 @@ def main(cfg):
     )
 
     # finish run
-    run.finish()
+    if cfg.evaluation.wandb:
+        run.finish()
 
 
-def pre_defined_split_performance(cfg, OUTCOME_COL_NAME) -> Tuple(Series, Series):
+def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple(Series, Series):
     """Loads dataset and fits a model on the pre-defined split.
 
     Args:
@@ -139,13 +148,11 @@ def pre_defined_split_performance(cfg, OUTCOME_COL_NAME) -> Tuple(Series, Series
     Returns:
         Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
     """
-    n_to_load = cfg.data.n_training_samples
-
     # Train set
     X_train, y_train = load_dataset(
         split_name="train",
         outcome_col_name=OUTCOME_COL_NAME,
-        n_to_load=n_to_load,
+        n_to_load=cfg.data.n_training_samples,
     )
     X_train = X_train[
         [c for c in X_train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
@@ -154,22 +161,20 @@ def pre_defined_split_performance(cfg, OUTCOME_COL_NAME) -> Tuple(Series, Series
     # Val set
     X_val, y_val = load_dataset(
         split_name="val",
-        n_to_load=n_to_load,
+        n_to_load=cfg.data.n_training_samples,
         outcome_col_name=OUTCOME_COL_NAME,
     )
     X_val = X_val[
         [c for c in X_val.columns if c.startswith(cfg.data.pred_col_name_prefix)]
     ]
 
-    preprocessing_pipe = create_preprocessing_pipelines(cfg)
-    mdl = create_model(cfg)
-    pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
-
     pipe.fit(X_train, y_train)
-    return y_val, pipe.predict(X_val)
+    y_hat = pipe.predict(X_val)
+
+    return y_val, y_hat
 
 
-def cross_validated_performance(cfg, OUTCOME_COL_NAME):
+def cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe):
     """Loads train and val, concatenates them and uses them for cross-
     validation.
 
@@ -193,11 +198,6 @@ def cross_validated_performance(cfg, OUTCOME_COL_NAME):
     ]
     y = dataset[[OUTCOME_COL_NAME]]
 
-    # construct sklearn pipeline
-    preprocessing_pipe = create_preprocessing_pipelines(cfg)
-    mdl = create_model(cfg)
-    pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
-
     # create stratified groups kfold
     folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
         X,
@@ -208,9 +208,19 @@ def cross_validated_performance(cfg, OUTCOME_COL_NAME):
     # perform CV, obtaining out of fold predictions
     dataset["oof_y_hat"] = np.nan
     for train_idxs, val_idxs in folds:
-        X_, y_ = X[train_idxs], y[train_idxs]
+        X_, y_ = X.loc[train_idxs], y.loc[train_idxs]
         pipe.fit(X_, y_)
-        dataset["oof_y_hat"][val_idxs] = pipe.predict(X[val_idxs])
+
+        y_hat = pipe.predict(X_)
+
+        dataset["oof_y_hat"].loc[val_idxs] = pipe.predict(X.loc[val_idxs])
+
+        out_of_fold_y = dataset[[OUTCOME_COL_NAME]].loc[val_idxs]
+        out_of_fold_y_hat = dataset["oof_y_hat"].loc[val_idxs]
+        print(f"Within-fold performance: {roc_auc_score(y_,y_hat)}")
+        print(
+            f"Out-of-fold performance: {roc_auc_score(out_of_fold_y, out_of_fold_y_hat)}",
+        )
 
     return y, dataset["oof_y_hat"]
 
