@@ -10,11 +10,12 @@ Features:
 """
 
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple
 
 import hydra
 import numpy as np
 import wandb
+from pandas import Series
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
@@ -56,7 +57,8 @@ def evaluate(
 ):
     if wandb_run:
         wandb_run.log({"roc_auc_unweighted": round(roc_auc_score(y, y_hat_prob), 3)})
-
+    else:
+        print(f"AUC is: {round(roc_auc_score(y, y_hat_prob), 3)}")
     # wandb.sklearn.plot_classifier(
     #     model,
     #     X_test=X,
@@ -106,11 +108,78 @@ def main(cfg):
     else:
         run = None
 
-    OUTCOME_COL_NAME = f"t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
-    # PREDICTED_OUTCOME_COL_NAME = f"pred_{OUTCOME_COL_NAME}"
-    # OUTCOME_TIMESTAMP_COL_NAME = f"timestamp_{OUTCOME_COL_NAME}"
-    # PREDICTED_PROBABILITY_COL_NAME = f"pred_prob_{OUTCOME_COL_NAME}"
+    OUTCOME_COL_NAME = (
+        f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
+    )
 
+    if cfg.training.n_splits is not None:
+        y, y_hat_prob = cross_validated_performance(cfg, OUTCOME_COL_NAME)
+    else:
+        y, y_hat_prob = pre_defined_split_performance(cfg, OUTCOME_COL_NAME)
+
+    # Calculate performance metrics and log to wandb_run
+    evaluate(
+        X="",
+        y=y,
+        y_hat_prob=y_hat_prob,
+        wandb_run=run,
+    )
+
+    # finish run
+    run.finish()
+
+
+def pre_defined_split_performance(cfg, OUTCOME_COL_NAME) -> Tuple(Series, Series):
+    """Loads dataset and fits a model on the pre-defined split.
+
+    Args:
+        cfg (_type_): _description_
+        OUTCOME_COL_NAME (_type_): _description_
+
+    Returns:
+        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
+    """
+    n_to_load = cfg.data.n_training_samples
+
+    # Train set
+    X_train, y_train = load_dataset(
+        split_name="train",
+        outcome_col_name=OUTCOME_COL_NAME,
+        n_to_load=n_to_load,
+    )
+    X_train = X_train[
+        [c for c in X_train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
+    ]
+
+    # Val set
+    X_val, y_val = load_dataset(
+        split_name="val",
+        n_to_load=n_to_load,
+        outcome_col_name=OUTCOME_COL_NAME,
+    )
+    X_val = X_val[
+        [c for c in X_val.columns if c.startswith(cfg.data.pred_col_name_prefix)]
+    ]
+
+    preprocessing_pipe = create_preprocessing_pipelines(cfg)
+    mdl = create_model(cfg)
+    pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
+
+    pipe.fit(X_train, y_train)
+    return y_val, pipe.predict(X_val)
+
+
+def cross_validated_performance(cfg, OUTCOME_COL_NAME):
+    """Loads train and val, concatenates them and uses them for cross-
+    validation.
+
+    Args:
+        cfg (_type_): _description_
+        OUTCOME_COL_NAME (_type_): _description_
+
+    Returns:
+        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
+    """
     dataset = load_dataset(
         split_names=["train", "val"],
         n_training_samples=cfg.data.n_training_samples,
@@ -143,16 +212,7 @@ def main(cfg):
         pipe.fit(X_, y_)
         dataset["oof_y_hat"][val_idxs] = pipe.predict(X[val_idxs])
 
-    # Calculate performance metrics and log to wandb_run
-    evaluate(
-        X,
-        y=dataset[[OUTCOME_COL_NAME]],
-        y_hat_prob=dataset["oof_y_hat"],
-        wandb_run=run,
-    )
-
-    # finish run
-    run.finish()
+    return y, dataset["oof_y_hat"]
 
 
 if __name__ == "__main__":

@@ -13,6 +13,6 @@ model:
   xgboost: # Hyperparameters for xgboost: See more here: https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.XGBClassifier
     n_estimators: 100
 training:
-  n_splits: 5 # (int): number of k-fold during CV
+  n_splits: 5 # (int, Null): Number of k-folds during CV. If Null, loads pre-defined dataset.
 evaluation:
   wandb: False
