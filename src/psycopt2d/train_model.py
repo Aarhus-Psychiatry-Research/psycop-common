@@ -14,17 +14,20 @@ from typing import Iterable, Optional, Tuple
 
 import hydra
 import numpy as np
+
+# import wandb
 from pandas import Series
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wandb.sdk import wandb_run
+from xgboost import XGBClassifier
 
-import wandb
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
-from psycopt2d.models import model_catalogue
-from psycopt2d.utils import flatten_nested_dict
+
+# from psycopt2d.models import model_catalogue
+# from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
@@ -44,12 +47,13 @@ def create_preprocessing_pipelines(cfg):
 
 
 def create_model(cfg):
-    model_config_dict = model_catalogue.get(cfg.model.model_name)
+    # model_config_dict = model_catalogue.get(cfg.model.model_name)
 
-    model_args = model_config_dict["static_hyperparameters"]
-    # training_arguments = getattr(cfg.model, cfg.model.model_name)
-    # model_args.update(training_arguments)
-    mdl = model_config_dict["model"](**model_args)
+    # model_args = model_config_dict["static_hyperparameters"]
+    # # training_arguments = getattr(cfg.model, cfg.model.model_name)
+    # # model_args.update(training_arguments)
+    # mdl = model_config_dict["model"](**model_args)
+    mdl = XGBClassifier(missing=np.nan, verbose=True)
     return mdl
 
 
@@ -103,14 +107,14 @@ def evaluate(
     config_name="train_config",
 )
 def main(cfg):
-    if cfg.evaluation.wandb:
-        run = wandb.init(
-            project=cfg.project,
-            reinit=True,
-            config=flatten_nested_dict(cfg, sep="."),
-        )
-    else:
-        run = None
+    # if cfg.evaluation.wandb:
+    #     run = wandb.init(
+    #         project=cfg.project,
+    #         reinit=True,
+    #         config=flatten_nested_dict(cfg, sep="."),
+    #     )
+    # else:
+    #     run = None
 
     OUTCOME_COL_NAME = (
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
@@ -125,17 +129,19 @@ def main(cfg):
     else:
         y, y_hat_prob = pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe)
 
-    # Calculate performance metrics and log to wandb_run
-    evaluate(
-        X="",
-        y=y,
-        y_hat_prob=y_hat_prob,
-        wandb_run=run,
-    )
+    print(f"Performance on val: {roc_auc_score(y, y_hat_prob)}")
 
-    # finish run
-    if cfg.evaluation.wandb:
-        run.finish()
+    # # Calculate performance metrics and log to wandb_run
+    # evaluate(
+    #     X="",
+    #     y=y,
+    #     y_hat_prob=y_hat_prob,
+    #     wandb_run=run,  # noqa
+    # )
+
+    # # finish run
+    # if cfg.evaluation.wandb:
+    #     run.finish()  # noqa
 
 
 def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, Series]:
@@ -171,9 +177,12 @@ def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, 
     y_val = val[[OUTCOME_COL_NAME]]
 
     pipe.fit(X_train, y_train)
-    y_hat = pipe.predict(X_val)
+    y_train_hat = pipe.predict(X_train)
+    y_val_hat = pipe.predict(X_val)
 
-    return y_val, y_hat
+    print(f"Performance on train: {roc_auc_score(y_train, y_train_hat)}")
+
+    return y_val, y_val_hat
 
 
 def cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe):
