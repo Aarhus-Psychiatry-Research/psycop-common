@@ -10,17 +10,17 @@ msg = Printer(timestamp=True)
 
 def load_dataset(
     split_names: Union[List[str], str],
-    drop_if_outcome_before_date: Union[datetime, str],
+    drop_patient_if_outcome_before_date: Union[datetime, str],
     min_lookahead_days: int,
-    pred_datetime_column: str = "pred_timestamp",
+    pred_datetime_column: str = "timestamp",
     n_training_samples: Union[None, int] = None,
 ) -> pd.DataFrame:
-    """load dataset for t2d.
+    """Load dataset for t2d.
 
     Args:
         split_names (Union[List[str], str]): Names of splits, includes "train", "val",
             "test".
-        drop_if_outcome_before_date (Union[datetime, str]): Remove patients which
+        drop_patient_if_outcome_before_date (Union[datetime, str]): Remove patients which
             experienced an outcome prior to the date. Also removes all visits prior to
             this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
             Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
@@ -28,21 +28,30 @@ def load_dataset(
         Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
             Defined as days from the last days.
         pred_timestamp_column (str, optional): Column with prediction time timestamps.
-        Defaults to "pred_timestamp".
+        Defaults to "timestamp".
         n_training_samples (Union[None, int], optional): Number of training samples to load.
         Defaults to None, in which case all training samples are loaded.
     Returns:
         pd.DataFrame: The filtered dataset
     """
-    if isinstance(drop_if_outcome_before_date, str):
-        drop_if_outcome_before_date = date.fromisoformat(drop_if_outcome_before_date)
+    if isinstance(drop_patient_if_outcome_before_date, str):
+        drop_patient_if_outcome_before_date = date.fromisoformat(
+            drop_patient_if_outcome_before_date,
+        )
+
+    # Convert drop_patient_if_outcome_before_date from a date to a datetime at midnight
+    if isinstance(drop_patient_if_outcome_before_date, date):
+        drop_patient_if_outcome_before_date = datetime.combine(
+            drop_patient_if_outcome_before_date,
+            datetime.min.time(),
+        )
 
     if isinstance(split_names, list):
         return pd.concat(
             [
                 load_dataset(
                     split,
-                    drop_if_outcome_before_date,
+                    drop_patient_if_outcome_before_date,
                     min_lookahead_days,
                     pred_datetime_column,
                     n_training_samples,
@@ -94,12 +103,16 @@ def load_dataset(
             )
             dataset[colname] = pd.to_datetime(dataset[colname])
 
-    outcome_before_date = dataset["timestamp_t2d_diag"] < drop_if_outcome_before_date
+    outcome_before_date = (
+        dataset["timestamp_first_diabetes_any"] < drop_patient_if_outcome_before_date
+    )
     patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
     dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
 
-    # Removed dates before drop_if_outcome_before_date
-    dataset = dataset[dataset[pred_datetime_column] > drop_if_outcome_before_date]
+    # Removed dates before drop_patient_if_outcome_before_date
+    dataset = dataset[
+        dataset[pred_datetime_column] > drop_patient_if_outcome_before_date
+    ]
 
     # remove dates min_lookahead_days before last recorded timestep
     max_datetime = dataset[pred_datetime_column].max() - min_lookahead

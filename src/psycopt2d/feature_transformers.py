@@ -45,7 +45,7 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
 
         for col in cols_to_round:
             X[col] = X[col].isnull()
-        return X, y
+        return X
 
 
 class DateTimeConverter(BaseEstimator, TransformerMixin):
@@ -81,4 +81,4 @@ class DateTimeConverter(BaseEstimator, TransformerMixin):
         for colname in dt_columns:
             X[colname] = X[colname].map(datetime.toordinal)
 
-        return X, y
+        return X

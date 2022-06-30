@@ -1,7 +1,7 @@
 
 data:
-  n_training_samples: None  # Number of training samples to use, defaults to None in which cases it uses all samples.
-  drop_if_outcome_before_date: 2013-01-01
+  n_training_samples: 50000  # Number of training samples to use, defaults to None in which cases it uses all samples.
+  drop_patient_if_outcome_before_date: 2013-01-01
   min_lookahead_days: 365 # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
   lookahead_days: 1826.25 # (float): Number of days from prediction time to look ahead for the outcome.
   pred_col_name_prefix: "pred_" # (str): prefix of predictor columns
@@ -13,6 +13,6 @@ model:
   xgboost: # Hyperparameters for xgboost: See more here: https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.XGBClassifier
     n_estimators: 100
 training:
-  n_splits: 5 # (int, Null): Number of k-folds during CV. If Null, loads pre-defined dataset.
+  n_splits: Null # (int, Null): Number of k-folds during CV. If Null, loads pre-defined dataset.
 evaluation:
   wandb: False

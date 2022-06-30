@@ -14,13 +14,13 @@ from typing import Iterable, Optional, Tuple
 
 import hydra
 import numpy as np
-import wandb
 from pandas import Series
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wandb.sdk import wandb_run
 
+import wandb
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
 from psycopt2d.models import model_catalogue
@@ -62,7 +62,7 @@ def evaluate(
     if wandb_run:
         wandb_run.log({"roc_auc_unweighted": round(roc_auc_score(y, y_hat_prob), 3)})
     else:
-        print(f"AUC is: {round(roc_auc_score(y, y_hat_prob), 3)}")
+        print(f"AUC is: {roc_auc_score(y, y_hat_prob)}")
     # wandb.sklearn.plot_classifier(
     #     model,
     #     X_test=X,
@@ -116,9 +116,9 @@ def main(cfg):
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     )
 
-    preprocessing_pipe = create_preprocessing_pipelines(cfg)
+    # preprocessing_pipe = create_preprocessing_pipelines(cfg)
     mdl = create_model(cfg)
-    pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
+    pipe = Pipeline([("mdl", mdl)])  # ("preprocessing", preprocessing_pipe),
 
     if cfg.training.n_splits is not None:
         y, y_hat_prob = cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe)
@@ -138,7 +138,7 @@ def main(cfg):
         run.finish()
 
 
-def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple(Series, Series):
+def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, Series]:
     """Loads dataset and fits a model on the pre-defined split.
 
     Args:
@@ -149,24 +149,26 @@ def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple(Series, 
         Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
     """
     # Train set
-    X_train, y_train = load_dataset(
-        split_name="train",
-        outcome_col_name=OUTCOME_COL_NAME,
-        n_to_load=cfg.data.n_training_samples,
+    train = load_dataset(
+        split_names="train",
+        n_training_samples=cfg.data.n_training_samples,
+        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+        min_lookahead_days=cfg.data.min_lookahead_days,
     )
-    X_train = X_train[
-        [c for c in X_train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
+    X_train = train[
+        [c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
     ]
+    y_train = train[[OUTCOME_COL_NAME]]
 
     # Val set
-    X_val, y_val = load_dataset(
-        split_name="val",
-        n_to_load=cfg.data.n_training_samples,
-        outcome_col_name=OUTCOME_COL_NAME,
+    val = load_dataset(
+        split_names="val",
+        n_training_samples=cfg.data.n_training_samples,
+        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+        min_lookahead_days=cfg.data.min_lookahead_days,
     )
-    X_val = X_val[
-        [c for c in X_val.columns if c.startswith(cfg.data.pred_col_name_prefix)]
-    ]
+    X_val = val[[c for c in val.columns if c.startswith(cfg.data.pred_col_name_prefix)]]
+    y_val = val[[OUTCOME_COL_NAME]]
 
     pipe.fit(X_train, y_train)
     y_hat = pipe.predict(X_val)
@@ -188,7 +190,7 @@ def cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe):
     dataset = load_dataset(
         split_names=["train", "val"],
         n_training_samples=cfg.data.n_training_samples,
-        drop_if_outcome_before_date=cfg.data.min_lookahead_days,
+        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
         min_lookahead_days=cfg.data.min_lookahead_days,
     )
 
