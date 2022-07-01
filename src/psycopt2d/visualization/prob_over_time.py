@@ -1,11 +1,10 @@
-"""
-Code for creating probabilities over time plots.
-"""
+"""Code for creating probabilities over time plots."""
 
 from datetime import datetime
-from typing import Iterable, Union, Optional
-import pandas as pd
+from typing import Iterable, Optional, Union
+
 import altair as alt
+import pandas as pd
 
 
 def plot_prob_over_time(
@@ -20,7 +19,9 @@ def plot_prob_over_time(
     look_behind_distance: Optional[int] = None,
     line_opacity: float = 0.3,
 ) -> alt.Chart:
-    """Plot probabilities over time for a given outcome. Each element passed (e.g. timestamp, pred_prob etc.) must have the same length, and for each iterable, the i'th item must correspond to the same patient.
+    """Plot probabilities over time for a given outcome. Each element passed
+    (e.g. timestamp, pred_prob etc.) must have the same length, and for each
+    iterable, the i'th item must correspond to the same patient.
 
     Args:
         timestamp (Iterable[datetime]): Timestamps for each prediction time.
@@ -67,7 +68,7 @@ def plot_prob_over_time(
             "outcome_timestamp": list(outcome_timestamp),
             "patient_id": list(patient_id),
             "label": list(label),
-        }
+        },
     )
     # remove individuals with no outcome
     plot_df = plot_df.dropna()
@@ -104,7 +105,7 @@ def plot_prob_over_time(
                 "start": [0 - look_behind_distance],
                 "stop": [0],
                 "Predictive Window": "Positive",
-            }
+            },
         ).reset_index()
 
         areas = (
