@@ -2,12 +2,13 @@ from typing import Dict, List, Union
 
 import numpy as np
 import pandas as pd
-import wandb
 from matplotlib import pyplot as plt
 from psycopmlutils.model_performance import ModelPerformance
 from sklearn.impute import SimpleImputer
 from wasabi import msg
 from xgboost import XGBClassifier
+
+import wandb
 
 
 def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
