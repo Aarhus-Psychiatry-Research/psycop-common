@@ -21,13 +21,12 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wandb.sdk import wandb_run
-from xgboost import XGBClassifier
 
+import wandb
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
-
-# from psycopt2d.models import model_catalogue
-# from psycopt2d.utils import flatten_nested_dict
+from psycopt2d.models import model_catalogue
+from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
@@ -47,13 +46,13 @@ def create_preprocessing_pipelines(cfg):
 
 
 def create_model(cfg):
-    # model_config_dict = model_catalogue.get(cfg.model.model_name)
+    model_config_dict = model_catalogue.get(cfg.model.model_name)
 
-    # model_args = model_config_dict["static_hyperparameters"]
-    # # training_arguments = getattr(cfg.model, cfg.model.model_name)
-    # # model_args.update(training_arguments)
-    # mdl = model_config_dict["model"](**model_args)
-    mdl = XGBClassifier(missing=np.nan, verbose=True)
+    model_args = model_config_dict["static_hyperparameters"]
+    training_arguments = getattr(cfg.model, cfg.model.model_name)
+    model_args.update(training_arguments)
+
+    mdl = model_config_dict["model"](**model_args)
     return mdl
 
 
@@ -107,14 +106,14 @@ def evaluate(
     config_name="train_config",
 )
 def main(cfg):
-    # if cfg.evaluation.wandb:
-    #     run = wandb.init(
-    #         project=cfg.project,
-    #         reinit=True,
-    #         config=flatten_nested_dict(cfg, sep="."),
-    #     )
-    # else:
-    #     run = None
+    if cfg.evaluation.wandb:
+        run = wandb.init(
+            project=cfg.project,
+            reinit=True,
+            config=flatten_nested_dict(cfg, sep="."),
+        )
+    else:
+        run = None
 
     OUTCOME_COL_NAME = (
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
@@ -129,19 +128,17 @@ def main(cfg):
     else:
         y, y_hat_prob = pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe)
 
-    print(f"Performance on val: {roc_auc_score(y, y_hat_prob)}")
+    # Calculate performance metrics and log to wandb_run
+    evaluate(
+        X="",
+        y=y,
+        y_hat_prob=y_hat_prob,
+        wandb_run=run,
+    )
 
-    # # Calculate performance metrics and log to wandb_run
-    # evaluate(
-    #     X="",
-    #     y=y,
-    #     y_hat_prob=y_hat_prob,
-    #     wandb_run=run,  # noqa
-    # )
-
-    # # finish run
-    # if cfg.evaluation.wandb:
-    #     run.finish()  # noqa
+    # finish run
+    if cfg.evaluation.wandb:
+        run.finish()
 
 
 def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, Series]:
@@ -164,7 +161,7 @@ def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, 
     X_train = train[
         [c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
     ]
-    y_train = train[[OUTCOME_COL_NAME]]
+    y_train = train[OUTCOME_COL_NAME]
 
     # Val set
     val = load_dataset(
@@ -177,8 +174,8 @@ def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, 
     y_val = val[[OUTCOME_COL_NAME]]
 
     pipe.fit(X_train, y_train)
-    y_train_hat = pipe.predict(X_train)
-    y_val_hat = pipe.predict(X_val)
+    y_train_hat = pipe.predict_proba(X_train)[:, 1]
+    y_val_hat = pipe.predict_proba(X_val)[:, 1]
 
     print(f"Performance on train: {roc_auc_score(y_train, y_train_hat)}")
 
@@ -222,15 +219,15 @@ def cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe):
         X_, y_ = X.loc[train_idxs], y.loc[train_idxs]
         pipe.fit(X_, y_)
 
-        y_hat = pipe.predict(X_)
-
-        dataset["oof_y_hat"].loc[val_idxs] = pipe.predict(X.loc[val_idxs])
-
-        out_of_fold_y = dataset[[OUTCOME_COL_NAME]].loc[val_idxs]
-        out_of_fold_y_hat = dataset["oof_y_hat"].loc[val_idxs]
+        y_hat = pipe.predict_proba(X_)[:, 1]
         print(f"Within-fold performance: {roc_auc_score(y_,y_hat)}")
+
+        out_of_fold_y = dataset[OUTCOME_COL_NAME].loc[val_idxs]
+        dataset["oof_y_hat"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[:, 1]
+
+        out_of_fold_y_hat = dataset["oof_y_hat"].loc[val_idxs]
         print(
-            f"Out-of-fold performance: {roc_auc_score(out_of_fold_y, out_of_fold_y_hat)}",
+            f"Out-of-fold performance: {roc_auc_score(out_of_fold_y, out_of_fold_y_hat)})",
         )
 
     return y, dataset["oof_y_hat"]
