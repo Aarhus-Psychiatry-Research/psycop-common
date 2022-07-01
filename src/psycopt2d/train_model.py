@@ -65,7 +65,7 @@ def evaluate(
     if wandb_run:
         wandb_run.log({"roc_auc_unweighted": round(roc_auc_score(y, y_hat_prob), 3)})
     else:
-        print(f"AUC is: {roc_auc_score(y, y_hat_prob)}")
+        print(f"AUC is: {round(roc_auc_score(y, y_hat_prob), 3)}")
     # wandb.sklearn.plot_classifier(
     #     model,
     #     X_test=X,
@@ -119,9 +119,9 @@ def main(cfg):
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     )
 
-    # preprocessing_pipe = create_preprocessing_pipelines(cfg)
+    preprocessing_pipe = create_preprocessing_pipelines(cfg)
     mdl = create_model(cfg)
-    pipe = Pipeline([("mdl", mdl)])  # ("preprocessing", preprocessing_pipe),
+    pipe = Pipeline([("mdl", mdl), ("preprocessing", preprocessing_pipe)])
 
     if cfg.training.n_splits is not None:
         y, y_hat_prob = cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe)
@@ -177,7 +177,7 @@ def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, 
     y_train_hat = pipe.predict_proba(X_train)[:, 1]
     y_val_hat = pipe.predict_proba(X_val)[:, 1]
 
-    print(f"Performance on train: {roc_auc_score(y_train, y_train_hat)}")
+    print(f"Performance on train: {round(roc_auc_score(y_train, y_train_hat), 3)}")
 
     return y_val, y_val_hat
 
@@ -220,14 +220,14 @@ def cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe):
         pipe.fit(X_, y_)
 
         y_hat = pipe.predict_proba(X_)[:, 1]
-        print(f"Within-fold performance: {roc_auc_score(y_,y_hat)}")
+        print(f"Within-fold performance: {round(roc_auc_score(y_,y_hat), 3)}")
 
         out_of_fold_y = dataset[OUTCOME_COL_NAME].loc[val_idxs]
         dataset["oof_y_hat"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[:, 1]
 
         out_of_fold_y_hat = dataset["oof_y_hat"].loc[val_idxs]
         print(
-            f"Out-of-fold performance: {roc_auc_score(out_of_fold_y, out_of_fold_y_hat)})",
+            f"Out-of-fold performance: {round(roc_auc_score(out_of_fold_y, out_of_fold_y_hat), 3)}",
         )
 
     return y, dataset["oof_y_hat"]
