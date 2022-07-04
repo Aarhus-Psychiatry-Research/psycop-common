@@ -14,6 +14,7 @@ from typing import Iterable, Optional, Tuple
 
 import hydra
 import numpy as np
+import wandb
 
 # import wandb
 from pandas import Series
@@ -22,7 +23,6 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wandb.sdk import wandb_run
 
-import wandb
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
 from psycopt2d.models import model_catalogue
