@@ -2,6 +2,7 @@ from typing import Iterable, Union
 
 import numpy as np
 import pandas as pd
+import wandb
 from sklearn.metrics import confusion_matrix
 
 
@@ -12,7 +13,7 @@ def generate_performance_by_threshold_table(
     ids: Iterable[Union[int, float]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
-    output_format: str = "df",
+    output_format: str = "wandb_table",
 ) -> Union[pd.DataFrame, str]:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
@@ -76,8 +77,10 @@ def generate_performance_by_threshold_table(
         return df.reset_index(drop=True).to_html()
     elif output_format == "df":
         return df.reset_index(drop=True)
+    elif output_format == "wandb_table":
+        return wandb.Table(dataframe=df.reset_index(drop=True))
     else:
-        raise ValueError("Output format is neither html nor df")
+        raise ValueError("Output format does not match anything that is allowed")
 
 
 def performance_by_threshold(
