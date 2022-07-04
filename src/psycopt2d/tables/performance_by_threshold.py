@@ -2,9 +2,8 @@ from typing import Iterable, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
-
 import wandb
+from sklearn.metrics import confusion_matrix
 
 
 def generate_performance_by_threshold_table(

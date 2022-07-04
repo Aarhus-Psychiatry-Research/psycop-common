@@ -1,8 +1,8 @@
 from typing import Iterable, Optional
 
+import wandb
 from sklearn.metrics import roc_auc_score
 
-import wandb
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_threshold_table,
 )

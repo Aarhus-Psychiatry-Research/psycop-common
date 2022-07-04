@@ -16,10 +16,11 @@ model:
   xgboost: # Hyperparameters for xgboost: See more here: https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.XGBClassifier
     n_estimators: 100
 training:
+  data_source: synth # Where to load data from. Takes "SQL" or "synth"
   n_splits: Null # (int, Null): Number of k-folds during CV. If Null, loads pre-defined dataset.
 evaluation:
-  wandb: True
+  wandb: False
   id_col_name: dw_ek_borger
   tables:
     performance_by_threshold:
-      #hreshold_percentiles: [0.01, 1, 3, 5, 10, 25, 50, 75, 90, 95, 97, 99, 99.9]
+      threshold_percentiles: [0.01, 1, 3, 5, 10, 25, 50, 75, 90, 95, 97, 99, 99.9]

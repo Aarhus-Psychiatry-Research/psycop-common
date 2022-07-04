@@ -5,6 +5,8 @@ from typing import Tuple
 
 import hydra
 import numpy as np
+import pandas as pd
+import wandb
 
 # import wandb
 from pandas import Series
@@ -12,7 +14,6 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 
-import wandb
 from psycopt2d.evaluate_model import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
@@ -36,10 +37,7 @@ def create_preprocessing_pipeline(cfg):
     if cfg.preprocessing.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
-    if len(steps) == 0:
-        return Pipeline(("passthrough", "passthrough"))
-    else:
-        return Pipeline(steps)
+    return Pipeline(steps)
 
 
 def create_model(cfg):
@@ -157,6 +155,49 @@ def train_with_crossvalidation(cfg, OUTCOME_COL_NAME, pipe):
     )
 
 
+def train_with_synth_data(cfg, OUTCOME_COL_NAME, pipe):
+    """Loads train and val, concatenates them and uses them for cross-
+    validation.
+
+    Args:
+        cfg (_type_): _description_
+        OUTCOME_COL_NAME (_type_): _description_
+
+    Returns:
+        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
+    """
+
+    # Get top_directory in package
+    base_dir = Path(__file__).parent.parent.parent
+
+    dataset = pd.read_csv(
+        base_dir / "tests" / "test_data" / "synth_prediction_data.csv",
+    )
+
+    # Get 75% of dataset for train
+    train = dataset.sample(frac=0.75, random_state=42)
+    X_train = train[
+        [c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
+    ]
+    y_train = train[OUTCOME_COL_NAME]
+
+    # Get remaining 25% for val
+    val = dataset.drop(train.index)
+    X_val = val[[c for c in val.columns if c.startswith(cfg.data.pred_col_name_prefix)]]
+    y_val = val[[OUTCOME_COL_NAME]]
+
+    pipe.fit(X_train, y_train)
+    y_val_hat = pipe.predict_proba(X_val)[:, 1]
+
+    return (
+        dataset[
+            [c for c in dataset.columns if c != OUTCOME_COL_NAME and c != "oof_y_hat"]
+        ],
+        y_val,
+        y_val_hat,
+    )
+
+
 @hydra.main(
     config_path=CONFIG_PATH,
     config_name="train_config",
@@ -177,9 +218,16 @@ def main(cfg):
 
     preprocessing_pipe = create_preprocessing_pipeline(cfg)
     mdl = create_model(cfg)
-    pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
 
-    if cfg.training.n_splits is not None:
+    if len(preprocessing_pipe.steps) != 0:
+        pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
+    else:
+        pipe = Pipeline([("mdl", mdl)])
+
+    if cfg.training.data_source == "synth":
+        OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
+        X_eval, y, y_hat_prob = train_with_synth_data(cfg, OUTCOME_COL_NAME, pipe)
+    elif cfg.training.n_splits is not None:
         X_eval, y, y_hat_prob = train_with_crossvalidation(cfg, OUTCOME_COL_NAME, pipe)
     else:
         X_eval, y, y_hat_prob = train_with_predefined_splits(
