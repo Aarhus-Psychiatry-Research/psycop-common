@@ -5,7 +5,7 @@ from typing import List, Union
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 
-df = pd.read_csv(Path("tests") / "test_data" / "synth_data.csv")
+df = pd.read_csv(Path("tests") / "test_data" / "synth_eval_data.csv")
 
 
 def auc_by_group_table(

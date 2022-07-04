@@ -9,7 +9,7 @@ from psycopt2d.visualization import plot_prob_over_time
 def test_prob_over_time():
     """Test visualization runs on test set."""
     repo_path = Path(__file__).parent
-    path = repo_path / "test_data" / "synth_data.csv"
+    path = repo_path / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)
     alt.data_transformers.disable_max_rows()
 
