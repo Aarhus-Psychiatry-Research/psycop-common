@@ -44,6 +44,7 @@ def create_model(cfg):
     model_config_dict = model_catalogue.get(cfg.model.model_name)
 
     model_args = model_config_dict["static_hyperparameters"]
+
     training_arguments = getattr(cfg.model, cfg.model.model_name)
     model_args.update(training_arguments)
 
