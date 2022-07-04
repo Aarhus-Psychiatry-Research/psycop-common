@@ -5,7 +5,6 @@ from typing import Tuple
 
 import hydra
 import numpy as np
-import wandb
 
 # import wandb
 from pandas import Series
@@ -13,6 +12,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 
+import wandb
 from psycopt2d.evaluate_model import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
@@ -26,13 +26,20 @@ TRAINING_COL_NAME_PREFIX = "pred_"
 def create_preprocessing_pipeline(cfg):
     """create preprocessing pipeline based on config."""
     steps = []
-    dtconverter = DateTimeConverter(convert_to=cfg.preprocessing.convert_datetimes_to)
-    steps.append(("DateTimeConverter", dtconverter))
+
+    if cfg.preprocessing.convert_datetimes_to:
+        dtconverter = DateTimeConverter(
+            convert_to=cfg.preprocessing.convert_datetimes_to,
+        )
+        steps.append(("DateTimeConverter", dtconverter))
 
     if cfg.preprocessing.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
-    return Pipeline(steps)
+    if len(steps) == 0:
+        return Pipeline(("passthrough", "passthrough"))
+    else:
+        return Pipeline(steps)
 
 
 def create_model(cfg):
@@ -157,7 +164,7 @@ def train_with_crossvalidation(cfg, OUTCOME_COL_NAME, pipe):
 def main(cfg):
     if cfg.evaluation.wandb:
         run = wandb.init(
-            project=cfg.project_name,
+            project=cfg.project.name,
             reinit=True,
             config=flatten_nested_dict(cfg, sep="."),
         )
@@ -170,7 +177,7 @@ def main(cfg):
 
     preprocessing_pipe = create_preprocessing_pipeline(cfg)
     mdl = create_model(cfg)
-    pipe = Pipeline([("mdl", mdl), ("preprocessing", preprocessing_pipe)])
+    pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
 
     if cfg.training.n_splits is not None:
         X_eval, y, y_hat_prob = train_with_crossvalidation(cfg, OUTCOME_COL_NAME, pipe)

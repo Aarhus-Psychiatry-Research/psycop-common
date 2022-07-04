@@ -2,16 +2,17 @@ from typing import Dict, List, Union
 
 import numpy as np
 import pandas as pd
-import wandb
 from matplotlib import pyplot as plt
 from psycopmlutils.model_performance import ModelPerformance
 from sklearn.impute import SimpleImputer
 from wasabi import msg
 from xgboost import XGBClassifier
 
+import wandb
+
 
 def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
-    """Flatten a nested dict.
+    """Flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes {"level1.level2.level3.level4": 5}.
 
@@ -22,7 +23,12 @@ def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
     Returns:
         Dict: The flattened dict.
     """
-    return pd.json_normalize(dict, sep=sep).to_dict(orient="records")[0]
+    return {
+        sep.join(map(str, (k, v))): v
+        for k, v in dict.items()
+        if isinstance(v, Dict)
+        for v in flatten_nested_dict(v, sep).items()
+    }
 
 
 def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):

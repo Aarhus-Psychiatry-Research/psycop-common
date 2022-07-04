@@ -1,8 +1,8 @@
 from typing import Iterable, Optional
 
-import wandb
 from sklearn.metrics import roc_auc_score
 
+import wandb
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_threshold_table,
 )
@@ -12,7 +12,7 @@ def evaluate_model(
     X,
     y: Iterable[int],
     y_hat_prob: Iterable[float],
-    run: Optional[wandb.sdk.wandb_run],
+    run: Optional[wandb.run],
     cfg,
 ):
     if run:
