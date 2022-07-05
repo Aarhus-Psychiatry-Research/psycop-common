@@ -31,10 +31,12 @@ def generate_performance_by_threshold_table(
         pd.DataFrame
     """
 
-    labels = pd.Series(list(labels))
-    pred_probs = pd.Series(list(pred_probs))
-
     # Calculate percentiles from the pred_probs series
+    # Check if percentiles provided as whole numbers, e.g. 99, 98 etc.
+    # If so, convert to float.
+    if max(threshold_percentiles) > 1:
+        threshold_percentiles = [x / 100 for x in threshold_percentiles]
+
     thresholds = pd.Series(pred_probs).quantile(threshold_percentiles)
 
     rows = []
@@ -87,6 +89,7 @@ def performance_by_threshold(
     labels: Iterable[int],
     pred_probs: Iterable[float],
     positive_threshold: float,
+    round_to: int = 4,
 ) -> pd.DataFrame:
     """Generates a row for a performance_by_threshold table.
 
@@ -95,6 +98,7 @@ def performance_by_threshold(
         pred_probs (Iterable[float]): Model prediction probabilities.
         positive_threshold (float): Threshold for a probability to be
             labelled as "positive".
+        round_to (int): Number of decimal places to round metrics
 
     Returns:
         pd.DataFrame
@@ -108,25 +112,30 @@ def performance_by_threshold(
     TP = CM[1][1]
     FP = CM[0][1]
 
-    n = TN + FN + TP + FP
+    n_total = TN + FN + TP + FP
 
-    Prevalence = round((TP + FP) / n, 2)
+    true_prevalence = round((TP + FN) / n_total, round_to)
 
-    PPV = round(TP / (TP + FP), 2)
-    NPV = round(TN / (TN + FN), 2)
+    positive_rate = round((TP + FP) / n_total, round_to)
+    negative_rate = round((TN + FN) / n_total, round_to)
 
-    Sensitivity = round(TP / (TP + FN), 2)
-    Specificity = round(TN / (TN + FP), 2)
+    PPV = round(TP / (TP + FP), round_to)
+    NPV = round(TN / (TN + FN), round_to)
 
-    FPR = round(FP / (TN + FP), 2)
-    FNR = round(FN / (TP + FN), 2)
+    Sensitivity = round(TP / (TP + FN), round_to)
+    Specificity = round(TN / (TN + FP), round_to)
 
-    Accuracy = round((TP + TN) / n, 2)
+    FPR = round(FP / (TN + FP), round_to)
+    FNR = round(FN / (TP + FN), round_to)
+
+    Accuracy = round((TP + TN) / n_total, round_to)
 
     # Must return lists as values, otherwise pd.Dataframe requires setting indeces
     metrics_matrix = pd.DataFrame(
         {
-            "prevalence": [Prevalence],
+            "true_prevalence": [true_prevalence],
+            "positive_rate": [positive_rate],
+            "negative_rate": [negative_rate],
             "PPV": [PPV],
             "NPV": [NPV],
             "sensitivity": [Sensitivity],
@@ -134,7 +143,10 @@ def performance_by_threshold(
             "FPR": [FPR],
             "FNR": [FNR],
             "accuracy": [Accuracy],
+            "true_positives": [TP],
+            "true_negatives": [TN],
             "false_positives": [FP],
+            "false_negatives": [FN],
         },
     )
 
