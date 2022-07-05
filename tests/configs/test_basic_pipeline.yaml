@@ -1,6 +1,7 @@
 project: 
   name: psycop-t2d
   seed: 42
+  wandb_mode: "disabled"
 data:
   n_training_samples: 50000  # Number of training samples to use, defaults to None in which cases it uses all samples.
   drop_patient_if_outcome_before_date: 2011-01-01
@@ -10,7 +11,7 @@ data:
   pred_timestamp_col_name: "timestamp"
   outcome_timestamp_col_name: "timestamp_diabetes_any"
   id_col_name: dw_ek_borger
-  data_source: synthetic # Where to load data from. Takes "sql" or "synthetic"
+  source: synthetic # Where to load data from. Takes "sql" or "synthetic"
 preprocessing:
   convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
   convert_datetimes_to: False # (str): Options include "ordinal" or "False" 

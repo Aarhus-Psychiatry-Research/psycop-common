@@ -83,7 +83,7 @@ def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
         )
     else:
         raise ValueError(
-            "The config data.data_source is {cfg.data.data_source}, valid options include 'sql' or 'synthetic'",
+            "The config data.source is {cfg.data.source}",
         )
     return train, val
 
@@ -102,9 +102,9 @@ def stratified_cross_validation(
 
     # Create folds
     folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
-        X,
-        y,
-        dataset[cfg.data.id_col_name],
+        X=X,
+        y=y,
+        groups=dataset[cfg.data.id_col_name],
     )
 
     # Perform CV and get out of fold predictions
@@ -128,14 +128,12 @@ def stratified_cross_validation(
     config_name="train_config",
 )
 def main(cfg):
-    if cfg.evaluation.wandb:
-        run = wandb.init(
-            project=cfg.project.name,
-            reinit=True,
-            config=flatten_nested_dict(cfg, sep="."),
-        )
-    else:
-        run = None
+    run = wandb.init(
+        project=cfg.project.name,
+        reinit=True,
+        config=flatten_nested_dict(cfg, sep="."),
+        mode=cfg.project.wandb_mode,
+    )
 
     # load dataset
     train, val = load_dataset_from_config(cfg)
@@ -145,6 +143,7 @@ def main(cfg):
     preprocessing_pipe = create_preprocessing_pipeline(cfg)
     if len(preprocessing_pipe.steps) != 0:
         steps.append(("preprocessing", preprocessing_pipe))
+
     mdl = create_model(cfg)
     steps.append(("model", mdl))
     pipe = Pipeline(steps)
@@ -156,6 +155,7 @@ def main(cfg):
     )
     if cfg.data.data_source.lower() == "synthetic":
         OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
+
     TRAIN_COL_NAMES = [
         c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
     ]
@@ -164,12 +164,16 @@ def main(cfg):
         X_train = train[TRAIN_COL_NAMES]
         y_train = train[OUTCOME_COL_NAME]
         X_val = val[TRAIN_COL_NAMES]
+
         pipe.fit(X_train, y_train)
+
         y_train_hat_prob = pipe.predict_proba(X_train)[:, 1]
         y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
+
         print(
             f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
         )  # TODO log to wandb
+
         eval_dataset = val
         eval_dataset["y_hat_prob"] = y_val_hat_prob
         y_hat_prob_col_name = "y_hat_prob"
@@ -184,7 +188,7 @@ def main(cfg):
         )
         y_hat_prob_col_name = "oof_y_hat_prob"
 
-    # Evaluate: Calculate performance metrics and log to wandb_run
+    # Evaluate: Calculate performance metrics and log to wandb
     evaluate_model(
         cfg=cfg,
         eval_dataset=eval_dataset,
