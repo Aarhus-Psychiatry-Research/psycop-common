@@ -191,18 +191,13 @@ def train_with_synth_data(cfg, OUTCOME_COL_NAME, pipe):
     y_val_hat = pipe.predict_proba(X_val)[:, 1]
 
     return (
-        dataset[
-            [c for c in dataset.columns if c != OUTCOME_COL_NAME and c != "oof_y_hat"]
-        ],
+        val[[c for c in dataset.columns if c != OUTCOME_COL_NAME and c != "oof_y_hat"]],
         y_val,
         y_val_hat,
     )
 
 
-@hydra.main(
-    config_path=CONFIG_PATH,
-    config_name="train_config",
-)
+@hydra.main(config_path=CONFIG_PATH, config_name="train_config", version_base="1.1")
 def main(cfg):
     if cfg.evaluation.wandb:
         run = wandb.init(

@@ -1,3 +1,4 @@
+from collections.abc import MutableMapping
 from typing import Dict, List, Union
 
 import numpy as np
@@ -10,7 +11,11 @@ from wasabi import msg
 from xgboost import XGBClassifier
 
 
-def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
+def flatten_nested_dict(
+    d: Dict,
+    parent_key: str = "",
+    sep: str = ".",
+) -> Dict:
     """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes {"level1.level2.level3.level4": 5}.
@@ -22,7 +27,15 @@ def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
     Returns:
         Dict: The flattened dict.
     """
-    return pd.json_normalize(dict, sep=sep).to_dict(orient="records")[0]
+
+    items = []
+    for k, v in d.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, MutableMapping):
+            items.extend(flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
 
 
 def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
