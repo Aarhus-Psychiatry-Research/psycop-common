@@ -2,8 +2,9 @@ from typing import Iterable, Union
 
 import numpy as np
 import pandas as pd
-import wandb
 from sklearn.metrics import confusion_matrix
+
+import wandb
 
 
 def generate_performance_by_threshold_table(
@@ -89,6 +90,7 @@ def performance_by_threshold(
     labels: Iterable[int],
     pred_probs: Iterable[float],
     positive_threshold: float,
+    round_to: int = 4,
 ) -> pd.DataFrame:
     """Generates a row for a performance_by_threshold table.
 
@@ -97,6 +99,7 @@ def performance_by_threshold(
         pred_probs (Iterable[float]): Model prediction probabilities.
         positive_threshold (float): Threshold for a probability to be
             labelled as "positive".
+        round_to (int): Number of decimal places to round metrics
 
     Returns:
         pd.DataFrame
@@ -110,20 +113,20 @@ def performance_by_threshold(
     TP = CM[1][1]
     FP = CM[0][1]
 
-    n = TN + FN + TP + FP
+    n_total = TN + FN + TP + FP
 
-    Prevalence = round((TP + FP) / n, 2)
+    Prevalence = round((TP + FN) / n_total, round_to)
 
-    PPV = round(TP / (TP + FP), 2)
-    NPV = round(TN / (TN + FN), 2)
+    PPV = round(TP / (TP + FP), round_to)
+    NPV = round(TN / (TN + FN), round_to)
 
-    Sensitivity = round(TP / (TP + FN), 2)
-    Specificity = round(TN / (TN + FP), 2)
+    Sensitivity = round(TP / (TP + FN), round_to)
+    Specificity = round(TN / (TN + FP), round_to)
 
-    FPR = round(FP / (TN + FP), 2)
-    FNR = round(FN / (TP + FN), 2)
+    FPR = round(FP / (TN + FP), round_to)
+    FNR = round(FN / (TP + FN), round_to)
 
-    Accuracy = round((TP + TN) / n, 2)
+    Accuracy = round((TP + TN) / n_total, round_to)
 
     # Must return lists as values, otherwise pd.Dataframe requires setting indeces
     metrics_matrix = pd.DataFrame(
