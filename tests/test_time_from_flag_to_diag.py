@@ -12,7 +12,7 @@ from psycopt2d.tables.performance_by_threshold import (
 
 @pytest.fixture(scope="function")
 def synth_data():
-    csv_path = Path("tests") / "test_data" / "synth_data.csv"
+    csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
     return pd.read_csv(csv_path)
 
 

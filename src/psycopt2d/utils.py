@@ -11,7 +11,7 @@ from xgboost import XGBClassifier
 
 
 def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
-    """Flatten an infinitely nested dict.
+    """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes {"level1.level2.level3.level4": 5}.
 
@@ -22,12 +22,7 @@ def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
     Returns:
         Dict: The flattened dict.
     """
-    return {
-        sep.join(map(str, (k, v))): v
-        for k, v in dict.items()
-        if isinstance(v, Dict)
-        for v in flatten_nested_dict(v, sep).items()
-    }
+    return pd.json_normalize(dict, sep=sep).to_dict(orient="records")[0]
 
 
 def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
