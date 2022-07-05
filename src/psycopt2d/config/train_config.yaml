@@ -8,15 +8,15 @@ data:
   min_lookahead_days: 0 # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
   lookahead_days: 1826.25 # (float): Number of days from prediction time to look ahead for the outcome.
   pred_col_name_prefix: "pred_" # (str): prefix of predictor columns
-  pred_timestamp_col_name: "timestamp"
+  pred_timestamp_col_name: timestamp # (str): Column name for prediction times
   outcome_timestamp_col_name: "timestamp_diabetes_any"  # (str): Column name for outcome timestamps
-  id_col_name: dw_ek_borger
+  id_col_name: dw_ek_borger # (str): Citizen colnames
   source: sql # Where to load data from. Takes "sql" or "synthetic"
 preprocessing:
   convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
-  convert_datetimes_to: False # (str): Options include "ordinal" or "False" 
+  convert_datetimes_to: False # (str): Options include ordinal or False 
 model:
-  model_name: "xgboost" # (str): Model, can currently take "xgboost"
+  model_name: xgboost # (str): Model, can currently take xgboost
   xgboost: # Hyperparameters for xgboost: See more here: https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.XGBClassifier
     n_estimators: 100
 training:
