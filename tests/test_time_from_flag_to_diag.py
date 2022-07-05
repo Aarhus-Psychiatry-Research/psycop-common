@@ -42,9 +42,12 @@ def test_generate_performance_by_threshold_table(synth_data):
             "FPR": {0: 0.0099, 1: 0.5, 2: 0.5512},
             "FNR": {0: 0.9881, 1: 0.5003, 2: 0.4497},
             "accuracy": {0: 0.941, 1: 0.5, 2: 0.4539},
-            "false_positives": {0: 940, 1: 47490, 2: 52350},
             "warning_days": {0: 70822, 1: 2618039, 2: 4609550},
             "warning_days_per_false_positive": {0: 88.05, 1: 88.05, 2: 88.05},
+            "true_positives": {0: 60, 1: 2510, 2: 2764},
+            "true_negatives": {0: 94037, 1: 47487, 2: 42627},
+            "false_positives": {0: 940, 1: 47490, 2: 52350},
+            "false_negatives": {0: 4963, 1: 2513, 2: 2259},
         },
     )
 

@@ -143,7 +143,10 @@ def performance_by_threshold(
             "FPR": [FPR],
             "FNR": [FNR],
             "accuracy": [Accuracy],
+            "true_positives": [TP],
+            "true_negatives": [TN],
             "false_positives": [FP],
+            "false_negatives": [FN],
         },
     )
 
