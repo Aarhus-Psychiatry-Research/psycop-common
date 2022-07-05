@@ -1,5 +1,6 @@
-from typing import Iterable, Optional
+from typing import Optional
 
+import pandas as pd
 import wandb
 from sklearn.metrics import roc_auc_score
 
@@ -9,12 +10,14 @@ from psycopt2d.tables.performance_by_threshold import (
 
 
 def evaluate_model(
-    X,
-    y: Iterable[int],
-    y_hat_prob: Iterable[float],
-    run: Optional[wandb.run],
     cfg,
+    eval_dataset: pd.DataFrame,
+    y_col_name: str,
+    y_hat_prob_col_name: str,
+    run: Optional[wandb.run],
 ):
+    y = eval_dataset[y_col_name]
+    y_hat_prob = eval_dataset[y_hat_prob_col_name]
     if run:
         run.log({"roc_auc_unweighted": round(roc_auc_score(y, y_hat_prob), 3)})
         run.log(
@@ -23,9 +26,11 @@ def evaluate_model(
                     labels=y,
                     pred_probs=y_hat_prob,
                     threshold_percentiles=cfg.evaluation.tables.performance_by_threshold.threshold_percentiles,
-                    ids=X[cfg.id_col_name],
-                    pred_timestamps=X[cfg.data.pred_timestamp_col_name],
-                    outcome_timestamps=X[""],  # TODO: Find outcome timestamps colname
+                    ids=eval_dataset[cfg.id_col_name],
+                    pred_timestamps=eval_dataset[cfg.data.pred_timestamp_col_name],
+                    outcome_timestamps=eval_dataset[
+                        ""
+                    ],  # TODO: Find outcome timestamps colname
                 ),
             },
         )

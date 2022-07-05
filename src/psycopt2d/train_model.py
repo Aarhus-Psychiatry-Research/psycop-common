@@ -186,11 +186,11 @@ def main(cfg):
 
     # Evaluate: Calculate performance metrics and log to wandb_run
     evaluate_model(
+        cfg=cfg,
         eval_dataset=eval_dataset,
         y_col_name=OUTCOME_COL_NAME,
         y_hat_prob_col_name=y_hat_prob_col_name,
         run=run,
-        cfg=cfg,
     )
 
     # finish run

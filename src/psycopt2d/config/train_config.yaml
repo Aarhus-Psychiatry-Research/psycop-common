@@ -10,7 +10,7 @@ data:
   pred_timestamp_col_name: "timestamp"
   outcome_timestamp_col_name: "timestamp_diabetes_any"
   id_col_name: dw_ek_borger
-  data_source: synthetic # Where to load data from. Takes "sql" or "synthetic"
+  data_source: sql # Where to load data from. Takes "sql" or "synthetic"
 preprocessing:
   convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
   convert_datetimes_to: False # (str): Options include "ordinal" or "False" 
