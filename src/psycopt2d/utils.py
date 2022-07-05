@@ -11,7 +11,7 @@ from xgboost import XGBClassifier
 
 
 def flatten_nested_dict(dict: Dict, sep: str = ".") -> Dict:
-    """Flatten a nested dict.
+    """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes {"level1.level2.level3.level4": 5}.
 
