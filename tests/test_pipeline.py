@@ -45,4 +45,4 @@ def test_basic_pipeline():
         OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
         X_eval, y, y_hat_prob = train_with_synth_data(cfg, OUTCOME_COL_NAME, pipe)
 
-        assert round(roc_auc_score(y, y_hat_prob), 3) == 0.885
+        assert roc_auc_score(y, y_hat_prob) > 0.85

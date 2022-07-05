@@ -67,10 +67,10 @@ def test_diag_characteristics_by_threshold(synth_data):
         for threshold in range(0, 5, 1)
     }
 
-    assert matrices["threshold_0.1"]["prevalence"][0] == 0.45
-    assert matrices["threshold_0.2"]["prevalence"][0] == 0.35
-    assert matrices["threshold_0.3"]["prevalence"][0] == 0.25
-    assert matrices["threshold_0.4"]["prevalence"][0] == 0.15
+    assert matrices["threshold_0.1"]["true_prevalence"][0] == 0.45
+    assert matrices["threshold_0.2"]["true_prevalence"][0] == 0.35
+    assert matrices["threshold_0.3"]["true_prevalence"][0] == 0.25
+    assert matrices["threshold_0.4"]["true_prevalence"][0] == 0.15
 
 
 def test_time_from_flag_to_diag(synth_data):
