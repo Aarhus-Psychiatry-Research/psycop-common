@@ -1,4 +1,4 @@
-import collections
+from collections.abc import MutableMapping
 from typing import Dict, List, Union
 
 import numpy as np
@@ -31,7 +31,7 @@ def flatten_nested_dict(
     items = []
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
-        if isinstance(v, collections.MutableMapping):
+        if isinstance(v, MutableMapping):
             items.extend(flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items())
         else:
             items.append((new_key, v))

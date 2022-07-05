@@ -197,10 +197,7 @@ def train_with_synth_data(cfg, OUTCOME_COL_NAME, pipe):
     )
 
 
-@hydra.main(
-    config_path=CONFIG_PATH,
-    config_name="train_config",
-)
+@hydra.main(config_path=CONFIG_PATH, config_name="train_config", version_base="1.1")
 def main(cfg):
     if cfg.evaluation.wandb:
         run = wandb.init(

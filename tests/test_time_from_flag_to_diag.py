@@ -6,7 +6,6 @@ import pytest
 from psycopt2d.tables.performance_by_threshold import (
     days_from_positive_to_diagnosis,
     generate_performance_by_threshold_table,
-    performance_by_threshold,
 )
 
 
@@ -53,24 +52,6 @@ def test_generate_performance_by_threshold_table(synth_data):
 
     for col in table.columns:
         table[col].equals(expected_df[col])
-
-
-def test_diag_characteristics_by_threshold(synth_data):
-    df = synth_data
-
-    matrices = {
-        f"threshold_{threshold/10}": performance_by_threshold(
-            labels=df["label"],
-            pred_probs=df["pred_prob"],
-            positive_threshold=threshold / 10,
-        )
-        for threshold in range(0, 5, 1)
-    }
-
-    assert matrices["threshold_0.1"]["true_prevalence"][0] == 0.45
-    assert matrices["threshold_0.2"]["true_prevalence"][0] == 0.35
-    assert matrices["threshold_0.3"]["true_prevalence"][0] == 0.25
-    assert matrices["threshold_0.4"]["true_prevalence"][0] == 0.15
 
 
 def test_time_from_flag_to_diag(synth_data):
