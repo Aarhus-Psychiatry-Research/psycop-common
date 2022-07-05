@@ -7,7 +7,8 @@ data:
   lookahead_days: 1826.25 # (float): Number of days from prediction time to look ahead for the outcome.
   pred_col_name_prefix: "pred_" # (str): prefix of predictor columns
   pred_timestamp_col_name: "timestamp"
-  outcome_timestamp_col_name: "timestamp_diabetes_any"
+  outcome_timestamp_col_name: "timestamp_outcome"
+  id_col_name: "citizen_ids"
 preprocessing:
   convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
   convert_datetimes_to: False # (str): Options include "ordinal" or "False" 
@@ -19,8 +20,7 @@ training:
   data_source: synth # Where to load data from. Takes "SQL" or "synth"
   n_splits: Null # (int, Null): Number of k-folds during CV. If Null, loads pre-defined dataset.
 evaluation:
-  wandb: False
-  id_col_name: dw_ek_borger
+  wandb: True
   tables:
     performance_by_threshold:
       threshold_percentiles: [0.01, 1, 3, 5, 10, 25, 50, 75, 90, 95, 97, 99, 99.9]

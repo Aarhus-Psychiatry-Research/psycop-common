@@ -23,9 +23,9 @@ def evaluate_model(
                     labels=y,
                     pred_probs=y_hat_prob,
                     threshold_percentiles=cfg.evaluation.tables.performance_by_threshold.threshold_percentiles,
-                    ids=X[cfg.id_col_name],
+                    ids=X[cfg.data.id_col_name],
                     pred_timestamps=X[cfg.data.pred_timestamp_col_name],
-                    outcome_timestamps=X[""],  # TODO: Find outcome timestamps colname
+                    outcome_timestamps=X[cfg.data.outcome_timestamp_col_name],
                 ),
             },
         )
