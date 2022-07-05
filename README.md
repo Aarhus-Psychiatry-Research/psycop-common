@@ -5,6 +5,8 @@ psycop-t2d
 
 Prediction of type 2 diabetes among patients with visits to psychiatric hospital departments.
 
+[Kanban board](https://github.com/orgs/Aarhus-Psychiatry-Research/projects/4/views/1)
+
 ## Installing pre-commit hooks
 `pre-commit install`
 
