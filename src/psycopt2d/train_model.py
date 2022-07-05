@@ -57,7 +57,7 @@ def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
     Should only use the cfg.data config with the exception of seed
     """
 
-    if cfg.data.data_source.lower() == "sql":
+    if cfg.data.source.lower() == "sql":
         train = load_dataset(
             split_names="train",
             n_training_samples=cfg.data.n_training_samples,
@@ -70,7 +70,7 @@ def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
         )
-    elif cfg.data.data_source.lower() == "synthetic":
+    elif cfg.data.source.lower() == "synthetic":
         repo_dir = Path(__file__).parent.parent.parent
         dataset = pd.read_csv(
             repo_dir / "tests" / "test_data" / "synth_prediction_data.csv",
@@ -153,7 +153,7 @@ def main(cfg):
     OUTCOME_COL_NAME = (
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     )
-    if cfg.data.data_source.lower() == "synthetic":
+    if cfg.data.source.lower() == "synthetic":
         OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
 
     TRAIN_COL_NAMES = [
