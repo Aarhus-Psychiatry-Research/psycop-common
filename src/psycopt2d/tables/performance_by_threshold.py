@@ -2,9 +2,8 @@ from typing import Iterable, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
-
 import wandb
+from sklearn.metrics import confusion_matrix
 
 
 def generate_performance_by_threshold_table(
@@ -115,7 +114,10 @@ def performance_by_threshold(
 
     n_total = TN + FN + TP + FP
 
-    Prevalence = round((TP + FN) / n_total, round_to)
+    true_prevalence = round((TP + FN) / n_total, round_to)
+
+    positive_rate = round((TP + FP) / n_total, round_to)
+    negative_rate = round((TN + FN) / n_total, round_to)
 
     PPV = round(TP / (TP + FP), round_to)
     NPV = round(TN / (TN + FN), round_to)
@@ -131,7 +133,9 @@ def performance_by_threshold(
     # Must return lists as values, otherwise pd.Dataframe requires setting indeces
     metrics_matrix = pd.DataFrame(
         {
-            "prevalence": [Prevalence],
+            "true_prevalence": [true_prevalence],
+            "positive_rate": [positive_rate],
+            "negative_rate": [negative_rate],
             "PPV": [PPV],
             "NPV": [NPV],
             "sensitivity": [Sensitivity],
