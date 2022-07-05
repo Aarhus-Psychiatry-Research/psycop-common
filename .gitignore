@@ -111,7 +111,7 @@ About
 figures/
 
 # data files
-*.csv
+# *.csv
 
 #VS code
 .vscode
