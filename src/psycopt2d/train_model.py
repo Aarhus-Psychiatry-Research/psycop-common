@@ -1,7 +1,7 @@
 """Training script for training a single model for predicting t2d."""
 
 from pathlib import Path
-from typing import Tuple
+from typing import List, Tuple
 
 import hydra
 import numpy as np
@@ -9,9 +9,8 @@ import pandas as pd
 import wandb
 
 # import wandb
-from pandas import Series
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import StratifiedGroupKFold
+from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
 
 from psycopt2d.evaluate_model import evaluate_model
@@ -52,82 +51,60 @@ def create_model(cfg):
     return mdl
 
 
-def train_with_predefined_splits(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, Series]:
-    """Loads dataset and fits a model on the pre-defined split.
+def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """load dataset based on config file.
 
-    Args:
-        cfg (_type_): _description_
-        OUTCOME_COL_NAME (_type_): _description_
-
-    Returns:
-        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
+    Should only use the cfg.data config with the exception of seed
     """
-    X_train, y_train, val, X_val, y_val = load_predefined_splits(cfg, OUTCOME_COL_NAME)
 
-    pipe.fit(X_train, y_train)
-    y_train_hat = pipe.predict_proba(X_train)[:, 1]
-    y_val_hat = pipe.predict_proba(X_val)[:, 1]
-
-    print(f"Performance on train: {round(roc_auc_score(y_train, y_train_hat), 3)}")
-
-    return val, y_val, y_val_hat
-
-
-def load_predefined_splits(cfg, OUTCOME_COL_NAME):
-    # Train set
-    train = load_dataset(
-        split_names="train",
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-    )
-    X_train = train[
-        [c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
-    ]
-    y_train = train[OUTCOME_COL_NAME]
-
-    # Val set
-    val = load_dataset(
-        split_names="val",
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-    )
-
-    X_val = val[[c for c in val.columns if c.startswith(cfg.data.pred_col_name_prefix)]]
-    y_val = val[[OUTCOME_COL_NAME]]
-    return X_train, y_train, val, X_val, y_val
+    if cfg.data.source.lower() == "sql":
+        train = load_dataset(
+            split_names="train",
+            n_training_samples=cfg.data.n_training_samples,
+            drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+            min_lookahead_days=cfg.data.min_lookahead_days,
+        )
+        val = load_dataset(
+            split_names="val",
+            n_training_samples=cfg.data.n_training_samples,
+            drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+            min_lookahead_days=cfg.data.min_lookahead_days,
+        )
+    elif cfg.data.source.lower() == "synthetic":
+        repo_dir = Path(__file__).parent.parent.parent
+        dataset = pd.read_csv(
+            repo_dir / "tests" / "test_data" / "synth_prediction_data.csv",
+        )
+        # Get 75% of dataset for train
+        train, val = train_test_split(
+            dataset,
+            test_size=0.25,
+            random_state=cfg.project.seed,
+        )
+    else:
+        raise ValueError(
+            "The config data.source is {cfg.data.source}",
+        )
+    return train, val
 
 
-def train_with_crossvalidation(cfg, OUTCOME_COL_NAME, pipe):
-    """Loads train and val, concatenates them and uses them for cross-
-    validation.
-
-    Args:
-        cfg (_type_): _description_
-        OUTCOME_COL_NAME (_type_): _description_
-
-    Returns:
-        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
-    """
-    dataset = load_dataset(
-        split_names=["train", "val"],
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-    )
-
-    # Get predictors
-    X = dataset[
-        [c for c in dataset.columns if c.startswith(cfg.data.pred_col_name_prefix)]
-    ]
-    y = dataset[[OUTCOME_COL_NAME]]
+def stratified_cross_validation(
+    cfg,
+    pipe: Pipeline,
+    dataset: pd.DataFrame,
+    train_col_names: List[str],
+    outcome_col_name: str,
+):
+    """Performs a stratified and grouped cross validation using the
+    pipeline."""
+    X = dataset[train_col_names]
+    y = dataset[outcome_col_name]
 
     # Create folds
     folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
-        X,
-        y,
-        dataset["dw_ek_borger"],
+        X=X,
+        y=y,
+        groups=dataset[cfg.data.id_col_name],
     )
 
     # Perform CV and get out of fold predictions
@@ -138,102 +115,87 @@ def train_with_crossvalidation(cfg, OUTCOME_COL_NAME, pipe):
 
         y_hat = pipe.predict_proba(X_)[:, 1]
         print(f"Within-fold performance: {round(roc_auc_score(y_,y_hat), 3)}")
+        dataset["oof_y_hat_prob"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[
+            :,
+            1,
+        ]
 
-        out_of_fold_y = dataset[OUTCOME_COL_NAME].loc[val_idxs]
-        dataset["oof_y_hat"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[:, 1]
-
-        out_of_fold_y_hat = dataset["oof_y_hat"].loc[val_idxs]
-        print(
-            f"Out-of-fold performance: {round(roc_auc_score(out_of_fold_y, out_of_fold_y_hat), 3)}",
-        )
-
-    return (
-        dataset[
-            [c for c in dataset.columns if c != OUTCOME_COL_NAME and c != "oof_y_hat"]
-        ],
-        dataset[OUTCOME_COL_NAME],
-        dataset["oof_y_hat"],
-    )
+    return dataset
 
 
-def train_with_synth_data(cfg, OUTCOME_COL_NAME, pipe):
-    """Loads train and val, concatenates them and uses them for cross-
-    validation.
-
-    Args:
-        cfg (_type_): _description_
-        OUTCOME_COL_NAME (_type_): _description_
-
-    Returns:
-        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
-    """
-
-    # Get top_directory in package
-    base_dir = Path(__file__).parent.parent.parent
-
-    dataset = pd.read_csv(
-        base_dir / "tests" / "test_data" / "synth_prediction_data.csv",
-    )
-
-    # Get 75% of dataset for train
-    train = dataset.sample(frac=0.75, random_state=42)
-    X_train = train[
-        [c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
-    ]
-    y_train = train[OUTCOME_COL_NAME]
-
-    # Get remaining 25% for val
-    val = dataset.drop(train.index)
-    X_val = val[[c for c in val.columns if c.startswith(cfg.data.pred_col_name_prefix)]]
-    y_val = val[[OUTCOME_COL_NAME]]
-
-    pipe.fit(X_train, y_train)
-    y_val_hat = pipe.predict_proba(X_val)[:, 1]
-
-    return (
-        val[[c for c in dataset.columns if c != OUTCOME_COL_NAME and c != "oof_y_hat"]],
-        y_val,
-        y_val_hat,
-    )
-
-
-@hydra.main(config_path=CONFIG_PATH, config_name="train_config", version_base="1.1")
+@hydra.main(
+    config_path=CONFIG_PATH,
+    config_name="train_config",
+)
 def main(cfg):
-    if cfg.evaluation.wandb:
-        run = wandb.init(
-            project=cfg.project.name,
-            reinit=True,
-            config=flatten_nested_dict(cfg, sep="."),
-        )
-    else:
-        run = None
+    run = wandb.init(
+        project=cfg.project.name,
+        reinit=True,
+        config=flatten_nested_dict(cfg, sep="."),
+        mode=cfg.project.wandb_mode,
+    )
 
+    # load dataset
+    train, val = load_dataset_from_config(cfg)
+
+    # creating pipeline
+    steps = []
+    preprocessing_pipe = create_preprocessing_pipeline(cfg)
+    if len(preprocessing_pipe.steps) != 0:
+        steps.append(("preprocessing", preprocessing_pipe))
+
+    mdl = create_model(cfg)
+    steps.append(("model", mdl))
+    pipe = Pipeline(steps)
+
+    # train
+    ## define columns
     OUTCOME_COL_NAME = (
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     )
-
-    preprocessing_pipe = create_preprocessing_pipeline(cfg)
-    mdl = create_model(cfg)
-
-    if len(preprocessing_pipe.steps) != 0:
-        pipe = Pipeline([("preprocessing", preprocessing_pipe), ("mdl", mdl)])
-    else:
-        pipe = Pipeline([("mdl", mdl)])
-
-    if cfg.training.data_source == "synth":
+    if cfg.data.source.lower() == "synthetic":
         OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
-        X_eval, y, y_hat_prob = train_with_synth_data(cfg, OUTCOME_COL_NAME, pipe)
-    elif cfg.training.n_splits is not None:
-        X_eval, y, y_hat_prob = train_with_crossvalidation(cfg, OUTCOME_COL_NAME, pipe)
-    else:
-        X_eval, y, y_hat_prob = train_with_predefined_splits(
-            cfg,
-            OUTCOME_COL_NAME,
-            pipe,
-        )
 
-    # Calculate performance metrics and log to wandb_run
-    evaluate_model(X=X_eval, y=y, y_hat_prob=y_hat_prob, run=run, cfg=cfg)
+    TRAIN_COL_NAMES = [
+        c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
+    ]
+
+    if cfg.training.n_splits is None:  # train on pre-defined splits
+        X_train = train[TRAIN_COL_NAMES]
+        y_train = train[OUTCOME_COL_NAME]
+        X_val = val[TRAIN_COL_NAMES]
+
+        pipe.fit(X_train, y_train)
+
+        y_train_hat_prob = pipe.predict_proba(X_train)[:, 1]
+        y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
+
+        print(
+            f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
+        )  # TODO log to wandb
+
+        eval_dataset = val
+        eval_dataset["y_hat_prob"] = y_val_hat_prob
+        y_hat_prob_col_name = "y_hat_prob"
+    else:
+        train_val = pd.concat([train, val], ignore_index=True)
+        eval_dataset = stratified_cross_validation(
+            cfg,
+            pipe,
+            dataset=train_val,
+            train_col_names=TRAIN_COL_NAMES,
+            outcome_col_name=OUTCOME_COL_NAME,
+        )
+        y_hat_prob_col_name = "oof_y_hat_prob"
+
+    # Evaluate: Calculate performance metrics and log to wandb
+    evaluate_model(
+        cfg=cfg,
+        eval_dataset=eval_dataset,
+        y_col_name=OUTCOME_COL_NAME,
+        y_hat_prob_col_name=y_hat_prob_col_name,
+        run=run,
+    )
 
     # finish run
     if cfg.evaluation.wandb:

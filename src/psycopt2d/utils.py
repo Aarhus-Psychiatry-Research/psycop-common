@@ -18,11 +18,13 @@ def flatten_nested_dict(
 ) -> Dict:
     """Recursively flatten an infinitely nested dict.
 
-    E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes {"level1.level2.level3.level4": 5}.
+    E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes
+    {"level1.level2.level3.level4": 5}.
 
     Args:
         dict (Dict): Dict to flatten.
-        separator (str, optional): How to separate each level in the dict. Defaults to ".".
+        separator (str, optional): How to separate each level in the dict. Defaults to
+            ".".
 
     Returns:
         Dict: The flattened dict.
@@ -39,7 +41,9 @@ def flatten_nested_dict(
 
 
 def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
-    """Calculate difference in days between two pandas datetime series (end_date - start_date).
+    """Calculate difference in days between two pandas datetime series.
+
+    (end_date - start_date).
 
     Args:
         end_date_series (pd.Series): First datetime64[ns] series
