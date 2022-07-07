@@ -6,13 +6,13 @@ from typing import List, Tuple
 import hydra
 import numpy as np
 import pandas as pd
-import wandb
 
 # import wandb
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
 
+import wandb
 from psycopt2d.evaluate_model import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
@@ -197,9 +197,7 @@ def main(cfg):
         run=run,
     )
 
-    # finish run
-    if cfg.evaluation.wandb:
-        run.finish()
+    run.finish()
 
 
 if __name__ == "__main__":
