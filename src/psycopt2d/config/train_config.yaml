@@ -1,7 +1,7 @@
 project: 
   name: psycop-t2d
   seed: 42
-  wandb_mode: "disabled"
+  wandb_mode: "run" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
 data:
   n_training_samples: null  # (int, null): Number of training samples to use, defaults to null in which cases it uses all samples.
   drop_patient_if_outcome_before_date: 2011-01-01
