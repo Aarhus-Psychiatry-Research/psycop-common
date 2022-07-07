@@ -1,18 +1,13 @@
+# @package _global_
 defaults:
-  - project: default_project
-  - data: all_data
+  - project: test_project
+  - data: test_data
   - preprocessing: default_preprocessing
-  - model: xgboost
   - training: default_training
   - evaluation: default_evaluation
   - _self_
 
-hydra:
-  sweeper:
-    sampler:
-      seed: 123
-    n_trials: 4
-    n_jobs: 4
-    direction: maximize
-    params:
-      ${params}
+model:
+  model_name: xgboost # (str): Model, can currently take xgboost
+  hyperparameters:
+      n_estimators: 100

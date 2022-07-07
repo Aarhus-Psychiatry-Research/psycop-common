@@ -61,6 +61,22 @@ Project Organization
 
 --------
 
+## Run XGBoost with defaults
+
+```
+python src/psycopt2d/train_model.py
+```
+
+if you want to change a hyperparameter simply run:
+
+```
+python src/psycopt2d/train_model.py ++model.hyperparameters.n_estimators=20
+```
+
+## Run sweep
+```
+python src/psycopt2d/train_model.py --multirun --config-name sweep_xgboost.yaml
+```
 
 ## Logging Altair to WandB
 Minimal example

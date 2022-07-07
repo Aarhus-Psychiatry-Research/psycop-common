@@ -3,12 +3,14 @@ defaults:
   - project: test_project
   - data: test_data
   - preprocessing: default_preprocessing
-  - model: xgboost
   - training: default_training
   - evaluation: default_evaluation
   - _self_
   - override /hydra/sweeper: optuna
   - override /hydra/sweeper/sampler: tpe
+
+model:
+  model_name: xgboost # (str): Model, can currently take xgboost
 
 hydra:
   sweeper:
@@ -18,4 +20,4 @@ hydra:
     n_jobs: 4
     direction: maximize
     params:
-      model.xgboost.n_estimators: choice(40, 60)
+      ++model.hyperparameters.n_estimators: choice(20, 30)

@@ -44,8 +44,7 @@ def create_model(cfg):
 
     model_args = model_config_dict["static_hyperparameters"]
 
-    training_arguments = getattr(cfg.model, cfg.model.model_name)
-    model_args.update(training_arguments)
+    model_args.update(cfg.model.hyperparameters)
 
     mdl = model_config_dict["model"](**model_args)
     return mdl
@@ -125,7 +124,7 @@ def stratified_cross_validation(
 
 @hydra.main(
     config_path=CONFIG_PATH,
-    config_name="sweep_config",
+    config_name="default_config",
     version_base="1.2",
 )
 def main(cfg):
