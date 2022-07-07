@@ -44,7 +44,7 @@ def create_model(cfg):
 
     model_args = model_config_dict["static_hyperparameters"]
 
-    model_args.update(cfg.model.hyperparameters)
+    model_args.update(cfg.model.args)
 
     mdl = model_config_dict["model"](**model_args)
     return mdl

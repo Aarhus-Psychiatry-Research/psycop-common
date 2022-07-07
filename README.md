@@ -70,12 +70,12 @@ python src/psycopt2d/train_model.py
 if you want to change a hyperparameter simply run:
 
 ```
-python src/psycopt2d/train_model.py ++model.hyperparameters.n_estimators=20
+python src/psycopt2d/train_model.py ++model.args.n_estimators=20
 ```
 
-## Run sweep
+## Run sweep with xgboost
 ```
-python src/psycopt2d/train_model.py --multirun --config-name sweep_xgboost.yaml
+python src/psycopt2d/train_model.py --multirun --config-name sweep.yaml +model=xgboost
 ```
 
 ## Logging Altair to WandB
