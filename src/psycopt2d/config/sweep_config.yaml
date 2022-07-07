@@ -1,11 +1,14 @@
+# @package _global_
 defaults:
-  - project: default_project
-  - data: all_data
+  - project: test_project
+  - data: test_data
   - preprocessing: default_preprocessing
   - model: xgboost
   - training: default_training
   - evaluation: default_evaluation
   - _self_
+  - override /hydra/sweeper: optuna
+  - override /hydra/sweeper/sampler: tpe
 
 hydra:
   sweeper:
@@ -15,4 +18,4 @@ hydra:
     n_jobs: 4
     direction: maximize
     params:
-      ${params}
+      model.xgboost.n_estimators: choice(40, 60)
