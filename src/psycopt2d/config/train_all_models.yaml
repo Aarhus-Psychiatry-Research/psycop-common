@@ -1,8 +1,0 @@
-defaults:
-  - project: default_project
-  - data: all_data
-  - preprocessing: default_preprocessing
-  - model: # Use parallel processing with optuna config here
-  - training: default_training
-  - evaluation: default_evaluation
-  - _self_

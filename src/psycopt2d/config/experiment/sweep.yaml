@@ -1,0 +1,25 @@
+# @package _global_
+defaults:
+  - project: test_project
+  - data: test_data
+  - _self_
+  - override /hydra/sweeper: optuna
+  - override /hydra/sweeper/sampler: tpe
+
+hydra:
+  sweeper:
+    sampler:
+      seed: 123
+    n_trials: 4
+    n_jobs: 4
+    direction: maximize
+    params:
+      var.x: choice(40, 60)
+
+var:
+  x: 1
+
+model:
+  model_name: xgboost
+  xgboost:
+    n_estimators: 100

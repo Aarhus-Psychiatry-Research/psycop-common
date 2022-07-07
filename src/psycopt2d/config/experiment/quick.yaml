@@ -1,3 +1,4 @@
+# @package _global_
 defaults:
   - project: test_project
   - data: test_data
