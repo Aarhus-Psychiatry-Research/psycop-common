@@ -5,19 +5,20 @@ defaults:
   - preprocessing: default_preprocessing
   - training: default_training
   - evaluation: default_evaluation
+  - sweeper: optuna
   - _self_
-  - override /hydra/sweeper: optuna
-  - override /hydra/sweeper/sampler: tpe
 
 model:
   model_name: xgboost # (str): Model, can currently take xgboost
 
 hydra:
   sweeper:
-    sampler:
-      seed: 123
-    n_trials: 4
-    n_jobs: 4
-    direction: maximize
     params:
       ++model.hyperparameters.n_estimators: choice(20, 30)
+      ++model.hyperparameters.lambda: tag(log, interval(1e-8, 1.0))
+      ++model.hyperparameters.alpha: tag(log, interval(1e-8, 1.0))
+      ++model.hyperparameters.booster: choice("gbtree", "gblinear")
+      ++model.hyperparameters.max_depth: int(interval(1, 9))
+      ++model.hyperparameters.learning_rate: tag(log, interval(1e-8, 1.0))
+      ++model.hyperparameters.gamma: tag(log, interval(1e-8, 1.0))
+      ++model.hyperparameters.grow_policy: choice("depthwise", "lossguide")
