@@ -1,0 +1,2 @@
+convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
+convert_datetimes_to: False # (str): Options include ordinal or False 

@@ -1,0 +1,3 @@
+model_name: xgboost # (str): Model, can currently take xgboost
+xgboost: # Hyperparameters for xgboost: See more here: https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.XGBClassifier
+  n_estimators: 100
