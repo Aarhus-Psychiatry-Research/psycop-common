@@ -197,6 +197,7 @@ def days_from_positive_to_diagnosis(
     df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
         "min",
     )
+    df = df[df["timestamp_first_pos_pred"].notnull()]
 
     df = df.drop_duplicates(
         subset=["id", "timestamp_first_pos_pred", "outcome_timestamps"],
