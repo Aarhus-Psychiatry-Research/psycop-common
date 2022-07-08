@@ -18,3 +18,13 @@ def test_main_logistic_regression():
             overrides=["+model=logistic-regression"],
         )
         main(cfg)
+
+
+def test_main_ebm():
+    """test main using an explainable boosting machine."""
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name="test_config.yaml",
+            overrides=["+model=ebm"],
+        )
+        main(cfg)
