@@ -141,6 +141,7 @@ def stratified_cross_validation(
 @hydra.main(
     config_path=CONFIG_PATH,
     config_name="default_config",
+    version_base="1.2",
 )
 def main(cfg):
     run = wandb.init(
@@ -213,6 +214,11 @@ def main(cfg):
     )
 
     run.finish()
+
+    return roc_auc_score(
+        eval_dataset[OUTCOME_COL_NAME],
+        eval_dataset[y_hat_prob_col_name],
+    )
 
 
 if __name__ == "__main__":
