@@ -1,9 +1,0 @@
-# @package _global_
-defaults:
-  - project: test_project
-  - data: test_data
-  - preprocessing: default_preprocessing
-  - model: xgboost
-  - training: default_training
-  - evaluation: default_evaluation
-  - _self_
