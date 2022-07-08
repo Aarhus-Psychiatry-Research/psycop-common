@@ -34,7 +34,7 @@ def generate_synth_data(
             values, e.g. specified as'1*col_name+1*col_name2'
         na_prob (float, optional): Probability of changing a value in a predictor column
             to NA.
-        na_ignore_cols (List[str], optional): columns to ignore when creating NAs
+        na_ignore_cols (List[str], optional): Columns to ignore when creating NAs
         prob_outcome (float): Probability of a given row receiving "1" for the outcome.
         noise_mean_sd (Tuple[float, float], optional): mean and sd of the noise.
             Increase SD to obtain more uncertain models.
