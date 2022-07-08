@@ -44,7 +44,7 @@ def log_altair_to_vega_and_png(chart: Chart, chart_name: str, run: wandb.run):
     Returns:
         None
     """
-    base_path = Path(__file__).parent.parent.parent.parent / "outputs" / "figures"
+    base_path = Path(__file__).parent.parent.parent.parent / "figures"
 
     # plot_png_path = altair_chart_to_file(
     #     chart=chart,
