@@ -61,19 +61,20 @@ Project Organization
 
 --------
 
-## Run XGBoost with defaults
+## Train models:
+To run XGBoost with defaults:
 
 ```
-python src/psycopt2d/train_model.py
+python src/psycopt2d/train_model.py +model=xgboost
 ```
 
 if you want to change a hyperparameter simply run:
 
 ```
-python src/psycopt2d/train_model.py ++model.args.n_estimators=20
+python src/psycopt2d/train_model.py  +model=xgboost ++model.args.n_estimators=20
 ```
 
-## Run sweep with xgboost
+to run a sweep with xgboost you will have to add the `--multirun` flag and specify the sweep config.
 ```
 python src/psycopt2d/train_model.py --multirun --config-name sweep.yaml +model=xgboost
 ```
