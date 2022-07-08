@@ -46,6 +46,9 @@ def log_altair_to_vega_and_png(chart: Chart, chart_name: str, run: wandb.run):
     """
     base_path = Path(__file__).parent.parent.parent.parent / "figures"
 
+    # Create folder if it doesn't exist
+    Path.mkdir(base_path, parents=True, exist_ok=True)
+
     # plot_png_path = altair_chart_to_file(
     #     chart=chart,
     #     filepath=base_path / f"{chart_name}.png",
