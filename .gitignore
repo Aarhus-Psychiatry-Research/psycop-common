@@ -116,4 +116,7 @@ outputs
 
 # Poetry
 poetry.lock
+
+# Run files
 multirun
+node_modules
