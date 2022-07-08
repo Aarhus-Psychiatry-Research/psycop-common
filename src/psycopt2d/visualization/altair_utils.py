@@ -33,7 +33,7 @@ def altair_chart_to_file(
     return str(filepath)
 
 
-def log_altair_to_vega_and_png(chart: Chart, chart_name: str, run: wandb.run):
+def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb.run):
     """Helper to log Altair charts.
 
     Args:

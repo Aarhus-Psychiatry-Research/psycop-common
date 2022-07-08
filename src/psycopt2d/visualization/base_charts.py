@@ -3,8 +3,6 @@ from typing import Iterable
 import altair as alt
 import pandas as pd
 
-alt.data_transformers.disable_max_rows()
-
 
 def plot_bar_chart(
     x_values: Iterable,
