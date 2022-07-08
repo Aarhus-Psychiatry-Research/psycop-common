@@ -6,15 +6,17 @@ from typing import List, Tuple
 import hydra
 import numpy as np
 import pandas as pd
+from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 import wandb
 from psycopt2d.evaluate_model import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
-from psycopt2d.models import models_dict
+from psycopt2d.models import MODELS
 from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
@@ -37,15 +39,28 @@ def create_preprocessing_pipeline(cfg):
     if cfg.preprocessing.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
+    if cfg.model.require_imputation:
+        steps.append(
+            ("Imputation", SimpleImputer(strategy=cfg.preprocessing.imputation_method)),
+        )
+    if cfg.preprocessing.transform in {
+        "z-score-normalization",
+        "z-score-normalisation",
+    }:
+        steps.append(
+            ("z-score-normalization", StandardScaler()),
+        )
+
     return Pipeline(steps)
 
 
 def create_model(cfg):
-    model_dict = models_dict.get(cfg.model.model_name)
+    model_dict = MODELS.get(cfg.model.model_name)
 
     model_args = model_dict["static_hyperparameters"]
 
-    model_args.update(cfg.model.args)
+    training_arguments = getattr(cfg.model, "args")
+    model_args.update(training_arguments)
 
     mdl = model_dict["model"](**model_args)
     return mdl
