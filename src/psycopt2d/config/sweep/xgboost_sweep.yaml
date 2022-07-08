@@ -1,9 +1,0 @@
-hydra:
-  sweeper:
-    sampler:
-      seed: 123
-    n_trials: 4
-    n_jobs: 4
-    direction: maximize
-    params:
-      model.xgboost.n_estimators: choice(40, 60)
