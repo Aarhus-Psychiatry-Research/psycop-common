@@ -38,6 +38,7 @@ def test_get_sens_by_time_to_outcome_df(df):
         y_hat_probs=df["pred"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
+        threshold=0.5,
     )
 
 
@@ -47,6 +48,7 @@ def test_plot_bar_chart(df):
         y_hat_probs=df["pred"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
+        threshold=0.5,
     )
     plot_bar_chart(
         x_values=plot_df["days_to_outcome_binned"],
