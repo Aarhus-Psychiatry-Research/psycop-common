@@ -1,5 +1,5 @@
 """Training script for training a single model for predicting t2d."""
-
+import os
 from pathlib import Path
 from typing import List, Tuple
 
@@ -15,11 +15,14 @@ import wandb
 from psycopt2d.evaluate_model import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
-from psycopt2d.models import model_catalogue
+from psycopt2d.models import MODELS
 from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
+
+# Handle wandb not playing nice with joblib
+os.environ["WANDB_START_METHOD"] = "thread"
 
 
 def create_preprocessing_pipeline(cfg):
@@ -44,14 +47,14 @@ def create_preprocessing_pipeline(cfg):
 
 
 def create_model(cfg):
-    model_config_dict = model_catalogue.get(cfg.model.model_name)
+    model_dict = MODELS.get(cfg.model.model_name)
 
-    model_args = model_config_dict["static_hyperparameters"]
+    model_args = model_dict["static_hyperparameters"]
 
     training_arguments = getattr(cfg.model, "args")
     model_args.update(training_arguments)
 
-    mdl = model_config_dict["model"](**model_args)
+    mdl = model_dict["model"](**model_args)
     return mdl
 
 
