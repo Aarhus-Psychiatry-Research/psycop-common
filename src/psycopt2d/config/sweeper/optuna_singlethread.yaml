@@ -4,10 +4,8 @@ defaults:
   - override /hydra/sweeper/sampler: tpe
 
 hydra:
-  launcher: joblib
   sweeper:
     sampler:
       seed: 123
     n_trials: 4
-    n_jobs: 4
     direction: maximize
