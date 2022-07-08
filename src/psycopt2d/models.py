@@ -1,6 +1,7 @@
 import numpy as np
 from interpret.glassbox import ExplainableBoostingClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 
 
@@ -13,5 +14,11 @@ def InitLogisticRegression(**kwargs):
 logistic = {"model": InitLogisticRegression, "static_hyperparameters": {}}
 xgboost = {"model": XGBClassifier, "static_hyperparameters": {"missing": np.nan}}
 ebm = {"model": ExplainableBoostingClassifier, "static_hyperparameters": {}}
+nb = {"model": GaussianNB, "static_hyperparameters": {}}
 
-MODELS = {"logistic-regression": logistic, "xgboost": xgboost, "ebm": ebm}
+MODELS = {
+    "logistic-regression": logistic,
+    "xgboost": xgboost,
+    "ebm": ebm,
+    "naive-bayes": nb,
+}
