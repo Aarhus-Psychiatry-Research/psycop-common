@@ -4,6 +4,7 @@ defaults:
   - override /hydra/sweeper/sampler: tpe
 
 hydra:
+  launcher: joblib
   sweeper:
     sampler:
       seed: 123
