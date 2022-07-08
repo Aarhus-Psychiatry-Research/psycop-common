@@ -1,52 +1,102 @@
-from typing import Dict
+from pathlib import Path
+from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
 from scipy import stats
 
 
-def generate_synth_data(dict: Dict, len: int) -> pd.DataFrame:
+def generate_synth_data(
+    predictors: Dict,
+    outcome_column_name: str,
+    n_samples: int,
+    synthetic_model: str,
+    intercept=0,
+    na_prob: float = 0.01,
+    prob_outcome: float = 0.08,
+    noise_mean_sd: Tuple[float, float] = (0, 1),
+) -> pd.DataFrame:
     """Takes a dict and generates synth data from it.
 
     Args:
-        dict (Dict): A dict representing each column of shape: {"col_name": {"column_type": str, "output_type": ["float"|"int"], "min": int, "max": int}}
-        len (int): Number of rows to generate.
+        predictors (Dict): A dict representing each column of shape: {"col_name":
+            {"column_type": str, "output_type": ["float"|"int"], "min": int, "max":
+            int}}
+        n_samples (int): Number of samples (rows) to generate.
+        synthetic_model (str): the syntehtic model e.g. specified as
+            '1*col_name+1*col_name2'
+        na_prob (float, optional): probability of changing a predictor column to NA
+        prob_outcome (float): probability of outcome
+        noise_mean_sd (Tuple[float, float], optional): mean and sd of the noise.
+            Increase SD to optain more uncertain models.
+
+
 
     Returns:
-        pd.DataFrame
+        pd.DataFrame: The synthetic dataset
     """
 
     # Initialise dataframe
-    df = pd.DataFrame(columns=list(dict.keys()))
+    df = pd.DataFrame(columns=list(predictors.keys()))
 
     # Generate data
-    for col_name, col_props in dict.items():
+    df = generate_data_columns(predictors, n_samples, df)
+
+    # Linear model with columns
+    y_ = intercept
+    for var in synthetic_model.split("+"):
+        effect, col = var.split("*")
+        y_ = float(effect) * df[col] + y_
+
+    noise = np.random.normal(
+        loc=noise_mean_sd[0],
+        scale=noise_mean_sd[1],
+        size=n_samples,
+    )
+    # Z-score normalise and add noise
+    y_ = stats.zscore(y_) + noise
+
+    # randomly replace predictors with NAs
+    if na_prob:
+        mask = np.random.choice([True, False], size=df.shape, p=[na_prob, 1 - na_prob])
+        df = df.mask(mask)
+
+    # Sigmoid it to get probabilities with mean = 0.5
+    df[outcome_column_name] = 1 / (1 + np.exp(y_))
+
+    df[outcome_column_name] = np.where(df[outcome_column_name] < prob_outcome, 1, 0)
+
+    return df
+
+
+def generate_data_columns(predictors, n_samples, df):
+    for col_name, col_props in predictors.items():
         column_type = col_props["column_type"]
 
         if column_type == "uniform_float":
             df[col_name] = np.random.uniform(
                 low=col_props["min"],
                 high=col_props["max"],
-                size=len,
+                size=n_samples,
             )
         elif column_type == "uniform_int":
             df[col_name] = np.random.randint(
                 low=col_props["min"],
                 high=col_props["max"],
-                size=len,
+                size=n_samples,
             )
         elif column_type == "normal":
             df[col_name] = np.random.normal(
                 loc=col_props["mean"],
                 scale=col_props["sd"],
-                size=len,
+                size=n_samples,
             )
         elif column_type == "datetime_uniform":
             df[col_name] = pd.to_datetime(
                 np.random.uniform(
                     low=col_props["min"],
                     high=col_props["max"],
-                    size=len,
+                    size=n_samples,
                 ),
                 unit="D",
             ).round("min")
@@ -76,24 +126,15 @@ if __name__ == "__main__":
         "pred_hdl": {"column_type": "normal", "mean": 1, "sd": 0.5, "min": 0},
     }
 
-    OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
+    df = generate_synth_data(
+        predictors=column_specifications,
+        outcome_column_name="outc_dichotomous_t2d_within_30_days_max_fallback_0",
+        n_samples=10_000,
+        synthetic_model="1*pred_hba1c+1*pred_hdl",
+        prob_outcome=0.08,
+    )
 
-    n_samples = 10_000
-
-    df = generate_synth_data(dict=column_specifications, len=n_samples)
-    noise = np.random.normal(loc=0, scale=1, size=n_samples)
-
-    # Linear model with columns
-    x = df["pred_hba1c"] + df["pred_hdl"]
-
-    # Z-score normalise and add noise
-    x = stats.zscore(x) + noise
-
-    # Sigmoid it to get probabilities with mean = 0.5
-    df[OUTCOME_COL_NAME] = 1 / (1 + np.exp(x))
-
-    threshold = 0.08
-    df[OUTCOME_COL_NAME] = np.where(df[OUTCOME_COL_NAME] < threshold, 1, 0)
     df.describe()
 
-    df.to_csv("synth_prediction_data.csv")
+    save_path = Path(__file__).parent.parent.parent.parent
+    df.to_csv(save_path / "tests" / "test_data" / "synth_prediction_data.csv")
