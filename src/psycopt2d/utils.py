@@ -39,18 +39,6 @@ def flatten_nested_dict(
     return dict(items)
 
 
-def difference_in_days(end_date_series: pd.Series, start_date_series: pd.Series):
-    """Calculate difference in days between two pandas datetime series.
-
-    (end_date - start_date).
-
-    Args:
-        end_date_series (pd.Series): First datetime64[ns] series
-        start_date_series (pd.Series): Second datetime64[ns] series
-    """
-    return (end_date_series - start_date_series) / np.timedelta64(1, "D")
-
-
 def drop_records_if_datediff_days_smaller_than(
     df: pd.DataFrame,
     t2_col_name: str,
@@ -70,12 +58,16 @@ def drop_records_if_datediff_days_smaller_than(
     if inplace:
         df.drop(
             df[
-                difference_in_days(df[t2_col_name], df[t1_col_name]) < threshold_days
+                (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")
+                < threshold_days
             ].index,
             inplace=True,
         )
     else:
-        return df[difference_in_days(df[t2_col_name], df[t1_col_name]) < threshold_days]
+        return df[
+            (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")
+            < threshold_days
+        ]
 
 
 def impute(

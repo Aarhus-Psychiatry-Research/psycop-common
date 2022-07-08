@@ -75,6 +75,11 @@ def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
         dataset = pd.read_csv(
             repo_dir / "tests" / "test_data" / "synth_prediction_data.csv",
         )
+
+        # Convert all timestamp cols to datetime
+        for col in [col for col in dataset.columns if "timestamp" in col]:
+            dataset[col] = pd.to_datetime(dataset[col])
+
         # Get 75% of dataset for train
         train, val = train_test_split(
             dataset,

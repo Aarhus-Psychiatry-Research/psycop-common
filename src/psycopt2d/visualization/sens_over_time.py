@@ -1,8 +1,9 @@
-from typing import Iterable
+from typing import Iterable, List
 
+import numpy as np
 import pandas as pd
 
-from psycopt2d.utils import difference_in_days, round_floats_to_edge
+from psycopt2d.utils import round_floats_to_edge
 from psycopt2d.visualization.base_charts import plot_bar_chart
 
 
@@ -39,23 +40,15 @@ def create_sensitivity_by_time_to_outcome_df(
         },
     )
 
-    # Convert all timestamp columns to datetime64[ns]
-    df["outcome_timestamp"] = df["outcome_timestamp"].astype("datetime64[ns]")
-    df["prediction_timestamp"] = df["prediction_timestamp"].astype("datetime64[ns]")
-
     df = df[df["y"] == 1]
 
     # Calculate difference in days between columns
-    df["days_to_outcome"] = difference_in_days(
-        df["outcome_timestamp"],
-        df["prediction_timestamp"],
-    )
+    df["days_to_outcome"] = (
+        df["outcome_timestamp"] - df["prediction_timestamp"]
+    ) / np.timedelta64(1, "D")
 
-    true = df["y"]
-    pred = df["y_hat"]
-
-    df["true_positive"] = (true == 1) & (pred == 1)
-    df["false_negative"] = (true == 1) & (pred == 0)
+    df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
+    df["false_negative"] = (df["y"] == 1) & (df["y_hat"] == 0)
 
     df["days_to_outcome_binned"] = round_floats_to_edge(
         df["days_to_outcome"],
@@ -81,7 +74,7 @@ def plot_sensitivity_by_time_to_outcome(
     threshold: float,
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
+    bins: List[int] = [0, 1, 7, 14, 28, 182, 365, 730, 1825],
 ):
     """Plot sensitivity by time to outcome.
 

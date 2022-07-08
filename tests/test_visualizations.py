@@ -16,6 +16,11 @@ def df():
     repo_path = Path(__file__).parent
     path = repo_path / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)
+
+    # Convert all timestamp cols to datetime[64]ns
+    for col in [col for col in df.columns if "timestamp" in col]:
+        df[col] = pd.to_datetime(df[col])
+
     return df
 
 
