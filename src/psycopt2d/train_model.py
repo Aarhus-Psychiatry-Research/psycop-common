@@ -10,6 +10,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 import wandb
 from psycopt2d.evaluate_model import evaluate_model
@@ -41,6 +42,13 @@ def create_preprocessing_pipeline(cfg):
     if cfg.model.require_imputation:
         steps.append(
             ("Imputation", SimpleImputer(strategy=cfg.preprocessing.imputation_method)),
+        )
+    if cfg.preprocessing.transform in {
+        "z-score-normalization",
+        "z-score-normalisation",
+    }:
+        steps.append(
+            ("z-score-normalization", StandardScaler()),
         )
 
     return Pipeline(steps)
