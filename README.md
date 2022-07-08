@@ -60,6 +60,12 @@ Project Organization
 
 
 --------
+## Testing configs
+To run XGBoost with defaults but a synth dataset:
+
+```
+python src/psycopt2d/train_model.py --config-name test_config.yaml +model=xgboost
+```
 
 ## Train models:
 To run XGBoost with defaults:
@@ -76,7 +82,7 @@ python src/psycopt2d/train_model.py  +model=xgboost ++model.args.n_estimators=20
 
 to run a sweep with xgboost you will have to add the `--multirun` flag and specify the sweep config.
 ```
-python src/psycopt2d/train_model.py --multirun --config-name sweep.yaml +model=xgboost
+python src/psycopt2d/train_model.py --multirun +model=xgboost
 ```
 
 ## Logging Altair to WandB
