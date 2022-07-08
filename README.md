@@ -1,5 +1,5 @@
 Current priorities are on the 
-[🎬 Board](https://github.com/orgs/Aarhus-Psychiatry-Research/projects/4/views/1)
+[Board 🎬](https://github.com/orgs/Aarhus-Psychiatry-Research/projects/4/views/1).
 
 psycop-t2d
 ==============================
