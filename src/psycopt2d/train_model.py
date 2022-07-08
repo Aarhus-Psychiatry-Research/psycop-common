@@ -6,8 +6,7 @@ from typing import List, Tuple
 import hydra
 import numpy as np
 import pandas as pd
-
-# import wandb
+from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
@@ -36,6 +35,11 @@ def create_preprocessing_pipeline(cfg):
     if cfg.preprocessing.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
+    if cfg.model.require_imputation:
+        steps.append(
+            ("Imputation", SimpleImputer(strategy=cfg.preprocessing.imputation_method)),
+        )
+
     return Pipeline(steps)
 
 
@@ -44,7 +48,8 @@ def create_model(cfg):
 
     model_args = model_config_dict["static_hyperparameters"]
 
-    model_args.update(cfg.model.args)
+    training_arguments = getattr(cfg.model, "args")
+    model_args.update(training_arguments)
 
     mdl = model_config_dict["model"](**model_args)
     return mdl
@@ -125,7 +130,6 @@ def stratified_cross_validation(
 @hydra.main(
     config_path=CONFIG_PATH,
     config_name="default_config",
-    version_base="1.2",
 )
 def main(cfg):
     run = wandb.init(
@@ -198,11 +202,6 @@ def main(cfg):
     )
 
     run.finish()
-
-    return roc_auc_score(
-        eval_dataset[OUTCOME_COL_NAME],
-        eval_dataset[y_hat_prob_col_name],
-    )
 
 
 if __name__ == "__main__":

@@ -1,2 +1,3 @@
 convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
 convert_datetimes_to: False # (str): Options include ordinal or False 
+imputation_method: "most_frequent" # (str): Options include 2most_frequent"
