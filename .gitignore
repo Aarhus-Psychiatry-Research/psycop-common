@@ -116,3 +116,4 @@ outputs
 
 # Poetry
 poetry.lock
+multirun/*
