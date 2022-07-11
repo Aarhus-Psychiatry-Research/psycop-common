@@ -86,8 +86,10 @@ to run a sweep with xgboost you will have to add the `--multirun` flag and speci
 python src/psycopt2d/train_model.py --multirun +model=xgboost
 ```
 
-## Logging Altair to WandB
-Minimal example
+## Logging Altair to WandB and saving as png
+We use Selenium and chromedriver to save Altair charts as png. This works out-of-the-box on Overtaci, but requires you to download (chromedriver)[https://chromedriver.chromium.org] and place it on PATH (e.g. `/usr/local/bin` on OSX) to use locally. Optionally, (see this guide)[https://www.swtestacademy.com/install-chrome-driver-on-mac/]. 
+
+Minimal example of logging Altair chart to WandB
 ```py
 run = wandb.init()
 
