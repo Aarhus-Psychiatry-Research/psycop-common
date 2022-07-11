@@ -46,7 +46,7 @@ def plot_prob_over_time(
     Examples:
         >>> from pathlib import Path
         >>> repo_path = Path(__file__).parent.parent.parent.parent
-        >>> path = repo_path / "tests" / "test_data" / "synth_data.csv"
+        >>> path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
         >>> df = pd.read_csv(path)
         >>> alt.data_transformers.disable_max_rows()
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     from pathlib import Path
 
     repo_path = Path(__file__).parent.parent.parent.parent
-    path = repo_path / "tests" / "test_data" / "synth_data.csv"
+    path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)
     df.head()
     alt.data_transformers.disable_max_rows()

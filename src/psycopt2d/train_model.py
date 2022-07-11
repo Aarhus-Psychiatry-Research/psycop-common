@@ -1,219 +1,133 @@
-"""Training script for training a single model for predicting t2d.
-
-TODO:
-add split for using pre-defined train-val split
-add dynamic hyperparams for hydra optimisation
-
-Features:
-# fix impute
-# move filter to compute
-"""
-
+"""Training script for training a single model for predicting t2d."""
+import os
 from pathlib import Path
-from typing import Iterable, Optional, Tuple
+from typing import List, Tuple
 
 import hydra
 import numpy as np
-
-# import wandb
-from pandas import Series
+import pandas as pd
+from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import StratifiedGroupKFold
+from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
-from wandb.sdk import wandb_run
+from sklearn.preprocessing import StandardScaler
 
 import wandb
+from psycopt2d.evaluate_model import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
-from psycopt2d.models import model_catalogue
+from psycopt2d.models import MODELS
 from psycopt2d.utils import flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
 
+# Handle wandb not playing nice with joblib
+os.environ["WANDB_START_METHOD"] = "thread"
 
-def create_preprocessing_pipelines(cfg):
+
+def create_preprocessing_pipeline(cfg):
     """create preprocessing pipeline based on config."""
     steps = []
-    dtconverter = DateTimeConverter(convert_to=cfg.preprocessing.convert_datetimes_to)
-    steps.append(("DateTimeConverter", dtconverter))
+
+    if cfg.preprocessing.convert_datetimes_to:
+        dtconverter = DateTimeConverter(
+            convert_to=cfg.preprocessing.convert_datetimes_to,
+        )
+        steps.append(("DateTimeConverter", dtconverter))
 
     if cfg.preprocessing.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
-    # steps.append(("ConvertToNumpyArray", ConvertToNumpyArray()))
+    if cfg.model.require_imputation:
+        steps.append(
+            ("Imputation", SimpleImputer(strategy=cfg.preprocessing.imputation_method)),
+        )
+    if cfg.preprocessing.transform in {
+        "z-score-normalization",
+        "z-score-normalisation",
+    }:
+        steps.append(
+            ("z-score-normalization", StandardScaler()),
+        )
+
     return Pipeline(steps)
 
 
 def create_model(cfg):
-    model_config_dict = model_catalogue.get(cfg.model.model_name)
+    model_dict = MODELS.get(cfg.model.model_name)
 
-    model_args = model_config_dict["static_hyperparameters"]
-    training_arguments = getattr(cfg.model, cfg.model.model_name)
+    model_args = model_dict["static_hyperparameters"]
+
+    training_arguments = getattr(cfg.model, "args")
     model_args.update(training_arguments)
 
-    mdl = model_config_dict["model"](**model_args)
+    mdl = model_dict["model"](**model_args)
     return mdl
 
 
-def evaluate(
-    X,
-    y: Iterable[int],
-    y_hat_prob: Iterable[float],
-    wandb_run: Optional[wandb_run.Run],
-):
-    if wandb_run:
-        wandb_run.log({"roc_auc_unweighted": round(roc_auc_score(y, y_hat_prob), 3)})
-    else:
-        print(f"AUC is: {round(roc_auc_score(y, y_hat_prob), 3)}")
-    # wandb.sklearn.plot_classifier(
-    #     model,
-    #     X_test=X,
-    #     y_train=y_train,
-    #     y_test=y_val,
-    #     y_pred=y_preds,
-    #     y_probas=y_probas,
-    #     labels=[0, 1],
-    #     model_name=cfg.training.model_name,
-    #     feature_names=X_train.columns,
-    # )
-    # eval_df = X_val_eval
-    # eval_df[OUTCOME_COL_NAME] = y_val_eval
-    # eval_df[PREDICTED_OUTCOME_COL_NAME] = y_preds
-    # eval_df[PREDICTED_PROBABILITY_COL_NAME] = y_probas
+def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """load dataset based on config file.
 
-    # if cfg.evaluation.wandb:
-    #     log_tpr_by_time_to_event(
-    #         eval_df_combined=eval_df,
-    #         outcome_col_name=OUTCOME_COL_NAME,
-    #         predicted_outcome_col_name=PREDICTED_OUTCOME_COL_NAME,
-    #         outcome_timestamp_col_name=OUTCOME_TIMESTAMP_COL_NAME,
-    #         prediction_timestamp_col_name="timestamp",
-    #         bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
-    #     )
-    #     performance_metrics = calculate_performance_metrics(
-    #         eval_df,
-    #         outcome_col_name=OUTCOME_COL_NAME,
-    #         prediction_probabilities_col_name=PREDICTED_PROBABILITY_COL_NAME,
-    #         id_col_name="dw_ek_borger",
-    #     )
+    Should only use the cfg.data config with the exception of seed
+    """
 
-    #     run.log(performance_metrics)
+    if cfg.data.source.lower() == "sql":
+        train = load_dataset(
+            split_names="train",
+            n_training_samples=cfg.data.n_training_samples,
+            drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+            min_lookahead_days=cfg.data.min_lookahead_days,
+        )
+        val = load_dataset(
+            split_names="val",
+            n_training_samples=cfg.data.n_training_samples,
+            drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+            min_lookahead_days=cfg.data.min_lookahead_days,
+        )
+    elif cfg.data.source.lower() == "synthetic":
+        repo_dir = Path(__file__).parent.parent.parent
+        dataset = pd.read_csv(
+            repo_dir / "tests" / "test_data" / "synth_prediction_data.csv",
+        )
 
+        # Convert all timestamp cols to datetime
+        for col in [col for col in dataset.columns if "timestamp" in col]:
+            dataset[col] = pd.to_datetime(dataset[col])
 
-@hydra.main(
-    config_path=CONFIG_PATH,
-    config_name="train_config",
-)
-def main(cfg):
-    if cfg.evaluation.wandb:
-        run = wandb.init(
-            project=cfg.project,
-            reinit=True,
-            config=flatten_nested_dict(cfg, sep="."),
+        # Get 75% of dataset for train
+        train, val = train_test_split(
+            dataset,
+            test_size=0.25,
+            random_state=cfg.project.seed,
         )
     else:
-        run = None
-
-    OUTCOME_COL_NAME = (
-        f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
-    )
-
-    preprocessing_pipe = create_preprocessing_pipelines(cfg)
-    mdl = create_model(cfg)
-    pipe = Pipeline([("mdl", mdl), ("preprocessing", preprocessing_pipe)])
-
-    if cfg.training.n_splits is not None:
-        y, y_hat_prob = cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe)
-    else:
-        y, y_hat_prob = pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe)
-
-    # Calculate performance metrics and log to wandb_run
-    evaluate(
-        X="",
-        y=y,
-        y_hat_prob=y_hat_prob,
-        wandb_run=run,
-    )
-
-    # finish run
-    if cfg.evaluation.wandb:
-        run.finish()
+        raise ValueError(
+            "The config data.source is {cfg.data.source}",
+        )
+    return train, val
 
 
-def pre_defined_split_performance(cfg, OUTCOME_COL_NAME, pipe) -> Tuple[Series, Series]:
-    """Loads dataset and fits a model on the pre-defined split.
+def stratified_cross_validation(
+    cfg,
+    pipe: Pipeline,
+    dataset: pd.DataFrame,
+    train_col_names: List[str],
+    outcome_col_name: str,
+):
+    """Performs a stratified and grouped cross validation using the
+    pipeline."""
+    X = dataset[train_col_names]
+    y = dataset[outcome_col_name]
 
-    Args:
-        cfg (_type_): _description_
-        OUTCOME_COL_NAME (_type_): _description_
-
-    Returns:
-        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
-    """
-    # Train set
-    train = load_dataset(
-        split_names="train",
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-    )
-    X_train = train[
-        [c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)]
-    ]
-    y_train = train[OUTCOME_COL_NAME]
-
-    # Val set
-    val = load_dataset(
-        split_names="val",
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-    )
-    X_val = val[[c for c in val.columns if c.startswith(cfg.data.pred_col_name_prefix)]]
-    y_val = val[[OUTCOME_COL_NAME]]
-
-    pipe.fit(X_train, y_train)
-    y_train_hat = pipe.predict_proba(X_train)[:, 1]
-    y_val_hat = pipe.predict_proba(X_val)[:, 1]
-
-    print(f"Performance on train: {round(roc_auc_score(y_train, y_train_hat), 3)}")
-
-    return y_val, y_val_hat
-
-
-def cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe):
-    """Loads train and val, concatenates them and uses them for cross-
-    validation.
-
-    Args:
-        cfg (_type_): _description_
-        OUTCOME_COL_NAME (_type_): _description_
-
-    Returns:
-        Tuple(Series, Series): Two series: True labels and predicted labels for the validation set.
-    """
-    dataset = load_dataset(
-        split_names=["train", "val"],
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-    )
-
-    # extract training data
-    X = dataset[
-        [c for c in dataset.columns if c.startswith(cfg.data.pred_col_name_prefix)]
-    ]
-    y = dataset[[OUTCOME_COL_NAME]]
-
-    # create stratified groups kfold
+    # Create folds
     folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
-        X,
-        y,
-        dataset["dw_ek_borger"],
+        X=X,
+        y=y,
+        groups=dataset[cfg.data.id_col_name],
     )
 
-    # perform CV, obtaining out of fold predictions
+    # Perform CV and get out of fold predictions
     dataset["oof_y_hat"] = np.nan
     for train_idxs, val_idxs in folds:
         X_, y_ = X.loc[train_idxs], y.loc[train_idxs]
@@ -221,16 +135,95 @@ def cross_validated_performance(cfg, OUTCOME_COL_NAME, pipe):
 
         y_hat = pipe.predict_proba(X_)[:, 1]
         print(f"Within-fold performance: {round(roc_auc_score(y_,y_hat), 3)}")
+        dataset["oof_y_hat_prob"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[
+            :,
+            1,
+        ]
 
-        out_of_fold_y = dataset[OUTCOME_COL_NAME].loc[val_idxs]
-        dataset["oof_y_hat"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[:, 1]
+    return dataset
 
-        out_of_fold_y_hat = dataset["oof_y_hat"].loc[val_idxs]
+
+@hydra.main(
+    config_path=CONFIG_PATH,
+    config_name="default_config",
+    version_base="1.2",
+)
+def main(cfg):
+    run = wandb.init(
+        project=cfg.project.name,
+        reinit=True,
+        config=flatten_nested_dict(cfg, sep="."),
+        mode=cfg.project.wandb_mode,
+    )
+
+    # load dataset
+    train, val = load_dataset_from_config(cfg)
+
+    # creating pipeline
+    steps = []
+    preprocessing_pipe = create_preprocessing_pipeline(cfg)
+    if len(preprocessing_pipe.steps) != 0:
+        steps.append(("preprocessing", preprocessing_pipe))
+
+    mdl = create_model(cfg)
+    steps.append(("model", mdl))
+    pipe = Pipeline(steps)
+
+    # train
+    ## define columns
+    OUTCOME_COL_NAME = (
+        f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
+    )
+    if cfg.data.source.lower() == "synthetic":
+        OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
+
+    TRAIN_COL_NAMES = [
+        c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
+    ]
+
+    if cfg.training.n_splits is None:  # train on pre-defined splits
+        X_train = train[TRAIN_COL_NAMES]
+        y_train = train[OUTCOME_COL_NAME]
+        X_val = val[TRAIN_COL_NAMES]
+
+        pipe.fit(X_train, y_train)
+
+        y_train_hat_prob = pipe.predict_proba(X_train)[:, 1]
+        y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
+
         print(
-            f"Out-of-fold performance: {round(roc_auc_score(out_of_fold_y, out_of_fold_y_hat), 3)}",
-        )
+            f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
+        )  # TODO log to wandb
 
-    return y, dataset["oof_y_hat"]
+        eval_dataset = val
+        eval_dataset["y_hat_prob"] = y_val_hat_prob
+        y_hat_prob_col_name = "y_hat_prob"
+    else:
+        train_val = pd.concat([train, val], ignore_index=True)
+        eval_dataset = stratified_cross_validation(
+            cfg,
+            pipe,
+            dataset=train_val,
+            train_col_names=TRAIN_COL_NAMES,
+            outcome_col_name=OUTCOME_COL_NAME,
+        )
+        y_hat_prob_col_name = "oof_y_hat_prob"
+
+    # Evaluate: Calculate performance metrics and log to wandb
+    evaluate_model(
+        cfg=cfg,
+        eval_dataset=eval_dataset,
+        y_col_name=OUTCOME_COL_NAME,
+        y_hat_prob_col_name=y_hat_prob_col_name,
+        run=run,
+    )
+
+    run.finish()
+
+    return roc_auc_score(
+        eval_dataset[OUTCOME_COL_NAME],
+        eval_dataset[y_hat_prob_col_name],
+    )
 
 
 if __name__ == "__main__":

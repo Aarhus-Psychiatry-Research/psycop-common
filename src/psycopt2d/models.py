@@ -1,8 +1,24 @@
-import catalogue
 import numpy as np
+from interpret.glassbox import ExplainableBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 
-model_catalogue = catalogue.create("psycopt2d", "models")
 
+def InitLogisticRegression(**kwargs):
+    if "penalty_solver" in kwargs:
+        kwargs["penalty"], kwargs["solver"] = kwargs.pop("penalty_solver").split("_")
+    return LogisticRegression(**kwargs)
+
+
+logistic = {"model": InitLogisticRegression, "static_hyperparameters": {}}
 xgboost = {"model": XGBClassifier, "static_hyperparameters": {"missing": np.nan}}
-model_catalogue.register("xgboost", func=xgboost)
+ebm = {"model": ExplainableBoostingClassifier, "static_hyperparameters": {}}
+nb = {"model": GaussianNB, "static_hyperparameters": {}}
+
+MODELS = {
+    "logistic-regression": logistic,
+    "xgboost": xgboost,
+    "ebm": ebm,
+    "naive-bayes": nb,
+}

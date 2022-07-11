@@ -7,6 +7,6 @@ from utils_for_testing import add_age_gender
 
 @pytest.fixture
 def synth_data():
-    df = pd.read_csv(Path("tests") / "test_data" / "synth_data.csv")
+    df = pd.read_csv(Path("tests") / "test_data" / "synth_eval_data.csv")
     df = add_age_gender(df)
     return df

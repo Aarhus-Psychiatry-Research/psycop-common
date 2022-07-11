@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
 
+import wandb
+from psycopt2d.utils import get_thresholds_by_pred_proba_percentiles
+
 
 def generate_performance_by_threshold_table(
     labels: Iterable[Union[int, float]],
@@ -12,7 +15,7 @@ def generate_performance_by_threshold_table(
     ids: Iterable[Union[int, float]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
-    output_format: str = "df",
+    output_format: str = "wandb_table",
 ) -> Union[pd.DataFrame, str]:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
@@ -30,11 +33,10 @@ def generate_performance_by_threshold_table(
         pd.DataFrame
     """
 
-    labels = pd.Series(list(labels))
-    pred_probs = pd.Series(list(pred_probs))
-
-    # Calculate percentiles from the pred_probs series
-    thresholds = pd.Series(pred_probs).quantile(threshold_percentiles)
+    thresholds = get_thresholds_by_pred_proba_percentiles(
+        pred_probs=pred_probs,
+        threshold_percentiles=threshold_percentiles,
+    )
 
     rows = []
 
@@ -76,14 +78,17 @@ def generate_performance_by_threshold_table(
         return df.reset_index(drop=True).to_html()
     elif output_format == "df":
         return df.reset_index(drop=True)
+    elif output_format == "wandb_table":
+        return wandb.Table(dataframe=df.reset_index(drop=True))
     else:
-        raise ValueError("Output format is neither html nor df")
+        raise ValueError("Output format does not match anything that is allowed")
 
 
 def performance_by_threshold(
     labels: Iterable[int],
     pred_probs: Iterable[float],
     positive_threshold: float,
+    round_to: int = 4,
 ) -> pd.DataFrame:
     """Generates a row for a performance_by_threshold table.
 
@@ -92,6 +97,7 @@ def performance_by_threshold(
         pred_probs (Iterable[float]): Model prediction probabilities.
         positive_threshold (float): Threshold for a probability to be
             labelled as "positive".
+        round_to (int): Number of decimal places to round metrics
 
     Returns:
         pd.DataFrame
@@ -105,25 +111,30 @@ def performance_by_threshold(
     TP = CM[1][1]
     FP = CM[0][1]
 
-    n = TN + FN + TP + FP
+    n_total = TN + FN + TP + FP
 
-    Prevalence = round((TP + FP) / n, 2)
+    true_prevalence = round((TP + FN) / n_total, round_to)
 
-    PPV = round(TP / (TP + FP), 2)
-    NPV = round(TN / (TN + FN), 2)
+    positive_rate = round((TP + FP) / n_total, round_to)
+    negative_rate = round((TN + FN) / n_total, round_to)
 
-    Sensitivity = round(TP / (TP + FN), 2)
-    Specificity = round(TN / (TN + FP), 2)
+    PPV = round(TP / (TP + FP), round_to)
+    NPV = round(TN / (TN + FN), round_to)
 
-    FPR = round(FP / (TN + FP), 2)
-    FNR = round(FN / (TP + FN), 2)
+    Sensitivity = round(TP / (TP + FN), round_to)
+    Specificity = round(TN / (TN + FP), round_to)
 
-    Accuracy = round((TP + TN) / n, 2)
+    FPR = round(FP / (TN + FP), round_to)
+    FNR = round(FN / (TP + FN), round_to)
+
+    Accuracy = round((TP + TN) / n_total, round_to)
 
     # Must return lists as values, otherwise pd.Dataframe requires setting indeces
     metrics_matrix = pd.DataFrame(
         {
-            "prevalence": [Prevalence],
+            "true_prevalence": [true_prevalence],
+            "positive_rate": [positive_rate],
+            "negative_rate": [negative_rate],
             "PPV": [PPV],
             "NPV": [NPV],
             "sensitivity": [Sensitivity],
@@ -131,7 +142,10 @@ def performance_by_threshold(
             "FPR": [FPR],
             "FNR": [FNR],
             "accuracy": [Accuracy],
+            "true_positives": [TP],
+            "true_negatives": [TN],
             "false_positives": [FP],
+            "false_negatives": [FN],
         },
     )
 
@@ -181,6 +195,7 @@ def days_from_positive_to_diagnosis(
     df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
         "min",
     )
+    df = df[df["timestamp_first_pos_pred"].notnull()]
 
     df = df.drop_duplicates(
         subset=["id", "timestamp_first_pos_pred", "outcome_timestamps"],

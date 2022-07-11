@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - override /hydra/sweeper: optuna
+  - override /hydra/sweeper/sampler: tpe
+
+hydra:
+  sweeper:
+    sampler:
+      seed: 123
+    n_trials: 4
+    direction: maximize
