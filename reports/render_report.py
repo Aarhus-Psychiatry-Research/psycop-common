@@ -2,7 +2,7 @@
 captions.
 
 Uses the keywords @title and @authors to add title and authors (might not really
-be necessarry..). Add figures and tables using {filepath : caption}. Tables should
+be necessary but can be used for pretty styling). Add figures and tables using {filepath : caption}. Tables should
 be in a dir called 'tables' and figures in a dir called 'figs'
 """
 
