@@ -49,11 +49,11 @@ def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb.run):
     # Create folder if it doesn't exist
     Path.mkdir(base_path, parents=True, exist_ok=True)
 
-    # plot_png_path = altair_chart_to_file(
-    #     chart=chart,
-    #     filepath=base_path / f"{chart_name}.png",
-    # )
-    # run.log({f"png_{chart_name}": wandb.Image(plot_png_path)})
+    plot_png_path = altair_chart_to_file(
+        chart=chart,
+        filepath=base_path / f"{chart_name}.png",
+    )
+    run.log({f"png_{chart_name}": wandb.Image(plot_png_path)})
 
     plot_html = altair_chart_to_file(
         chart=chart,
