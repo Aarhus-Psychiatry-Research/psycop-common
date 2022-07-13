@@ -7,18 +7,30 @@ on:
   pull_request:
     branches: [ main, dev ]
 
+concurrency:
+  # New commit on branch cancels running workflows of the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
     steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
+
     - name: Checkout repo
       uses: actions/checkout@v3
-    ### Caching
-    - name: Load cached $HOME/.local
-      uses: actions/cache@v2.1.6
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
       with:
-        path: ~/.local
-        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/pytest.yml') }}
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    ### Caching
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v2.1.6
@@ -28,17 +40,13 @@ jobs:
           poetry.lock
         # Cache the complete venv dir for a given os, python version, pyproject.toml
         key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
+
     ### Installing
-    - name: Install poetry
-      run: pipx install poetry
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.8
     - name: Install Project
-      shell: bash
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install
+    
+    ### Run tests
     - name: Run and write pytest
       run: |
         set -o pipefail
