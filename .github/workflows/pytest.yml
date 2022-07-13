@@ -19,22 +19,26 @@ jobs:
       with:
         path: ~/.local
         key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/pytest.yml') }}
-    - name: Cache Poetry cache
-      uses: actions/cache@v2
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2.1.6
       with:
-        path: ~/.cache/pypoetry
-        key: poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}
+        path: |
+          .venv
+          poetry.lock
+        # Cache the complete venv dir for a given os, python version, pyproject.toml
+        key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
+    ### Installing
     - name: Install poetry
       run: pipx install poetry
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.8
-        cache: 'poetry'
-        cache-dependency-path: "pyproject.toml"
-    - name: Install dependencies
-      run: |
-        poetry install
+    - name: Install Project
+      shell: bash
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install
     - name: Run and write pytest
       run: |
         set -o pipefail
