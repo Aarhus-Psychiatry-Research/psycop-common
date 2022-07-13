@@ -45,8 +45,7 @@ jobs:
           .venv
           poetry.lock
         # Cache the complete venv dir for a given os, python version, pyproject.toml
-        key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
-        # If you want to invalidate cache on each pytest.yml update, append --${{ hashFiles('.github/workflows/pytest.yml') }}
+        key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('.github/workflows/cache_version') }}
 
     ### Installing
     - name: Install Project
