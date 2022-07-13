@@ -152,8 +152,4 @@ def plot_sensitivity_by_time_to_outcome(
         ),
     )
 
-    plt = heatmap + text
-
-    plt.properties(width=400, height=300).save("test.html")
-
-    return plt
+    return heatmap + text
