@@ -39,15 +39,19 @@ jobs:
           .venv
           poetry.lock
         # Cache the complete venv dir for a given os, python version, pyproject.toml
-        key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
+        key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}--${{ hashFiles('.github/workflows/pytest.yml') }}
 
     ### Installing
     - name: Install Project
-      # if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install
     
     ### Run tests
+    - name: Load .venv
+      run: |
+        source $VENV
+
     - name: Run and write pytest
       run: |
         set -o pipefail
-        poetry run pytest --cov=src --cov-report term-missing | tee pytest-coverage.txt
+        poetry run pytest --cov=src --cov-report term-missing --color=yes | tee pytest-coverage.txt
