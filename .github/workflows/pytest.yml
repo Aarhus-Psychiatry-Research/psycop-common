@@ -53,7 +53,7 @@ jobs:
       run: poetry install
     
     ### Run tests
-    - name: Load .venv
+    - name: Source .venv
       run: |
         source $VENV
 
