@@ -1,0 +1,22 @@
+# GitHub action to check if pre-commit has been run
+
+
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+concurrency:
+  # New commit on branch cancels running workflows of the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+    - uses: pre-commit/action@v3.0.0
