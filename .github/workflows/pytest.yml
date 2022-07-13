@@ -13,6 +13,17 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
+    ### Caching
+    - name: Load cached $HOME/.local
+      uses: actions/cache@v2.1.6
+      with:
+        path: ~/.local
+        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/pytest.yml') }}
+    - name: Cache Poetry cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pypoetry
+        key: poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}
     - name: Install poetry
       run: pipx install poetry
     - name: Set up Python
@@ -28,23 +39,3 @@ jobs:
       run: |
         set -o pipefail
         poetry run pytest --cov=src --cov-report term-missing | tee pytest-coverage.txt
-    # Most code isn't testable on github, saves a comment per commit for now.
-    # - name: Coverage comment
-    #   id: coverage-comment
-    #   uses: MishaKav/pytest-coverage-comment@v1.1.24
-    #   with:
-    #     pytest-coverage-path: ./pytest-coverage.txt
-    # - name: Output coverage
-    #   run: |
-    #     echo "Coverage Report - ${{ steps.coverage-comment.outputs.coverage }}"
-    #     echo "Coverage Color - ${{ steps.coverage-comment.outputs.color }}"
-    # - name: Create Badge
-    #   uses: schneegans/dynamic-badges-action@v1.1.0
-    #   with:
-    #     auth: ${{ secrets.PYTEST_COVERAGE }}
-    #     gistID: d6c40a5b5a3169c079e8b8f778b8e517
-    #     filename: badge-psycop-ml-utils-pytest-coverage.json
-    #     label: Coverage
-    #     message: ${{ steps.coverage-comment.outputs.coverage }}
-    #     color: ${{ steps.coverage-comment.outputs.color }}
-    #     namedLogo: python
