@@ -140,7 +140,7 @@ def plot_sensitivity_by_time_to_outcome(
 
     # Heatmap
     heatmap = base.mark_rect().encode(
-        color="sens:Q",
+        color=alt.Color("sens:Q", title="Sensitivity"),
     )
 
     text = base.mark_text(baseline="middle").encode(
@@ -152,4 +152,6 @@ def plot_sensitivity_by_time_to_outcome(
         ),
     )
 
-    return heatmap + text
+    plt = heatmap + text
+
+    return plt
