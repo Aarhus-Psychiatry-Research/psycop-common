@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix
 
 import wandb
-from psycopt2d.utils import get_thresholds_by_pred_proba_percentiles
+from psycopt2d.utils import pred_proba_to_threshold_percentiles
 
 
 def generate_performance_by_threshold_table(
@@ -33,7 +33,7 @@ def generate_performance_by_threshold_table(
         pd.DataFrame
     """
 
-    thresholds = get_thresholds_by_pred_proba_percentiles(
+    thresholds = pred_proba_to_threshold_percentiles(
         pred_probs=pred_probs,
         threshold_percentiles=threshold_percentiles,
     )

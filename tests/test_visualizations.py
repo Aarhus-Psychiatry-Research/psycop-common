@@ -8,6 +8,7 @@ from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_bar_chart
 from psycopt2d.visualization.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
+    plot_sensitivity_by_time_to_outcome,
 )
 
 
@@ -61,3 +62,16 @@ def test_plot_bar_chart(df):
         x_title="Days to outcome",
         y_title="Sensitivity",
     )
+
+
+def test_sens_by_time_to_outcome(df):
+    plt = plot_sensitivity_by_time_to_outcome(  # noqa
+        labels=df["label"],
+        y_hat_probs=df["pred_prob"],
+        outcome_timestamps=df["timestamp_t2d_diag"],
+        prediction_timestamps=df["timestamp"],
+        threshold_percentiles=[0.9, 0.8, 0.7, 0.6, 0.5],
+        bins=[0, 28, 182, 365, 730, 1825],
+    )
+
+    pass

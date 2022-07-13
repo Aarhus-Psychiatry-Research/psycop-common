@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .error {
+        color: red;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "layer": [{"mark": "rect", "encoding": {"color": {"field": "sens", "type": "quantitative"}, "x": {"field": "days_to_outcome_binned", "sort": ["(0, 28]", "(28, 182]", "(182, 365]", "(365, 730]", "(730, 1825]"], "title": "Days to Outcome", "type": "ordinal"}, "y": {"field": "threshold_percentile", "sort": "-y", "title": "Threshold percentile", "type": "ordinal"}}}, {"mark": {"type": "text", "baseline": "middle"}, "encoding": {"color": {"condition": {"value": "white", "test": "(datum.sens > 0.24)"}, "value": "black"}, "text": {"field": "sens", "type": "quantitative"}, "x": {"field": "days_to_outcome_binned", "sort": ["(0, 28]", "(28, 182]", "(182, 365]", "(365, 730]", "(730, 1825]"], "title": "Days to Outcome", "type": "ordinal"}, "y": {"field": "threshold_percentile", "sort": "-y", "title": "Threshold percentile", "type": "ordinal"}}}], "data": {"name": "data-674b67a732547595946d6c8cb97770eb"}, "height": 300, "width": 400, "$schema": "https://vega.github.io/schema/vega-lite/v4.17.0.json", "datasets": {"data-674b67a732547595946d6c8cb97770eb": [{"days_to_outcome_binned": "(0, 28]", "true_positive": 0, "false_negative": 5, "sens": 0.0, "threshold": 0.44992447113140155, "threshold_percentile": 0.9}, {"days_to_outcome_binned": "(28, 182]", "true_positive": 8, "false_negative": 75, "sens": 0.1, "threshold": 0.44992447113140155, "threshold_percentile": 0.9}, {"days_to_outcome_binned": "(182, 365]", "true_positive": 15, "false_negative": 140, "sens": 0.1, "threshold": 0.44992447113140155, "threshold_percentile": 0.9}, {"days_to_outcome_binned": "(365, 730]", "true_positive": 28, "false_negative": 343, "sens": 0.08, "threshold": 0.44992447113140155, "threshold_percentile": 0.9}, {"days_to_outcome_binned": "(730, 1825]", "true_positive": 445, "false_negative": 3843, "sens": 0.1, "threshold": 0.44992447113140155, "threshold_percentile": 0.9}, {"days_to_outcome_binned": "(0, 28]", "true_positive": 0, "false_negative": 5, "sens": 0.0, "threshold": 0.3512693737323488, "threshold_percentile": 0.8}, {"days_to_outcome_binned": "(28, 182]", "true_positive": 20, "false_negative": 63, "sens": 0.24, "threshold": 0.3512693737323488, "threshold_percentile": 0.8}, {"days_to_outcome_binned": "(182, 365]", "true_positive": 36, "false_negative": 119, "sens": 0.23, "threshold": 0.3512693737323488, "threshold_percentile": 0.8}, {"days_to_outcome_binned": "(365, 730]", "true_positive": 63, "false_negative": 308, "sens": 0.17, "threshold": 0.3512693737323488, "threshold_percentile": 0.8}, {"days_to_outcome_binned": "(730, 1825]", "true_positive": 865, "false_negative": 3423, "sens": 0.2, "threshold": 0.3512693737323488, "threshold_percentile": 0.8}, {"days_to_outcome_binned": "(0, 28]", "true_positive": 0, "false_negative": 5, "sens": 0.0, "threshold": 0.2502871857028048, "threshold_percentile": 0.7}, {"days_to_outcome_binned": "(28, 182]", "true_positive": 29, "false_negative": 54, "sens": 0.35, "threshold": 0.2502871857028048, "threshold_percentile": 0.7}, {"days_to_outcome_binned": "(182, 365]", "true_positive": 54, "false_negative": 101, "sens": 0.35, "threshold": 0.2502871857028048, "threshold_percentile": 0.7}, {"days_to_outcome_binned": "(365, 730]", "true_positive": 107, "false_negative": 264, "sens": 0.29, "threshold": 0.2502871857028048, "threshold_percentile": 0.7}, {"days_to_outcome_binned": "(730, 1825]", "true_positive": 1273, "false_negative": 3015, "sens": 0.3, "threshold": 0.2502871857028048, "threshold_percentile": 0.7}, {"days_to_outcome_binned": "(0, 28]", "true_positive": 1, "false_negative": 4, "sens": 0.2, "threshold": 0.1510656254306632, "threshold_percentile": 0.6}, {"days_to_outcome_binned": "(28, 182]", "true_positive": 35, "false_negative": 48, "sens": 0.42, "threshold": 0.1510656254306632, "threshold_percentile": 0.6}, {"days_to_outcome_binned": "(182, 365]", "true_positive": 66, "false_negative": 89, "sens": 0.43, "threshold": 0.1510656254306632, "threshold_percentile": 0.6}, {"days_to_outcome_binned": "(365, 730]", "true_positive": 147, "false_negative": 224, "sens": 0.4, "threshold": 0.1510656254306632, "threshold_percentile": 0.6}, {"days_to_outcome_binned": "(730, 1825]", "true_positive": 1688, "false_negative": 2600, "sens": 0.39, "threshold": 0.1510656254306632, "threshold_percentile": 0.6}, {"days_to_outcome_binned": "(0, 28]", "true_positive": 1, "false_negative": 4, "sens": 0.2, "threshold": 0.051227991388237304, "threshold_percentile": 0.5}, {"days_to_outcome_binned": "(28, 182]", "true_positive": 40, "false_negative": 43, "sens": 0.48, "threshold": 0.051227991388237304, "threshold_percentile": 0.5}, {"days_to_outcome_binned": "(182, 365]", "true_positive": 79, "false_negative": 76, "sens": 0.51, "threshold": 0.051227991388237304, "threshold_percentile": 0.5}, {"days_to_outcome_binned": "(365, 730]", "true_positive": 182, "false_negative": 189, "sens": 0.49, "threshold": 0.051227991388237304, "threshold_percentile": 0.5}, {"days_to_outcome_binned": "(730, 1825]", "true_positive": 2149, "false_negative": 2139, "sens": 0.5, "threshold": 0.051227991388237304, "threshold_percentile": 0.5}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div class="error" style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

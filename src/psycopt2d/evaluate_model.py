@@ -8,7 +8,7 @@ import wandb
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_threshold_table,
 )
-from psycopt2d.utils import get_thresholds_by_pred_proba_percentiles
+from psycopt2d.utils import pred_proba_to_threshold_percentiles
 from psycopt2d.visualization.altair_utils import log_altair_to_wandb
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
 
@@ -54,7 +54,7 @@ def evaluate_model(
 
     ## Sensitivity by time to outcome
     threshold_percentiles = cfg.evaluation.tables.threshold_percentiles
-    thresholds = get_thresholds_by_pred_proba_percentiles(
+    thresholds = pred_proba_to_threshold_percentiles(
         pred_probs=y_hat_probs,
         threshold_percentiles=threshold_percentiles,
     )
