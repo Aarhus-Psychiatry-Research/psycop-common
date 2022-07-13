@@ -43,7 +43,7 @@ jobs:
 
     ### Installing
     - name: Install Project
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      # if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install
     
     ### Run tests
