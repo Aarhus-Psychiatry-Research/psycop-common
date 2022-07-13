@@ -1,6 +1,5 @@
 # GitHub action to check if pre-commit has been run
 
-
 name: pre-commit
 
 on:
