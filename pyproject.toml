@@ -67,3 +67,6 @@ branch = "main"
 upload_to_pypi = false
 upload_to_release = true
 build_command = "poetry build"
+
+[tool.isort]
+known_third_party = ["wandb"]

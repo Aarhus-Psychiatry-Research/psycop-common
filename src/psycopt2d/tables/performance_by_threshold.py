@@ -2,10 +2,9 @@ from typing import Iterable, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
-
 import wandb
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
+from sklearn.metrics import confusion_matrix
+from psycopt2d.utils import get_thresholds_by_pred_proba_percentiles
 
 
 def generate_performance_by_threshold_table(
