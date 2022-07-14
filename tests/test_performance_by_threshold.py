@@ -12,7 +12,13 @@ from psycopt2d.tables.performance_by_threshold import (
 @pytest.fixture(scope="function")
 def synth_data():
     csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
-    return pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path)
+
+    # Convert all timestamp cols to datetime
+    for col in [col for col in df.columns if "timestamp" in col]:
+        df[col] = pd.to_datetime(df[col])
+
+    return df
 
 
 def test_generate_performance_by_threshold_table(synth_data):
@@ -22,7 +28,7 @@ def test_generate_performance_by_threshold_table(synth_data):
         labels=df["label"],
         pred_probs=df["pred_prob"],
         ids=df["dw_ek_borger"],
-        threshold_percentiles=[0.99, 0.5, 0.01],
+        threshold_percentiles=[0.2, 0.1],
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         output_format="df",

@@ -172,6 +172,7 @@ def days_from_positive_to_diagnosis(
     Returns:
         float: _description_
     """
+    # Generate df
     df = pd.DataFrame(
         {
             "id": ids,
@@ -181,28 +182,29 @@ def days_from_positive_to_diagnosis(
         },
     )
 
-    timestamp_cols = ["pred_timestamps", "outcome_timestamps"]
-
-    for col in timestamp_cols:
-        df[col] = pd.to_datetime(df[col])
-
-    # Get min date among true positives
+    # Keep only true positives
     df["true_positive"] = (df["pred_probs"] >= positive_threshold) & (
         df["outcome_timestamps"].notnull()
     )
     df = df[df["true_positive"]]
 
+    # Find timestamp of first positive prediction
     df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
         "min",
     )
     df = df[df["timestamp_first_pos_pred"].notnull()]
 
+    # Keep only one record per patient
     df = df.drop_duplicates(
         subset=["id", "timestamp_first_pos_pred", "outcome_timestamps"],
     )
 
-    # Compare to timestamp_t2d_diag
-    df["warning_days"] = df["outcome_timestamps"] - df["timestamp_first_pos_pred"]
+    # Calculate warning days
+    df["warning_days"] = round(
+        (df["outcome_timestamps"] - df["timestamp_first_pos_pred"])
+        / np.timedelta64(1, "D"),
+        0,
+    )
 
     df = df[
         [
@@ -213,6 +215,8 @@ def days_from_positive_to_diagnosis(
         ]
     ]
 
-    warning_days = (df["warning_days"] / np.timedelta64(1, "D")).astype(int).agg("sum")
+    df_mistakes = df[df["warning_days"] < 0]  # noqa
+
+    warning_days = df["warning_days"].agg("sum")
 
     return warning_days
