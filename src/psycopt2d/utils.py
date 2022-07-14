@@ -191,10 +191,10 @@ def bin_continuous_data(series: pd.Series, bins: List[int]) -> pd.Series:
     return pd.cut(series, bins=bins, labels=labels)
 
 
-def get_thresholds_by_pred_proba_percentiles(
+def pred_proba_to_threshold_percentiles(
     pred_probs: pd.Series,
     threshold_percentiles: Iterable,
-):
+) -> List:
     """Get thresholds for a set of percentiles. E.g. if percentile == 1, return
     the threshold that 1% of the probabilities are above.
 
@@ -211,4 +211,4 @@ def get_thresholds_by_pred_proba_percentiles(
         threshold_percentiles = [x / 100 for x in threshold_percentiles]
 
     thresholds = pd.Series(pred_probs).quantile(threshold_percentiles)
-    return thresholds
+    return dict(zip(threshold_percentiles, thresholds))
