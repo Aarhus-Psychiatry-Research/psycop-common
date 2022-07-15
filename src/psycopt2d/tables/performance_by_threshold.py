@@ -33,6 +33,10 @@ def generate_performance_by_threshold_table(
         pd.DataFrame
     """
 
+    # Round decimals to percent, e.g. 0.99 -> 99%
+    if min(threshold_percentiles) < 1:
+        threshold_percentiles = [x * 100 for x in threshold_percentiles]
+
     rows = []
 
     # For each percentile, calculate relevant performance metrics
