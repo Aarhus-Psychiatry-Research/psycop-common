@@ -62,7 +62,7 @@ def test_generate_performance_by_threshold_table(synth_data):
             "false_negatives": {0: 4515, 1: 2513, 2: 2259},
             "total_warning_days": {0: 609757.0, 1: 2619787.0, 2: 4612729.0},
             "warning_days_per_false_positive": {0: 64.2, 1: 55.2, 2: 88.1},
-            "mean_warning_days": {0: 1252, 1: 1332, 3: 1451},
+            "mean_warning_days": {0: 1252, 1: 1332, 2: 1451},
         },
     )
 
