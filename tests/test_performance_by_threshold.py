@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from psycopt2d.tables.performance_by_threshold import (
-    days_from_positive_to_diagnosis,
+    days_from_first_positive_to_diagnosis,
     generate_performance_by_threshold_table,
 )
 from psycopt2d.utils import pred_proba_to_threshold_percentiles
@@ -73,7 +73,7 @@ def test_time_from_flag_to_diag(synth_data):
     df = synth_data
 
     # Threshold = 0.5
-    val = days_from_positive_to_diagnosis(
+    val = days_from_first_positive_to_diagnosis(
         ids=df["dw_ek_borger"],
         pred_probs=df["pred_prob"],
         pred_timestamps=df["timestamp"],
@@ -84,7 +84,7 @@ def test_time_from_flag_to_diag(synth_data):
     assert val > 290_000 and val < 292_000
 
     # Threshold = 0.2
-    val = days_from_positive_to_diagnosis(
+    val = days_from_first_positive_to_diagnosis(
         ids=df["dw_ek_borger"],
         pred_probs=df["pred_prob"],
         pred_timestamps=df["timestamp"],

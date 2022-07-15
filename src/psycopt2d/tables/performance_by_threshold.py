@@ -57,12 +57,22 @@ def generate_performance_by_threshold_table(
             axis=1,
         )
 
-        threshold_metrics["warning_days"] = days_from_positive_to_diagnosis(
+        threshold_metrics["total_warning_days"] = days_from_first_positive_to_diagnosis(
             ids=ids,
             pred_probs=pred_probs,
             pred_timestamps=pred_timestamps,
             outcome_timestamps=outcome_timestamps,
             positive_threshold=threshold_value,
+            aggregation_method="sum",
+        )
+
+        threshold_metrics["mean_warning_days"] = days_from_first_positive_to_diagnosis(
+            ids=ids,
+            pred_probs=pred_probs,
+            pred_timestamps=pred_timestamps,
+            outcome_timestamps=outcome_timestamps,
+            positive_threshold=threshold_value,
+            aggregation_method="mean",
         )
 
         rows.append(threshold_metrics)
@@ -151,12 +161,13 @@ def performance_by_threshold(
     return metrics_matrix.reset_index(drop=True)
 
 
-def days_from_positive_to_diagnosis(
+def days_from_first_positive_to_diagnosis(
     ids: Iterable[Union[float, str]],
     pred_probs: Iterable[Union[float, str]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
     positive_threshold: float = 0.5,
+    aggregation_method: str = "sum",
 ) -> float:
     """Calculate number of days from the first positive prediction to the
     patient's outcome timestamp.
@@ -167,6 +178,7 @@ def days_from_positive_to_diagnosis(
         pred_timestamps (Iterable[pd.Timestamp]): _description_
         outcome_timestamps (Iterable[pd.Timestamp]): _description_
         positive_threshold (float, optional): _description_. Defaults to 0.5.
+        aggregation_method (str, optional): How to aggregate the warning days. Defaults to "sum".
 
     Returns:
         float: _description_
@@ -214,6 +226,6 @@ def days_from_positive_to_diagnosis(
         ]
     ]
 
-    warning_days = df["warning_days"].agg("sum")
+    warning_days = df["warning_days"].agg(aggregation_method)
 
     return warning_days
