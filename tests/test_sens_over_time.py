@@ -20,7 +20,7 @@ def df():
 
 
 def test_plot_sensitivity_by_time_to_outcome(df):
-    plt = plot_sensitivity_by_time_to_outcome(
+    plot_sensitivity_by_time_to_outcome(
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
         threshold_percentiles=[0.95, 0.99, 0.999, 0.9999],
@@ -28,5 +28,3 @@ def test_plot_sensitivity_by_time_to_outcome(df):
         prediction_timestamps=df["timestamp"],
         bins=[0, 28, 182, 365, 730, 1825],
     )
-
-    plt.save("test_sens_over_time.html")
