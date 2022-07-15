@@ -1,3 +1,3 @@
 name: psycop-t2d-testing
 seed: 42
-wandb_mode: "dryrun" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+wandb_mode: "run" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
