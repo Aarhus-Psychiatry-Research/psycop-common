@@ -206,6 +206,8 @@ def days_from_positive_to_diagnosis(
         0,
     )
 
+    df_mistakes = df[df["warning_days"] < 0]  # noqa
+
     df = df[
         [
             "id",
@@ -214,8 +216,6 @@ def days_from_positive_to_diagnosis(
             "warning_days",
         ]
     ]
-
-    df_mistakes = df[df["warning_days"] < 0]  # noqa
 
     warning_days = df["warning_days"].agg("sum")
 
