@@ -11,6 +11,7 @@ msg = Printer(timestamp=True)
 
 def load_dataset(
     split_names: Union[List[str], str],
+    table_name: str,
     drop_patient_if_outcome_before_date: Union[datetime, str],
     min_lookahead_days: int,
     pred_datetime_column: str = "timestamp",
@@ -21,6 +22,7 @@ def load_dataset(
     Args:
         split_names (Union[List[str], str]): Names of splits, includes "train", "val",
             "test".
+        table_name (str): Name of SQL table to load.
         drop_patient_if_outcome_before_date (Union[datetime, str]): Remove patients which
             experienced an outcome prior to the date. Also removes all visits prior to
             this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
@@ -63,7 +65,7 @@ def load_dataset(
         )
 
     min_lookahead = timedelta(days=min_lookahead_days)
-    sql_table_name = f"psycop_t2d_{split_names}"
+    sql_table_name = f"{table_name}_{split_names}"
 
     if n_training_samples is not None:
         msg.info(f"{sql_table_name}: Loading {n_training_samples} rows")

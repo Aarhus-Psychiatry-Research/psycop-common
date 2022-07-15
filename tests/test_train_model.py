@@ -16,7 +16,7 @@ def test_main(model_name):
 
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
-            config_name="test_config.yaml",
+            config_name="integration_testing.yaml",
             overrides=[f"+model={model_name}"],
         )
         main(cfg)
