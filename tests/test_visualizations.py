@@ -4,6 +4,7 @@ import altair as alt
 import pandas as pd
 import pytest
 
+from psycopt2d.utils import pred_proba_to_threshold_percentiles
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_bar_chart
 from psycopt2d.visualization.sens_over_time import (
@@ -67,11 +68,19 @@ def test_plot_bar_chart(df):
 
 
 def test_sens_by_time_to_outcome(df):
+    threshold_percentiles = [0.9, 0.8, 0.7, 0.6, 0.5]
+
+    pred_proba_thresholds = pred_proba_to_threshold_percentiles(
+        pred_probs=df["pred_prob"],
+        threshold_percentiles=threshold_percentiles,
+    )
+
     plot_sensitivity_by_time_to_outcome(  # noqa
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
-        threshold_percentiles=[0.9, 0.8, 0.7, 0.6, 0.5],
+        threshold_percentiles=threshold_percentiles,
+        pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
     )
