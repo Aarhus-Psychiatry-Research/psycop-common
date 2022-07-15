@@ -51,6 +51,10 @@ jobs:
       run: poetry install
     
     ### Run tests
+    - name: Parralelise pytest
+      run: |
+        echo "[pytest]\naddopts=-n 2" > pytest.ini
+        
     - name: Source .venv
       run: |
         source $VENV
