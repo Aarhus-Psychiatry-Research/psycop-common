@@ -5,7 +5,7 @@ import altair as alt
 import numpy as np
 import pandas as pd
 
-from psycopt2d.utils import pred_proba_to_threshold_percentiles, round_floats_to_edge
+from psycopt2d.utils import round_floats_to_edge
 
 
 def create_sensitivity_by_time_to_outcome_df(
@@ -89,7 +89,8 @@ def create_sensitivity_by_time_to_outcome_df(
 def plot_sensitivity_by_time_to_outcome(
     labels: Iterable[int],
     y_hat_probs: Iterable[int],
-    threshold_percentiles: List[float],
+    threshold_percentiles: Iterable[float],
+    pred_proba_thresholds: Iterable[float],
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: List[int] = [0, 28, 182, 365, 730, 1825],
@@ -99,7 +100,8 @@ def plot_sensitivity_by_time_to_outcome(
     Args:
         label (Iterable[int]): Label of the data.
         y_hat_probs (Iterable[int]): Predicted probability of class 1.
-        threshold_percentiles (List[float]): List of thresholds to plot.
+        threshold_percentiles (Iterable[float]): List of thresholds to plot.
+        pred_proba_thresholds (Iterable[float]): List of pred_proba thresholds above which predictions are classified as positive.
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
@@ -117,15 +119,13 @@ def plot_sensitivity_by_time_to_outcome(
         bins=bins,
     )
 
-    thresholds = pred_proba_to_threshold_percentiles(
-        threshold_percentiles=threshold_percentiles,
-        pred_probs=y_hat_probs,
-    )
-
     df = pd.concat(
         [
-            func(threshold=thresholds[k], threshold_percentile=k)
-            for k in thresholds.keys()
+            func(
+                threshold=pred_proba_thresholds[i],
+                threshold_percentile=threshold_percentiles[i],
+            )
+            for i in range(len(threshold_percentiles))
         ],
         axis=0,
     )

@@ -5,13 +5,12 @@ import pandas as pd
 import wandb
 from sklearn.metrics import confusion_matrix
 
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
-
 
 def generate_performance_by_threshold_table(
     labels: Iterable[Union[int, float]],
     pred_probs: Iterable[Union[int, float]],
     threshold_percentiles: Iterable[Union[int, float]],
+    pred_proba_thresholds: Iterable[float],
     ids: Iterable[Union[int, float]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
@@ -25,6 +24,7 @@ def generate_performance_by_threshold_table(
         pred_probs (Iterable[int, float]): Predicted probabilities.
         threshold_percentiles (Iterable[float]): Threshold-percentiles to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
+        pred_proba_thresholds (Iterable[float]): Thresholds above which predictions are classified as positive.
         ids (Iterable[Union[int, float]]): Ids to group on.
         pred_timestamps (Iterable[ pd.Timestamp ]): Timestamp for each prediction time.
         output_format (str, optional): Format to output - either "df" or "html". Defaults to "df".
@@ -33,15 +33,10 @@ def generate_performance_by_threshold_table(
         pd.DataFrame
     """
 
-    thresholds = pred_proba_to_threshold_percentiles(
-        pred_probs=pred_probs,
-        threshold_percentiles=threshold_percentiles,
-    )
-
     rows = []
 
     # For each percentile, calculate relevant performance metrics
-    for i, threshold_value in enumerate(thresholds):
+    for i, threshold_value in enumerate(pred_proba_thresholds):
         threshold_metrics = pd.DataFrame(
             {"threshold_percentile": [threshold_percentiles[i]]},
         )
