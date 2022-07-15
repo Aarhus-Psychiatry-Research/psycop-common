@@ -66,13 +66,16 @@ def generate_performance_by_threshold_table(
             aggregation_method="sum",
         )
 
-        threshold_metrics["mean_warning_days"] = days_from_first_positive_to_diagnosis(
-            ids=ids,
-            pred_probs=pred_probs,
-            pred_timestamps=pred_timestamps,
-            outcome_timestamps=outcome_timestamps,
-            positive_threshold=threshold_value,
-            aggregation_method="mean",
+        threshold_metrics["mean_warning_days"] = round(
+            days_from_first_positive_to_diagnosis(
+                ids=ids,
+                pred_probs=pred_probs,
+                pred_timestamps=pred_timestamps,
+                outcome_timestamps=outcome_timestamps,
+                positive_threshold=threshold_value,
+                aggregation_method="mean",
+            ),
+            0,
         )
 
         rows.append(threshold_metrics)
@@ -80,7 +83,7 @@ def generate_performance_by_threshold_table(
     df = pd.concat(rows)
 
     df["warning_days_per_false_positive"] = (
-        df["warning_days"] / df["false_positives"]
+        df["total_warning_days"] / df["false_positives"]
     ).round(1)
 
     if output_format == "html":
