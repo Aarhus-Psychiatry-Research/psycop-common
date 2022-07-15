@@ -24,12 +24,14 @@ jobs:
 
     ### Caching
     - name: Load cached $HOME/.local (cache poetry)
+      id: cached-poetry-install
       uses: actions/cache@v2.1.6
       with:
         path: ~/.local
         key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/pytest.yml') }}
 
     - name: Install Poetry
+      if: steps.cached-poetry-install.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
       with:
         virtualenvs-create: true
