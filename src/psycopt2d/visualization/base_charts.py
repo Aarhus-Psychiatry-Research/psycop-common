@@ -16,31 +16,27 @@ def plot_bar_chart(
     Args:
         x_values: The x values of the bar chart.
         y_values: The y values of the bar chart.
-        sort: order of columns
+        sort: order of values on the x-axis
 
     Returns:
         alt.Chart: An altair chart object.
     """
-    if sort is not None:
-        return (
-            alt.Chart(pd.DataFrame({"x": x_values, "y": y_values, "sort": sort}))
-            .mark_bar()
-            .encode(
-                x=alt.X(
-                    "x",
-                    axis=alt.Axis(title=x_title),
-                    sort=alt.SortField(field="sort"),
-                ),
-                y=alt.Y("y", axis=alt.Axis(title=y_title)),
-            )
-        )
+    df = pd.DataFrame({"x": x_values, "y": y_values, "sort": sort})
 
-    else:
-        return (
-            alt.Chart(pd.DataFrame({"x": x_values, "y": y_values}))
-            .mark_bar()
-            .encode(
-                x=alt.X("x", axis=alt.Axis(title=x_title)),
-                y=alt.Y("y", axis=alt.Axis(title=y_title)),
-            )
+    if sort is not None:
+        x_axis = alt.X(
+            "x",
+            axis=alt.Axis(title=x_title),
+            sort=alt.SortField(field="sort"),
         )
+    else:
+        x_axis = alt.X("x", axis=alt.Axis(title=x_title))
+
+    return (
+        alt.Chart(df)
+        .mark_bar()
+        .encode(
+            x=x_axis,
+            y=alt.Y("y", axis=alt.Axis(title=y_title)),
+        )
+    )

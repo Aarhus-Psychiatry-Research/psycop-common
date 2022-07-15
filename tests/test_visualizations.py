@@ -7,8 +7,8 @@ import pytest
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_bar_chart
 from psycopt2d.visualization.performance_over_time import (
-    plot_auc_time_from_first_visit,
-    plot_metric_time_until_diagnosis,
+    plot_auc_by_time_from_first_visit,
+    plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
 from psycopt2d.visualization.sens_over_time import (
@@ -82,7 +82,7 @@ def test_plot_performance_by_calendar_time(df):
 def test_plot_metric_until_diagnosis(df):
     alt.data_transformers.disable_max_rows()
 
-    plot_metric_time_until_diagnosis(
+    plot_metric_by_time_until_diagnosis(
         labels=df["label"],
         y_hat=df["pred"],
         diagnosis_timestamps=df["timestamp_t2d_diag"],
@@ -93,7 +93,7 @@ def test_plot_metric_until_diagnosis(df):
 def test_plot_auc_time_from_first_visit(df):
     alt.data_transformers.disable_max_rows()
 
-    plot_auc_time_from_first_visit(
+    plot_auc_by_time_from_first_visit(
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
         first_visit_timestamps=df["timestamp_first_pred_time"],

@@ -2,7 +2,6 @@
 1. AUC by calendar time
 2. AUC by time from first visit
 3. AUC by time until diagnosis
-TODO: change default bins to something sensible in time to metric
 """
 from typing import Callable, Iterable, List
 
@@ -10,7 +9,6 @@ import altair as alt
 import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score
-from wasabi import msg
 
 from psycopt2d.utils import bin_continuous_data, round_floats_to_edge
 from psycopt2d.visualization.base_charts import plot_bar_chart
@@ -32,24 +30,11 @@ def _calc_performance(df: pd.DataFrame, metric: Callable) -> float:
         return metric(df["y"], df["y_hat"])
 
 
-def time_difference_in_days(t1: pd.Series, t2: pd.Series) -> pd.Series:
-    """Calculate time difference in days between two series.
-
-    Args:
-        t1 (pd.Series): first time series
-        t2 (pd.Series): second time series
-
-    Returns:
-        pd.Series: Series of time differences in days
-    """
-    return (t1 - t2) / np.timedelta64(1, "D")
-
-
 def create_performance_by_calendar_time_df(
     labels: Iterable[int],
     y_hat: Iterable[int],
     timestamps: Iterable[pd.Timestamp],
-    metric: Callable,
+    metric_fn: Callable,
     bin_period: str,
 ) -> pd.DataFrame:
     """Calculate performance by calendar time of prediction.
@@ -66,7 +51,7 @@ def create_performance_by_calendar_time_df(
     """
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
     df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
-    output_df = df.groupby("time_bin").apply(_calc_performance, metric)
+    output_df = df.groupby("time_bin").apply(_calc_performance, metric_fn)
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
 
@@ -75,9 +60,9 @@ def plot_performance_by_calendar_time(
     labels: Iterable[int],
     y_hat: Iterable[int],
     timestamps: Iterable[pd.Timestamp],
-    metric: Callable = roc_auc_score,
-    bin_period: str = "M",
-    y_title: str = "AUC",
+    metric_fn: Callable,
+    bin_period: str,
+    y_title: str,
 ) -> alt.Chart:
     """Plot performance by calendar time of prediciton.
 
@@ -85,10 +70,9 @@ def plot_performance_by_calendar_time(
         labels (Iterable[int]): True labels
         y_hat (Iterable[int]): Predicted label of probability depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
-        metric (Callable, optional): Which metric to calculate. Defaults to roc_auc_score.
-        bin_period (str, optional): Which time period to bin on. Defaults to "M",
-        which calculates performance on the monthly level
-        y_title (str, optional): Title of y-axis. Defaults to "AUC".
+        metric_fn (Callable, optional): Which metric to calculate.
+        bin_period (str, optional): Which time period to bin on. Takes "M" or "Y".
+        y_title (str, optional): Title of y-axis.
 
     Returns:
         alt.Chart: Bar chart of performance
@@ -97,12 +81,10 @@ def plot_performance_by_calendar_time(
         labels=labels,
         y_hat=y_hat,
         timestamps=timestamps,
-        metric=metric,
+        metric_fn=metric_fn,
         bin_period=bin_period,
     )
     sort_order = np.arange(len(df))
-    if y_title == "AUC" and metric != roc_auc_score:
-        msg.warning("Title is AUC but metric might not be!")
     return plot_bar_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
@@ -112,16 +94,16 @@ def plot_performance_by_calendar_time(
     )
 
 
-def create_performance_from_time_from_event_df(
+def create_performance_by_time_from_event_df(
     labels: Iterable[int],
     y_hat: Iterable[int],
     event_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    metric: Callable,
+    metric_fn: Callable,
     direction: str,
     bins: List[int],
     pretty_bins: bool = True,
-    drop_na_events: bool = False,
+    drop_na_events: bool = True,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
     some event (e.g. time of diagnosis, time from first visit).
@@ -131,12 +113,13 @@ def create_performance_from_time_from_event_df(
         y_hat (Iterable[int]): Predicted probabilities or labels depending on metric
         event_timestamps (Iterable[pd.Timestamp]): Timestamp of event (e.g. first visit)
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
-        metric (Callable): Which performance metric function to use (e.g. roc_auc_score)
+        metric_fn (Callable): Which performance metric function to use (e.g. roc_auc_score)
         direction (str, optional): Which direction to calculate time difference.
         Can either be 'prediction-event' or 'event-prediction'.
         bins (list, optional): Bins to group by.
-        pretty_bins (bool, optional): Whether to prettify bin names. Defaults to True.
-        drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to False.
+        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
+        bins look like "1-7" instead of "[1-7)". Defaults to True.
+        drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
@@ -156,15 +139,15 @@ def create_performance_from_time_from_event_df(
 
     # Calculate difference in days between prediction and event
     if direction == "event-prediction":
-        df["days_from_event"] = time_difference_in_days(
-            df["event_timestamp"],
-            df["prediction_timestamp"],
-        )
+        df["days_from_event"] = (
+            df["event_timestamp"] - df["prediction_timestamp"]
+        ) / np.timedelta64(1, "D")
+
     elif direction == "prediction-event":
-        df["days_from_event"] = time_difference_in_days(
-            df["prediction_timestamp"],
-            df["event_timestamp"],
-        )
+        df["days_from_event"] = (
+            df["prediction_timestamp"] - df["event_timestamp"]
+        ) / np.timedelta64(1, "D")
+
     else:
         raise ValueError(
             f"Direction should be one of ['event-prediction', 'prediction-event'], not {direction}",
@@ -175,12 +158,12 @@ def create_performance_from_time_from_event_df(
     df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
 
     # Calc performance and prettify output
-    output_df = df.groupby("days_from_event_binned").apply(_calc_performance, metric)
+    output_df = df.groupby("days_from_event_binned").apply(_calc_performance, metric_fn)
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
 
 
-def plot_auc_time_from_first_visit(
+def plot_auc_by_time_from_first_visit(
     labels: Iterable[int],
     y_hat_probs: Iterable[int],
     first_visit_timestamps: Iterable[pd.Timestamp],
@@ -196,13 +179,14 @@ def plot_auc_time_from_first_visit(
         first_visit_timestamps (Iterable[pd.Timestamp]): Timestamps of the first visit
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamps of the predictions
         bins (list, optional): Bins to group by. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
-        pretty_bins (bool, optional): Prettify bin names. Defaults to True.
+        pretty_bins (bool, optional): Prettify bin names. I.e. make
+        bins look like "1-7" instead of "[1-7)" Defaults to True.
 
     Returns:
         alt.Chart: Altair bar chart
     """
 
-    df = create_performance_from_time_from_event_df(
+    df = create_performance_by_time_from_event_df(
         labels=labels,
         y_hat=y_hat_probs,
         event_timestamps=first_visit_timestamps,
@@ -211,7 +195,7 @@ def plot_auc_time_from_first_visit(
         bins=bins,
         pretty_bins=pretty_bins,
         drop_na_events=False,
-        metric=roc_auc_score,
+        metric_fn=roc_auc_score,
     )
 
     sort_order = np.arange(len(df))
@@ -224,7 +208,7 @@ def plot_auc_time_from_first_visit(
     )
 
 
-def plot_metric_time_until_diagnosis(
+def plot_metric_by_time_until_diagnosis(
     labels: Iterable[int],
     y_hat: Iterable[int],
     diagnosis_timestamps: Iterable[pd.Timestamp],
@@ -234,14 +218,8 @@ def plot_metric_time_until_diagnosis(
         -730,
         -365,
         -182,
-        -28,
-        -14,
-        -7,
         -1,
         0,
-        1,
-        7,
-        14,
         28,
         182,
         365,
@@ -249,7 +227,7 @@ def plot_metric_time_until_diagnosis(
         1825,
     ],
     pretty_bins: bool = True,
-    metric: Callable = f1_score,
+    metric_fn: Callable = f1_score,
     y_title: str = "F1",
 ) -> alt.Chart:
     """Plots performance of a specified performance metric in bins of time
@@ -261,17 +239,15 @@ def plot_metric_time_until_diagnosis(
         y_hat (Iterable[int]): Predicted label
         diagnosis_timestamps (Iterable[pd.Timestamp]): Timestamp of diagnosis
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
-        y_title (str): Title for y-axis (metric name)
         bins (list, optional): Bins to group by. Negative values indicate days after
         diagnosis. Defaults to [ -1825, -730, -365, -182, -28, -14, -7, -1, 0, 1, 7, 14, 28, 182, 365, 730, 1825] (which is stupid).
         pretty_bins (bool, optional): Whether to prettify bin names. Defaults to True.
-        metric (Callable): Which performance metric to use. Defaults to f1_score
+        metric_fn (Callable): Which performance metric  function to use.
+        y_title (str): Title for y-axis (metric name)
     Returns:
         alt.Chart: Altair bar chart
     """
-    if y_title == "F1" and metric != f1_score:
-        msg.warning("Title is F1 but metric might not be!")
-    df = create_performance_from_time_from_event_df(
+    df = create_performance_by_time_from_event_df(
         labels=labels,
         y_hat=y_hat,
         event_timestamps=diagnosis_timestamps,
@@ -280,7 +256,7 @@ def plot_metric_time_until_diagnosis(
         bins=bins,
         pretty_bins=pretty_bins,
         drop_na_events=True,
-        metric=metric,
+        metric_fn=metric_fn,
     )
     sort_order = np.arange(len(df))
 
