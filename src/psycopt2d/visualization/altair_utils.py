@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Union
 
-from altair.vegalite.v4.api import Chart
-
 import wandb
+from altair.vegalite.v4.api import Chart
 
 
 def altair_chart_to_file(
