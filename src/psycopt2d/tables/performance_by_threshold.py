@@ -68,10 +68,10 @@ def generate_performance_by_threshold_table(
         rows.append(threshold_metrics)
 
     df = pd.concat(rows)
-    df["warning_days_per_false_positive"] = round(
-        (threshold_metrics["warning_days"] / threshold_metrics["false_positives"]),
-        2,
-    )
+
+    df["warning_days_per_false_positive"] = (
+        df["warning_days"] / df["false_positives"]
+    ).round(1)
 
     if output_format == "html":
         return df.reset_index(drop=True).to_html()
