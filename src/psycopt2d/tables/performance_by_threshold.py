@@ -206,8 +206,6 @@ def days_from_positive_to_diagnosis(
         0,
     )
 
-    df_mistakes = df[df["warning_days"] < 0]  # noqa
-
     df = df[
         [
             "id",

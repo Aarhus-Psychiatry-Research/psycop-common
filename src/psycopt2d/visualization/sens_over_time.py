@@ -90,7 +90,7 @@ def plot_sensitivity_by_time_to_outcome(
     threshold_percentiles: List[float],
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: List[int] = [0, 1, 7, 14, 28, 182, 365, 730, 1825],
+    bins: List[int] = [0, 28, 182, 365, 730, 1825],
 ):
     """Plot sensitivity by time to outcome.
 
