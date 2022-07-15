@@ -36,23 +36,23 @@ def test_generate_performance_by_threshold_table(synth_data):
 
     expected_df = pd.DataFrame(
         {
-            "threshold_percentile": {0: 0.99, 1: 0.5, 2: 0.01},
-            "true_prevalence": {0: 0.0502, 1: 0.0502, 2: 0.0502},
-            "positive_rate": {0: 0.01, 1: 0.5, 2: 0.5511},
-            "negative_rate": {0: 0.99, 1: 0.5, 2: 0.4489},
-            "PPV": {0: 0.06, 1: 0.0502, 2: 0.0502},
-            "NPV": {0: 0.9499, 1: 0.9497, 2: 0.9497},
-            "sensitivity": {0: 0.0119, 1: 0.4997, 2: 0.5503},
-            "specificity": {0: 0.9901, 1: 0.5, 2: 0.4488},
-            "FPR": {0: 0.0099, 1: 0.5, 2: 0.5512},
-            "FNR": {0: 0.9881, 1: 0.5003, 2: 0.4497},
-            "accuracy": {0: 0.941, 1: 0.5, 2: 0.4539},
-            "warning_days": {0: 70822, 1: 2618039, 2: 4609550},
-            "warning_days_per_false_positive": {0: 88.05, 1: 88.05, 2: 88.05},
-            "true_positives": {0: 60, 1: 2510, 2: 2764},
-            "true_negatives": {0: 94037, 1: 47487, 2: 42627},
-            "false_positives": {0: 940, 1: 47490, 2: 52350},
-            "false_negatives": {0: 4963, 1: 2513, 2: 2259},
+            "threshold_percentile": {0: 0.2, 1: 0.1},
+            "true_prevalence": {0: 0.0502, 1: 0.0502},
+            "positive_rate": {0: 0.3497, 1: 0.4517},
+            "negative_rate": {0: 0.6503, 1: 0.5483},
+            "PPV": {0: 0.0491, 1: 0.0501},
+            "NPV": {0: 0.9492, 1: 0.9497},
+            "sensitivity": {0: 0.3418, 1: 0.4507},
+            "specificity": {0: 0.6499, 1: 0.5483},
+            "FPR": {0: 0.3501, 1: 0.4517},
+            "FNR": {0: 0.6582, 1: 0.5493},
+            "accuracy": {0: 0.6344, 1: 0.5434},
+            "true_positives": {0: 1717, 1: 2264},
+            "true_negatives": {0: 61728, 1: 52074},
+            "false_positives": {0: 33249, 1: 42903},
+            "false_negatives": {0: 3306, 1: 2759},
+            "warning_days": {0: 1880143.0, 1: 2412489.0},
+            "warning_days_per_false_positive": {0: 56.23, 1: 56.23},
         },
     )
 
@@ -64,25 +64,23 @@ def test_time_from_flag_to_diag(synth_data):
     df = synth_data
 
     # Threshold = 0.5
-    assert (
-        days_from_positive_to_diagnosis(
-            ids=df["dw_ek_borger"],
-            pred_probs=df["pred_prob"],
-            pred_timestamps=df["timestamp"],
-            outcome_timestamps=df["timestamp_t2d_diag"],
-            positive_threshold=0.5,
-        )
-        == 290996
+    val = days_from_positive_to_diagnosis(
+        ids=df["dw_ek_borger"],
+        pred_probs=df["pred_prob"],
+        pred_timestamps=df["timestamp"],
+        outcome_timestamps=df["timestamp_t2d_diag"],
+        positive_threshold=0.5,
     )
 
+    assert val > 290_000 and val < 292_000
+
     # Threshold = 0.2
-    assert (
-        days_from_positive_to_diagnosis(
-            ids=df["dw_ek_borger"],
-            pred_probs=df["pred_prob"],
-            pred_timestamps=df["timestamp"],
-            outcome_timestamps=df["timestamp_t2d_diag"],
-            positive_threshold=0.2,
-        )
-        == 1_878_900
+    val = days_from_positive_to_diagnosis(
+        ids=df["dw_ek_borger"],
+        pred_probs=df["pred_prob"],
+        pred_timestamps=df["timestamp"],
+        outcome_timestamps=df["timestamp_t2d_diag"],
+        positive_threshold=0.2,
     )
+
+    assert val > 1_875_000 and val < 1_885_000
