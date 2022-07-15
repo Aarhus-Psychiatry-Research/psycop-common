@@ -53,8 +53,9 @@ jobs:
     ### Run tests
     - name: Parralelise pytest
       run: |
-        echo "[pytest]\naddopts=-n 2" > pytest.ini
-        
+        echo "[pytest]\naddopts='-n 2'" > pytest.ini
+        cat pytest.ini
+
     - name: Source .venv
       run: |
         source $VENV
