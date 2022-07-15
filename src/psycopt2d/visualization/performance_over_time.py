@@ -168,7 +168,7 @@ def plot_auc_by_time_from_first_visit(
     y_hat_probs: Iterable[int],
     first_visit_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
+    bins=[0, 28, 182, 365, 730, 1825],
     pretty_bins: bool = True,
 ) -> alt.Chart:
     """Plot AUC as a function of time to first visit.
@@ -178,7 +178,7 @@ def plot_auc_by_time_from_first_visit(
         y_hat_probs (Iterable[int]): Predicted probabilities
         first_visit_timestamps (Iterable[pd.Timestamp]): Timestamps of the first visit
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamps of the predictions
-        bins (list, optional): Bins to group by. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
+        bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
         pretty_bins (bool, optional): Prettify bin names. I.e. make
         bins look like "1-7" instead of "[1-7)" Defaults to True.
 
