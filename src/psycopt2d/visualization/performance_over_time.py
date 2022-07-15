@@ -222,6 +222,7 @@ def plot_metric_by_time_until_diagnosis(
         -730,
         -365,
         -182,
+        -28,
         -1,
         0,
         28,
