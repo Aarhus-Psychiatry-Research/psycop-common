@@ -72,7 +72,9 @@ def create_sensitivity_by_time_to_outcome_df(
     # Prep for plotting
     ## Save the threshold for each bin
     output_df["threshold"] = threshold
-    output_df["threshold_percentile"] = threshold_percentile
+    output_df["threshold_percentile"] = (
+        threshold_percentile if threshold_percentile > 1 else threshold_percentile * 100
+    )
 
     output_df = output_df.reset_index()
 
