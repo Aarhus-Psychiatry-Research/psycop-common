@@ -22,6 +22,11 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
 
+    ## setup chromedriver for saving Altair plots
+    - name: setup-chromedriver
+    uses: nanasess/setup-chromedriver@v1.0.7
+
+
     ### Caching
     - name: Load cached $HOME/.local (cache poetry)
       uses: actions/cache@v2.1.6
