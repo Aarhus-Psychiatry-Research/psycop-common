@@ -3,6 +3,7 @@ from pathlib import Path
 import altair as alt
 import pandas as pd
 import pytest
+from sklearn.metrics import f1_score, roc_auc_score
 
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_bar_chart
@@ -79,6 +80,8 @@ def test_plot_performance_by_calendar_time(df):
         y_hat=df["pred"],
         timestamps=df["timestamp"],
         bin_period="M",
+        metric_fn=roc_auc_score,
+        y_title="AUC",
     )
 
 
@@ -90,6 +93,8 @@ def test_plot_metric_until_diagnosis(df):
         y_hat=df["pred"],
         diagnosis_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
+        metric_fn=f1_score,
+        y_title="F1",
     )
 
 
