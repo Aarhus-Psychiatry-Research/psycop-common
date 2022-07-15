@@ -31,7 +31,6 @@ jobs:
         key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/pytest.yml') }}
 
     - name: Install Poetry
-      if: steps.cached-poetry-install.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
       with:
         virtualenvs-create: true
