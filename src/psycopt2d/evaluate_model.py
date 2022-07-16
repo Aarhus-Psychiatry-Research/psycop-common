@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Iterable, Optional
 
 import altair as alt
 import numpy as np
 import pandas as pd
 import wandb
 from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.pipeline import Pipeline
 
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_threshold_table,
@@ -12,6 +13,7 @@ from psycopt2d.tables.performance_by_threshold import (
 from psycopt2d.utils import pred_proba_to_threshold_percentiles
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
+    plot_feature_importances,
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
@@ -21,8 +23,10 @@ from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_o
 
 def evaluate_model(
     cfg,
+    pipe: Pipeline,
     eval_dataset: pd.DataFrame,
     y_col_name: str,
+    train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
     run: Optional[wandb.run],
 ):
@@ -66,6 +70,19 @@ def evaluate_model(
 
     # Figures
     plots = {}
+
+    # Feature importance
+    # Check if model has feature_importances_ attribute
+    feature_importances = getattr(pipe["model"], "feature_importances_", None)
+    if feature_importances:
+        plots.update(
+            {
+                "feature_importance": plot_feature_importances(
+                    train_col_names,
+                    feature_importances,
+                ),
+            },
+        )
 
     ## Sensitivity by time to outcome
     plots.update(

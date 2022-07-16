@@ -214,8 +214,10 @@ def main(cfg):
     # Evaluate: Calculate performance metrics and log to wandb
     evaluate_model(
         cfg=cfg,
+        pipe=pipe,
         eval_dataset=eval_dataset,
         y_col_name=OUTCOME_COL_NAME,
+        train_col_names=TRAIN_COL_NAMES,
         y_hat_prob_col_name=y_hat_prob_col_name,
         run=run,
     )

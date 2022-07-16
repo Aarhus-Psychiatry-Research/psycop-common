@@ -3,7 +3,6 @@ from typing import Dict, Iterable, List, Union
 
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 from psycopmlutils.model_performance import ModelPerformance
 from sklearn.impute import SimpleImputer
 from wasabi import msg
@@ -104,13 +103,6 @@ def round_floats_to_edge(series: pd.Series, bins: List[float]):
     labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
 
     return pd.cut(series, bins=bins, labels=labels)
-
-
-def plot_xgb_feature_importances(val_X_column_names, model):
-    sorted_idx = model.feature_importances_.argsort()
-    plt.barh(val_X_column_names[sorted_idx], model.feature_importances_[sorted_idx])
-    plt.autoscale()
-    plt.subplots_adjust(left=0.5, bottom=0.171, right=0.92, top=0.92)
 
 
 def convert_all_to_binary(ds, skip):
