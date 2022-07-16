@@ -210,5 +210,4 @@ def pred_proba_to_threshold_percentiles(
     if max(threshold_percentiles) > 1:
         threshold_percentiles = [x / 100 for x in threshold_percentiles]
 
-    thresholds = pd.Series(pred_probs).quantile(threshold_percentiles)
-    return dict(zip(threshold_percentiles, thresholds))
+    return pd.Series(pred_probs).quantile(threshold_percentiles).tolist()

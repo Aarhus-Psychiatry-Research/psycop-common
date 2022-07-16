@@ -14,6 +14,7 @@ from psycopt2d.visualization import (
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
+from psycopt2d.utils import pred_proba_to_threshold_percentiles
 from psycopt2d.visualization.altair_utils import log_altair_to_wandb
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
 
@@ -35,6 +36,11 @@ def evaluate_model(
         cfg.data.pred_timestamp_col_name
     ].transform("min")
 
+    pred_proba_thresholds = pred_proba_to_threshold_percentiles(
+        pred_probs=y_hat_probs,
+        threshold_percentiles=cfg.evaluation.threshold_percentiles,
+    )
+
     alt.data_transformers.disable_max_rows()
 
     print(f"AUC: {auc}")
@@ -49,6 +55,7 @@ def evaluate_model(
         labels=y,
         pred_probs=y_hat_probs,
         threshold_percentiles=cfg.evaluation.threshold_percentiles,
+        pred_proba_thresholds=pred_proba_thresholds,
         ids=eval_dataset[cfg.data.id_col_name],
         pred_timestamps=pred_timestamps,
         outcome_timestamps=outcome_timestamps,
@@ -67,6 +74,7 @@ def evaluate_model(
                 labels=y,
                 y_hat_probs=y_hat_probs,
                 threshold_percentiles=cfg.evaluation.threshold_percentiles,
+                pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
             ),

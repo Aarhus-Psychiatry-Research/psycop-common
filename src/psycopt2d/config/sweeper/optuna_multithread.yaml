@@ -3,6 +3,7 @@ defaults:
   - override /hydra/sweeper: optuna
   - override /hydra/sweeper/sampler: tpe
   - override /hydra/launcher: joblib
+  - override /project/wandb_mode: dryrun
 
 hydra:
   sweeper:

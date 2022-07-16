@@ -5,13 +5,12 @@ import pandas as pd
 import wandb
 from sklearn.metrics import confusion_matrix
 
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
-
 
 def generate_performance_by_threshold_table(
     labels: Iterable[Union[int, float]],
     pred_probs: Iterable[Union[int, float]],
     threshold_percentiles: Iterable[Union[int, float]],
+    pred_proba_thresholds: Iterable[float],
     ids: Iterable[Union[int, float]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
@@ -25,6 +24,7 @@ def generate_performance_by_threshold_table(
         pred_probs (Iterable[int, float]): Predicted probabilities.
         threshold_percentiles (Iterable[float]): Threshold-percentiles to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
+        pred_proba_thresholds (Iterable[float]): Thresholds above which predictions are classified as positive.
         ids (Iterable[Union[int, float]]): Ids to group on.
         pred_timestamps (Iterable[ pd.Timestamp ]): Timestamp for each prediction time.
         output_format (str, optional): Format to output - either "df" or "html". Defaults to "df".
@@ -33,15 +33,14 @@ def generate_performance_by_threshold_table(
         pd.DataFrame
     """
 
-    thresholds = pred_proba_to_threshold_percentiles(
-        pred_probs=pred_probs,
-        threshold_percentiles=threshold_percentiles,
-    )
+    # Round decimals to percent, e.g. 0.99 -> 99%
+    if min(threshold_percentiles) < 1:
+        threshold_percentiles = [x * 100 for x in threshold_percentiles]
 
     rows = []
 
     # For each percentile, calculate relevant performance metrics
-    for i, threshold_value in enumerate(thresholds):
+    for i, threshold_value in enumerate(pred_proba_thresholds):
         threshold_metrics = pd.DataFrame(
             {"threshold_percentile": [threshold_percentiles[i]]},
         )
@@ -58,21 +57,34 @@ def generate_performance_by_threshold_table(
             axis=1,
         )
 
-        threshold_metrics["warning_days"] = days_from_positive_to_diagnosis(
+        threshold_metrics["total_warning_days"] = days_from_first_positive_to_diagnosis(
             ids=ids,
             pred_probs=pred_probs,
             pred_timestamps=pred_timestamps,
             outcome_timestamps=outcome_timestamps,
             positive_threshold=threshold_value,
+            aggregation_method="sum",
+        )
+
+        threshold_metrics["mean_warning_days"] = round(
+            days_from_first_positive_to_diagnosis(
+                ids=ids,
+                pred_probs=pred_probs,
+                pred_timestamps=pred_timestamps,
+                outcome_timestamps=outcome_timestamps,
+                positive_threshold=threshold_value,
+                aggregation_method="mean",
+            ),
+            0,
         )
 
         rows.append(threshold_metrics)
 
     df = pd.concat(rows)
-    df["warning_days_per_false_positive"] = round(
-        (threshold_metrics["warning_days"] / threshold_metrics["false_positives"]),
-        2,
-    )
+
+    df["warning_days_per_false_positive"] = (
+        df["total_warning_days"] / df["false_positives"]
+    ).round(1)
 
     if output_format == "html":
         return df.reset_index(drop=True).to_html()
@@ -152,12 +164,13 @@ def performance_by_threshold(
     return metrics_matrix.reset_index(drop=True)
 
 
-def days_from_positive_to_diagnosis(
+def days_from_first_positive_to_diagnosis(
     ids: Iterable[Union[float, str]],
     pred_probs: Iterable[Union[float, str]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
     positive_threshold: float = 0.5,
+    aggregation_method: str = "sum",
 ) -> float:
     """Calculate number of days from the first positive prediction to the
     patient's outcome timestamp.
@@ -168,10 +181,12 @@ def days_from_positive_to_diagnosis(
         pred_timestamps (Iterable[pd.Timestamp]): _description_
         outcome_timestamps (Iterable[pd.Timestamp]): _description_
         positive_threshold (float, optional): _description_. Defaults to 0.5.
+        aggregation_method (str, optional): How to aggregate the warning days. Defaults to "sum".
 
     Returns:
         float: _description_
     """
+    # Generate df
     df = pd.DataFrame(
         {
             "id": ids,
@@ -181,28 +196,29 @@ def days_from_positive_to_diagnosis(
         },
     )
 
-    timestamp_cols = ["pred_timestamps", "outcome_timestamps"]
-
-    for col in timestamp_cols:
-        df[col] = pd.to_datetime(df[col])
-
-    # Get min date among true positives
+    # Keep only true positives
     df["true_positive"] = (df["pred_probs"] >= positive_threshold) & (
         df["outcome_timestamps"].notnull()
     )
     df = df[df["true_positive"]]
 
+    # Find timestamp of first positive prediction
     df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
         "min",
     )
     df = df[df["timestamp_first_pos_pred"].notnull()]
 
+    # Keep only one record per patient
     df = df.drop_duplicates(
         subset=["id", "timestamp_first_pos_pred", "outcome_timestamps"],
     )
 
-    # Compare to timestamp_t2d_diag
-    df["warning_days"] = df["outcome_timestamps"] - df["timestamp_first_pos_pred"]
+    # Calculate warning days
+    df["warning_days"] = round(
+        (df["outcome_timestamps"] - df["timestamp_first_pos_pred"])
+        / np.timedelta64(1, "D"),
+        0,
+    )
 
     df = df[
         [
@@ -213,6 +229,6 @@ def days_from_positive_to_diagnosis(
         ]
     ]
 
-    warning_days = (df["warning_days"] / np.timedelta64(1, "D")).astype(int).agg("sum")
+    warning_days = df["warning_days"].agg(aggregation_method)
 
     return warning_days

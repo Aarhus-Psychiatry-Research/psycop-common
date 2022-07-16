@@ -75,12 +75,14 @@ def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
     if cfg.data.source.lower() == "sql":
         train = load_dataset(
             split_names="train",
+            table_name=cfg.data.table_name,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
         )
         val = load_dataset(
             split_names="val",
+            table_name=cfg.data.table_name,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
