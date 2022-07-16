@@ -74,7 +74,7 @@ def evaluate_model(
     # Feature importance
     # Check if model has feature_importances_ attribute
     feature_importances = getattr(pipe["model"], "feature_importances_", None)
-    if feature_importances:
+    if feature_importances is not None:
         plots.update(
             {
                 "feature_importance": plot_feature_importances(
