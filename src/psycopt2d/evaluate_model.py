@@ -9,12 +9,12 @@ from sklearn.metrics import f1_score, roc_auc_score
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_threshold_table,
 )
+from psycopt2d.utils import pred_proba_to_threshold_percentiles
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
 from psycopt2d.visualization.altair_utils import log_altair_to_wandb
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
 
