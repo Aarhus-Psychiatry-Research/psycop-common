@@ -1,2 +1,2 @@
 from .performance_by_threshold import generate_performance_by_threshold_table
-from .tables import auc_by_group_table
+from .tables import auc_by_group_table, generate_feature_importances_table

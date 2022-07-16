@@ -7,6 +7,7 @@ import wandb
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 
+from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_threshold_table,
 )
@@ -78,20 +79,25 @@ def evaluate_model(
     if feature_importances is not None:
         # Handle EBM and other models a bit differently
         if cfg.model.model_name != "ebm":
-            feature_importances_plot = plot_feature_importances(
-                column_names=train_col_names,
-                feature_importances=feature_importances,
-                top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
-            )
+            feature_names = pipe["model"].feature_names
         else:
-            feature_importances_plot = plot_feature_importances(
-                column_names=pipe["model"].feature_names,
-                feature_importances=feature_importances,
-                top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
-            )
+            feature_names = train_col_names
+
+        feature_importances_plot = plot_feature_importances(
+            column_names=feature_names,
+            feature_importances=feature_importances,
+            top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+        )
         plots.update(
             {"feature_importance": feature_importances_plot},
         )
+        # Log as table too for readability
+        feature_importances_table = generate_feature_importances_table(
+            column_names=feature_names,
+            feature_importances=feature_importances,
+            top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+        )
+        run.log({"feature_importance_table": feature_importances_table})
 
     ## Sensitivity by time to outcome
     plots.update(
