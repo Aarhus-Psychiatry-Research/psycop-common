@@ -78,7 +78,7 @@ def evaluate_model(
 
     if feature_importances is not None:
         # Handle EBM and other models a bit differently
-        if cfg.model.model_name != "ebm":
+        if cfg.model.model_name == "ebm":
             feature_names = pipe["model"].feature_names
         else:
             feature_names = train_col_names
@@ -95,7 +95,6 @@ def evaluate_model(
         feature_importances_table = generate_feature_importances_table(
             column_names=feature_names,
             feature_importances=feature_importances,
-            top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
         )
         run.log({"feature_importance_table": feature_importances_table})
 
