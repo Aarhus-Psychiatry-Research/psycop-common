@@ -13,6 +13,12 @@ def plot_feature_importances(
 ) -> alt.Chart:
     """Plots feature importances.
 
+    Sklearn's standard feature importance metric is "gain"/information gain,
+    which is the decrease in node impurity after the dataset is split on an
+    attribute. Node impurity is measured by Gini impurity and is maximal when
+    the distribution of the two classes in a node is even, and minimal when the
+    classes are perfectly split.
+
     Args:
         val_X_column_names (Iterable[str]): Feature names
         feature_importances (np.ndarray): Feature importances
