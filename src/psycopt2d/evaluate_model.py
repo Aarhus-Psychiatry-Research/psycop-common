@@ -82,6 +82,7 @@ def evaluate_model(
                 "feature_importance": plot_feature_importances(
                     train_col_names,
                     feature_importances,
+                    cfg.evaluation.top_n_feature_importances,
                 ),
             },
         )
