@@ -74,17 +74,23 @@ def evaluate_model(
     # Feature importance
     # Check if model has feature_importances_ attribute
     feature_importances = getattr(pipe["model"], "feature_importances_", None)
-    # ebm also has feature_importances_ attribute, but requires different handling
-    # that should be done in a seperate function
-    if feature_importances is not None and cfg.model.model_name != "ebm":
+
+    if feature_importances is not None:
+        # Handle EBM and other models a bit differently
+        if cfg.model.model_name != "ebm":
+            feature_importances_plot = plot_feature_importances(
+                column_names=train_col_names,
+                feature_importances=feature_importances,
+                top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+            )
+        else:
+            feature_importances_plot = plot_feature_importances(
+                column_names=pipe["model"].feature_names,
+                feature_importances=feature_importances,
+                top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+            )
         plots.update(
-            {
-                "feature_importance": plot_feature_importances(
-                    train_col_names,
-                    feature_importances,
-                    cfg.evaluation.top_n_feature_importances,
-                ),
-            },
+            {"feature_importance": feature_importances_plot},
         )
 
     ## Sensitivity by time to outcome

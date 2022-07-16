@@ -183,6 +183,11 @@ def main(cfg):
         c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
     ]
 
+    # Set feature names if model is EBM to get interpretable feature importance
+    # output
+    if cfg.model.model_name == "ebm":
+        pipe["model"].feature_names = TRAIN_COL_NAMES
+
     if cfg.training.n_splits is None:  # train on pre-defined splits
         X_train = train[TRAIN_COL_NAMES]
         y_train = train[OUTCOME_COL_NAME]
