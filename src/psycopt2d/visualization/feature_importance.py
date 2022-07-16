@@ -32,4 +32,5 @@ def plot_feature_importances(
         y_values=y_values,
         x_title="Feature name",
         y_title="Feature importance",
+        sort=np.arange(len(x_values)),
     )
