@@ -1,14 +1,20 @@
 from typing import Optional
 
 import altair as alt
+import numpy as np
 import pandas as pd
 import wandb
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import f1_score, roc_auc_score
 
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_threshold_table,
 )
 from psycopt2d.utils import pred_proba_to_threshold_percentiles
+from psycopt2d.visualization import (
+    plot_auc_by_time_from_first_visit,
+    plot_metric_by_time_until_diagnosis,
+    plot_performance_by_calendar_time,
+)
 from psycopt2d.visualization.altair_utils import log_altair_to_wandb
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
 
@@ -25,6 +31,10 @@ def evaluate_model(
     auc = round(roc_auc_score(y, y_hat_probs), 3)
     outcome_timestamps = eval_dataset[cfg.data.outcome_timestamp_col_name]
     pred_timestamps = eval_dataset[cfg.data.pred_timestamp_col_name]
+    y_hat_int = np.round(y_hat_probs, 0)
+    first_visit_timestamp = eval_dataset.groupby(cfg.data.id_col_name)[
+        cfg.data.pred_timestamp_col_name
+    ].transform("min")
 
     pred_proba_thresholds = pred_proba_to_threshold_percentiles(
         pred_probs=y_hat_probs,
@@ -67,6 +77,28 @@ def evaluate_model(
                 pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
+            ),
+            "auc_by_calendar_time": plot_performance_by_calendar_time(
+                labels=y,
+                y_hat=y_hat_probs,
+                timestamps=pred_timestamps,
+                bin_period="M",
+                metric_fn=roc_auc_score,
+                y_title="AUC",
+            ),
+            "auc_by_time_from_first_visit": plot_auc_by_time_from_first_visit(
+                labels=y,
+                y_hat_probs=y_hat_probs,
+                first_visit_timestamps=first_visit_timestamp,
+                prediction_timestamps=pred_timestamps,
+            ),
+            "f1_by_time_until_diagnosis": plot_metric_by_time_until_diagnosis(
+                labels=y,
+                y_hat=y_hat_int,
+                diagnosis_timestamps=outcome_timestamps,
+                prediction_timestamps=pred_timestamps,
+                metric_fn=f1_score,
+                y_title="F1",
             ),
         },
     )
