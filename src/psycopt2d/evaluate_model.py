@@ -74,7 +74,9 @@ def evaluate_model(
     # Feature importance
     # Check if model has feature_importances_ attribute
     feature_importances = getattr(pipe["model"], "feature_importances_", None)
-    if feature_importances is not None:
+    # ebm also has feature_importances_ attribute, but requires different handling
+    # that should be done in a seperate function
+    if feature_importances is not None and cfg.model.model_name != "ebm":
         plots.update(
             {
                 "feature_importance": plot_feature_importances(

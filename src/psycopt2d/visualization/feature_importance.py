@@ -9,7 +9,7 @@ from psycopt2d.visualization.base_charts import plot_bar_chart
 
 def plot_feature_importances(
     val_X_column_names: Iterable[str],
-    feature_importances: np.ndarray,
+    feature_importances: Iterable[str],
 ) -> alt.Chart:
     """Plots feature importances.
 
@@ -20,7 +20,7 @@ def plot_feature_importances(
     Returns:
         alt.Chart: Bar chart of feature importances
     """
-    sorted_idx = feature_importances.argsort()
+    sorted_idx = np.array(feature_importances).argsort()
 
     return plot_bar_chart(
         x_values=pd.Series(val_X_column_names)[sorted_idx],
