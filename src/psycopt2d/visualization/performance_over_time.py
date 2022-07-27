@@ -94,7 +94,7 @@ def plot_performance_by_calendar_time(
         y_values=df["metric"],
         x_title="Calendar time",
         y_title=y_title,
-        sort=sort_order,
+        sort_x=sort_order,
     )
 
 
@@ -208,7 +208,7 @@ def plot_auc_by_time_from_first_visit(
         y_values=df["metric"],
         x_title="Days from first visit",
         y_title="AUC",
-        sort=sort_order,
+        sort_x=sort_order,
     )
 
 
@@ -270,5 +270,5 @@ def plot_metric_by_time_until_diagnosis(
         y_values=df["metric"],
         x_title="Days to diagnosis",
         y_title=y_title,
-        sort=sort_order,
+        sort_x=sort_order,
     )

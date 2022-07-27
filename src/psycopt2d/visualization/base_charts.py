@@ -9,21 +9,26 @@ def plot_bar_chart(
     y_values: Iterable,
     x_title: str,
     y_title: str,
-    sort: Optional[Iterable[int]] = None,
+    sort_x: Optional[Iterable[int]] = None,
+    sort_y: Optional[Iterable[int]] = None,
 ) -> alt.Chart:
-    """Plot a bar chart.
+    """_summary_
 
     Args:
-        x_values: The x values of the bar chart.
-        y_values: The y values of the bar chart.
-        sort: order of values on the x-axis
+        x_values (Iterable): The x values of the bar chart.
+        y_values (Iterable): The y values of the bar chart.
+        x_title (str): title of x axis
+        y_title (str): title of y axis
+        sort_x (Optional[Iterable[int]], optional): order of values on the x-axis. Defaults to None.
+        sort_y (Optional[Iterable[int]], optional): order of values on the y-axis. Defaults to None.
 
     Returns:
-        alt.Chart: An altair chart object.
+        alt.Chart: _description_
     """
-    df = pd.DataFrame({"x": x_values, "y": y_values, "sort": sort})
 
-    if sort is not None:
+    df = pd.DataFrame({"x": x_values, "y": y_values, "sort": sort_x})
+
+    if sort_x is not None:
         x_axis = alt.X(
             "x",
             axis=alt.Axis(title=x_title),
@@ -32,11 +37,20 @@ def plot_bar_chart(
     else:
         x_axis = alt.X("x", axis=alt.Axis(title=x_title))
 
+    if sort_y is not None:
+        y_axis = alt.Y(
+            "y",
+            axis=alt.Axis(title=y_title),
+            sort=alt.SortField(field="sort"),
+        )
+    else:
+        y_axis = alt.Y("y", axis=alt.Axis(title=y_title))
+
     return (
         alt.Chart(df)
         .mark_bar()
         .encode(
             x=x_axis,
-            y=alt.Y("y", axis=alt.Axis(title=y_title)),
+            y=y_axis,
         )
     )

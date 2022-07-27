@@ -77,7 +77,7 @@ def evaluate_model(
     feature_importances = getattr(pipe["model"], "feature_importances_", None)
 
     if feature_importances is not None:
-        # Handle EBM and other models a bit differently
+        # Handle EBM differently as it autogenerates interaction terms
         if cfg.model.model_name == "ebm":
             feature_names = pipe["model"].feature_names
         else:

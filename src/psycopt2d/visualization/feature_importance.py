@@ -30,13 +30,13 @@ def plot_feature_importances(
     # argsort sorts in ascending order, need to reverse
     sorted_idx = feature_importances.argsort()[::-1]
 
-    x_values = np.array(column_names)[sorted_idx][:top_n_feature_importances]
-    y_values = feature_importances[sorted_idx][:top_n_feature_importances]
+    feature_names = np.array(column_names)[sorted_idx][:top_n_feature_importances]
+    feature_importances = feature_importances[sorted_idx][:top_n_feature_importances]
 
     return plot_bar_chart(
-        x_values=x_values,
-        y_values=y_values,
-        x_title="Feature name",
-        y_title="Feature importance",
-        sort=np.arange(len(x_values)),
+        x_values=feature_importances,
+        y_values=feature_names,
+        x_title="Feature importance (gain)",
+        y_title="Feature name",
+        sort_y=np.arange(len(feature_importances)),
     )
