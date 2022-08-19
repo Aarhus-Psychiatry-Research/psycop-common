@@ -6,10 +6,10 @@ import wandb
 from sklearn.metrics import confusion_matrix
 
 
-def generate_performance_by_threshold_table(
+def generate_performance_by_positive_rate_table(
     labels: Iterable[Union[int, float]],
     pred_probs: Iterable[Union[int, float]],
-    threshold_percentiles: Iterable[Union[int, float]],
+    positive_rate_thresholds: Iterable[Union[int, float]],
     pred_proba_thresholds: Iterable[float],
     ids: Iterable[Union[int, float]],
     pred_timestamps: Iterable[pd.Timestamp],
@@ -22,7 +22,7 @@ def generate_performance_by_threshold_table(
     Args:
         labels (Iterable[int, float]): True labels.
         pred_probs (Iterable[int, float]): Predicted probabilities.
-        threshold_percentiles (Iterable[float]): Threshold-percentiles to add to the table, e.g. 0.99, 0.98 etc.
+        positive_rate_thresholds (Iterable[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
         pred_proba_thresholds (Iterable[float]): Thresholds above which predictions are classified as positive.
         ids (Iterable[Union[int, float]]): Ids to group on.
@@ -34,27 +34,17 @@ def generate_performance_by_threshold_table(
     """
 
     # Round decimals to percent, e.g. 0.99 -> 99%
-    if min(threshold_percentiles) < 1:
-        threshold_percentiles = [x * 100 for x in threshold_percentiles]
+    if min(positive_rate_thresholds) < 1:
+        positive_rate_thresholds = [x * 100 for x in positive_rate_thresholds]
 
     rows = []
 
     # For each percentile, calculate relevant performance metrics
-    for i, threshold_value in enumerate(pred_proba_thresholds):
-        threshold_metrics = pd.DataFrame(
-            {"threshold_percentile": [threshold_percentiles[i]]},
-        )
-
-        threshold_metrics = pd.concat(
-            [
-                threshold_metrics,
-                performance_by_threshold(
-                    labels=labels,
-                    pred_probs=pred_probs,
-                    positive_threshold=threshold_value,
-                ),
-            ],
-            axis=1,
+    for threshold_value in pred_proba_thresholds:
+        threshold_metrics = performance_by_threshold(
+            labels=labels,
+            pred_probs=pred_probs,
+            positive_threshold=threshold_value,
         )
 
         threshold_metrics["total_warning_days"] = days_from_first_positive_to_diagnosis(
@@ -62,7 +52,7 @@ def generate_performance_by_threshold_table(
             pred_probs=pred_probs,
             pred_timestamps=pred_timestamps,
             outcome_timestamps=outcome_timestamps,
-            positive_threshold=threshold_value,
+            positive_rate_thresholds=threshold_value,
             aggregation_method="sum",
         )
 
@@ -72,7 +62,7 @@ def generate_performance_by_threshold_table(
                 pred_probs=pred_probs,
                 pred_timestamps=pred_timestamps,
                 outcome_timestamps=outcome_timestamps,
-                positive_threshold=threshold_value,
+                positive_rate_thresholds=threshold_value,
                 aggregation_method="mean",
             ),
             0,
@@ -144,9 +134,9 @@ def performance_by_threshold(
     # Must return lists as values, otherwise pd.Dataframe requires setting indeces
     metrics_matrix = pd.DataFrame(
         {
-            "true_prevalence": [true_prevalence],
             "positive_rate": [positive_rate],
             "negative_rate": [negative_rate],
+            "true_prevalence": [true_prevalence],
             "PPV": [PPV],
             "NPV": [NPV],
             "sensitivity": [Sensitivity],
@@ -169,7 +159,7 @@ def days_from_first_positive_to_diagnosis(
     pred_probs: Iterable[Union[float, str]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
-    positive_threshold: float = 0.5,
+    positive_rate_thresholds: float = 0.5,
     aggregation_method: str = "sum",
 ) -> float:
     """Calculate number of days from the first positive prediction to the
@@ -197,7 +187,7 @@ def days_from_first_positive_to_diagnosis(
     )
 
     # Keep only true positives
-    df["true_positive"] = (df["pred_probs"] >= positive_threshold) & (
+    df["true_positive"] = (df["pred_probs"] >= positive_rate_thresholds) & (
         df["outcome_timestamps"].notnull()
     )
     df = df[df["true_positive"]]

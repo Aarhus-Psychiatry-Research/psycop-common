@@ -11,8 +11,8 @@ from psycopt2d.utils import round_floats_to_edge
 def create_sensitivity_by_time_to_outcome_df(
     label: Iterable[int],
     y_hat_probs: Iterable[int],
-    threshold: float,
-    threshold_percentile: float,
+    positive_rate_threshold: float,
+    positive_rate: float,
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
@@ -31,7 +31,9 @@ def create_sensitivity_by_time_to_outcome_df(
     """
 
     # Modify pandas series to 1 if y_hat is larger than threshold, otherwise 0
-    y_hat = pd.Series(y_hat_probs).apply(lambda x: 1 if x > threshold else 0)
+    y_hat = pd.Series(y_hat_probs).apply(
+        lambda x: 1 if x > positive_rate_threshold else 0,
+    )
 
     df = pd.DataFrame(
         {
@@ -71,9 +73,9 @@ def create_sensitivity_by_time_to_outcome_df(
 
     # Prep for plotting
     ## Save the threshold for each bin
-    output_df["threshold"] = threshold
+    output_df["threshold"] = positive_rate_threshold
     output_df["threshold_percentile"] = (
-        threshold_percentile if threshold_percentile > 1 else threshold_percentile * 100
+        positive_rate if positive_rate > 1 else positive_rate * 100
     )
 
     output_df = output_df.reset_index()
@@ -89,7 +91,7 @@ def create_sensitivity_by_time_to_outcome_df(
 def plot_sensitivity_by_time_to_outcome(
     labels: Iterable[int],
     y_hat_probs: Iterable[int],
-    threshold_percentiles: Iterable[float],
+    positive_rates: Iterable[float],
     pred_proba_thresholds: Iterable[float],
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
@@ -122,10 +124,10 @@ def plot_sensitivity_by_time_to_outcome(
     df = pd.concat(
         [
             func(
-                threshold=pred_proba_thresholds[i],
-                threshold_percentile=threshold_percentiles[i],
+                positive_rate_threshold=pred_proba_thresholds[i],
+                positive_rate=positive_rates[i],
             )
-            for i in range(len(threshold_percentiles))
+            for i in range(len(positive_rates))
         ],
         axis=0,
     )
@@ -137,7 +139,7 @@ def plot_sensitivity_by_time_to_outcome(
             sort=df.days_to_outcome_binned.unique().tolist(),
             title="Days to Outcome",
         ),
-        y=alt.Y("threshold_percentile:O", title="Threshold percentile", sort="-y"),
+        y=alt.Y("positive_rate:O", title="Positive rate", sort="-y"),
     )
 
     # Heatmap

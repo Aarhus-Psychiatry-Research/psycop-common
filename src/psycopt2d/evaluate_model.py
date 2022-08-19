@@ -6,9 +6,9 @@ import wandb
 from sklearn.metrics import roc_auc_score
 
 from psycopt2d.tables.performance_by_threshold import (
-    generate_performance_by_threshold_table,
+    generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
+from psycopt2d.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization.altair_utils import log_altair_to_wandb
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
 
@@ -26,9 +26,9 @@ def evaluate_model(
     outcome_timestamps = eval_dataset[cfg.data.outcome_timestamp_col_name]
     pred_timestamps = eval_dataset[cfg.data.pred_timestamp_col_name]
 
-    pred_proba_thresholds = pred_proba_to_threshold_percentiles(
+    pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=y_hat_probs,
-        threshold_percentiles=cfg.evaluation.threshold_percentiles,
+        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
     )
 
     alt.data_transformers.disable_max_rows()
@@ -41,10 +41,10 @@ def evaluate_model(
 
     # Tables
     ## Performance by threshold
-    performance_by_threshold_df = generate_performance_by_threshold_table(
+    performance_by_threshold_df = generate_performance_by_positive_rate_table(
         labels=y,
         pred_probs=y_hat_probs,
-        threshold_percentiles=cfg.evaluation.threshold_percentiles,
+        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
         ids=eval_dataset[cfg.data.id_col_name],
         pred_timestamps=pred_timestamps,
@@ -63,7 +63,7 @@ def evaluate_model(
             "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(
                 labels=y,
                 y_hat_probs=y_hat_probs,
-                threshold_percentiles=cfg.evaluation.threshold_percentiles,
+                positive_rates=cfg.evaluation.positive_rate_thresholds,
                 pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,

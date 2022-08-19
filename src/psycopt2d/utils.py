@@ -191,23 +191,28 @@ def bin_continuous_data(series: pd.Series, bins: List[int]) -> pd.Series:
     return pd.cut(series, bins=bins, labels=labels)
 
 
-def pred_proba_to_threshold_percentiles(
+def positive_rate_to_pred_probs(
     pred_probs: pd.Series,
-    threshold_percentiles: Iterable,
+    positive_rate_thresholds: Iterable,
 ) -> List:
-    """Get thresholds for a set of percentiles. E.g. if percentile == 1, return
-    the threshold that 1% of the probabilities are above.
+    """Get thresholds for a set of percentiles. E.g. if one
+    positive_rate_threshold == 1, return the value where 1% of predicted
+    probabilities lie above.
 
     Args:
         pred_probs (pd.Sereis): Predicted probabilities.
-        threshold_percentiles (Iterable): Threshold-percentiles
+        positive_rate_thresholds (Iterable): positive_rate_thresholds
 
     Returns:
-        pd.Series: Threshodls for each percentile
+        pd.Series: Thresholds for each percentile
     """
+
     # Check if percentiles provided as whole numbers, e.g. 99, 98 etc.
     # If so, convert to float.
-    if max(threshold_percentiles) > 1:
-        threshold_percentiles = [x / 100 for x in threshold_percentiles]
+    if max(positive_rate_thresholds) > 1:
+        positive_rate_thresholds = [x / 100 for x in positive_rate_thresholds]
 
-    return pd.Series(pred_probs).quantile(threshold_percentiles).tolist()
+    # Invert thresholds for quantile calculation
+    thresholds = [1 - threshold for threshold in positive_rate_thresholds]
+
+    return pd.Series(pred_probs).quantile(thresholds).tolist()
