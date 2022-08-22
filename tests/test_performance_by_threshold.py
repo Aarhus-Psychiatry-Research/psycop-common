@@ -5,9 +5,9 @@ import pytest
 
 from psycopt2d.tables.performance_by_threshold import (
     days_from_first_positive_to_diagnosis,
-    generate_performance_by_threshold_table,
+    generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
+from psycopt2d.utils import positive_rate_to_pred_probs
 
 
 @pytest.fixture(scope="function")
@@ -25,18 +25,18 @@ def synth_data():
 def test_generate_performance_by_threshold_table(synth_data):
     df = synth_data
 
-    threshold_percentiles = [0.9, 0.5, 0.1]
+    positive_rate_thresholds = [0.9, 0.5, 0.1]
 
-    pred_proba_thresholds = pred_proba_to_threshold_percentiles(
+    pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=df["pred_prob"],
-        threshold_percentiles=threshold_percentiles,
+        positive_rate_thresholds=positive_rate_thresholds,
     )
 
-    t = generate_performance_by_threshold_table(
+    t = generate_performance_by_positive_rate_table(
         labels=df["label"],
         pred_probs=df["pred_prob"],
         ids=df["dw_ek_borger"],
-        threshold_percentiles=threshold_percentiles,
+        positive_rate_thresholds=positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
@@ -79,7 +79,7 @@ def test_time_from_flag_to_diag(synth_data):
         pred_probs=df["pred_prob"],
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
-        positive_threshold=0.5,
+        positive_rate_thresholds=0.5,
     )
 
     assert val > 290_000 and val < 292_000
@@ -90,7 +90,7 @@ def test_time_from_flag_to_diag(synth_data):
         pred_probs=df["pred_prob"],
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
-        positive_threshold=0.2,
+        positive_rate_thresholds=0.2,
     )
 
     assert val > 1_875_000 and val < 1_885_000

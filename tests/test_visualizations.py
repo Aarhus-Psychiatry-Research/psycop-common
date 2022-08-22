@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
+from psycopt2d.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_bar_chart
 from psycopt2d.visualization.feature_importance import plot_feature_importances
@@ -52,8 +52,8 @@ def test_get_sens_by_time_to_outcome_df(df):
         y_hat_probs=df["pred"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
-        threshold=0.5,
-        threshold_percentile=0.5,
+        positive_rate_threshold=0.5,
+        positive_rate=0.5,
     )
 
 
@@ -63,8 +63,8 @@ def test_plot_bar_chart(df):
         y_hat_probs=df["pred"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
-        threshold=0.5,
-        threshold_percentile=0.5,
+        positive_rate_threshold=0.5,
+        positive_rate=0.5,
     )
     plot_bar_chart(
         x_values=plot_df["days_to_outcome_binned"],
@@ -112,11 +112,11 @@ def test_plot_auc_time_from_first_visit(df):
 
 
 def test_sens_by_time_to_outcome(df):
-    threshold_percentiles = [0.9, 0.8, 0.7, 0.6, 0.5]
+    positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5]
 
-    pred_proba_thresholds = pred_proba_to_threshold_percentiles(
+    pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=df["pred_prob"],
-        threshold_percentiles=threshold_percentiles,
+        positive_rate_thresholds=positive_rate_thresholds,
     )
 
     plot_sensitivity_by_time_to_outcome(  # noqa
@@ -124,7 +124,7 @@ def test_sens_by_time_to_outcome(df):
         y_hat_probs=df["pred_prob"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
-        threshold_percentiles=threshold_percentiles,
+        positive_rates=positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
     )
