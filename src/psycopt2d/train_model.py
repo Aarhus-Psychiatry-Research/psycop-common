@@ -220,6 +220,9 @@ def main(cfg):
         run=run,
     )
 
+    # Log metadata to wandb
+    wandb.log_artifact("poetry.lock", name="poetry_lock_file", type="poetry_lock")
+
     run.finish()
 
     return roc_auc_score(
