@@ -20,12 +20,14 @@ def plot_feature_importances(
     classes are perfectly split.
 
     Args:
-        val_X_column_names (Iterable[str]): Feature names
-        feature_importances (np.ndarray): Feature importances
+        column_names (Iterable[str]): Column/feature names
+        feature_importances (Iterable[str]): Feature importances
+        top_n_feature_importances (int): Top n features to plot
 
     Returns:
-        alt.Chart: Bar chart of feature importances
+        alt.Chart: Horizontal barchart of feature importances
     """
+
     feature_importances = np.array(feature_importances)
     # argsort sorts in ascending order, need to reverse
     sorted_idx = feature_importances.argsort()[::-1]

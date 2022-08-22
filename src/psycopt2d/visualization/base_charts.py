@@ -12,7 +12,7 @@ def plot_bar_chart(
     sort_x: Optional[Iterable[int]] = None,
     sort_y: Optional[Iterable[int]] = None,
 ) -> alt.Chart:
-    """_summary_
+    """Plot a basic bar chart with Altair.
 
     Args:
         x_values (Iterable): The x values of the bar chart.
@@ -23,7 +23,7 @@ def plot_bar_chart(
         sort_y (Optional[Iterable[int]], optional): order of values on the y-axis. Defaults to None.
 
     Returns:
-        alt.Chart: _description_
+        alt.Chart: Altair chart
     """
 
     df = pd.DataFrame({"x": x_values, "y": y_values, "sort": sort_x})

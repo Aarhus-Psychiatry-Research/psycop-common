@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Iterable
 
 import altair as alt
 import numpy as np
@@ -29,8 +29,27 @@ def evaluate_model(
     y_col_name: str,
     train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
-    run: Optional[wandb.run],
+    run: wandb.run,
 ):
+    """Runs the evaluation suite on the model and logs to WandB.
+    At present, this includes:
+    1. AUC
+    2. Table of performance by pred_proba threshold
+    3. Feature importance
+    4. Sensitivity by time to outcome
+    5. AUC by calendar time
+    6. AUC by time from first visit
+    7. F1 by time until diagnosis
+
+    Args:
+        cfg (_type_): The hydra config from the run
+        pipe (Pipeline): Pipeline including the model
+        eval_dataset (pd.DataFrame): Evalaution split
+        y_col_name (str): Label column name
+        train_col_names (Iterable[str]): Column names for all predictors
+        y_hat_prob_col_name (str): Column name containing pred_proba output
+        run [wandb.run]: WandB run
+    """
     y = eval_dataset[y_col_name]
     y_hat_probs = eval_dataset[y_hat_prob_col_name]
     auc = round(roc_auc_score(y, y_hat_probs), 3)
