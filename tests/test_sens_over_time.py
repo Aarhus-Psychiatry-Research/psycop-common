@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from psycopt2d.utils import pred_proba_to_threshold_percentiles
+from psycopt2d.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
 
 
@@ -21,17 +21,17 @@ def df():
 
 
 def test_plot_sensitivity_by_time_to_outcome(df):
-    threshold_percentiles = [0.95, 0.99, 0.999, 0.9999]
+    positive_rates = [0.95, 0.99, 0.999, 0.9999]
 
-    pred_proba_thresholds = pred_proba_to_threshold_percentiles(
+    pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=df["pred_prob"],
-        threshold_percentiles=threshold_percentiles,
+        positive_rate_thresholds=positive_rates,
     )
 
     plt = plot_sensitivity_by_time_to_outcome(
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
-        threshold_percentiles=threshold_percentiles,
+        positive_rates=positive_rates,
         pred_proba_thresholds=pred_proba_thresholds,
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
