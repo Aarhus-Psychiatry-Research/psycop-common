@@ -68,6 +68,13 @@ To run XGBoost with defaults but a synth dataset:
 python src/psycopt2d/train_model.py --config-name test_config.yaml +model=xgboost
 ```
 
+To test new integrations with WandB:
+```python
+python src/psycopt2d/train_model.py +model=xgboost project.wandb_model="run" --config-name integration_testing.yaml
+```
+
+
+
 ## Train models:
 To run XGBoost with defaults:
 
