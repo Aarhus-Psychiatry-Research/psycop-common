@@ -42,13 +42,13 @@ def evaluate_model(
     7. F1 by time until diagnosis
 
     Args:
-        cfg (_type_): The hydra config from the run
+        cfg (OmegaConf): The hydra config from the run
         pipe (Pipeline): Pipeline including the model
         eval_dataset (pd.DataFrame): Evalaution split
         y_col_name (str): Label column name
         train_col_names (Iterable[str]): Column names for all predictors
         y_hat_prob_col_name (str): Column name containing pred_proba output
-        run [wandb.run]: WandB run
+        run (wandb.run): WandB run
     """
     y = eval_dataset[y_col_name]
     y_hat_probs = eval_dataset[y_hat_prob_col_name]
