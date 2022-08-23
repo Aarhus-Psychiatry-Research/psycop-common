@@ -1,6 +1,6 @@
 # from datetime import date, datetime, timedelta
 from datetime import date, datetime, timedelta
-from typing import List, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 from psycopmlutils.loaders import sql_load
@@ -14,7 +14,7 @@ def load_dataset(
     table_name: str,
     drop_patient_if_outcome_before_date: Union[datetime, str],
     min_lookahead_days: int,
-    pred_datetime_column: str = "timestamp",
+    pred_datetime_column: Optional[str] = "timestamp",
     n_training_samples: Union[None, int] = None,
 ) -> pd.DataFrame:
     """Load dataset for t2d.
@@ -28,12 +28,13 @@ def load_dataset(
             this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
             Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
         min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included.
-        Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
+            Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
             Defined as days from the last days.
-        pred_timestamp_column (str, optional): Column with prediction time timestamps.
+        pred_datetime_column (str, optional): Column with prediction time timestamps.
         Defaults to "timestamp".
         n_training_samples (Union[None, int], optional): Number of training samples to load.
         Defaults to None, in which case all training samples are loaded.
+
     Returns:
         pd.DataFrame: The filtered dataset
     """

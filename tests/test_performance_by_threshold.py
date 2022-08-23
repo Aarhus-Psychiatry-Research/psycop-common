@@ -79,7 +79,7 @@ def test_time_from_flag_to_diag(synth_data):
         pred_probs=df["pred_prob"],
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
-        positive_rate_thresholds=0.5,
+        positive_rate_threshold=0.5,
     )
 
     assert val > 290_000 and val < 292_000
@@ -90,7 +90,7 @@ def test_time_from_flag_to_diag(synth_data):
         pred_probs=df["pred_prob"],
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
-        positive_rate_thresholds=0.2,
+        positive_rate_threshold=0.2,
     )
 
     assert val > 1_875_000 and val < 1_885_000

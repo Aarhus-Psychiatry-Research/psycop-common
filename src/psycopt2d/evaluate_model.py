@@ -1,3 +1,4 @@
+"""Functions for evaluating a model's prredictions."""
 from typing import Iterable
 
 import altair as alt
@@ -123,7 +124,6 @@ def evaluate_model(
             "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(
                 labels=y,
                 y_hat_probs=y_hat_probs,
-                positive_rates=cfg.evaluation.positive_rate_thresholds,
                 pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,

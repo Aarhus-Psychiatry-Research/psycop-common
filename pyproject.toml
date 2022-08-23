@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "psycopt2d"
-version = "0.1.1"
+version = "0.1.2"
 description = "Training scripts for the psycop-t2d project"
 authors = ["Your Name <you@example.com>"]
 
@@ -33,6 +33,7 @@ ipython = ">=8.4.0,<8.5.0"
 ipykernel = ">=6.15.1,<6.16.0"
 flake8 = ">=4.0.1,<4.1.0"
 pytest-xdist = "^2.5.0"
+darglint = "^1.8.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

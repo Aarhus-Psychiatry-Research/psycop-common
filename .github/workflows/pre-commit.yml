@@ -1,4 +1,4 @@
-# GitHub action to check if pre-commit has been run
+# GitHub action to check if pre-commit has been run. Runs from .pre-commit-config.yaml, where the pre-commit actions are.
 
 name: run-pre-commit
 

@@ -1,4 +1,4 @@
-"""Contains custom transformers for data preprocessing."""
+"""Custom transformers for data preprocessing."""
 from datetime import datetime
 from typing import List, Optional
 
@@ -6,14 +6,15 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class ConvertToBoolean(BaseEstimator, TransformerMixin):
+    """Convert all cells with a value to True, otherwise false."""
+
     def __init__(
         self,
         columns_to_include: Optional[List[str]] = None,
         columns_to_skip: Optional[List[str]] = ["age_in_years", "sex_female"],
-        ignore_dtypes: set = {"datetime64[ns]", "<M8[ns]"},
+        ignore_dtypes: Optional[set] = {"datetime64[ns]", "<M8[ns]"},
     ) -> None:
-        """Convert all cells with a value to True, otherwise False.
-
+        """
         Args:
             columns_to_include (List[str], optional): Columns to convert to boolean.
                 Acts as a whitelist, skipping all columns not in the list.

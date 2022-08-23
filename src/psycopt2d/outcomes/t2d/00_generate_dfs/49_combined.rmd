@@ -1,7 +1,7 @@
 Combine medication, hba1c and diagnoses to find first date where the patient has t2d.
 
 ```{r}
-source(here("src", "functions.r"))
+source(here("functions.r"))
 p_load(odbc, dbplyr, DBI)
 ```
 

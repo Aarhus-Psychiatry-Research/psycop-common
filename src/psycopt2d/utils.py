@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -12,7 +12,7 @@ from xgboost import XGBClassifier
 def flatten_nested_dict(
     d: Dict,
     parent_key: str = "",
-    sep: str = ".",
+    sep: Optional[str] = ".",
 ) -> Dict:
     """Recursively flatten an infinitely nested dict.
 
@@ -20,9 +20,9 @@ def flatten_nested_dict(
     {"level1.level2.level3.level4": 5}.
 
     Args:
-        dict (Dict): Dict to flatten.
-        separator (str, optional): How to separate each level in the dict. Defaults to
-            ".".
+        d (Dict): Dict to flatten.
+        parent_key (str): The parent key for the current dict, e.g. "level1" for the first iteration.
+        sep (str, optional): How to separate each level in the dict. Defaults to ".".
 
     Returns:
         Dict: The flattened dict.
@@ -43,8 +43,8 @@ def drop_records_if_datediff_days_smaller_than(
     t2_col_name: str,
     t1_col_name: str,
     threshold_days: Union[float, int],
-    inplace: bool = True,
-):
+    inplace: Optional[bool] = True,
+) -> pd.DataFrame:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
     Args:
@@ -53,6 +53,9 @@ def drop_records_if_datediff_days_smaller_than(
         t1_col_name (str): _description_
         threshold_days (Union[float, int]): _description_
         inplace (bool, optional): Defaults to True.
+
+    Returns:
+        A pandas dataframe without the records where datadiff was smaller than threshold_days.
     """
     if inplace:
         df.drop(
@@ -93,11 +96,15 @@ def generate_predictions(train_y, train_X, val_X):
     return preds, pred_probs, model
 
 
-def round_floats_to_edge(series: pd.Series, bins: List[float]):
+def round_floats_to_edge(series: pd.Series, bins: List[float]) -> np.ndarray:
     """Rounds a float to the lowest value it is larger than.
 
     Args:
+        series (pd.Series): The series of floats to round to bin edges.
         bins (List[floats]): Values to round to.
+
+    Returns:
+        A numpy ndarray with the borders.
     """
     _, edges = pd.cut(series, bins=bins, retbins=True)
     labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
@@ -122,7 +129,7 @@ def calculate_performance_metrics(
     outcome_col_name: str,
     prediction_probabilities_col_name: str,
     id_col_name: str = "dw_ek_borger",
-):
+) -> pd.DataFrame:
     """Log performance metrics to WandB.
 
     Args:
@@ -131,6 +138,9 @@ def calculate_performance_metrics(
         prediction_probabilities_col_name (str): Name of the column containing predicted
             probabilities
         id_col_name (str): Name of the id column
+
+    Returns:
+        A pandas dataframe with the performance metrics.
     """
     performance_metrics = ModelPerformance.performance_metrics_from_df(
         eval_df,
@@ -186,7 +196,7 @@ def bin_continuous_data(series: pd.Series, bins: List[int]) -> pd.Series:
 def positive_rate_to_pred_probs(
     pred_probs: pd.Series,
     positive_rate_thresholds: Iterable,
-) -> List:
+) -> pd.Series:
     """Get thresholds for a set of percentiles. E.g. if one
     positive_rate_threshold == 1, return the value where 1% of predicted
     probabilities lie above.

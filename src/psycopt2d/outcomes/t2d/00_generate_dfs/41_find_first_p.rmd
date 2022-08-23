@@ -1,13 +1,16 @@
 ```{r}
-source(here("psycop-r-utils", "import_from_sql.r"))
+source(here("psycop-r-utilities", "import_from_sql.r"))
 p_load(tidyverse)
 ```
 
 # Remove patients with incidence before first psych-contact
 ## LPR3, both in and outpatient
 ```{r}
+pt_types = c("Ambulant", "Indlagt")
+
 df_lpr3_preproc <- con %>% 
   tbl(sql("SELECT * FROM [fct].FOR_LPR3kontakter_psyk_somatik_inkl_2021")) %>% 
+  filter(pt_type %in% pt_types) %>% 
   filter(substr(shakkode_lpr3kontaktophold, 1, 4) == "6600") %>% # Only psychiatry in RM
   select(dw_ek_borger, datotid_lpr3kontaktstart) %>% 
   rename(datotid_start = datotid_lpr3kontaktstart) %>% 

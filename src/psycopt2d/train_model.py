@@ -27,7 +27,7 @@ os.environ["WANDB_START_METHOD"] = "thread"
 
 
 def create_preprocessing_pipeline(cfg):
-    """create preprocessing pipeline based on config."""
+    """Create preprocessing pipeline based on config."""
     steps = []
 
     if cfg.preprocessing.convert_datetimes_to:
@@ -67,10 +67,7 @@ def create_model(cfg):
 
 
 def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """load dataset based on config file.
-
-    Should only use the cfg.data config with the exception of seed
-    """
+    """Load dataset based on settings in the config file."""
 
     if cfg.data.source.lower() == "sql":
         train = load_dataset(
@@ -117,8 +114,7 @@ def stratified_cross_validation(
     train_col_names: List[str],
     outcome_col_name: str,
 ):
-    """Performs a stratified and grouped cross validation using the
-    pipeline."""
+    """Performs stratified and grouped cross validation using the pipeline."""
     X = dataset[train_col_names]
     y = dataset[outcome_col_name]
 
