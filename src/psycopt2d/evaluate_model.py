@@ -1,18 +1,21 @@
 """Functions for evaluating a model's prredictions."""
-from typing import Optional
+from typing import Iterable
 
 import altair as alt
 import numpy as np
 import pandas as pd
 import wandb
 from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.pipeline import Pipeline
 
+from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
 from psycopt2d.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
+    plot_feature_importances,
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
@@ -22,19 +25,31 @@ from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_o
 
 def evaluate_model(
     cfg,
+    pipe: Pipeline,
     eval_dataset: pd.DataFrame,
     y_col_name: str,
+    train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
-    run: Optional[wandb.run],
+    run: wandb.run,
 ):
-    """Evaluate a model's predictions.
+    """Runs the evaluation suite on the model and logs to WandB.
+    At present, this includes:
+    1. AUC
+    2. Table of performance by pred_proba threshold
+    3. Feature importance
+    4. Sensitivity by time to outcome
+    5. AUC by calendar time
+    6. AUC by time from first visit
+    7. F1 by time until diagnosis
 
     Args:
-        cfg (any): Hydra config file.
-        eval_dataset (pd.DataFrame): Dataset to evaluate.
-        y_col_name (str): Column name for the true labels.
-        y_hat_prob_col_name (str): Column name for the predicted probabilities.
-        run (Optional[wandb.run]): wandb.run to attach plots to.
+        cfg (OmegaConf): The hydra config from the run
+        pipe (Pipeline): Pipeline including the model
+        eval_dataset (pd.DataFrame): Evalaution split
+        y_col_name (str): Label column name
+        train_col_names (Iterable[str]): Column names for all predictors
+        y_hat_prob_col_name (str): Column name containing pred_proba output
+        run (wandb.run): WandB run
     """
     y = eval_dataset[y_col_name]
     y_hat_probs = eval_dataset[y_hat_prob_col_name]
@@ -76,6 +91,32 @@ def evaluate_model(
 
     # Figures
     plots = {}
+
+    # Feature importance
+    # Check if model has feature_importances_ attribute
+    feature_importances = getattr(pipe["model"], "feature_importances_", None)
+
+    if feature_importances is not None:
+        # Handle EBM differently as it autogenerates interaction terms
+        if cfg.model.model_name == "ebm":
+            feature_names = pipe["model"].feature_names
+        else:
+            feature_names = train_col_names
+
+        feature_importances_plot = plot_feature_importances(
+            column_names=feature_names,
+            feature_importances=feature_importances,
+            top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+        )
+        plots.update(
+            {"feature_importance": feature_importances_plot},
+        )
+        # Log as table too for readability
+        feature_importances_table = generate_feature_importances_table(
+            column_names=feature_names,
+            feature_importances=feature_importances,
+        )
+        run.log({"feature_importance_table": feature_importances_table})
 
     ## Sensitivity by time to outcome
     plots.update(

@@ -1,11 +1,9 @@
 from functools import partial
-from pathlib import Path
-from typing import List, Union
+from typing import Iterable, List, Union
 
 import pandas as pd
+import wandb
 from sklearn.metrics import roc_auc_score
-
-df = pd.read_csv(Path("tests") / "test_data" / "synth_eval_data.csv")
 
 
 def auc_by_group_table(
@@ -67,3 +65,24 @@ def _calc_auc_and_n(
     auc = roc_auc_score(df[outcome_col_name], df[pred_probs_col_name])
     n = len(df)
     return pd.Series([auc, n], index=["AUC", "N"])
+
+
+def generate_feature_importances_table(
+    column_names: Iterable[str],
+    feature_importances: Iterable[str],
+    output_format: str = "wandb_table",
+) -> Union[pd.DataFrame, str]:
+
+    df = pd.DataFrame(
+        {"predictor": column_names, "feature_importance": feature_importances},
+    )
+    df = df.sort_values("feature_importance", ascending=False)
+
+    if output_format == "html":
+        return df.reset_index(drop=True).to_html()
+    elif output_format == "df":
+        return df.reset_index(drop=True)
+    elif output_format == "wandb_table":
+        return wandb.Table(dataframe=df)
+    else:
+        raise ValueError("Output format does not match anything that is allowed")

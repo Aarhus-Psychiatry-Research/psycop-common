@@ -8,6 +8,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 from psycopt2d.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_bar_chart
+from psycopt2d.visualization.feature_importance import plot_feature_importances
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_time_until_diagnosis,
@@ -123,4 +124,15 @@ def test_sens_by_time_to_outcome(df):
         prediction_timestamps=df["timestamp"],
         pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
+    )
+
+
+def test_plot_feature_importances():
+    feature_names = ["very long feature name right here yeah", "feat2", "feat3"]
+    feature_importance = [0.6, 0.3, 0.1]
+
+    plot_feature_importances(
+        feature_names,
+        feature_importances=feature_importance,
+        top_n_feature_importances=3,
     )
