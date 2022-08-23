@@ -53,7 +53,7 @@ def generate_performance_by_positive_rate_table(
             pred_probs=pred_probs,
             pred_timestamps=pred_timestamps,
             outcome_timestamps=outcome_timestamps,
-            positive_rate_thresholds=threshold_value,
+            positive_rate_threshold=threshold_value,
             aggregation_method="sum",
         )
 
@@ -63,7 +63,7 @@ def generate_performance_by_positive_rate_table(
                 pred_probs=pred_probs,
                 pred_timestamps=pred_timestamps,
                 outcome_timestamps=outcome_timestamps,
-                positive_rate_thresholds=threshold_value,
+                positive_rate_threshold=threshold_value,
                 aggregation_method="mean",
             ),
             0,

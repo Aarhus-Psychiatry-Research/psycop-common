@@ -31,7 +31,6 @@ def test_plot_sensitivity_by_time_to_outcome(df):
     plt = plot_sensitivity_by_time_to_outcome(
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
-        positive_rates=positive_rates,
         pred_proba_thresholds=pred_proba_thresholds,
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],

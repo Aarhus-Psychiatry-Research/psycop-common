@@ -117,7 +117,7 @@ def plot_sensitivity_by_time_to_outcome(
 
     func = partial(
         create_sensitivity_by_time_to_outcome_df,
-        label=labels,
+        labels=labels,
         y_hat_probs=y_hat_probs,
         outcome_timestamps=outcome_timestamps,
         prediction_timestamps=prediction_timestamps,
