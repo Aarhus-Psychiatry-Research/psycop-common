@@ -33,7 +33,6 @@ ipython = ">=8.4.0,<8.5.0"
 ipykernel = ">=6.15.1,<6.16.0"
 flake8 = ">=4.0.1,<4.1.0"
 pytest-xdist = "^2.5.0"
-pydocstyle = "^6.1.1"
 darglint = "^1.8.1"
 
 [build-system]
