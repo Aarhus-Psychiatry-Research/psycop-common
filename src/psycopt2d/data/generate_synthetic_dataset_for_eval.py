@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -30,10 +31,11 @@ def null_series_with_prob(
 
     Args:
         series (pd.Series): Series.
-        prop (float): The probability of overwriting all with null_value.
+        prob (float): The probability of overwriting all with null_value.
+        null_value (any, optional): The value to overwrite with. Defaults to np.NaN.
 
     Returns:
-        pd.Series:
+        A pd.Series.
     """
 
     if return_0_with_prob(prob) == 0:
@@ -47,7 +49,7 @@ def null_series_with_prob(
 def overwrite_prop_with_null(
     series: pd.Series,
     prop: float,
-    null_value=np.NaN,
+    null_value: Optional[any] = np.NaN,
 ) -> pd.Series:
     """Overwrite a proportion of all values in a series with a null value (NaN
     or NaT).
@@ -55,6 +57,10 @@ def overwrite_prop_with_null(
     Args:
         series (pd.Series): The series to overwrite in.
         prop (float): How large a proportion to overwrite.
+        null_value (any, optional): The value to overwrite with. Defaults to np.NaN.
+
+    Returns:
+        A pd.Series.
     """
     series.loc[
         np.random.choice(series.index, int(len(series) * prop), replace=False)

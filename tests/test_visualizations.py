@@ -47,23 +47,21 @@ def test_prob_over_time(df):
 
 def test_get_sens_by_time_to_outcome_df(df):
     create_sensitivity_by_time_to_outcome_df(
-        label=df["label"],
+        labels=df["label"],
         y_hat_probs=df["pred"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
-        positive_rate_threshold=0.5,
-        positive_rate=0.5,
+        pred_proba_threshold=0.5,
     )
 
 
 def test_plot_bar_chart(df):
     plot_df = create_sensitivity_by_time_to_outcome_df(
-        label=df["label"],
+        labels=df["label"],
         y_hat_probs=df["pred"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
-        positive_rate_threshold=0.5,
-        positive_rate=0.5,
+        pred_proba_threshold=0.5,
     )
     plot_bar_chart(
         x_values=plot_df["days_to_outcome_binned"],
@@ -123,7 +121,6 @@ def test_sens_by_time_to_outcome(df):
         y_hat_probs=df["pred_prob"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
-        positive_rates=positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
     )

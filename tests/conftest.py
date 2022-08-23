@@ -1,3 +1,4 @@
+"""Define fixtures for tests."""
 from pathlib import Path
 
 import pandas as pd

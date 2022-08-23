@@ -16,13 +16,13 @@ def altair_chart_to_file(
 
     Args:
         chart (Chart): Altair chart
-        filename (Union[str, Path]): Filename including suffix. Suffix determines the file type.
+        filepath (Union[str, Path]): Filepath including suffix. Suffix determines the file type.
         height (int): Height in pixels
         width (int): Width in pixels
         font_size (int): How large the axis labels should be
 
     Returns:
-        Path: Path to the file (filename)
+        str: Path to the file (filename)
     """
     filepath = Path(filepath)
     chart = chart.properties(height=height, width=width)
@@ -38,10 +38,7 @@ def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb.run):
     Args:
         chart (Chart): Altair chart
         chart_name (str): Name of the chart
-        run (wandb.run): Wandb run
-
-    Returns:
-        None
+        run (wandb.run): Wandb run object
     """
     base_path = Path(__file__).parent.parent.parent.parent / "figures"
 

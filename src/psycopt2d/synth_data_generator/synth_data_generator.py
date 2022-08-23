@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -11,11 +11,11 @@ def generate_synth_data(
     outcome_column_name: str,
     n_samples: int,
     logistic_outcome_model: str,
-    intercept=0,
-    na_prob: float = 0.01,
+    intercept: Optional[float] = 0,
+    na_prob: Optional[float] = 0.01,
     na_ignore_cols: List[str] = [],
-    prob_outcome: float = 0.08,
-    noise_mean_sd: Tuple[float, float] = (0, 1),
+    prob_outcome: Optional[float] = 0.08,
+    noise_mean_sd: Optional[Tuple[float, float]] = (0, 1),
 ) -> pd.DataFrame:
     """Takes a dict and generates synth data from it.
 
@@ -29,17 +29,17 @@ def generate_synth_data(
                 "max":int
                 }
             }
+        outcome_column_name: str, name of the outcome column
         n_samples (int): Number of samples (rows) to generate.
         logistic_outcome_model (str): The statistical model used to generate outcome
             values, e.g. specified as'1*col_name+1*col_name2'
+        intercept (float, optional): The intercept of the logistic outcome model. Defaults to 0.
         na_prob (float, optional): Probability of changing a value in a predictor column
             to NA.
         na_ignore_cols (List[str], optional): Columns to ignore when creating NAs
         prob_outcome (float): Probability of a given row receiving "1" for the outcome.
         noise_mean_sd (Tuple[float, float], optional): mean and sd of the noise.
             Increase SD to obtain more uncertain models.
-
-
 
     Returns:
         pd.DataFrame: The synthetic dataset

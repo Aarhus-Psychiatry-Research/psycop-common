@@ -13,11 +13,11 @@ def plot_prob_over_time(
     label: Iterable[Union[int, str]],
     outcome_timestamp: Iterable[Union[datetime, None]],
     patient_id: Iterable[Union[int, str]],
-    x_axis: str = "Time from outcome",
-    y_axis: str = "Model Predictive Probability",
-    legend: str = "Highest Predictive Probability",
+    x_axis: Optional[str] = "Time from outcome",
+    y_axis: Optional[str] = "Model Predictive Probability",
+    legend: Optional[str] = "Highest Predictive Probability",
     look_behind_distance: Optional[int] = None,
-    line_opacity: float = 0.3,
+    line_opacity: Optional[float] = 0.3,
 ) -> alt.Chart:
     """Plot probabilities over time for a given outcome. Each element passed
     (e.g. timestamp, pred_prob etc.) must have the same length, and for each
@@ -39,6 +39,7 @@ def plot_prob_over_time(
         look_behind_distance (Optional[int], optional): Look-behind window. Used for
             shading the corresponding area. Defaults to None in which case no shaded
             areas is plotted.
+        line_opacity (float, optional): Opacity of the line. Defaults to 0.3.
 
     Returns:
         alt.Chart: An altair chart object.
