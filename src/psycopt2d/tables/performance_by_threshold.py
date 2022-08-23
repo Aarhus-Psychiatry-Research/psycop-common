@@ -1,4 +1,4 @@
-from typing import Iterable, Union
+from typing import Iterable, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -14,7 +14,7 @@ def generate_performance_by_positive_rate_table(
     ids: Iterable[Union[int, float]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
-    output_format: str = "wandb_table",
+    output_format: Optional[str] = "wandb_table",
 ) -> Union[pd.DataFrame, str]:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
@@ -27,7 +27,8 @@ def generate_performance_by_positive_rate_table(
         pred_proba_thresholds (Iterable[float]): Thresholds above which predictions are classified as positive.
         ids (Iterable[Union[int, float]]): Ids to group on.
         pred_timestamps (Iterable[ pd.Timestamp ]): Timestamp for each prediction time.
-        output_format (str, optional): Format to output - either "df" or "html". Defaults to "df".
+        outcome_timestamps (Iterable[pd.Timestamp]): Timestamp for each outcome time.
+        output_format (str, optional): Format to output - either "df" or "wandb_table". Defaults to "df".
 
     Returns:
         pd.DataFrame
@@ -159,18 +160,18 @@ def days_from_first_positive_to_diagnosis(
     pred_probs: Iterable[Union[float, str]],
     pred_timestamps: Iterable[pd.Timestamp],
     outcome_timestamps: Iterable[pd.Timestamp],
-    positive_rate_thresholds: float = 0.5,
-    aggregation_method: str = "sum",
+    positive_rate_threshold: Optional[float] = 0.5,
+    aggregation_method: Optional[str] = "sum",
 ) -> float:
     """Calculate number of days from the first positive prediction to the
     patient's outcome timestamp.
 
     Args:
-        ids (Iterable[Union[float, str]]): _description_
-        pred_probs (Iterable[Union[float, str]]): _description_
-        pred_timestamps (Iterable[pd.Timestamp]): _description_
-        outcome_timestamps (Iterable[pd.Timestamp]): _description_
-        positive_threshold (float, optional): _description_. Defaults to 0.5.
+        ids (Iterable[Union[float, str]]): Iterable of patient IDs.
+        pred_probs (Iterable[Union[float, str]]): Predicted probabilities.
+        pred_timestamps (Iterable[pd.Timestamp]): Timestamps for each prediction time.
+        outcome_timestamps (Iterable[pd.Timestamp]): Timestamps of patient outcome.
+        positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
         aggregation_method (str, optional): How to aggregate the warning days. Defaults to "sum".
 
     Returns:
@@ -187,7 +188,7 @@ def days_from_first_positive_to_diagnosis(
     )
 
     # Keep only true positives
-    df["true_positive"] = (df["pred_probs"] >= positive_rate_thresholds) & (
+    df["true_positive"] = (df["pred_probs"] >= positive_rate_threshold) & (
         df["outcome_timestamps"].notnull()
     )
     df = df[df["true_positive"]]

@@ -1,3 +1,4 @@
+"""Functions for evaluating a model's prredictions."""
 from typing import Optional
 
 import altair as alt
@@ -26,6 +27,15 @@ def evaluate_model(
     y_hat_prob_col_name: str,
     run: Optional[wandb.run],
 ):
+    """Evaluate a model's predictions.
+
+    Args:
+        cfg (any): Hydra config file.
+        eval_dataset (pd.DataFrame): Dataset to evaluate.
+        y_col_name (str): Column name for the true labels.
+        y_hat_prob_col_name (str): Column name for the predicted probabilities.
+        run (Optional[wandb.run]): wandb.run to attach plots to.
+    """
     y = eval_dataset[y_col_name]
     y_hat_probs = eval_dataset[y_hat_prob_col_name]
     auc = round(roc_auc_score(y, y_hat_probs), 3)

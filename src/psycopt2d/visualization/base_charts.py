@@ -14,8 +14,10 @@ def plot_bar_chart(
     """Plot a bar chart.
 
     Args:
-        x_values: The x values of the bar chart.
-        y_values: The y values of the bar chart.
+        x_values (Iterable): The x values of the bar chart.
+        y_values (Iterable): The y values of the bar chart.
+        x_title (str): x_title on the chart
+        y_title (str): y_title on the chart
         sort: order of values on the x-axis
 
     Returns:
