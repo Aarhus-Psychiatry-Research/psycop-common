@@ -8,7 +8,7 @@ from psycopt2d.visualization.base_charts import plot_bar_chart
 
 def plot_feature_importances(
     column_names: Iterable[str],
-    feature_importances: Union[List[str], np.ndarray],
+    feature_importances: Union[List[float], np.ndarray],
     top_n_feature_importances: int,
 ) -> alt.Chart:
     """Plots feature importances.
