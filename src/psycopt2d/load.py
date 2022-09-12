@@ -43,7 +43,7 @@ def load_dataset(
 
     if isinstance(drop_patient_if_outcome_before_date, str):
         drop_patient_if_outcome_before_date = date.fromisoformat(
-            drop_patient_if_outcome_before_date,  # type: ignore
+            drop_patient_if_outcome_before_date,
         )
 
     # Convert drop_patient_if_outcome_before_date from a date to a datetime at midnight

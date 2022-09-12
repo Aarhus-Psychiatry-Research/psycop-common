@@ -58,8 +58,8 @@ def generate_synth_data(
         y_ = float(effect) * df[col] + y_
 
     noise = np.random.normal(
-        loc=noise_mean_sd[0],  # type: ignore
-        scale=noise_mean_sd[1],  # type: ignore
+        loc=noise_mean_sd[0],
+        scale=noise_mean_sd[1],
         size=n_samples,
     )
     # Z-score normalise and add noise
@@ -75,7 +75,7 @@ def generate_synth_data(
             df_[col] = df[col]
 
     # Sigmoid it to get probabilities with mean = 0.5
-    df[outcome_column_name] = 1 / (1 + np.exp(y_))  # type: ignore
+    df[outcome_column_name] = 1 / (1 + np.exp(y_))
 
     df[outcome_column_name] = np.where(df[outcome_column_name] < prob_outcome, 1, 0)
 
