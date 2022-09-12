@@ -96,7 +96,7 @@ def create_sensitivity_by_time_to_outcome_df(
 def plot_sensitivity_by_time_to_outcome(
     labels: Iterable[int],
     y_hat_probs: Iterable[int],
-    pred_proba_thresholds: Iterable[float],
+    pred_proba_thresholds: List[float],
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: List[int] = [0, 28, 182, 365, 730, 1825],

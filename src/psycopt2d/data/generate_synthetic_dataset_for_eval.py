@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -49,7 +49,7 @@ def null_series_with_prob(
 def overwrite_prop_with_null(
     series: pd.Series,
     prop: float,
-    null_value: Optional[any] = np.NaN,
+    null_value: Optional[Any] = np.NaN,
 ) -> pd.Series:
     """Overwrite a proportion of all values in a series with a null value (NaN
     or NaT).

@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from typing import List, Optional, Union
 
 import pandas as pd
+from pathlim import Path
 from psycopmlutils.loaders import sql_load
 from wasabi import Printer
 
@@ -11,7 +12,7 @@ msg = Printer(timestamp=True)
 
 def load_dataset(
     split_names: Union[List[str], str],
-    table_name: str,
+    dir: Path,
     drop_patient_if_outcome_before_date: Union[datetime, str],
     min_lookahead_days: int,
     pred_datetime_column: Optional[str] = "timestamp",
@@ -22,7 +23,7 @@ def load_dataset(
     Args:
         split_names (Union[List[str], str]): Names of splits, includes "train", "val",
             "test".
-        table_name (str): Name of SQL table to load.
+        dir (Path): Directory of the dataset.
         drop_patient_if_outcome_before_date (Union[datetime, str]): Remove patients which
             experienced an outcome prior to the date. Also removes all visits prior to
             this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
@@ -38,9 +39,11 @@ def load_dataset(
     Returns:
         pd.DataFrame: The filtered dataset
     """
+    min_lookahead = timedelta(days=min_lookahead_days)
+
     if isinstance(drop_patient_if_outcome_before_date, str):
         drop_patient_if_outcome_before_date = date.fromisoformat(
-            drop_patient_if_outcome_before_date,
+            drop_patient_if_outcome_before_date,  # type: ignore
         )
 
     # Convert drop_patient_if_outcome_before_date from a date to a datetime at midnight
@@ -54,30 +57,23 @@ def load_dataset(
         return pd.concat(
             [
                 load_dataset(
-                    split,
-                    drop_patient_if_outcome_before_date,
-                    min_lookahead_days,
-                    pred_datetime_column,
-                    n_training_samples,
+                    split_names=split,
+                    dir=dir,
+                    drop_patient_if_outcome_before_date=drop_patient_if_outcome_before_date,
+                    min_lookahead_days=min_lookahead_days,
+                    pred_datetime_column=pred_datetime_column,
+                    n_training_samples=int(n_training_samples / len(split_names)),
                 )
                 for split in split_names
             ],
             ignore_index=True,
         )
 
-    min_lookahead = timedelta(days=min_lookahead_days)
-    sql_table_name = f"{table_name}_{split_names}"
-
-    if n_training_samples is not None:
-        msg.info(f"{sql_table_name}: Loading {n_training_samples} rows")
-        select = f"SELECT TOP {n_training_samples}"
-    else:
-        msg.info(f"{sql_table_name}: Loading all rows")
-        select = "SELECT"
-
-    dataset = sql_load(
-        query=f"{select} * FROM [fct].[{sql_table_name}]",
-        format_timestamp_cols_to_datetime=False,
+    # Load dataset from csv
+    dataset = load_dataset_from_dir(
+        split_name=split_names,
+        dir=dir,
+        nrows=n_training_samples,
     )
 
     # Add "any diabetes" column for wash-in
@@ -125,3 +121,26 @@ def load_dataset(
 
     msg.good(f"{split_names}: Returning!")
     return dataset
+
+
+def load_dataset_from_dir(
+    split_name: str,
+    dir: Path,
+    nrows: Optional[int],
+) -> pd.DataFrame:
+    """Load dataset from directory. Finds any .csv with the split name in its
+    filename.
+
+    Args:
+        split_name (str): Name of split, allowed are ["train", "test", "val"]
+        dir (Path): Directory of the dataset.
+        nrows (Optional[int]): Number of rows to load. Defaults to None, in which case
+            all rows are loaded.
+
+    Returns:
+        pd.DataFrame: The dataset
+    """
+    # Use glob to find the file
+    path = list(dir.glob(f"*{split_name}*.csv"))[0]
+
+    return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
