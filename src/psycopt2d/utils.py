@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Dict, Iterable, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -12,7 +12,7 @@ from xgboost import XGBClassifier
 def flatten_nested_dict(
     d: Dict,
     parent_key: str = "",
-    sep: Optional[str] = ".",
+    sep: str = ".",
 ) -> Dict:
     """Recursively flatten an infinitely nested dict.
 
@@ -22,19 +22,23 @@ def flatten_nested_dict(
     Args:
         d (Dict): Dict to flatten.
         parent_key (str): The parent key for the current dict, e.g. "level1" for the first iteration.
-        sep (str, optional): How to separate each level in the dict. Defaults to ".".
+        sep (str): How to separate each level in the dict. Defaults to ".".
 
     Returns:
         Dict: The flattened dict.
     """
 
-    items = []
+    items: List[dict[str, Any]] = []
+
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
         if isinstance(v, MutableMapping):
-            items.extend(flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items())
+            items.extend(
+                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),
+            )  # typing: ignore
         else:
             items.append((new_key, v))
+
     return dict(items)
 
 

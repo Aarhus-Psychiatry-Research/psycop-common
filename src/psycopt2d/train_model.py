@@ -69,17 +69,21 @@ def create_model(cfg):
 def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Load dataset based on settings in the config file."""
 
-    if cfg.data.source.lower() == "sql":
+    allowed_data_sources = {"csv", "synthetic"}
+
+    if cfg.data.source.lower() == "csv":
+        path = Path(cfg.data.dir)
+
         train = load_dataset(
             split_names="train",
-            table_name=cfg.data.table_name,
+            dir=path,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
         )
         val = load_dataset(
             split_names="val",
-            table_name=cfg.data.table_name,
+            dir=path,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
@@ -102,7 +106,7 @@ def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
         )
     else:
         raise ValueError(
-            "The config data.source is {cfg.data.source}",
+            f"The config data.source is {cfg.data.source}, allowed are {allowed_data_sources}",
         )
     return train, val
 
@@ -173,7 +177,7 @@ def main(cfg):
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     )
     if cfg.data.source.lower() == "synthetic":
-        OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
+        OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_1825_days_max_fallback_0"
 
     TRAIN_COL_NAMES = [
         c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)

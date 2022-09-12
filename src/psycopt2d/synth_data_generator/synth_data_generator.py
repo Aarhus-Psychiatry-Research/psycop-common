@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -11,7 +11,7 @@ def generate_synth_data(
     outcome_column_name: str,
     n_samples: int,
     logistic_outcome_model: str,
-    intercept: Optional[float] = 0,
+    intercept: Optional[Union[int, float, complex, str, bytes]] = 0,
     na_prob: Optional[float] = 0.01,
     na_ignore_cols: List[str] = [],
     prob_outcome: Optional[float] = 0.08,
