@@ -1,10 +1,10 @@
 # from datetime import date, datetime, timedelta
 from datetime import date, datetime, timedelta
+from pathlib import Path
 from typing import List, Optional, Union
 
 import pandas as pd
-from pathlim import Path
-from psycopmlutils.loaders import sql_load
+from psycopmlutils.loaders.raw import sql_load
 from wasabi import Printer
 
 msg = Printer(timestamp=True)
@@ -54,6 +54,9 @@ def load_dataset(
         )
 
     if isinstance(split_names, list):
+        if n_training_samples is not None:
+            n_training_samples = int(n_training_samples / len(split_names))
+
         return pd.concat(
             [
                 load_dataset(
@@ -62,7 +65,7 @@ def load_dataset(
                     drop_patient_if_outcome_before_date=drop_patient_if_outcome_before_date,
                     min_lookahead_days=min_lookahead_days,
                     pred_datetime_column=pred_datetime_column,
-                    n_training_samples=int(n_training_samples / len(split_names)),
+                    n_training_samples=n_training_samples,
                 )
                 for split in split_names
             ],

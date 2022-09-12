@@ -1,0 +1,8 @@
+# @package _global_
+defaults:
+  - project: default_project
+  - data: all_csv
+  - preprocessing: default_preprocessing
+  - training: default_training
+  - evaluation: default_evaluation
+  - sweeper: optuna_singlethread
