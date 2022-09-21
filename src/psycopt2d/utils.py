@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
 from psycopmlutils.model_performance import ModelPerformance
-from psycopmlutils.utils import EVALUATION_DATA_PATH, format_dict_for_printing
+from psycopmlutils.utils import MODEL_PREDICTIONS_PATH, format_dict_for_printing
 from wasabi import msg
 
 
@@ -202,7 +202,7 @@ def df_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
     if cfg.evaluation.save_results_on_overtaci:
         # Save to overtaci formatted with date
         overtaci_path = (
-            EVALUATION_DATA_PATH
+            MODEL_PREDICTIONS_PATH
             / cfg.project.name
             / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.csv"
         )
