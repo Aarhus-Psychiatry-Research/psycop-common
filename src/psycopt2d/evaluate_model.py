@@ -93,10 +93,7 @@ def evaluate_model(
     plots = {}
 
     # Feature importance
-    # Check if model has feature_importances_ attribute
-    feature_importances = getattr(pipe["model"], "feature_importances_", None)
-
-    if feature_importances is not None:
+    if hasattr(pipe["model"], "feature_importances_"):
         # Handle EBM differently as it autogenerates interaction terms
         if cfg.model.model_name == "ebm":
             feature_names = pipe["model"].feature_names
@@ -105,7 +102,7 @@ def evaluate_model(
 
         feature_importances_plot = plot_feature_importances(
             column_names=feature_names,
-            feature_importances=feature_importances,
+            feature_importances=pipe["model"].feature_importances_,
             top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
         )
         plots.update(
@@ -114,7 +111,7 @@ def evaluate_model(
         # Log as table too for readability
         feature_importances_table = generate_feature_importances_table(
             column_names=feature_names,
-            feature_importances=feature_importances,
+            feature_importances=pipe["model"].feature_importances_,
         )
         run.log({"feature_importance_table": feature_importances_table})
 

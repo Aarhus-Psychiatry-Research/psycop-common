@@ -1,12 +1,14 @@
+import time
 from collections.abc import MutableMapping
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
+from omegaconf.dictconfig import DictConfig
 from psycopmlutils.model_performance import ModelPerformance
-from sklearn.impute import SimpleImputer
+from psycopmlutils.utils import EVALUATION_DATA_PATH, format_dict_for_printing
 from wasabi import msg
-from xgboost import XGBClassifier
 
 
 def flatten_nested_dict(
@@ -76,30 +78,6 @@ def drop_records_if_datediff_days_smaller_than(
         ]
 
 
-def impute(
-    train_X,
-    val_X,
-):
-    msg.info("Imputing!")
-    my_imputer = SimpleImputer(missing_values=np.nan, strategy="most_frequent")
-    train_X_imputed = my_imputer.fit_transform(train_X)
-    val_X_imputed = my_imputer.transform(val_X)
-    return train_X_imputed, val_X_imputed
-
-
-def generate_predictions(train_y, train_X, val_X):
-    msg.info("Fitting model")
-    model = XGBClassifier(n_jobs=58, missing=np.nan)
-    model.fit(train_X, train_y, verbose=True)
-    msg.good("Model fit!")
-
-    msg.info("Generating predictions")
-
-    pred_probs = model.predict_proba(val_X)
-    preds = model.predict(val_X)
-    return preds, pred_probs, model
-
-
 def round_floats_to_edge(series: pd.Series, bins: List[float]) -> np.ndarray:
     """Rounds a float to the lowest value it is larger than.
 
@@ -114,18 +92,6 @@ def round_floats_to_edge(series: pd.Series, bins: List[float]) -> np.ndarray:
     labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
 
     return pd.cut(series, bins=bins, labels=labels)
-
-
-def convert_all_to_binary(ds, skip):
-    msg.info("Rounding all to binary")
-    cols_to_round = [
-        colname for colname in ds.columns if ds[colname].dtype != "datetime64[ns]"
-    ]
-
-    [cols_to_round.remove(c) for c in skip]
-
-    for col in cols_to_round:
-        ds[col] = ds[col].map(lambda x: 1 if x > 0 else np.NaN)
 
 
 def calculate_performance_metrics(
@@ -222,3 +188,36 @@ def positive_rate_to_pred_probs(
     thresholds = [1 - threshold for threshold in positive_rate_thresholds]
 
     return pd.Series(pred_probs).quantile(thresholds).tolist()
+
+
+def df_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
+    """Save a dataframe to disk.
+
+    Args:
+        df (pd.DataFrame): Dataframe to save.
+        cfg (DictConfig): Hydra config.
+    """
+    model_args = format_dict_for_printing(cfg.model)
+
+    if cfg.evaluation.save_results_on_overtaci:
+        # Save to overtaci formatted with date
+        overtaci_path = (
+            EVALUATION_DATA_PATH
+            / cfg.project.name
+            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.csv"
+        )
+        if not overtaci_path.parent.exists():
+            overtaci_path.parent.mkdir(parents=True)
+        df.to_csv(overtaci_path, index=False)
+        msg.good(f"Saved evaluation results to {overtaci_path}")
+
+    if cfg.evaluation.save_results_in_folder:
+        local_path = (
+            Path()
+            / "evaluation_results"
+            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.csv"
+        )
+        if not local_path.parent.exists():
+            local_path.parent.mkdir(parents=True)
+        df.to_csv(local_path, index=False)
+        msg.good(f"Saved evaluation results to {local_path}")
