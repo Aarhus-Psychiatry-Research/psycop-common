@@ -44,6 +44,14 @@ to run a sweep with xgboost you will have to add the `--multirun` flag and speci
 python src/psycopt2d/train_model.py --multirun +model=xgboost
 ```
 
+## Developing new evaluation plots
+If you're developing a new evaluation plot (or polishing one for publication), it's much faster to develop it if you don't have to train a model. 
+
+We recommend that you:
+
+1. Design the plot on synthetic prediction data. Use the `evaluate_saved_model_predictions.py` script as a guide.
+2. Test the plot on real prediction data on Overtaci.
+
 ## Logging Altair to WandB and saving as png
 We use Selenium and chromedriver to save Altair charts as png. This works out-of-the-box on Overtaci, but requires you to download [chromedriver](https://chromedriver.chromium.org) and place it on PATH (e.g. `/usr/local/bin` on OSX) to use locally. Optionally, [see this guide](https://www.swtestacademy.com/install-chrome-driver-on-mac/). If on OSX, you'll probably need to give chromedriver permission to be run. Move to the folder containing the file and run the following line in a terminal:
 

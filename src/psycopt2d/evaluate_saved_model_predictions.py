@@ -51,12 +51,13 @@ if __name__ == "__main__":
     eval_path = Path() / "evaluation_results"
     eval_df, cfg = load_model_predictions_and_cfg(
         eval_path
+        # insert your own model path here
         / "eval_model_name-xgboost_require_imputation-True_args-n_estimators-100_tree_method-auto_2022_09_22_10_52.pkl",
     )
 
     train_col_names = infer_predictor_col_names(eval_df, cfg)
     y_col_name = infer_outcome_col_name(eval_df)
-    y_hat_prob_col_name = "y_hat_prob"  # hardcoded in `train_model.py`
+    y_hat_prob_col_name = "y_hat_prob"  # change to 'y_hat_prob_oof' if using cv
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
         cfg.data.pred_timestamp_col_name
     ].transform("min")

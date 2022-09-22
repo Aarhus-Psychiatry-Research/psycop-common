@@ -215,8 +215,9 @@ def read_pickle(path: str) -> Any:
         return pkl.load(f)
 
 
-def df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
-    """Save an evaluation dataframe to disk.
+def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
+    """Saves prediction dataframe with and hydra config to disk. Stored as a
+    dict with keys "df" and "cfg".
 
     Args:
         df (pd.DataFrame): Dataframe to save.
@@ -226,7 +227,7 @@ def df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
 
     metadata = {"df": df, "cfg": cfg}
 
-    if cfg.evaluation.save_results_on_overtaci:
+    if cfg.evaluation.save_model_predictions_on_overtaci:
         # Save to overtaci formatted with date
         overtaci_path = (
             MODEL_PREDICTIONS_PATH
@@ -238,7 +239,7 @@ def df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
         dump_to_pickle(metadata, overtaci_path)
         msg.good(f"Saved evaluation results to {overtaci_path}")
 
-    if cfg.evaluation.save_results_in_folder:
+    else:
         local_path = (
             Path()
             / "evaluation_results"
