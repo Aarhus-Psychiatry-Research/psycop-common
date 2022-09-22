@@ -1,5 +1,5 @@
 """Functions for evaluating a model's prredictions."""
-from typing import Iterable
+from typing import Iterable, Optional
 
 import altair as alt
 import numpy as np
@@ -30,7 +30,7 @@ def evaluate_model(
     y_col_name: str,
     train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
-    run: wandb.run,
+    run: Optional[wandb.run] = None,
 ):
     """Runs the evaluation suite on the model and logs to WandB.
     At present, this includes:
@@ -49,7 +49,8 @@ def evaluate_model(
         y_col_name (str): Label column name
         train_col_names (Iterable[str]): Column names for all predictors
         y_hat_prob_col_name (str): Column name containing pred_proba output
-        run (wandb.run): WandB run
+        run (Optional[wandb.run]): WandB run to log to. Will not log to WandB if
+            set to None
     """
     y = eval_dataset[y_col_name]
     y_hat_probs = eval_dataset[y_hat_prob_col_name]

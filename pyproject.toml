@@ -75,3 +75,5 @@ known_third_party = ["wandb"]
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.pyright]

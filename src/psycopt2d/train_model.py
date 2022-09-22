@@ -13,11 +13,11 @@ from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from psycopt2d.evaluate_model import evaluate_model
+from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
 from psycopt2d.models import MODELS
-from psycopt2d.utils import df_to_disk, flatten_nested_dict
+from psycopt2d.utils import df_with_metadata_to_disk, flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
@@ -227,7 +227,7 @@ def main(cfg):
         run=run,
     )
     # Save results to disk
-    df_to_disk(df=eval_dataset, cfg=cfg)
+    df_with_metadata_to_disk(df=eval_dataset, cfg=cfg)
 
     # Log metadata to wandb
     wandb.log_artifact("poetry.lock", name="poetry_lock_file", type="poetry_lock")

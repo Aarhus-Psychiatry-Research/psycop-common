@@ -3,6 +3,7 @@ from collections.abc import MutableMapping
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
+import dill as pkl
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
@@ -190,8 +191,32 @@ def positive_rate_to_pred_probs(
     return pd.Series(pred_probs).quantile(thresholds).tolist()
 
 
-def df_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
-    """Save a dataframe to disk.
+def dump_to_pickle(obj: Any, path: str) -> None:
+    """Pickles an object to a file.
+
+    Args:
+        obj (Any): Object to pickle.
+        path (str): Path to pickle file.
+    """
+    with open(path, "wb") as f:
+        pkl.dump(obj, f)
+
+
+def read_pickle(path: str) -> Any:
+    """Reads a pickled object from a file.
+
+    Args:
+        path (str): Path to pickle file.
+
+    Returns:
+        Any: Pickled object.
+    """
+    with open(path, "rb") as f:
+        return pkl.load(f)
+
+
+def df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
+    """Save an evaluation dataframe to disk.
 
     Args:
         df (pd.DataFrame): Dataframe to save.
@@ -199,25 +224,27 @@ def df_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
     """
     model_args = format_dict_for_printing(cfg.model)
 
+    metadata = {"df": df, "cfg": cfg}
+
     if cfg.evaluation.save_results_on_overtaci:
         # Save to overtaci formatted with date
         overtaci_path = (
             MODEL_PREDICTIONS_PATH
             / cfg.project.name
-            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.csv"
+            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.pkl"
         )
         if not overtaci_path.parent.exists():
             overtaci_path.parent.mkdir(parents=True)
-        df.to_csv(overtaci_path, index=False)
+        dump_to_pickle(metadata, overtaci_path)
         msg.good(f"Saved evaluation results to {overtaci_path}")
 
     if cfg.evaluation.save_results_in_folder:
         local_path = (
             Path()
             / "evaluation_results"
-            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.csv"
+            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.pkl"
         )
         if not local_path.parent.exists():
             local_path.parent.mkdir(parents=True)
-        df.to_csv(local_path, index=False)
+        dump_to_pickle(metadata, local_path)
         msg.good(f"Saved evaluation results to {local_path}")

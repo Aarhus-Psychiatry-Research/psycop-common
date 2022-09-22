@@ -40,16 +40,10 @@ def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb.run):
         chart_name (str): Name of the chart
         run (wandb.run): Wandb run object
     """
-    base_path = Path(__file__).parent.parent.parent.parent / "figures"
+    base_path = Path(__file__).parent.parent.parent.parent / ".tmp_figures"
 
     # Create folder if it doesn't exist
     Path.mkdir(base_path, parents=True, exist_ok=True)
-
-    plot_png_path = altair_chart_to_file(
-        chart=chart,
-        filepath=base_path / f"{chart_name}.png",
-    )
-    run.log({f"png_{chart_name}": wandb.Image(plot_png_path)})
 
     plot_html = altair_chart_to_file(
         chart=chart,
@@ -57,3 +51,20 @@ def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb.run):
     )
 
     run.log({f"html_{chart_name}": wandb.Html(plot_html)})
+
+
+def log_altair_to_disk(chart: Chart, chart_name: str, path: Path):
+    """Log Altair chart to disk.
+
+    Args:
+        chart (Chart): Altair chart
+        chart_name (str): Name of the chart
+        path (Path): Path to the folder where the chart should be saved
+    """
+    # Create folder if it doesn't exist
+    Path.mkdir(path, parents=True, exist_ok=True)
+
+    altair_chart_to_file(
+        chart=chart,
+        filepath=path / f"{chart_name}.png",
+    )
