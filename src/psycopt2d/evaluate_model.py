@@ -12,7 +12,7 @@ from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import positive_rate_to_pred_probs
+from psycopt2d.utils import AUC_LOGGING_FILE_PATH, positive_rate_to_pred_probs
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
     plot_feature_importances,
@@ -73,6 +73,16 @@ def evaluate_model(
     # Log to wandb
     # Numerical metrics
     run.log({"roc_auc_unweighted": auc})
+
+    # log AUC and run ID to a file to find the best run later
+    # Only create the file if it doesn't exists (will be auto-deleted/moved after
+    # syncing). This is to avoid creating a new file every time the script is run
+    # e.g. during a hyperparameter seacrch.
+    if not AUC_LOGGING_FILE_PATH.exists():
+        AUC_LOGGING_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        AUC_LOGGING_FILE_PATH.touch()
+    with open(AUC_LOGGING_FILE_PATH, "a", encoding="utf-8") as f:
+        f.write(f"{run.id},{auc}\n")
 
     # Tables
     ## Performance by threshold

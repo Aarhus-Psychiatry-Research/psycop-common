@@ -1,4 +1,5 @@
 from collections.abc import MutableMapping
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 import numpy as np
@@ -7,6 +8,8 @@ from psycopmlutils.model_performance import ModelPerformance
 from sklearn.impute import SimpleImputer
 from wasabi import msg
 from xgboost import XGBClassifier
+
+AUC_LOGGING_FILE_PATH = Path() / ".aucs" / "aucs.txt"
 
 
 def flatten_nested_dict(

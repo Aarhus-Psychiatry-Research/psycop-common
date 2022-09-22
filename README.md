@@ -44,6 +44,12 @@ to run a sweep with xgboost you will have to add the `--multirun` flag and speci
 python src/psycopt2d/train_model.py --multirun +model=xgboost
 ```
 
+If training with WandB in offline mode (e.g. if doing hyperparameter search), make sure to call the `sync_best_runs_to_wandb.py` script. 
+This will upload the `top_n` best models to WandB, move the other runs to an archive folder, and delete the `.aucs/auc.csv` file which is used to track the best performing models.
+```
+python src/sync_best_runs_to_wandb.py --top_n 10 --project psycopt2d
+```
+
 ## Logging Altair to WandB and saving as png
 We use Selenium and chromedriver to save Altair charts as png. This works out-of-the-box on Overtaci, but requires you to download [chromedriver](https://chromedriver.chromium.org) and place it on PATH (e.g. `/usr/local/bin` on OSX) to use locally. Optionally, [see this guide](https://www.swtestacademy.com/install-chrome-driver-on-mac/). If on OSX, you'll probably need to give chromedriver permission to be run. Move to the folder containing the file and run the following line in a terminal:
 
