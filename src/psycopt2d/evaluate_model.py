@@ -78,11 +78,12 @@ def evaluate_model(
     # Only create the file if it doesn't exists (will be auto-deleted/moved after
     # syncing). This is to avoid creating a new file every time the script is run
     # e.g. during a hyperparameter seacrch.
-    if not AUC_LOGGING_FILE_PATH.exists():
-        AUC_LOGGING_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        AUC_LOGGING_FILE_PATH.touch()
-    with open(AUC_LOGGING_FILE_PATH, "a", encoding="utf-8") as f:
-        f.write(f"{run.id},{auc}\n")
+    if cfg.project.wandb_mode == "offline":
+        if not AUC_LOGGING_FILE_PATH.exists():
+            AUC_LOGGING_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+            AUC_LOGGING_FILE_PATH.touch()
+        with open(AUC_LOGGING_FILE_PATH, "a", encoding="utf-8") as f:
+            f.write(f"{run.id},{auc}\n")
 
     # Tables
     ## Performance by threshold
