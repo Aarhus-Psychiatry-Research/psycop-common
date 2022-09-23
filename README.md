@@ -45,12 +45,15 @@ python src/psycopt2d/train_model.py --multirun +model=xgboost
 ```
 
 ## Developing new evaluation plots
-If you're developing a new evaluation plot (or polishing one for publication), it's much faster to develop it if you don't have to train a model. 
+In general, model evaluations are added to `evaluate_model` in `psycopt2d > evaluation.py`. However, when developing, it's much faster when you don't have to train a model for each iteration.
 
-We recommend that you:
-
-1. Design the plot on synthetic prediction data. Use the `evaluate_saved_model_predictions.py` script as a guide.
-2. Test the plot on real prediction data on Overtaci.
+To do that:
+**Work locally**
+1. Write your plot function in an appropriate file in the `psycopt2d > visualization` directory. 
+2. Test the plot on synthetic prediction data. Use the `evaluate_saved_model_predictions.py` script as a guide.
+**Work remotely**
+3. When you're happy with the plot, test it on real data on Overtaci. To do this, go to Overtaci and replace the path in your test script with some real model predictions with metadata.
+4. When all is ready to go, add the function to the `psycopt2d > evaluation.py > evaluate_model` function
 
 ## Logging Altair to WandB and saving as png
 We use Selenium and chromedriver to save Altair charts as png. This works out-of-the-box on Overtaci, but requires you to download [chromedriver](https://chromedriver.chromium.org) and place it on PATH (e.g. `/usr/local/bin` on OSX) to use locally. Optionally, [see this guide](https://www.swtestacademy.com/install-chrome-driver-on-mac/). If on OSX, you'll probably need to give chromedriver permission to be run. Move to the folder containing the file and run the following line in a terminal:
