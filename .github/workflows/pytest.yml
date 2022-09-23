@@ -27,8 +27,7 @@ jobs:
       uses: nanasess/setup-chromedriver@v1.0.7
 
     - name: install-pandoc-for-markdown-generation
-      run: apt-get install pandoc
-
+      run: sudo apt-get install pandoc
 
     ### Caching
     - name: Load cached $HOME/.local (cache poetry)
