@@ -51,7 +51,7 @@ jobs:
     ### Run tests
     - name: Activate venv
       run: |
-        source .venv
+        source .venv/bin/activate
 
     - name: Run and write pytest
       run: |
