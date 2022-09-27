@@ -12,7 +12,12 @@ concurrency:
 
 jobs:
   pytest:
-    runs-on: -latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+        
     steps:
     - name: Set up Python
       uses: actions/setup-python@v4
