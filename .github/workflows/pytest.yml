@@ -32,13 +32,6 @@ jobs:
       uses: nanasess/setup-chromedriver@v1.0.7
 
     ### Caching
-    - name: Load cached $HOME/.local (cache poetry)
-      id: cached-poetry-install
-      uses: actions/cache@v2.1.6
-      with:
-        path: ~/.local
-        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/pytest.yml') }}-${{ hashFiles('.github/workflows/cache_version') }}
-
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
@@ -61,14 +54,9 @@ jobs:
       run: poetry install -vvv
     
     ### Run tests
-    - name: Parralelise pytest
+    - name: Activate venv
       run: |
-        echo -e "[pytest]\naddopts='-n 2'" > pytest.ini
-        cat pytest.ini
-
-    - name: Source .venv
-      run: |
-        source $VENV
+        poetry shell
 
     - name: Run and write pytest
       run: |
