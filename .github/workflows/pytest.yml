@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
         
     steps:
     - name: Set up Python
@@ -60,5 +60,4 @@ jobs:
 
     - name: Run and write pytest
       run: |
-        set -o pipefail
         poetry run pytest --cov=src --cov-report term-missing --color=yes | tee pytest-coverage.txt
