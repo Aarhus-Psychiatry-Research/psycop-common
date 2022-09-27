@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         
     steps:
     - name: Set up Python
@@ -51,7 +51,7 @@ jobs:
     ### Run tests
     - name: Activate venv
       run: |
-        source .venv/bin/activate
+        poetry shell
     - name: Run and write pytest
       run: |
         poetry run pytest --cov=src --cov-report term-missing --color=yes
