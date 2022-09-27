@@ -49,9 +49,5 @@ jobs:
       run: poetry install -vvv
     
     ### Run tests
-    - name: Activate venv
-      run: |
-        poetry shell
-    - name: Run and write pytest
       run: |
         poetry run pytest --cov=src --cov-report term-missing --color=yes
