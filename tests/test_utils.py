@@ -34,11 +34,11 @@ def test_drop_records_if_datediff_days_smaller_than():
     ).to_list()
     expected = [29.0, np.nan]
 
-    for i in range(len(differences)):
-        if np.isnan(differences[i]):
+    for i, diff in enumerate(differences):
+        if np.isnan(diff):
             assert np.isnan(expected[i])
         else:
-            assert differences[i] == expected[i]
+            assert diff == expected[i]
 
 
 def test_flatten_nested_dict():

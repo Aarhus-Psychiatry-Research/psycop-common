@@ -11,13 +11,14 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: [3.9]
         
     steps:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.9.0
+        python-version: 3.9
 
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -49,10 +50,6 @@ jobs:
       run: poetry install -vvv
     
     ### Run tests
-    - name: Activate venv
+    - name: Run pytest
       run: |
-        source .venv/bin/activate
-
-    - name: Run and write pytest
-      run: |
-        poetry run pytest --cov=src --cov-report term-missing --color=yes | tee pytest-coverage.txt
+        poetry run pytest --cov=src --cov-report term-missing --color=yes
