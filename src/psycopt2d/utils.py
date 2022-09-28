@@ -8,8 +8,38 @@ import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
 from psycopmlutils.model_performance import ModelPerformance
-from psycopmlutils.utils import MODEL_PREDICTIONS_PATH, format_dict_for_printing
 from wasabi import msg
+
+SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
+FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
+OUTCOME_DATA_PATH = SHARED_RESOURCES_PATH / "outcome_data"
+RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
+FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
+MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def format_dict_for_printing(d: dict) -> str:
+    """Format a dictionary for printing. Removes extra apostrophes, formats
+    colon to dashes, separates items with underscores and removes curly
+    brackets.
+    Args:
+        d (dict): dictionary to format.
+    Returns:
+        str: Formatted dictionary.
+    Example:
+        >>> d = {"a": 1, "b": 2}
+        >>> print(format_dict_for_printing(d))
+        >>> "a-1_b-2"
+    """
+    return (
+        str(d)
+        .replace("'", "")
+        .replace(": ", "-")
+        .replace("{", "")
+        .replace("}", "")
+        .replace(", ", "_")
+    )
 
 
 def flatten_nested_dict(
