@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
 
-from psycopt2d.utils import read_pickle
+from psycopt2d.utils import PROJECT_ROOT, read_pickle
 from psycopt2d.visualization import plot_auc_by_time_from_first_visit
 
 
@@ -48,7 +48,7 @@ def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig
 
 if __name__ == "__main__":
 
-    eval_path = Path() / "evaluation_results"
+    eval_path = PROJECT_ROOT / "evaluation_results"
     eval_df, cfg = load_model_predictions_and_cfg(
         eval_path
         # insert your own model path here
