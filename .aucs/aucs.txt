@@ -1,0 +1,7 @@
+run_id,auc
+2p2dnzhx,0.917
+2qsu8x6y,0.892
+1uuut992,0.917
+1tfjvo0w,0.917
+1bwsbhue,0.892
+383cy5mo,0.917
