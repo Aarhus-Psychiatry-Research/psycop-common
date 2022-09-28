@@ -1,6 +1,6 @@
 from collections.abc import MutableMapping
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Dict, Iterable, List, Union
 
 import numpy as np
 import pandas as pd
@@ -32,7 +32,7 @@ def flatten_nested_dict(
         Dict: The flattened dict.
     """
 
-    items: List[dict[str, Any]] = []
+    items = []
 
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
@@ -51,15 +51,15 @@ def drop_records_if_datediff_days_smaller_than(
     t2_col_name: str,
     t1_col_name: str,
     threshold_days: Union[float, int],
-    inplace: Optional[bool] = True,
+    inplace: bool = True,
 ) -> pd.DataFrame:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
     Args:
         df (pd.DataFrame): Dataframe.
-        t2_col_name (str): _description_
-        t1_col_name (str): _description_
-        threshold_days (Union[float, int]): _description_
+        t2_col_name (str): Column name of a time column
+        t1_col_name (str): Column name of a time column
+        threshold_days (Union[float, int]): Drop if datediff is smaller than this.
         inplace (bool, optional): Defaults to True.
 
     Returns:
