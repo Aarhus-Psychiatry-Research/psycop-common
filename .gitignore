@@ -125,3 +125,5 @@ package-lock.json
 package.json
 *.pkl
 *.txt
+
+.aucs

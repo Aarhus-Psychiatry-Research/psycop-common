@@ -5,7 +5,6 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_integer_dtype
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -38,6 +37,7 @@ class ModelPerformance:
             dict[int, str]
         ] = None,
         to_wide: Optional[bool] = False,
+        binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
         """Calculate performance metrics from a dataframe.
 
@@ -54,6 +54,7 @@ class ModelPerformance:
                 metadata columns and add them all.
             id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.
+            binary_threshold (float): Threshold for binary classification. Defaults to 0.5.
 
         Returns:
             pd.Dataframe: Dataframe with performance metrics.
@@ -69,6 +70,7 @@ class ModelPerformance:
             id_col_name=id_col_name,
             to_wide=to_wide,
             id2label=id2label,
+            binary_threshold=binary_threshold,
         )
 
         if id_col_name:
@@ -87,6 +89,7 @@ class ModelPerformance:
                 id_col_name=id_col_name,
                 to_wide=to_wide,
                 id2label=id2label,
+                binary_threshold=binary_threshold,
             )
 
             performance_description = pd.concat(
@@ -119,6 +122,7 @@ class ModelPerformance:
             dict[int, str]
         ] = None,
         to_wide: Optional[bool] = False,
+        binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
         """Load a .jsonl file and returns performance metrics.
 
@@ -132,6 +136,7 @@ class ModelPerformance:
                 metadata columns and add them all.
             id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.
+            binary_threshold (float): Threshold for binary classification. Defaults to 0.5.
 
         Raises:
             ValueError: If file is not a .jsonl file
@@ -155,6 +160,7 @@ class ModelPerformance:
             to_wide=to_wide,
             id2label=id2label,
             metadata_col_names=metadata_col_names,
+            binary_threshold=binary_threshold,
         )
 
     def performance_metrics_from_folder(
@@ -168,6 +174,7 @@ class ModelPerformance:
             dict[int, str]
         ] = None,
         to_wide=False,
+        binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
         """Load and calculates performance metrics for all files matching a
         pattern in a folder.
@@ -183,6 +190,7 @@ class ModelPerformance:
             metadata_col_names (Optional[list[str]], optional): Column(s) containing metadata to add to the performance dataframe.
             id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.
+            binary_threshold (float): Threshold for binary classification. Defaults to 0.5.
 
 
         Returns:
@@ -199,6 +207,7 @@ class ModelPerformance:
                 metadata_col_names=metadata_col_names,
                 id2label=id2label,
                 to_wide=to_wide,
+                binary_threshold=binary_threshold,
             )
             for p in folder.glob(pattern)
         ]
@@ -212,6 +221,7 @@ class ModelPerformance:
         id_col_name: str,
         to_wide: bool,
         id2label: dict[int, str] = None,  # pylint: disable=redefined-outer-name
+        binary_threshold=0.5,
     ) -> pd.DataFrame:
         """Calculate performance metrics from a dataframe. Optionally adds
         aggregated performance by id.
@@ -224,6 +234,7 @@ class ModelPerformance:
             id_col_name (str): Column name for the id, used for grouping.
             to_wide (bool): Whether to return performance as wide format.
             id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
+            binary_threshold (float): Threshold to use for binary classification. Defaults to 0.5.
 
         Returns:
             pd.Dataframe: Dataframe with performance metrics containing the columns
@@ -250,13 +261,18 @@ class ModelPerformance:
             else:
                 predictions = argmax_indices
         else:
-            predictions = np.round(prediction_df[prediction_col_name])
+            # round binary predictions by threshold
+            predictions = np.where(
+                prediction_df[prediction_col_name] >= binary_threshold,
+                1.0,
+                0.0,
+            )
 
         metrics = ModelPerformance.compute_metrics(
-            prediction_df[label_col_name],
-            predictions,
-            to_wide,
-            level_prefix,
+            labels=prediction_df[label_col_name],
+            predicted=predictions,
+            to_wide=to_wide,
+            add_level_prefix=level_prefix,
         )
 
         # calculate roc if binary model
@@ -265,10 +281,8 @@ class ModelPerformance:
         if isinstance(first_score, float) or len(first_score) == 2:
             label2id = {v: k for k, v in id2label.items()} if id2label else None
             probs = scores_to_probs(prediction_df[prediction_col_name])
-            if not is_integer_dtype(prediction_df[label_col_name]):
-                label_int = labels_to_int(prediction_df[label_col_name], label2id)
-            else:
-                label_int = prediction_df[label_col_name]
+            label_int = labels_to_int(prediction_df[label_col_name], label2id)
+
             auc_df = ModelPerformance.calculate_roc_auc(
                 label_int,
                 probs,

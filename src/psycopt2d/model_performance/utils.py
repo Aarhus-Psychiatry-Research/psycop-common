@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 from pandas import Series
+from pandas.api.types import is_integer_dtype
 
 
 def scores_to_probs(scores: Series) -> Series:
@@ -37,7 +38,7 @@ def labels_to_int(
     Returns:
         Series: _description_
     """
-    if labels.dtype == "int":
+    if is_integer_dtype(labels):
         return labels
 
     return labels.apply(lambda x: label2id[x])

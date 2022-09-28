@@ -105,6 +105,7 @@ def test_binary_transform_from_dataframe_with_float(binary_float_df):
         metadata_col_names="all",
         prediction_col_name="scores",
         label_col_name="label",
+        binary_threshold=0.5,
     )
 
     assert res[res["score_type"] == "acc"]["value"].values[0] == pytest.approx(0.666667)
