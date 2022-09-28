@@ -97,6 +97,7 @@ target/
 # figures
 *.png
 figures/
+.tmp_figures/
 
 # data files
 *.csv
