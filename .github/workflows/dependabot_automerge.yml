@@ -4,8 +4,6 @@ name: automerge-dependabot-prs
 
 on:
   pull_request:
-  push:
-    branches: [main, dev]
 
 jobs:
   dependabot-automerge:
