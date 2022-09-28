@@ -5,6 +5,7 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_integer_dtype
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -264,7 +265,10 @@ class ModelPerformance:
         if isinstance(first_score, float) or len(first_score) == 2:
             label2id = {v: k for k, v in id2label.items()} if id2label else None
             probs = scores_to_probs(prediction_df[prediction_col_name])
-            label_int = labels_to_int(prediction_df[label_col_name], label2id)
+            if not is_integer_dtype(prediction_df[label_col_name]):
+                label_int = labels_to_int(prediction_df[label_col_name], label2id)
+            else:
+                label_int = prediction_df[label_col_name]
             auc_df = ModelPerformance.calculate_roc_auc(
                 label_int,
                 probs,
