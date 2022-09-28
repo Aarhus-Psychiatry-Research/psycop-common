@@ -1,5 +1,5 @@
 """Functions for evaluating a model's prredictions."""
-from typing import Iterable
+from typing import Iterable, Optional
 
 import altair as alt
 import numpy as np
@@ -30,7 +30,7 @@ def evaluate_model(
     y_col_name: str,
     train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
-    run: wandb.run,
+    run: Optional[wandb.run] = None,
 ):
     """Runs the evaluation suite on the model and logs to WandB.
     At present, this includes:
@@ -49,7 +49,8 @@ def evaluate_model(
         y_col_name (str): Label column name
         train_col_names (Iterable[str]): Column names for all predictors
         y_hat_prob_col_name (str): Column name containing pred_proba output
-        run (wandb.run): WandB run
+        run (Optional[wandb.run]): WandB run to log to. Will not log to WandB if
+            set to None
     """
     y = eval_dataset[y_col_name]
     y_hat_probs = eval_dataset[y_hat_prob_col_name]
@@ -105,10 +106,7 @@ def evaluate_model(
     plots = {}
 
     # Feature importance
-    # Check if model has feature_importances_ attribute
-    feature_importances = getattr(pipe["model"], "feature_importances_", None)
-
-    if feature_importances is not None:
+    if hasattr(pipe["model"], "feature_importances_"):
         # Handle EBM differently as it autogenerates interaction terms
         if cfg.model.model_name == "ebm":
             feature_names = pipe["model"].feature_names
@@ -117,7 +115,7 @@ def evaluate_model(
 
         feature_importances_plot = plot_feature_importances(
             column_names=feature_names,
-            feature_importances=feature_importances,
+            feature_importances=pipe["model"].feature_importances_,
             top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
         )
         plots.update(
@@ -126,7 +124,7 @@ def evaluate_model(
         # Log as table too for readability
         feature_importances_table = generate_feature_importances_table(
             column_names=feature_names,
-            feature_importances=feature_importances,
+            feature_importances=pipe["model"].feature_importances_,
         )
         run.log({"feature_importance_table": feature_importances_table})
 
