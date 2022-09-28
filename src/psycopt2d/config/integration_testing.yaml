@@ -4,5 +4,5 @@ defaults:
   - data: synth_data
   - preprocessing: default_preprocessing
   - training: default_training
-  - evaluation: default_evaluation
+  - evaluation: evaluation_synth
   - sweeper: optuna_singlethread

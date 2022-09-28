@@ -44,11 +44,16 @@ to run a sweep with xgboost you will have to add the `--multirun` flag and speci
 python src/psycopt2d/train_model.py --multirun +model=xgboost
 ```
 
-If training with WandB in offline mode (e.g. if doing hyperparameter search), make sure to call the `sync_best_runs_to_wandb.py` script. 
-This will upload the `top_n` best models to WandB, move the other runs to an archive folder, and delete the `.aucs/auc.csv` file which is used to track the best performing models.
-```
-python src/sync_best_runs_to_wandb.py --top_n 10 --project psycopt2d
-```
+## Developing new evaluation plots
+In general, model evaluations are added to `evaluate_model` in `psycopt2d > evaluation.py`. However, when developing, it's much faster when you don't have to train a model for each iteration.
+
+To do that:
+**Work locally**
+1. Write your plot function in an appropriate file in the `psycopt2d > visualization` directory. 
+2. Test the plot on synthetic prediction data. Use the `evaluate_saved_model_predictions.py` script as a guide.
+**Work remotely**
+3. When you're happy with the plot, test it on real data on Overtaci. To do this, go to Overtaci and replace the path in your test script with some real model predictions with metadata.
+4. When all is ready to go, add the function to the `psycopt2d > evaluation.py > evaluate_model` function
 
 ## Logging Altair to WandB and saving as png
 We use Selenium and chromedriver to save Altair charts as png. 
