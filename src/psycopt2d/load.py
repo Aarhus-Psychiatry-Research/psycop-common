@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import pandas as pd
-from psycopmlutils.loaders.raw import sql_load
+from psycopmlutils.sql.loader import sql_load
 from wasabi import Printer
 
 msg = Printer(timestamp=True)

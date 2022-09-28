@@ -11,6 +11,7 @@ from typing import List
 
 import pandas as pd
 
+# import pandoc
 # See comment in pyproject.toml on Pandoc, not currently in use. import pandoc
 
 AUTHORS = ["Lasse Hansen", "MB", "KCE"]
