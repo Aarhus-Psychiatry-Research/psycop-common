@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from psycopt2d.utils import AUC_LOGGING_FILE_PATH, PROJECT_ROOT_PATH
+from psycopt2d.utils import AUC_LOGGING_FILE_PATH, PROJECT_ROOT
 
 
 def get_best_run_ids(top_n: int) -> list[str]:
@@ -56,7 +56,7 @@ def sync_runs_to_wandb(runs: list[str], project: str) -> None:
 
 def archive_wandb_runs() -> None:
     """Move all wandb runs to an archive folder."""
-    wandb_path = PROJECT_ROOT_PATH / "wandb"
+    wandb_path = PROJECT_ROOT / "wandb"
     archive_path = wandb_path / "archive"
     archive_path.mkdir(exist_ok=True)
     for run in wandb_path.glob("*"):

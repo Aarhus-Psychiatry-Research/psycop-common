@@ -17,6 +17,7 @@ RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
 FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+AUC_LOGGING_FILE_PATH = PROJECT_ROOT / ".aucs" / "aucs.txt"
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -40,10 +41,6 @@ def format_dict_for_printing(d: dict) -> str:
         .replace("}", "")
         .replace(", ", "_")
     )
-
-
-PROJECT_ROOT_PATH = Path(__file__).parent.parent.parent
-AUC_LOGGING_FILE_PATH = PROJECT_ROOT_PATH / ".aucs" / "aucs.txt"
 
 
 def flatten_nested_dict(
