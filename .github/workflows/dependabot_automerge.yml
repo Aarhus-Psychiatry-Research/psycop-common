@@ -1,4 +1,4 @@
-# GitHub action to check if pre-commit has been run. Runs from .pre-commit-config.yaml, where the pre-commit actions are.
+# GitHub action to automerge dependabot PRs. Only merges if tests pass due to branch protections in the repo.
 
 name: automerge-dependabot-prs
 
