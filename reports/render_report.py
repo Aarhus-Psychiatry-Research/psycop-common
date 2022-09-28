@@ -10,7 +10,9 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
-import pandoc
+
+# import pandoc
+# See comment in pyproject.toml on Pandoc, not currently in use. import pandoc
 
 AUTHORS = ["Lasse Hansen", "MB", "KCE"]
 TITLE = "Paradigm Shattering Paper 1"
@@ -75,8 +77,8 @@ if __name__ == "__main__":
         md.append(line)
 
     md = "".join(md)
-    pandoc_format = pandoc.read(md)
-    pandoc.write(pandoc_format, file=str(REPORT_PATH / "auto_report.docx"))
+    # pandoc_format = pandoc.read(md)
+    # pandoc.write(pandoc_format, file=str(REPORT_PATH / "auto_report.docx"))
 
     with open(REPORT_PATH / "auto_report.md", "w") as f:
         f.write(md)

@@ -1,7 +1,7 @@
 n_training_samples: null
 drop_patient_if_outcome_before_date: 2011-01-01
 min_lookahead_days: 0
-lookahead_days: 1826.25
+lookahead_days: 30
 pred_col_name_prefix: "pred_"
 pred_timestamp_col_name: timestamp
 outcome_timestamp_col_name: timestamp_outcome
