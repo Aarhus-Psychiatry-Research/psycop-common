@@ -1,7 +1,7 @@
 import time
 from collections.abc import MutableMapping
 from pathlib import Path
-from typing import Dict, Iterable, List, Union
+from typing import Any, Dict, Iterable, List, Union
 
 import dill as pkl
 import numpy as np
@@ -40,6 +40,10 @@ def format_dict_for_printing(d: dict) -> str:
         .replace("}", "")
         .replace(", ", "_")
     )
+
+
+PROJECT_ROOT_PATH = Path(__file__).parent.parent.parent
+AUC_LOGGING_FILE_PATH = PROJECT_ROOT_PATH / ".aucs" / "aucs.txt"
 
 
 def flatten_nested_dict(
