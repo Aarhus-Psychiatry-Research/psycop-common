@@ -6,7 +6,7 @@ on:
   pull_request
 
 jobs:
-  dependabot:
+  dependabot-automerge:
     - name: Enable automerge for Dependabot PRs
       runs-on: ubuntu-latest
       if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}} # Detect that the PR author is dependabot
@@ -25,4 +25,6 @@ jobs:
             pull-requests: write
           if: github.actor == 'dependabot[bot]'
           steps:
-            - uses: hmarr/auto-approve-action@v2
+            - uses: hmarr/auto-approve-action@v2i
+              with:
+                github-token: ${{ secrets.MB_PERSONAL_ACCESS_TOKEN }}
