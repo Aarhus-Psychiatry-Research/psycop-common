@@ -5,19 +5,20 @@ on:
   pull_request:
     branches: [ main, dev ]
 
-concurrency:
-  # New commit on branch cancels running workflows of the same branch
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: [3.9]
+        
     steps:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.9.0
+        python-version: 3.9
 
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -26,15 +27,7 @@ jobs:
     - name: setup-chromedriver
       uses: nanasess/setup-chromedriver@v1.0.7
 
-
     ### Caching
-    - name: Load cached $HOME/.local (cache poetry)
-      id: cached-poetry-install
-      uses: actions/cache@v2.1.6
-      with:
-        path: ~/.local
-        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/pytest.yml') }}
-
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
@@ -54,19 +47,9 @@ jobs:
     ### Installing
     - name: Install Project
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install
+      run: poetry install -vvv
     
     ### Run tests
-    - name: Parralelise pytest
+    - name: Run pytest
       run: |
-        echo -e "[pytest]\naddopts='-n 2'" > pytest.ini
-        cat pytest.ini
-
-    - name: Source .venv
-      run: |
-        source $VENV
-
-    - name: Run and write pytest
-      run: |
-        set -o pipefail
-        poetry run pytest --cov=src --cov-report term-missing --color=yes | tee pytest-coverage.txt
+        poetry run pytest --cov=src --cov-report term-missing --color=yes
