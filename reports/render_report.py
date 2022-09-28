@@ -6,10 +6,11 @@ be necessary but can be used for pretty styling). Add figures and tables using {
 be in a dir called 'tables' and figures in a dir called 'figs'
 """
 
-from pathlib import Path
 from typing import List
 
 import pandas as pd
+
+from psycopt2d.utils import PROJECT_ROOT
 
 # import pandoc
 # See comment in pyproject.toml on Pandoc, not currently in use. import pandoc
@@ -18,9 +19,9 @@ AUTHORS = ["Lasse Hansen", "MB", "KCE"]
 TITLE = "Paradigm Shattering Paper 1"
 
 
-TABLE_DIR = Path() / "tables"
-PLOT_DIR = Path() / "figs"
-REPORT_PATH = Path() / "reports"
+TABLE_DIR = PROJECT_ROOT / "tables"
+PLOT_DIR = PROJECT_ROOT / "figs"
+REPORT_PATH = PROJECT_ROOT / "reports"
 
 
 def insert_figure(line: str, fig_number: int):
