@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.2 (2022-09-29)
+### Fix
+* Bump version after more lenient branch protections v7 ([`05d04b4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/05d04b4a4ed8667c90ecc3b6ace566a571a4b70d))
+* Bump version after more lenient branch protections v6 ([`55c3acf`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/55c3acff60c892dd6b3f32ffeb0539f6eddd87a0))
+* Bump version after more lenient branch protections v5 ([`a90f4b0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a90f4b0e42b8458c8db1728fb4925dc9edd08b13))
+* Bump version after more lenient branch protections v4 ([`1aa2dd0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1aa2dd07f7103f2573eb9991d0bab5194c4fa253))
+* Typo in release.yml ([`0c7d793`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0c7d7938672e25b992f3d3d358098699a66eb14b))
+* Try using personal access token to override ([`6b1170d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6b1170de1fcd04958afbb21fecbfd631e8e73517))
+
 ## v0.1.1 (2022-09-29)
 ### Fix
 * Bump version after more lenient branch protections v4 ([`c231bc3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c231bc3dda115062ce9ad94840bf36e6a8a1d395))
