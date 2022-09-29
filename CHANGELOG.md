@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.3 (2022-09-29)
+### Fix
+* Add PAT to checkout for it to persist for python semantic release ([`3af0ae6`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3af0ae6c4303d69235acfd0f4f929406068210d4))
+
 ## v0.1.2 (2022-09-29)
 ### Fix
 * Bump version after more lenient branch protections v7 ([`05d04b4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/05d04b4a4ed8667c90ecc3b6ace566a571a4b70d))
