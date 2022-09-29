@@ -11,6 +11,7 @@ jobs:
     concurrency: release
 
     steps:
+    # Checkout action is required for token to persist
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
@@ -22,3 +23,9 @@ jobs:
         github_token: ${{ secrets.MB_PERSONAL_ACCESS_TOKEN}}
         # Remember to copy the tool.semantic_release section from pyproject.toml 
         # as well
+        # To enable pypi, 
+        # 1) Set upload_to_pypi to true in pyproject.toml and
+        # 2) Set the pypi_token in the repo
+        # 3) Uncomment the two lines below
+        # repository_username: __token__
+        # repository_password: ${{ secrets.PYPI_TOKEN }}
