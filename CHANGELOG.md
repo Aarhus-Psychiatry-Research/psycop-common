@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.1 (2022-09-29)
+### Fix
+* Bump version after more lenient branch protections v4 ([`c231bc3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c231bc3dda115062ce9ad94840bf36e6a8a1d395))
+* Bump version after more lenient branch protections v4 ([`3e78068`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3e7806880598722b7a9d5200e649aa0aca7d1984))
+* Bump version after even more lenient branch protections ([`fe07436`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/fe07436759b1a03bdc7c9eb738506e5f674c3d0c))
+* Bump version after more lenient branch protections ([`4b90e57`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4b90e57e0642b5d92d3359fbe68a5bdefd827468))
+* Bump release version ([`8fcb3f8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/8fcb3f8703ea57697e5f89d4aaf799aec3559ff6))
+* Bump release version ([`af89cdd`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/af89cdd96a90db3305f0087cd2e8347cc3b1821d))
+
 ## v0.1.0 (2022-09-29)
 ### Feature
 * Add binary threshold option for `model_performance` ([`528d3a0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/528d3a0de432d607bd9528911b9cf877818aaa71))
