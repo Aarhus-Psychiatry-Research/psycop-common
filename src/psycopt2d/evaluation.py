@@ -12,15 +12,19 @@ from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import AUC_LOGGING_FILE_PATH, positive_rate_to_pred_probs
+from psycopt2d.utils import (
+    AUC_LOGGING_FILE_PATH,
+    PROJECT_ROOT,
+    positive_rate_to_pred_probs,
+)
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
     plot_feature_importances,
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
-from psycopt2d.visualization.altair_utils import log_altair_to_wandb
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
+from psycopt2d.visualization.utils import log_image_to_wandb
 
 
 def evaluate_model(
@@ -117,6 +121,7 @@ def evaluate_model(
             column_names=feature_names,
             feature_importances=pipe["model"].feature_importances_,
             top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+            save_path=PROJECT_ROOT / "figures" / "feature_importances.png",
         )
         plots.update(
             {"feature_importance": feature_importances_plot},
@@ -145,12 +150,14 @@ def evaluate_model(
                 bin_period="M",
                 metric_fn=roc_auc_score,
                 y_title="AUC",
+                save_path=PROJECT_ROOT / "figures" / "auc_by_calendar_time.png",
             ),
             "auc_by_time_from_first_visit": plot_auc_by_time_from_first_visit(
                 labels=y,
                 y_hat_probs=y_hat_probs,
                 first_visit_timestamps=first_visit_timestamp,
                 prediction_timestamps=pred_timestamps,
+                save_path=PROJECT_ROOT / "figures" / "auc_by_time_from_first_visit.png",
             ),
             "f1_by_time_until_diagnosis": plot_metric_by_time_until_diagnosis(
                 labels=y,
@@ -159,10 +166,11 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 metric_fn=f1_score,
                 y_title="F1",
+                save_path=PROJECT_ROOT / "figures" / "f1_by_time_until_diagnosis.png",
             ),
         },
     )
 
     ## Log all the figures to wandb
-    for chart_name, chart_obj in plots.items():
-        log_altair_to_wandb(chart=chart_obj, chart_name=chart_name, run=run)
+    for chart_name, chart_path in plots.items():
+        log_image_to_wandb(chart_path=chart_path, chart_name=chart_name, run=run)

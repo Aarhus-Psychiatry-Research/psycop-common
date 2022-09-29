@@ -32,6 +32,17 @@ def altair_chart_to_file(
     return str(filepath)
 
 
+def log_image_to_wandb(chart_path: Path, chart_name: str, run: wandb.run):
+    """Helper to log image to wandb.
+
+    Args:
+        chart_path (Path): Path to the image
+        chart_name (str): Name of the chart
+        run (wandb.run): Wandb run object
+    """
+    run.log({f"image_{chart_name}": wandb.Image(str(chart_path))})
+
+
 def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb.run):
     """Helper to log Altair charts.
 

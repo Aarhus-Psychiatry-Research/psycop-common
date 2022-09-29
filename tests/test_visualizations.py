@@ -7,7 +7,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 from psycopt2d.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
-from psycopt2d.visualization.base_charts import plot_bar_chart
+from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.feature_importance import plot_feature_importances
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
@@ -64,17 +64,16 @@ def test_plot_bar_chart(df):
         prediction_timestamps=df["timestamp"],
         pred_proba_threshold=0.5,
     )
-    plot_bar_chart(
+    plot_basic_chart(
         x_values=plot_df["days_to_outcome_binned"],
         y_values=plot_df["sens"],
         x_title="Days to outcome",
         y_title="Sensitivity",
+        plot_type="bar",
     )
 
 
 def test_plot_performance_by_calendar_time(df):
-    alt.data_transformers.disable_max_rows()
-
     plot_performance_by_calendar_time(
         labels=df["label"],
         y_hat=df["pred"],
@@ -86,8 +85,6 @@ def test_plot_performance_by_calendar_time(df):
 
 
 def test_plot_metric_until_diagnosis(df):
-    alt.data_transformers.disable_max_rows()
-
     plot_metric_by_time_until_diagnosis(
         labels=df["label"],
         y_hat=df["pred"],
@@ -99,8 +96,6 @@ def test_plot_metric_until_diagnosis(df):
 
 
 def test_plot_auc_time_from_first_visit(df):
-    alt.data_transformers.disable_max_rows()
-
     plot_auc_by_time_from_first_visit(
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
@@ -129,7 +124,7 @@ def test_sens_by_time_to_outcome(df):
 
 def test_plot_feature_importances():
     feature_names = ["very long feature name right here yeah", "feat2", "feat3"]
-    feature_importance = [0.6, 0.3, 0.1]
+    feature_importance = [0.6, 0.7, 0.1]
 
     plot_feature_importances(
         feature_names,
