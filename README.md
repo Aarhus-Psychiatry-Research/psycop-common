@@ -56,8 +56,8 @@ To do that:
 
 **Work remotely**
 
-4. When you're happy with the plot, test it on real data on Overtaci. To do this, go to Overtaci and replace the path in your test script with some real model predictions with metadata.
-5. When all is ready to go, add the function to the `psycopt2d > evaluation.py > evaluate_model` function
+3. When you're happy with the plot, test it on real data on Overtaci. To do this, go to Overtaci and replace the path in your test script with some real model predictions with metadata.
+4. When all is ready to go, add the function to the `psycopt2d > evaluation.py > evaluate_model` function
 
 
 
