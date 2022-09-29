@@ -125,5 +125,6 @@ package-lock.json
 package.json
 *.pkl
 *.txt
+.aucs/
 
-.aucs
+evaluation_results

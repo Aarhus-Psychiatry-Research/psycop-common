@@ -7,8 +7,9 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
-from psycopmlutils.model_performance import ModelPerformance
 from wasabi import msg
+
+from psycopt2d.model_performance import ModelPerformance
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"

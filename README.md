@@ -48,54 +48,16 @@ python src/psycopt2d/train_model.py --multirun +model=xgboost
 In general, model evaluations are added to `evaluate_model` in `psycopt2d > evaluation.py`. However, when developing, it's much faster when you don't have to train a model for each iteration.
 
 To do that:
+
 **Work locally**
 1. Write your plot function in an appropriate file in the `psycopt2d > visualization` directory. 
-2. Test the plot on synthetic prediction data. Use the `evaluate_saved_model_predictions.py` script as a guide.
+2. Test the plot on synthetic prediction data. Write a test in `tests>name_of_your_plot.py`. 
+    Use the `evaluate_saved_model_predictions.py` script as a guide.
+
 **Work remotely**
+
 3. When you're happy with the plot, test it on real data on Overtaci. To do this, go to Overtaci and replace the path in your test script with some real model predictions with metadata.
 4. When all is ready to go, add the function to the `psycopt2d > evaluation.py > evaluate_model` function
-
-## Logging Altair to WandB and saving as png
-We use Selenium and chromedriver to save Altair charts as png. 
-
-This works out-of-the-box on Overtaci.
-
-Locally it requires you to:
-
-### Install chromedriver
-1. Download [chromedriver](https://chromedriver.chromium.org) 
-2. Place it on PATH (e.g. `/usr/local/bin` on OSX) 
-3. Remove from quarantine: `cd /usr/local/bin && xattr -d com.apple.quarantine chromedriver`
-
-For more description, [see this guide](https://www.swtestacademy.com/install-chrome-driver-on-mac/).
-
-### Install vega for png output
-1. Install npm, `brew install npm`
-2. Install the required packages, `npm install vega-lite vega-cli canvas`
-
-More on the altair_saver [readme](https://github.com/altair-viz/altair_saver#selenium) 
-
-
-
-Minimal example of logging Altair chart to WandB
-```py
-run = wandb.init()
-
-source = pd.DataFrame(
-    {
-        "a": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
-        "b": [28, 55, 43, 91, 81, 53, 19, 87, 52],
-    }
-)
-
-chart = alt.Chart(source).mark_bar().encode(x="a", y="b")
-
-tmp_filename = "chart.png"
-chart.save(tmp_filename)
-
-run.log({"dummy_chart" : wandb.Image(tmp_filename)})
-```
-
 
 
 
