@@ -62,19 +62,19 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
-[tool.semantic_release]
-version_variable = [
-    "pyproject.toml:version"
-]
-branch = "main"
-upload_to_pypi = false
-upload_to_release = true
-build_command = "poetry build"
-
 [tool.isort]
 known_third_party = ["wandb"]
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.semantic_release]
+branch = "main"
+version_variable = [
+    "pyproject.toml:version"
+]
+upload_to_pypi = false
+upload_to_release = true
+build_command = "pip install poetry && poetry build"
 
 [tool.pyright]
