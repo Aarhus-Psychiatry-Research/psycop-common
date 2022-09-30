@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.4 (2022-09-30)
+### Fix
+* Automerge with MB PAT ([`e708d64`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/e708d6479287c76133c2becc13d43b84b91d0abe))
+
 ## v0.1.3 (2022-09-29)
 ### Fix
 * Add PAT to checkout for it to persist for python semantic release ([`3af0ae6`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3af0ae6c4303d69235acfd0f4f929406068210d4))
