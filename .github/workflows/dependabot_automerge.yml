@@ -11,8 +11,7 @@ permissions:
 jobs:
   dependabot-automerge:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'MartinBernstorff'}}    
-    # if: ${{ github.actor == 'dependabot[bot]'}}    
+    if: ${{ github.actor == 'dependabot[bot]'}}    
     
     steps:
     # Checkout action is required for token to persist
@@ -28,6 +27,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.MB_PERSONAL_ACCESS_TOKEN }}
     
     - name: Auto approve dependabot PRs
-      if: github.actor == 'MartinBernstorff'
-      # if: github.actor == 'dependabot[bot]'
+      if: github.actor == 'dependabot[bot]'
       uses: hmarr/auto-approve-action@v2
