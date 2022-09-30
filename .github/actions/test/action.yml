@@ -28,7 +28,7 @@ runs:
       with:
         poetry-version: ${{ inputs.poetry-version }}
         cache-version: ${{ inputs.cache-version }}
-        python-versoin: ${{ inputs.python-version }}
+        python-version: ${{ inputs.python-version }}
 
     # Installing
     - name: Install Poetry
