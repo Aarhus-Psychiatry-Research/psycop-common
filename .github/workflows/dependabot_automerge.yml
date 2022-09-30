@@ -11,15 +11,23 @@ permissions:
 jobs:
   dependabot-automerge:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]'}}    
+    if: ${{ github.actor == 'MartinBernstorff'}}    
+    # if: ${{ github.actor == 'dependabot[bot]'}}    
     
     steps:
+    # Checkout action is required for token to persist
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.MB_PERSONAL_ACCESS_TOKEN }}
+
     - name: Enable auto-merge for Dependabot PRs
       run: gh pr merge --auto --merge "$PR_URL" # Use Github CLI to merge automatically the PR
       env:
         PR_URL: ${{github.event.pull_request.html_url}}
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
+    
     - name: Auto approve dependabot PRs
-      if: github.actor == 'dependabot[bot]'
+      if: github.actor == 'MartinBernstorff'
+      # if: github.actor == 'dependabot[bot]'
       uses: hmarr/auto-approve-action@v2
