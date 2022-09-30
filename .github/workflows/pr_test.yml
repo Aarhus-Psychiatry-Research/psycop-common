@@ -1,0 +1,25 @@
+name: test_pr
+on:
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  test_pr:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: [3.9]
+        poetry-version: [1.1.15]
+        cache-version: [0.0.0] # Change this number if you want to manually invalidate all caches
+        
+    steps:
+    - name: Run tests
+      uses: ./.github/actions/test
+      with:
+        os: ${{ matrix.os }}
+        python-version: ${{ matrix.python-version }}
+        poetry-version: ${{ matrix.poetry-version }}
+        cache-version: ${{ matrix.cache-version }}
+    
