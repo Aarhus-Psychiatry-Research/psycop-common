@@ -34,7 +34,6 @@ def df():
 
 
 def test_prob_over_time(df):
-    alt.data_transformers.disable_max_rows()
 
     plot_prob_over_time(
         patient_id=df["dw_ek_borger"],
