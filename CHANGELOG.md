@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2022-09-30)
+### Feature
+* First CI release ([`1b5f5a9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1b5f5a91e89826ba1c530c82570eb4465008a506))
+
+### Fix
+* CI didn't run; match version with latest release ([`d14a05c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d14a05c4e32bb6fdc4ce7195d3a932105ef258ca))
+
 ## v0.1.6 (2022-09-30)
 ### Fix
 * Version bump shouldn't invalidate cache in PRs ([`2cbd2b7`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/2cbd2b7c160dbf86c385d252ccf9b415f78e73fe))
