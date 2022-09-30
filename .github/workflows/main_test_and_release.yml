@@ -1,6 +1,7 @@
-name: Test and release main
+name: Test (and release)
 
 on:
+  pull_request:
   push:
     branches:
       - main 
@@ -31,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: release
     needs: test
-
+    if: github.ref == 'refs/heads/main'
     steps:
     # Checkout action is required for token to persist
     - uses: actions/checkout@v2
