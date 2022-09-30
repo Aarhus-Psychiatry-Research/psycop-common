@@ -18,7 +18,7 @@ inputs:
 
 jobs:
   test_pr:
-    runs-on: ${{ input.os }}
+    runs-on: ${{ inputs.os }}
         
     steps:
     ### Setup prerequisites
