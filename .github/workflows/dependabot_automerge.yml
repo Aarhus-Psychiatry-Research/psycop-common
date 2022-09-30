@@ -15,11 +15,6 @@ jobs:
     
     steps:
     # Checkout action is required for token to persist
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Enable auto-merge for Dependabot PRs
       run: gh pr merge --auto --merge "$PR_URL" # Use Github CLI to merge automatically the PR
       env:
@@ -29,3 +24,5 @@ jobs:
     - name: Auto approve dependabot PRs
       if: github.actor == 'dependabot[bot]'
       uses: hmarr/auto-approve-action@v2
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
