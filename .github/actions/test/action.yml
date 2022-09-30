@@ -1,10 +1,6 @@
 name: 'Run tests'
 description: 'Run tests'
 inputs:
-  os:
-    description: "Which OS to run on"
-    required: true
-    default: 'ubuntu-latest'
   python-version:
     description: "Which Python version to run on"
     required: true
@@ -16,11 +12,9 @@ inputs:
     description: "Cache version for invalidation"
     default: 0.0.0
 
-jobs:
-  test_pr:
-    runs-on: ${{ inputs.os }}
-        
-    steps:
+runs:
+  using: "composite"
+  steps:
     ### Setup prerequisites
     - name: Set up Python
       uses: actions/setup-python@v4

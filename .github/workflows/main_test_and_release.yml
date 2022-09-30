@@ -23,7 +23,6 @@ jobs:
       - name: Run tests
         uses: ./.github/actions/test
         with:
-          os: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
           poetry-version: ${{ matrix.poetry-version }}
           cache-version: ${{ matrix.cache-version }}
