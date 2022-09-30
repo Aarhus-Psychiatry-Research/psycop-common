@@ -48,8 +48,6 @@ def plot_basic_chart(
         df = df.sort_values(by=["sort_y"])
 
     plt.figure(figsize=fig_size)
-
-    plt.figure(figsize=fig_size)
     if "bar" in plot_type:
         plt.bar(df["x"], df["y"])
     if "hbar" in plot_type:

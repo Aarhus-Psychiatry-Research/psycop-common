@@ -56,6 +56,9 @@ def evaluate_model(
         run (Optional[wandb.run]): WandB run to log to. Will not log to WandB if
             set to None
     """
+    SAVE_DIR = PROJECT_ROOT / ".tmp"
+    if not SAVE_DIR.exists():
+        SAVE_DIR.mkdir()
     y = eval_dataset[y_col_name]
     y_hat_probs = eval_dataset[y_hat_prob_col_name]
     auc = round(roc_auc_score(y, y_hat_probs), 3)
@@ -121,7 +124,7 @@ def evaluate_model(
             column_names=feature_names,
             feature_importances=pipe["model"].feature_importances_,
             top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
-            save_path=PROJECT_ROOT / "figures" / "feature_importances.png",
+            save_path=SAVE_DIR / "feature_importances.png",
         )
         plots.update(
             {"feature_importance": feature_importances_plot},
@@ -150,14 +153,14 @@ def evaluate_model(
                 bin_period="M",
                 metric_fn=roc_auc_score,
                 y_title="AUC",
-                save_path=PROJECT_ROOT / "figures" / "auc_by_calendar_time.png",
+                save_path=SAVE_DIR / "auc_by_calendar_time.png",
             ),
             "auc_by_time_from_first_visit": plot_auc_by_time_from_first_visit(
                 labels=y,
                 y_hat_probs=y_hat_probs,
                 first_visit_timestamps=first_visit_timestamp,
                 prediction_timestamps=pred_timestamps,
-                save_path=PROJECT_ROOT / "figures" / "auc_by_time_from_first_visit.png",
+                save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
             ),
             "f1_by_time_until_diagnosis": plot_metric_by_time_until_diagnosis(
                 labels=y,
@@ -166,7 +169,7 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 metric_fn=f1_score,
                 y_title="F1",
-                save_path=PROJECT_ROOT / "figures" / "f1_by_time_until_diagnosis.png",
+                save_path=SAVE_DIR / "f1_by_time_until_diagnosis.png",
             ),
         },
     )
