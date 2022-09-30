@@ -48,6 +48,16 @@ jobs:
           # Cache the complete venv dir for a given os, python version, pyproject.toml
           key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('.github/workflows/cache_version') }}
 
+      - name: Load cached .local (Poetry install location)
+        id: cached-poetry-dependencies
+        if: matrix.os == 'ubuntu-latest' | matrix.os == 'macos-latest'
+        uses: actions/cache@v2.1.6
+        with:
+          path: |
+            ~/.local/
+          # Cache the complete venv dir for a given os, python version, pyproject.toml
+          key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('.github/workflows/cache_version') }}--${{ hashFiles('.github/workflows/test_prs.yml') }}
+
       ### Installing
       - name: Install Project
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
