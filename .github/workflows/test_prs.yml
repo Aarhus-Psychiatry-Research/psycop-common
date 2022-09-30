@@ -1,10 +1,10 @@
-name: CI Pytest
+name: test_pr
 on:
   pull_request:
     branches: [ main, dev ]
 
 jobs:
-  pytest:
+  test_pr:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: $ {{ matrix.python-version }}
+        python-version: ${{ matrix.python-version }}
 
     - name: Checkout repo
       uses: actions/checkout@v3
