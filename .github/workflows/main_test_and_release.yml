@@ -56,7 +56,7 @@ jobs:
           path: |
             ~/.local/
           # Cache the complete venv dir for a given os, python version, pyproject.toml
-          key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('.github/workflows/cache_version') }}--${{ hashFiles('.github/workflows/test_prs.yml') }}
+          key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('.github/workflows/cache_version') }}--${{ hashFiles('.github/workflows/main_test_and_release.yml') }}
 
       ### Installing
       - name: Install Project
