@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.5 (2022-09-30)
+### Fix
+* Only run automerge for dependabot PRs ([`4638a64`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4638a64c4b7f59152483eb91b41730ea51aa43cf))
+
 ## v0.1.4 (2022-09-30)
 ### Fix
 * Automerge with MB PAT ([`e708d64`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/e708d6479287c76133c2becc13d43b84b91d0abe))
