@@ -40,9 +40,11 @@ runs:
 
     - name: Install Project
       if: steps.cache-poetry-and-venv.outputs.venv-cache-hit != 'true'
+      shell: bash
       run: poetry install -vvv
     
     ### Run tests
     - name: Run pytest
+      shell: bash
       run: |
         poetry run pytest --cov=src --cov-report term-missing --color=yes
