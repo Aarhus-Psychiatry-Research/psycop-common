@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.6 (2022-09-30)
+### Fix
+* Version bump shouldn't invalidate cache in PRs ([`2cbd2b7`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/2cbd2b7c160dbf86c385d252ccf9b415f78e73fe))
+
 ## v0.1.5 (2022-09-30)
 ### Fix
 * Only run automerge for dependabot PRs ([`4638a64`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4638a64c4b7f59152483eb91b41730ea51aa43cf))
