@@ -3,6 +3,7 @@ from typing import Union
 
 import wandb
 from altair.vegalite.v4.api import Chart
+from wandb.sdk.wandb_run import Run as wandb_run
 
 
 def altair_chart_to_file(
@@ -32,7 +33,7 @@ def altair_chart_to_file(
     return str(filepath)
 
 
-def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb.run):
+def log_altair_to_wandb(chart: Chart, chart_name: str, run: wandb_run):  # type: ignore
     """Helper to log Altair charts.
 
     Args:
