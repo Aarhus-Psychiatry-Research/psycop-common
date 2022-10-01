@@ -44,3 +44,16 @@ repos:
         entry: check-yaml
         language: python
         types: [yaml]
+        
+  - repo: https://github.com/pycqa/pylint
+    rev: v2.15.2
+    hooks:
+      - id: pylint
+        types: [python]
+        args:
+          [
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+            "--disable=R,import-error" # Refactors are not important enough to block a commit. 
+            # Unused-imports aren't testable by the github action, so don't test that here.
+          ]

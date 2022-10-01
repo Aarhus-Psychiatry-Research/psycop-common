@@ -122,7 +122,7 @@ def evaluate_model(
         )
         # Log as table too for readability
         feature_importances_table = generate_feature_importances_table(
-            column_names=feature_names,
+            feature_names=feature_names,
             feature_importances=pipe["model"].feature_importances_,
         )
         run.log({"feature_importance_table": feature_importances_table})
