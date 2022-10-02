@@ -1,6 +1,6 @@
 # TODO: Refactor this to use only be an application of module in psycop-ml-utils instead.
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -8,20 +8,20 @@ from scipy import stats
 
 
 def generate_synth_data(
-    predictors: Dict,
+    predictors: dict,
     outcome_column_name: str,
     n_samples: int,
     logistic_outcome_model: str,
     intercept: Optional[Union[int, float, complex, str, bytes]] = 0,
     na_prob: Optional[float] = 0.01,
-    na_ignore_cols: List[str] = [],
+    na_ignore_cols: list[str] = [],
     prob_outcome: Optional[float] = 0.08,
-    noise_mean_sd: Optional[Tuple[float, float]] = (0, 1),
+    noise_mean_sd: Optional[tuple[float, float]] = (0, 1),
 ) -> pd.DataFrame:
     """Takes a dict and generates synth data from it.
 
     Args:
-        predictors (Dict): A dict representing each column of shape:
+        predictors (dict): A dict representing each column of shape:
             {"col_name":
                 {
                 "column_type": str,
@@ -37,9 +37,9 @@ def generate_synth_data(
         intercept (float, optional): The intercept of the logistic outcome model. Defaults to 0.
         na_prob (float, optional): Probability of changing a value in a predictor column
             to NA.
-        na_ignore_cols (List[str], optional): Columns to ignore when creating NAs
+        na_ignore_cols (list[str], optional): Columns to ignore when creating NAs
         prob_outcome (float): Probability of a given row receiving "1" for the outcome.
-        noise_mean_sd (Tuple[float, float], optional): mean and sd of the noise.
+        noise_mean_sd (tuple[float, float], optional): mean and sd of the noise.
             Increase SD to obtain more uncertain models.
 
     Returns:

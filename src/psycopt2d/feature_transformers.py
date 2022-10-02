@@ -1,6 +1,6 @@
 """Custom transformers for data preprocessing."""
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional, list
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -10,15 +10,15 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        columns_to_include: Optional[List[str]] = None,
-        columns_to_skip: Optional[List[str]] = ["age_in_years", "sex_female"],
+        columns_to_include: Optional[list[str]] = None,
+        columns_to_skip: Optional[list[str]] = ["age_in_years", "sex_female"],
         ignore_dtypes: Optional[set] = {"datetime64[ns]", "<M8[ns]"},
     ) -> None:
         """
         Args:
-            columns_to_include (List[str], optional): Columns to convert to boolean.
+            columns_to_include (list[str], optional): Columns to convert to boolean.
                 Acts as a whitelist, skipping all columns not in the list.
-            columns_to_skip (List[str], optional): Columns to not convert to boolean.
+            columns_to_skip (list[str], optional): Columns to not convert to boolean.
                 Acts as a blacklist.
                 Defaults to ["age_in_years", "male"].
                 Default to None in which case all columns are included.

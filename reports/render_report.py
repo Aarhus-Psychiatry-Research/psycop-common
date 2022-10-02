@@ -6,7 +6,7 @@ be necessary but can be used for pretty styling). Add figures and tables using {
 be in a dir called 'tables' and figures in a dir called 'figs'
 """
 
-from typing import List
+from typing import list
 
 import pandas as pd
 
@@ -48,11 +48,11 @@ def load_table(filepath: str):
     return df.to_markdown()
 
 
-def center_text(text: List[str]):
+def center_text(text: list[str]):
     return "\n" + f"""<div align="center">{_join_by_newline(text)}</div>"""
 
 
-def _join_by_newline(text: List[str]):
+def _join_by_newline(text: list[str]):
     return "\n\n".join(text)
 
 

@@ -3,7 +3,7 @@
 2. AUC by time from first visit
 3. AUC by time until diagnosis
 """
-from typing import Callable, Iterable, List, Optional
+from typing import Callable, Iterable, Optional, list
 
 import altair as alt
 import numpy as np
@@ -105,7 +105,7 @@ def create_performance_by_time_from_event_df(
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     direction: str,
-    bins: List[int],
+    bins: list[int],
     pretty_bins: Optional[bool] = True,
     drop_na_events: Optional[bool] = True,
 ) -> pd.DataFrame:

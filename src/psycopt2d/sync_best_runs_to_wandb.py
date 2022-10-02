@@ -19,7 +19,7 @@ def get_best_run_ids(top_n: int) -> list[str]:
         top_n (int): Number of runs to return
 
     Returns:
-        list[str]: List of run ids
+        list[str]: list of run ids
     """
     df = pd.read_csv(AUC_LOGGING_FILE_PATH)
     return df.sort_values("auc", ascending=False)["run_id"].tolist()[:top_n]
@@ -42,7 +42,7 @@ def sync_runs_to_wandb(runs: list[str], project: str) -> None:
     """Sync runs to wandb.
 
     Args:
-        runs (list[str]): List of run ids
+        runs (list[str]): list of run ids
         project (str): Project name
     """
 

@@ -1,7 +1,7 @@
 # from datetime import date, datetime, timedelta
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional, Union, list
 
 import pandas as pd
 from psycopmlutils.sql.loader import sql_load
@@ -11,7 +11,7 @@ msg = Printer(timestamp=True)
 
 
 def load_dataset(
-    split_names: Union[List[str], str],
+    split_names: Union[list[str], str],
     dir: Path,
     drop_patient_if_outcome_before_date: Union[datetime, str],
     min_lookahead_days: int,
@@ -21,7 +21,7 @@ def load_dataset(
     """Load dataset for t2d.
 
     Args:
-        split_names (Union[List[str], str]): Names of splits, includes "train", "val",
+        split_names (Union[list[str], str]): Names of splits, includes "train", "val",
             "test".
         dir (Path): Directory of the dataset.
         drop_patient_if_outcome_before_date (Union[datetime, str]): Remove patients which

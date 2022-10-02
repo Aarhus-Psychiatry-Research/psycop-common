@@ -1,12 +1,12 @@
 import time
 from collections.abc import MutableMapping
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Iterable, Union, dict, list
 
 import dill as pkl
 import numpy as np
 import pandas as pd
-from omegaconf.dictconfig import DictConfig
+from omegaconf.dictconfig import dictConfig
 from wasabi import msg
 
 from psycopt2d.model_performance import ModelPerformance
@@ -45,22 +45,22 @@ def format_dict_for_printing(d: dict) -> str:
 
 
 def flatten_nested_dict(
-    d: Dict,
+    d: dict,
     parent_key: str = "",
     sep: str = ".",
-) -> Dict:
+) -> dict:
     """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes
     {"level1.level2.level3.level4": 5}.
 
     Args:
-        d (Dict): Dict to flatten.
+        d (dict): dict to flatten.
         parent_key (str): The parent key for the current dict, e.g. "level1" for the first iteration.
         sep (str): How to separate each level in the dict. Defaults to ".".
 
     Returns:
-        Dict: The flattened dict.
+        dict: The flattened dict.
     """
 
     items = []
@@ -111,12 +111,12 @@ def drop_records_if_datediff_days_smaller_than(
         ]
 
 
-def round_floats_to_edge(series: pd.Series, bins: List[float]) -> np.ndarray:
+def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
     """Rounds a float to the lowest value it is larger than.
 
     Args:
         series (pd.Series): The series of floats to round to bin edges.
-        bins (List[floats]): Values to round to.
+        bins (list[floats]): Values to round to.
 
     Returns:
         A numpy ndarray with the borders.
@@ -158,12 +158,12 @@ def calculate_performance_metrics(
     return performance_metrics
 
 
-def bin_continuous_data(series: pd.Series, bins: List[int]) -> pd.Series:
+def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     """For prettier formatting of continuous binned data such as age.
 
     Args:
         series (pd.Series): Series with continuous data such as age
-        bins (List[int]): Desired bins
+        bins (list[int]): Desired bins
 
     Returns:
         pd.Series: Binned data
@@ -247,13 +247,13 @@ def read_pickle(path: str) -> Any:
         return pkl.load(f)
 
 
-def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
+def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: dictConfig) -> None:
     """Saves prediction dataframe with and hydra config to disk. Stored as a
     dict with keys "df" and "cfg".
 
     Args:
         df (pd.DataFrame): Dataframe to save.
-        cfg (DictConfig): Hydra config.
+        cfg (dictConfig): Hydra config.
     """
     model_args = format_dict_for_printing(cfg.model)
 

@@ -9,7 +9,7 @@ Possible extensions (JIT when needed):
 from pathlib import Path
 
 import pandas as pd
-from omegaconf.dictconfig import DictConfig
+from omegaconf.dictconfig import dictConfig
 
 from psycopt2d.utils import PROJECT_ROOT, read_pickle
 from psycopt2d.visualization import plot_auc_by_time_from_first_visit
@@ -23,20 +23,20 @@ def infer_outcome_col_name(df: pd.DataFrame):
         raise ValueError("More than one outcome inferred")
 
 
-def infer_predictor_col_names(df: pd.DataFrame, cfg: DictConfig) -> list[str]:
+def infer_predictor_col_names(df: pd.DataFrame, cfg: dictConfig) -> list[str]:
     """Get the predictors that are used in the model.
 
     Args:
         df (pd.Dataframe): Dataframe with model predictions
-        cfg (DictConfig): Config file
+        cfg (dictConfig): Config file
 
     Returns:
-        list[str]: List of predictors
+        list[str]: list of predictors
     """
     return [c for c in df.columns if c.startswith(cfg.data.pred_col_name_prefix)]
 
 
-def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig]:
+def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, dictConfig]:
     """Load model predictions and config file from a pickle file.
 
     Args:

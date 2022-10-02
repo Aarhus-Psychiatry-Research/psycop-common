@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Iterable, List
+from typing import Iterable, list
 
 import altair as alt
 import numpy as np
@@ -96,17 +96,17 @@ def create_sensitivity_by_time_to_outcome_df(
 def plot_sensitivity_by_time_to_outcome(
     labels: Iterable[int],
     y_hat_probs: Iterable[int],
-    pred_proba_thresholds: List[float],
+    pred_proba_thresholds: list[float],
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: List[int] = [0, 28, 182, 365, 730, 1825],
+    bins: list[int] = [0, 28, 182, 365, 730, 1825],
 ):
     """Plot sensitivity by time to outcome.
 
     Args:
         labels (Iterable[int]): True labels of the data.
         y_hat_probs (Iterable[int]): Predicted probability of class 1.
-        pred_proba_thresholds (Iterable[float]): List of pred_proba thresholds to plot, above which predictions are classified as positive.
+        pred_proba_thresholds (Iterable[float]): list of pred_proba thresholds to plot, above which predictions are classified as positive.
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
