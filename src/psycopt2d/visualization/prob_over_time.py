@@ -1,13 +1,10 @@
 """Code for creating probabilities over time plots."""
 
-from multiprocessing.heap import Arena
-from pathlib import Path
 from datetime import datetime
-from tkinter import Variable
+from pathlib import Path
 from typing import Iterable, Optional, Union
-from webbrowser import BackgroundBrowser
-import matplotlib
 
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
