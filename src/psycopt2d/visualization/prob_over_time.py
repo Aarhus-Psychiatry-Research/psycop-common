@@ -1,8 +1,11 @@
 """Code for creating probabilities over time plots."""
 
+from multiprocessing.heap import Arena
 from pathlib import Path
 from datetime import datetime
+from tkinter import Variable
 from typing import Iterable, Optional, Union
+from webbrowser import BackgroundBrowser
 import matplotlib
 
 import matplotlib.pyplot as plt
@@ -93,25 +96,47 @@ def plot_prob_over_time(
     plot_df["color"] = [max_pred_prob[id_] for id_ in plot_df["patient_id"]]
 
     plt.figure(figsize=fig_size)
+
     sns.lineplot(
         data=plot_df,
         x="delta_time",
         y="pred_prob",
         alpha=line_opacity,
         hue="color",
-        palette="viridis",
-        legend=False,
+        palette="magma",
+        legend="auto",
     )
-    plt.xlabel(x_axis)
-    plt.ylabel(y_axis)
-    # plt.colorbar(label=legend)
+
+    # Reformat y-axis values to percentage
+    plt.gca().yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=1))
+
+    plt.xlabel(x_axis, size=14)
+    plt.ylabel(y_axis, size=14)
+
+    plt.grid(color="grey", linestyle="--", linewidth=0.5, alpha=0.5)
+    plt.gca().set_facecolor("#f2f2f2")
+
+    plt.legend(title=legend, loc="lower right", fontsize=12)
+
+    # Add shaded area for look-behind window
     if look_behind_distance is not None:
         plt.axvspan(
             -look_behind_distance,
             0,
-            alpha=0.2,
             color="grey",
+            alpha=0.2,
         )
+
+    plt.text(
+        -look_behind_distance / 2,
+        plot_df["pred_prob"].max() * 0,
+        95,
+        "Predictive window",
+        horizontalalignment="center",
+        verticalalignment="center",
+        rotation=0,
+        size=12,
+    )
 
     if save_path is None:
         plt.show()
