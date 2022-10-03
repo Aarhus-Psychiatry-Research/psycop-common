@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import altair as alt
 import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
@@ -34,7 +33,6 @@ def df():
 
 
 def test_prob_over_time(df):
-
     plot_prob_over_time(
         patient_id=df["dw_ek_borger"],
         timestamp=df["timestamp"],
