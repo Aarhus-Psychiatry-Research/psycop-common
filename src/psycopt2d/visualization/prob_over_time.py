@@ -129,8 +129,7 @@ def plot_prob_over_time(
 
     plt.text(
         -look_behind_distance / 2,
-        plot_df["pred_prob"].max() * 0,
-        95,
+        plot_df["pred_prob"].max(),
         "Predictive window",
         horizontalalignment="center",
         verticalalignment="center",
