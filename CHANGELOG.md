@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2022-10-03)
+### Feature
+* Try decomposing actions ([`316e643`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/316e64335ee1b14aaf1c0a02fc7aad474af7a09a))
+
+### Fix
+* Specify shell ([`3574577`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/35745779716151b6e3f90e5a1b93023a27943603))
+* Another attempt ([`612e88e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/612e88e92e592bcb7145ac12159161456b9cc6f4))
+* Typo in action (input -> inputs) ([`e668bad`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/e668badddeb80155da0bcf26c9bd5e155b3237bb))
+* Checkout repo before attempting to use action ([`29c5f92`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/29c5f9289453b09130673d1348affd36efbf63f8))
+* Typo on CI ([`9774d6e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9774d6e10f1dd28f00745accf23ec6902eef35db))
+
 ## v0.2.0 (2022-09-30)
 ### Feature
 * First CI release ([`1b5f5a9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1b5f5a91e89826ba1c530c82570eb4465008a506))
