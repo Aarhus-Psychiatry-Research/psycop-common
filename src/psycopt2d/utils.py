@@ -1,3 +1,6 @@
+"""Various utilities for the project."""
+import sys
+import tempfile
 import time
 from collections.abc import MutableMapping
 from pathlib import Path
@@ -281,3 +284,10 @@ def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> No
             local_path.parent.mkdir(parents=True)
         dump_to_pickle(metadata, local_path)
         msg.good(f"Saved evaluation results to {local_path}")
+
+
+def create_wandb_folders():
+    """Creates folders to store logs on Overtaci."""
+    if sys.platform == "win32":
+        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(exist_ok=True)
+        (PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True)

@@ -17,7 +17,11 @@ from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
 from psycopt2d.models import MODELS
-from psycopt2d.utils import flatten_nested_dict, prediction_df_with_metadata_to_disk
+from psycopt2d.utils import (
+    create_wandb_folders,
+    flatten_nested_dict,
+    prediction_df_with_metadata_to_disk,
+)
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
@@ -151,6 +155,8 @@ def stratified_cross_validation(
     version_base="1.2",
 )
 def main(cfg):
+    create_wandb_folders()
+
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
