@@ -104,8 +104,8 @@ def test_plot_auc_time_from_first_visit(df):
     )
 
 
-def test_sens_by_time_to_outcome(df):
-    positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5]
+def test_plot_sens_by_time_to_outcome(df):
+    positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=df["pred_prob"],
