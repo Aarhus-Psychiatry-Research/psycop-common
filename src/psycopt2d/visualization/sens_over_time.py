@@ -97,45 +97,46 @@ def create_sensitivity_by_time_to_outcome_df(
 
 def _generate_sensitivity_array(
     df: pd.DataFrame,
-    y_n_decimals: int,
-) -> np.ndarray:
+    n_decimals_y_axis: int,
+):
     """Generate sensitivity array for plotting heatmap.
 
     Args:
         df (pd.DataFrame): Dataframe with columns "sens", "days_to_outcome_binned" and "threshold".
+        n_decimals_y_axis (int): Number of decimals to round y axis labels to.
 
     Returns:
-        np.ndarray
+        A tuple containing the generated sensitivity array (np.ndarray), the x axis labels and the y axis labels rounded to n_decimals_y_axis.
     """
     x_labels = df["days_to_outcome_binned"].unique().tolist()
     y_labels = df["threshold"].unique().tolist()
+    y_labels_rounded = [round(y_labels[value], n_decimals_y_axis) for value in range(len(y_labels))]
 
-    sens_array = []
+    sensitivity_array = []
     for threshold in y_labels:
-        sens_for_threshold = []
-        small_df = df[df.threshold == threshold]
+        sensitivity_current_threshold = []
+        df_subset_y = df[df["threshold"] == threshold]
         for days_interval in x_labels:
-            smaller_df = small_df[small_df["days_to_outcome_binned"] == days_interval]
-            if len(smaller_df["sens"].unique().tolist()) > 1:
+            df_subset_y_x = df_subset_y[df_subset_y["days_to_outcome_binned"] == days_interval]
+            if len(df_subset_y_x["sens"].unique().tolist()) > 1:
                 raise ValueError(
-                    "More than one sensitivity value for this threshold and days interval",
+                    f"More than one sensitivity value for this threshold ({threshold}) and days interval ({days_interval}).",
                 )
-            else:
-                sens_for_threshold.append(smaller_df["sens"].unique().tolist()[0])
+            sensitivity_current_threshold.append(df_subset_y_x["sens"].unique().tolist()[0])
 
-        sens_array.append(sens_for_threshold)
+        sensitivity_array.append(sensitivity_current_threshold)
 
     return (
-        np.array(sens_array),
+        np.array(sensitivity_array),
         x_labels,
-        [round(y_labels[value], y_n_decimals) for value in range(len(y_labels))],
+        y_labels_rounded,
     )
 
 
 def _annotate_heatmap(
     im: matplotlib.image.AxesImage,
     data: Optional[np.array] = None,
-    valfmt: Optional[str] = "{x:.2f}",
+    value_formatter: Optional[str] = "{x:.2f}",
     textcolors: Optional[tuple] = ("black", "white"),
     threshold: Optional[float] = None,
     **textkw
@@ -145,7 +146,7 @@ def _annotate_heatmap(
     Args:
         im (matplotlib.image.AxesImage): The AxesImage to be labeled.
         data (np.ndarray): Data used to annotate. If None, the image's data is used. Defaults to None.
-        valfmt (str, optional): The format of the annotations inside the heatmap. This should either use the string format method, e.g. "$ {x:.2f}", or be a :class:`matplotlib.ticker.Formatter`. Defaults to "{x:.2f}".
+        value_formatter (str, optional): The format of the annotations inside the heatmap. This should either use the string format method, e.g. "$ {x:.2f}", or be a :class:`matplotlib.ticker.Formatter`. Defaults to "{x:.2f}".
         textcolors (tuple, optional): A pair of colors. The first is used for values below a threshold, the second for those above. Defaults to ("black", "white").
         threshold (float, optional): Value in data units according to which the colors from textcolors are applied. If None (the default) uses the middle of the colormap as separation. Defaults to None.
         **kwargs (dict, optional): All other arguments are forwarded to each call to `text` used to create the text labels. Defaults to {}.
@@ -165,23 +166,23 @@ def _annotate_heatmap(
 
     # Set default alignment to center, but allow it to be
     # overwritten by textkw.
-    kw = dict(
+    test_kwargs = dict(
         horizontalalignment="center",
         verticalalignment="center",
     )
-    kw.update(textkw)
+    test_kwargs.update(textkw)
 
     # Get the formatter in case a string is supplied
-    if isinstance(valfmt, str):
-        valfmt = matplotlib.ticker.StrMethodFormatter(valfmt)
+    if isinstance(value_formatter, str):
+        value_formatter = matplotlib.ticker.StrMethodFormatter(value_formatter)
 
     # Loop over the data and create a `Text` for each "pixel".
     # Change the text's color depending on the data.
     texts = []
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
-            kw.update(color=textcolors[int(im.norm(data[i, j]) > threshold)])
-            text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
+            test_kwargs.update(color=textcolors[int(im.norm(data[i, j]) > threshold)])
+            text = im.axes.text(j, i, value_formatter(data[i, j], None), **test_kwargs)
             texts.append(text)
 
     return texts
@@ -194,11 +195,11 @@ def plot_sensitivity_by_time_to_outcome(
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: List[int] = [0, 28, 182, 365, 730, 1825],
-    cmap: Optional[str] = "PuBu",
-    cbarlabel: Optional[str] = "Sensitivity",
+    color_map: Optional[str] = "PuBu",
+    colorbar_label: Optional[str] = "Sensitivity",
     x_title: Optional[str] = "Days to outcome",
     y_title: Optional[str] = "Positive rate",
-    y_n_decimals: Optional[int] = 4,
+    n_decimals_y_axis: Optional[int] = 4,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot heatmap of sensitivity by time to outcome according to different
@@ -211,11 +212,11 @@ def plot_sensitivity_by_time_to_outcome(
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
-        cmap (str, optional): Colormap to use. Defaults to "PuBu".
-        cbarlabel (str, optional): Colorbar label. Defaults to "Sensitivity".
+        color_map (str, optional): Colormap to use. Defaults to "PuBu".
+        colorbar_label (str, optional): Colorbar label. Defaults to "Sensitivity".
         x_title (str, optional): X axis title. Defaults to "Days to outcome".
         y_title (str, optional): Y axis title. Defaults to "Positive rate".
-        y_n_decimals (int, optional): Number of decimals to round y axis labels. Defaults to 4.
+        n_decimals_y_axis (int, optional): Number of decimals to round y axis labels. Defaults to 4.
         save_path (Optional[Path], optional): Path to save the plot. Defaults to None.
 
     Returns:
@@ -266,16 +267,16 @@ def plot_sensitivity_by_time_to_outcome(
     )
 
     # Prepare data for plotting
-    data, x_labels, y_labels = _generate_sensitivity_array(df, y_n_decimals)
+    data, x_labels, y_labels = _generate_sensitivity_array(df, n_decimals_y_axis)
 
     fig, ax = plt.subplots()
 
     # Plot the heatmap
-    im = ax.imshow(data, cmap=cmap)
+    im = ax.imshow(data, cmap=color_map)
 
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax)
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
+    cbar.ax.set_ylabel(colorbar_label, rotation=-90, va="bottom")
 
     # Show all ticks and label them with the respective list entries.
     ax.set_xticks(np.arange(data.shape[1]), labels=x_labels)
@@ -306,7 +307,7 @@ def plot_sensitivity_by_time_to_outcome(
     ax.tick_params(which="minor", bottom=False, left=False)
 
     # Add annotations
-    _ = _annotate_heatmap(im, valfmt="{x:.1f}")
+    _ = _annotate_heatmap(im, value_formatter="{x:.1f}")
 
     # Set axis labels and title
     ax.set(
