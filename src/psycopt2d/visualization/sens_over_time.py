@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from psycopt2d.utils import round_floats_to_edge
+from psycopt2d.utils import round_floats_to_edge, PROJECT_ROOT
 
 
 def create_sensitivity_by_time_to_outcome_df(
@@ -320,7 +320,8 @@ def plot_sensitivity_by_time_to_outcome(
         plt.show()
     else:
         plt.savefig(save_path)
-        return save_path
+    plt.close()
+    return save_path
 
 
 if __name__ == "__main__":
@@ -328,8 +329,7 @@ if __name__ == "__main__":
 
     from psycopt2d.utils import positive_rate_to_pred_probs
 
-    repo_path = Path(__file__).parent.parent.parent.parent
-    path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
+    path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)
 
     for col in [col for col in df.columns if "timestamp" in col]:
