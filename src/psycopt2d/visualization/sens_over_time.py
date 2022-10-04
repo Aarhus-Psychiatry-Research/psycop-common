@@ -127,7 +127,7 @@ def _generate_sensitivity_array(
                     f"More than one sensitivity value for this threshold ({threshold}) and days interval ({days_interval}).",
                 )
             sensitivity_current_threshold.append(
-                df_subset_y_x["sens"].unique().tolist()[0]
+                df_subset_y_x["sens"].unique().tolist()[0],
             )
 
         sensitivity_array.append(sensitivity_current_threshold)
