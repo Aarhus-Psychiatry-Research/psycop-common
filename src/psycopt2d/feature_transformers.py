@@ -1,8 +1,10 @@
 """Custom transformers for data preprocessing."""
 from datetime import datetime
-from typing import Optional, list
+from typing import Optional
 
 from sklearn.base import BaseEstimator, TransformerMixin
+
+# pylint: disable=missing-function-docstring
 
 
 class ConvertToBoolean(BaseEstimator, TransformerMixin):
@@ -10,15 +12,15 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        columns_to_include: Optional[list[str]] = None,
-        columns_to_skip: Optional[list[str]] = ["age_in_years", "sex_female"],
-        ignore_dtypes: Optional[set] = {"datetime64[ns]", "<M8[ns]"},
+        columns_to_include: Optional[tuple[str]] = None,
+        columns_to_skip: Optional[tuple[str, str]] = ("age_in_years", "sex_female"),
+        ignore_dtypes: Optional[tuple] = ("datetime64[ns]", "<M8[ns]"),
     ) -> None:
         """
         Args:
             columns_to_include (list[str], optional): Columns to convert to boolean.
                 Acts as a whitelist, skipping all columns not in the list.
-            columns_to_skip (list[str], optional): Columns to not convert to boolean.
+            columns_to_skip (Union(tuple[str], None) : Columns to not convert to boolean.
                 Acts as a blacklist.
                 Defaults to ["age_in_years", "male"].
                 Default to None in which case all columns are included.
@@ -27,12 +29,12 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
         """
         self.columns_to_skip = columns_to_skip
         self.columns_to_include = columns_to_include
-        self.ignore_dtypes = ignore_dtypes
+        self.ignore_dtypes = set(ignore_dtypes) if ignore_dtypes else None
 
-    def fit(self, X, y=None):
+    def fit(self, _, y=None):  # pylint: disable=unused-argument
         return self
 
-    def transform(self, X, y=None):
+    def transform(self, X, y=None):  # pylint: disable=unused-argument
         columns = X.columns
 
         if self.columns_to_include:
@@ -41,7 +43,7 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
         cols_to_round = [
             c
             for c in columns
-            if (X[c].dtype not in self.ignore_dtype) or c in self.columns_to_skip
+            if (X[c].dtype not in self.ignore_dtypes) or c in self.columns_to_skip
         ]
 
         for col in cols_to_round:
@@ -51,6 +53,8 @@ class ConvertToBoolean(BaseEstimator, TransformerMixin):
 
 
 class DateTimeConverter(BaseEstimator, TransformerMixin):
+    """Convert datetime columns to integers."""
+
     valid_types = {"ordinal"}
     datetime_dtypes = {"datetime64[ns]", "<M8[ns]"}
 
@@ -72,10 +76,10 @@ class DateTimeConverter(BaseEstimator, TransformerMixin):
 
         self.convert_to = convert_to
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None):  # pylint: disable=unused-argument
         return self
 
-    def transform(self, X, y=None):
+    def transform(self, X, y=None):  # pylint: disable=unused-argument
         # extract datatime columns
         dt_columns = [c for c in X.columns if X[c].dtypes in self.datetime_dtypes]
 

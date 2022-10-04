@@ -1,3 +1,5 @@
+"""Testing of the utils module."""
+# pylint: disable=missing-function-docstring
 import numpy as np
 import pandas as pd
 from utils_for_testing import str_to_df

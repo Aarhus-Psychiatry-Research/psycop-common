@@ -77,14 +77,14 @@ def load_dataset_from_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
 
         train = load_dataset(
             split_names="train",
-            dir=path,
+            dir_path=path,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
         )
         val = load_dataset(
             split_names="val",
-            dir=path,
+            dir_path=path,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
@@ -200,7 +200,7 @@ def main(cfg):
 
         print(
             f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
-        )  # TODO log to wandb
+        )  # ? log to wandb
 
         eval_dataset = val
         eval_dataset["y_hat_prob"] = y_val_hat_prob

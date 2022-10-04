@@ -1,3 +1,10 @@
+"""Generate performance by positive threshold.
+
+E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
+"""
+
+# pylint: disable=missing-function-docstring
+
 from pathlib import Path
 
 import pandas as pd
@@ -12,6 +19,7 @@ from psycopt2d.utils import positive_rate_to_pred_probs
 
 @pytest.fixture(scope="function")
 def synth_data():
+    """Load synthetic data."""
     csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
 
@@ -32,7 +40,7 @@ def test_generate_performance_by_threshold_table(synth_data):
         positive_rate_thresholds=positive_rate_thresholds,
     )
 
-    t = generate_performance_by_positive_rate_table(
+    table = generate_performance_by_positive_rate_table(
         labels=df["label"],
         pred_probs=df["pred_prob"],
         ids=df["dw_ek_borger"],
@@ -66,8 +74,8 @@ def test_generate_performance_by_threshold_table(synth_data):
         },
     )
 
-    for col in t.columns:
-        t[col].equals(expected_df[col])
+    for col in table.columns:
+        table[col].equals(expected_df[col])
 
 
 def test_time_from_flag_to_diag(synth_data):
@@ -82,7 +90,7 @@ def test_time_from_flag_to_diag(synth_data):
         positive_rate_threshold=0.5,
     )
 
-    assert val > 290_000 and val < 292_000
+    assert 290_000 < val < 292_000
 
     # Threshold = 0.2
     val = days_from_first_positive_to_diagnosis(
@@ -93,4 +101,4 @@ def test_time_from_flag_to_diag(synth_data):
         positive_rate_threshold=0.2,
     )
 
-    assert val > 1_875_000 and val < 1_885_000
+    assert 1_875_000 < val < 1_885_000

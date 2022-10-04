@@ -1,4 +1,5 @@
 """table_test_auc_by_group_table."""
+# pylint: disable=missing-function-docstring
 
 from psycopt2d.tables import auc_by_group_table
 from psycopt2d.utils import bin_continuous_data

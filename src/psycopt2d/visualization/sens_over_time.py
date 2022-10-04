@@ -1,5 +1,6 @@
+"""Generate a plot of sensitivity by time to outcome."""
+from collections.abc import Iterable
 from functools import partial
-from typing import Iterable, list
 
 import altair as alt
 import numpy as np
@@ -14,7 +15,7 @@ def create_sensitivity_by_time_to_outcome_df(
     pred_proba_threshold: float,
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
+    bins: Iterable = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
 
@@ -99,7 +100,7 @@ def plot_sensitivity_by_time_to_outcome(
     pred_proba_thresholds: list[float],
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: list[int] = [0, 28, 182, 365, 730, 1825],
+    bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
 ):
     """Plot sensitivity by time to outcome.
 

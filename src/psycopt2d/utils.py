@@ -1,12 +1,16 @@
+"""Misc.
+
+utilities.
+"""
 import time
-from collections.abc import MutableMapping
+from collections.abc import Iterable, MutableMapping
 from pathlib import Path
-from typing import Any, Iterable, Union, dict, list
+from typing import Any, Union
 
 import dill as pkl
 import numpy as np
 import pandas as pd
-from omegaconf.dictconfig import dictConfig
+from omegaconf.dictconfig import DictConfig
 from wasabi import msg
 
 from psycopt2d.model_performance import ModelPerformance
@@ -183,13 +187,13 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     8      51+
     """
     labels = []
-    for i, bin in enumerate(bins):
+    for i, bin_v in enumerate(bins):
         if i == 0:
-            labels.append(f"{bin}-{bins[i+1]}")
+            labels.append(f"{bin_v}-{bins[i+1]}")
         elif i < len(bins) - 2:
-            labels.append(f"{bin+1}-{bins[i+1]}")
+            labels.append(f"{bin_v+1}-{bins[i+1]}")
         elif i == len(bins) - 2:
-            labels.append(f"{bin+1}+")
+            labels.append(f"{bin_v+1}+")
         else:
             continue
 
@@ -247,13 +251,13 @@ def read_pickle(path: str) -> Any:
         return pkl.load(f)
 
 
-def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: dictConfig) -> None:
+def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
     """Saves prediction dataframe with and hydra config to disk. Stored as a
     dict with keys "df" and "cfg".
 
     Args:
         df (pd.DataFrame): Dataframe to save.
-        cfg (dictConfig): Hydra config.
+        cfg (DictConfig): Hydra config.
     """
     model_args = format_dict_for_printing(cfg.model)
 

@@ -1,4 +1,6 @@
-from typing import Iterable, Optional
+"""Base charts."""
+from collections.abc import Iterable
+from typing import Optional
 
 import altair as alt
 import pandas as pd

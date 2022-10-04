@@ -3,7 +3,8 @@
 2. AUC by time from first visit
 3. AUC by time until diagnosis
 """
-from typing import Callable, Iterable, Optional, list
+from collections.abc import Callable, Iterable
+from typing import Optional
 
 import altair as alt
 import numpy as np
@@ -27,7 +28,7 @@ def _calc_performance(df: pd.DataFrame, metric: Callable) -> float:
     """
     if df.empty:
         return np.nan
-    elif metric == roc_auc_score and len(df["y"].unique()) == 1:
+    elif metric is roc_auc_score and len(df["y"].unique()) == 1:
         msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan")
         return np.nan
     else:
@@ -105,7 +106,7 @@ def create_performance_by_time_from_event_df(
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     direction: str,
-    bins: list[int],
+    bins: Iterable[float],
     pretty_bins: Optional[bool] = True,
     drop_na_events: Optional[bool] = True,
 ) -> pd.DataFrame:
@@ -120,7 +121,7 @@ def create_performance_by_time_from_event_df(
         metric_fn (Callable): Which performance metric function to use (e.g. roc_auc_score)
         direction (str): Which direction to calculate time difference.
         Can either be 'prediction-event' or 'event-prediction'.
-        bins (list): Bins to group by.
+        bins (Iterable[float]): Bins to group by.
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
@@ -172,7 +173,7 @@ def plot_auc_by_time_from_first_visit(
     y_hat_probs: Iterable[int],
     first_visit_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins=[0, 28, 182, 365, 730, 1825],
+    bins: tuple = (0, 28, 182, 365, 730, 1825),
     pretty_bins: Optional[bool] = True,
 ) -> alt.Chart:
     """Plot AUC as a function of time to first visit.
@@ -217,7 +218,7 @@ def plot_metric_by_time_until_diagnosis(
     y_hat: Iterable[int],
     diagnosis_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins=[
+    bins: Iterable[int] = (
         -1825,
         -730,
         -365,
@@ -230,7 +231,7 @@ def plot_metric_by_time_until_diagnosis(
         365,
         730,
         1825,
-    ],
+    ),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",

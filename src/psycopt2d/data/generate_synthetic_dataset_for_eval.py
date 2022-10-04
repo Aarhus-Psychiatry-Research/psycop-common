@@ -1,3 +1,4 @@
+"""Generate synthetic data for evaluation of the model."""
 import datetime as dt
 from typing import Any, Optional
 
@@ -18,7 +19,8 @@ def years_to_seconds(years):
     return years * 365 * 24 * 60 * 60
 
 
-def return_0_with_prob(prob):
+def return_0_with_prob(prob: float):
+    """Return 0 with a given probability."""
     return 0 if np.random.random() < prob else 1
 
 
@@ -72,14 +74,14 @@ def overwrite_prop_with_null(
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
     base = pd.Timestamp.today()
-    n_rows = 100_000
+    N_ROWS = 100_000
 
     df = pd.DataFrame()
 
-    df["dw_ek_borger"] = [np.random.randint(0, 100_000) for n in range(n_rows)]
+    df["dw_ek_borger"] = [np.random.randint(0, 100_000) for _ in range(N_ROWS)]
 
     # Generate timestamps
-    df["timestamp"] = [base] * n_rows
+    df["timestamp"] = [base] * N_ROWS
 
     msg.info("Adding differences")
     df["time_differences"] = [
@@ -89,12 +91,12 @@ if __name__ == "__main__":
                 years_to_seconds(years=10),
             ),
         )
-        for n in range(n_rows)
+        for _ in range(N_ROWS)
     ]
     df["timestamp"] = df["timestamp"] + df["time_differences"]
     df.drop("time_differences", axis=1, inplace=True)
 
-    df["pred_prob"] = [(np.random.random() - 0.45) for n in range(n_rows)]
+    df["pred_prob"] = [(np.random.random() - 0.45) for _ in range(N_ROWS)]
     df["pred_prob"] = df["pred_prob"].clip(0, 1)
     df["pred"] = df["pred_prob"].clip(0, 1).round()
 

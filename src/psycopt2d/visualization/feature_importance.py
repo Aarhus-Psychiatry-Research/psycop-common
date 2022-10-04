@@ -1,4 +1,7 @@
-from typing import Iterable, Union, list
+"""Generate feature importances chart."""
+
+from collections.abc import Iterable
+from typing import Union
 
 import altair as alt
 import numpy as np

@@ -9,26 +9,27 @@ Possible extensions (JIT when needed):
 from pathlib import Path
 
 import pandas as pd
-from omegaconf.dictconfig import dictConfig
+from omegaconf.dictconfig import DictConfig
 
 from psycopt2d.utils import PROJECT_ROOT, read_pickle
 from psycopt2d.visualization import plot_auc_by_time_from_first_visit
 
 
-def infer_outcome_col_name(df: pd.DataFrame):
-    outcome_name = [c for c in df.columns if c.startswith("outc")]
+def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
+    """Infer the outcome column name from the dataframe."""
+    outcome_name = [c for c in df.columns if c.startswith(prefix)]
     if len(outcome_name) == 1:
         return outcome_name[0]
     else:
         raise ValueError("More than one outcome inferred")
 
 
-def infer_predictor_col_names(df: pd.DataFrame, cfg: dictConfig) -> list[str]:
+def infer_predictor_col_names(df: pd.DataFrame, cfg: DictConfig) -> list[str]:
     """Get the predictors that are used in the model.
 
     Args:
         df (pd.Dataframe): Dataframe with model predictions
-        cfg (dictConfig): Config file
+        cfg (DictConfig): Config file
 
     Returns:
         list[str]: list of predictors
@@ -36,7 +37,7 @@ def infer_predictor_col_names(df: pd.DataFrame, cfg: dictConfig) -> list[str]:
     return [c for c in df.columns if c.startswith(cfg.data.pred_col_name_prefix)]
 
 
-def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, dictConfig]:
+def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig]:
     """Load model predictions and config file from a pickle file.
 
     Args:
@@ -57,7 +58,9 @@ if __name__ == "__main__":
 
     train_col_names = infer_predictor_col_names(eval_df, cfg)
     y_col_name = infer_outcome_col_name(eval_df)
-    y_hat_prob_col_name = "y_hat_prob"  # change to 'y_hat_prob_oof' if using cv
+
+    Y_HAT_PROB_COL_NAME = "y_hat_prob"  # change to 'y_hat_prob_oof' if using cv
+
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
         cfg.data.pred_timestamp_col_name
     ].transform("min")
@@ -65,7 +68,7 @@ if __name__ == "__main__":
     # Do whatever extra evaluation you want to here
     p = plot_auc_by_time_from_first_visit(
         labels=eval_df[y_col_name],
-        y_hat_probs=eval_df[y_hat_prob_col_name],
+        y_hat_probs=eval_df[Y_HAT_PROB_COL_NAME],
         first_visit_timestamps=first_visit_timestamp,
         prediction_timestamps=eval_df[cfg.data.pred_timestamp_col_name],
     )

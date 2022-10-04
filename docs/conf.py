@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# pylint: disable-all
 #
 # psycop-t2d documentation build configuration file, created by
 # sphinx-quickstart.
