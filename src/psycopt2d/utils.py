@@ -289,5 +289,8 @@ def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> No
 def create_wandb_folders():
     """Creates folders to store logs on Overtaci."""
     if sys.platform == "win32":
-        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(exist_ok=True)
-        (PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True)
+        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(
+            exist_ok=True,
+            parents=True,
+        )
+        (PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
