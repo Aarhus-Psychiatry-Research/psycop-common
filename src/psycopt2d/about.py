@@ -1,3 +1,4 @@
+# pylint: disable-all
 import pkg_resources
 
 __version__ = pkg_resources.get_distribution("psycop-t2d").version

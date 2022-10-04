@@ -1,0 +1,54 @@
+name: Test (and release)
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main 
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: [3.9]
+        poetry-version: [1.1.15]
+        cache-version: [0.0.2] # Change this number if you want to manually invalidate all caches
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Run tests
+        uses: ./.github/actions/test
+        with:
+          python-version: ${{ matrix.python-version }}
+          poetry-version: ${{ matrix.poetry-version }}
+          cache-version: ${{ matrix.cache-version }}
+
+  release:
+    runs-on: ubuntu-latest
+    concurrency: release
+    needs: test
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+    # Checkout action is required for token to persist
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.RELEASE_BOT }}
+
+    - name: Python Semantic Release
+      uses: relekang/python-semantic-release@v7.32.0
+      with: 
+        github_token: ${{ secrets.RELEASE_BOT }}
+        # Remember to copy the tool.semantic_release section from pyproject.toml 
+        # as well
+        # To enable pypi, 
+        # 1) Set upload_to_pypi to true in pyproject.toml and
+        # 2) Set the pypi_token in the repo
+        # 3) Uncomment the two lines below
+        # repository_username: __token__
+        # repository_password: ${{ secrets.PYPI_TOKEN }}

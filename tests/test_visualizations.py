@@ -1,3 +1,8 @@
+"""Tests for all our visualisations.
+
+Mainly tests that they run without errors.
+"""
+# pylint: disable=missing-function-docstring
 from pathlib import Path
 
 import altair as alt

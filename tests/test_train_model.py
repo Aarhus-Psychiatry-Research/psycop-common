@@ -1,3 +1,4 @@
+"""Test that the model trains correctly."""
 import platform
 
 import pytest
