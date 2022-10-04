@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.2 (2022-10-04)
+### Fix
+* Logging to wandb on Overtaci. ([`92efa58`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/92efa58fe16f8c04de178fdd6c83dfcb8c87956d))
+
 ## v0.3.1 (2022-10-04)
 ### Fix
 * More linting, enable pylint pre-commit hook ([`03a0be1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/03a0be1772737379cdcb2088934f6e7666d54013))
