@@ -110,19 +110,25 @@ def _generate_sensitivity_array(
     """
     x_labels = df["days_to_outcome_binned"].unique().tolist()
     y_labels = df["threshold"].unique().tolist()
-    y_labels_rounded = [round(y_labels[value], n_decimals_y_axis) for value in range(len(y_labels))]
+    y_labels_rounded = [
+        round(y_labels[value], n_decimals_y_axis) for value in range(len(y_labels))
+    ]
 
     sensitivity_array = []
     for threshold in y_labels:
         sensitivity_current_threshold = []
         df_subset_y = df[df["threshold"] == threshold]
         for days_interval in x_labels:
-            df_subset_y_x = df_subset_y[df_subset_y["days_to_outcome_binned"] == days_interval]
+            df_subset_y_x = df_subset_y[
+                df_subset_y["days_to_outcome_binned"] == days_interval
+            ]
             if len(df_subset_y_x["sens"].unique().tolist()) > 1:
                 raise ValueError(
                     f"More than one sensitivity value for this threshold ({threshold}) and days interval ({days_interval}).",
                 )
-            sensitivity_current_threshold.append(df_subset_y_x["sens"].unique().tolist()[0])
+            sensitivity_current_threshold.append(
+                df_subset_y_x["sens"].unique().tolist()[0]
+            )
 
         sensitivity_array.append(sensitivity_current_threshold)
 
@@ -139,7 +145,7 @@ def _annotate_heatmap(
     value_formatter: Optional[str] = "{x:.2f}",
     textcolors: Optional[tuple] = ("black", "white"),
     threshold: Optional[float] = None,
-    **textkw
+    **textkw,
 ):
     """A function to annotate a heatmap. Adapted from matplotlib documentation.
 
