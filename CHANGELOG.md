@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.1 (2022-10-04)
+### Fix
+* More linting, enable pylint pre-commit hook ([`03a0be1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/03a0be1772737379cdcb2088934f6e7666d54013))
+* Some extra linting ([`de621e8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/de621e8bbdb22addae980822f0926cfd733d1e3a))
+
 ## v0.3.0 (2022-10-03)
 ### Feature
 * Try decomposing actions ([`316e643`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/316e64335ee1b14aaf1c0a02fc7aad474af7a09a))
