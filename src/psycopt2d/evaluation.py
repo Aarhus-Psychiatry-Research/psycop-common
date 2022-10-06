@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.pipeline import Pipeline
-from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
+from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
+from wandb.sdk.wandb_run import Run as wandb_run
 
 from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
@@ -19,7 +20,6 @@ from psycopt2d.visualization import (
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
-from psycopt2d.visualization.altair_utils import log_altair_to_wandb
 from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
 
 

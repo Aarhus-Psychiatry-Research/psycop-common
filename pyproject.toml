@@ -25,6 +25,7 @@ selenium = ">=4.2.0,<4.6.0"
 # pandoc = "^2.2" not compatible with PEP517, which is required for poetry install. Disabled for now: https://github.com/boisgera/pandoc/pull/49
 # interpret = ">=0.2.7,<0.3.0" Disabled becuase of errors with github actions. 
 # See https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/pull/194 for thoughts on root cause
+pyarrow = "^9.0.0"
 
 
 [tool.poetry.dev-dependencies]

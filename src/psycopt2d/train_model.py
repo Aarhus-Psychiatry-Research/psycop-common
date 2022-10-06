@@ -1,11 +1,13 @@
 """Training script for training a single model for predicting t2d."""
 import os
+from collections.abc import Iterable
 from pathlib import Path
 
 import hydra
 import numpy as np
 import pandas as pd
 import wandb
+from omegaconf.dictconfig import DictConfig
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold, train_test_split
@@ -188,49 +190,26 @@ def main(cfg):
         c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
     ]
 
-    # Set feature names if model is EBM to get interpretable feature importance
-    # output
-    if cfg.model.model_name == "ebm":
-        pipe["model"].feature_names = TRAIN_COL_NAMES
-
-    if cfg.training.n_splits is None:  # train on pre-defined splits
-        X_train = train[TRAIN_COL_NAMES]  # pylint: disable=invalid-name
-        y_train = train[OUTCOME_COL_NAME]
-        X_val = val[TRAIN_COL_NAMES]  # pylint: disable=invalid-name
-
-        pipe.fit(X_train, y_train)
-
-        y_train_hat_prob = pipe.predict_proba(X_train)[:, 1]
-        y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
-
-        print(
-            f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
-        )  # ? log to wandb
-
-        eval_dataset = val
-        eval_dataset["y_hat_prob"] = y_val_hat_prob
-        y_hat_prob_col_name = "y_hat_prob"
-    else:
-        train_val = pd.concat([train, val], ignore_index=True)
-        eval_dataset = stratified_cross_validation(
-            cfg,
-            pipe,
-            dataset=train_val,
-            train_col_names=TRAIN_COL_NAMES,
-            outcome_col_name=OUTCOME_COL_NAME,
-        )
-        y_hat_prob_col_name = "oof_y_hat_prob"
+    eval_dataset = train_model(
+        cfg=cfg,
+        train=train,
+        val=val,
+        pipe=pipe,
+        outcome_col_name=outcome_col_name,
+        train_col_names=train_col_names,
+    )
 
     # Evaluate: Calculate performance metrics and log to wandb
     evaluate_model(
         cfg=cfg,
         pipe=pipe,
         eval_dataset=eval_dataset,
-        y_col_name=OUTCOME_COL_NAME,
-        train_col_names=TRAIN_COL_NAMES,
-        y_hat_prob_col_name=y_hat_prob_col_name,
+        y_col_name=outcome_col_name,
+        train_col_names=train_col_names,
+        y_hat_prob_col_name="y_hat_prob",
         run=run,
     )
+
     # Save results to disk
     prediction_df_with_metadata_to_disk(df=eval_dataset, cfg=cfg)
 
@@ -240,9 +219,65 @@ def main(cfg):
     run.finish()
 
     return roc_auc_score(
-        eval_dataset[OUTCOME_COL_NAME],
-        eval_dataset[y_hat_prob_col_name],
+        eval_dataset[outcome_col_name],
+        eval_dataset["y_hat_prob"],
     )
+
+
+def train_model(
+    cfg: DictConfig,
+    train: pd.DataFrame,
+    val: pd.DataFrame,
+    pipe: Pipeline,
+    outcome_col_name: str,
+    train_col_names: Iterable[str],
+):
+    """Train model and return evaluation dataset.
+
+    Args:
+        cfg (DictConfig): Config object
+        train: Training dataset
+        val: Validation dataset
+        pipe: Pipeline
+        outcome_col_name: Name of the outcome column
+        train_col_names: Names of the columns to use for training
+
+    Returns:
+        Evaluation dataset
+    """
+    # Set feature names if model is EBM to get interpretable feature importance
+    # output
+    if cfg.model.model_name == "ebm":
+        pipe["model"].feature_names = train_col_names
+
+    if cfg.training.n_splits is None:  # train on pre-defined splits
+        X_train = train[train_col_names]  # pylint: disable=invalid-name
+        y_train = train[outcome_col_name]
+        X_val = val[train_col_names]  # pylint: disable=invalid-name
+
+        pipe.fit(X_train, y_train)
+
+        y_train_hat_prob = pipe.predict_proba(X_train)[:, 1]
+        y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
+
+        print(
+            f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
+        )
+
+        eval_dataset = val
+        eval_dataset["y_hat_prob"] = y_val_hat_prob
+    else:
+        train_val = pd.concat([train, val], ignore_index=True)
+        eval_dataset = stratified_cross_validation(
+            cfg,
+            pipe,
+            dataset=train_val,
+            train_col_names=train_col_names,
+            outcome_col_name=outcome_col_name,
+        )
+        eval_dataset.rename(columns={"oof_y_hat_prob": "y_hat_prob"}, inplace=True)
+
+    return eval_dataset
 
 
 if __name__ == "__main__":
