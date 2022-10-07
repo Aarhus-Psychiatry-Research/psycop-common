@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.4 (2022-10-07)
+### Fix
+* Remove calls to altair ([`37f95ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/37f95ca3db7a42d422623a597e436dc4603e1a68))
+* Move plt close ([`aacd2cd`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/aacd2cdadca5e298d95287c84fe0a2e48aa79356))
+* Add SAVE_DIR to sens by time ([`a7d431c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a7d431ca77b9997c007d207929699d0d6806eb91))
+* Fix bug with None lookbehind_distance ([`06fc661`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/06fc6617766f048b0b8be1f87e8f6f083cfe947d))
+* Change sens_over_time plot to matplotlib ([`92cedc0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/92cedc020ad658096c600487994acbb9a9e19b9c))
+* Make dir before saving plots ([`d340149`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d34014984f150bba77c3caa268bf60855f8e6e89))
+* Change basic bar plot to matplotlib. Closes Plot bar chart in matplotlib #217 ([`f62b70d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f62b70d540183a456646c2b377ae74cc0c572b96))
+
 ## v0.3.3 (2022-10-06)
 ### Fix
 * Add balanced accuracy to `model_performance` ([`142e1e9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/142e1e95c879869f4eb8efbff940d06469d91b64))
