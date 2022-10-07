@@ -7,7 +7,6 @@ from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Optional, Union
 
-import altair as alt
 import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score
@@ -181,7 +180,7 @@ def plot_auc_by_time_from_first_visit(
     bins: tuple = (0, 28, 182, 365, 730, 1825),
     pretty_bins: Optional[bool] = True,
     save_path: Optional[Path] = None,
-) -> alt.Chart:
+) -> Union[None, Path]:
     """Plot AUC as a function of time to first visit.
 
     Args:
@@ -195,7 +194,7 @@ def plot_auc_by_time_from_first_visit(
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
-        alt.Chart: Altair bar chart
+        Union[None, Path]: Path to saved figure or None if not saved.
     """
 
     df = create_performance_by_time_from_event_df(

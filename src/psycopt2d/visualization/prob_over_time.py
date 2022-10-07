@@ -57,8 +57,6 @@ def plot_prob_over_time(
         >>> repo_path = Path(__file__).parent.parent.parent.parent
         >>> path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
         >>> df = pd.read_csv(path)
-        >>> alt.data_transformers.disable_max_rows()
-
         >>> plot_prob_over_time(
         >>>     patient_id=df["dw_ek_borger"],
         >>>     timestamp=df["timestamp"],

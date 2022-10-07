@@ -4,7 +4,6 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Optional, Union
 
-import altair as alt
 import numpy as np
 
 from psycopt2d.visualization.base_charts import plot_basic_chart
@@ -15,7 +14,7 @@ def plot_feature_importances(
     feature_importances: Union[list[float], np.ndarray],
     top_n_feature_importances: int,
     save_path: Optional[Path] = None,
-) -> alt.Chart:
+) -> Union[None, Path]:
     """Plots feature importances.
 
     Sklearn's standard feature importance metric is "gain"/information gain,
@@ -31,7 +30,7 @@ def plot_feature_importances(
         save_path (Optional[Path], optional): Path to save the plot. Defaults to None.
 
     Returns:
-        alt.Chart: Horizontal barchart of feature importances
+        Union[None, Path]: Path to the saved plot if save_path is not None, else None
     """
 
     feature_importances = np.array(feature_importances)
