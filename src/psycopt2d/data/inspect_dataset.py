@@ -2,7 +2,7 @@
 from datetime import datetime
 from pathlib import Path
 
-from psycopt2d.load import load_dataset
+from psycopt2d.load import load_dataset_from_dir
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     )
 
     # Load the dataset
-    dataset = load_dataset(
+    dataset = load_dataset_from_dir(
         split_names="train",
         dir_path=dataset_dir,
         min_lookahead_days=1825,

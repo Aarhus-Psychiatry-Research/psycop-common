@@ -6,8 +6,10 @@ from typing import Optional
 
 import hydra
 import numpy as np
+import omegaconf
 import pandas as pd
 import wandb
+from omegaconf import open_dict
 from omegaconf.dictconfig import DictConfig
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
@@ -18,7 +20,7 @@ from wasabi import Printer
 
 from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
-from psycopt2d.load import load_dataset
+from psycopt2d.load import load_dataset_from_dir
 from psycopt2d.models import MODELS
 from psycopt2d.utils import create_wandb_folders, flatten_nested_dict
 
@@ -71,49 +73,139 @@ def create_model(cfg):
     return mdl
 
 
-def load_dataset_from_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
+def load_synth_train_val_from_dir(cfg, synth_splits_dir):
+    """Load synthetic train and val data from dir."""
+    # This is a temp fix. We probably want to use pydantic to validate all our inputs, and to set defaults if they don't exist in the config
+    try:
+        type(cfg.data.drop_patient_if_outcome_before_date)
+    except omegaconf.errors.ConfigAttributeError:
+        # Assign as none to struct
+        with open_dict(cfg) as conf_dict:
+            conf_dict.data.drop_patient_if_outcome_before_date = None
+
+    train = load_dataset_from_dir(
+        split_names="train",
+        dir_path=synth_splits_dir,
+        n_training_samples=cfg.data.n_training_samples,
+        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+        min_lookahead_days=cfg.data.min_lookahead_days,
+        min_lookbehind_days=cfg.data.min_lookbehind_days,
+        min_prediction_time_date=cfg.data.min_prediction_time_date,
+        file_suffix="csv",
+    )
+
+    val = load_dataset_from_dir(
+        split_names="val",
+        dir_path=synth_splits_dir,
+        n_training_samples=cfg.data.n_training_samples,
+        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+        min_lookahead_days=cfg.data.min_lookahead_days,
+        min_lookbehind_days=cfg.data.min_lookbehind_days,
+        min_prediction_time_date=cfg.data.min_prediction_time_date,
+        file_suffix="csv",
+    )
+
+    return train, val
+
+
+def gen_synth_data_splits(cfg, test_data_dir):
+    """Generate synthetic data splits."""
+    dataset = pd.read_csv(
+        test_data_dir / "synth_prediction_data.csv",
+    )
+
+    # Convert all timestamp cols to datetime
+    for col in [col for col in dataset.columns if "timestamp" in col]:
+        dataset[col] = pd.to_datetime(dataset[col])
+
+    # Get 75% of dataset for train
+    train, val = train_test_split(
+        dataset,
+        test_size=0.25,
+        random_state=cfg.project.seed,
+    )
+
+    return train, val
+
+
+def write_synth_splits(  # pylint: disable=unused-argument
+    test_data_dir: Path,
+    train,
+    val,
+):
+    """Write synthetic data splits to disk."""
+
+    synth_splits_dir = test_data_dir / "synth_splits"
+    synth_splits_dir.mkdir(parents=True, exist_ok=True)
+
+    for split in ("train", "val"):
+        split_df = eval(split)  # pylint: disable=eval-used
+        split_df.to_csv(synth_splits_dir / f"{split}.csv", index=False)
+
+    return synth_splits_dir
+
+
+def load_synthetic_data(cfg):
+    """Load synthetic data from file."""
+    repo_dir = Path(__file__).parent.parent.parent
+    test_data_dir = repo_dir / "tests" / "test_data"
+
+    train, val = gen_synth_data_splits(cfg, test_data_dir)
+
+    synth_splits_dir = write_synth_splits(
+        test_data_dir=test_data_dir,
+        train=train,
+        val=val,
+    )
+
+    # Load them from dir to use the same pipeline as we use for loading real data
+    # Makes it actually act as a smoke test
+    train, val = load_synth_train_val_from_dir(cfg, synth_splits_dir)
+
+    return train, val
+
+
+def load_real_data(cfg):
+    """Load real data from file."""
+    path = Path(cfg.data.dir)
+
+    train = load_dataset_from_dir(
+        split_names="train",
+        dir_path=path,
+        n_training_samples=cfg.data.n_training_samples,
+        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+        min_lookahead_days=cfg.data.min_lookahead_days,
+        min_lookbehind_days=cfg.data.min_lookbehind_days,
+    )
+
+    val = load_dataset_from_dir(
+        split_names="val",
+        dir_path=path,
+        n_training_samples=cfg.data.n_training_samples,
+        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
+        min_lookahead_days=cfg.data.min_lookahead_days,
+        min_lookbehind_days=cfg.data.min_lookbehind_days,
+    )
+
+    return train, val
+
+
+def load_dataset_with_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Load dataset based on settings in the config file."""
 
-    allowed_data_sources = {"csv", "synthetic"}
+    allowed_data_sources = {"csv", "parquet", "synthetic"}
 
-    if cfg.data.source.lower() == "csv":
-        path = Path(cfg.data.dir)
-
-        train = load_dataset(
-            split_names="train",
-            dir_path=path,
-            n_training_samples=cfg.data.n_training_samples,
-            drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-            min_lookahead_days=cfg.data.min_lookahead_days,
-        )
-        val = load_dataset(
-            split_names="val",
-            dir_path=path,
-            n_training_samples=cfg.data.n_training_samples,
-            drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-            min_lookahead_days=cfg.data.min_lookahead_days,
-        )
+    if "csv" in cfg.data.source.lower() or "parquet" in cfg.data.source.lower():
+        train, val = load_real_data(cfg)
 
     elif cfg.data.source.lower() == "synthetic":
-        repo_dir = Path(__file__).parent.parent.parent
-        dataset = pd.read_csv(
-            repo_dir / "tests" / "test_data" / "synth_prediction_data.csv",
-        )
+        train, val = load_synthetic_data(cfg)
 
-        # Convert all timestamp cols to datetime
-        for col in [col for col in dataset.columns if "timestamp" in col]:
-            dataset[col] = pd.to_datetime(dataset[col])
-
-        # Get 75% of dataset for train
-        train, val = train_test_split(
-            dataset,
-            test_size=0.25,
-            random_state=cfg.project.seed,
-        )
     else:
         raise ValueError(
             f"The config data.source is {cfg.data.source}, allowed are {allowed_data_sources}",
         )
+
     return train, val
 
 
@@ -356,7 +448,7 @@ def main(cfg):
         mode=cfg.project.wandb_mode,
     )
 
-    train, val = load_dataset_from_config(cfg)
+    train, val = load_dataset_with_config(cfg)
 
     msg.info("Creating pipeline")
     pipe = create_pipeline(cfg)

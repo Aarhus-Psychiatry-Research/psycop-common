@@ -6,6 +6,7 @@ import sys
 import tempfile
 import time
 from collections.abc import Iterable, MutableMapping
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Union
 
@@ -285,7 +286,7 @@ def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> No
         )
         if not local_path.parent.exists():
             local_path.parent.mkdir(parents=True)
-        dump_to_pickle(metadata, local_path)
+        dump_to_pickle(metadata, str(local_path))
         msg.good(f"Saved evaluation results to {local_path}")
 
 
@@ -297,3 +298,20 @@ def create_wandb_folders():
             parents=True,
         )
         (PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
+
+
+def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
+    """Coerce date or str to datetime."""
+    if isinstance(date_repr, str):
+        date_repr = date.fromisoformat(
+            date_repr,
+        )
+
+    # Convert drop_patient_if_outcome_before_date from a date to a datetime at midnight
+    if isinstance(date_repr, date):
+        date_repr = datetime.combine(
+            date_repr,
+            datetime.min.time(),
+        )
+
+    return date_repr
