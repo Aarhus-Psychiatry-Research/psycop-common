@@ -11,10 +11,11 @@ from wasabi import Printer
 msg = Printer(timestamp=True)
 
 
-def load_dataset_from_dir(
+def load_dataset_from_dir(  # pylint: disable=inconsistent-return-statements
     split_name: str,
     dir_path: Path,
     nrows: Optional[int],
+    file_suffix: str = "parquet",
 ) -> pd.DataFrame:
     """Load dataset from directory. Finds any .csv with the split name in its
     filename.
@@ -24,21 +25,36 @@ def load_dataset_from_dir(
         dir_path (Path): Directory of the dataset.
         nrows (Optional[int]): Number of rows to load. Defaults to None, in which case
             all rows are loaded.
+        file_suffix (str, optional): File suffix of the dataset. Defaults to "parquet".
 
     Returns:
         pd.DataFrame: The dataset
     """
-    # Use glob to find the file
-    path = list(dir_path.glob(f"*{split_name}*.csv"))[0]
+    if file_suffix not in ("csv", "parquet"):
+        raise ValueError(f"File suffix {file_suffix} not supported.")
 
-    return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
+    if split_name not in ("train", "test", "val"):
+        raise ValueError(f"Split name {split_name} not supported.")
+
+    # Use glob to find the file
+    path = list(dir_path.glob(f"*{split_name}*.{file_suffix}"))[0]
+
+    if "parquet" in file_suffix:
+        if nrows:
+            raise ValueError(
+                "nrows is not supported for parquet files. Please use csv files."
+            )
+        return pd.read_parquet(path)
+    elif "csv" in file_suffix:
+        return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
 
 
 def load_dataset(
     split_names: Union[list[str], str],
     dir_path: Path,
-    drop_patient_if_outcome_before_date: Union[datetime, str],
+    drop_patient_if_outcome_before_date: datetime,
     min_lookahead_days: int,
+    file_suffix: str = "parquet",
     pred_datetime_column: Optional[str] = "timestamp",
     n_training_samples: Union[None, int] = None,
 ) -> pd.DataFrame:
@@ -55,8 +71,9 @@ def load_dataset(
         min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included.
             Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
             Defined as days from the last days.
+        file_suffix (str): File suffix of the dataset. Defaults to "parquet".
         pred_datetime_column (str, optional): Column with prediction time timestamps.
-        Defaults to "timestamp".
+            Defaults to "timestamp".
         n_training_samples (Union[None, int], optional): Number of training samples to load.
         Defaults to None, in which case all training samples are loaded.
 
@@ -90,6 +107,7 @@ def load_dataset(
                     min_lookahead_days=min_lookahead_days,
                     pred_datetime_column=pred_datetime_column,
                     n_training_samples=n_training_samples,
+                    file_suffix=file_suffix,
                 )
                 for split in split_names
             ],

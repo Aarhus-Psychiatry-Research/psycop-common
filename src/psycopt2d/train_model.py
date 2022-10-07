@@ -118,36 +118,41 @@ def load_dataset_from_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
 def stratified_cross_validation(
     cfg,
     pipe: Pipeline,
-    dataset: pd.DataFrame,
+    train_df: pd.DataFrame,
     train_col_names: Iterable[str],
     outcome_col_name: str,
     n_splits: int,
 ):
     """Performs stratified and grouped cross validation using the pipeline."""
-    X = dataset[train_col_names]  # pylint: disable=invalid-name
-    y = dataset[outcome_col_name]  # pylint: disable=invalid-name
+    X = train_df[train_col_names]  # pylint: disable=invalid-name
+    y = train_df[outcome_col_name]  # pylint: disable=invalid-name
 
     # Create folds
     folds = StratifiedGroupKFold(n_splits=n_splits).split(
         X=X,
         y=y,
-        groups=dataset[cfg.data.id_col_name],
+        groups=train_df[cfg.data.id_col_name],
     )
 
     # Perform CV and get out of fold predictions
-    dataset["oof_y_hat"] = np.nan
+    train_df["oof_y_hat"] = np.nan
     for train_idxs, val_idxs in folds:
-        X_, y_ = X.loc[train_idxs], y.loc[train_idxs]  # pylint: disable=invalid-name
-        pipe.fit(X_, y_)
+        X_train, y_train = (
+            X.loc[train_idxs],
+            y.loc[train_idxs],
+        )  # pylint: disable=invalid-name
+        pipe.fit(X_train, y_train)
 
-        y_hat = pipe.predict_proba(X_)[:, 1]
-        print(f"Within-fold performance: {round(roc_auc_score(y_,y_hat), 3)}")
-        dataset["oof_y_hat_prob"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[
+        y_pred = pipe.predict_proba(X_train)[:, 1]
+
+        print(f"Within-fold performance: {round(roc_auc_score(y_train,y_pred), 3)}")
+
+        train_df["oof_y_hat_prob"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[
             :,
             1,
         ]
 
-    return dataset
+    return train_df
 
 
 def train_and_eval_on_crossvalidation(
@@ -177,7 +182,7 @@ def train_and_eval_on_crossvalidation(
     eval_dataset = stratified_cross_validation(
         cfg=cfg,
         pipe=pipe,
-        dataset=train_val,
+        train_df=train_val,
         train_col_names=train_col_names,
         outcome_col_name=outcome_col_name,
         n_splits=n_splits,
