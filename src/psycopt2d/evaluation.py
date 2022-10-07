@@ -10,7 +10,7 @@ import wandb
 from omegaconf.dictconfig import DictConfig
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.pipeline import Pipeline
-from wandb.sdk.wandb_run import Run as wandb_run
+from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 
 from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
