@@ -1,7 +1,6 @@
 """Functions for evaluating a model's prredictions."""
 from typing import Iterable, Optional
 
-import altair as alt
 import numpy as np
 import pandas as pd
 import wandb
@@ -74,8 +73,6 @@ def evaluate_model(
         positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
     )
 
-    alt.data_transformers.disable_max_rows()
-
     print(f"AUC: {auc}")
 
     # Log to wandb
@@ -145,6 +142,7 @@ def evaluate_model(
                 pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
+                save_path=SAVE_DIR / "sensitivity_by_time_by_threshold.png",
             ),
             "auc_by_calendar_time": plot_performance_by_calendar_time(
                 labels=y,
