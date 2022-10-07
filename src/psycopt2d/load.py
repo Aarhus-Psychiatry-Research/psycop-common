@@ -11,6 +11,29 @@ from wasabi import Printer
 msg = Printer(timestamp=True)
 
 
+def load_dataset_from_dir(
+    split_name: str,
+    dir_path: Path,
+    nrows: Optional[int],
+) -> pd.DataFrame:
+    """Load dataset from directory. Finds any .csv with the split name in its
+    filename.
+
+    Args:
+        split_name (str): Name of split, allowed are ["train", "test", "val"]
+        dir_path (Path): Directory of the dataset.
+        nrows (Optional[int]): Number of rows to load. Defaults to None, in which case
+            all rows are loaded.
+
+    Returns:
+        pd.DataFrame: The dataset
+    """
+    # Use glob to find the file
+    path = list(dir_path.glob(f"*{split_name}*.csv"))[0]
+
+    return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
+
+
 def load_dataset(
     split_names: Union[list[str], str],
     dir_path: Path,
@@ -125,26 +148,3 @@ def load_dataset(
 
     msg.good(f"{split_names}: Returning!")
     return dataset
-
-
-def load_dataset_from_dir(
-    split_name: str,
-    dir_path: Path,
-    nrows: Optional[int],
-) -> pd.DataFrame:
-    """Load dataset from directory. Finds any .csv with the split name in its
-    filename.
-
-    Args:
-        split_name (str): Name of split, allowed are ["train", "test", "val"]
-        dir_path (Path): Directory of the dataset.
-        nrows (Optional[int]): Number of rows to load. Defaults to None, in which case
-            all rows are loaded.
-
-    Returns:
-        pd.DataFrame: The dataset
-    """
-    # Use glob to find the file
-    path = list(dir_path.glob(f"*{split_name}*.csv"))[0]
-
-    return pd.read_csv(filepath_or_buffer=path, nrows=nrows)

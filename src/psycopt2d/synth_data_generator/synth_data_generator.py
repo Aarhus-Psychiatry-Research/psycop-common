@@ -13,6 +13,50 @@ import pandas as pd
 from scipy import stats
 
 
+def generate_data_columns(predictors, n_samples, df):
+    for col_name, col_props in predictors.items():
+        column_type = col_props["column_type"]
+
+        if column_type == "uniform_float":
+            df[col_name] = np.random.uniform(
+                low=col_props["min"],
+                high=col_props["max"],
+                size=n_samples,
+            )
+        elif column_type == "uniform_int":
+            df[col_name] = np.random.randint(
+                low=col_props["min"],
+                high=col_props["max"],
+                size=n_samples,
+            )
+        elif column_type == "normal":
+            df[col_name] = np.random.normal(
+                loc=col_props["mean"],
+                scale=col_props["sd"],
+                size=n_samples,
+            )
+        elif column_type == "datetime_uniform":
+            df[col_name] = pd.to_datetime(
+                np.random.uniform(
+                    low=col_props["min"],
+                    high=col_props["max"],
+                    size=n_samples,
+                ),
+                unit="D",
+            ).round("min")
+        else:
+            raise ValueError(f"Unknown distribution: {column_type}")
+
+        # If column has min and/or max, floor and ceil appropriately
+        if df[col_name].dtype not in ["datetime64[ns]"]:
+            if "min" in col_props:
+                df[col_name] = df[col_name].clip(lower=col_props["min"])
+            if "max" in col_props:
+                df[col_name] = df[col_name].clip(upper=col_props["max"])
+
+    return df
+
+
 def generate_synth_data(
     predictors: dict,
     outcome_column_name: str,
@@ -86,50 +130,6 @@ def generate_synth_data(
     df[outcome_column_name] = 1 / (1 + np.exp(y_))
 
     df[outcome_column_name] = np.where(df[outcome_column_name] < prob_outcome, 1, 0)
-
-    return df
-
-
-def generate_data_columns(predictors, n_samples, df):
-    for col_name, col_props in predictors.items():
-        column_type = col_props["column_type"]
-
-        if column_type == "uniform_float":
-            df[col_name] = np.random.uniform(
-                low=col_props["min"],
-                high=col_props["max"],
-                size=n_samples,
-            )
-        elif column_type == "uniform_int":
-            df[col_name] = np.random.randint(
-                low=col_props["min"],
-                high=col_props["max"],
-                size=n_samples,
-            )
-        elif column_type == "normal":
-            df[col_name] = np.random.normal(
-                loc=col_props["mean"],
-                scale=col_props["sd"],
-                size=n_samples,
-            )
-        elif column_type == "datetime_uniform":
-            df[col_name] = pd.to_datetime(
-                np.random.uniform(
-                    low=col_props["min"],
-                    high=col_props["max"],
-                    size=n_samples,
-                ),
-                unit="D",
-            ).round("min")
-        else:
-            raise ValueError(f"Unknown distribution: {column_type}")
-
-        # If column has min and/or max, floor and ceil appropriately
-        if df[col_name].dtype not in ["datetime64[ns]"]:
-            if "min" in col_props:
-                df[col_name] = df[col_name].clip(lower=col_props["min"])
-            if "max" in col_props:
-                df[col_name] = df[col_name].clip(upper=col_props["max"])
 
     return df
 

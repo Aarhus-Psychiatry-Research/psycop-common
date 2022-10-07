@@ -2,6 +2,7 @@
 import os
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Optional
 
 import hydra
 import numpy as np
@@ -18,11 +19,7 @@ from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
 from psycopt2d.models import MODELS
-from psycopt2d.utils import (
-    create_wandb_folders,
-    flatten_nested_dict,
-    prediction_df_with_metadata_to_disk,
-)
+from psycopt2d.utils import create_wandb_folders, flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
@@ -122,15 +119,16 @@ def stratified_cross_validation(
     cfg,
     pipe: Pipeline,
     dataset: pd.DataFrame,
-    train_col_names: list[str],
+    train_col_names: Iterable[str],
     outcome_col_name: str,
+    n_splits: int,
 ):
     """Performs stratified and grouped cross validation using the pipeline."""
     X = dataset[train_col_names]  # pylint: disable=invalid-name
     y = dataset[outcome_col_name]  # pylint: disable=invalid-name
 
     # Create folds
-    folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
+    folds = StratifiedGroupKFold(n_splits=n_splits).split(
         X=X,
         y=y,
         groups=dataset[cfg.data.id_col_name],
@@ -152,85 +150,89 @@ def stratified_cross_validation(
     return dataset
 
 
-@hydra.main(
-    config_path=str(CONFIG_PATH),
-    config_name="default_config",
-    version_base="1.2",
-)
-def main(cfg):
-    """Main function for training a single model."""
-    create_wandb_folders()
-    run = wandb.init(
-        project=cfg.project.name,
-        reinit=True,
-        config=flatten_nested_dict(cfg, sep="."),
-        mode=cfg.project.wandb_mode,
-    )
-
-    # load dataset
-    train, val = load_dataset_from_config(cfg)
-
-    # creating pipeline
-    steps = []
-    preprocessing_pipe = create_preprocessing_pipeline(cfg)
-    if len(preprocessing_pipe.steps) != 0:
-        steps.append(("preprocessing", preprocessing_pipe))
-
-    mdl = create_model(cfg)
-    steps.append(("model", mdl))
-    pipe = Pipeline(steps)
-
-    # train
-    # define columns
-    OUTCOME_COL_NAME = (  # pylint: disable=invalid-name
-        f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
-    )
-
-    TRAIN_COL_NAMES = [  # pylint: disable=invalid-name
-        c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
-    ]
-
-    eval_dataset = train_model(
-        cfg=cfg,
-        train=train,
-        val=val,
-        pipe=pipe,
-        outcome_col_name=outcome_col_name,
-        train_col_names=train_col_names,
-    )
-
-    # Evaluate: Calculate performance metrics and log to wandb
-    evaluate_model(
-        cfg=cfg,
-        pipe=pipe,
-        eval_dataset=eval_dataset,
-        y_col_name=outcome_col_name,
-        train_col_names=train_col_names,
-        y_hat_prob_col_name="y_hat_prob",
-        run=run,
-    )
-
-    # Save results to disk
-    prediction_df_with_metadata_to_disk(df=eval_dataset, cfg=cfg)
-
-    # Log metadata to wandb
-    wandb.log_artifact("poetry.lock", name="poetry_lock_file", type="poetry_lock")
-
-    run.finish()
-
-    return roc_auc_score(
-        eval_dataset[outcome_col_name],
-        eval_dataset["y_hat_prob"],
-    )
-
-
-def train_model(
+def train_and_eval_on_crossvalidation(
     cfg: DictConfig,
     train: pd.DataFrame,
     val: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: Iterable[str],
+    n_splits: int,
+) -> pd.DataFrame:
+    """Train model on cross validation folds and return evaluation dataset.
+
+    Args:
+        cfg (DictConfig): Config object
+        train: Training dataset
+        val: Validation dataset
+        pipe: Pipeline
+        outcome_col_name: Name of the outcome column
+        train_col_names: Names of the columns to use for training
+        n_splits: Number of folds for cross validation.
+
+    Returns:
+        Evaluation dataset
+    """
+    train_val = pd.concat([train, val], ignore_index=True)
+    eval_dataset = stratified_cross_validation(
+        cfg=cfg,
+        pipe=pipe,
+        dataset=train_val,
+        train_col_names=train_col_names,
+        outcome_col_name=outcome_col_name,
+        n_splits=n_splits,
+    )
+    eval_dataset.rename(columns={"oof_y_hat_prob": "y_hat_prob"}, inplace=True)
+    return eval_dataset
+
+
+def train_and_eval_on_val_split(
+    train: pd.DataFrame,
+    val: pd.DataFrame,
+    pipe: Pipeline,
+    outcome_col_name: str,
+    train_col_names: Iterable[str],
+) -> pd.DataFrame:
+    """Train model on pre-defined train and validation split and return
+    evaluation dataset.
+
+    Args:
+        train: Training dataset
+        val: Validation dataset
+        pipe: Pipeline
+        outcome_col_name: Name of the outcome column
+        train_col_names: Names of the columns to use for training
+
+    Returns:
+        Evaluation dataset
+    """
+
+    X_train = train[train_col_names]  # pylint: disable=invalid-name
+    y_train = train[outcome_col_name]
+    X_val = val[train_col_names]  # pylint: disable=invalid-name
+
+    pipe.fit(X_train, y_train)
+
+    y_train_hat_prob = pipe.predict_proba(X_train)[:, 1]
+    y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
+
+    print(
+        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
+    )
+
+    eval_dataset = val
+    eval_dataset["y_hat_prob"] = y_val_hat_prob
+    return eval_dataset
+
+
+def train_and_get_model_eval_df(
+    cfg: DictConfig,
+    train: pd.DataFrame,
+    val: pd.DataFrame,
+    pipe: Pipeline,
+    outcome_col_name: str,
+    train_col_names: Iterable[str],
+    n_splits: Optional[int],
 ):
     """Train model and return evaluation dataset.
 
@@ -241,6 +243,7 @@ def train_model(
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
+        n_splits: Number of folds for cross validation. If None, no cross validation is performed.
 
     Returns:
         Evaluation dataset
@@ -250,34 +253,120 @@ def train_model(
     if cfg.model.model_name == "ebm":
         pipe["model"].feature_names = train_col_names
 
-    if cfg.training.n_splits is None:  # train on pre-defined splits
-        X_train = train[train_col_names]  # pylint: disable=invalid-name
-        y_train = train[outcome_col_name]
-        X_val = val[train_col_names]  # pylint: disable=invalid-name
-
-        pipe.fit(X_train, y_train)
-
-        y_train_hat_prob = pipe.predict_proba(X_train)[:, 1]
-        y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
-
-        print(
-            f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
-        )
-
-        eval_dataset = val
-        eval_dataset["y_hat_prob"] = y_val_hat_prob
-    else:
-        train_val = pd.concat([train, val], ignore_index=True)
-        eval_dataset = stratified_cross_validation(
-            cfg,
-            pipe,
-            dataset=train_val,
-            train_col_names=train_col_names,
+    if n_splits is None:  # train on pre-defined splits
+        eval_dataset = train_and_eval_on_val_split(
+            train=train,
+            val=val,
+            pipe=pipe,
             outcome_col_name=outcome_col_name,
+            train_col_names=train_col_names,
         )
-        eval_dataset.rename(columns={"oof_y_hat_prob": "y_hat_prob"}, inplace=True)
+    else:
+        eval_dataset = train_and_eval_on_crossvalidation(
+            cfg=cfg,
+            train=train,
+            val=val,
+            pipe=pipe,
+            outcome_col_name=outcome_col_name,
+            train_col_names=train_col_names,
+            n_splits=n_splits,
+        )
 
     return eval_dataset
+
+
+def create_pipeline(cfg):
+    """Create pipeline.
+
+    Args:
+        cfg (DictConfig): Config object
+
+    Returns:
+        Pipeline
+    """
+    steps = []
+    preprocessing_pipe = create_preprocessing_pipeline(cfg)
+    if len(preprocessing_pipe.steps) != 0:
+        steps.append(("preprocessing", preprocessing_pipe))
+
+    mdl = create_model(cfg)
+    steps.append(("model", mdl))
+    pipe = Pipeline(steps)
+    return pipe
+
+
+def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]:
+    """Get column names for outcome and features.
+
+    Args:
+        cfg (DictConfig): Config object
+        train: Training dataset
+
+    Returns:
+        outcome_col_name: Name of the outcome column
+        train_col_names: Names of the columns to use for training
+    """
+
+    outcome_col_name = (  # pylint: disable=invalid-name
+        f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
+    )
+
+    train_col_names = [  # pylint: disable=invalid-name
+        c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
+    ]
+
+    return outcome_col_name, train_col_names
+
+
+@hydra.main(
+    config_path=str(CONFIG_PATH),
+    config_name="default_config",
+    version_base="1.2",
+)
+def main(cfg):
+    """Main function for training a single model."""
+    create_wandb_folders()
+
+    run = wandb.init(
+        project=cfg.project.name,
+        reinit=True,
+        config=flatten_nested_dict(cfg, sep="."),
+        mode=cfg.project.wandb_mode,
+    )
+
+    train, val = load_dataset_from_config(cfg)
+
+    pipe = create_pipeline(cfg)
+
+    outcome_col_name, train_col_names = get_col_names(cfg, train)
+
+    eval_df = train_and_get_model_eval_df(
+        cfg=cfg,
+        train=train,
+        val=val,
+        pipe=pipe,
+        outcome_col_name=outcome_col_name,
+        train_col_names=train_col_names,
+        n_splits=cfg.training.n_splits,
+    )
+
+    # Evaluate: Calculate performance metrics and log to wandb
+    evaluate_model(
+        cfg=cfg,
+        pipe=pipe,
+        eval_df=eval_df,
+        y_col_name=outcome_col_name,
+        train_col_names=train_col_names,
+        y_hat_prob_col_name="y_hat_prob",
+        run=run,
+    )
+
+    run.finish()
+
+    return roc_auc_score(
+        eval_df[outcome_col_name],
+        eval_df["y_hat_prob"],
+    )
 
 
 if __name__ == "__main__":

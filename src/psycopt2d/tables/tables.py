@@ -8,6 +8,26 @@ import wandb
 from sklearn.metrics import roc_auc_score
 
 
+def _calc_auc_and_n(
+    df: pd.DataFrame,
+    pred_probs_col_name: str,
+    outcome_col_name: str,
+) -> pd.Series:
+    """Calculate auc and number of data points per group.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing predicted probabilities and labels
+        pred_probs_col_name (str): The column containing predicted probabilities
+        outcome_col_name (str): THe containing the labels
+
+    Returns:
+        pd.Series: Series containing AUC and N
+    """
+    auc = roc_auc_score(df[outcome_col_name], df[pred_probs_col_name])
+    n = len(df)
+    return pd.Series([auc, n], index=["AUC", "N"])
+
+
 def auc_by_group_table(
     df: pd.DataFrame,
     pred_probs_col_name: str,
@@ -47,26 +67,6 @@ def auc_by_group_table(
         groups_df.append(table)
 
     return pd.concat(groups_df)
-
-
-def _calc_auc_and_n(
-    df: pd.DataFrame,
-    pred_probs_col_name: str,
-    outcome_col_name: str,
-) -> pd.Series:
-    """Calculate auc and number of data points per group.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing predicted probabilities and labels
-        pred_probs_col_name (str): The column containing predicted probabilities
-        outcome_col_name (str): THe containing the labels
-
-    Returns:
-        pd.Series: Series containing AUC and N
-    """
-    auc = roc_auc_score(df[outcome_col_name], df[pred_probs_col_name])
-    n = len(df)
-    return pd.Series([auc, n], index=["AUC", "N"])
 
 
 def generate_feature_importances_table(

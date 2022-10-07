@@ -33,6 +33,12 @@ def insert_figure(line: str, fig_number: int):
     return figure
 
 
+def csv_to_md(filepath: str):
+    """Load a table from a csv and return as markdown."""
+    df = pd.read_csv(filepath)
+    return df.to_markdown()
+
+
 def insert_table(line: str, table_number: int):
     """Add a table to the report as md."""
     path, caption = line.split(":")
@@ -44,20 +50,14 @@ def insert_table(line: str, table_number: int):
     return table
 
 
-def csv_to_md(filepath: str):
-    """Load a table from a csv and return as markdown."""
-    df = pd.read_csv(filepath)
-    return df.to_markdown()
+def _join_by_newline(text: list[str]):
+    """Join a list of strings by newline."""
+    return "\n\n".join(text)
 
 
 def center_text(text: list[str]):
     """Add html center align tags."""
     return "\n" + f"""<div align="center">{_join_by_newline(text)}</div>"""
-
-
-def _join_by_newline(text: list[str]):
-    """Join a list of strings by newline."""
-    return "\n\n".join(text)
 
 
 if __name__ == "__main__":
