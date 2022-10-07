@@ -2,7 +2,6 @@
 # pylint: disable=missing-function-docstring
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
 
@@ -23,7 +22,7 @@ def df():
     return df
 
 
-def test_plot_sensitivity_by_time_to_outcome(df):
+def test_plot_sensitivity_by_time_to_outcome(df, tmp_path):
     positive_rates = [0.95, 0.99, 0.999, 0.9999]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
@@ -38,5 +37,5 @@ def test_plot_sensitivity_by_time_to_outcome(df):
         outcome_timestamps=df["timestamp_t2d_diag"],
         prediction_timestamps=df["timestamp"],
         bins=[0, 28, 182, 365, 730, 1825],
+        save_path=tmp_path / "sensitivity_by_time_by_threshold.png",
     )
-    plt.close()

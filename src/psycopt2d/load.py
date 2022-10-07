@@ -184,7 +184,8 @@ def process_dataset(
         )
 
     # Drop if later than min prediction time date
-    dataset = dataset[dataset[pred_datetime_column] > min_prediction_time_date]
+    if min_prediction_time_date:
+        dataset = dataset[dataset[pred_datetime_column] > min_prediction_time_date]
 
     for direction in ("ahead", "behind"):
         n_days = min_lookahead_days if direction == "ahead" else min_lookbehind_days

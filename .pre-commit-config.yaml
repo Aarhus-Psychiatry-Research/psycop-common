@@ -5,6 +5,7 @@ repos:
     rev: v1.7.0
     hooks:
       - id: autoflake
+        args: ['--in-place', '--remove-all-unused-imports']
 
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1

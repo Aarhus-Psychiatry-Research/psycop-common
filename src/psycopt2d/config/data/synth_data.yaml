@@ -1,5 +1,6 @@
 n_training_samples: null
 min_lookahead_days: 0
+min_prediction_time_date: null
 lookahead_days: 30
 pred_col_name_prefix: "pred_"
 pred_timestamp_col_name: timestamp
