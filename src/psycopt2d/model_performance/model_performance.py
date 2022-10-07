@@ -12,6 +12,7 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     roc_auc_score,
+    balanced_accuracy_score
 )
 
 from psycopt2d.model_performance.utils import (
@@ -367,6 +368,7 @@ class ModelPerformance:
         performance = {}
 
         performance["acc-overall"] = accuracy_score(labels, predicted)
+        performance["balanced_accuracy-overall"] = balanced_accuracy_score(labels, predicted)
         performance["f1_macro-overall"] = f1_score(labels, predicted, average="macro")
         performance["f1_micro-overall"] = f1_score(labels, predicted, average="micro")
         performance["precision_macro-overall"] = precision_score(

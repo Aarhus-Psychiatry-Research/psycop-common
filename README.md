@@ -52,7 +52,7 @@ To do that:
 **Work locally**
 1. Write your plot function in an appropriate file in the `psycopt2d > visualization` directory. 
 2. Test the plot on synthetic prediction data. Write a test in `tests>name_of_your_plot.py`. 
-    Use the `evaluate_saved_model_predictions.py` script as a guide.
+    Use the `evaluate_saved_model_predictions.py` script or the other visualization tests as a guide.
 
 **Work remotely**
 

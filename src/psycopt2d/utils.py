@@ -1,7 +1,13 @@
+"""Misc.
+
+utilities.
+"""
+import sys
+import tempfile
 import time
-from collections.abc import MutableMapping
+from collections.abc import Iterable, MutableMapping
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Union
 
 import dill as pkl
 import numpy as np
@@ -45,22 +51,22 @@ def format_dict_for_printing(d: dict) -> str:
 
 
 def flatten_nested_dict(
-    d: Dict,
+    d: dict,
     parent_key: str = "",
     sep: str = ".",
-) -> Dict:
+) -> dict:
     """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes
     {"level1.level2.level3.level4": 5}.
 
     Args:
-        d (Dict): Dict to flatten.
+        d (dict): dict to flatten.
         parent_key (str): The parent key for the current dict, e.g. "level1" for the first iteration.
         sep (str): How to separate each level in the dict. Defaults to ".".
 
     Returns:
-        Dict: The flattened dict.
+        dict: The flattened dict.
     """
 
     items = []
@@ -111,12 +117,12 @@ def drop_records_if_datediff_days_smaller_than(
         ]
 
 
-def round_floats_to_edge(series: pd.Series, bins: List[float]) -> np.ndarray:
+def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
     """Rounds a float to the lowest value it is larger than.
 
     Args:
         series (pd.Series): The series of floats to round to bin edges.
-        bins (List[floats]): Values to round to.
+        bins (list[floats]): Values to round to.
 
     Returns:
         A numpy ndarray with the borders.
@@ -158,12 +164,12 @@ def calculate_performance_metrics(
     return performance_metrics
 
 
-def bin_continuous_data(series: pd.Series, bins: List[int]) -> pd.Series:
+def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     """For prettier formatting of continuous binned data such as age.
 
     Args:
         series (pd.Series): Series with continuous data such as age
-        bins (List[int]): Desired bins
+        bins (list[int]): Desired bins
 
     Returns:
         pd.Series: Binned data
@@ -183,13 +189,13 @@ def bin_continuous_data(series: pd.Series, bins: List[int]) -> pd.Series:
     8      51+
     """
     labels = []
-    for i, bin in enumerate(bins):
+    for i, bin_v in enumerate(bins):
         if i == 0:
-            labels.append(f"{bin}-{bins[i+1]}")
+            labels.append(f"{bin_v}-{bins[i+1]}")
         elif i < len(bins) - 2:
-            labels.append(f"{bin+1}-{bins[i+1]}")
+            labels.append(f"{bin_v+1}-{bins[i+1]}")
         elif i == len(bins) - 2:
-            labels.append(f"{bin+1}+")
+            labels.append(f"{bin_v+1}+")
         else:
             continue
 
@@ -281,3 +287,13 @@ def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> No
             local_path.parent.mkdir(parents=True)
         dump_to_pickle(metadata, local_path)
         msg.good(f"Saved evaluation results to {local_path}")
+
+
+def create_wandb_folders():
+    """Creates folders to store logs on Overtaci."""
+    if sys.platform == "win32":
+        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(
+            exist_ok=True,
+            parents=True,
+        )
+        (PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)

@@ -1,3 +1,4 @@
+"""Specifications of models to be evaluated."""
 import numpy as np
 
 # from interpret.glassbox import ExplainableBoostingClassifier
@@ -6,13 +7,14 @@ from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 
 
-def InitLogisticRegression(**kwargs):
+def init_logistic_regression(**kwargs):
+    """Initialize LogisticRegression model."""
     if "penalty_solver" in kwargs:
         kwargs["penalty"], kwargs["solver"] = kwargs.pop("penalty_solver").split("_")
     return LogisticRegression(**kwargs)
 
 
-logistic = {"model": InitLogisticRegression, "static_hyperparameters": {}}
+logistic = {"model": init_logistic_regression, "static_hyperparameters": {}}
 xgboost = {"model": XGBClassifier, "static_hyperparameters": {"missing": np.nan}}
 nb = {"model": GaussianNB, "static_hyperparameters": {}}
 

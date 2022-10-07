@@ -1,6 +1,8 @@
+"""Generate a plot of sensitivity by time to outcome."""
+from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
-from typing import Iterable, List, Optional, Union
+from typing import Optional, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -16,7 +18,7 @@ def create_sensitivity_by_time_to_outcome_df(
     pred_proba_threshold: float,
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins=[0, 1, 7, 14, 28, 182, 365, 730, 1825],
+    bins: Iterable = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
 
@@ -140,7 +142,7 @@ def _generate_sensitivity_array(
 
 
 def _annotate_heatmap(
-    im: matplotlib.image.AxesImage,
+    image: matplotlib.image.AxesImage,
     data: Optional[np.array] = None,
     value_formatter: Optional[str] = "{x:.2f}",
     textcolors: Optional[tuple] = ("black", "white"),
@@ -150,7 +152,7 @@ def _annotate_heatmap(
     """A function to annotate a heatmap. Adapted from matplotlib documentation.
 
     Args:
-        im (matplotlib.image.AxesImage): The AxesImage to be labeled.
+        image (matplotlib.image.AxesImage): The AxesImage to be labeled.
         data (np.ndarray): Data used to annotate. If None, the image's data is used. Defaults to None.
         value_formatter (str, optional): The format of the annotations inside the heatmap. This should either use the string format method, e.g. "$ {x:.2f}", or be a :class:`matplotlib.ticker.Formatter`. Defaults to "{x:.2f}".
         textcolors (tuple, optional): A pair of colors. The first is used for values below a threshold, the second for those above. Defaults to ("black", "white").
@@ -162,13 +164,13 @@ def _annotate_heatmap(
     """
 
     if not isinstance(data, (list, np.ndarray)):
-        data = im.get_array()
+        data = image.get_array()
 
     # Normalize the threshold to the images color range.
     if threshold is not None:
-        threshold = im.norm(threshold)
+        threshold = image.norm(threshold)
     else:
-        threshold = im.norm(data.max()) / 2.0
+        threshold = image.norm(data.max()) / 2.0
 
     # Set default alignment to center, but allow it to be
     # overwritten by textkw.
@@ -185,10 +187,19 @@ def _annotate_heatmap(
     # Loop over the data and create a `Text` for each "pixel".
     # Change the text's color depending on the data.
     texts = []
-    for i in range(data.shape[0]):
-        for j in range(data.shape[1]):
-            test_kwargs.update(color=textcolors[int(im.norm(data[i, j]) > threshold)])
-            text = im.axes.text(j, i, value_formatter(data[i, j], None), **test_kwargs)
+    for heat_row_idx in range(data.shape[0]):
+        for heat_col_idx in range(data.shape[1]):
+            test_kwargs.update(
+                color=textcolors[
+                    int(image.norm(data[heat_row_idx, heat_col_idx]) > threshold)
+                ],
+            )
+            text = image.axes.text(
+                heat_col_idx,
+                heat_row_idx,
+                value_formatter(data[heat_row_idx, heat_col_idx], None),
+                **test_kwargs,
+            )
             texts.append(text)
 
     return texts
@@ -197,10 +208,10 @@ def _annotate_heatmap(
 def plot_sensitivity_by_time_to_outcome(
     labels: Iterable[int],
     y_hat_probs: Iterable[int],
-    pred_proba_thresholds: List[float],
+    pred_proba_thresholds: list[float],
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: List[int] = [0, 28, 182, 365, 730, 1825],
+    bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
     color_map: Optional[str] = "PuBu",
     colorbar_label: Optional[str] = "Sensitivity",
     x_title: Optional[str] = "Days to outcome",
@@ -214,7 +225,7 @@ def plot_sensitivity_by_time_to_outcome(
     Args:
         labels (Iterable[int]): True labels of the data.
         y_hat_probs (Iterable[int]): Predicted probability of class 1.
-        pred_proba_thresholds (Iterable[float]): List of pred_proba thresholds to plot, above which predictions are classified as positive.
+        pred_proba_thresholds (Iterable[float]): list of pred_proba thresholds to plot, above which predictions are classified as positive.
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
@@ -275,10 +286,10 @@ def plot_sensitivity_by_time_to_outcome(
     # Prepare data for plotting
     data, x_labels, y_labels = _generate_sensitivity_array(df, n_decimals_y_axis)
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots()  # pylint: disable=invalid-name
 
     # Plot the heatmap
-    im = ax.imshow(data, cmap=color_map)
+    im = ax.imshow(data, cmap=color_map)  # pylint: disable=invalid-name
 
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax)
@@ -332,8 +343,6 @@ def plot_sensitivity_by_time_to_outcome(
 
 
 if __name__ == "__main__":
-    from pathlib import Path
-
     from psycopt2d.utils import positive_rate_to_pred_probs
 
     path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"

@@ -1,5 +1,7 @@
+"""Base charts."""
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd

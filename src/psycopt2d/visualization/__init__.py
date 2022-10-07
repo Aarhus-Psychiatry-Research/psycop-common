@@ -1,3 +1,4 @@
+"""Visualisations."""
 from .feature_importance import plot_feature_importances
 from .performance_over_time import (
     plot_auc_by_time_from_first_visit,

@@ -1,3 +1,5 @@
+"""Tests of sens over time."""
+# pylint: disable=missing-function-docstring
 from pathlib import Path
 
 import matplotlib.pyplot as plt

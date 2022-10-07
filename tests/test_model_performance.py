@@ -76,7 +76,7 @@ def test_multiclass_transform_from_dataframe(multiclass_df, multiclass_score_map
 
     assert len(res["model_name"].unique()) == 1
     assert len(res["level"].unique()) == 2
-    assert res.shape[0] == 40  # (3 metrics per class (4) + 7 overall) * 2
+    assert res.shape[0] == 42  # (3 metrics per class (4) + 8 overall) * 2
 
 
 def test_binary_transform_from_dataframe(binary_df, binary_score_mapping):

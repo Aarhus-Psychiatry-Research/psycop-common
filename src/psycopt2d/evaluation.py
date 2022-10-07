@@ -1,11 +1,11 @@
 """Functions for evaluating a model's prredictions."""
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
-import wandb
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.pipeline import Pipeline
+from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 
 from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
@@ -33,7 +33,7 @@ def evaluate_model(
     y_col_name: str,
     train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
-    run: Optional[wandb.run] = None,
+    run: wandb_run,
 ):
     """Runs the evaluation suite on the model and logs to WandB.
     At present, this includes:
@@ -52,13 +52,12 @@ def evaluate_model(
         y_col_name (str): Label column name
         train_col_names (Iterable[str]): Column names for all predictors
         y_hat_prob_col_name (str): Column name containing pred_proba output
-        run (Optional[wandb.run]): WandB run to log to. Will not log to WandB if
-            set to None
+        run (wandb_run): WandB run to log to.
     """
-    SAVE_DIR = PROJECT_ROOT / ".tmp"
+    SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
     if not SAVE_DIR.exists():
         SAVE_DIR.mkdir()
-    y = eval_dataset[y_col_name]
+    y = eval_dataset[y_col_name]  # pylint: disable=invalid-name
     y_hat_probs = eval_dataset[y_hat_prob_col_name]
     auc = round(roc_auc_score(y, y_hat_probs), 3)
     outcome_timestamps = eval_dataset[cfg.data.outcome_timestamp_col_name]
@@ -92,7 +91,7 @@ def evaluate_model(
             f.write(f"{run.id},{auc}\n")
 
     # Tables
-    ## Performance by threshold
+    # Performance by threshold
     performance_by_threshold_df = generate_performance_by_positive_rate_table(
         labels=y,
         pred_probs=y_hat_probs,
@@ -128,12 +127,12 @@ def evaluate_model(
         )
         # Log as table too for readability
         feature_importances_table = generate_feature_importances_table(
-            column_names=feature_names,
+            feature_names=feature_names,
             feature_importances=pipe["model"].feature_importances_,
         )
         run.log({"feature_importance_table": feature_importances_table})
 
-    ## Sensitivity by time to outcome
+    # Sensitivity by time to outcome
     plots.update(
         {
             "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(

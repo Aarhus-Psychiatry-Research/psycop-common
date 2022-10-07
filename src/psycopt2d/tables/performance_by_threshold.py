@@ -1,4 +1,6 @@
-from typing import Iterable, Optional, Union
+"""Get performance by which threshold is used to classify positive."""
+from collections.abc import Iterable
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -7,8 +9,8 @@ from sklearn.metrics import confusion_matrix
 
 
 def generate_performance_by_positive_rate_table(
-    labels: Iterable[Union[int, float]],
-    pred_probs: Iterable[Union[int, float]],
+    labels: Iterable[int],
+    pred_probs: Iterable[float],
     positive_rate_thresholds: Iterable[Union[int, float]],
     pred_proba_thresholds: Iterable[float],
     ids: Iterable[Union[int, float]],
@@ -20,8 +22,8 @@ def generate_performance_by_positive_rate_table(
     object.
 
     Args:
-        labels (Iterable[int, float]): True labels.
-        pred_probs (Iterable[int, float]): Predicted probabilities.
+        labels (Iterable[int]): True labels.
+        pred_probs (Iterable[float]): Predicted probabilities.
         positive_rate_thresholds (Iterable[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
         pred_proba_thresholds (Iterable[float]): Thresholds above which predictions are classified as positive.
@@ -48,7 +50,9 @@ def generate_performance_by_positive_rate_table(
             positive_threshold=threshold_value,
         )
 
-        threshold_metrics["total_warning_days"] = days_from_first_positive_to_diagnosis(
+        threshold_metrics[  # pylint: disable=unsupported-assignment-operation
+            "total_warning_days"
+        ] = days_from_first_positive_to_diagnosis(
             ids=ids,
             pred_probs=pred_probs,
             pred_timestamps=pred_timestamps,
@@ -57,7 +61,9 @@ def generate_performance_by_positive_rate_table(
             aggregation_method="sum",
         )
 
-        threshold_metrics["mean_warning_days"] = round(
+        threshold_metrics[  # pylint: disable=unsupported-assignment-operation
+            "mean_warning_days"
+        ] = round(
             days_from_first_positive_to_diagnosis(
                 ids=ids,
                 pred_probs=pred_probs,
@@ -87,7 +93,7 @@ def generate_performance_by_positive_rate_table(
         raise ValueError("Output format does not match anything that is allowed")
 
 
-def performance_by_threshold(
+def performance_by_threshold(  # pylint: disable=too-many-locals
     labels: Iterable[int],
     pred_probs: Iterable[float],
     positive_threshold: float,
@@ -107,30 +113,30 @@ def performance_by_threshold(
     """
     preds = np.where(pred_probs > positive_threshold, 1, 0)
 
-    CM = confusion_matrix(labels, preds)
+    conf_matrix = confusion_matrix(labels, preds)
 
-    TN = CM[0][0]
-    FN = CM[1][0]
-    TP = CM[1][1]
-    FP = CM[0][1]
+    true_neg = conf_matrix[0][0]
+    false_neg = conf_matrix[1][0]
+    true_pos = conf_matrix[1][1]
+    false_pos = conf_matrix[0][1]
 
-    n_total = TN + FN + TP + FP
+    n_total = true_neg + false_neg + true_pos + false_pos
 
-    true_prevalence = round((TP + FN) / n_total, round_to)
+    true_prevalence = round((true_pos + false_neg) / n_total, round_to)
 
-    positive_rate = round((TP + FP) / n_total, round_to)
-    negative_rate = round((TN + FN) / n_total, round_to)
+    positive_rate = round((true_pos + false_pos) / n_total, round_to)
+    negative_rate = round((true_neg + false_neg) / n_total, round_to)
 
-    PPV = round(TP / (TP + FP), round_to)
-    NPV = round(TN / (TN + FN), round_to)
+    pos_pred_val = round(true_pos / (true_pos + false_pos), round_to)
+    neg_pred_val = round(true_neg / (true_neg + false_neg), round_to)
 
-    Sensitivity = round(TP / (TP + FN), round_to)
-    Specificity = round(TN / (TN + FP), round_to)
+    sens = round(true_pos / (true_pos + false_neg), round_to)
+    spec = round(true_neg / (true_neg + false_pos), round_to)
 
-    FPR = round(FP / (TN + FP), round_to)
-    FNR = round(FN / (TP + FN), round_to)
+    false_pos_rate = round(false_pos / (true_neg + false_pos), round_to)
+    neg_pos_rate = round(false_neg / (true_pos + false_neg), round_to)
 
-    Accuracy = round((TP + TN) / n_total, round_to)
+    acc = round((true_pos + true_neg) / n_total, round_to)
 
     # Must return lists as values, otherwise pd.Dataframe requires setting indeces
     metrics_matrix = pd.DataFrame(
@@ -138,17 +144,17 @@ def performance_by_threshold(
             "positive_rate": [positive_rate],
             "negative_rate": [negative_rate],
             "true_prevalence": [true_prevalence],
-            "PPV": [PPV],
-            "NPV": [NPV],
-            "sensitivity": [Sensitivity],
-            "specificity": [Specificity],
-            "FPR": [FPR],
-            "FNR": [FNR],
-            "accuracy": [Accuracy],
-            "true_positives": [TP],
-            "true_negatives": [TN],
-            "false_positives": [FP],
-            "false_negatives": [FN],
+            "PPV": [pos_pred_val],
+            "NPV": [neg_pred_val],
+            "sensitivity": [sens],
+            "specificity": [spec],
+            "FPR": [false_pos_rate],
+            "FNR": [neg_pos_rate],
+            "accuracy": [acc],
+            "true_positives": [true_pos],
+            "true_negatives": [true_neg],
+            "false_positives": [false_pos],
+            "false_negatives": [false_neg],
         },
     )
 

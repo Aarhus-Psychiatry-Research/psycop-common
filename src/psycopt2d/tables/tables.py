@@ -1,5 +1,7 @@
+"""Tables for evaluation of models."""
+from collections.abc import Iterable
 from functools import partial
-from typing import Iterable, List, Union
+from typing import Union
 
 import pandas as pd
 import wandb
@@ -10,7 +12,7 @@ def auc_by_group_table(
     df: pd.DataFrame,
     pred_probs_col_name: str,
     outcome_col_name: str,
-    groups: Union[List[str], str],
+    groups: Union[list[str], str],
 ) -> pd.DataFrame:
     """Create table with AUC per group.
 
@@ -19,7 +21,7 @@ def auc_by_group_table(
             and groups to stratify by.
         pred_probs_col_name (str): The column containing the predicted probabilities
         outcome_col_name (str): The column containing the labels
-        groups (Union[List[str], str]): The (categorical) groups to
+        groups (Union[list[str], str]): The (categorical) groups to
             stratify the table by.
 
     Returns:
@@ -68,13 +70,23 @@ def _calc_auc_and_n(
 
 
 def generate_feature_importances_table(
-    column_names: Iterable[str],
+    feature_names: Iterable[str],
     feature_importances: Iterable[str],
     output_format: str = "wandb_table",
-) -> Union[pd.DataFrame, str]:
+) -> Union[pd.DataFrame, wandb.Table]:
+    """Generate table with feature importances.
+
+    Args:
+        feature_names (Iterable[str]): The names of the columns to generate feature_importances for
+        feature_importances (Iterable[str]): The feature importances
+        output_format (str, optional): The output format. Takes one of "html", "df", "wandb_table". Defaults to "wandb_table".
+
+    Returns:
+        Union[pd.DataFrame, wandb.Table]: The table with feature importances
+    """
 
     df = pd.DataFrame(
-        {"predictor": column_names, "feature_importance": feature_importances},
+        {"predictor": feature_names, "feature_importance": feature_importances},
     )
     df = df.sort_values("feature_importance", ascending=False)
 

@@ -1,7 +1,6 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from pathlib import Path
-from typing import List, Tuple
 
 import hydra
 import numpy as np
@@ -17,7 +16,11 @@ from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset
 from psycopt2d.models import MODELS
-from psycopt2d.utils import flatten_nested_dict, prediction_df_with_metadata_to_disk
+from psycopt2d.utils import (
+    create_wandb_folders,
+    flatten_nested_dict,
+    prediction_df_with_metadata_to_disk,
+)
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
@@ -55,6 +58,8 @@ def create_preprocessing_pipeline(cfg):
 
 
 def create_model(cfg):
+    """Instantiate and return a model object based on settings in the config
+    file."""
     model_dict = MODELS.get(cfg.model.model_name)
 
     model_args = model_dict["static_hyperparameters"]
@@ -66,7 +71,7 @@ def create_model(cfg):
     return mdl
 
 
-def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def load_dataset_from_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Load dataset based on settings in the config file."""
 
     allowed_data_sources = {"csv", "synthetic"}
@@ -76,14 +81,14 @@ def load_dataset_from_config(cfg) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
         train = load_dataset(
             split_names="train",
-            dir=path,
+            dir_path=path,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
         )
         val = load_dataset(
             split_names="val",
-            dir=path,
+            dir_path=path,
             n_training_samples=cfg.data.n_training_samples,
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
@@ -115,12 +120,12 @@ def stratified_cross_validation(
     cfg,
     pipe: Pipeline,
     dataset: pd.DataFrame,
-    train_col_names: List[str],
+    train_col_names: list[str],
     outcome_col_name: str,
 ):
     """Performs stratified and grouped cross validation using the pipeline."""
-    X = dataset[train_col_names]
-    y = dataset[outcome_col_name]
+    X = dataset[train_col_names]  # pylint: disable=invalid-name
+    y = dataset[outcome_col_name]  # pylint: disable=invalid-name
 
     # Create folds
     folds = StratifiedGroupKFold(n_splits=cfg.training.n_splits).split(
@@ -132,7 +137,7 @@ def stratified_cross_validation(
     # Perform CV and get out of fold predictions
     dataset["oof_y_hat"] = np.nan
     for train_idxs, val_idxs in folds:
-        X_, y_ = X.loc[train_idxs], y.loc[train_idxs]
+        X_, y_ = X.loc[train_idxs], y.loc[train_idxs]  # pylint: disable=invalid-name
         pipe.fit(X_, y_)
 
         y_hat = pipe.predict_proba(X_)[:, 1]
@@ -146,11 +151,13 @@ def stratified_cross_validation(
 
 
 @hydra.main(
-    config_path=CONFIG_PATH,
+    config_path=str(CONFIG_PATH),
     config_name="default_config",
     version_base="1.2",
 )
 def main(cfg):
+    """Main function for training a single model."""
+    create_wandb_folders()
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
@@ -172,12 +179,12 @@ def main(cfg):
     pipe = Pipeline(steps)
 
     # train
-    ## define columns
-    OUTCOME_COL_NAME = (
+    # define columns
+    OUTCOME_COL_NAME = (  # pylint: disable=invalid-name
         f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
     )
 
-    TRAIN_COL_NAMES = [
+    TRAIN_COL_NAMES = [  # pylint: disable=invalid-name
         c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
     ]
 
@@ -187,9 +194,9 @@ def main(cfg):
         pipe["model"].feature_names = TRAIN_COL_NAMES
 
     if cfg.training.n_splits is None:  # train on pre-defined splits
-        X_train = train[TRAIN_COL_NAMES]
+        X_train = train[TRAIN_COL_NAMES]  # pylint: disable=invalid-name
         y_train = train[OUTCOME_COL_NAME]
-        X_val = val[TRAIN_COL_NAMES]
+        X_val = val[TRAIN_COL_NAMES]  # pylint: disable=invalid-name
 
         pipe.fit(X_train, y_train)
 
@@ -198,7 +205,7 @@ def main(cfg):
 
         print(
             f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
-        )  # TODO log to wandb
+        )  # ? log to wandb
 
         eval_dataset = val
         eval_dataset["y_hat_prob"] = y_val_hat_prob

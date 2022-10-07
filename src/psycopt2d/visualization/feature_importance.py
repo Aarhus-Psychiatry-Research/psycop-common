@@ -1,5 +1,8 @@
+"""Generate feature importances chart."""
+
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Optional, Union
 
 import altair as alt
 import numpy as np

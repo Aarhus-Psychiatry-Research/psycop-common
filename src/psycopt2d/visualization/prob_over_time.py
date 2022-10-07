@@ -1,8 +1,9 @@
 """Code for creating probabilities over time plots."""
 
+from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Optional, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -118,13 +119,13 @@ def plot_prob_over_time(
     # Add shaded area for look-behind window
     if look_behind_distance is not None:
         plt.axvspan(
-            -look_behind_distance,
+            -look_behind_distance,  # pylint: disable=invalid-unary-operand-type
             0,
             color="grey",
             alpha=0.2,
         )
         plt.text(
-            -look_behind_distance / 2,
+            -look_behind_distance / 2,  # pylint: disable=invalid-unary-operand-type
             plot_df["pred_prob"].max(),
             "Predictive window",
             horizontalalignment="center",
@@ -142,13 +143,10 @@ def plot_prob_over_time(
 
 
 if __name__ == "__main__":
-    from pathlib import Path
-
     from psycopt2d.utils import PROJECT_ROOT
 
     path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)
-    df.head()
 
     plot_prob_over_time(
         patient_id=df["dw_ek_borger"],
