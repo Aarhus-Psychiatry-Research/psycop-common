@@ -338,7 +338,7 @@ def plot_sensitivity_by_time_to_outcome(
         plt.show()
     else:
         plt.savefig(save_path)
-    plt.close()
+        plt.close()
     return save_path
 
 
