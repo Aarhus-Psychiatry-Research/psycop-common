@@ -64,5 +64,6 @@ def plot_basic_chart(
 
     if save_path is not None:
         plt.savefig(save_path)
+
     plt.close()
     return save_path

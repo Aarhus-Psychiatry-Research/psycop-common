@@ -1,7 +1,7 @@
 """Functions for evaluating a model's prredictions."""
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -35,6 +35,7 @@ def log_feature_importances(
     pipe: Pipeline,
     train_col_names: Iterable[str],
     run: wandb_run,
+    save_path: Optional[Path] = None,
 ) -> dict[str, Path]:
     """Log feature importances to wandb."""
     # Handle EBM differently as it autogenerates interaction terms
@@ -43,10 +44,11 @@ def log_feature_importances(
     else:
         feature_names = train_col_names
 
-    feature_importances_plot = plot_feature_importances(
+    feature_importance_plot_path = plot_feature_importances(
         column_names=feature_names,
         feature_importances=pipe["model"].feature_importances_,
         top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+        save_path=save_path,
     )
 
     # Log as table too for readability
@@ -57,7 +59,7 @@ def log_feature_importances(
 
     run.log({"feature_importance_table": feature_importances_table})
 
-    return {"feature_importance": feature_importances_plot}
+    return {"feature_importance": feature_importance_plot_path}
 
 
 def log_auc_to_file(cfg: DictConfig, run: wandb_run, auc: Union[float, int]):
@@ -154,16 +156,16 @@ def evaluate_model(
     if hasattr(pipe["model"], "feature_importances_"):
         feature_names = train_col_names
 
-        feature_importances_plot = log_feature_importances(
+        feature_importances_plot_dict = log_feature_importances(
             cfg=cfg,
             pipe=pipe,
             train_col_names=train_col_names,
             run=run,
+            save_path=SAVE_DIR / "feature_importances.png",
         )
 
-        plots.update(
-            {"feature_importance": feature_importances_plot},
-        )
+        plots.update(feature_importances_plot_dict)
+
         # Log as table too for readability
         feature_importances_table = generate_feature_importances_table(
             feature_names=feature_names,
@@ -171,7 +173,7 @@ def evaluate_model(
         )
         run.log({"feature_importance_table": feature_importances_table})
 
-    # Sensitivity by time to outcome
+    # Add plots
     plots.update(
         {
             "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(

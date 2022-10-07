@@ -4,7 +4,7 @@ model:
   require_imputation: true # (bool): Whether the model requires imputation. (shouldn't this be false?)
   args:
     n_estimators: 100
-    tree_method: gpu_hist # set to gpu_hist to enable GPU training (default auto)
+    tree_method: auto # set to gpu_hist to enable GPU training (default auto)
 
 # Parameters that will only take effect if running with --multirun
 hydra:
