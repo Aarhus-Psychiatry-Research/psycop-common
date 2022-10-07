@@ -2,10 +2,13 @@
 
 from collections.abc import Iterable
 from datetime import datetime
+from pathlib import Path
 from typing import Optional, Union
 
-import altair as alt
+import matplotlib
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 
 def plot_prob_over_time(
@@ -19,7 +22,9 @@ def plot_prob_over_time(
     legend: Optional[str] = "Highest Predictive Probability",
     look_behind_distance: Optional[int] = None,
     line_opacity: Optional[float] = 0.3,
-) -> alt.Chart:
+    fig_size: Optional[tuple] = (10, 10),
+    save_path: Optional[Path] = None,
+) -> Union[None, Path]:
     """Plot probabilities over time for a given outcome. Each element passed
     (e.g. timestamp, pred_prob etc.) must have the same length, and for each
     iterable, the i'th item must correspond to the same patient.
@@ -41,17 +46,17 @@ def plot_prob_over_time(
             shading the corresponding area. Defaults to None in which case no shaded
             areas is plotted.
         line_opacity (float, optional): Opacity of the line. Defaults to 0.3.
+        fig_size (Optional[tuple], optional): figure size. Defaults to None.
+        save_path (Optional[Path], optional): path to save figure. Defaults to None.
 
     Returns:
-        alt.Chart: An altair chart object.
+        Union[None, Path]: None if save_path is None, else path to saved figure
 
     Examples:
         >>> from pathlib import Path
         >>> repo_path = Path(__file__).parent.parent.parent.parent
         >>> path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
         >>> df = pd.read_csv(path)
-        >>> alt.data_transformers.disable_max_rows()
-
         >>> plot_prob_over_time(
         >>>     patient_id=df["dw_ek_borger"],
         >>>     timestamp=df["timestamp"],
@@ -86,53 +91,60 @@ def plot_prob_over_time(
     max_pred_prob = plot_df.groupby(["patient_id"])["pred_prob"].max()
     plot_df["color"] = [max_pred_prob[id_] for id_ in plot_df["patient_id"]]
 
-    chart = (
-        alt.Chart(plot_df)
-        .mark_line(opacity=line_opacity)
-        .encode(
-            x=alt.X("delta_time", axis=alt.Axis(title=x_axis)),
-            y=alt.Y("pred_prob", axis=alt.Axis(format="%", title=y_axis)),
-            color=alt.Color(
-                "color",
-                legend=alt.Legend(title=legend),
-                scale=alt.Scale(scheme="plasma"),
-            ),
-            detail="patient_id",
-        )
+    plt.figure(figsize=fig_size)
+
+    sns.lineplot(
+        data=plot_df,
+        x="delta_time",
+        y="pred_prob",
+        alpha=line_opacity,
+        hue="color",
+        palette="magma",
+        legend="auto",
     )
 
-    if look_behind_distance:
-        areas_cutoffs = pd.DataFrame(
-            {
-                "start": [0 - look_behind_distance],
-                "stop": [0],
-                "Predictive Window": "Positive",
-            },
-        ).reset_index()
+    # Reformat y-axis values to percentage
+    plt.gca().yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=1))
 
-        areas = (
-            alt.Chart(areas_cutoffs)
-            .mark_rect(opacity=0.2)
-            .encode(
-                x="start",
-                x2="stop",
-                y=alt.value(0),  # pixels from top
-                y2=alt.value(300),  # pixels from top
-                color="Predictive Window",
-            )
+    plt.xlabel(x_axis, size=14)
+    plt.ylabel(y_axis, size=14)
+
+    plt.grid(color="grey", linestyle="--", linewidth=0.5, alpha=0.5)
+    plt.gca().set_facecolor("#f2f2f2")
+
+    plt.legend(title=legend, loc="lower right", fontsize=12)
+
+    # Add shaded area for look-behind window
+    if look_behind_distance is not None:
+        plt.axvspan(
+            -look_behind_distance,  # pylint: disable=invalid-unary-operand-type
+            0,
+            color="grey",
+            alpha=0.2,
         )
-        chart = areas + chart
-    return chart
+        plt.text(
+            -look_behind_distance / 2,  # pylint: disable=invalid-unary-operand-type
+            plot_df["pred_prob"].max(),
+            "Predictive window",
+            horizontalalignment="center",
+            verticalalignment="center",
+            rotation=0,
+            size=12,
+        )
+
+    if save_path is None:
+        plt.show()
+    else:
+        plt.savefig(save_path)
+        plt.close()
+    return save_path
 
 
 if __name__ == "__main__":
-    from pathlib import Path
+    from psycopt2d.utils import PROJECT_ROOT
 
-    repo_path = Path(__file__).parent.parent.parent.parent
-    path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
+    path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)
-    df.head()
-    alt.data_transformers.disable_max_rows()
 
     plot_prob_over_time(
         patient_id=df["dw_ek_borger"],

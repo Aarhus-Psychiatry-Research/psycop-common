@@ -4,16 +4,16 @@
 3. AUC by time until diagnosis
 """
 from collections.abc import Callable, Iterable
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
-import altair as alt
 import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score
 from wasabi import msg
 
 from psycopt2d.utils import bin_continuous_data, round_floats_to_edge
-from psycopt2d.visualization.base_charts import plot_bar_chart
+from psycopt2d.visualization.base_charts import plot_basic_chart
 
 
 def _calc_performance(df: pd.DataFrame, metric: Callable) -> float:
@@ -68,7 +68,8 @@ def plot_performance_by_calendar_time(
     metric_fn: Callable,
     bin_period: str,
     y_title: str,
-) -> alt.Chart:
+    save_path: Optional[str] = None,
+) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
 
     Args:
@@ -78,9 +79,10 @@ def plot_performance_by_calendar_time(
         metric_fn (Callable): Function which returns the metric.
         bin_period (str): Which time period to bin on. Takes "M" or "Y".
         y_title (str): Title of y-axis.
+        save_path (str, optional): Path to save figure. Defaults to None.
 
     Returns:
-        alt.Chart: Bar chart of performance
+        Union[None, Path]: Path to saved figure or None if not saved.
     """
     df = create_performance_by_calendar_time_df(
         labels=labels,
@@ -90,12 +92,14 @@ def plot_performance_by_calendar_time(
         bin_period=bin_period,
     )
     sort_order = np.arange(len(df))
-    return plot_bar_chart(
+    return plot_basic_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
         x_title="Calendar time",
         y_title=y_title,
         sort_x=sort_order,
+        plot_type="line",
+        save_path=save_path,
     )
 
 
@@ -175,7 +179,8 @@ def plot_auc_by_time_from_first_visit(
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: tuple = (0, 28, 182, 365, 730, 1825),
     pretty_bins: Optional[bool] = True,
-) -> alt.Chart:
+    save_path: Optional[Path] = None,
+) -> Union[None, Path]:
     """Plot AUC as a function of time to first visit.
 
     Args:
@@ -186,9 +191,10 @@ def plot_auc_by_time_from_first_visit(
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
         pretty_bins (bool, optional): Prettify bin names. I.e. make
         bins look like "1-7" instead of "[1-7)" Defaults to True.
+        save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
-        alt.Chart: Altair bar chart
+        Union[None, Path]: Path to saved figure or None if not saved.
     """
 
     df = create_performance_by_time_from_event_df(
@@ -204,12 +210,14 @@ def plot_auc_by_time_from_first_visit(
     )
 
     sort_order = np.arange(len(df))
-    return plot_bar_chart(
+    return plot_basic_chart(
         x_values=df["days_from_event_binned"],
         y_values=df["metric"],
         x_title="Days from first visit",
         y_title="AUC",
         sort_x=sort_order,
+        plot_type=["line", "scatter"],
+        save_path=save_path,
     )
 
 
@@ -235,7 +243,8 @@ def plot_metric_by_time_until_diagnosis(
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
-) -> alt.Chart:
+    save_path: Optional[Path] = None,
+) -> Union[None, Path]:
     """Plots performance of a specified performance metric in bins of time
     until diagnosis. Rows with no date of diagnosis (i.e. no outcome) are
     removed.
@@ -250,9 +259,10 @@ def plot_metric_by_time_until_diagnosis(
         pretty_bins (bool, optional): Whether to prettify bin names. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
+        save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
-        alt.Chart: Altair bar chart
+        Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
     df = create_performance_by_time_from_event_df(
         labels=labels,
@@ -267,10 +277,12 @@ def plot_metric_by_time_until_diagnosis(
     )
     sort_order = np.arange(len(df))
 
-    return plot_bar_chart(
+    return plot_basic_chart(
         x_values=df["days_from_event_binned"],
         y_values=df["metric"],
         x_title="Days to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
+        plot_type=["line", "scatter"],
+        save_path=save_path,
     )
