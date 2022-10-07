@@ -14,6 +14,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from wasabi import Printer
 
 from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
@@ -92,6 +93,7 @@ def load_dataset_from_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
             drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
             min_lookahead_days=cfg.data.min_lookahead_days,
         )
+
     elif cfg.data.source.lower() == "synthetic":
         repo_dir = Path(__file__).parent.parent.parent
         dataset = pd.read_csv(
@@ -124,10 +126,13 @@ def stratified_cross_validation(
     n_splits: int,
 ):
     """Performs stratified and grouped cross validation using the pipeline."""
+    msg = Printer(timestamp=True)
+
     X = train_df[train_col_names]  # pylint: disable=invalid-name
     y = train_df[outcome_col_name]  # pylint: disable=invalid-name
 
     # Create folds
+    msg.info("Creating folds")
     folds = StratifiedGroupKFold(n_splits=n_splits).split(
         X=X,
         y=y,
@@ -136,7 +141,12 @@ def stratified_cross_validation(
 
     # Perform CV and get out of fold predictions
     train_df["oof_y_hat"] = np.nan
-    for train_idxs, val_idxs in folds:
+
+    for i, (train_idxs, val_idxs) in enumerate(folds):
+        msg_prefix = f"Fold {i + 1}"
+
+        msg.info(f"{msg_prefix}: Training fold")
+
         X_train, y_train = (  # pylint: disable=invalid-name
             X.loc[train_idxs],
             y.loc[train_idxs],
@@ -145,9 +155,9 @@ def stratified_cross_validation(
 
         y_pred = pipe.predict_proba(X_train)[:, 1]
 
-        print(f"Within-fold performance: {round(roc_auc_score(y_train,y_pred), 3)}")
+        msg.info(f"{msg_prefix}: AUC = {round(roc_auc_score(y_train,y_pred), 3)}")
 
-        train_df["oof_y_hat_prob"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[
+        train_df.loc[val_idxs, "oof_y_hat"] = pipe.predict_proba(X.loc[val_idxs])[
             :,
             1,
         ]
@@ -178,7 +188,11 @@ def train_and_eval_on_crossvalidation(
     Returns:
         Evaluation dataset
     """
+    msg = Printer(timestamp=True)
+
+    msg.info("Concatenating train and val for crossvalidation")
     train_val = pd.concat([train, val], ignore_index=True)
+
     eval_dataset = stratified_cross_validation(
         cfg=cfg,
         pipe=pipe,
@@ -187,6 +201,7 @@ def train_and_eval_on_crossvalidation(
         outcome_col_name=outcome_col_name,
         n_splits=n_splits,
     )
+
     eval_dataset.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
     return eval_dataset
 
@@ -330,6 +345,8 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
 )
 def main(cfg):
     """Main function for training a single model."""
+    msg = Printer(timestamp=True)
+
     create_wandb_folders()
 
     run = wandb.init(
@@ -341,10 +358,12 @@ def main(cfg):
 
     train, val = load_dataset_from_config(cfg)
 
+    msg.info("Creating pipeline")
     pipe = create_pipeline(cfg)
 
     outcome_col_name, train_col_names = get_col_names(cfg, train)
 
+    msg.info("Training model")
     eval_df = train_and_get_model_eval_df(
         cfg=cfg,
         train=train,
@@ -355,6 +374,7 @@ def main(cfg):
         n_splits=cfg.training.n_splits,
     )
 
+    msg.info("Evaluating model")
     # Evaluate: Calculate performance metrics and log to wandb
     evaluate_model(
         cfg=cfg,
@@ -368,10 +388,14 @@ def main(cfg):
 
     run.finish()
 
-    return roc_auc_score(
+    roc_auc = roc_auc_score(
         eval_df[outcome_col_name],
         eval_df["y_hat_prob"],
     )
+
+    msg.info(f"ROC AUC: {roc_auc}")
+
+    return roc_auc
 
 
 if __name__ == "__main__":
