@@ -137,7 +137,7 @@ def stratified_cross_validation(
     # Perform CV and get out of fold predictions
     train_df["oof_y_hat"] = np.nan
     for train_idxs, val_idxs in folds:
-        X_train, y_train = (
+        X_train, y_train = (  # pylint: disable=invalid-name
             X.loc[train_idxs],
             y.loc[train_idxs],
         )  # pylint: disable=invalid-name
@@ -187,7 +187,7 @@ def train_and_eval_on_crossvalidation(
         outcome_col_name=outcome_col_name,
         n_splits=n_splits,
     )
-    eval_dataset.rename(columns={"oof_y_hat_prob": "y_hat_prob"}, inplace=True)
+    eval_dataset.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
     return eval_dataset
 
 

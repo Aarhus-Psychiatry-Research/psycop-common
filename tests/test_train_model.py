@@ -21,3 +21,13 @@ def test_main(model_name):
             overrides=[f"+model={model_name}"],
         )
         main(cfg)
+
+
+def test_crossvalidation():
+    """Test crossvalidation."""
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name="integration_testing.yaml",
+            overrides=["+model=logistic-regression", "+data.n_splits=2"],
+        )
+        main(cfg)
