@@ -142,7 +142,8 @@ def stratified_cross_validation(
 
         y_hat = pipe.predict_proba(X_)[:, 1]
         print(f"Within-fold performance: {round(roc_auc_score(y_,y_hat), 3)}")
-        dataset["oof_y_hat_prob"].loc[val_idxs] = pipe.predict_proba(X.loc[val_idxs])[
+
+        dataset.loc[val_idxs, "oof_y_hat"] = pipe.predict_proba(X.loc[val_idxs])[
             :,
             1,
         ]
@@ -182,7 +183,7 @@ def train_and_eval_on_crossvalidation(
         outcome_col_name=outcome_col_name,
         n_splits=n_splits,
     )
-    eval_dataset.rename(columns={"oof_y_hat_prob": "y_hat_prob"}, inplace=True)
+    eval_dataset.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
     return eval_dataset
 
 
