@@ -123,29 +123,30 @@ def plot_prob_over_time(
             color="grey",
             alpha=0.2,
         )
-
-    plt.text(
-        -look_behind_distance / 2,
-        plot_df["pred_prob"].max(),
-        "Predictive window",
-        horizontalalignment="center",
-        verticalalignment="center",
-        rotation=0,
-        size=12,
-    )
+        plt.text(
+            -look_behind_distance / 2,
+            plot_df["pred_prob"].max(),
+            "Predictive window",
+            horizontalalignment="center",
+            verticalalignment="center",
+            rotation=0,
+            size=12,
+        )
 
     if save_path is None:
         plt.show()
     else:
         plt.savefig(save_path)
-        return save_path
+        plt.close()
+    return save_path
 
 
 if __name__ == "__main__":
     from pathlib import Path
 
-    repo_path = Path(__file__).parent.parent.parent.parent
-    path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
+    from psycopt2d.utils import PROJECT_ROOT
+
+    path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)
     df.head()
 
