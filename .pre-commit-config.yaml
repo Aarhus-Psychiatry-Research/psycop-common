@@ -1,4 +1,5 @@
 default_stages: [push]
+default_install_hook_types: [pre-push, pre-commit]
 
 repos:
   - repo: https://github.com/pycqa/isort
@@ -6,35 +7,43 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-        args: ["--profile", "black", "--filter-files", "--skip __init__.py"]
+        args: [".", "--profile", "black"]
+        always_run: true
 
   - repo: https://github.com/asottile/add-trailing-comma
     rev: v2.2.3
     hooks:
       - id: add-trailing-comma
+        args: [--py36-plus]
+        always_run: true
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.0.0 
     hooks:
       - id: pyupgrade
         args: ["--py39-plus"]
+        always_run: true
 
   - repo: https://github.com/myint/docformatter
     rev: v1.5.0
     hooks:
       - id: docformatter
-        args: [--in-place]
+        args: [., --in-place, --recursive]
+        always_run: true
 
   - repo: https://github.com/psf/black
     rev: 22.6.0
     hooks:
       - id: black
+        args: [src, tests]
+        always_run: true
 
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
       - id: flake8
-        args: [--config, .flake8]
+        args: [src, tests, --config, .flake8]
+        always_run: true
         
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0 # Use the ref you want to point at
@@ -45,7 +54,24 @@ repos:
         entry: check-yaml
         language: python
         types: [yaml]
+        always_run: true
 
+  - repo: https://github.com/pycqa/pylint
+    rev: v2.15.2
+    hooks:
+      - id: pylint
+        args:
+          [
+            "src",
+            "tests",
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+            "--disable=R,import-error" # Refactors are not important enough to block a commit. 
+            # Unused-imports aren't testable by the github action, so don't test that here.
+          ]
+        stages: [commit, push]
+        always_run: true
+        
   - repo: local
     hooks:
     -   id: pytest
@@ -55,16 +81,3 @@ repos:
         types: [python]
         stages: [push]
         always_run: true
-
-  - repo: https://github.com/pycqa/pylint
-    rev: v2.15.2
-    hooks:
-      - id: pylint
-        args:
-          [
-            "-rn", # Only display messages
-            "-sn", # Don't display the score
-            "--disable=R,import-error" # Refactors are not important enough to block a commit. 
-            # Unused-imports aren't testable by the github action, so don't test that here.
-          ]
-        stages: [commit, push]
