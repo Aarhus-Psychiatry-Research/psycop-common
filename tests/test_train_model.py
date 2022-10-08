@@ -31,4 +31,7 @@ def test_integration_test():
             config_name="integration_testing.yaml",
             overrides=["+model=logistic-regression"],
         )
+
+        assert 2 == 1
+
         main(cfg)

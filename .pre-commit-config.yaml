@@ -54,13 +54,12 @@ repos:
         language: script
         types: [python]
         stages: [push]
+        always_run: true
 
   - repo: https://github.com/pycqa/pylint
     rev: v2.15.2
-    stages: [commit, push]
     hooks:
       - id: pylint
-        types: [python]
         args:
           [
             "-rn", # Only display messages
@@ -68,3 +67,4 @@ repos:
             "--disable=R,import-error" # Refactors are not important enough to block a commit. 
             # Unused-imports aren't testable by the github action, so don't test that here.
           ]
+        stages: [commit, push]
