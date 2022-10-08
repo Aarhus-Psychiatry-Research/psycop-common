@@ -176,6 +176,7 @@ def load_real_data(cfg):
         drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
         min_lookahead_days=cfg.data.min_lookahead_days,
         min_lookbehind_days=cfg.data.min_lookbehind_days,
+        min_prediction_time_date=cfg.data.min_prediction_time_date,
     )
 
     val = load_dataset_from_dir(
@@ -185,6 +186,7 @@ def load_real_data(cfg):
         drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
         min_lookahead_days=cfg.data.min_lookahead_days,
         min_lookbehind_days=cfg.data.min_lookbehind_days,
+        min_prediction_time_date=cfg.data.min_prediction_time_date,
     )
 
     return train, val
@@ -303,7 +305,7 @@ def train_and_eval_on_val_split(
     val: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
-    train_col_names: Iterable[str],
+    train_col_names: list[str],
 ) -> pd.DataFrame:
     """Train model on pre-defined train and validation split and return
     evaluation dataset.

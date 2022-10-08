@@ -20,8 +20,8 @@ def load_dataset_file(  # pylint: disable=inconsistent-return-statements
     nrows: Optional[int],
     file_suffix: str = "parquet",
 ) -> pd.DataFrame:
-    """Load dataset from directory. Finds any .csv with the split name in its
-    filename.
+    """Load dataset from directory. Finds any file with the matching file
+    suffix with the split name in its filename.
 
     Args:
         split_name (str): Name of split, allowed are ["train", "test", "val"]
@@ -52,7 +52,7 @@ def load_dataset_file(  # pylint: disable=inconsistent-return-statements
         return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
 
 
-def drop_if_datasets_ends_within_days(
+def drop_rows_if_datasets_ends_within_days(
     pred_datetime_column: str,
     n_days: Union[float, int, timedelta],
     dataset: pd.DataFrame,
@@ -111,7 +111,8 @@ def drop_patients_with_event_in_washin(
 
 
 def process_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
-    """Process timestamp dtype and NaT values."""
+    """Convert columns with `timestamp`in their name to datetime, and convert
+    0's to NaT."""
     timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
 
     for colname in timestamp_colnames:
@@ -153,7 +154,13 @@ def process_dataset(
     min_lookbehind_days: Union[int, float],
     min_prediction_time_date: datetime,
 ) -> pd.DataFrame:
-    """Process dataset.
+    """Process dataset, namely:
+
+    - Drop patients with outcome before drop_patient_if_outcome_before_date
+    - Process timestamp columns
+    - Drop visits where mmin_lookahead, min_lookbehind or min_prediction_time_date are not met
+
+    And return the dataset.
 
     Args:
         dataset (pd.DataFrame): Dataset to process.
@@ -190,7 +197,7 @@ def process_dataset(
     for direction in ("ahead", "behind"):
         n_days = min_lookahead_days if direction == "ahead" else min_lookbehind_days
 
-        dataset = drop_if_datasets_ends_within_days(
+        dataset = drop_rows_if_datasets_ends_within_days(
             dataset=dataset,
             pred_datetime_column=pred_datetime_column,
             n_days=n_days,
@@ -211,7 +218,8 @@ def load_dataset_from_dir(
     pred_datetime_column: str = "timestamp",
     n_training_samples: Union[None, int] = None,
 ) -> pd.DataFrame:
-    """Load dataset for t2d.
+    """Load dataset for t2d. Can load multiple splits at once, e.g. concatenate
+    train and val for crossvalidation.
 
     Args:
         split_names (Union[Iterable[str], str]): Names of splits, includes "train", "val",
