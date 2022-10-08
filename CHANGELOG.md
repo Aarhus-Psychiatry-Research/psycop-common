@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2022-10-08)
+### Feature
+* Add t2d_parquet data source ([`beae0d4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/beae0d4476d0b706f2a0465a48a2cc2da137b514))
+
+### Fix
+* Improvements from review ([`f65bdfa`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f65bdfa2aa3f7729ed29ddf4ba843ba5cf6370ee))
+* Type mismatch causing failing test ([`3f494a7`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3f494a722c2eb61f3598c97dbe9a30c3e4305a87))
+* Failing tests ([`a4c625b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a4c625ba7536769e6f85dab804c19d6cfed18f99))
+* Minor linitng ([`42a6399`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/42a6399cd2e22320ba6913c5bbbf59e313b0aa20))
+* Refactor and add min_date to data ([`c6e5052`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c6e5052667e803fc06e2f3892c3d5cdf960a2c6c))
+* Invalid key in crossvalidation ([`ba490e1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ba490e17a63ef2cdb162792980d11b091366b87c))
+
 ## v0.3.4 (2022-10-07)
 ### Fix
 * Remove calls to altair ([`37f95ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/37f95ca3db7a42d422623a597e436dc4603e1a68))
