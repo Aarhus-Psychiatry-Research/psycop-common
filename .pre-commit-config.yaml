@@ -62,8 +62,9 @@ repos:
   - repo: local
     hooks:
     -   id: pytest
-        types: [python, yaml, csv]
         name: Run integration tests before push
         entry: .venv/bin/pytest -m integration_test
         language: script
         stages: [push]
+        pass_filenames: false
+        always_run: true
