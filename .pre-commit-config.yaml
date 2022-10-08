@@ -1,6 +1,12 @@
 default_stages: [commit, push]
 
 repos:
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v1.7.0
+    hooks:
+      - id: autoflake
+        args: ['--in-place', '--remove-all-unused-imports', "--ignore-init-module-imports"]
+
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
@@ -18,6 +24,11 @@ repos:
     hooks:
       - id: pyupgrade
         args: ["--py39-plus"]
+
+  - repo: https://github.com/bwhmather/ssort
+    rev: v0.11.6
+    hooks:
+    - id: ssort
 
   - repo: https://github.com/myint/docformatter
     rev: v1.5.0

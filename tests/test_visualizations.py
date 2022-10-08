@@ -37,7 +37,7 @@ def df():
     return df
 
 
-def test_prob_over_time(df):
+def test_prob_over_time(df, tmp_path):
     plot_prob_over_time(
         patient_id=df["dw_ek_borger"],
         timestamp=df["timestamp"],
@@ -45,6 +45,7 @@ def test_prob_over_time(df):
         outcome_timestamp=df["timestamp_t2d_diag"],
         label=df["label"],
         look_behind_distance=500,
+        save_path=tmp_path,
     )
 
 
@@ -106,7 +107,7 @@ def test_plot_auc_time_from_first_visit(df):
     )
 
 
-def test_plot_sens_by_time_to_outcome(df):
+def test_plot_sens_by_time_to_outcome(df, tmp_path):
     positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
@@ -121,6 +122,7 @@ def test_plot_sens_by_time_to_outcome(df):
         prediction_timestamps=df["timestamp"],
         pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
+        save_path=tmp_path,
     )
 
 
