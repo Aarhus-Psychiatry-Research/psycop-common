@@ -21,3 +21,14 @@ def test_main(model_name):
             overrides=[f"+model={model_name}"],
         )
         main(cfg)
+
+
+@pytest.mark.integration_test
+def test_integration_test():
+    """test main using a variety of model."""
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name="integration_testing.yaml",
+            overrides=["+model=logistic-regression"],
+        )
+        main(cfg)

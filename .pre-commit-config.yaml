@@ -45,10 +45,19 @@ repos:
         entry: check-yaml
         language: python
         types: [yaml]
-        
+
+  - repo: local
+    hooks:
+    -   id: pytest
+        name: Run integration tests before push
+        entry: .venv/bin/pytest -m integration_test
+        language: script
+        types: [python]
+        stages: [push]
+
   - repo: https://github.com/pycqa/pylint
     rev: v2.15.2
-    stages: [commit]
+    stages: [commit, push]
     hooks:
       - id: pylint
         types: [python]
