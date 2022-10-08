@@ -1,5 +1,5 @@
-default_stages: [push]
-default_install_hook_types: [pre-push, pre-commit]
+default_stages: [push, manual]
+default_install_hook_types: [pre-push, pre-commit] # Using the "manual" stage for github actions
 
 repos:
   - repo: https://github.com/pycqa/isort
@@ -59,16 +59,14 @@ repos:
             "-rn", # Only display messages
             "-sn", # Don't display the score
             "--disable=R,import-error" # Refactors are not important enough to block a commit. 
-            # Unused-imports aren't testable by the github action, so don't test that here.
+            # Unused-imports aren't testable by the github action without installing the whole project, so don't test that here.
           ]
-        stages: [commit, push]
         
   - repo: local
     hooks:
     -   id: pytest
-        types: [python, yml, parquet, csv]
+        types: [python, yaml, csv]
         name: Run integration tests before push
         entry: .venv/bin/pytest -m integration_test
         language: script
-        types: [python]
         stages: [push]
