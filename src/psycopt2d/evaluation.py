@@ -1,4 +1,4 @@
-"""Functions for evaluating a model's prredictions."""
+"""Functions for evaluating a model's predictions."""
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Optional, Union
@@ -33,7 +33,7 @@ from psycopt2d.visualization.utils import log_image_to_wandb
 def log_feature_importances(
     cfg: DictConfig,
     pipe: Pipeline,
-    train_col_names: Iterable[str],
+    feature_names: Iterable[str],
     run: wandb_run,
     save_path: Optional[Path] = None,
 ) -> dict[str, Path]:
@@ -41,8 +41,6 @@ def log_feature_importances(
     # Handle EBM differently as it autogenerates interaction terms
     if cfg.model.model_name == "ebm":
         feature_names = pipe["model"].feature_names
-    else:
-        feature_names = train_col_names
 
     feature_importance_plot_path = plot_feature_importances(
         column_names=feature_names,
@@ -159,7 +157,7 @@ def evaluate_model(
         feature_importances_plot_dict = log_feature_importances(
             cfg=cfg,
             pipe=pipe,
-            train_col_names=train_col_names,
+            feature_names=train_col_names,
             run=run,
             save_path=SAVE_DIR / "feature_importances.png",
         )
