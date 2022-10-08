@@ -51,6 +51,7 @@ repos:
     rev: v2.15.2
     hooks:
       - id: pylint
+        types: [python]
         args:
           [
             "src",
@@ -65,9 +66,9 @@ repos:
   - repo: local
     hooks:
     -   id: pytest
+        types: [python, yml, parquet, csv]
         name: Run integration tests before push
         entry: .venv/bin/pytest -m integration_test
         language: script
         types: [python]
         stages: [push]
-        always_run: true
