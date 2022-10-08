@@ -32,4 +32,6 @@ def test_integration_test():
             overrides=["+model=logistic-regression"],
         )
 
+        assert 2 == 3
+
         main(cfg)
