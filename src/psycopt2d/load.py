@@ -42,7 +42,6 @@ def load_dataset_file(  # pylint: disable=inconsistent-return-statements
     if split_name not in ("train", "test", "val"):
         raise ValueError(f"Split name {split_name} not supported.")
 
-    # Use glob to find the file
     path = list(dir_path.glob(f"*{split_name}*.{file_suffix}"))[0]
 
     if "parquet" in file_suffix:
@@ -61,7 +60,7 @@ def drop_rows_if_datasets_ends_within_days(
     dataset: pd.DataFrame,
     direction: str,
 ) -> pd.DataFrame:
-    """Drop visits where the dataset ends within a certain amount of days.
+    """Drop visits that lie within certain amount of days from end of dataset.
 
     Args:
         pred_datetime_column (str): Name of the column containing the prediction
@@ -226,7 +225,7 @@ def load_dataset_from_dir(
 
     Args:
         split_names (Union[Iterable[str], str]): Names of splits, includes "train", "val",
-            "test".
+            "test". Can take multiple splits and concatenate them for crossvalidation.
         dir_path (Path): Directory of the dataset.
         drop_patient_if_outcome_before_date (Union[datetime, str]): Remove patients which
             experienced an outcome prior to the date. Also removes all visits prior to

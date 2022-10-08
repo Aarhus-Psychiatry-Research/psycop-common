@@ -307,7 +307,6 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
             date_repr,
         )
 
-    # Convert drop_patient_if_outcome_before_date from a date to a datetime at midnight
     if isinstance(date_repr, date):
         date_repr = datetime.combine(
             date_repr,
