@@ -71,6 +71,11 @@ good-names = "df,p,f,d,e,n,k,i,v,y_,X,y"
 disable = "too-many-lines,line-too-long,missing-raises-doc,no-self-argument,unused-wildcard-import,wildcard-import,no-else-return,too-many-arguments,redefined-outer-name,c-extension-no-member,wrong-import-order,import-outside-toplevel"
 extension-pkg-allow-list = "wandb"
 
+[tool.pytest.ini_options]
+markers = [
+    "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds.",
+]
+
 [tool.isort]
 known_third_party = ["wandb"]
 
