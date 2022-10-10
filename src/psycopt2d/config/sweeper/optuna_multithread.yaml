@@ -3,12 +3,11 @@ defaults:
   - override /hydra/sweeper: optuna
   - override /hydra/sweeper/sampler: tpe
   - override /hydra/launcher: joblib
-  - override /project/wandb_mode: dryrun
 
 hydra:
   sweeper:
     sampler:
       seed: 123
-    n_trials: 4
+    n_trials: 1000
     n_jobs: 4
     direction: maximize
