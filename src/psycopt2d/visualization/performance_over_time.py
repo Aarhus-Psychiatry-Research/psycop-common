@@ -283,6 +283,6 @@ def plot_metric_by_time_until_diagnosis(
         x_title="Days to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
-        plot_type=["line", "scatter"],
+        plot_type=["scatter"],
         save_path=save_path,
     )
