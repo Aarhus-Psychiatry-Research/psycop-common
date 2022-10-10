@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2022-10-10)
+### Fix
+* Rename integration tests ([`0e30f40`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0e30f4007960bf17f762265c6e167daae2869e08))
+* Remove dummy assert ([`5603007`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/5603007e0e5d2089dceb4c4bdb0b020f068aa4dd))
+* Run on all files on push and autoinstall push ([`a446418`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a446418f2578efe10cdf1429d671990ad7c6cf88))
+
 ## v0.4.0 (2022-10-08)
 ### Feature
 * Add t2d_parquet data source ([`beae0d4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/beae0d4476d0b706f2a0465a48a2cc2da137b514))
