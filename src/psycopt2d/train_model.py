@@ -1,6 +1,7 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from collections.abc import Iterable
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -303,11 +304,15 @@ def main(cfg):
 
     create_wandb_folders()
 
+    # Get today's date as str
+    today_str = datetime.today().strftime("%Y-%m-%d")
+
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
         config=flatten_nested_dict(cfg, sep="."),
         mode=cfg.project.wandb_mode,
+        group=today_str,
     )
 
     train, val = load_dataset_with_config(cfg)
