@@ -1,5 +1,4 @@
 """Test that the model trains correctly."""
-import platform
 
 import pytest
 from hydra import compose, initialize
@@ -11,10 +10,6 @@ from psycopt2d.train_model import main
 @pytest.mark.parametrize("model_name", MODELS.keys())
 def test_main(model_name):
     """test main using a variety of model."""
-    if model_name == "ebm" and platform.processor() == "arm":
-        print("Skipping EBM test on arm")
-        return
-
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name="integration_testing.yaml",
@@ -31,5 +26,26 @@ def test_integration_test():
             config_name="integration_testing.yaml",
             overrides=["+model=logistic-regression"],
         )
+        main(cfg)
 
+def test_crossvalidation():
+    """Test crossvalidation."""
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name="integration_testing.yaml",
+            overrides=["+model=logistic-regression", "+data.n_splits=2"],
+        )
+        main(cfg)
+
+
+def test_min_prediction_time_date():
+    """Test crossvalidation."""
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name="integration_testing.yaml",
+            overrides=[
+                "+model=logistic-regression",
+                "+data.min_prediction_time_date=1972-01-01",
+            ],
+        )
         main(cfg)
