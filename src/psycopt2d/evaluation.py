@@ -211,7 +211,7 @@ def evaluate_model(
     )
 
     # Save results to disk
-    prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg)
+    prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, run=run)
 
     # Log all the figures to wandb
     for chart_name, chart_path in plots.items():
