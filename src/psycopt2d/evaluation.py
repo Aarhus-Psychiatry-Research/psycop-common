@@ -186,7 +186,7 @@ def evaluate_model(
                 labels=y,
                 y_hat=y_hat_probs,
                 timestamps=pred_timestamps,
-                bin_period="M",
+                bin_period="Y",
                 metric_fn=roc_auc_score,
                 y_title="AUC",
                 save_path=SAVE_DIR / "auc_by_calendar_time.png",
