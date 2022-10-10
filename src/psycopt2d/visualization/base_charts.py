@@ -54,6 +54,7 @@ def plot_basic_chart(
         plt.bar(df["x"], df["y"])
     if "hbar" in plot_type:
         plt.barh(df["x"], df["y"])
+        plt.yticks(fontsize=7)
     if "line" in plot_type:
         plt.plot(df["x"], df["y"])
     if "scatter" in plot_type:
@@ -61,9 +62,8 @@ def plot_basic_chart(
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)
-
     if save_path is not None:
         plt.savefig(save_path)
-
     plt.close()
+
     return save_path

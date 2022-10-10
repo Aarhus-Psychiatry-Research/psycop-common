@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable
 from pathlib import Path
+from textwrap import wrap
 from typing import Optional, Union
 
 import numpy as np
@@ -39,13 +40,16 @@ def plot_feature_importances(
 
     feature_names = np.array(column_names)[sorted_idx][:top_n_feature_importances]
     feature_importances = feature_importances[sorted_idx][:top_n_feature_importances]
+    # wrap labels to fit in plot
+    feature_names = ["\n".join(wrap(name, 20)) for name in feature_names]
 
     return plot_basic_chart(
         x_values=feature_names,
         y_values=feature_importances,
         x_title="Feature importance (gain)",
         y_title="Feature name",
-        sort_x=np.arange(len(feature_importances)),
+        sort_x=np.flip(np.arange(len(feature_importances))),
         plot_type="hbar",
+        fig_size=(16, 10),
         save_path=save_path,
     )
