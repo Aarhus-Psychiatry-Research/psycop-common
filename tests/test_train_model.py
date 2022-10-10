@@ -20,7 +20,10 @@ def test_main(model_name):
 
 @pytest.mark.pre_push_test
 def test_integration_test():
-    """test main using the logistic model. Used for quickly testing functions before a push."""
+    """test main using the logistic model.
+
+    Used for quickly testing functions before a push.
+    """
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name="integration_testing.yaml",
