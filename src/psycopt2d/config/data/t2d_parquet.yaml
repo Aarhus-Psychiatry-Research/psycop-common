@@ -1,12 +1,20 @@
+# General config
 n_training_samples: null # (int, null): Number of training samples to use, defaults to null in which cases it uses all samples.
 dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_201_features_2022_10_05_15_14
-drop_patient_if_outcome_before_date: 2013-01-01
-min_prediction_time_date: 2013-01-01
-min_lookahead_days: 1825 # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
-lookahead_days: 1825 # (float): Number of days from prediction time to look ahead for the outcome.
-min_lookbehind_days: 1825 # (int): Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
+source: parquet # Where to load data from. Takes "sql" or "synthetic"
+
+# Feature specs
 pred_col_name_prefix: "pred_" # (str): prefix of predictor columns
 pred_timestamp_col_name: timestamp # (str): Column name for prediction times
 outcome_timestamp_col_name: _timestamp_first_t2d # (str): Column name for outcome timestamps
 id_col_name: dw_ek_borger # (str): Citizen colnames
-source: csv # Where to load data from. Takes "sql" or "synthetic"
+
+# Looking ahead
+lookahead_days: 1825 # (float): Number of days from prediction time to look ahead for the outcome.
+min_lookahead_days: 1825 # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
+drop_patient_if_outcome_before_date: 2013-01-01
+
+# Looking behind
+min_prediction_time_date: 2013-01-01
+min_lookbehind_days: 365 # (int): Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
+
