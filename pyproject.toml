@@ -73,7 +73,7 @@ extension-pkg-allow-list = "wandb"
 
 [tool.pytest.ini_options]
 markers = [
-    "integration_test: Tests run on push. Should be as minimal as possible",
+    "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds.",
 ]
 
 [tool.isort]

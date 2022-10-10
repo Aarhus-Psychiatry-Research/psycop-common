@@ -75,7 +75,7 @@ repos:
     hooks:
     -   id: pytest
         name: Run integration tests before push
-        entry: .venv/bin/pytest -m integration_test
+        entry: .venv/bin/pytest -m pre_push_test
         language: script
         stages: [push]
         pass_filenames: false
