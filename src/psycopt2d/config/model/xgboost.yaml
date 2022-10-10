@@ -13,7 +13,7 @@ hydra:
       ++model.args.n_estimators: choice(100, 300, 500, 750, 800, 1200)
       ++model.args.lambda: tag(log, interval(1e-8, 1.0))
       ++model.args.alpha: tag(log, interval(1e-8, 1.0))
-      ++model.args.booster: choice("gbtree", "gblinear")
+      ++model.args.booster: choice("gbtree", "dart")
       ++model.args.max_depth: int(interval(1, 9))
       ++model.args.learning_rate: tag(log, interval(1e-8, 1.0))
       ++model.args.gamma: tag(log, interval(1e-8, 1.0))
