@@ -9,6 +9,7 @@ from omegaconf.dictconfig import DictConfig
 from sklearn.metrics import recall_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
+from wasabi import Printer
 
 from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
@@ -210,7 +211,7 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 metric_fn=recall_score,
                 y_title="Sensitivty (recall)",
-                save_path=SAVE_DIR / "recall_by_time_to_diagnosis",
+                save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
             ),
         },
     )
