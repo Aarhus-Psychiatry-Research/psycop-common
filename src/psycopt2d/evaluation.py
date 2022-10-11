@@ -108,9 +108,14 @@ def evaluate_model(
         y_hat_prob_col_name (str): Column name containing pred_proba output
         run (wandb_run): WandB run to log to.
     """
+    msg = Printer(timestamp=True)
+
+    msg.info("Starting model evaluation")
+
     SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
     if not SAVE_DIR.exists():
         SAVE_DIR.mkdir()
+
     # Initialise relevant variables for the upcoming evaluation
     y = eval_df[y_col_name]  # pylint: disable=invalid-name
     y_hat_probs = eval_df[y_hat_prob_col_name]
@@ -212,6 +217,8 @@ def evaluate_model(
 
     # Save results to disk
     prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, run=run)
+
+    msg.info("Finished model evaluation, logging charts to WandB")
 
     # Log all the figures to wandb
     for chart_name, chart_path in plots.items():
