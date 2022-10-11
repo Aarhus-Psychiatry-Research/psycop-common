@@ -272,34 +272,52 @@ def prediction_df_with_metadata_to_disk(
     """
     model_args = format_dict_for_printing(cfg.model)
 
-    metadata = {"df": df, "cfg": cfg}
+    timestamp = time.strftime('%Y_%m_%d_%H_%M')
 
     if run and run.name:
-        run_descriptor = f"{time.strftime('%Y_%m_%d_%H_%M')}_{run.name}"
+        run_descriptor = f"{timestamp}_{run.name}"
     else:
-        run_descriptor = f"{time.strftime('%Y_%m_%d_%H_%M')}_{model_args}"
+        run_descriptor = f"{timestamp}_{model_args}"
 
     if cfg.evaluation.save_model_predictions_on_overtaci and run:
         # Save to overtaci formatted with date
-        overtaci_path = (
+        dir_path = (
             MODEL_PREDICTIONS_PATH
             / cfg.project.name
-            / run.group
-            / f"eval_{run_descriptor}.pkl"
+            / run_descriptor
         )
-
-        if not overtaci_path.parent.exists():
-            overtaci_path.parent.mkdir(parents=True)
-
     else:
         # Local path handling
-        path = Path() / "evaluation_results" / run_descriptor
+        dir_path = Path() / "evaluation_results" / run_descriptor
 
-        if not path.parent.exists():
-            path.parent.mkdir(parents=True)
+    if not dir_path.parent.exists():
+        dir_path.parent.mkdir(parents=True)
 
-    dump_to_pickle(metadata, str(path))
-    msg.good(f"Saved evaluation results to {path}")
+    # Write the files
+    dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
+    write_df_to_file(df, dir_path / "df.parquet"))    
+    
+    msg.good(f"Saved evaluation results to {dir_path}")
+
+def write_df_to_file(
+    df: pd.DataFrame,
+    file_path: Path,
+):
+    """Write dataset to file. Handles csv and parquet files based on suffix.
+
+    Args:
+        df: Dataset
+        file_path (str): File name.
+    """
+
+    file_suffix = file_path.suffix
+
+    if file_suffix == ".csv":
+        df.to_csv(file_path, index=False)
+    elif file_suffix == ".parquet":
+        df.to_parquet(file_path, index=False)
+    else:
+        raise ValueError(f"Invalid file suffix {file_suffix}")
 
 
 def create_wandb_folders():
