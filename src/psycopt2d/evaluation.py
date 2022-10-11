@@ -6,7 +6,7 @@ from typing import Optional, Union
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import recall_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 
@@ -203,14 +203,14 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
             ),
-            "f1_by_time_until_diagnosis": plot_metric_by_time_until_diagnosis(
+            "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
                 labels=y,
                 y_hat=y_hat_int,
                 diagnosis_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
-                metric_fn=f1_score,
-                y_title="F1",
-                save_path=SAVE_DIR / "f1_by_time_until_diagnosis.png",
+                metric_fn=recall_score,
+                y_title="Sensitivty (recall)",
+                save_path=SAVE_DIR / "recall_by_time_to_diagnosis",
             ),
         },
     )
