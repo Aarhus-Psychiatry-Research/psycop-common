@@ -1,7 +1,7 @@
 # @package _global_
 defaults:
-  - project: test_project
-  - data: all_parquet
+  - project: overtaci_test_project
+  - data: t2d_parquet
   - preprocessing: default_preprocessing
   - training: default_training
   - evaluation: default_evaluation
