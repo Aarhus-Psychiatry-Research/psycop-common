@@ -211,7 +211,7 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 metric_fn=recall_score,
                 y_title="Sensitivty (recall)",
-                save_path=SAVE_DIR / "recall_by_time_to_diagnosis",
+                save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
             ),
         },
     )

@@ -274,32 +274,32 @@ def prediction_df_with_metadata_to_disk(
 
     metadata = {"df": df, "cfg": cfg}
 
-    if run:
+    if run and run.name:
         run_descriptor = f"{time.strftime('%Y_%m_%d_%H_%M')}_{run.name}"
     else:
         run_descriptor = f"{time.strftime('%Y_%m_%d_%H_%M')}_{model_args}"
 
-    if cfg.evaluation.save_model_predictions_on_overtaci:
+    if cfg.evaluation.save_model_predictions_on_overtaci and run:
         # Save to overtaci formatted with date
         overtaci_path = (
             MODEL_PREDICTIONS_PATH
             / cfg.project.name
-            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.pkl"
+            / run.group
+            / f"eval_{run_descriptor}.pkl"
         )
+
         if not overtaci_path.parent.exists():
             overtaci_path.parent.mkdir(parents=True)
-        dump_to_pickle(metadata, overtaci_path)
-
-        msg.good(f"Saved evaluation results to {overtaci_path}")
 
     else:
-        local_path = Path() / "evaluation_results" / run_descriptor
+        # Local path handling
+        path = Path() / "evaluation_results" / run_descriptor
 
-        if not local_path.parent.exists():
-            local_path.parent.mkdir(parents=True)
+        if not path.parent.exists():
+            path.parent.mkdir(parents=True)
 
-        dump_to_pickle(metadata, str(local_path))
-        msg.good(f"Saved evaluation results to {local_path}")
+    dump_to_pickle(metadata, str(path))
+    msg.good(f"Saved evaluation results to {path}")
 
 
 def create_wandb_folders():
