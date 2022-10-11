@@ -235,6 +235,7 @@ def positive_rate_to_pred_probs(
 
 def dump_to_pickle(obj: Any, path: str) -> None:
     """Pickles an object to a file.
+
     Args:
         obj (Any): Object to pickle.
         path (str): Path to pickle file.
@@ -257,10 +258,12 @@ def read_pickle(path: str) -> Any:
 
 
 def prediction_df_with_metadata_to_disk(
-    df: pd.DataFrame, cfg: DictConfig, run: Optional[Run] = None
+    df: pd.DataFrame,
+    cfg: DictConfig,
+    run: Optional[Run] = None,
 ) -> None:
-    """Saves prediction dataframe and hydra config to disk. Stored as a
-    dict with keys "df" and "cfg".
+    """Saves prediction dataframe and hydra config to disk. Stored as a dict
+    with keys "df" and "cfg".
 
     Args:
         df (pd.DataFrame): Dataframe to save.
