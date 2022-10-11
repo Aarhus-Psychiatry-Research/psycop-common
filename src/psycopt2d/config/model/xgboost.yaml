@@ -11,10 +11,10 @@ hydra:
   sweeper:
     params:
       ++model.args.n_estimators: choice(100, 300, 500, 800, 1200)
-      ++model.args.lambda: tag(log, interval(1e-4, 1.0))
-      ++model.args.alpha: tag(log, interval(1e-4, 1.0))
-      ++model.args.booster: choice("gbtree", "dart")
-      ++model.args.max_depth: int(interval(1, 9))
-      ++model.args.learning_rate: tag(log, interval(0.1, 0.5)) # Multiplier during boosting, [0,1]. Lower numbers mean more conservative boosting. Default is 0.3
-      ++model.args.gamma: tag(log, interval(1e-4, 0.1)) # Minimum loss reduction required to make a further partition on a leaf node of the tree. If lower, stops adding nodes.
+      ++model.args.lambda: tag(log, interval(1e-8, 1.0))
+      ++model.args.alpha: tag(log, interval(1e-8, 1.0))
+      ++model.args.booster: choice("gbtree")
+      ++model.args.max_depth: int(interval(3, 8))
+      ++model.args.learning_rate: tag(log, interval(1e-8), 0.3)) # Multiplier during boosting, [0,1]. Lower numbers mean more conservative boosting. Default is 0.3
+      ++model.args.gamma: tag(log, interval(1e-4, 0.1)) # Threshold for loss reduction per node split. If lower than threshold, stops adding nodes to branch.
       ++model.args.grow_policy: choice("depthwise", "lossguide")

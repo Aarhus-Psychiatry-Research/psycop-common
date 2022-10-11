@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.2 (2022-10-10)
+### Fix
+* Remove booster which requires different args from xgboost ([`65812d9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/65812d95e09d490e07225d69475988f0cc9e7113))
+* Make saving resistant to long cfgs ([`18a5e18`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/18a5e18ae81a1d6ce908f6a0d29808b937879281))
+* Add today's date as default group ([`6cb876f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6cb876f7ecffaff55c70123711063e25e65d1f81))
+* Binning by year to avoid bins with only one class ([`ebc3f55`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ebc3f55a970ad1c0d66974961e8ae8516ae3bacc))
+
 ## v0.4.1 (2022-10-10)
 ### Fix
 * Rename integration tests ([`0e30f40`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0e30f4007960bf17f762265c6e167daae2869e08))

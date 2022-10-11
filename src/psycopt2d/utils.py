@@ -33,28 +33,25 @@ def format_dict_for_printing(d: dict) -> str:
     """Format a dictionary for printing. Removes extra apostrophes, formats
     colon to dashes, separates items with underscores and removes curly
     brackets.
+
     Args:
         d (dict): dictionary to format.
-        max_str_length (int): Shorten the str to this length. Useful for e.g. the NTFS file system,
-        which has a max path length of 256 characters.
     Returns:
         str: Formatted dictionary.
+
     Example:
         >>> d = {"a": 1, "b": 2}
         >>> print(format_dict_for_printing(d))
         >>> "a-1_b-2"
     """
-    str_to_print = (
+    return (
         str(d)
         .replace("'", "")
         .replace(": ", "-")
         .replace("{", "")
         .replace("}", "")
         .replace(", ", "_")
-        .replace(".", "_")
     )
-
-    return str_to_print
 
 
 def flatten_nested_dict(
@@ -76,7 +73,7 @@ def flatten_nested_dict(
         dict: The flattened dict.
     """
 
-    items = []
+    items: list[dict[str, Any]] = []
 
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
@@ -236,21 +233,13 @@ def positive_rate_to_pred_probs(
     return pd.Series(pred_probs).quantile(thresholds).tolist()
 
 
-def dump_to_pickle(obj: Any, path_to_file: str) -> None:
+def dump_to_pickle(obj: Any, path: str) -> None:
     """Pickles an object to a file.
     Args:
         obj (Any): Object to pickle.
-        path_to_file (str): Path to pickle file.
+        path (str): Path to pickle file.
     """
-    # Create path if it doesn't exist
-    dir_path = Path(path_to_file).parent
-
-    dir_path.mkdir(parents=True, exist_ok=True)
-
-    if not dir_path.exists():
-        raise ValueError(f"Could not create directory {dir_path}")
-
-    with open(path_to_file, "wb") as f:
+    with open(path, "wb") as f:
         pkl.dump(obj, f)
 
 
@@ -289,23 +278,13 @@ def prediction_df_with_metadata_to_disk(
 
     if cfg.evaluation.save_model_predictions_on_overtaci:
         # Save to overtaci formatted with date
-        overtaci_dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name
-
-        # Max file path length is 255 on Windows
-        # Ensure we don't exceed this
-        dir_path_len = len(str(overtaci_dir_path))
-
-        run_descr_len = len(run_descriptor)
-
-        if dir_path_len + run_descr_len > 255:
-            allowed_model_conf_str_len = 255 - dir_path_len
-            run_descriptor = run_descriptor[:allowed_model_conf_str_len]
-
-        overtaci_path = overtaci_dir_path / run_descriptor
-
+        overtaci_path = (
+            MODEL_PREDICTIONS_PATH
+            / cfg.project.name
+            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.pkl"
+        )
         if not overtaci_path.parent.exists():
             overtaci_path.parent.mkdir(parents=True)
-
         dump_to_pickle(metadata, overtaci_path)
 
         msg.good(f"Saved evaluation results to {overtaci_path}")
