@@ -5,6 +5,7 @@ Mainly tests that they run without errors.
 # pylint: disable=missing-function-docstring
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
@@ -127,11 +128,15 @@ def test_plot_sens_by_time_to_outcome(df, tmp_path):
 
 
 def test_plot_feature_importances():
-    feature_names = ["very long feature name right here yeah", "feat2", "feat3"]
-    feature_importance = [0.6, 0.7, 0.1]
+    n_features = 10
+    feature_name = "very long feature name right here yeah actually super long like the feature names"
+    feature_names = [feature_name + str(i) for i in range(n_features)]
+    # generate 10 random nubmers between 0 and 1
+    feature_importance = np.random.rand(n_features)
 
     plot_feature_importances(
         feature_names,
         feature_importances=feature_importance,
-        top_n_feature_importances=3,
+        top_n_feature_importances=n_features,
+        save_path="tmp",
     )
