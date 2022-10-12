@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.3 (2022-10-12)
+### Fix
+* F1 plot only scatter ([`510746a`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/510746ae8cf6c938fa41773df6d3c1dd26e59c78))
+
 ## v0.4.2 (2022-10-10)
 ### Fix
 * Remove booster which requires different args from xgboost ([`65812d9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/65812d95e09d490e07225d69475988f0cc9e7113))
