@@ -272,32 +272,29 @@ def prediction_df_with_metadata_to_disk(
     """
     model_args = format_dict_for_printing(cfg.model)
 
-    timestamp = time.strftime('%Y_%m_%d_%H_%M')
+    timestamp = time.strftime("%Y_%m_%d_%H_%M")
 
     if run and run.name:
         run_descriptor = f"{timestamp}_{run.name}"
     else:
-        run_descriptor = f"{timestamp}_{model_args}"
+        run_descriptor = f"{timestamp}_{model_args}"[:100]
 
     if cfg.evaluation.save_model_predictions_on_overtaci and run:
         # Save to overtaci formatted with date
-        dir_path = (
-            MODEL_PREDICTIONS_PATH
-            / cfg.project.name
-            / run_descriptor
-        )
+        dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:
         # Local path handling
-        dir_path = Path() / "evaluation_results" / run_descriptor
+        dir_path = Path(__file__).parent / "evaluation_results" / run_descriptor
 
-    if not dir_path.parent.exists():
-        dir_path.parent.mkdir(parents=True)
+    if not dir_path.exists():
+        dir_path.mkdir(parents=True, exist_ok=True)
 
     # Write the files
     dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
-    write_df_to_file(df, dir_path / "df.parquet"))    
-    
+    write_df_to_file(df, dir_path / "df.parquet")
+
     msg.good(f"Saved evaluation results to {dir_path}")
+
 
 def write_df_to_file(
     df: pd.DataFrame,
