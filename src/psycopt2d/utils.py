@@ -257,6 +257,27 @@ def read_pickle(path: str) -> Any:
         return pkl.load(f)
 
 
+def write_df_to_file(
+    df: pd.DataFrame,
+    file_path: Path,
+):
+    """Write dataset to file. Handles csv and parquet files based on suffix.
+
+    Args:
+        df: Dataset
+        file_path (str): File name.
+    """
+
+    file_suffix = file_path.suffix
+
+    if file_suffix == ".csv":
+        df.to_csv(file_path, index=False)
+    elif file_suffix == ".parquet":
+        df.to_parquet(file_path, index=False)
+    else:
+        raise ValueError(f"Invalid file suffix {file_suffix}")
+
+
 def prediction_df_with_metadata_to_disk(
     df: pd.DataFrame,
     cfg: DictConfig,
@@ -294,27 +315,6 @@ def prediction_df_with_metadata_to_disk(
     write_df_to_file(df, dir_path / "df.parquet")
 
     msg.good(f"Saved evaluation results to {dir_path}")
-
-
-def write_df_to_file(
-    df: pd.DataFrame,
-    file_path: Path,
-):
-    """Write dataset to file. Handles csv and parquet files based on suffix.
-
-    Args:
-        df: Dataset
-        file_path (str): File name.
-    """
-
-    file_suffix = file_path.suffix
-
-    if file_suffix == ".csv":
-        df.to_csv(file_path, index=False)
-    elif file_suffix == ".parquet":
-        df.to_parquet(file_path, index=False)
-    else:
-        raise ValueError(f"Invalid file suffix {file_suffix}")
 
 
 def create_wandb_folders():
