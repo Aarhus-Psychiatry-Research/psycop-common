@@ -17,4 +17,3 @@ drop_patient_if_outcome_before_date: 2013-01-01
 # Looking behind
 min_prediction_time_date: 2013-01-01
 min_lookbehind_days: 365 # (int): Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
-

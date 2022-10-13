@@ -48,4 +48,4 @@ runs:
     - name: Run pytest
       shell: bash
       run: |
-        poetry run pytest --cov=src --cov-report term-missing --color=yes
+        poetry run pytest --cov=src --cov-report term-missing --color=yes -n 2 

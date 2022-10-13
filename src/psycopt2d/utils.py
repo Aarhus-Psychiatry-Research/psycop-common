@@ -8,12 +8,13 @@ import time
 from collections.abc import Iterable, MutableMapping
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import dill as pkl
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
+from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
 from psycopt2d.model_performance import ModelPerformance
@@ -28,16 +29,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 AUC_LOGGING_FILE_PATH = PROJECT_ROOT / ".aucs" / "aucs.txt"
 
 
-def format_dict_for_printing(d: dict, max_str_length: int = 200) -> str:
+def format_dict_for_printing(d: dict) -> str:
     """Format a dictionary for printing. Removes extra apostrophes, formats
     colon to dashes, separates items with underscores and removes curly
     brackets.
 
     Args:
         d (dict): dictionary to format.
-        max_str_length (int): Shorten the str to this length. Useful for e.g. the NTFS file system,
-        which has a max path length of 256 characters.
-
     Returns:
         str: Formatted dictionary.
 
@@ -46,17 +44,14 @@ def format_dict_for_printing(d: dict, max_str_length: int = 200) -> str:
         >>> print(format_dict_for_printing(d))
         >>> "a-1_b-2"
     """
-    str_to_print = (
+    return (
         str(d)
         .replace("'", "")
         .replace(": ", "-")
         .replace("{", "")
         .replace("}", "")
         .replace(", ", "_")
-        .replace(".", "_")
     )
-
-    return str_to_print[:max_str_length]
 
 
 def flatten_nested_dict(
@@ -238,22 +233,14 @@ def positive_rate_to_pred_probs(
     return pd.Series(pred_probs).quantile(thresholds).tolist()
 
 
-def dump_to_pickle(obj: Any, path_to_file: str) -> None:
+def dump_to_pickle(obj: Any, path: str) -> None:
     """Pickles an object to a file.
 
     Args:
         obj (Any): Object to pickle.
-        path_to_file (str): Path to pickle file.
+        path (str): Path to pickle file.
     """
-    # Create path if it doesn't exist
-    dir_path = Path(path_to_file).parent
-
-    dir_path.mkdir(parents=True, exist_ok=True)
-
-    if not dir_path.exists():
-        raise ValueError(f"Could not create directory {dir_path}")
-
-    with open(path_to_file, "wb") as f:
+    with open(path, "wb") as f:
         pkl.dump(obj, f)
 
 
@@ -270,42 +257,63 @@ def read_pickle(path: str) -> Any:
         return pkl.load(f)
 
 
-def prediction_df_with_metadata_to_disk(df: pd.DataFrame, cfg: DictConfig) -> None:
-    """Saves prediction dataframe with and hydra config to disk. Stored as a
-    dict with keys "df" and "cfg".
+def write_df_to_file(
+    df: pd.DataFrame,
+    file_path: Path,
+):
+    """Write dataset to file. Handles csv and parquet files based on suffix.
+
+    Args:
+        df: Dataset
+        file_path (str): File name.
+    """
+
+    file_suffix = file_path.suffix
+
+    if file_suffix == ".csv":
+        df.to_csv(file_path, index=False)
+    elif file_suffix == ".parquet":
+        df.to_parquet(file_path, index=False)
+    else:
+        raise ValueError(f"Invalid file suffix {file_suffix}")
+
+
+def prediction_df_with_metadata_to_disk(
+    df: pd.DataFrame,
+    cfg: DictConfig,
+    run: Optional[Run] = None,
+) -> None:
+    """Saves prediction dataframe and hydra config to disk. Stored as a dict
+    with keys "df" and "cfg".
 
     Args:
         df (pd.DataFrame): Dataframe to save.
         cfg (DictConfig): Hydra config.
+        run (Run): Wandb run. Used for getting name of the run.
     """
     model_args = format_dict_for_printing(cfg.model)
 
-    metadata = {"df": df, "cfg": cfg}
+    timestamp = time.strftime("%Y_%m_%d_%H_%M")
 
-    if cfg.evaluation.save_model_predictions_on_overtaci:
-        # Save to overtaci formatted with date
-        overtaci_path = (
-            MODEL_PREDICTIONS_PATH
-            / cfg.project.name
-            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.pkl"
-        )
-
-        if not overtaci_path.parent.exists():
-            overtaci_path.parent.mkdir(parents=True)
-
-        dump_to_pickle(metadata, overtaci_path)
-        msg.good(f"Saved evaluation results to {overtaci_path}")
-
+    if run and run.name:
+        run_descriptor = f"{timestamp}_{run.name}"
     else:
-        local_path = (
-            Path()
-            / "evaluation_results"
-            / f"eval_{model_args}_{time.strftime('%Y_%m_%d_%H_%M')}.pkl"
-        )
-        if not local_path.parent.exists():
-            local_path.parent.mkdir(parents=True)
-        dump_to_pickle(metadata, str(local_path))
-        msg.good(f"Saved evaluation results to {local_path}")
+        run_descriptor = f"{timestamp}_{model_args}"[:100]
+
+    if cfg.evaluation.save_model_predictions_on_overtaci and run:
+        # Save to overtaci formatted with date
+        dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
+    else:
+        # Local path handling
+        dir_path = PROJECT_ROOT / "evaluation_results" / run_descriptor
+
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+    # Write the files
+    dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
+    write_df_to_file(df, dir_path / "df.parquet")
+
+    msg.good(f"Saved evaluation results to {dir_path}")
 
 
 def create_wandb_folders():
