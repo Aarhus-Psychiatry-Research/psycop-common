@@ -63,11 +63,6 @@ def log_feature_importances(
 
 def log_auc_to_file(cfg: DictConfig, run: wandb_run, auc: Union[float, int]):
     """Log AUC to file."""
-    # Log to wandb
-
-    # Numerical metrics
-    run.log({"roc_auc_unweighted": auc})
-
     # log AUC and run ID to a file to find the best run later
     # Only create the file if it doesn't exists (will be auto-deleted/moved after
     # syncing). This is to avoid creating a new file every time the script is run
@@ -113,112 +108,115 @@ def evaluate_model(
 
     msg.info("Starting model evaluation")
 
-    # SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
-    # if not SAVE_DIR.exists():
-    #     SAVE_DIR.mkdir()
+    SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
+    if not SAVE_DIR.exists():
+        SAVE_DIR.mkdir()
 
-    # # Initialise relevant variables for the upcoming evaluation
-    # y = eval_df[y_col_name]  # pylint: disable=invalid-name
-    # y_hat_probs = eval_df[y_hat_prob_col_name]
-    # auc = round(roc_auc_score(y, y_hat_probs), 3)
-    # outcome_timestamps = eval_df[cfg.data.outcome_timestamp_col_name]
-    # pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
-    # y_hat_int = np.round(y_hat_probs, 0)
+    # Initialise relevant variables for the upcoming evaluation
+    y = eval_df[y_col_name]  # pylint: disable=invalid-name
+    y_hat_probs = eval_df[y_hat_prob_col_name]
+    auc = round(roc_auc_score(y, y_hat_probs), 3)
+    outcome_timestamps = eval_df[cfg.data.outcome_timestamp_col_name]
+    pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
+    y_hat_int = np.round(y_hat_probs, 0)
 
-    # first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
-    #     cfg.data.pred_timestamp_col_name
-    # ].transform("min")
+    first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
+        cfg.data.pred_timestamp_col_name
+    ].transform("min")
 
-    # pred_proba_thresholds = positive_rate_to_pred_probs(
-    #     pred_probs=y_hat_probs,
-    #     positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
-    # )
+    pred_proba_thresholds = positive_rate_to_pred_probs(
+        pred_probs=y_hat_probs,
+        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
+    )
 
-    # print(f"AUC: {auc}")
+    msg.info(f"AUC: {auc}")
+    msg.info(f"1 - AUC: {1 - auc}")
+    run.log({"roc_auc_unweighted": auc})
+    run.log({"1_minus_roc_auc_unweighted": 1 - auc})
 
-    # log_auc_to_file(cfg, run=run, auc=auc)
+    log_auc_to_file(cfg, run=run, auc=auc)
 
-    # # Tables
-    # # Performance by threshold
-    # performance_by_threshold_df = generate_performance_by_positive_rate_table(
-    #     labels=y,
-    #     pred_probs=y_hat_probs,
-    #     positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
-    #     pred_proba_thresholds=pred_proba_thresholds,
-    #     ids=eval_df[cfg.data.id_col_name],
-    #     pred_timestamps=pred_timestamps,
-    #     outcome_timestamps=outcome_timestamps,
-    # )
-    # run.log(
-    #     {"performance_by_threshold": performance_by_threshold_df},
-    # )
+    # Tables
+    # Performance by threshold
+    performance_by_threshold_df = generate_performance_by_positive_rate_table(
+        labels=y,
+        pred_probs=y_hat_probs,
+        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
+        pred_proba_thresholds=pred_proba_thresholds,
+        ids=eval_df[cfg.data.id_col_name],
+        pred_timestamps=pred_timestamps,
+        outcome_timestamps=outcome_timestamps,
+    )
+    run.log(
+        {"performance_by_threshold": performance_by_threshold_df},
+    )
 
-    # # Figures
-    # plots = {}
+    # Figures
+    plots = {}
 
-    # # Feature importance
-    # if hasattr(pipe["model"], "feature_importances_"):
-    #     feature_names = train_col_names
+    # Feature importance
+    if hasattr(pipe["model"], "feature_importances_"):
+        feature_names = train_col_names
 
-    #     feature_importances_plot_dict = log_feature_importances(
-    #         cfg=cfg,
-    #         pipe=pipe,
-    #         feature_names=train_col_names,
-    #         run=run,
-    #         save_path=SAVE_DIR / "feature_importances.png",
-    #     )
+        feature_importances_plot_dict = log_feature_importances(
+            cfg=cfg,
+            pipe=pipe,
+            feature_names=train_col_names,
+            run=run,
+            save_path=SAVE_DIR / "feature_importances.png",
+        )
 
-    #     plots.update(feature_importances_plot_dict)
+        plots.update(feature_importances_plot_dict)
 
-    #     # Log as table too for readability
-    #     feature_importances_table = generate_feature_importances_table(
-    #         feature_names=feature_names,
-    #         feature_importances=pipe["model"].feature_importances_,
-    #     )
-    #     run.log({"feature_importance_table": feature_importances_table})
+        # Log as table too for readability
+        feature_importances_table = generate_feature_importances_table(
+            feature_names=feature_names,
+            feature_importances=pipe["model"].feature_importances_,
+        )
+        run.log({"feature_importance_table": feature_importances_table})
 
-    # # Add plots
-    # plots.update(
-    #     {
-    #         "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(
-    #             labels=y,
-    #             y_hat_probs=y_hat_probs,
-    #             pred_proba_thresholds=pred_proba_thresholds,
-    #             outcome_timestamps=outcome_timestamps,
-    #             prediction_timestamps=pred_timestamps,
-    #             save_path=SAVE_DIR / "sensitivity_by_time_by_threshold.png",
-    #         ),
-    #         "auc_by_calendar_time": plot_performance_by_calendar_time(
-    #             labels=y,
-    #             y_hat=y_hat_probs,
-    #             timestamps=pred_timestamps,
-    #             bin_period="Y",
-    #             metric_fn=roc_auc_score,
-    #             y_title="AUC",
-    #             save_path=SAVE_DIR / "auc_by_calendar_time.png",
-    #         ),
-    #         "auc_by_time_from_first_visit": plot_auc_by_time_from_first_visit(
-    #             labels=y,
-    #             y_hat_probs=y_hat_probs,
-    #             first_visit_timestamps=first_visit_timestamp,
-    #             prediction_timestamps=pred_timestamps,
-    #             save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
-    #         ),
-    #         "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
-    #             labels=y,
-    #             y_hat=y_hat_int,
-    #             diagnosis_timestamps=outcome_timestamps,
-    #             prediction_timestamps=pred_timestamps,
-    #             metric_fn=recall_score,
-    #             y_title="Sensitivty (recall)",
-    #             save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
-    #         ),
-    #     },
-    # )
+    # Add plots
+    plots.update(
+        {
+            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(
+                labels=y,
+                y_hat_probs=y_hat_probs,
+                pred_proba_thresholds=pred_proba_thresholds,
+                outcome_timestamps=outcome_timestamps,
+                prediction_timestamps=pred_timestamps,
+                save_path=SAVE_DIR / "sensitivity_by_time_by_threshold.png",
+            ),
+            "auc_by_calendar_time": plot_performance_by_calendar_time(
+                labels=y,
+                y_hat=y_hat_probs,
+                timestamps=pred_timestamps,
+                bin_period="Y",
+                metric_fn=roc_auc_score,
+                y_title="AUC",
+                save_path=SAVE_DIR / "auc_by_calendar_time.png",
+            ),
+            "auc_by_time_from_first_visit": plot_auc_by_time_from_first_visit(
+                labels=y,
+                y_hat_probs=y_hat_probs,
+                first_visit_timestamps=first_visit_timestamp,
+                prediction_timestamps=pred_timestamps,
+                save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
+            ),
+            "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
+                labels=y,
+                y_hat=y_hat_int,
+                diagnosis_timestamps=outcome_timestamps,
+                prediction_timestamps=pred_timestamps,
+                metric_fn=recall_score,
+                y_title="Sensitivty (recall)",
+                save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
+            ),
+        },
+    )
 
-    # # Log all the figures to wandb
-    # for chart_name, chart_path in plots.items():
-    #     log_image_to_wandb(chart_path=chart_path, chart_name=chart_name, run=run)
+    # Log all the figures to wandb
+    for chart_name, chart_path in plots.items():
+        log_image_to_wandb(chart_path=chart_path, chart_name=chart_name, run=run)
 
     # Save results to disk
     prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, run=run)
