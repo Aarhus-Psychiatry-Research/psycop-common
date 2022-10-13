@@ -305,10 +305,9 @@ def prediction_df_with_metadata_to_disk(
         dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:
         # Local path handling
-        dir_path = Path(__file__).parent / "evaluation_results" / run_descriptor
+        dir_path = PROJECT_ROOT / "evaluation_results" / run_descriptor
 
-    if not dir_path.exists():
-        dir_path.mkdir(parents=True, exist_ok=True)
+    dir_path.mkdir(parents=True, exist_ok=True)
 
     # Write the files
     dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))

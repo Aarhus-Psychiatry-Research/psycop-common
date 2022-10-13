@@ -130,7 +130,6 @@ def evaluate_model(
     )
 
     msg.info(f"AUC: {auc}")
-    msg.info(f"1 - AUC: {1 - auc}")
     run.log({"roc_auc_unweighted": auc})
     run.log({"1_minus_roc_auc_unweighted": 1 - auc})
 
