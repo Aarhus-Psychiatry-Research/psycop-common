@@ -13,8 +13,14 @@ def test_main(model_name):
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name="integration_testing.yaml",
-            overrides=[f"+model={model_name}", "++model.args.tree_method=auto"],
+            overrides=[f"+model={model_name}"],
         )
+
+        # XGBoost should train on GPU on Overtaci,
+        # but CPU during integration testing
+        if model_name == "xgboost":
+            cfg.model.args.tree_method = "auto"
+
         main(cfg)
 
 
