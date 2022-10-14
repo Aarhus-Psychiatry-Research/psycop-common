@@ -335,6 +335,9 @@ def main(cfg):
 
     msg.info("Evaluating model")
     # Evaluate: Calculate performance metrics and log to wandb
+    # save model preds to disk -- handle feature importances that may or may not
+    # be available
+
     evaluate_model(
         cfg=cfg,
         pipe=pipe,

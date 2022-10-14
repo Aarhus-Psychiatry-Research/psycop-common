@@ -281,14 +281,16 @@ def write_df_to_file(
 def prediction_df_with_metadata_to_disk(
     df: pd.DataFrame,
     cfg: DictConfig,
+    feature_importances: dict[str, float] = None,
     run: Optional[Run] = None,
 ) -> None:
-    """Saves prediction dataframe and hydra config to disk. Stored as a dict
-    with keys "df" and "cfg".
+    """Saves prediction dataframe, hydra config and feature names to disk.
 
     Args:
         df (pd.DataFrame): Dataframe to save.
         cfg (DictConfig): Hydra config.
+        feature_importances (dict[str, float], optional): dict of feature names and
+            feature importances.
         run (Run): Wandb run. Used for getting name of the run.
     """
     model_args = format_dict_for_printing(cfg.model)
@@ -311,6 +313,8 @@ def prediction_df_with_metadata_to_disk(
 
     # Write the files
     dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
+    if feature_importances:
+        dump_to_pickle(feature_importances, str(dir_path / "feature_names.pkl"))
     write_df_to_file(df, dir_path / "df.parquet")
 
     msg.good(f"Saved evaluation results to {dir_path}")
