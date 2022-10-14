@@ -5,8 +5,6 @@ from psycopmlutils.synth_data_generator.synth_prediction_times_generator import 
     generate_synth_data,
 )
 
-from psycopt2d.utils import PROJECT_ROOT
-
 
 def test_synth_data_generator():
     """Test synth data generator."""
@@ -72,8 +70,3 @@ def test_synth_data_generator():
         synth_df.describe()
 
         assert synth_df.shape == (n_samples, len(column_specifications) + 1)
-
-        save_path = PROJECT_ROOT
-        synth_df.to_csv(
-            save_path / "tests" / "test_data" / "synth_splits" / f"synth_{split}.csv",
-        )

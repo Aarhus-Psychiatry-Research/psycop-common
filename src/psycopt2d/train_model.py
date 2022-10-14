@@ -19,7 +19,7 @@ from wasabi import Printer
 
 from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
-from psycopt2d.load import load_dataset_with_config
+from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
 from psycopt2d.utils import create_wandb_folders, flatten_nested_dict
 
@@ -315,7 +315,7 @@ def main(cfg):
         group=today_str,
     )
 
-    train, val = load_dataset_with_config(cfg)
+    train, val = load_train_and_val_from_cfg(cfg)
 
     msg.info("Creating pipeline")
     pipe = create_pipeline(cfg)

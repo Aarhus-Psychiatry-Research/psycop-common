@@ -1,7 +1,7 @@
 """Testing of loader functions."""
 from hydra import compose, initialize
 
-from psycopt2d.load import load_train_and_val_from_file
+from psycopt2d.load import load_train_and_val_from_cfg
 
 
 def test_load_feat_lookbehind_larger_than_min_lookbehind():
@@ -15,6 +15,6 @@ def test_load_feat_lookbehind_larger_than_min_lookbehind():
             ],
         )
 
-        train, _ = load_train_and_val_from_file(cfg)
+        train, _ = load_train_and_val_from_cfg(cfg)
 
-        assert train.shape == (659, 7)
+        assert train.shape == (669, 7)
