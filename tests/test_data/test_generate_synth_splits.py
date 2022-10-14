@@ -75,5 +75,5 @@ def test_synth_data_generator():
 
         save_path = PROJECT_ROOT
         synth_df.to_csv(
-            save_path / "tests" / "test_data" / "synth_splits" / f"synth_{split}.csv"
+            save_path / "tests" / "test_data" / "synth_splits" / f"synth_{split}.csv",
         )

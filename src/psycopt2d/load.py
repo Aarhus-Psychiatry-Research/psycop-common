@@ -4,7 +4,7 @@ import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Optional, Sized, Union
+from typing import Optional, Union
 
 import omegaconf
 import pandas as pd
@@ -238,7 +238,17 @@ def process_dataset(
         dataset = dataset[dataset[pred_datetime_column] > min_prediction_time_date]
 
     for direction in ("ahead", "behind"):
-        n_days = min_lookahead_days if direction == "ahead" else min_lookbehind_days
+        if direction == "ahead":
+            if min_lookahead_days:
+                n_days = min_lookahead_days
+            else:
+                break
+
+        if direction == "behind":
+            if min_lookbehind_days:
+                n_days = min_lookbehind_days
+            else:
+                break
 
         dataset = drop_rows_if_datasets_ends_within_days(
             dataset=dataset,
@@ -261,13 +271,13 @@ def load_dataset_from_dir(
     split_names: Union[Iterable[str], str],
     dir_path: Path,
     drop_patient_if_outcome_before_date: datetime,
-    min_lookahead_days: Union[float, int],
-    min_lookbehind_days: Union[float, int],
     min_prediction_time_date: datetime,
     pred_col_name_prefix: str,
     file_suffix: str = "parquet",
     pred_datetime_column: str = "timestamp",
     n_training_samples: Union[None, int] = None,
+    min_lookahead_days: Optional[Union[float, int]] = None,
+    min_lookbehind_days: Optional[Union[float, int]] = None,
 ) -> pd.DataFrame:
     """Load dataset for t2d. Can load multiple splits at once, e.g. concatenate
     train and val for crossvalidation.
@@ -280,24 +290,25 @@ def load_dataset_from_dir(
             experienced an outcome prior to the date. Also removes all visits prior to
             this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
             Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
-        min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included.
-            Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
-            Defined as days from the last days.
-        min_lookbehind_days (int): Minimum amount of days from prediction time to start of dataset for the visit time to be included.
         min_prediction_time_date (Union[str, datetime]): Minimum date for a prediction time to be included in the dataset.
         pred_col_name_prefix (str): Prefix of prediction columns. Defaults to "pred_".
         file_suffix (str): File suffix of the dataset. Defaults to "parquet".
         pred_datetime_column (str, optional): Column with prediction time timestamps.
             Defaults to "timestamp".
         n_training_samples (Union[None, int], optional): Number of training samples to load.
-        Defaults to None, in which case all training samples are loaded.
+            Defaults to None, in which case all training samples are loaded.
+        min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included.
+            Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
+            Defined as days from the last days.
+        min_lookbehind_days (int): Minimum amount of days from prediction time to start of dataset for the visit time to be included.
 
     Returns:
         pd.DataFrame: The filtered dataset
     """
     # Handle input types
     for timedelta_arg in (min_lookbehind_days, min_lookahead_days):
-        timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
+        if timedelta_arg:
+            timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
 
     for date_arg in (drop_patient_if_outcome_before_date, min_prediction_time_date):
         if isinstance(date_arg, str):
@@ -367,6 +378,7 @@ def load_synth_train_val_from_dir(cfg, synth_splits_dir):
         min_lookbehind_days=cfg.data.min_lookbehind_days,
         min_prediction_time_date=cfg.data.min_prediction_time_date,
         file_suffix="csv",
+        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
     )
 
     val = load_dataset_from_dir(
@@ -378,6 +390,7 @@ def load_synth_train_val_from_dir(cfg, synth_splits_dir):
         min_lookbehind_days=cfg.data.min_lookbehind_days,
         min_prediction_time_date=cfg.data.min_prediction_time_date,
         file_suffix="csv",
+        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
     )
 
     return train, val
