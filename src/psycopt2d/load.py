@@ -242,13 +242,13 @@ def process_dataset(
             if min_lookahead_days:
                 n_days = min_lookahead_days
             else:
-                break
+                continue
 
         if direction == "behind":
             if min_lookbehind_days:
                 n_days = min_lookbehind_days
             else:
-                break
+                continue
 
         dataset = drop_rows_if_datasets_ends_within_days(
             dataset=dataset,
@@ -416,31 +416,16 @@ def gen_synth_data_splits(cfg, test_data_dir):
     return train, val
 
 
-def write_synth_splits(  # pylint: disable=unused-argument
-    test_data_dir: Path,
-    train,
-    val,
-):
-    """Write synthetic data splits to disk."""
-
-    synth_splits_dir = test_data_dir / "synth_splits"
-    synth_splits_dir.mkdir(parents=True, exist_ok=True)
-
-    for split in ("train", "val"):
-        split_df = eval(split)  # pylint: disable=eval-used
-        split_df.to_csv(synth_splits_dir / f"{split}.csv", index=False)
-
-    return synth_splits_dir
-
-
 def load_train_and_val_from_file(cfg):
     """Load data from file."""
     if cfg.data.source in ("csv", "parquet"):
         path = Path(cfg.data.dir)
         file_suffix = cfg.data.source
+
     elif cfg.data.source == "synthetic":
         path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
         file_suffix = "csv"
+
     else:
         raise ValueError(f"Unknown data source: {cfg.data.source}")
 
