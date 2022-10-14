@@ -17,4 +17,4 @@ def test_load_feat_lookbehind_larger_than_min_lookbehind():
 
         train, _ = load_train_and_val_from_file(cfg)
 
-        assert train.shape == (659, 7)
+        assert train.shape == (669, 7)
