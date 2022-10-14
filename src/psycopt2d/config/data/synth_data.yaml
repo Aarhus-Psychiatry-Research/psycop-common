@@ -8,3 +8,4 @@ outcome_timestamp_col_name: timestamp_outcome
 id_col_name: citizen_ids
 source: synthetic
 min_lookbehind_days: 0
+drop_patient_if_outcome_before_date: null

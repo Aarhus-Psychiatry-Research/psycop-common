@@ -1,9 +1,10 @@
 """Loader for the t2d dataset."""
 # from datetime import date, datetime, timedelta
+import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Sized, Union
 
 import omegaconf
 import pandas as pd
@@ -12,7 +13,7 @@ from psycopmlutils.sql.loader import sql_load
 from sklearn.model_selection import train_test_split
 from wasabi import Printer
 
-from psycopt2d.utils import coerce_to_datetime
+from psycopt2d.utils import PROJECT_ROOT, coerce_to_datetime
 
 msg = Printer(timestamp=True)
 
@@ -148,6 +149,45 @@ def add_washin_timestamps(dataset):
     return dataset
 
 
+def drop_columns_if_min_look_direction_not_met(
+    dataset: pd.DataFrame,
+    n_days: Union[int, float],
+    direction: str,
+    pred_col_name_prefix: str,
+) -> pd.DataFrame:
+    """Drop columns if the minimum look direction is not met.
+
+    Args:
+        dataset (pd.DataFrame): Dataset to process.
+        n_days (Union[int, float]): Number of days to look in the direction.
+        direction (str): Direction to look. Allowed are ["ahead", "behind"].
+        pred_col_name_prefix (str): Prefix of the prediction column names.
+
+    Returns:
+        pd.DataFrame: Dataset with dropped columns.
+    """
+    cols_to_drop = []
+
+    if direction == "behind":
+        cols_to_process = [c for c in dataset.columns if pred_col_name_prefix in c]
+
+        for col in cols_to_process:
+            # Extract lookbehind days from column name use regex
+            # E.g. "column_name_within_90_days" == 90
+            # E.g. "column_name_within_90_days_fallback_NaN" == 90
+            lookbehind_days_strs = re.findall(r"within_(\d+)_days", col)
+
+            if len(lookbehind_days_strs) > 0:
+                lookbehind_days = int(lookbehind_days_strs[0])
+            else:
+                raise ValueError(f"Could not extract lookbehind days from {col}")
+
+            if lookbehind_days > n_days:
+                cols_to_drop.append(col)
+
+    return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
+
+
 def process_dataset(
     dataset: pd.DataFrame,
     drop_patient_if_outcome_before_date: datetime,
@@ -155,6 +195,7 @@ def process_dataset(
     min_lookahead_days: Union[int, float],
     min_lookbehind_days: Union[int, float],
     min_prediction_time_date: datetime,
+    pred_col_name_prefix: str,
 ) -> pd.DataFrame:
     """Process dataset, namely:
 
@@ -176,6 +217,7 @@ def process_dataset(
             Defined as days from the last days.
         min_lookbehind_days (Union[int, float]): Minimum amount of days from prediction time to start of dataset for the visit time to be included.
         min_prediction_time_date (datetime): Minimum prediction time date. Defaults to None.
+        pred_col_name_prefix (str): Prefix of prediction columns.
 
     Returns:
         pd.DataFrame: Processed dataset
@@ -184,7 +226,6 @@ def process_dataset(
         dataset = add_washin_timestamps(dataset=dataset)
 
     dataset = process_timestamp_dtype_and_nat(dataset)
-
     if drop_patient_if_outcome_before_date:
         dataset = drop_patients_with_event_in_washin(
             dataset=dataset,
@@ -206,6 +247,13 @@ def process_dataset(
             direction=direction,
         )
 
+        dataset = drop_columns_if_min_look_direction_not_met(
+            dataset=dataset,
+            n_days=n_days,
+            direction=direction,
+            pred_col_name_prefix=pred_col_name_prefix,
+        )
+
     return dataset
 
 
@@ -215,7 +263,8 @@ def load_dataset_from_dir(
     drop_patient_if_outcome_before_date: datetime,
     min_lookahead_days: Union[float, int],
     min_lookbehind_days: Union[float, int],
-    min_prediction_time_date: Union[str, datetime],
+    min_prediction_time_date: datetime,
+    pred_col_name_prefix: str,
     file_suffix: str = "parquet",
     pred_datetime_column: str = "timestamp",
     n_training_samples: Union[None, int] = None,
@@ -227,7 +276,7 @@ def load_dataset_from_dir(
         split_names (Union[Iterable[str], str]): Names of splits, includes "train", "val",
             "test". Can take multiple splits and concatenate them for crossvalidation.
         dir_path (Path): Directory of the dataset.
-        drop_patient_if_outcome_before_date (Union[datetime, str]): Remove patients which
+        drop_patient_if_outcome_before_date (datetime): Remove patients which
             experienced an outcome prior to the date. Also removes all visits prior to
             this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
             Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
@@ -236,6 +285,7 @@ def load_dataset_from_dir(
             Defined as days from the last days.
         min_lookbehind_days (int): Minimum amount of days from prediction time to start of dataset for the visit time to be included.
         min_prediction_time_date (Union[str, datetime]): Minimum date for a prediction time to be included in the dataset.
+        pred_col_name_prefix (str): Prefix of prediction columns. Defaults to "pred_".
         file_suffix (str): File suffix of the dataset. Defaults to "parquet".
         pred_datetime_column (str, optional): Column with prediction time timestamps.
             Defaults to "timestamp".
@@ -291,6 +341,7 @@ def load_dataset_from_dir(
         min_lookahead_days=min_lookahead_days,
         min_lookbehind_days=min_lookbehind_days,
         min_prediction_time_date=min_prediction_time_date,
+        pred_col_name_prefix=pred_col_name_prefix,
     )
 
     msg.good(f"{split_names}: Returning!")
@@ -369,29 +420,16 @@ def write_synth_splits(  # pylint: disable=unused-argument
     return synth_splits_dir
 
 
-def load_synthetic_data(cfg):
-    """Load synthetic data from file."""
-    repo_dir = Path(__file__).parent.parent.parent
-    test_data_dir = repo_dir / "tests" / "test_data"
-
-    train, val = gen_synth_data_splits(cfg, test_data_dir)
-
-    synth_splits_dir = write_synth_splits(
-        test_data_dir=test_data_dir,
-        train=train,
-        val=val,
-    )
-
-    # Load them from dir to use the same pipeline as we use for loading real data
-    # Makes it actually act as a smoke test
-    train, val = load_synth_train_val_from_dir(cfg, synth_splits_dir)
-
-    return train, val
-
-
-def load_real_data(cfg):
-    """Load real data from file."""
-    path = Path(cfg.data.dir)
+def load_train_and_val_from_file(cfg):
+    """Load data from file."""
+    if cfg.data.source in ("csv", "parquet"):
+        path = Path(cfg.data.dir)
+        file_suffix = cfg.data.source
+    elif cfg.data.source == "synthetic":
+        path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
+        file_suffix = "csv"
+    else:
+        raise ValueError(f"Unknown data source: {cfg.data.source}")
 
     train = load_dataset_from_dir(
         split_names="train",
@@ -401,6 +439,8 @@ def load_real_data(cfg):
         min_lookahead_days=cfg.data.min_lookahead_days,
         min_lookbehind_days=cfg.data.min_lookbehind_days,
         min_prediction_time_date=cfg.data.min_prediction_time_date,
+        file_suffix=file_suffix,
+        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
     )
 
     val = load_dataset_from_dir(
@@ -411,6 +451,8 @@ def load_real_data(cfg):
         min_lookahead_days=cfg.data.min_lookahead_days,
         min_lookbehind_days=cfg.data.min_lookbehind_days,
         min_prediction_time_date=cfg.data.min_prediction_time_date,
+        file_suffix=file_suffix,
+        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
     )
 
     return train, val
@@ -422,10 +464,10 @@ def load_dataset_with_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
     allowed_data_sources = {"csv", "parquet", "synthetic"}
 
     if "csv" in cfg.data.source.lower() or "parquet" in cfg.data.source.lower():
-        train, val = load_real_data(cfg)
+        train, val = load_train_and_val_from_file(cfg)
 
     elif cfg.data.source.lower() == "synthetic":
-        train, val = load_synthetic_data(cfg)
+        train, val = load_train_and_val_from_file(cfg)
 
     else:
         raise ValueError(
