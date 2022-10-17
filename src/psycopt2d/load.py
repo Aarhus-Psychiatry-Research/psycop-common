@@ -155,7 +155,11 @@ def drop_columns_if_min_look_direction_not_met(
     direction: str,
     pred_col_name_prefix: str,
 ) -> pd.DataFrame:
-    """Drop columns if the minimum look direction is not met.
+    """Drop columns if they cannot look sufficiently in the given direction.
+
+    For example, if direction is "ahead", and n_days is 30, then the column
+    should be dropped if it's trying to look 60 days ahead. This is useful
+    to avoid some rows having more information than others.
 
     Args:
         dataset (pd.DataFrame): Dataset to process.
@@ -164,7 +168,7 @@ def drop_columns_if_min_look_direction_not_met(
         pred_col_name_prefix (str): Prefix of the prediction column names.
 
     Returns:
-        pd.DataFrame: Dataset with dropped columns.
+        pd.DataFrame: Dataset without the dropped columns.
     """
     cols_to_drop = []
 
