@@ -14,6 +14,7 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
+from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
@@ -281,7 +282,7 @@ def write_df_to_file(
 def prediction_df_with_metadata_to_disk(
     df: pd.DataFrame,
     cfg: DictConfig,
-    feature_importances: dict[str, float] = None,
+    pipe: Pipeline,
     run: Optional[Run] = None,
 ) -> None:
     """Saves prediction dataframe, hydra config and feature names to disk.
@@ -289,8 +290,8 @@ def prediction_df_with_metadata_to_disk(
     Args:
         df (pd.DataFrame): Dataframe to save.
         cfg (DictConfig): Hydra config.
-        feature_importances (dict[str, float], optional): dict of feature names and
-            feature importances.
+        pipe (Pipeline). Sklearn pipeline. Used to get feature names and feature
+            importances. Can potentially also save the entire model pipeline.
         run (Run): Wandb run. Used for getting name of the run.
     """
     model_args = format_dict_for_printing(cfg.model)
@@ -313,9 +314,12 @@ def prediction_df_with_metadata_to_disk(
 
     # Write the files
     dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
-    if feature_importances:
-        dump_to_pickle(feature_importances, str(dir_path / "feature_names.pkl"))
     write_df_to_file(df, dir_path / "df.parquet")
+    feature_importance_dict = get_feature_importance_dict(pipe)
+    if feature_importance_dict is not None:
+        dump_to_pickle(
+            feature_importance_dict, str(dir_path / "feature_importances.pkl")
+        )
 
     msg.good(f"Saved evaluation results to {dir_path}")
 
@@ -344,3 +348,21 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
         )
 
     return date_repr
+
+
+def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]:
+    """Checks whether the model has feature importances and returns them as a
+    dictionary. Return None if not.
+
+    Args:
+        pipe (Pipeline): Sklearn pipeline.
+
+    Returns:
+        Union[None, dict[str, float]]: Dictionary of feature importances.
+    """
+    if hasattr(pipe["model"], "feature_importances_"):
+        return dict(
+            zip(pipe["model"].feature_names, pipe["model"].feature_importances_)
+        )
+    else:
+        return None

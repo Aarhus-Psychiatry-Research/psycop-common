@@ -21,7 +21,12 @@ from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_dataset_with_config
 from psycopt2d.models import MODELS
-from psycopt2d.utils import create_wandb_folders, flatten_nested_dict
+from psycopt2d.utils import (
+    create_wandb_folders,
+    flatten_nested_dict,
+    get_feature_importance_dict,
+    prediction_df_with_metadata_to_disk,
+)
 
 CONFIG_PATH = Path(__file__).parent / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
@@ -225,7 +230,7 @@ def train_and_get_model_eval_df(
     """
     # Set feature names if model is EBM to get interpretable feature importance
     # output
-    if cfg.model.model_name == "ebm":
+    if cfg.model.model_name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names
 
     if n_splits is None:  # train on pre-defined splits
@@ -337,14 +342,16 @@ def main(cfg):
     # Evaluate: Calculate performance metrics and log to wandb
     # save model preds to disk -- handle feature importances that may or may not
     # be available
+    prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, pipe=pipe, run=run)
 
+    
+    feature_importance_dict = get_feature_importance_dict(pipe)
     evaluate_model(
         cfg=cfg,
-        pipe=pipe,
         eval_df=eval_df,
         y_col_name=outcome_col_name,
-        train_col_names=train_col_names,
         y_hat_prob_col_name="y_hat_prob",
+        
         run=run,
     )
 
