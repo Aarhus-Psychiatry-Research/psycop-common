@@ -208,7 +208,7 @@ def train_and_get_model_eval_df(
     outcome_col_name: str,
     train_col_names: list[str],
     n_splits: Optional[int],
-):
+) -> pd.DataFrame:
     """Train model and return evaluation dataset.
 
     Args:
