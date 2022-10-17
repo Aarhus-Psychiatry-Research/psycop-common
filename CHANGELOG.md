@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2022-10-17)
+### Feature
+* Remove columns with lookbehind > min_lookbehind_days ([`c4b1611`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c4b16118990a3883d28c7d2a7c10afba2a9e6429))
+
+### Fix
+* Incorrect handling of null lookdirection vals ([`cac8838`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cac8838001ee287bac6d4cd0d589e9852891e288))
+* Allow null specification for min_lookdirection ([`d94526d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d94526d5a4510eac35d30a5ada7b7cfc3bfca14d))
+
+### Documentation
+* Update docstring from review ([`fce53d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/fce53d5f8dd0ecbe5070f70b9a3146a8d5843cd1))
+
 ## v0.5.0 (2022-10-14)
 ### Feature
 * Default group by day ([`7249388`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/7249388cb0937e1f04080c585511b354ce58a48e))
