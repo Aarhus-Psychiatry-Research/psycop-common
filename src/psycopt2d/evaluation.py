@@ -109,6 +109,12 @@ def evaluate_model(
     msg.info("Starting model evaluation")
 
     SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
+    # When parallelising tests, this causes issues since multiple processes
+    # override the same dir at once.
+    # Can be solved by allowing config to override this
+    # and using tmp_dir in pytest. Not worth refactoring
+    # right now, though.
+
     if not SAVE_DIR.exists():
         SAVE_DIR.mkdir()
 
@@ -120,12 +126,15 @@ def evaluate_model(
     pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
     y_hat_int = np.round(y_hat_probs, 0)
 
-    date_bins_ahead: Iterable[int] = eval_df[cfg.evaluation.date_bins_ahead]
-    date_bins_behind: Iterable[int] = eval_df[cfg.evaluation.date_bins_behind]
+    date_bins_ahead: Iterable[int] = cfg.evaluation.date_bins_ahead
+    date_bins_behind: Iterable[int] = cfg.evaluation.date_bins_behind
 
     # Invert date_bins_behind to negative if it's not already
     if min(date_bins_behind) >= 0:
         date_bins_behind = [-d for d in date_bins_behind]
+
+    # Sort date_bins_behind and date_bins_ahead to be monotonically increasing if they aren't already
+    date_bins_behind = sorted(date_bins_behind)
 
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
         cfg.data.pred_timestamp_col_name
