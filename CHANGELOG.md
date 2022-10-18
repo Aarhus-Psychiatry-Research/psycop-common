@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2022-10-18)
+### Fix
+* Failing tests ([`6060f0f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6060f0f86d507fe1d29500e25da6dc465e6713d8))
+
 ## v0.6.0 (2022-10-17)
 ### Feature
 * Remove columns with lookbehind > min_lookbehind_days ([`c4b1611`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c4b16118990a3883d28c7d2a7c10afba2a9e6429))
