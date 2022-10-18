@@ -21,19 +21,19 @@ class DatasetTimeSpecification(BaseModel):
 
     drop_patient_if_outcome_before_date: Optional[Union[str, datetime]] = Field(
         description="""If a patient experiences the outcome before this date, all their prediction times will be dropped.
-        Used for wash-in, to avoid including patients who were probably already experiencing the outcome before the study began."""
+        Used for wash-in, to avoid including patients who were probably already experiencing the outcome before the study began.""",
     )
 
     min_prediction_time_date: Optional[Union[str, datetime]] = Field(
-        description="""Any prediction time before this date will be dropped."""
+        description="""Any prediction time before this date will be dropped.""",
     )
 
     min_lookbehind_days: Optional[Union[int, float]] = Field(
-        description="""If the distance from the prediction time to the start of the dataset is less than this, the prediction time will be dropped"""
+        description="""If the distance from the prediction time to the start of the dataset is less than this, the prediction time will be dropped""",
     )
 
     min_lookahead_days: Optional[Union[int, float]] = Field(
-        description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped"""
+        description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped""",
     )
 
 
@@ -41,7 +41,7 @@ class DatasetSpecification(BaseModel):
     """Specification for loading a dataset."""
 
     split_dir_path: Union[str, Path] = Field(
-        description="""Path to the directory containing the split files."""
+        description="""Path to the directory containing the split files.""",
     )
 
     file_suffix: str = Field(
@@ -52,7 +52,8 @@ class DatasetSpecification(BaseModel):
     time: DatasetTimeSpecification
 
     pred_col_name_prefix: str = Field(
-        default="pred_", description="""Prefix for the prediction column names."""
+        default="pred_",
+        description="""Prefix for the prediction column names.""",
     )
     pred_time_colname: str = Field(
         default="timestamp",
@@ -60,24 +61,11 @@ class DatasetSpecification(BaseModel):
     )
 
 
-def add_washin_timestamps(dataset: pd.DataFrame) -> pd.DataFrame:
-    """Add washin timestamps to dataset.
-
-    Washin is an exclusion criterion. E.g. if the patient has any visit that looks like diabetes before the study starts (i.e. during washin), they are excluded.
-    """
-    timestamp_washin = load_timestamp_for_any_diabetes()
-
-    dataset = dataset.merge(
-        timestamp_washin,
-        on="dw_ek_borger",
-        how="left",
-    )
-
-    return dataset
-
-
 def load_timestamp_for_any_diabetes():
-    """Loads timestamps for the broad definition of diabetes used for wash-in. See R files for details."""
+    """Loads timestamps for the broad definition of diabetes used for wash-in.
+
+    See R files for details.
+    """
     timestamp_any_diabetes = sql_load(
         query="SELECT * FROM [fct].[psycop_t2d_first_diabetes_any]",
         format_timestamp_cols_to_datetime=False,
@@ -88,6 +76,24 @@ def load_timestamp_for_any_diabetes():
     )
 
     return timestamp_any_diabetes
+
+
+def add_washin_timestamps(dataset: pd.DataFrame) -> pd.DataFrame:
+    """Add washin timestamps to dataset.
+
+    Washin is an exclusion criterion. E.g. if the patient has any visit
+    that looks like diabetes before the study starts (i.e. during
+    washin), they are excluded.
+    """
+    timestamp_washin = load_timestamp_for_any_diabetes()
+
+    dataset = dataset.merge(
+        timestamp_washin,
+        on="dw_ek_borger",
+        how="left",
+    )
+
+    return dataset
 
 
 class DataLoader:
@@ -105,63 +111,6 @@ class DataLoader:
 
         # Column specifications
         self.pred_col_name_prefix = spec.pred_col_name_prefix
-
-    def load_dataset_from_dir(
-        self,
-        split_names: Union[Iterable[str], str],
-        nrows: Optional[int] = None,
-    ) -> pd.DataFrame:
-        """Load dataset for t2d. Can load multiple splits at once, e.g.
-        concatenate train and val for crossvalidation.
-
-        Args:
-            split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]
-            nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
-
-        Returns:
-            pd.DataFrame: The filtered dataset
-        """
-        # Handle input types
-        for timedelta_arg in (
-            self.spec.time.min_lookbehind_days,
-            self.spec.time.min_lookahead_days,
-        ):
-            if timedelta_arg:
-                timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
-
-        for date_arg in (
-            self.spec.time.drop_patient_if_outcome_before_date,
-            self.spec.time.min_prediction_time_date,
-        ):
-            if isinstance(date_arg, str):
-                date_arg = coerce_to_datetime(
-                    date_repr=date_arg,
-                )
-
-        # Concat splits if multiple are given
-        if isinstance(split_names, (list, tuple)):
-            if isinstance(split_names, Iterable):
-                split_names = tuple(split_names)
-
-            if nrows is not None:
-                nrows = int(
-                    nrows / len(split_names),
-                )
-
-            return pd.concat(
-                [
-                    self._load_dataset_file(split_name=split, nrows=nrows)
-                    for split in split_names
-                ],
-                ignore_index=True,
-            )
-        elif isinstance(split_names, str):
-            dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
-
-        dataset = self._process_dataset(dataset=dataset)
-
-        msg.good(f"{split_names}: Returning!")
-        return dataset
 
     def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
         self,
@@ -305,34 +254,6 @@ class DataLoader:
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
-    def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
-        """Process dataset, namely:
-
-        - Drop patients with outcome before drop_patient_if_outcome_before_date
-        - Process timestamp columns
-        - Drop visits where mmin_lookahead, min_lookbehind or min_prediction_time_date are not met
-
-        Returns:
-            pd.DataFrame: Processed dataset
-        """
-        if self.spec.time.drop_patient_if_outcome_before_date:
-            dataset = add_washin_timestamps(dataset=dataset)
-
-        dataset = self._convert_timestamp_dtype_and_nat(dataset)
-        if self.spec.time.drop_patient_if_outcome_before_date:
-            dataset = self._drop_patients_with_event_in_washin(dataset=dataset)
-
-        # Drop if later than min prediction time date
-        if self.spec.time.min_prediction_time_date:
-            dataset = dataset[
-                dataset[self.spec.pred_time_colname]
-                > self.spec.time.min_prediction_time_date
-            ]
-
-        dataset = self._drop_cols_and_rows_if_look_direction_not_met(dataset=dataset)
-
-        return dataset
-
     def _drop_cols_and_rows_if_look_direction_not_met(
         self,
         dataset: pd.DataFrame,
@@ -371,6 +292,91 @@ class DataLoader:
 
         return dataset
 
+    def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Process dataset, namely:
+
+        - Drop patients with outcome before drop_patient_if_outcome_before_date
+        - Process timestamp columns
+        - Drop visits where mmin_lookahead, min_lookbehind or min_prediction_time_date are not met
+
+        Returns:
+            pd.DataFrame: Processed dataset
+        """
+        if self.spec.time.drop_patient_if_outcome_before_date:
+            dataset = add_washin_timestamps(dataset=dataset)
+
+        dataset = self._convert_timestamp_dtype_and_nat(dataset)
+        if self.spec.time.drop_patient_if_outcome_before_date:
+            dataset = self._drop_patients_with_event_in_washin(dataset=dataset)
+
+        # Drop if later than min prediction time date
+        if self.spec.time.min_prediction_time_date:
+            dataset = dataset[
+                dataset[self.spec.pred_time_colname]
+                > self.spec.time.min_prediction_time_date
+            ]
+
+        dataset = self._drop_cols_and_rows_if_look_direction_not_met(dataset=dataset)
+
+        return dataset
+
+    def load_dataset_from_dir(
+        self,
+        split_names: Union[Iterable[str], str],
+        nrows: Optional[int] = None,
+    ) -> pd.DataFrame:
+        """Load dataset for t2d. Can load multiple splits at once, e.g.
+        concatenate train and val for crossvalidation.
+
+        Args:
+            split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]
+            nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
+
+        Returns:
+            pd.DataFrame: The filtered dataset
+        """
+        # Handle input types
+        for timedelta_arg in (
+            self.spec.time.min_lookbehind_days,
+            self.spec.time.min_lookahead_days,
+        ):
+            if timedelta_arg:
+                timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
+
+        for date_arg in (
+            self.spec.time.drop_patient_if_outcome_before_date,
+            self.spec.time.min_prediction_time_date,
+        ):
+            if isinstance(date_arg, str):
+                date_arg = coerce_to_datetime(
+                    date_repr=date_arg,
+                )
+
+        # Concat splits if multiple are given
+        if isinstance(split_names, (list, tuple)):
+            if isinstance(split_names, Iterable):
+                split_names = tuple(split_names)
+
+            if nrows is not None:
+                nrows = int(
+                    nrows / len(split_names),
+                )
+
+            return pd.concat(
+                [
+                    self._load_dataset_file(split_name=split, nrows=nrows)
+                    for split in split_names
+                ],
+                ignore_index=True,
+            )
+        elif isinstance(split_names, str):
+            dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
+
+        dataset = self._process_dataset(dataset=dataset)
+
+        msg.good(f"{split_names}: Returning!")
+        return dataset
+
 
 def _init_spec_from_cfg(
     cfg: DictConfig,
@@ -407,6 +413,8 @@ class SplitDataset(BaseModel):
     """A dataset split into train, test and optionally validation."""
 
     class Config:
+        """Configuration for the dataclass to allow pd.DataFrame as type."""
+
         arbitrary_types_allowed = True
 
     train: pd.DataFrame
