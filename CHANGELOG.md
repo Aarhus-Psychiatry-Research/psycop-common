@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2022-10-18)
+### Feature
+* Don't allow date_bins that are outside min_look_direction ([`09670ab`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/09670ab5654d01d7c9154c693791a83adf2851e2))
+
 ## v0.6.2 (2022-10-18)
 ### Fix
 * Incorrect order of y-labels on sens heatmap ([`554ddf8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/554ddf817e99748f6c999d02f38f490ba2c46430))
