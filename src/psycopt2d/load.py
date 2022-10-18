@@ -3,7 +3,7 @@ import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 from omegaconf import DictConfig
@@ -34,6 +34,10 @@ class DatasetTimeSpecification(BaseModel):
 
     min_lookahead_days: Optional[Union[int, float]] = Field(
         description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped""",
+    )
+
+    lookbehind_window_combination: Optional[List[Union[int, float]]] = Field(
+        description="""List containing a combination of lookbehind windows (e.g. [30, 60, 90]) which determines which features to keep in the dataset""",
     )
 
 
@@ -200,6 +204,33 @@ class DataLoader:
 
         return dataset
 
+    def _drop_columns_not_in_lookbehind_window_combination(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Drop predictor columns that are not in the specified combination of lookbehind windows.
+
+        Args:
+            dataset (pd.DataFrame): Dataset.
+
+        Returns:
+            pd.DataFrame: Dataset with dropped columns.
+        """
+
+        # Create a list of all predictor columns who have a lookbehind window not in lookbehind_window_combination list
+        cols_to_drop = [
+            col
+            for col in dataset.columns
+            if any(
+                str(x) not in col and "pred" in col
+                for x in self.spec.time.lookbehind_window_combination
+            )
+        ]
+
+        dataset = dataset.drop(columns=cols_to_drop)
+
+        return dataset
+
     def _convert_timestamp_dtype_and_nat(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
         convert 0's to NaT."""
@@ -215,13 +246,13 @@ class DataLoader:
 
         return dataset
 
-    def _drop_columns_if_min_look_direction_not_met(
+    def _drop_columns_if_exceeds_look_direction_threshold(
         self,
         dataset: pd.DataFrame,
-        n_days: Union[int, float],
+        look_direction_threshold: Union[int, float],
         direction: str,
     ) -> pd.DataFrame:
-        """Drop columns if the minimum look direction is not met.
+        """Drop columns if they look behind or ahead longer than a specified threshold
 
             For example, if direction is "ahead", and n_days is 30, then the column
         should be dropped if it's trying to look 60 days ahead. This is useful
@@ -229,7 +260,7 @@ class DataLoader:
 
             Args:
                 dataset (pd.DataFrame): Dataset to process.
-                n_days (Union[int, float]): Number of days to look in the direction.
+                look_direction_threshold (Union[int, float]): Number of days to look in the direction.
                 direction (str): Direction to look. Allowed are ["ahead", "behind"].
 
         Returns:
@@ -254,7 +285,7 @@ class DataLoader:
                 else:
                     raise ValueError(f"Could not extract lookbehind days from {col}")
 
-                if lookbehind_days > n_days:
+                if lookbehind_days > look_direction_threshold:
                     cols_to_drop.append(col)
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
@@ -289,9 +320,9 @@ class DataLoader:
                 direction=direction,
             )
 
-            dataset = self._drop_columns_if_min_look_direction_not_met(
+            dataset = self._drop_columns_if_exceeds_look_direction_threshold(
                 dataset=dataset,
-                n_days=n_days,
+                look_direction_threshold=n_days,
                 direction=direction,
             )
 
