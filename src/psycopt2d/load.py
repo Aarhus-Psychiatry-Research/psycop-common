@@ -223,14 +223,19 @@ class DataLoader:
     ) -> pd.DataFrame:
         """Drop columns if the minimum look direction is not met.
 
-        Args:
-            dataset (pd.DataFrame): Dataset to process.
-            n_days (Union[int, float]): Number of days to look in the direction.
-            direction (str): Direction to look. Allowed are ["ahead", "behind"].
+            For example, if direction is "ahead", and n_days is 30, then the column
+        should be dropped if it's trying to look 60 days ahead. This is useful
+        to avoid some rows having more information than others.
+
+            Args:
+                dataset (pd.DataFrame): Dataset to process.
+                n_days (Union[int, float]): Number of days to look in the direction.
+                direction (str): Direction to look. Allowed are ["ahead", "behind"].
 
         Returns:
-            pd.DataFrame: Dataset with dropped columns.
+            pd.DataFrame: Dataset without the dropped columns.
         """
+
         cols_to_drop = []
 
         if direction == "behind":
