@@ -354,6 +354,8 @@ class DataLoader:
                     n_days = self.spec.time.min_lookahead_days
                 elif self.spec.time.min_lookbehind_days:
                     n_days = self.spec.time.min_lookbehind_days
+                else:
+                    continue
 
             dataset = self._drop_rows_if_datasets_ends_within_days(
                 n_days=n_days,
@@ -404,8 +406,11 @@ def _init_spec_from_cfg(
 class SplitDataset(BaseModel):
     """A dataset split into train, test and optionally validation."""
 
+    class Config:
+        arbitrary_types_allowed = True
+
     train: pd.DataFrame
-    test: Optional[pd.DateFrame] = None
+    test: Optional[pd.DataFrame] = None
     val: pd.DataFrame
 
 

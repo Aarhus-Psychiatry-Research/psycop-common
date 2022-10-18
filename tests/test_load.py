@@ -15,6 +15,6 @@ def test_load_feat_lookbehind_larger_than_min_lookbehind():
             ],
         )
 
-        train, _ = load_train_and_val_from_cfg(cfg)
+        split_dataset = load_train_and_val_from_cfg(cfg)
 
-        assert train.shape == (669, 7)
+        assert split_dataset.train.shape == (644, 7)
