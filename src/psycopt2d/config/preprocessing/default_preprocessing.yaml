@@ -1,4 +1,8 @@
 convert_to_boolean: False # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
-convert_datetimes_to: False # (str): Options include ordinal or False 
+convert_datetimes_to: False # (str): Options include ordinal or False
 imputation_method: "most_frequent" # (str): Options include 2most_frequent"
 transform: null # (str|null): Transformation applied to all predictors after imputation. Options include "z-score-normalization"
+feature_selection_method: null
+feature_selection_params:
+  C: 1.0 # (float): For feature_selection_method=linear-svc. Regularization parameter - the smaller the C, the fewer features selected. Must be strictly positive. Defaults to 1.0
+  percentile: 10 # (int): For feature_selection_method=f_classif. Percent of features to keep. Defaults to 10.

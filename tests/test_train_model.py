@@ -37,7 +37,7 @@ def test_crossvalidation():
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name="integration_testing.yaml",
-            overrides=["+model=logistic-regression", "+data.n_splits=2"],
+            overrides=["+model=logistic-regression", "+training.n_splits=2"],
         )
         main(cfg)
 
@@ -50,6 +50,20 @@ def test_min_prediction_time_date():
             overrides=[
                 "+model=logistic-regression",
                 "+data.min_prediction_time_date=1972-01-01",
+            ],
+        )
+        main(cfg)
+
+
+def test_feature_selection():
+    """Test feature selection"""
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name="integration_testing.yaml",
+            overrides=[
+                "+model=logistic-regression",
+                "++preprocessing.feature_selection_method=linear-svc",
+                "++preprocessing.feature_selection_params.C=0.01",
             ],
         )
         main(cfg)
