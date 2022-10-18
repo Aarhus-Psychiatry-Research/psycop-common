@@ -48,7 +48,7 @@ def create_sensitivity_by_time_to_outcome_df(
         },
     )
 
-    # Get proportion of y_hat == 1, which is equal to the positive rate
+    # Get proportion of y_hat == 1, which is equal to the positive rate in the data
     threshold_percentile = round(
         df[df["y_hat"] == 1].shape[0] / df.shape[0] * 100,
         2,
@@ -100,26 +100,33 @@ def create_sensitivity_by_time_to_outcome_df(
 def _generate_sensitivity_array(
     df: pd.DataFrame,
     n_decimals_y_axis: int,
+    y_label_col_name: str,
 ):
     """Generate sensitivity array for plotting heatmap.
 
     Args:
         df (pd.DataFrame): Dataframe with columns "sens", "days_to_outcome_binned" and "threshold".
+        y_label_col_name (str): Name of the column to use for the y-axis labels.
         n_decimals_y_axis (int): Number of decimals to round y axis labels to.
 
     Returns:
         A tuple containing the generated sensitivity array (np.ndarray), the x axis labels and the y axis labels rounded to n_decimals_y_axis.
     """
     x_labels = df["days_to_outcome_binned"].unique().tolist()
-    y_labels = df["threshold"].unique().tolist()
+
+    y_labels = df[y_label_col_name].unique().tolist()
+
     y_labels_rounded = [
         round(y_labels[value], n_decimals_y_axis) for value in range(len(y_labels))
     ]
 
     sensitivity_array = []
-    for threshold in y_labels:
+
+    for threshold in df["threshold"].unique().tolist():
         sensitivity_current_threshold = []
+
         df_subset_y = df[df["threshold"] == threshold]
+
         for days_interval in x_labels:
             df_subset_y_x = df_subset_y[
                 df_subset_y["days_to_outcome_binned"] == days_interval
@@ -205,7 +212,64 @@ def _annotate_heatmap(
     return texts
 
 
-def plot_sensitivity_by_time_to_outcome(
+def _format_sens_by_time_heatmap(
+    colorbar_label,
+    x_title,
+    y_title,
+    data,
+    x_labels,
+    y_labels,
+    fig,
+    axes,
+    image,
+) -> tuple[plt.Figure, plt.Axes]:
+    # Create colorbar
+    cbar = axes.figure.colorbar(image, ax=axes)
+    cbar.ax.set_ylabel(colorbar_label, rotation=-90, va="bottom")
+
+    # Show all ticks and label them with the respective list entries.
+    axes.set_xticks(np.arange(data.shape[1]), labels=x_labels)
+    axes.set_yticks(np.arange(data.shape[0]), labels=y_labels)
+
+    # Let the horizontal axes labeling appear on top.
+    axes.tick_params(
+        top=False,
+        bottom=True,
+        labeltop=False,
+        labelbottom=True,
+    )
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(
+        axes.get_xticklabels(),
+        rotation=90,
+        ha="right",
+        rotation_mode="anchor",
+    )
+
+    # Turn spines off and create white grid.
+    axes.spines[:].set_visible(False)
+
+    axes.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
+    axes.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
+    axes.grid(which="minor", color="w", linestyle="-", linewidth=3)
+    axes.tick_params(which="minor", bottom=False, left=False)
+
+    # Add annotations
+    _ = _annotate_heatmap(image, value_formatter="{x:.1f}")
+
+    # Set axis labels and title
+    axes.set(
+        xlabel=x_title,
+        ylabel=y_title,
+    )
+
+    fig.tight_layout()
+
+    return fig, axes
+
+
+def plot_sensitivity_by_time_to_outcome_heatmap(
     labels: Iterable[int],
     y_hat_probs: Iterable[int],
     pred_proba_thresholds: list[float],
@@ -216,7 +280,7 @@ def plot_sensitivity_by_time_to_outcome(
     colorbar_label: Optional[str] = "Sensitivity",
     x_title: Optional[str] = "Days to outcome",
     y_title: Optional[str] = "Positive rate",
-    n_decimals_y_axis: Optional[int] = 4,
+    n_decimals_y_axis: int = 4,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot heatmap of sensitivity by time to outcome according to different
@@ -232,8 +296,8 @@ def plot_sensitivity_by_time_to_outcome(
         color_map (str, optional): Colormap to use. Defaults to "PuBu".
         colorbar_label (str, optional): Colorbar label. Defaults to "Sensitivity".
         x_title (str, optional): X axis title. Defaults to "Days to outcome".
-        y_title (str, optional): Y axis title. Defaults to "Positive rate".
-        n_decimals_y_axis (int, optional): Number of decimals to round y axis labels. Defaults to 4.
+        y_title (str, optional): Y axis title. Defaults to "y_hat percentile".
+        n_decimals_y_axis (int): Number of decimals to round y axis labels. Defaults to 4.
         save_path (Optional[Path], optional): Path to save the plot. Defaults to None.
 
     Returns:
@@ -264,6 +328,10 @@ def plot_sensitivity_by_time_to_outcome(
         >>> )
     """
     # Construct sensitivity dataframe
+    # Note that threshold_percentile IS equal to the positive rate,
+    # since it is calculated on the entire dataset, not just those
+    # whose true label is 1.
+
     func = partial(
         create_sensitivity_by_time_to_outcome_df,
         labels=labels,
@@ -284,55 +352,28 @@ def plot_sensitivity_by_time_to_outcome(
     )
 
     # Prepare data for plotting
-    data, x_labels, y_labels = _generate_sensitivity_array(df, n_decimals_y_axis)
+    data, x_labels, y_labels = _generate_sensitivity_array(
+        df,
+        n_decimals_y_axis=n_decimals_y_axis,
+        y_label_col_name="threshold_percentile",
+    )
 
-    fig, ax = plt.subplots()  # pylint: disable=invalid-name
+    fig, axes = plt.subplots()  # pylint: disable=invalid-name
 
     # Plot the heatmap
-    im = ax.imshow(data, cmap=color_map)  # pylint: disable=invalid-name
+    image = axes.imshow(data, cmap=color_map)  # pylint: disable=invalid-name
 
-    # Create colorbar
-    cbar = ax.figure.colorbar(im, ax=ax)
-    cbar.ax.set_ylabel(colorbar_label, rotation=-90, va="bottom")
-
-    # Show all ticks and label them with the respective list entries.
-    ax.set_xticks(np.arange(data.shape[1]), labels=x_labels)
-    ax.set_yticks(np.arange(data.shape[0]), labels=y_labels)
-
-    # Let the horizontal axes labeling appear on top.
-    ax.tick_params(
-        top=False,
-        bottom=True,
-        labeltop=False,
-        labelbottom=True,
+    fig, axes = _format_sens_by_time_heatmap(
+        colorbar_label=colorbar_label,
+        x_title=x_title,
+        y_title=y_title,
+        data=data,
+        x_labels=x_labels,
+        y_labels=y_labels,
+        fig=fig,
+        axes=axes,
+        image=image,
     )
-
-    # Rotate the tick labels and set their alignment.
-    plt.setp(
-        ax.get_xticklabels(),
-        rotation=90,
-        ha="right",
-        rotation_mode="anchor",
-    )
-
-    # Turn spines off and create white grid.
-    ax.spines[:].set_visible(False)
-
-    ax.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
-    ax.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
-    ax.grid(which="minor", color="w", linestyle="-", linewidth=3)
-    ax.tick_params(which="minor", bottom=False, left=False)
-
-    # Add annotations
-    _ = _annotate_heatmap(im, value_formatter="{x:.1f}")
-
-    # Set axis labels and title
-    ax.set(
-        xlabel=x_title,
-        ylabel=y_title,
-    )
-
-    fig.tight_layout()
 
     if save_path is None:
         plt.show()
@@ -358,7 +399,7 @@ if __name__ == "__main__":
         positive_rate_thresholds=positive_rate_thresholds,
     )
 
-    plot_sensitivity_by_time_to_outcome(
+    plot_sensitivity_by_time_to_outcome_heatmap(
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
         pred_proba_thresholds=pred_proba_thresholds,
