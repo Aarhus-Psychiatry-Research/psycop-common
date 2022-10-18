@@ -5,7 +5,8 @@ from psycopt2d.load import load_train_and_val_from_cfg
 
 
 def test_load_feat_lookbehind_exceeds_lookbehind_threshold():
-    """Test that columns are dropped if their lookbehind are larger than the lookbehind threshold."""
+    """Test that columns are dropped if their lookbehind are larger than the
+    lookbehind threshold."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name="integration_testing.yaml",
@@ -20,7 +21,8 @@ def test_load_feat_lookbehind_exceeds_lookbehind_threshold():
 
 
 def test_load_feat_lookbehind_not_in_lookbehind_combination():
-    """Test that columns are dropped if their lookbehind is not in the specified lookbehind combination list"""
+    """Test that columns are dropped if their lookbehind is not in the
+    specified lookbehind combination list."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name="integration_testing.yaml",
