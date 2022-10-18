@@ -36,7 +36,7 @@ class DatasetTimeSpecification(BaseModel):
         description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped""",
     )
 
-    lookbehind_window_combination: Optional[List[Union[int, float]]] = Field(
+    lookbehind_window_combination: Optional[list[Union[int, float]]] = Field(
         description="""List containing a combination of lookbehind windows (e.g. [30, 60, 90]) which determines which features to keep in the dataset""",
     )
 
@@ -208,7 +208,8 @@ class DataLoader:
         self,
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
-        """Drop predictor columns that are not in the specified combination of lookbehind windows.
+        """Drop predictor columns that are not in the specified combination of
+        lookbehind windows.
 
         Args:
             dataset (pd.DataFrame): Dataset.
@@ -252,7 +253,8 @@ class DataLoader:
         look_direction_threshold: Union[int, float],
         direction: str,
     ) -> pd.DataFrame:
-        """Drop columns if they look behind or ahead longer than a specified threshold
+        """Drop columns if they look behind or ahead longer than a specified
+        threshold.
 
             For example, if direction is "ahead", and n_days is 30, then the column
         should be dropped if it's trying to look 60 days ahead. This is useful
