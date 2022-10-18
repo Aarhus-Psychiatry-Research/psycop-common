@@ -27,7 +27,9 @@ from psycopt2d.visualization import (
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
-from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
+from psycopt2d.visualization.sens_over_time import (
+    plot_sensitivity_by_time_to_outcome_heatmap,
+)
 from psycopt2d.visualization.utils import log_image_to_wandb
 
 
@@ -177,7 +179,7 @@ def evaluate_model(
     # Add plots
     plots.update(
         {
-            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(
+            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome_heatmap(
                 labels=y,
                 y_hat_probs=y_hat_probs,
                 pred_proba_thresholds=pred_proba_thresholds,

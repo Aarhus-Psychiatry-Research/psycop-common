@@ -21,7 +21,7 @@ from psycopt2d.visualization.performance_over_time import (
 )
 from psycopt2d.visualization.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
-    plot_sensitivity_by_time_to_outcome,
+    plot_sensitivity_by_time_to_outcome_heatmap,
 )
 
 
@@ -116,7 +116,7 @@ def test_plot_sens_by_time_to_outcome(df, tmp_path):
         positive_rate_thresholds=positive_rate_thresholds,
     )
 
-    plot_sensitivity_by_time_to_outcome(  # noqa
+    plot_sensitivity_by_time_to_outcome_heatmap(  # noqa
         labels=df["label"],
         y_hat_probs=df["pred_prob"],
         outcome_timestamps=df["timestamp_t2d_diag"],
