@@ -3,10 +3,10 @@ import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import pandas as pd
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from psycopmlutils.sql.loader import sql_load
 from pydantic import BaseModel, Field
 from wasabi import Printer
@@ -423,30 +423,34 @@ def _init_spec_from_cfg(
     cfg: DictConfig,
 ) -> DatasetSpecification:
     """Initialise a feature spec from a DictConfig."""
+    data_cfg: dict[str, Any] = OmegaConf.to_container(  # type: ignore
+        cfg.data,
+        resolve=True,
+    )
 
-    data_cfg = cfg.data
-
-    if data_cfg.source == "synthetic":
+    if data_cfg["source"] == "synthetic":
         split_dir_path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
         file_suffix = "csv"
     else:
-        split_dir_path = data_cfg.dir
-        file_suffix = cfg.data.source
+        split_dir_path = data_cfg["dir"]
+        file_suffix = data_cfg["source"]
 
     time_spec = DatasetTimeSpecification(
-        drop_patient_if_outcome_before_date=data_cfg.drop_patient_if_outcome_before_date,
-        min_lookahead_days=data_cfg.min_lookahead_days,
-        min_lookbehind_days=data_cfg.min_lookbehind_days,
-        min_prediction_time_date=data_cfg.min_prediction_time_date,
-        lookbehind_combination=list(data_cfg.lookbehind_combination),
+        drop_patient_if_outcome_before_date=data_cfg[
+            "drop_patient_if_outcome_before_date"
+        ],
+        min_lookahead_days=data_cfg["min_lookahead_days"],
+        min_lookbehind_days=data_cfg["min_lookbehind_days"],
+        min_prediction_time_date=data_cfg["min_prediction_time_date"],
+        lookbehind_combination=data_cfg["lookbehind_combination"],
     )
 
     return DatasetSpecification(
         split_dir_path=split_dir_path,
-        pred_col_name_prefix=data_cfg.pred_col_name_prefix,
+        pred_col_name_prefix=data_cfg["pred_col_name_prefix"],
         file_suffix=file_suffix,
-        pred_time_colname=data_cfg.pred_timestamp_col_name,
-        n_training_samples=data_cfg.n_training_samples,
+        pred_time_colname=data_cfg["pred_timestamp_col_name"],
+        n_training_samples=data_cfg["n_training_samples"],
         time=time_spec,
     )
 
