@@ -100,7 +100,6 @@ figures/
 .tmp_figures/
 
 # data files
-*.csv
 
 #VS code
 .vscode
@@ -126,5 +125,6 @@ package.json
 *.pkl
 *.txt
 .aucs/
+*.parquet
 
 evaluation_results

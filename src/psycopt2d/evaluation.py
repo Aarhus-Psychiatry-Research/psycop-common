@@ -6,9 +6,10 @@ from typing import Optional, Union
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import recall_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
+from wasabi import Printer
 
 from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
@@ -62,11 +63,6 @@ def log_feature_importances(
 
 def log_auc_to_file(cfg: DictConfig, run: wandb_run, auc: Union[float, int]):
     """Log AUC to file."""
-    # Log to wandb
-
-    # Numerical metrics
-    run.log({"roc_auc_unweighted": auc})
-
     # log AUC and run ID to a file to find the best run later
     # Only create the file if it doesn't exists (will be auto-deleted/moved after
     # syncing). This is to avoid creating a new file every time the script is run
@@ -108,9 +104,14 @@ def evaluate_model(
         y_hat_prob_col_name (str): Column name containing pred_proba output
         run (wandb_run): WandB run to log to.
     """
+    msg = Printer(timestamp=True)
+
+    msg.info("Starting model evaluation")
+
     SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
     if not SAVE_DIR.exists():
         SAVE_DIR.mkdir()
+
     # Initialise relevant variables for the upcoming evaluation
     y = eval_df[y_col_name]  # pylint: disable=invalid-name
     y_hat_probs = eval_df[y_hat_prob_col_name]
@@ -128,7 +129,9 @@ def evaluate_model(
         positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
     )
 
-    print(f"AUC: {auc}")
+    msg.info(f"AUC: {auc}")
+    run.log({"roc_auc_unweighted": auc})
+    run.log({"1_minus_roc_auc_unweighted": 1 - auc})
 
     log_auc_to_file(cfg, run=run, auc=auc)
 
@@ -198,21 +201,23 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
             ),
-            "f1_by_time_until_diagnosis": plot_metric_by_time_until_diagnosis(
+            "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
                 labels=y,
                 y_hat=y_hat_int,
                 diagnosis_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
-                metric_fn=f1_score,
-                y_title="F1",
-                save_path=SAVE_DIR / "f1_by_time_until_diagnosis.png",
+                metric_fn=recall_score,
+                y_title="Sensitivty (recall)",
+                save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
             ),
         },
     )
 
-    # Save results to disk
-    prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg)
-
     # Log all the figures to wandb
     for chart_name, chart_path in plots.items():
         log_image_to_wandb(chart_path=chart_path, chart_name=chart_name, run=run)
+
+    # Save results to disk
+    prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, run=run)
+
+    msg.info("Finished model evaluation, logging charts to WandB")

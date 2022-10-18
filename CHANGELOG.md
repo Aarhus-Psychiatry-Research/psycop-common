@@ -2,6 +2,41 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2022-10-18)
+### Fix
+* Failing tests ([`6060f0f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6060f0f86d507fe1d29500e25da6dc465e6713d8))
+
+## v0.6.0 (2022-10-17)
+### Feature
+* Remove columns with lookbehind > min_lookbehind_days ([`c4b1611`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c4b16118990a3883d28c7d2a7c10afba2a9e6429))
+
+### Fix
+* Incorrect handling of null lookdirection vals ([`cac8838`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cac8838001ee287bac6d4cd0d589e9852891e288))
+* Allow null specification for min_lookdirection ([`d94526d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d94526d5a4510eac35d30a5ada7b7cfc3bfca14d))
+
+### Documentation
+* Update docstring from review ([`fce53d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/fce53d5f8dd0ecbe5070f70b9a3146a8d5843cd1))
+
+## v0.5.0 (2022-10-14)
+### Feature
+* Default group by day ([`7249388`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/7249388cb0937e1f04080c585511b354ce58a48e))
+
+### Fix
+* More robust saving eval data ([`58c801f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/58c801f992deb97c5164f5c95f8d32b7ce0ac00d))
+* Train on GPU ([`4d07209`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4d07209b2d61ca14e2c6a07d5a36e4556e188db3))
+* Even more robust naming, write to parquet instead of pickle ([`4e55454`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4e554544d5507f0ab70a53efd71ca65b49f0426e))
+* Enable pytest on non-windows ([`9beb331`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9beb3312f4034a86682cea722a212479384ce098))
+* Disable wand in integration test for now ([`0b3b264`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0b3b2641f33daa079be9957b346903809da957ad))
+* Can't only run pytest on darwin, not sure what to do ([`ddc1638`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ddc163882c5a9b29204bcca602f0f6bbb8c9e440))
+* Run wandb when doing integration testing ([`cec3678`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cec367838fdf6720e247d71653389ad81717881f))
+* Check run exists before using for file locatin ([`63b5065`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/63b5065f30c019774f2543f3b2003e3ee981e162))
+* Missing imports ([`4e6e0a0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4e6e0a0aa417f5db2396c485488bbbf4925a262b))
+* Make eval save naming more robust ([`51eccc9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/51eccc99bebeebb1ec09ea83f5cea5d5a4f98177))
+* Missing imports ([`37a1b15`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/37a1b15150a892abe9c51cf71de89ef52d5194b8))
+* F1 to recall ([`9e31f1f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9e31f1f943b0ce242f5e7bec6396fb211efb545a))
+* Misc. changes to configs ([`3b22c4e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3b22c4ea1b97f259d19d7aaf242e6e669a76cca0))
+* More robust max file length handling ([`b14a424`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b14a424312e9b9b2651bcb1135b52929d13f9d08))
+
 ## v0.4.3 (2022-10-12)
 ### Fix
 * F1 plot only scatter ([`510746a`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/510746ae8cf6c938fa41773df6d3c1dd26e59c78))

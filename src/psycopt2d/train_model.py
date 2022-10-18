@@ -22,8 +22,7 @@ from wasabi import Printer
 
 from psycopt2d.evaluation import evaluate_model
 from psycopt2d.preprocessing.feature_transformers import ConvertToBoolean, DateTimeConverter
-#from psycopt2d.preprocessing.feature_selection import FeatureSelection
-from psycopt2d.load import load_dataset_with_config
+from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
 from psycopt2d.utils import create_wandb_folders, flatten_nested_dict
 
@@ -223,7 +222,7 @@ def train_and_get_model_eval_df(
     outcome_col_name: str,
     train_col_names: list[str],
     n_splits: Optional[int],
-):
+) -> pd.DataFrame:
     """Train model and return evaluation dataset.
 
     Args:
@@ -320,7 +319,7 @@ def main(cfg):
     create_wandb_folders()
 
     # Get today's date as str
-    today_str = datetime.today().strftime("%Y-%m-%d")
+    today_str = datetime.now().strftime("%Y-%m-%d")
 
     run = wandb.init(
         project=cfg.project.name,
@@ -330,18 +329,18 @@ def main(cfg):
         group=today_str,
     )
 
-    train, val = load_dataset_with_config(cfg)
+    dataset = load_train_and_val_from_cfg(cfg)
 
     msg.info("Creating pipeline")
     pipe = create_pipeline(cfg)
 
-    outcome_col_name, train_col_names = get_col_names(cfg, train)
+    outcome_col_name, train_col_names = get_col_names(cfg, dataset.train)
 
     msg.info("Training model")
     eval_df = train_and_get_model_eval_df(
         cfg=cfg,
-        train=train,
-        val=val,
+        train=dataset.train,
+        val=dataset.val,
         pipe=pipe,
         outcome_col_name=outcome_col_name,
         train_col_names=train_col_names,
