@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.2 (2022-10-18)
+### Fix
+* Incorrect order of y-labels on sens heatmap ([`554ddf8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/554ddf817e99748f6c999d02f38f490ba2c46430))
+
 ## v0.6.1 (2022-10-18)
 ### Fix
 * Failing tests ([`6060f0f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6060f0f86d507fe1d29500e25da6dc465e6713d8))
