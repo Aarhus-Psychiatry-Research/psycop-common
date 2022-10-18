@@ -100,13 +100,11 @@ def create_sensitivity_by_time_to_outcome_df(
 def _generate_sensitivity_array(
     df: pd.DataFrame,
     n_decimals_y_axis: int,
-    y_label_col_name: str,
 ):
     """Generate sensitivity array for plotting heatmap.
 
     Args:
         df (pd.DataFrame): Dataframe with columns "sens", "days_to_outcome_binned" and "threshold".
-        y_label_col_name (str): Name of the column to use for the y-axis labels.
         n_decimals_y_axis (int): Number of decimals to round y axis labels to.
 
     Returns:
@@ -114,7 +112,7 @@ def _generate_sensitivity_array(
     """
     x_labels = df["days_to_outcome_binned"].unique().tolist()
 
-    y_labels = df[y_label_col_name].unique().tolist()
+    y_labels = df["threshold_percentile"].unique().tolist()
 
     y_labels_rounded = [
         round(y_labels[value], n_decimals_y_axis) for value in range(len(y_labels))
@@ -355,7 +353,6 @@ def plot_sensitivity_by_time_to_outcome_heatmap(
     data, x_labels, y_labels = _generate_sensitivity_array(
         df,
         n_decimals_y_axis=n_decimals_y_axis,
-        y_label_col_name="threshold_percentile",
     )
 
     fig, axes = plt.subplots()  # pylint: disable=invalid-name
