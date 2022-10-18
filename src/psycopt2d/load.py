@@ -36,7 +36,7 @@ class DatasetTimeSpecification(BaseModel):
         description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped""",
     )
 
-    lookbehind_window_combination: Optional[list[Union[int, float]]] = Field(
+    lookbehind_combination: Optional[list[Union[int, float]]] = Field(
         description="""List containing a combination of lookbehind windows (e.g. [30, 60, 90]) which determines which features to keep in the dataset""",
     )
 
@@ -204,7 +204,7 @@ class DataLoader:
 
         return dataset
 
-    def _drop_columns_not_in_lookbehind_window_combination(
+    def _drop_cols_not_in_lookbehind_combination(
         self,
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
@@ -218,13 +218,13 @@ class DataLoader:
             pd.DataFrame: Dataset with dropped columns.
         """
 
-        # Create a list of all predictor columns who have a lookbehind window not in lookbehind_window_combination list
+        # Create a list of all predictor columns who have a lookbehind window not in lookbehind_combination list
         cols_to_drop = [
             col
             for col in dataset.columns
             if any(
                 str(x) not in col and "pred" in col
-                for x in self.spec.time.lookbehind_window_combination
+                for x in self.spec.time.lookbehind_combination
             )
         ]
 
@@ -247,7 +247,7 @@ class DataLoader:
 
         return dataset
 
-    def _drop_columns_if_exceeds_look_direction_threshold(
+    def _drop_cols_if_exceeds_look_direction_threshold(
         self,
         dataset: pd.DataFrame,
         look_direction_threshold: Union[int, float],
@@ -322,7 +322,7 @@ class DataLoader:
                 direction=direction,
             )
 
-            dataset = self._drop_columns_if_exceeds_look_direction_threshold(
+            dataset = self._drop_cols_if_exceeds_look_direction_threshold(
                 dataset=dataset,
                 look_direction_threshold=n_days,
                 direction=direction,
@@ -355,6 +355,9 @@ class DataLoader:
             ]
 
         dataset = self._drop_cols_and_rows_if_look_direction_not_met(dataset=dataset)
+
+        if self.spec.time.lookbehind_combination:
+            dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
 
         return dataset
 
@@ -435,6 +438,7 @@ def _init_spec_from_cfg(
         min_lookahead_days=data_cfg.min_lookahead_days,
         min_lookbehind_days=data_cfg.min_lookbehind_days,
         min_prediction_time_date=data_cfg.min_prediction_time_date,
+        lookbehind_combination=list(data_cfg.lookbehind_combination),
     )
 
     return DatasetSpecification(
