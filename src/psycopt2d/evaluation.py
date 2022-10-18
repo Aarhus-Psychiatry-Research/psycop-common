@@ -120,6 +120,13 @@ def evaluate_model(
     pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
     y_hat_int = np.round(y_hat_probs, 0)
 
+    date_bins_ahead: Iterable[int] = eval_df[cfg.evaluation.date_bins_ahead]
+    date_bins_behind: Iterable[int] = eval_df[cfg.evaluation.date_bins_behind]
+
+    # Invert date_bins_behind to negative if it's not already
+    if min(date_bins_behind) >= 0:
+        date_bins_behind = [-d for d in date_bins_behind]
+
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
         cfg.data.pred_timestamp_col_name
     ].transform("min")
@@ -183,6 +190,7 @@ def evaluate_model(
                 pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
+                bins=date_bins_ahead,
                 save_path=SAVE_DIR / "sensitivity_by_time_by_threshold.png",
             ),
             "auc_by_calendar_time": plot_performance_by_calendar_time(
@@ -199,6 +207,7 @@ def evaluate_model(
                 y_hat_probs=y_hat_probs,
                 first_visit_timestamps=first_visit_timestamp,
                 prediction_timestamps=pred_timestamps,
+                bins=date_bins_ahead,
                 save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
             ),
             "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
@@ -208,6 +217,7 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 metric_fn=recall_score,
                 y_title="Sensitivty (recall)",
+                bins=date_bins_behind,
                 save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
             ),
         },
