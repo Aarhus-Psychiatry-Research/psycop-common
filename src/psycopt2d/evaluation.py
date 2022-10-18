@@ -131,6 +131,17 @@ def evaluate_model(
     date_bins_ahead: Iterable[int] = cfg.evaluation.date_bins_ahead
     date_bins_behind: Iterable[int] = cfg.evaluation.date_bins_behind
 
+    # Drop date_bins_direction if they are further away than min_lookdirection_days
+    if cfg.data.min_lookbehind_days:
+        date_bins_behind = [
+            b for b in date_bins_behind if abs(cfg.data.min_lookbehind_days) < abs(b)
+        ]
+
+    if cfg.data.min_lookahead_days:
+        date_bins_ahead = [
+            b for b in date_bins_ahead if abs(cfg.data.min_lookahead_days) < abs(b)
+        ]
+
     # Invert date_bins_behind to negative if it's not already
     if min(date_bins_behind) >= 0:
         date_bins_behind = [-d for d in date_bins_behind]
