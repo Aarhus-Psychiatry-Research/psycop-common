@@ -69,7 +69,10 @@ ignore_missing_imports = true
 load-plugins = "pylint.extensions.docparams,pylint.extensions.code_style,pylint.extensions.for_any_all,pylint.extensions.typing"
 good-names = "df,p,f,d,e,n,k,i,v,y_,X,y"
 disable = "too-many-lines,line-too-long,missing-raises-doc,no-self-argument,unused-wildcard-import,wildcard-import,no-else-return,too-many-arguments,redefined-outer-name,c-extension-no-member,wrong-import-order,import-outside-toplevel,unused-import"
-extension-pkg-allow-list = "wandb"
+extension-pkg-allow-list = "wandb,pydantic"
+
+[tool.pylint.'MESSAGES CONTROL']
+extension-pkg-whitelist = "pydantic"
 
 [tool.pytest.ini_options]
 markers = [

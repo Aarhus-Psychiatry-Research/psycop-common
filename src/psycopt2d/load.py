@@ -1,16 +1,14 @@
 """Loader for the t2d dataset."""
-# from datetime import date, datetime, timedelta
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, Union
 
-import omegaconf
 import pandas as pd
-from omegaconf import open_dict
+from omegaconf import DictConfig
 from psycopmlutils.sql.loader import sql_load
-from sklearn.model_selection import train_test_split
+from pydantic import BaseModel, Field
 from wasabi import Printer
 
 from psycopt2d.utils import PROJECT_ROOT, coerce_to_datetime
@@ -18,130 +16,79 @@ from psycopt2d.utils import PROJECT_ROOT, coerce_to_datetime
 msg = Printer(timestamp=True)
 
 
-def load_dataset_file(  # pylint: disable=inconsistent-return-statements
-    split_name: str,
-    dir_path: Path,
-    nrows: Optional[int],
-    file_suffix: str = "parquet",
-) -> pd.DataFrame:
-    """Load dataset from directory. Finds any file with the matching file
-    suffix with the split name in its filename.
+class DatasetTimeSpecification(BaseModel):
+    """Specification of the time range of the dataset."""
 
-    Args:
-        split_name (str): Name of split, allowed are ["train", "test", "val"]
-        dir_path (Path): Directory of the dataset.
-        nrows (Optional[int]): Number of rows to load. Defaults to None, in which case
-            all rows are loaded.
-        file_suffix (str, optional): File suffix of the dataset. Defaults to "parquet".
-
-    Returns:
-        pd.DataFrame: The dataset
-    """
-    if file_suffix not in ("csv", "parquet"):
-        raise ValueError(f"File suffix {file_suffix} not supported.")
-
-    if split_name not in ("train", "test", "val"):
-        raise ValueError(f"Split name {split_name} not supported.")
-
-    path = list(dir_path.glob(f"*{split_name}*.{file_suffix}"))[0]
-
-    if "parquet" in file_suffix:
-        if nrows:
-            raise ValueError(
-                "nrows is not supported for parquet files. Please use csv files.",
-            )
-        return pd.read_parquet(path)
-    elif "csv" in file_suffix:
-        return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
-
-
-def drop_rows_if_datasets_ends_within_days(
-    pred_datetime_column: str,
-    n_days: Union[float, int, timedelta],
-    dataset: pd.DataFrame,
-    direction: str,
-) -> pd.DataFrame:
-    """Drop visits that lie within certain amount of days from end of dataset.
-
-    Args:
-        pred_datetime_column (str): Name of the column containing the prediction
-            datetime.
-        n_days (Union[float, int]): Number of days.
-        dataset (pd.DataFrame): Dataset.
-        direction (str): Direction to look. Allowed are ["before", "after"].
-
-    Returns:
-        pd.DataFrame: Dataset with dropped rows.
-    """
-    if not isinstance(n_days, timedelta):
-        n_days = timedelta(days=n_days)
-
-    if direction not in ("ahead", "behind"):
-        raise ValueError(f"Direction {direction} not supported.")
-
-    if direction == "ahead":
-        max_datetime = dataset[pred_datetime_column].max() - n_days
-        before_max_dt = dataset[pred_datetime_column] < max_datetime
-        dataset = dataset[before_max_dt]
-    elif direction == "behind":
-        min_datetime = dataset[pred_datetime_column].min() + n_days
-        after_min_dt = dataset[pred_datetime_column] > min_datetime
-        dataset = dataset[after_min_dt]
-
-    return dataset
-
-
-def drop_patients_with_event_in_washin(
-    drop_patient_if_outcome_before_date: datetime,
-    dataset: pd.DataFrame,
-    pred_datetime_column: str,
-) -> pd.DataFrame:
-    """Drop patients within washin period."""
-
-    outcome_before_date = (
-        dataset["timestamp_first_diabetes_any"] < drop_patient_if_outcome_before_date
+    drop_patient_if_outcome_before_date: Optional[Union[str, datetime]] = Field(
+        description="""If a patient experiences the outcome before this date, all their prediction times will be dropped.
+        Used for wash-in, to avoid including patients who were probably already experiencing the outcome before the study began.""",
     )
 
-    patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
-    dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
+    min_prediction_time_date: Optional[Union[str, datetime]] = Field(
+        description="""Any prediction time before this date will be dropped.""",
+    )
 
-    # Removed dates before drop_patient_if_outcome_before_date
-    dataset = dataset[
-        dataset[pred_datetime_column] > drop_patient_if_outcome_before_date
-    ]
+    min_lookbehind_days: Optional[Union[int, float]] = Field(
+        description="""If the distance from the prediction time to the start of the dataset is less than this, the prediction time will be dropped""",
+    )
 
-    return dataset
-
-
-def process_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
-    """Convert columns with `timestamp`in their name to datetime, and convert
-    0's to NaT."""
-    timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
-
-    for colname in timestamp_colnames:
-        if dataset[colname].dtype != "datetime64[ns]":
-            # Convert all 0s in colname to NaT
-            dataset[colname] = dataset[colname].apply(
-                lambda x: pd.NaT if x == "0" else x,
-            )
-            dataset[colname] = pd.to_datetime(dataset[colname])
-
-    return dataset
+    min_lookahead_days: Optional[Union[int, float]] = Field(
+        description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped""",
+    )
 
 
-def add_washin_timestamps(dataset):
-    """Add washin timestamps to dataset."""
+class DatasetSpecification(BaseModel):
+    """Specification for loading a dataset."""
+
+    split_dir_path: Union[str, Path] = Field(
+        description="""Path to the directory containing the split files.""",
+    )
+
+    file_suffix: str = Field(
+        description="""Suffix of the split files. E.g. 'parquet' or 'csv'.""",
+        default="parquet",
+    )
+
+    time: DatasetTimeSpecification
+
+    pred_col_name_prefix: str = Field(
+        default="pred_",
+        description="""Prefix for the prediction column names.""",
+    )
+    pred_time_colname: str = Field(
+        default="timestamp",
+        description="""Column name for with timestamps for prediction times""",
+    )
+
+
+def load_timestamp_for_any_diabetes():
+    """Loads timestamps for the broad definition of diabetes used for wash-in.
+
+    See R files for details.
+    """
     timestamp_any_diabetes = sql_load(
         query="SELECT * FROM [fct].[psycop_t2d_first_diabetes_any]",
         format_timestamp_cols_to_datetime=False,
     )[["dw_ek_borger", "datotid_first_diabetes_any"]]
 
     timestamp_any_diabetes = timestamp_any_diabetes.rename(
-        columns={"datotid_first_diabetes_any": "timestamp_first_diabetes_any"},
+        columns={"datotid_first_diabetes_any": "timestamp_washin"},
     )
 
+    return timestamp_any_diabetes
+
+
+def add_washin_timestamps(dataset: pd.DataFrame) -> pd.DataFrame:
+    """Add washin timestamps to dataset.
+
+    Washin is an exclusion criterion. E.g. if the patient has any visit
+    that looks like diabetes before the study starts (i.e. during
+    washin), they are excluded.
+    """
+    timestamp_washin = load_timestamp_for_any_diabetes()
+
     dataset = dataset.merge(
-        timestamp_any_diabetes,
+        timestamp_washin,
         on="dw_ek_borger",
         how="left",
     )
@@ -149,331 +96,347 @@ def add_washin_timestamps(dataset):
     return dataset
 
 
-def drop_columns_if_min_look_direction_not_met(
-    dataset: pd.DataFrame,
-    n_days: Union[int, float],
-    direction: str,
-    pred_col_name_prefix: str,
-) -> pd.DataFrame:
-    """Drop columns if they cannot look sufficiently in the given direction.
+class DataLoader:
+    """Class to handle loading of a datasplit."""
 
-    For example, if direction is "ahead", and n_days is 30, then the column
-    should be dropped if it's trying to look 60 days ahead. This is useful
-    to avoid some rows having more information than others.
+    def __init__(
+        self,
+        spec: DatasetSpecification,
+    ):
+        self.spec = spec
 
-    Args:
-        dataset (pd.DataFrame): Dataset to process.
-        n_days (Union[int, float]): Number of days to look in the direction.
-        direction (str): Direction to look. Allowed are ["ahead", "behind"].
-        pred_col_name_prefix (str): Prefix of the prediction column names.
+        # File handling
+        self.dir_path = Path(spec.split_dir_path)
+        self.file_suffix = spec.file_suffix
 
-    Returns:
-        pd.DataFrame: Dataset without the dropped columns.
-    """
-    cols_to_drop = []
+        # Column specifications
+        self.pred_col_name_prefix = spec.pred_col_name_prefix
 
-    if direction == "behind":
-        cols_to_process = [c for c in dataset.columns if pred_col_name_prefix in c]
+    def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
+        self,
+        split_name: str,
+        nrows: Optional[int] = None,
+    ) -> pd.DataFrame:  # pylint: disable=inconsistent-return-statements
+        """Load dataset from directory. Finds any file with the matching file
+        suffix with the split name in its filename.
 
-        for col in cols_to_process:
-            # Extract lookbehind days from column name use regex
-            # E.g. "column_name_within_90_days" == 90
-            # E.g. "column_name_within_90_days_fallback_NaN" == 90
-            lookbehind_days_strs = re.findall(r"within_(\d+)_days", col)
+        Args:
+            split_name (str): Name of split, allowed are ["train", "test", "val"]
+            nrows (Optional[int]): Number of rows to load. Defaults to None, in which case
+                all rows are loaded.
+            self.file_suffix (str, optional): File suffix of the dataset. Defaults to "parquet".
 
-            if len(lookbehind_days_strs) > 0:
-                lookbehind_days = int(lookbehind_days_strs[0])
-            else:
-                raise ValueError(f"Could not extract lookbehind days from {col}")
+        Returns:
+            pd.DataFrame: The dataset
+        """
+        if self.file_suffix not in ("csv", "parquet"):
+            raise ValueError(f"File suffix {self.file_suffix} not supported.")
 
-            if lookbehind_days > n_days:
-                cols_to_drop.append(col)
+        if split_name not in ("train", "test", "val"):
+            raise ValueError(f"Split name {split_name} not supported.")
 
-    return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
+        path = list(self.dir_path.glob(f"*{split_name}*.{self.file_suffix}"))[0]
 
+        if "parquet" in self.file_suffix:
+            if nrows:
+                raise ValueError(
+                    "nrows is not supported for parquet files. Please use csv files.",
+                )
+            return pd.read_parquet(path)
+        elif "csv" in self.file_suffix:
+            return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
 
-def process_dataset(
-    dataset: pd.DataFrame,
-    drop_patient_if_outcome_before_date: datetime,
-    pred_datetime_column: str,
-    min_lookahead_days: Union[int, float],
-    min_lookbehind_days: Union[int, float],
-    min_prediction_time_date: datetime,
-    pred_col_name_prefix: str,
-) -> pd.DataFrame:
-    """Process dataset, namely:
+    def _drop_rows_if_datasets_ends_within_days(
+        self,
+        n_days: Union[int, float],
+        dataset: pd.DataFrame,
+        direction: str,
+    ) -> pd.DataFrame:
+        """Drop visits that lie within certain amount of days from end of
+        dataset.
 
-    - Drop patients with outcome before drop_patient_if_outcome_before_date
-    - Process timestamp columns
-    - Drop visits where mmin_lookahead, min_lookbehind or min_prediction_time_date are not met
+        Args:
+            n_days (Union[float, int]): Number of days.
+            dataset (pd.DataFrame): Dataset.
+            direction (str): Direction to look. Allowed are ["before", "after"].
 
-    And return the dataset.
+        Returns:
+            pd.DataFrame: Dataset with dropped rows.
+        """
+        if not isinstance(n_days, timedelta):
+            n_days = timedelta(days=n_days)  # type: ignore
 
-    Args:
-        dataset (pd.DataFrame): Dataset to process.
-        drop_patient_if_outcome_before_date (datetime): Remove patients which
-            experienced an outcome prior to the date. Also removes all visits prior to
-            this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
-            Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
-        pred_datetime_column (str): Column with prediction time timestamps.
-        min_lookahead_days (Union[int, float]): Minimum amount of days from prediction time to end of dataset for the visit time to be included.
-            Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
-            Defined as days from the last days.
-        min_lookbehind_days (Union[int, float]): Minimum amount of days from prediction time to start of dataset for the visit time to be included.
-        min_prediction_time_date (datetime): Minimum prediction time date. Defaults to None.
-        pred_col_name_prefix (str): Prefix of prediction columns.
+        if direction not in ("ahead", "behind"):
+            raise ValueError(f"Direction {direction} not supported.")
 
-    Returns:
-        pd.DataFrame: Processed dataset
-    """
-    if drop_patient_if_outcome_before_date:
-        dataset = add_washin_timestamps(dataset=dataset)
+        if direction == "ahead":
+            max_datetime = dataset[self.spec.pred_time_colname].max() - n_days
+            before_max_dt = dataset[self.spec.pred_time_colname] < max_datetime
+            dataset = dataset[before_max_dt]
+        elif direction == "behind":
+            min_datetime = dataset[self.spec.pred_time_colname].min() + n_days
+            after_min_dt = dataset[self.spec.pred_time_colname] > min_datetime
+            dataset = dataset[after_min_dt]
 
-    dataset = process_timestamp_dtype_and_nat(dataset)
-    if drop_patient_if_outcome_before_date:
-        dataset = drop_patients_with_event_in_washin(
-            dataset=dataset,
-            drop_patient_if_outcome_before_date=drop_patient_if_outcome_before_date,
-            pred_datetime_column=pred_datetime_column,
+        return dataset
+
+    def _drop_patients_with_event_in_washin(self, dataset) -> pd.DataFrame:
+        """Drop patients within washin period."""
+
+        # Remove dates before drop_patient_if_outcome_before_date
+        outcome_before_date = (
+            dataset["timestamp_first_diabetes_any"]
+            < self.spec.time.drop_patient_if_outcome_before_date
         )
 
-    # Drop if later than min prediction time date
-    if min_prediction_time_date:
-        dataset = dataset[dataset[pred_datetime_column] > min_prediction_time_date]
+        patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
+        dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
 
-    for direction in ("ahead", "behind"):
-        if direction == "ahead":
-            if min_lookahead_days:
-                n_days = min_lookahead_days
-            else:
-                continue
+        # Removed dates before drop_patient_if_outcome_before_date
+        dataset = dataset[
+            dataset[self.spec.pred_time_colname]
+            > self.spec.time.drop_patient_if_outcome_before_date
+        ]
+
+        return dataset
+
+    def _convert_timestamp_dtype_and_nat(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Convert columns with `timestamp`in their name to datetime, and
+        convert 0's to NaT."""
+        timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
+
+        for colname in timestamp_colnames:
+            if dataset[colname].dtype != "datetime64[ns]":
+                # Convert all 0s in colname to NaT
+                dataset[colname] = dataset[colname].apply(
+                    lambda x: pd.NaT if x == "0" else x,
+                )
+                dataset[colname] = pd.to_datetime(dataset[colname])
+
+        return dataset
+
+    def _drop_columns_if_min_look_direction_not_met(
+        self,
+        dataset: pd.DataFrame,
+        n_days: Union[int, float],
+        direction: str,
+    ) -> pd.DataFrame:
+        """Drop columns if the minimum look direction is not met.
+
+            For example, if direction is "ahead", and n_days is 30, then the column
+        should be dropped if it's trying to look 60 days ahead. This is useful
+        to avoid some rows having more information than others.
+
+            Args:
+                dataset (pd.DataFrame): Dataset to process.
+                n_days (Union[int, float]): Number of days to look in the direction.
+                direction (str): Direction to look. Allowed are ["ahead", "behind"].
+
+        Returns:
+            pd.DataFrame: Dataset without the dropped columns.
+        """
+
+        cols_to_drop = []
 
         if direction == "behind":
-            if min_lookbehind_days:
-                n_days = min_lookbehind_days
-            else:
-                continue
+            cols_to_process = [
+                c for c in dataset.columns if self.pred_col_name_prefix in c
+            ]
 
-        dataset = drop_rows_if_datasets_ends_within_days(
-            dataset=dataset,
-            pred_datetime_column=pred_datetime_column,
-            n_days=n_days,
-            direction=direction,
-        )
+            for col in cols_to_process:
+                # Extract lookbehind days from column name use regex
+                # E.g. "column_name_within_90_days" == 90
+                # E.g. "column_name_within_90_days_fallback_NaN" == 90
+                lookbehind_days_strs = re.findall(r"within_(\d+)_days", col)
 
-        dataset = drop_columns_if_min_look_direction_not_met(
-            dataset=dataset,
-            n_days=n_days,
-            direction=direction,
-            pred_col_name_prefix=pred_col_name_prefix,
-        )
+                if len(lookbehind_days_strs) > 0:
+                    lookbehind_days = int(lookbehind_days_strs[0])
+                else:
+                    raise ValueError(f"Could not extract lookbehind days from {col}")
 
-    return dataset
+                if lookbehind_days > n_days:
+                    cols_to_drop.append(col)
 
+        return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
-def load_dataset_from_dir(
-    split_names: Union[Iterable[str], str],
-    dir_path: Path,
-    drop_patient_if_outcome_before_date: datetime,
-    min_prediction_time_date: datetime,
-    pred_col_name_prefix: str,
-    file_suffix: str = "parquet",
-    pred_datetime_column: str = "timestamp",
-    n_training_samples: Union[None, int] = None,
-    min_lookahead_days: Optional[Union[float, int]] = None,
-    min_lookbehind_days: Optional[Union[float, int]] = None,
-) -> pd.DataFrame:
-    """Load dataset for t2d. Can load multiple splits at once, e.g. concatenate
-    train and val for crossvalidation.
+    def _drop_cols_and_rows_if_look_direction_not_met(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Drop columns if they are outside the specification. Specifically:
 
-    Args:
-        split_names (Union[Iterable[str], str]): Names of splits, includes "train", "val",
-            "test". Can take multiple splits and concatenate them for crossvalidation.
-        dir_path (Path): Directory of the dataset.
-        drop_patient_if_outcome_before_date (datetime): Remove patients which
-            experienced an outcome prior to the date. Also removes all visits prior to
-            this date as otherwise the model might learn that no visits prior to the date can be tagged with the outcome.
-            Takes either a datetime or a str in isoformat (e.g. 2022-01-01). Defaults to None.
-        min_prediction_time_date (Union[str, datetime]): Minimum date for a prediction time to be included in the dataset.
-        pred_col_name_prefix (str): Prefix of prediction columns. Defaults to "pred_".
-        file_suffix (str): File suffix of the dataset. Defaults to "parquet".
-        pred_datetime_column (str, optional): Column with prediction time timestamps.
-            Defaults to "timestamp".
-        n_training_samples (Union[None, int], optional): Number of training samples to load.
-            Defaults to None, in which case all training samples are loaded.
-        min_lookahead_days (int): Minimum amount of days from prediction time to end of dataset for the visit time to be included.
-            Useful if you're looking e.g. 5 years ahead for your outcome, but some visits only have 1 year of lookahead.
-            Defined as days from the last days.
-        min_lookbehind_days (int): Minimum amount of days from prediction time to start of dataset for the visit time to be included.
+        - min_lookahead_days is insufficient for the column's lookahead
+        - min_lookbehind_days is insufficient for the column's lookbehind
+        - The dataset doesn't stretch far enough for the prediction time's lookahead
+        - The dataset doesn't stretch far enough for the prediction time's lookbehind
 
-    Returns:
-        pd.DataFrame: The filtered dataset
-    """
-    # Handle input types
-    for timedelta_arg in (min_lookbehind_days, min_lookahead_days):
-        if timedelta_arg:
-            timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
+        Args:
+            dataset (pd.DataFrame): Dataset to process.
+        """
+        for direction in ("ahead", "behind"):
 
-    for date_arg in (drop_patient_if_outcome_before_date, min_prediction_time_date):
-        if isinstance(date_arg, str):
-            date_arg = coerce_to_datetime(
-                date_repr=date_arg,
+            if direction in ("ahead", "behind"):
+                if self.spec.time.min_lookahead_days:
+                    n_days = self.spec.time.min_lookahead_days
+                elif self.spec.time.min_lookbehind_days:
+                    n_days = self.spec.time.min_lookbehind_days
+                else:
+                    continue
+
+            dataset = self._drop_rows_if_datasets_ends_within_days(
+                n_days=n_days,
+                dataset=dataset,
+                direction=direction,
             )
 
-    # Concat splits if multiple are given
-    if isinstance(split_names, (list, tuple)):
+            dataset = self._drop_columns_if_min_look_direction_not_met(
+                dataset=dataset,
+                n_days=n_days,
+                direction=direction,
+            )
 
-        if isinstance(split_names, Iterable):
-            split_names = tuple(split_names)
+        return dataset
 
-        if n_training_samples is not None:
-            n_training_samples = int(n_training_samples / len(split_names))
+    def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Process dataset, namely:
 
-        return pd.concat(
-            [
-                load_dataset_file(
-                    split_name=split,
-                    dir_path=dir_path,
-                    nrows=n_training_samples,
-                    file_suffix=file_suffix,
+        - Drop patients with outcome before drop_patient_if_outcome_before_date
+        - Process timestamp columns
+        - Drop visits where mmin_lookahead, min_lookbehind or min_prediction_time_date are not met
+
+        Returns:
+            pd.DataFrame: Processed dataset
+        """
+        if self.spec.time.drop_patient_if_outcome_before_date:
+            dataset = add_washin_timestamps(dataset=dataset)
+
+        dataset = self._convert_timestamp_dtype_and_nat(dataset)
+        if self.spec.time.drop_patient_if_outcome_before_date:
+            dataset = self._drop_patients_with_event_in_washin(dataset=dataset)
+
+        # Drop if later than min prediction time date
+        if self.spec.time.min_prediction_time_date:
+            dataset = dataset[
+                dataset[self.spec.pred_time_colname]
+                > self.spec.time.min_prediction_time_date
+            ]
+
+        dataset = self._drop_cols_and_rows_if_look_direction_not_met(dataset=dataset)
+
+        return dataset
+
+    def load_dataset_from_dir(
+        self,
+        split_names: Union[Iterable[str], str],
+        nrows: Optional[int] = None,
+    ) -> pd.DataFrame:
+        """Load dataset for t2d. Can load multiple splits at once, e.g.
+        concatenate train and val for crossvalidation.
+
+        Args:
+            split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]
+            nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
+
+        Returns:
+            pd.DataFrame: The filtered dataset
+        """
+        # Handle input types
+        for timedelta_arg in (
+            self.spec.time.min_lookbehind_days,
+            self.spec.time.min_lookahead_days,
+        ):
+            if timedelta_arg:
+                timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
+
+        for date_arg in (
+            self.spec.time.drop_patient_if_outcome_before_date,
+            self.spec.time.min_prediction_time_date,
+        ):
+            if isinstance(date_arg, str):
+                date_arg = coerce_to_datetime(
+                    date_repr=date_arg,
                 )
-                for split in split_names
-            ],
-            ignore_index=True,
-        )
-    elif isinstance(split_names, str):
-        dataset = load_dataset_file(
-            split_name=split_names,
-            dir_path=dir_path,
-            nrows=n_training_samples,
-            file_suffix=file_suffix,
-        )
 
-    dataset = process_dataset(
-        dataset=dataset,
-        drop_patient_if_outcome_before_date=drop_patient_if_outcome_before_date,
-        pred_datetime_column=pred_datetime_column,
-        min_lookahead_days=min_lookahead_days,
-        min_lookbehind_days=min_lookbehind_days,
-        min_prediction_time_date=min_prediction_time_date,
-        pred_col_name_prefix=pred_col_name_prefix,
-    )
+        # Concat splits if multiple are given
+        if isinstance(split_names, (list, tuple)):
+            if isinstance(split_names, Iterable):
+                split_names = tuple(split_names)
 
-    msg.good(f"{split_names}: Returning!")
-    return dataset
+            if nrows is not None:
+                nrows = int(
+                    nrows / len(split_names),
+                )
 
+            return pd.concat(
+                [
+                    self._load_dataset_file(split_name=split, nrows=nrows)
+                    for split in split_names
+                ],
+                ignore_index=True,
+            )
+        elif isinstance(split_names, str):
+            dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
 
-def load_synth_train_val_from_dir(cfg, synth_splits_dir):
-    """Load synthetic train and val data from dir."""
-    # This is a temp fix. We probably want to use pydantic to validate all our inputs, and to set defaults if they don't exist in the config
-    try:
-        type(cfg.data.drop_patient_if_outcome_before_date)
-    except omegaconf.errors.ConfigAttributeError:
-        # Assign as none to struct
-        with open_dict(cfg) as conf_dict:
-            conf_dict.data.drop_patient_if_outcome_before_date = None
+        dataset = self._process_dataset(dataset=dataset)
 
-    train = load_dataset_from_dir(
-        split_names="train",
-        dir_path=synth_splits_dir,
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-        min_lookbehind_days=cfg.data.min_lookbehind_days,
-        min_prediction_time_date=cfg.data.min_prediction_time_date,
-        file_suffix="csv",
-        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
-    )
-
-    val = load_dataset_from_dir(
-        split_names="val",
-        dir_path=synth_splits_dir,
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-        min_lookbehind_days=cfg.data.min_lookbehind_days,
-        min_prediction_time_date=cfg.data.min_prediction_time_date,
-        file_suffix="csv",
-        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
-    )
-
-    return train, val
+        msg.good(f"{split_names}: Returning!")
+        return dataset
 
 
-def gen_synth_data_splits(cfg, test_data_dir):
-    """Generate synthetic data splits."""
-    dataset = pd.read_csv(
-        test_data_dir / "synth_prediction_data.csv",
-    )
+def _init_spec_from_cfg(
+    cfg: DictConfig,
+) -> DatasetSpecification:
+    """Initialise a feature spec from a DictConfig."""
 
-    # Convert all timestamp cols to datetime
-    for col in [col for col in dataset.columns if "timestamp" in col]:
-        dataset[col] = pd.to_datetime(dataset[col])
+    data_cfg = cfg.data
 
-    # Get 75% of dataset for train
-    train, val = train_test_split(
-        dataset,
-        test_size=0.25,
-        random_state=cfg.project.seed,
-    )
-
-    return train, val
-
-
-def load_train_and_val_from_file(cfg):
-    """Load data from file."""
-    if cfg.data.source in ("csv", "parquet"):
-        path = Path(cfg.data.dir)
+    if data_cfg.source == "synthetic":
+        split_dir_path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
+        file_suffix = "csv"
+    else:
+        split_dir_path = data_cfg.dir
         file_suffix = cfg.data.source
 
-    elif cfg.data.source == "synthetic":
-        path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
-        file_suffix = "csv"
-
-    else:
-        raise ValueError(f"Unknown data source: {cfg.data.source}")
-
-    train = load_dataset_from_dir(
-        split_names="train",
-        dir_path=path,
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-        min_lookbehind_days=cfg.data.min_lookbehind_days,
-        min_prediction_time_date=cfg.data.min_prediction_time_date,
-        file_suffix=file_suffix,
-        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
+    time_spec = DatasetTimeSpecification(
+        drop_patient_if_outcome_before_date=data_cfg.drop_patient_if_outcome_before_date,
+        min_lookahead_days=data_cfg.min_lookahead_days,
+        min_lookbehind_days=data_cfg.min_lookbehind_days,
+        min_prediction_time_date=data_cfg.min_prediction_time_date,
     )
 
-    val = load_dataset_from_dir(
-        split_names="val",
-        dir_path=path,
-        n_training_samples=cfg.data.n_training_samples,
-        drop_patient_if_outcome_before_date=cfg.data.drop_patient_if_outcome_before_date,
-        min_lookahead_days=cfg.data.min_lookahead_days,
-        min_lookbehind_days=cfg.data.min_lookbehind_days,
-        min_prediction_time_date=cfg.data.min_prediction_time_date,
+    return DatasetSpecification(
+        split_dir_path=split_dir_path,
+        pred_col_name_prefix=data_cfg.pred_col_name_prefix,
         file_suffix=file_suffix,
-        pred_col_name_prefix=cfg.data.pred_col_name_prefix,
+        pred_time_colname=data_cfg.pred_timestamp_col_name,
+        n_training_samples=data_cfg.n_training_samples,
+        time=time_spec,
     )
 
-    return train, val
+
+class SplitDataset(BaseModel):
+    """A dataset split into train, test and optionally validation."""
+
+    class Config:
+        """Configuration for the dataclass to allow pd.DataFrame as type."""
+
+        arbitrary_types_allowed = True
+
+    train: pd.DataFrame
+    test: Optional[pd.DataFrame] = None
+    val: pd.DataFrame
 
 
-def load_dataset_with_config(cfg) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Load dataset based on settings in the config file."""
+def load_train_and_val_from_cfg(cfg: DictConfig):
+    """Load train and validation data from file."""
 
-    allowed_data_sources = {"csv", "parquet", "synthetic"}
+    data_specification = _init_spec_from_cfg(
+        cfg,
+    )
 
-    if "csv" in cfg.data.source.lower() or "parquet" in cfg.data.source.lower():
-        train, val = load_train_and_val_from_file(cfg)
+    split = DataLoader(spec=data_specification)
 
-    elif cfg.data.source.lower() == "synthetic":
-        train, val = load_train_and_val_from_file(cfg)
-
-    else:
-        raise ValueError(
-            f"The config data.source is {cfg.data.source}, allowed are {allowed_data_sources}",
-        )
-
-    return train, val
+    return SplitDataset(
+        train=split.load_dataset_from_dir(split_names="train"),
+        val=split.load_dataset_from_dir(split_names="val"),
+    )
