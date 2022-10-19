@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2022-10-19)
+### Feature
+* Check for meaningful lookbehind_combination ([`297f7c4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/297f7c41b87520c1044944dabc3aa4805cadb3c3))
+
+### Fix
+* Error caused by merge ([`b77679d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b77679d45d6b8895db776f29fcb8cb2d0d5158f6))
+* Convert to sets in check ([`722a282`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/722a282cb9d46498cead7dbd04006ad59b8162d2))
+* Convert omegaconf types to generics ([`c85e2d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c85e2d52f650192478e497c866e84c872272a53d))
+
 ## v0.8.0 (2022-10-19)
 ### Feature
 * Log how many rows and cols are dropped ([`9bd5720`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9bd572008b250e7ba181f5436dbd8fe9b92e9e13))
