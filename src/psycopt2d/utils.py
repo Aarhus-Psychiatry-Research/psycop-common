@@ -320,7 +320,7 @@ def prediction_df_with_metadata_to_disk(
     else:
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
-    if cfg.evaluation.save_model_predictions_on_overtaci and run:
+    if cfg.evaluation.save_model_predictions_on_overtaci:
         # Save to overtaci formatted with date
         dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:
