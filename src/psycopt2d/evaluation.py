@@ -27,7 +27,9 @@ from psycopt2d.visualization import (
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
-from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
+from psycopt2d.visualization.sens_over_time import (
+    plot_sensitivity_by_time_to_outcome_heatmap,
+)
 from psycopt2d.visualization.utils import log_image_to_wandb
 
 
@@ -109,6 +111,12 @@ def evaluate_model(
     msg.info("Starting model evaluation")
 
     SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
+    # When parallelising tests, this causes issues since multiple processes
+    # override the same dir at once.
+    # Can be solved by allowing config to override this
+    # and using tmp_dir in pytest. Not worth refactoring
+    # right now, though.
+
     if not SAVE_DIR.exists():
         SAVE_DIR.mkdir()
 
@@ -119,6 +127,27 @@ def evaluate_model(
     outcome_timestamps = eval_df[cfg.data.outcome_timestamp_col_name]
     pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
     y_hat_int = np.round(y_hat_probs, 0)
+
+    date_bins_ahead: Iterable[int] = cfg.evaluation.date_bins_ahead
+    date_bins_behind: Iterable[int] = cfg.evaluation.date_bins_behind
+
+    # Drop date_bins_direction if they are further away than min_lookdirection_days
+    if cfg.data.min_lookbehind_days:
+        date_bins_behind = [
+            b for b in date_bins_behind if cfg.data.min_lookbehind_days < b
+        ]
+
+    if cfg.data.min_lookahead_days:
+        date_bins_ahead = [
+            b for b in date_bins_ahead if cfg.data.min_lookahead_days < abs(b)
+        ]
+
+    # Invert date_bins_behind to negative if it's not already
+    if min(date_bins_behind) >= 0:
+        date_bins_behind = [-d for d in date_bins_behind]
+
+    # Sort date_bins_behind and date_bins_ahead to be monotonically increasing if they aren't already
+    date_bins_behind = sorted(date_bins_behind)
 
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
         cfg.data.pred_timestamp_col_name
@@ -177,12 +206,13 @@ def evaluate_model(
     # Add plots
     plots.update(
         {
-            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(
+            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome_heatmap(
                 labels=y,
                 y_hat_probs=y_hat_probs,
                 pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
+                bins=date_bins_ahead,
                 save_path=SAVE_DIR / "sensitivity_by_time_by_threshold.png",
             ),
             "auc_by_calendar_time": plot_performance_by_calendar_time(
@@ -199,6 +229,7 @@ def evaluate_model(
                 y_hat_probs=y_hat_probs,
                 first_visit_timestamps=first_visit_timestamp,
                 prediction_timestamps=pred_timestamps,
+                bins=date_bins_ahead,
                 save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
             ),
             "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
@@ -208,6 +239,7 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 metric_fn=recall_score,
                 y_title="Sensitivty (recall)",
+                bins=date_bins_behind,
                 save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
             ),
         },
