@@ -13,28 +13,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 from psycopt2d.utils import bin_continuous_data, round_floats_to_edge
 from psycopt2d.visualization.base_charts import plot_basic_chart
-
-
-def _calc_performance(df: pd.DataFrame, metric: Callable) -> float:
-    """Calculates performance metrics of a df with 'y' and 'y_hat' columns.
-
-    Args:
-        df (pd.DataFrame): dataframe
-        metric (Callable): which metric to calculate
-
-    Returns:
-        float: performance
-    """
-    if df.empty:
-        return np.nan
-    elif metric is roc_auc_score and len(df["y"].unique()) == 1:
-        # msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan") This was hit almost once per month, making it very hard to read.
-        # Many of our models probably try to predict the majority class.
-        # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
-        # For now, suppressing this message.
-        return np.nan
-    else:
-        return metric(df["y"], df["y_hat"])
+from psycopt2d.visualization.utils import calc_performance
 
 
 def create_performance_by_calendar_time_df(
@@ -59,7 +38,7 @@ def create_performance_by_calendar_time_df(
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
     df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
 
-    output_df = df.groupby("time_bin").apply(_calc_performance, metric_fn)
+    output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
@@ -171,7 +150,7 @@ def create_performance_by_time_from_event_df(
     df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
 
     # Calc performance and prettify output
-    output_df = df.groupby("days_from_event_binned").apply(_calc_performance, metric_fn)
+    output_df = df.groupby("days_from_event_binned").apply(calc_performance, metric_fn)
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
 
