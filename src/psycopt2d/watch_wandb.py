@@ -91,15 +91,6 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         if len(self.run_ids) >= self.n_runs_before_eval:
             self.evaluate_best_runs()
 
-    def upload_recent_runs(self) -> None:
-        """Upload unarchived runs to wandb."""
-        for run_folder in WANDB_DIR.glob("offline-run*"):
-            run_id = self._get_run_id(run_folder)
-
-            self._upload_run(run_folder)
-            self._archive_run(run_folder)
-            self.run_ids.append(run_id)
-
     def _upload_run(self, run: Path) -> None:
         """Upload a single run to wandb."""
         subprocess.run(
@@ -114,6 +105,15 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
     def _get_run_id(self, run: Path) -> str:
         """Get the run id from the wandb directory."""
         return run.name.split("-")[-1]
+
+    def upload_recent_runs(self) -> None:
+        """Upload unarchived runs to wandb."""
+        for run_folder in WANDB_DIR.glob("offline-run*"):
+            run_id = self._get_run_id(run_folder)
+
+            self._upload_run(run_folder)
+            self._archive_run(run_folder)
+            self.run_ids.append(run_id)
 
     def _get_run_evaluation_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
@@ -179,7 +179,7 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         }
         # sort runs by performance
         run_performances = dict(
-            sorted(run_performances.items(), key=lambda item: item[1], reverse=True)
+            sorted(run_performances.items(), key=lambda item: item[1], reverse=True),
         )
         # get runs with auc of 0 (attempted upload before run finished)
         unfinished_runs = [

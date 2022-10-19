@@ -1,6 +1,6 @@
-"""Example script to train (multiple) models and simultaneously log the results to
-wandb. Logs AUC for all models, and runs the full model evaluation suite on the
-best performing ones.
+"""Example script to train (multiple) models and simultaneously log the results
+to wandb. Logs AUC for all models, and runs the full model evaluation suite on
+the best performing ones.
 
 Usage:
 - Set the constants in the first section of the script (mainly CONFIG_NAME, HYDRA_ARGS, and OVERTACI).
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         ],
     )
 
-    any_process_done = False
+    any_process_done = False  # pylint: disable=invalid-name
     for process in (trainer, watcher):
         while process.poll() is None:
             if any_process_done:
@@ -64,5 +64,5 @@ if __name__ == "__main__":
                 time.sleep(MINUTES_WAIT_FOR_SYNCING * 60)
                 process.kill()
             time.sleep(1)
-        any_process_done = True
+        any_process_done = True  # pylint: disable=invalid-name
         process.kill()
