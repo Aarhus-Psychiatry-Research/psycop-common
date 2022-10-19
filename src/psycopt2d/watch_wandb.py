@@ -1,11 +1,9 @@
 """Watches the wandb directory for new files and uploads them to wandb."""
 import argparse
-import re
 import subprocess
 import time
 from distutils.util import strtobool
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 import wandb
@@ -20,7 +18,7 @@ from psycopt2d.utils import MODEL_PREDICTIONS_PATH, PROJECT_ROOT, read_pickle
 WANDB_DIR = PROJECT_ROOT / "wandb"
 
 
-class WandbWatcher:
+class WandbWatcher:  # pylint: disable=too-many-instance-attributes
     """Watch the wandb directory for new files and uploads them to wandb.
     Fully evaluates the best runs after a certain number of runs have been
     uploaded.
