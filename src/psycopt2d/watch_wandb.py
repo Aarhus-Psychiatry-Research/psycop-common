@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 import wandb
-from wandb.apis.public import Api
-from wandb.sdk.wandb_run import Run
+from wandb.apis.public import Api  # pylint: disable=no-name-in-module
+from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
 from psycopt2d.evaluation import evaluate_model
