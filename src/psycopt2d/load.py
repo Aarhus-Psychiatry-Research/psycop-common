@@ -181,9 +181,12 @@ class DataLoader:
             dataset = dataset[after_min_dt]
 
         n_rows_after_modification = dataset.shape[0]
+        percent_dropped = (
+            n_rows_before_modification - n_rows_after_modification
+        ) / n_rows_before_modification
 
         msg.info(
-            f"Dropped {n_rows_before_modification - n_rows_after_modification} rows because dataset end was within {n_days} {direction} from their prediction time.",
+            f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because the end of the dataset was within {n_days} of their prediction time when looking {direction} from their prediction time",
         )
 
         return dataset
@@ -209,9 +212,12 @@ class DataLoader:
         ]
 
         n_rows_after_modification = dataset.shape[0]
+        percent_dropped = (
+            n_rows_before_modification - n_rows_after_modification
+        ) / n_rows_before_modification
 
         msg.info(
-            f"Dropped {n_rows_before_modification - n_rows_after_modification} rows because patients had diabetes in the washin period.",
+            f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because patients had diabetes in the washin period.",
         )
 
         return dataset
@@ -276,9 +282,12 @@ class DataLoader:
                     cols_to_drop.append(col)
 
         n_cols_after_modification = dataset.shape[1]
+        percent_dropped = (
+            n_cols_before_modification - n_cols_after_modification
+        ) / n_cols_before_modification
 
         msg.info(
-            f"Dropped {n_cols_before_modification - n_cols_after_modification} columns because they were looking {direction} further out than {n_days} days.",
+            f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {n_days} days.",
         )
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
