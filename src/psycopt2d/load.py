@@ -1,4 +1,5 @@
 """Loader for the t2d dataset."""
+from distutils.log import error
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
@@ -9,6 +10,7 @@ import pandas as pd
 from omegaconf import DictConfig, OmegaConf
 from psycopmlutils.sql.loader import sql_load
 from pydantic import BaseModel, Field
+from pyparsing import col
 from wasabi import Printer
 
 from psycopt2d.utils import PROJECT_ROOT, coerce_to_datetime
@@ -218,6 +220,26 @@ class DataLoader:
             pd.DataFrame: Dataset with dropped columns.
         """
 
+        # Extract all unique lookbhehinds in the dataset predictors
+        lookbehinds_in_dataset = list(
+            set(
+                [
+                    int(re.findall(r"within_(\d+)_days", col)[0])
+                    for col in dataset.columns
+                    if self.pred_col_name_prefix in col
+                ]
+            )
+        )
+
+        # Check that all loobehinds in lookbehind_combination are used in the predictors
+        if not all(
+            item in lookbehinds_in_dataset
+            for item in self.spec.time.lookbehind_combination
+        ):
+            raise ValueError(
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Lookbehinds in dataset: {lookbehinds_in_dataset}. Lookbehinds in lookbehind_combination: {self.spec.time.lookbehind_combination}.",
+            )
+
         # Create a list of all predictor columns who have a lookbehind window not in lookbehind_combination list
         cols_to_drop = [
             col
@@ -336,6 +358,7 @@ class DataLoader:
         - Drop patients with outcome before drop_patient_if_outcome_before_date
         - Process timestamp columns
         - Drop visits where mmin_lookahead, min_lookbehind or min_prediction_time_date are not met
+        - Drop features with lookbehinds not in lookbehind_combination
 
         Returns:
             pd.DataFrame: Processed dataset
