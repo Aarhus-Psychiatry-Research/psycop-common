@@ -223,7 +223,7 @@ class DataLoader:
             col
             for col in dataset.columns
             if any(
-                str(x) not in col and "pred" in col
+                str(x) not in col and self.pred_col_name_prefix in col
                 for x in self.spec.time.lookbehind_combination
             )
         ]
