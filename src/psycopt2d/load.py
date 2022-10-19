@@ -227,7 +227,7 @@ class DataLoader:
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
         if not set(self.spec.time.lookbehind_combination).issubset(
-            lookbehinds_in_dataset
+            lookbehinds_in_dataset,
         ):
             raise ValueError(
                 f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Lookbehinds in dataset: {lookbehinds_in_dataset}. Lookbehinds in lookbehind_combination: {self.spec.time.lookbehind_combination}.",
