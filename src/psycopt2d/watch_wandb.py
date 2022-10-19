@@ -18,10 +18,27 @@ from psycopt2d.utils import MODEL_PREDICTIONS_PATH, PROJECT_ROOT, read_pickle
 WANDB_DIR = PROJECT_ROOT / "wandb"
 
 
+def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
+    """Infer the outcome column name from the dataframe."""
+    outcome_name = [c for c in df.columns if c.startswith(prefix)]
+    if len(outcome_name) == 1:
+        return outcome_name[0]
+    else:
+        raise ValueError("More than one outcome inferred")
+
+
+def infer_y_hat_prop_col_name(df: pd.DataFrame) -> str:
+    """Infer the y_hat_prob column name from the dataframe."""
+    y_hat_prob_name = [c for c in df.columns if c.startswith("y_hat_prob")]
+    if len(y_hat_prob_name) == 1:
+        return y_hat_prob_name[0]
+    else:
+        raise ValueError("More than one y_hat_prob inferred")
+
+
 class WandbWatcher:  # pylint: disable=too-many-instance-attributes
-    """Watch the wandb directory for new files and uploads them to wandb.
-    Fully evaluates the best runs after a certain number of runs have been
-    uploaded.
+    """Watch the wandb directory for new files and uploads them to wandb. Fully
+    evaluates the best runs after a certain number of runs have been uploaded.
 
     Args:
         entity: The wandb entity to upload to (e.g. "psycop")
@@ -74,6 +91,21 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         if len(self.run_ids) >= self.n_runs_before_eval:
             self.evaluate_best_runs()
 
+    def _upload_run(self, run: Path) -> None:
+        """Upload a single run to wandb."""
+        subprocess.run(
+            ["wandb", "sync", str(run), "--project", self.project_name],
+            check=True,
+        )
+
+    def _archive_run(self, run: Path) -> None:
+        """Move a run to the archive folder."""
+        run.rename(self.archive_path / run.name)
+
+    def _get_run_id(self, run: Path) -> str:
+        """Get the run id from the wandb directory."""
+        return run.name.split("-")[-1]
+
     def upload_recent_runs(self) -> None:
         """Upload unarchived runs to wandb."""
         for run_folder in WANDB_DIR.glob("offline-run*"):
@@ -83,24 +115,24 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
             self._archive_run(run_folder)
             self.run_ids.append(run_id)
 
-    def evaluate_best_runs(self) -> None:
-        """Evaluate the best runs."""
-        run_performances = {
-            run_id: self._get_run_performance(run_id) for run_id in self.run_ids
-        }
+    def _get_run_evaluation_dir(self, run_id: str) -> Path:
+        """Get the evaluation path for a single run."""
+        return list(self.model_data_dir.glob(f"*{run_id}*"))[0]
 
-        for run_id, performance in run_performances.items():
-            if performance > self.max_performance:
-                msg.good(f"New record performance! AUC: {performance}")
-                self.max_performance = performance
-                self._do_evaluation(run_id)
-        # reset run id tracker
-        self.run_ids = []
+    def _get_eval_data(self, run_id: str) -> tuple:
+        """Get the evaluation data for a single run."""
+        run_eval_dir = self._get_run_evaluation_dir(run_id)
 
-    def archive_all_runs(self) -> None:
-        """Archive all runs in the wandb directory."""
-        for run_folder in WANDB_DIR.glob("offline-run*"):
-            self._archive_run(run_folder)
+        eval_df = pd.read_parquet(run_eval_dir / "df.parquet")
+        cfg = read_pickle(str(run_eval_dir / "cfg.pkl"))
+
+        if (run_eval_dir / "feature_importance.pkl").exists():
+            feature_importance = read_pickle(
+                str(run_eval_dir / "feature_importance.pkl"),
+            )
+        else:
+            feature_importance = None
+        return eval_df, cfg, feature_importance
 
     def _do_evaluation(self, run_id: str) -> None:
         """Do the full evaluation of the run and upload to wandb."""
@@ -123,39 +155,9 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         )
         run.finish()
 
-    def _get_eval_data(self, run_id: str) -> tuple:
-        """Get the evaluation data for a single run."""
-        run_eval_dir = self._get_run_evaluation_dir(run_id)
-
-        eval_df = pd.read_parquet(run_eval_dir / "df.parquet")
-        cfg = read_pickle(str(run_eval_dir / "cfg.pkl"))
-
-        if (run_eval_dir / "feature_importance.pkl").exists():
-            feature_importance = read_pickle(
-                str(run_eval_dir / "feature_importance.pkl")
-            )
-        else:
-            feature_importance = None
-        return eval_df, cfg, feature_importance
-
-    def _get_run_evaluation_dir(self, run_id: str) -> Path:
-        """Get the evaluation path for a single run."""
-        return list(self.model_data_dir.glob(f"*{run_id}*"))[0]
-
-    def _upload_run(self, run: Path) -> None:
-        """Upload a single run to wandb."""
-        subprocess.run(
-            ["wandb", "sync", str(run), "--project", self.project_name],
-            check=True,
-        )
-
-    def _archive_run(self, run: Path) -> None:
-        """Move a run to the archive folder."""
-        run.rename(self.archive_path / run.name)
-
-    def _get_run_id(self, run: Path) -> str:
-        """Get the run id from the wandb directory."""
-        return run.name.split("-")[-1]
+    def _get_wandb_run(self, run_id: str) -> Run:
+        """Get the wandb run object from the run id."""
+        return Api().run(f"{self.entity}/{self.project_name}/{run_id}")
 
     def _get_run_performance(self, run_id: str) -> float:
         """Get the performance of a single run and check if it failed."""
@@ -170,34 +172,34 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
             msg.warn(f"Run {run_id} has no performance metric.")
             return 0.0
 
-    def _get_wandb_run(self, run_id: str) -> Run:
-        """Get the wandb run object from the run id."""
-        return Api().run(f"{self.entity}/{self.project_name}/{run_id}")
+    def evaluate_best_runs(self) -> None:
+        """Evaluate the best runs."""
+        run_performances = {
+            run_id: self._get_run_performance(run_id) for run_id in self.run_ids
+        }
 
+        for run_id, performance in run_performances.items():
+            if performance > self.max_performance:
+                msg.good(f"New record performance! AUC: {performance}")
+                self.max_performance = performance
+                self._do_evaluation(run_id)
+        # reset run id tracker
+        self.run_ids = []
 
-def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
-    """Infer the outcome column name from the dataframe."""
-    outcome_name = [c for c in df.columns if c.startswith(prefix)]
-    if len(outcome_name) == 1:
-        return outcome_name[0]
-    else:
-        raise ValueError("More than one outcome inferred")
-
-
-def infer_y_hat_prop_col_name(df: pd.DataFrame) -> str:
-    """Infer the y_hat_prob column name from the dataframe."""
-    y_hat_prob_name = [c for c in df.columns if c.startswith("y_hat_prob")]
-    if len(y_hat_prob_name) == 1:
-        return y_hat_prob_name[0]
-    else:
-        raise ValueError("More than one y_hat_prob inferred")
+    def archive_all_runs(self) -> None:
+        """Archive all runs in the wandb directory."""
+        for run_folder in WANDB_DIR.glob("offline-run*"):
+            self._archive_run(run_folder)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--entity", type=str, help="Wandb entity", required=True)
     parser.add_argument(
-        "--project_name", type=str, help="Wandb project name", required=True
+        "--project_name",
+        type=str,
+        help="Wandb project name",
+        required=True,
     )
     parser.add_argument(
         "--n_runs_before_eval",

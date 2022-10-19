@@ -278,6 +278,24 @@ def write_df_to_file(
         raise ValueError(f"Invalid file suffix {file_suffix}")
 
 
+def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]:
+    """Checks whether the model has feature importances and returns them as a
+    dictionary. Return None if not.
+
+    Args:
+        pipe (Pipeline): Sklearn pipeline.
+
+    Returns:
+        Union[None, dict[str, float]]: Dictionary of feature importances.
+    """
+    if hasattr(pipe["model"], "feature_importances_"):
+        return dict(
+            zip(pipe["model"].feature_names, pipe["model"].feature_importances_),
+        )
+    else:
+        return None
+
+
 def prediction_df_with_metadata_to_disk(
     df: pd.DataFrame,
     cfg: DictConfig,
@@ -316,7 +334,8 @@ def prediction_df_with_metadata_to_disk(
     write_df_to_file(df, dir_path / "df.parquet")
     if (feature_importance_dict := get_feature_importance_dict(pipe)) is not None:
         dump_to_pickle(
-            feature_importance_dict, str(dir_path / "feature_importance.pkl")
+            feature_importance_dict,
+            str(dir_path / "feature_importance.pkl"),
         )
 
     msg.good(f"Saved evaluation results to {dir_path}")
@@ -346,21 +365,3 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
         )
 
     return date_repr
-
-
-def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]:
-    """Checks whether the model has feature importances and returns them as a
-    dictionary. Return None if not.
-
-    Args:
-        pipe (Pipeline): Sklearn pipeline.
-
-    Returns:
-        Union[None, dict[str, float]]: Dictionary of feature importances.
-    """
-    if hasattr(pipe["model"], "feature_importances_"):
-        return dict(
-            zip(pipe["model"].feature_names, pipe["model"].feature_importances_)
-        )
-    else:
-        return None
