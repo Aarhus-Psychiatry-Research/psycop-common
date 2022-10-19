@@ -338,24 +338,21 @@ def main(cfg):
         n_splits=cfg.training.n_splits,
     )
 
-    msg.info("Evaluating model")
-    # Evaluate: Calculate performance metrics and log to wandb
-    # save model preds to disk -- handle feature importances that may or may not
-    # be available
+    # Save model predictions, feature importance, and config to disk
     prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, pipe=pipe, run=run)
 
-    
-    feature_importance_dict = get_feature_importance_dict(pipe)
-    evaluate_model(
-        cfg=cfg,
-        eval_df=eval_df,
-        y_col_name=outcome_col_name,
-        y_hat_prob_col_name="y_hat_prob",
-        
-        run=run,
-    )
-
-    run.finish()
+    # only run full evaluation if wandb mode mode is online
+    # otherwise delegate to watcher script
+    if cfg.project.wandb_mode == "online":
+        msg.info("Evaluating model")
+        evaluate_model(
+            cfg=cfg,
+            eval_df=eval_df,
+            y_col_name=outcome_col_name,
+            y_hat_prob_col_name="y_hat_prob",
+            feature_importance_dict=get_feature_importance_dict(pipe),
+            run=run,
+        )
 
     roc_auc = roc_auc_score(
         eval_df[outcome_col_name],
@@ -363,7 +360,8 @@ def main(cfg):
     )
 
     msg.info(f"ROC AUC: {roc_auc}")
-
+    run.log({"roc_auc_unweighted": roc_auc})
+    run.finish()
     return roc_auc
 
 

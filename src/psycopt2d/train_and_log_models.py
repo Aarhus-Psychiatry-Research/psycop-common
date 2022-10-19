@@ -21,6 +21,3 @@ if __name__ == "__main__":
     # train models
     os.system(f"python src/psycopt2d/train_model.py {HYDRA_ARGS}")
     # sync to wandb and move runs to archive
-    os.system(
-        f"python src/psycopt2d/sync_best_runs_to_wandb.py --top_n {SAVE_TOP_N} --project {WANDB_PROJECT}",
-    )

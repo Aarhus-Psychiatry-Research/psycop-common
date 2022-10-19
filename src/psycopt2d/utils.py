@@ -27,7 +27,6 @@ RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
 FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-AUC_LOGGING_FILE_PATH = PROJECT_ROOT / ".aucs" / "aucs.txt"
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -290,7 +289,7 @@ def prediction_df_with_metadata_to_disk(
     Args:
         df (pd.DataFrame): Dataframe to save.
         cfg (DictConfig): Hydra config.
-        pipe (Pipeline). Sklearn pipeline. Used to get feature names and feature
+        pipe (Pipeline): Sklearn pipeline. Used to get feature names and feature
             importances. Can potentially also save the entire model pipeline.
         run (Run): Wandb run. Used for getting name of the run.
     """
@@ -298,8 +297,8 @@ def prediction_df_with_metadata_to_disk(
 
     timestamp = time.strftime("%Y_%m_%d_%H_%M")
 
-    if run and run.name:
-        run_descriptor = f"{timestamp}_{run.name}"
+    if run and run.id:
+        run_descriptor = f"{timestamp}_{run.id}"
     else:
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
@@ -315,10 +314,9 @@ def prediction_df_with_metadata_to_disk(
     # Write the files
     dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
     write_df_to_file(df, dir_path / "df.parquet")
-    feature_importance_dict = get_feature_importance_dict(pipe)
-    if feature_importance_dict is not None:
+    if (feature_importance_dict := get_feature_importance_dict(pipe)) is not None:
         dump_to_pickle(
-            feature_importance_dict, str(dir_path / "feature_importances.pkl")
+            feature_importance_dict, str(dir_path / "feature_importance.pkl")
         )
 
     msg.good(f"Saved evaluation results to {dir_path}")
