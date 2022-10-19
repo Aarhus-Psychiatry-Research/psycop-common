@@ -1,11 +1,20 @@
-n_training_samples: null
-min_lookahead_days: null
-min_prediction_time_date: null
-lookahead_days: 30
-pred_col_name_prefix: "pred_"
-pred_timestamp_col_name: timestamp
-outcome_timestamp_col_name: timestamp_outcome
-id_col_name: citizen_ids
-source: synthetic
-min_lookbehind_days: null
-drop_patient_if_outcome_before_date: null
+# @package _global_
+data:
+  n_training_samples: null
+  min_lookahead_days: null
+  min_prediction_time_date: null
+  lookahead_days: 30
+  pred_col_name_prefix: "pred_"
+  pred_timestamp_col_name: timestamp
+  outcome_timestamp_col_name: timestamp_outcome
+  id_col_name: citizen_ids
+  source: synthetic
+  min_lookbehind_days: null
+  drop_patient_if_outcome_before_date: null
+  lookbehind_combination: null
+
+# Parameters that will only take effect if running with --multirun
+hydra:
+  sweeper:
+    params:
+      ++data.lookbehind_combinations: choice([30, 90], [30])
