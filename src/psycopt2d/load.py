@@ -37,7 +37,7 @@ class DatasetTimeSpecification(BaseModel):
     )
 
     lookbehind_combination: Optional[list[Union[int, float]]] = Field(
-        description="""List containing a combination of lookbehind windows (e.g. [30, 60, 90]) which determines which features to keep in the dataset""",
+        description="""List containing a combination of lookbehind windows (e.g. [30, 60, 90]) which determines which features to keep in the dataset. E.g. for the above list, only features with lookbehinds of 30, 60 or 90 days will be kept.""",
     )
 
 
