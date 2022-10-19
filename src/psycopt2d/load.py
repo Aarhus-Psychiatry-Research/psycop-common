@@ -169,6 +169,8 @@ class DataLoader:
         if direction not in ("ahead", "behind"):
             raise ValueError(f"Direction {direction} not supported.")
 
+        n_rows_before_modification = dataset.shape[0]
+
         if direction == "ahead":
             max_datetime = dataset[self.spec.pred_time_colname].max() - n_days
             before_max_dt = dataset[self.spec.pred_time_colname] < max_datetime
@@ -178,10 +180,18 @@ class DataLoader:
             after_min_dt = dataset[self.spec.pred_time_colname] > min_datetime
             dataset = dataset[after_min_dt]
 
+        n_rows_after_modification = dataset.shape[0]
+
+        msg.info(
+            f"Dropped {n_rows_before_modification - n_rows_after_modification} rows because dataset end was within {n_days} {direction} from their prediction time.",
+        )
+
         return dataset
 
     def _drop_patients_with_event_in_washin(self, dataset) -> pd.DataFrame:
         """Drop patients within washin period."""
+
+        n_rows_before_modification = dataset.shape[0]
 
         # Remove dates before drop_patient_if_outcome_before_date
         outcome_before_date = (
@@ -197,6 +207,12 @@ class DataLoader:
             dataset[self.spec.pred_time_colname]
             > self.spec.time.drop_patient_if_outcome_before_date
         ]
+
+        n_rows_after_modification = dataset.shape[0]
+
+        msg.info(
+            f"Dropped {n_rows_before_modification - n_rows_after_modification} rows because patients had diabetes in the washin period.",
+        )
 
         return dataset
 
@@ -227,16 +243,18 @@ class DataLoader:
         should be dropped if it's trying to look 60 days ahead. This is useful
         to avoid some rows having more information than others.
 
-            Args:
-                dataset (pd.DataFrame): Dataset to process.
-                n_days (Union[int, float]): Number of days to look in the direction.
-                direction (str): Direction to look. Allowed are ["ahead", "behind"].
+        Args:
+            dataset (pd.DataFrame): Dataset to process.
+            n_days (Union[int, float]): Number of days to look in the direction.
+            direction (str): Direction to look. Allowed are ["ahead", "behind"].
 
         Returns:
             pd.DataFrame: Dataset without the dropped columns.
         """
 
         cols_to_drop = []
+
+        n_cols_before_modification = dataset.shape[1]
 
         if direction == "behind":
             cols_to_process = [
@@ -256,6 +274,12 @@ class DataLoader:
 
                 if lookbehind_days > n_days:
                     cols_to_drop.append(col)
+
+        n_cols_after_modification = dataset.shape[1]
+
+        msg.info(
+            f"Dropped {n_cols_before_modification - n_cols_after_modification} columns because they were looking {direction} further out than {n_days} days.",
+        )
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
