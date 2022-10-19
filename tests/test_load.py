@@ -20,7 +20,7 @@ def test_load_lookbehind_exceeds_lookbehind_threshold():
         assert split_dataset.train.shape == (644, 7)
 
 
-def test_load_feat_lookbehind_not_in_lookbehind_combination():
+def test_load_lookbehind_not_in_lookbehind_combination():
     """Test that columns are dropped if their lookbehind is not in the
     specified lookbehind combination list."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
