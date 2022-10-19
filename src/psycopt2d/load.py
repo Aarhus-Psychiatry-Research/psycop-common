@@ -335,7 +335,7 @@ class DataLoader:
         ) / n_cols_before_modification
 
         msg.info(
-            f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {n_days} days.",
+            f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days.",
         )
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
