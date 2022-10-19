@@ -83,13 +83,22 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         start_time = time.time()
         while start_time + timeout * 60 > time.time() or timeout == 0:
             self.get_new_runs_and_evaluate()
-            time.sleep(20)
+            time.sleep(10)
 
     def get_new_runs_and_evaluate(self) -> None:
         """Get new runs and evaluate the best runs."""
         self.upload_recent_runs()
         if len(self.run_ids) >= self.n_runs_before_eval:
             self.evaluate_best_runs()
+
+    def upload_recent_runs(self) -> None:
+        """Upload unarchived runs to wandb."""
+        for run_folder in WANDB_DIR.glob("offline-run*"):
+            run_id = self._get_run_id(run_folder)
+
+            self._upload_run(run_folder)
+            self._archive_run(run_folder)
+            self.run_ids.append(run_id)
 
     def _upload_run(self, run: Path) -> None:
         """Upload a single run to wandb."""
@@ -105,15 +114,6 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
     def _get_run_id(self, run: Path) -> str:
         """Get the run id from the wandb directory."""
         return run.name.split("-")[-1]
-
-    def upload_recent_runs(self) -> None:
-        """Upload unarchived runs to wandb."""
-        for run_folder in WANDB_DIR.glob("offline-run*"):
-            run_id = self._get_run_id(run_folder)
-
-            self._upload_run(run_folder)
-            self._archive_run(run_folder)
-            self.run_ids.append(run_id)
 
     def _get_run_evaluation_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
@@ -169,7 +169,7 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         elif hasattr(run.summary, "roc_auc_unweighted"):
             return run.summary.roc_auc_unweighted
         else:
-            msg.warn(f"Run {run_id} has no performance metric.")
+            msg.warn(f"Run {run_id} has no performance metric. Trying again next time")
             return 0.0
 
     def evaluate_best_runs(self) -> None:
@@ -177,18 +177,26 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         run_performances = {
             run_id: self._get_run_performance(run_id) for run_id in self.run_ids
         }
+        # sort runs by performance
+        run_performances = dict(
+            sorted(run_performances.items(), key=lambda item: item[1], reverse=True)
+        )
+        # get runs with auc of 0 (attempted upload before run finished)
+        unfinished_runs = [
+            run_id for run_id, auc in run_performances.items() if auc == 0
+        ]
 
         for run_id, performance in run_performances.items():
             if performance > self.max_performance:
                 msg.good(f"New record performance! AUC: {performance}")
                 self.max_performance = performance
                 self._do_evaluation(run_id)
-        # reset run id tracker
-        self.run_ids = []
+        # reset run id tracker and try to upload unfinished runs next time
+        self.run_ids = unfinished_runs
 
     def archive_all_runs(self) -> None:
         """Archive all runs in the wandb directory."""
-        for run_folder in WANDB_DIR.glob("offline-run*"):
+        for run_folder in WANDB_DIR.glob("*run*"):
             self._archive_run(run_folder)
 
 
@@ -231,4 +239,5 @@ if __name__ == "__main__":
     if args.clean_wandb_dir:
         watcher.archive_all_runs()
 
+    msg.info("Starting WandB watcher")
     watcher.watch(timeout=args.timeout)
