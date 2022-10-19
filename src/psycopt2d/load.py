@@ -219,20 +219,15 @@ class DataLoader:
         """
 
         # Extract all unique lookbhehinds in the dataset predictors
-        lookbehinds_in_dataset = list(
-            set(
-                [
-                    int(re.findall(r"within_(\d+)_days", col)[0])
-                    for col in dataset.columns
-                    if self.pred_col_name_prefix in col
-                ]
-            )
-        )
+        lookbehinds_in_dataset = {
+            int(re.findall(r"within_(\d+)_days", col)[0])
+            for col in dataset.columns
+            if self.pred_col_name_prefix in col
+        }
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
-        if not all(
-            item in lookbehinds_in_dataset
-            for item in self.spec.time.lookbehind_combination
+        if not set(self.spec.time.lookbehind_combination).issubset(
+            lookbehinds_in_dataset
         ):
             raise ValueError(
                 f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Lookbehinds in dataset: {lookbehinds_in_dataset}. Lookbehinds in lookbehind_combination: {self.spec.time.lookbehind_combination}.",
