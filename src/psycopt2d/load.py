@@ -1,5 +1,4 @@
 """Loader for the t2d dataset."""
-from distutils.log import error
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
@@ -10,7 +9,6 @@ import pandas as pd
 from omegaconf import DictConfig, OmegaConf
 from psycopmlutils.sql.loader import sql_load
 from pydantic import BaseModel, Field
-from pyparsing import col
 from wasabi import Printer
 
 from psycopt2d.utils import PROJECT_ROOT, coerce_to_datetime
