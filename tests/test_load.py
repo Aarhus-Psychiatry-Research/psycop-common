@@ -4,7 +4,7 @@ from hydra import compose, initialize
 from psycopt2d.load import load_train_and_val_from_cfg
 
 
-def test_load_feat_lookbehind_exceeds_lookbehind_threshold():
+def test_load_lookbehind_exceeds_lookbehind_threshold():
     """Test that columns are dropped if their lookbehind are larger than the
     lookbehind threshold."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
