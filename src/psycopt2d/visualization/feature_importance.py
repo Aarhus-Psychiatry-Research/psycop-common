@@ -35,7 +35,7 @@ def plot_feature_importances(
         Union[None, Path]: Path to the saved plot if save_path is not None, else None
     """
     df = pd.DataFrame(
-        {"feature_names": column_names, "feature_importances": feature_importances}
+        {"feature_names": column_names, "feature_importances": feature_importances},
     )
     df = df.sort_values("feature_importances", ascending=False)
     df = df.iloc[:top_n_feature_importances]
