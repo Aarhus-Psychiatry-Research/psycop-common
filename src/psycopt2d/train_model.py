@@ -343,7 +343,7 @@ def main(cfg):
 
     # only run full evaluation if wandb mode mode is online
     # otherwise delegate to watcher script
-    if cfg.project.wandb_mode == "online":
+    if cfg.project.wandb_mode == "run":
         msg.info("Evaluating model")
         evaluate_model(
             cfg=cfg,
