@@ -392,6 +392,7 @@ def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
         feature_importance_dict=feature_importance_dict,
     )
 
+
 def infer_col_names(
     df: pd.DataFrame,
     prefix: str,
@@ -429,6 +430,11 @@ def infer_predictor_col_name(
     """Get the predictors that are used in the model."""
     return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
 
-def infer_y_hat_prob_col_name(df: pd.DataFrame, prefix="y_hat_prob", allow_multiple: False) -> str:
+
+def infer_y_hat_prob_col_name(
+    df: pd.DataFrame,
+    prefix="y_hat_prob",
+    allow_multiple: bool = False,
+) -> str:
     """Infer the y_hat_prob column name from the dataframe."""
     return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
