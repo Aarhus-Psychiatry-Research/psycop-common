@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.0 (2022-10-20)
+### Feature
+* Script to run (multirun) training and wandb watcher simultaneously ([`b8954bf`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b8954bf85b5814b304aa56efd9e161b53bc93f55))
+* Sort performance before logging and try uploading again next time if no auc ([`ba70ea8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ba70ea890857b24571589529847f54828b89a4cb))
+* Wandb watcher for asynchronous uploading of runs to wandb. ([`f6cae88`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f6cae888080d730548a9bb3df15489ea1ff28921))
+
+### Fix
+* Make `metric_by_time_to_diagnosis` and `auc_by_calender_time` plots include both scatter and line ([`3d123d8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3d123d8a190dd2bcc398f348f79e8fd832d42b71))
+* Correct name of wandb run ([`4821b99`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4821b993eecb35ccd351a6c5fe467e39bb1b8a11))
+* Save model predictions on overtaci ([`9b65f6f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9b65f6f5c1b2830a438870dc095165b48946b0ff))
+
 ## v0.9.0 (2022-10-19)
 ### Feature
 * Check for meaningful lookbehind_combination ([`297f7c4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/297f7c41b87520c1044944dabc3aa4805cadb3c3))
