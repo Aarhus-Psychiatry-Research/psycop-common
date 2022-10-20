@@ -2,7 +2,7 @@
 import argparse
 import subprocess
 import time
-from distutils.util import strtobool
+from distutils.util import strtobool  # pylint: disable=deprecated-module
 from pathlib import Path
 from typing import Optional
 
@@ -191,6 +191,7 @@ if __name__ == "__main__":
         help="Number of runs before first evaluation",
         required=True,
     )
+
     parser.add_argument(
         "--overtaci",
         type=lambda x: bool(strtobool(x)),

@@ -1,4 +1,5 @@
 """Functions for evaluating a model's predictions."""
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Optional
 
