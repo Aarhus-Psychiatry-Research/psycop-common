@@ -69,13 +69,17 @@ def test_min_prediction_time_date():
 
 def test_feature_selection():
     """Test feature selection"""
-    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+    with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
         cfg = compose(
-            config_name="integration_testing.yaml",
+            config_name=CONFIG_FILE_NAME,
             overrides=[
-                "+model=logistic-regression",
-                "++preprocessing.feature_selection_method=linear-svc",
-                "++preprocessing.feature_selection_params.C=0.01",
+                INTEGRATION_TESTING_MODEL_OVERRIDE,
+                "preprocessing.feature_selection_method=f_classif",
+                "preprocessing.feature_selection_params.percentile=10",
+                #"project.wandb_mode=run",
             ],
         )
         main(cfg)
+
+
+

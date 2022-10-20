@@ -1,8 +1,8 @@
 """Training script for training a single model for predicting t2d."""
-from logging import raiseExceptions
 import os
 from collections.abc import Iterable
 from datetime import datetime
+from logging import raiseExceptions
 from pathlib import Path
 from typing import Optional
 
@@ -11,19 +11,22 @@ import numpy as np
 import pandas as pd
 import wandb
 from omegaconf.dictconfig import DictConfig
+from sklearn.feature_selection import SelectFromModel, SelectPercentile, chi2, f_classif
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import SelectFromModel, SelectPercentile, f_classif
 from sklearn.svm import LinearSVC
 from wasabi import Printer
 
 from psycopt2d.evaluation import evaluate_model
-from psycopt2d.preprocessing.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
+from psycopt2d.preprocessing.feature_transformers import (
+    ConvertToBoolean,
+    DateTimeConverter,
+)
 from psycopt2d.utils import create_wandb_folders, flatten_nested_dict
 
 CONFIG_PATH = Path(__file__).parent / "config"
@@ -58,16 +61,14 @@ def create_preprocessing_pipeline(cfg):
             ("z-score-normalization", StandardScaler()),
         )
 
-    if cfg.preprocessing.feature_selection_method == "linear-svc":
-        steps.append(
-            ("feature_selection", SelectFromModel(LinearSVC(C = cfg.preprocessing.feature_selection_params.C, penalty="l2", dual=False))),
-        )
-
     if cfg.preprocessing.feature_selection_method == "f_classif":
         steps.append(
             ("feature_selection", SelectPercentile(f_classif, percentile = cfg.preprocessing.feature_selection_params.percentile)),
         )
-
+    if cfg.preprocessing.feature_selection_method == "chi2":
+        steps.append(
+            ("feature_selection", SelectPercentile(chi2, percentile = cfg.preprocessing.feature_selection_params.percentile)),
+        )
 
     return Pipeline(steps)
 
@@ -327,6 +328,7 @@ def main(cfg):
         config=flatten_nested_dict(cfg, sep="."),
         mode=cfg.project.wandb_mode,
         group=today_str,
+        entity=cfg.project.wandb_entity,
     )
 
     dataset = load_train_and_val_from_cfg(cfg)

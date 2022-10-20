@@ -98,3 +98,21 @@ def generate_feature_importances_table(
         return wandb.Table(dataframe=df)
     else:
         raise ValueError("Output format does not match anything that is allowed")
+
+def feature_selection_table(    
+    feature_names: Iterable[str],
+    selected_feature_names: Iterable[str],
+    output_format: str = "wandb_table",
+) -> Union[pd.DataFrame, wandb.Table]:
+
+    df = pd.DataFrame({"train_col_names": feature_names, "is_removed": [0 if i in selected_feature_names else 1 for i in feature_names]})
+
+    # Refactor, this control flow is identical to the function above. Unify into something like "log_df_as_wandb_table".
+    if output_format == "html":
+        return df.reset_index(drop=True).to_html()
+    elif output_format == "df":
+        return df.reset_index(drop=True)
+    elif output_format == "wandb_table":
+        return wandb.Table(dataframe=df)
+    else:
+        raise ValueError("Output format does not match anything that is allowed")
