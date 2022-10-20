@@ -1,7 +1,6 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from collections.abc import Iterable
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 

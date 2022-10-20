@@ -72,7 +72,8 @@ def infer_look_distance(
     if isinstance(col_name, Iterable) and not isinstance(col_name, str):
         for c_name in col_name:
             look_distances += infer_look_distance(
-                col_name=c_name, regex_pattern=regex_pattern
+                col_name=c_name,
+                regex_pattern=regex_pattern,
             )
     else:
         look_distances = re.findall(pattern=regex_pattern, string=col_name)

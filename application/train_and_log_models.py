@@ -50,7 +50,7 @@ if __name__ == "__main__":
     possible_lookahead_days = set(
         infer_look_distance(
             col_name=outcome_col_names,
-        )
+        ),
     )
 
     # Get potential lookbehinds from pred_ columns
