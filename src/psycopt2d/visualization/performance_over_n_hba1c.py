@@ -33,9 +33,8 @@ def create_performance_by_n_hba1c(
         pd.DataFrame: Dataframe ready for plotting
     """
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "n_hba1c": n_hba1c})
-    df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
 
-    output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
+    output_df = df.groupby("n_hba1c").apply(calc_performance, metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
