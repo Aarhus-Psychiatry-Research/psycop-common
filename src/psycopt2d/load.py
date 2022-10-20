@@ -2,7 +2,6 @@
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
-from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -193,7 +192,8 @@ class DataLoader:
 
         n_rows_after_modification = dataset.shape[0]
         percent_dropped = get_percent_lost(
-            n_before=n_rows_after_modification, n_after=n_rows_after_modification
+            n_before=n_rows_after_modification,
+            n_after=n_rows_after_modification,
         )
 
         if n_rows_before_modification - n_rows_after_modification != 0:
@@ -225,7 +225,8 @@ class DataLoader:
 
         n_rows_after_modification = dataset.shape[0]
         percent_dropped = get_percent_lost(
-            n_before=n_rows_after_modification, n_after=n_rows_after_modification
+            n_before=n_rows_after_modification,
+            n_after=n_rows_after_modification,
         )
 
         if n_rows_before_modification - n_rows_after_modification != 0:
@@ -270,7 +271,7 @@ class DataLoader:
             )
 
             lookbehinds_to_keep = lookbehinds_in_spec.intersection(
-                lookbehinds_in_dataset
+                lookbehinds_in_dataset,
             )
 
             if not lookbehinds_to_keep:
@@ -350,7 +351,8 @@ class DataLoader:
 
         n_cols_after_modification = dataset.shape[1]
         percent_dropped = get_percent_lost(
-            n_before=n_cols_before_modification, n_after=n_cols_after_modification
+            n_before=n_cols_before_modification,
+            n_after=n_cols_after_modification,
         )
 
         if n_cols_before_modification - n_cols_after_modification != 0:

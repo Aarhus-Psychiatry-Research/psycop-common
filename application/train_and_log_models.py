@@ -86,7 +86,8 @@ class TrainConf(BaseModel):
     conf_name: str = Field(default="integration_testing.yaml")
 
     multirun: bool = Field(
-        default=False, description="Whether to use Hydra to run multiple models."
+        default=False,
+        description="Whether to use Hydra to run multiple models.",
     )
 
     possible_look_distances: PossibleLookDistanceDays
