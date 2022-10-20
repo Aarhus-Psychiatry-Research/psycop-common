@@ -3,7 +3,7 @@ default_install_hook_types: [pre-push, pre-commit] # Using the "manual" stage fo
 
 repos:
   - repo: https://github.com/PyCQA/autoflake
-    rev: v1.7.0
+    rev: v1.7.6
     hooks:
       - id: autoflake
         args: ['--in-place', '--remove-all-unused-imports', "--ignore-init-module-imports"]
@@ -16,12 +16,12 @@ repos:
         args: ["--profile", "black"]
 
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.2.3
+    rev: v2.3.0
     hooks:
       - id: add-trailing-comma
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.0.0 
+    rev: v3.1.0 
     hooks:
       - id: pyupgrade
         args: ["--py39-plus"]
@@ -38,7 +38,7 @@ repos:
         args: [--in-place]
 
   - repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 22.10.0
     hooks:
       - id: black
 
@@ -59,7 +59,7 @@ repos:
         types: [yaml]
 
   - repo: https://github.com/pycqa/pylint
-    rev: v2.15.2
+    rev: v2.15.4
     hooks:
       - id: pylint
         types: [python]
