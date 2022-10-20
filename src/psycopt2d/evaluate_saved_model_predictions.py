@@ -6,7 +6,9 @@ Possible extensions (JIT when needed):
 - Evaluate all models in 'evaluation_results' folder
 - CLI for evaluating a model
 """
+import re
 from pathlib import Path
+from typing import Iterable, Union
 
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
@@ -15,26 +17,57 @@ from psycopt2d.utils import PROJECT_ROOT, read_pickle
 from psycopt2d.visualization import plot_auc_by_time_from_first_visit
 
 
-def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
-    """Infer the outcome column name from the dataframe."""
-    outcome_name = [c for c in df.columns if c.startswith(prefix)]
-    if len(outcome_name) == 1:
-        return outcome_name[0]
+def infer_col_names(
+    df: pd.DataFrame, prefix: str, allow_multiple: bool = True
+) -> Union[str, list[str]]:
+    """Infer col names based on prefix"""
+    col_name = [c for c in df.columns if c.startswith(prefix)]
+
+    if len(col_name) == 1:
+        return col_name[0]
+    elif len(col_name) > 1:
+        if allow_multiple:
+            return col_name
+        raise ValueError(
+            f"Multipel columns found and allow_multiple is {allow_multiple}."
+        )
     else:
         raise ValueError("More than one outcome inferred")
 
 
-def infer_predictor_col_names(df: pd.DataFrame, cfg: DictConfig) -> list[str]:
-    """Get the predictors that are used in the model.
+def infer_outcome_col_name(
+    df: pd.DataFrame, prefix: str = "outc_", allow_multiple: bool = True
+) -> Union[str, list[str]]:
+    """Infer the outcome column name from the dataframe."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
 
-    Args:
-        df (pd.Dataframe): Dataframe with model predictions
-        cfg (DictConfig): Config file
 
-    Returns:
-        list[str]: list of predictors
-    """
-    return [c for c in df.columns if c.startswith(cfg.data.pred_col_name_prefix)]
+def infer_predictor_col_names(
+    df: pd.DataFrame, prefix: str = "outc_", allow_multiple: bool = True
+) -> Union[str, list[str]]:
+    """Get the predictors that are used in the model."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def infer_look_distance(
+    col_name: Union[Iterable[str], str], regex_pattern=r"within_(\d)_days"
+):
+    """Infer look distances from col names"""
+    # E.g. "outc_within_1_days" = 1
+    # E.g. "outc_within_2_days" = 2
+    # E.g. "pred_within_3_days" = 3
+    # E.g. "pred_within_3_days" = 3
+
+    look_distances = []
+
+    if isinstance(col_name, Iterable):
+        look_distances.append(
+            infer_look_distance(col_name=col_name, regex_pattern=regex_pattern)
+        )
+    else:
+        look_distances = re.findall(regex_pattern, col_name)
+
+    return look_distances
 
 
 def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig]:
