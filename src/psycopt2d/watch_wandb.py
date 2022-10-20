@@ -4,47 +4,36 @@ import subprocess
 import time
 from distutils.util import strtobool
 from pathlib import Path
+from typing import Optional
 
-import pandas as pd
 import wandb
 from wandb.apis.public import Api  # pylint: disable=no-name-in-module
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
 from psycopt2d.evaluation import evaluate_model
-from psycopt2d.utils import MODEL_PREDICTIONS_PATH, PROJECT_ROOT, read_pickle
+from psycopt2d.utils import (
+    MODEL_PREDICTIONS_PATH,
+    PROJECT_ROOT,
+    infer_outcome_col_name,
+    infer_y_hat_prob_col_name,
+    load_evaluation_data,
+)
 
 # Path to the wandb directory
 WANDB_DIR = PROJECT_ROOT / "wandb"
 
 
-def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
-    """Infer the outcome column name from the dataframe."""
-    outcome_name = [c for c in df.columns if c.startswith(prefix)]
-    if len(outcome_name) == 1:
-        return outcome_name[0]
-    else:
-        raise ValueError("More than one outcome inferred")
-
-
-def infer_y_hat_prop_col_name(df: pd.DataFrame) -> str:
-    """Infer the y_hat_prob column name from the dataframe."""
-    y_hat_prob_name = [c for c in df.columns if c.startswith("y_hat_prob")]
-    if len(y_hat_prob_name) == 1:
-        return y_hat_prob_name[0]
-    else:
-        raise ValueError("More than one y_hat_prob inferred")
-
-
-class WandbWatcher:  # pylint: disable=too-many-instance-attributes
+class ModelTrainingWatcher:
     """Watch the wandb directory for new files and uploads them to wandb. Fully
     evaluates the best runs after a certain number of runs have been uploaded.
 
     Args:
         entity: The wandb entity to upload to (e.g. "psycop")
         project_name: The wandb project name to upload to (e.g. "psycopt2d")
-        n_runs_before_eval: The number of runs to upload before evaluating the
+        n_runs_before_eval: The number of runs to complete before evaluating the
             best runs.
+        model_data_dir: Where to look for evaluation results.
         overtaci: Whether the script is running on overtaci. Determines where
             to look for the evaluation results.
     """
@@ -54,66 +43,64 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         entity: str,
         project_name: str,
         n_runs_before_eval: int,
-        overtaci: bool,
+        model_data_dir: Path,
     ):
         self.entity = entity
         self.project_name = project_name
-        self.overtaci = overtaci
-        self.model_data_dir = (
-            MODEL_PREDICTIONS_PATH / project_name
-            if overtaci
-            else PROJECT_ROOT / "evaluation_results"
-        )
+        self.model_data_dir = model_data_dir
 
         self.n_runs_before_eval = n_runs_before_eval
 
-        self.run_ids = []
+        # A queue for runs waiting to be uploaded to WandB
+        self.run_id_upload_queue = []
         self.max_performance = 0
 
         self.archive_path = WANDB_DIR / "archive"
         self.archive_path.mkdir(exist_ok=True)
 
-    def watch(self, timeout: int = 0) -> None:
+    def watch(self, timeout_minutes: Optional[int] = None) -> None:
         """Watch the wandb directory for new runs.
 
         Args:
-            timeout: The timeout in minutes. If 0, the script will run
+            timeout_minutes: The timeout in minutes. If None, the script will run
                 indefinitely.
         """
         start_time = time.time()
-        while start_time + timeout * 60 > time.time() or timeout == 0:
+        while (
+            timeout_minutes is None or start_time + timeout_minutes * 60 > time.time()
+        ):
             self.get_new_runs_and_evaluate()
             time.sleep(10)
 
     def get_new_runs_and_evaluate(self) -> None:
         """Get new runs and evaluate the best runs."""
-        self.upload_recent_runs()
-        if len(self.run_ids) >= self.n_runs_before_eval:
+        self.upload_unarchived_runs()
+        if len(self.run_id_upload_queue) >= self.n_runs_before_eval:
             self.evaluate_best_runs()
 
-    def _upload_run(self, run: Path) -> None:
+    def _upload_run_dir(self, run_dir: Path) -> None:
         """Upload a single run to wandb."""
         subprocess.run(
-            ["wandb", "sync", str(run), "--project", self.project_name],
+            ["wandb", "sync", str(run_dir), "--project", self.project_name],
             check=True,
         )
 
-    def _archive_run(self, run: Path) -> None:
+    def _archive_run_dir(self, run_dir: Path) -> None:
         """Move a run to the archive folder."""
-        run.rename(self.archive_path / run.name)
+        run_dir.rename(self.archive_path / run_dir.name)
 
-    def _get_run_id(self, run: Path) -> str:
-        """Get the run id from the wandb directory."""
-        return run.name.split("-")[-1]
+    def _get_run_id(self, run_dir: Path) -> str:
+        """Get the run id from a run directory."""
+        return run_dir.name.split("-")[-1]
 
-    def upload_recent_runs(self) -> None:
+    def upload_unarchived_runs(self) -> None:
         """Upload unarchived runs to wandb."""
-        for run_folder in WANDB_DIR.glob("offline-run*"):
+        for run_folder in WANDB_DIR.glob(r"offline-run*"):
             run_id = self._get_run_id(run_folder)
 
-            self._upload_run(run_folder)
-            self._archive_run(run_folder)
-            self.run_ids.append(run_id)
+            self._upload_run_dir(run_folder)
+            self._archive_run_dir(run_folder)
+            self.run_id_upload_queue.append(run_id)
 
     def _get_run_evaluation_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
@@ -123,35 +110,26 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
         """Get the evaluation data for a single run."""
         run_eval_dir = self._get_run_evaluation_dir(run_id)
 
-        eval_df = pd.read_parquet(run_eval_dir / "df.parquet")
-        cfg = read_pickle(str(run_eval_dir / "cfg.pkl"))
-
-        if (run_eval_dir / "feature_importance.pkl").exists():
-            feature_importance = read_pickle(
-                str(run_eval_dir / "feature_importance.pkl"),
-            )
-        else:
-            feature_importance = None
-        return eval_df, cfg, feature_importance
+        return load_evaluation_data(run_eval_dir)
 
     def _do_evaluation(self, run_id: str) -> None:
         """Do the full evaluation of the run and upload to wandb."""
         # get evaluation data
-        eval_df, cfg, feature_importance_dict = self._get_eval_data(run_id)
+        eval_data = self._get_eval_data(run_id)
         # infer required column names
-        y_col_name = infer_outcome_col_name(df=eval_df, prefix="outc_")
-        y_hat_prob_col_name = infer_y_hat_prop_col_name(df=eval_df)
+        y_col_name = infer_outcome_col_name(df=eval_data.df, prefix="outc_")
+        y_hat_prob_col_name = infer_y_hat_prob_col_name(df=eval_data.df)
         # get wandb run
         run = wandb.init(project=self.project_name, entity=self.entity, id=run_id)
 
         # run evaluation
         evaluate_model(
-            cfg=cfg,
-            eval_df=eval_df,
+            cfg=eval_data.cfg,
+            eval_df=eval_data.df,
             y_col_name=y_col_name,
             y_hat_prob_col_name=y_hat_prob_col_name,
             run=run,
-            feature_importance_dict=feature_importance_dict,
+            feature_importance_dict=eval_data.feature_importance_dict,
         )
         run.finish()
 
@@ -162,28 +140,26 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
     def _get_run_performance(self, run_id: str) -> float:
         """Get the performance of a single run and check if it failed."""
         run = self._get_wandb_run(run_id)
-        if run.state == "failed":
-            wandb.init(project=self.project_name, entity=self.entity, id=run_id)
-            wandb.alert(title="Failed run", text=f"Run {run_id} failed.")
-            return 0.0
-        elif hasattr(run.summary, "roc_auc_unweighted"):
+        if "roc_auc_unweighted" in run.summary:
             return run.summary.roc_auc_unweighted
-        else:
-            msg.warn(f"Run {run_id} has no performance metric. Trying again next time")
-            return 0.0
+        msg.info(
+            f"Run {run_id} has no performance metric. Pinging again at next eval time."
+        )
+        return None
 
     def evaluate_best_runs(self) -> None:
         """Evaluate the best runs."""
         run_performances = {
-            run_id: self._get_run_performance(run_id) for run_id in self.run_ids
+            run_id: self._get_run_performance(run_id)
+            for run_id in self.run_id_upload_queue
         }
-        # sort runs by performance
+        # sort runs by performance to not upload subpar runs
         run_performances = dict(
             sorted(run_performances.items(), key=lambda item: item[1], reverse=True),
         )
-        # get runs with auc of 0 (attempted upload before run finished)
+        # get runs with auc of None (attempted upload before run finished)
         unfinished_runs = [
-            run_id for run_id, auc in run_performances.items() if auc == 0
+            run_id for run_id, auc in run_performances.items() if auc is None
         ]
 
         for run_id, performance in run_performances.items():
@@ -191,13 +167,13 @@ class WandbWatcher:  # pylint: disable=too-many-instance-attributes
                 msg.good(f"New record performance! AUC: {performance}")
                 self.max_performance = performance
                 self._do_evaluation(run_id)
-        # reset run id tracker and try to upload unfinished runs next time
-        self.run_ids = unfinished_runs
+        # reset run id queue and try to upload unfinished runs next time
+        self.run_id_upload_queue = unfinished_runs
 
     def archive_all_runs(self) -> None:
         """Archive all runs in the wandb directory."""
         for run_folder in WANDB_DIR.glob("*run*"):
-            self._archive_run(run_folder)
+            self._archive_run_dir(run_folder)
 
 
 if __name__ == "__main__":
@@ -221,7 +197,16 @@ if __name__ == "__main__":
         help="Whether the script is run on Overtaci or not",
         required=True,
     )
-    parser.add_argument("--timeout", type=int, help="Timeout in minutes", required=True)
+
+    def float_or_none(x):
+        return None if x == "None" else float(x)
+
+    parser.add_argument(
+        "--timeout",
+        type=float_or_none,
+        help="""How long to run the watcher for. If None, keeps runnning until process 
+        is killed (e.g. receives SIGTERM())""",
+    )
     parser.add_argument(
         "--clean_wandb_dir",
         type=lambda x: bool(strtobool(x)),
@@ -230,14 +215,20 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    watcher = WandbWatcher(
+    model_data_dir = (
+        MODEL_PREDICTIONS_PATH / args.project_name
+        if args.overtaci
+        else PROJECT_ROOT / "evaluation_results"
+    )
+
+    watcher = ModelTrainingWatcher(
         entity=args.entity,
         project_name=args.project_name,
         n_runs_before_eval=args.n_runs_before_eval,
-        overtaci=args.overtaci,
+        model_data_dir=model_data_dir,
     )
     if args.clean_wandb_dir:
         watcher.archive_all_runs()
 
     msg.info("Starting WandB watcher")
-    watcher.watch(timeout=args.timeout)
+    watcher.watch(timeout_minutes=args.timeout)

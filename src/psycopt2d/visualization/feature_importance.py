@@ -12,7 +12,7 @@ from psycopt2d.visualization.base_charts import plot_basic_chart
 
 
 def plot_feature_importances(
-    column_names: Iterable[str],
+    feature_names: Iterable[str],
     feature_importances: Iterable[float],
     top_n_feature_importances: int,
     save_path: Optional[Path] = None,
@@ -26,7 +26,7 @@ def plot_feature_importances(
     classes are perfectly split.
 
     Args:
-        column_names (Iterable[str]): Column/feature names
+        feature_names (Iterable[str]): Column/feature names
         feature_importances (Iterable[float]): Feature importances
         top_n_feature_importances (int): Top n features to plot
         save_path (Optional[Path], optional): Path to save the plot. Defaults to None.
@@ -35,7 +35,7 @@ def plot_feature_importances(
         Union[None, Path]: Path to the saved plot if save_path is not None, else None
     """
     df = pd.DataFrame(
-        {"feature_names": column_names, "feature_importances": feature_importances},
+        {"feature_names": feature_names, "feature_importances": feature_importances},
     )
     df = df.sort_values("feature_importances", ascending=False)
     df = df.iloc[:top_n_feature_importances]

@@ -18,6 +18,7 @@ from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
+from psycopt2d.dataclasses.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -321,7 +322,7 @@ def prediction_df_with_metadata_to_disk(
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
     if cfg.evaluation.save_model_predictions_on_overtaci:
-        # Save to overtaci formatted with date
+        # Save to overtaci
         dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:
         # Local path handling
@@ -334,8 +335,8 @@ def prediction_df_with_metadata_to_disk(
     write_df_to_file(df, dir_path / "df.parquet")
     if (feature_importance_dict := get_feature_importance_dict(pipe)) is not None:
         dump_to_pickle(
-            feature_importance_dict,
-            str(dir_path / "feature_importance.pkl"),
+            obj=feature_importance_dict,
+            path=str(dir_path / "feature_importance.pkl"),
         )
 
     msg.good(f"Saved evaluation results to {dir_path}")
@@ -365,3 +366,46 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
         )
 
     return date_repr
+
+
+def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
+    """Get evaluation data from a directory.
+
+    Args:
+        model_data_dir (Path): Path to model data directory.
+
+    Returns:
+        ModelEvalData: Evaluation data.
+    """
+    df = pd.read_parquet(model_data_dir / "df.parquet")
+    cfg = read_pickle(model_data_dir / "cfg.pkl")
+    if (model_data_dir / "feature_importance.pkl").exists():
+        feature_importance_dict = read_pickle(
+            str(model_data_dir / "feature_importance.pkl"),
+        )
+    else:
+        feature_importance_dict = None
+
+    return ModelEvalData(
+        df=df,
+        cfg=cfg,
+        feature_importance_dict=feature_importance_dict,
+    )
+
+
+def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
+    """Infer the outcome column name from the dataframe."""
+    outcome_name = [c for c in df.columns if c.startswith(prefix)]
+    if len(outcome_name) == 1:
+        return outcome_name[0]
+    else:
+        raise ValueError("More than one outcome inferred")
+
+
+def infer_y_hat_prob_col_name(df: pd.DataFrame) -> str:
+    """Infer the y_hat_prob column name from the dataframe."""
+    y_hat_prob_name = [c for c in df.columns if c.startswith("y_hat_prob")]
+    if len(y_hat_prob_name) == 1:
+        return y_hat_prob_name[0]
+    else:
+        raise ValueError("More than one y_hat_prob inferred")

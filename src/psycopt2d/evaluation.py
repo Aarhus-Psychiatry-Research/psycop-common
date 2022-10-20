@@ -32,7 +32,7 @@ def log_feature_importances(
 ) -> dict[str, Path]:
     """Log feature importances to wandb."""
     feature_importance_plot_path = plot_feature_importances(
-        column_names=feature_importance_dict.keys(),
+        feature_names=feature_importance_dict.keys(),
         feature_importances=feature_importance_dict.values(),
         top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
         save_path=save_path,
