@@ -407,7 +407,7 @@ def infer_col_names(
         if allow_multiple:
             return col_name
         raise ValueError(
-            f"Multipel columns found and allow_multiple is {allow_multiple}.",
+            f"Multiple columns found and allow_multiple is {allow_multiple}.",
         )
     else:
         raise ValueError("More than one outcome inferred")
