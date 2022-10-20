@@ -8,11 +8,11 @@ Usage:
 import os
 import subprocess
 import time
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Union
 
-from hydra import compose, initialize
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from wasabi import Printer, msg
 
 from psycopt2d.evaluate_saved_model_predictions import (
@@ -22,48 +22,79 @@ from psycopt2d.evaluate_saved_model_predictions import (
 )
 from psycopt2d.load import DataLoader, DatasetSpecification, DatasetTimeSpecification
 
-BASE_CONF_FILE_NAME = "integration_testing.yaml"
-
-DATA_DIR = Path("/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/")
-
-BASE_ARGS = "--multirun +model=xgboost"
-WANDB_PROJECT = "psycopt2d-testing"
-N_TRIALS_PER_CELL_IN_GRID = 50
-
-# RUN CONSTANTS
-CONFIG_NAME = "integration_testing.yaml"
-
-HYDRA_ARGS = f"--multirun +model=xgboost project.wandb_mode='dryrun' model.args.tree_method='auto' --config-name {CONFIG_NAME}"
-OVERTACI = "false"  # Change to "true" if running on overtaci
-
-# WATCHER CONSTANTS
-WANDB_ENTITY = (
-    "psycop"  # The wandb entity to upload to (e.g. "psycop" or your user name)
-)
-N_RUNS_BEFORE_FIRST_EVAL = (
-    "1"  # The number of runs to upload to wandb before evaluating the best runs.
-)
-KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES = (
-    5  # minutes to wait for the wandb watcher after training
-)
-# has finished. Will kill the watcher after this time.
-ARCHIVE_ALL_WANDB_RUNS = "false"  # whether to archive all runs in the wandb folder
-# before starting model training. Change to "t" to archive all wandb runs
-
-
-def load_data(dataset_spec):
-    """Load the data"""
-    loader = DataLoader(dataset_spec)
-    return loader.load_dataset_from_dir(split_names="train")
-
 
 class PossibleLookDistanceDays(BaseModel):
+    """Possible look distances"""
+
     ahead: Iterable[Union[int, float]]
     behind: Iterable[Union[int, float]]
 
 
+class MetaConf(BaseModel):
+    """Meta configuration for the script."""
+
+    conf_name: str = Field("integration_testing.yaml")
+    data_dir: Path = Path(
+        "/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/"
+    )
+    overtaci: str = Field(
+        default="false", description="Change to 'true' if running on overtaci"
+    )
+
+
+class WatcherConf(BaseModel):
+    """Confiugration for the watcher."""
+
+    archive_all: str = Field(
+        default="false",
+        description="Whether to archive all runs in the wandb folder before starting model training. Change to 't' to archive all wandb runs",
+    )
+    n_runs_before_first_eval: int = Field(
+        default="1",
+        description="The number of runs to upload to wandb before evaluating the best runs.",
+    )
+    keep_alive_after_training_minutes: int = Field(
+        default=5,
+        description="minutes to wait for the wandb watcher after training has finished. Will kill the watcher after this time.",
+    )
+
+
+class WandbConf(BaseModel):
+    """Configuration for wandb."""
+
+    project_name: str = "psycopt2d-testing"
+    entity: str = Field(
+        default="psycop",
+        description="The wandb entity to upload to (e.g. 'psycop' or your user name)",
+    )
+
+
+class TrainConf(BaseModel):
+    """Configuration for model training."""
+
+    n_trials_per_cell_in_grid: int = Field(
+        default=50,
+        description="Number of trials per cell in the lookahead/lookbehind grid",
+    )
+
+    conf_name: str = Field(default="integration_testing.yaml")
+
+    base_args: str = Field(
+        default=f"--multirun +model=xgboost project.wandb_mode='dryrun' model.args.tree_method='auto' --config-name {conf_name}"
+    )
+
+    possible_look_distance: PossibleLookDistanceDays
+
+
+def load_data(dataset_spec):
+    """Load the data."""
+    loader = DataLoader(dataset_spec)
+    return loader.load_dataset_from_dir(split_names="train")
+
+
 def infer_possible_look_directions(train):
-    """Infer the possible values for min_lookahead_days and min_lookbehind_days"""
+    """Infer the possible values for min_lookahead_days and
+    min_lookbehind_days."""
     # Get potential lookaheads from outc_ columns
     outcome_col_names = infer_outcome_col_name(df=train, allow_multiple=True)
 
@@ -78,11 +109,13 @@ def infer_possible_look_directions(train):
     possible_lookbehind_days = set(infer_look_distance(col_name=pred_col_names))
 
     return PossibleLookDistanceDays(
-        ahead=possible_lookahead_days, behind=possible_lookbehind_days
+        ahead=possible_lookahead_days,
+        behind=possible_lookbehind_days,
     )
 
 
 def get_dataset_spec(data_dir_path: Path):
+    """Get dataset specification"""
     time_spec = DatasetTimeSpecification(
         drop_patient_if_outcome_before_date=None,
         min_prediction_time_date="1979-01-01",
@@ -99,13 +132,13 @@ def get_dataset_spec(data_dir_path: Path):
     )
 
 
-def train_models_for_each_grid(
+def train_models_for_each_cell_in_grid(
     base_conf_file_name: Union[str, Path],
     base_args: str,
     n_trials_per_cell_in_grid: int,
     possible_look_distances: PossibleLookDistanceDays,
 ):
-    """Train a model for each cell in the grid of possible look distances"""
+    """Train a model for each cell in the grid of possible look distances."""
     from random_word import RandomWords
 
     random_word = RandomWords()
@@ -125,47 +158,62 @@ def train_models_for_each_grid(
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
 
-    with initialize(version_base=None, config_path="config/"):
-        cfg = compose(
-            config_name=CONFIG_NAME,
-        )
+    meta_conf = MetaConf(
+        conf_name="integration_testing.yaml",
+        overtaci="false",
+        data_dir=Path(
+            "/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/"
+        ),
+    )
 
-    dataset_spec = get_dataset_spec(data_dir_path=DATA_DIR)
+    wandb_conf = WandbConf(
+        entity="psycop",
+        project_name="psycopt2d-testing",
+    )
+
+    watcher_conf = WatcherConf(archive_all="false", keep_alive_after_training_minutes=5)
+
+    dataset_spec = get_dataset_spec(data_dir_path=meta_conf.data_dir)
 
     train = load_data(dataset_spec=dataset_spec)
-
     possible_look_distance = infer_possible_look_directions(train)
+
+    train_conf = TrainConf(
+        conf_name=meta_conf.conf_name,
+        base_args=f"--multirun +model=xgboost project.wandb_mode='dryrun' model.args.tree_method='auto' --config-name {meta_conf.conf_name}",
+        n_trials_per_cell_in_grid=50,
+    )
 
     watcher = subprocess.Popen(  # pylint: disable=consider-using-with
         [
             "python",
             "src/psycopt2d/model_training_watcher.py",
             "--entity",
-            WANDB_ENTITY,
+            wandb_conf.entity,
             "--project_name",
-            cfg.project.name,
+            wandb_conf.project_name,
             "--n_runs_before_eval",
-            N_RUNS_BEFORE_FIRST_EVAL,
+            str(watcher_conf.n_runs_before_first_eval),
             "--overtaci",
-            OVERTACI,
+            meta_conf.overtaci,
             "--timeout",
             "None",
             "--clean_wandb_dir",
-            ARCHIVE_ALL_WANDB_RUNS,
+            watcher_conf.archive_all,
         ],
     )
 
-    train_models_for_each_grid(
-        base_conf_file_name=BASE_CONF_FILE_NAME,
-        base_args=BASE_ARGS,
-        n_trials_per_cell_in_grid=N_TRIALS_PER_CELL_IN_GRID,
-        possible_look_distances=possible_look_distance,
+    train_models_for_each_cell_in_grid(
+        base_conf_file_name=train_conf.conf_name,
+        base_args=train_conf.base_args,
+        n_trials_per_cell_in_grid=train_conf.n_trials_per_cell_in_grid,
+        possible_look_distances=train_conf.possible_look_distance,
     )
 
     msg.good(
-        f"Training finished. Stopping the watcher in {KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES} minutes...",
+        f"Training finished. Stopping the watcher in {watcher_conf.keep_alive_after_training_minutes} minutes...",
     )
 
-    time.sleep(60 * KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES)
+    time.sleep(60 * watcher_conf.keep_alive_after_training_minutes)
     watcher.kill()
     msg.good("Watcher stopped.")
