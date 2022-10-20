@@ -2,73 +2,37 @@
 pickle file with model predictions and hydra config.
 
 Possible extensions (JIT when needed):
-- Load most recent pickle file from 'evaluation_results' folder
+- Load most recent directory from 'evaluation_results'/Overtaci equivalent folder
 - Evaluate all models in 'evaluation_results' folder
 - CLI for evaluating a model
 """
-from pathlib import Path
 
-import pandas as pd
-from omegaconf.dictconfig import DictConfig
-
-from psycopt2d.utils import PROJECT_ROOT, read_pickle
+from psycopt2d.utils import (
+    PROJECT_ROOT,
+    infer_outcome_col_name,
+    infer_y_hat_prob_col_name,
+    load_evaluation_data,
+)
 from psycopt2d.visualization import plot_auc_by_time_from_first_visit
-
-
-def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
-    """Infer the outcome column name from the dataframe."""
-    outcome_name = [c for c in df.columns if c.startswith(prefix)]
-    if len(outcome_name) == 1:
-        return outcome_name[0]
-    else:
-        raise ValueError("More than one outcome inferred")
-
-
-def infer_predictor_col_names(df: pd.DataFrame, cfg: DictConfig) -> list[str]:
-    """Get the predictors that are used in the model.
-
-    Args:
-        df (pd.Dataframe): Dataframe with model predictions
-        cfg (DictConfig): Config file
-
-    Returns:
-        list[str]: list of predictors
-    """
-    return [c for c in df.columns if c.startswith(cfg.data.pred_col_name_prefix)]
-
-
-def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig]:
-    """Load model predictions and config file from a pickle file.
-
-    Args:
-        path (Path): Path to pickle file
-    """
-    obj = read_pickle(path)
-    return obj["df"], obj["cfg"]
-
 
 if __name__ == "__main__":
 
     eval_path = PROJECT_ROOT / "evaluation_results"
-    eval_df, cfg = load_model_predictions_and_cfg(
-        eval_path
-        # insert your own model path here
-        / "eval_model_name-xgboost_require_imputation-True_args-n_estimators-100_tree_method-auto_2022_09_22_10_52.pkl",
-    )
+    # change to whatever modele you wish to evaluate
+    eval_data = load_evaluation_data(eval_path / "2022_10_18_13_23_2h3cxref")
 
-    train_col_names = infer_predictor_col_names(eval_df, cfg)
-    y_col_name = infer_outcome_col_name(eval_df)
+    y_col_name = infer_outcome_col_name(eval_data.df)
 
-    Y_HAT_PROB_COL_NAME = "y_hat_prob"  # change to 'y_hat_prob_oof' if using cv
+    y_hat_prob_name = infer_y_hat_prob_col_name(eval_data.df)
 
-    first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
-        cfg.data.pred_timestamp_col_name
+    first_visit_timestamp = eval_data.df.groupby(eval_data.cfg.data.id_col_name)[
+        eval_data.cfg.data.pred_timestamp_col_name
     ].transform("min")
 
     # Do whatever extra evaluation you want to here
     p = plot_auc_by_time_from_first_visit(
-        labels=eval_df[y_col_name],
-        y_hat_probs=eval_df[Y_HAT_PROB_COL_NAME],
+        labels=eval_data.df[y_col_name],
+        y_hat_probs=eval_data.df[y_hat_prob_name],
         first_visit_timestamps=first_visit_timestamp,
-        prediction_timestamps=eval_df[cfg.data.pred_timestamp_col_name],
+        prediction_timestamps=eval_data.df[eval_data.cfg.data.pred_timestamp_col_name],
     )
