@@ -1,4 +1,4 @@
-"""Dataclasses used in the project"""
+"""Dataclasses used in the project."""
 from typing import Optional
 
 import pandas as pd

@@ -205,7 +205,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--timeout",
         type=float_or_none,
-        help="""How long to run the watcher for. If None, keeps runnning until process 
+        help="""How long to run the watcher for. If None, keeps runnning until process
         is killed (e.g. receives SIGTERM())""",
     )
     parser.add_argument(
