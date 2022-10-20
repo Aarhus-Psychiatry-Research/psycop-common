@@ -304,15 +304,12 @@ def main(cfg):
 
     create_wandb_folders()
 
-    # Get today's date as str
-    today_str = datetime.now().strftime("%Y-%m-%d")
-
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
         config=flatten_nested_dict(cfg, sep="."),
         mode=cfg.project.wandb_mode,
-        group=today_str,
+        group=cfg.project.wandb_group,
     )
 
     dataset = load_train_and_val_from_cfg(cfg)

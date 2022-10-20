@@ -5,4 +5,4 @@ defaults:
   - preprocessing: default_preprocessing
   - training: default_training
   - evaluation: default_evaluation
-  - sweeper: optuna_singlethread
+  - sweeper: optuna_multithread
