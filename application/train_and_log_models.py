@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Union
 
 from pydantic import BaseModel, Field
-from wasabi import Printer, msg
+from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import (
     infer_look_distance,
@@ -24,7 +24,7 @@ from psycopt2d.load import DataLoader, DatasetSpecification, DatasetTimeSpecific
 
 
 class PossibleLookDistanceDays(BaseModel):
-    """Possible look distances"""
+    """Possible look distances."""
 
     ahead: Iterable[Union[int, float]]
     behind: Iterable[Union[int, float]]
@@ -35,10 +35,11 @@ class MetaConf(BaseModel):
 
     conf_name: str = Field("integration_testing.yaml")
     data_dir: Path = Path(
-        "/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/"
+        "/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/",
     )
     overtaci: str = Field(
-        default="false", description="Change to 'true' if running on overtaci"
+        default="false",
+        description="Change to 'true' if running on overtaci",
     )
 
 
@@ -80,7 +81,7 @@ class TrainConf(BaseModel):
     conf_name: str = Field(default="integration_testing.yaml")
 
     base_args: str = Field(
-        default=f"--multirun +model=xgboost project.wandb_mode='dryrun' model.args.tree_method='auto' --config-name {conf_name}"
+        default=f"--multirun +model=xgboost project.wandb_mode='dryrun' model.args.tree_method='auto' --config-name {conf_name}",
     )
 
     possible_look_distance: PossibleLookDistanceDays
@@ -115,7 +116,7 @@ def infer_possible_look_directions(train):
 
 
 def get_dataset_spec(data_dir_path: Path):
-    """Get dataset specification"""
+    """Get dataset specification."""
     time_spec = DatasetTimeSpecification(
         drop_patient_if_outcome_before_date=None,
         min_prediction_time_date="1979-01-01",
@@ -162,7 +163,7 @@ if __name__ == "__main__":
         conf_name="integration_testing.yaml",
         overtaci="false",
         data_dir=Path(
-            "/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/"
+            "/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/",
         ),
     )
 
