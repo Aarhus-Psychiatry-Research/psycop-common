@@ -14,9 +14,11 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
+from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
+from psycopt2d.dataclasses.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -26,7 +28,6 @@ RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
 FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-AUC_LOGGING_FILE_PATH = PROJECT_ROOT / ".aucs" / "aucs.txt"
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -278,30 +279,50 @@ def write_df_to_file(
         raise ValueError(f"Invalid file suffix {file_suffix}")
 
 
+def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]:
+    """Checks whether the model has feature importances and returns them as a
+    dictionary. Return None if not.
+
+    Args:
+        pipe (Pipeline): Sklearn pipeline.
+
+    Returns:
+        Union[None, dict[str, float]]: Dictionary of feature importances.
+    """
+    if hasattr(pipe["model"], "feature_importances_"):
+        return dict(
+            zip(pipe["model"].feature_names, pipe["model"].feature_importances_),
+        )
+    else:
+        return None
+
+
 def prediction_df_with_metadata_to_disk(
     df: pd.DataFrame,
     cfg: DictConfig,
+    pipe: Pipeline,
     run: Optional[Run] = None,
 ) -> None:
-    """Saves prediction dataframe and hydra config to disk. Stored as a dict
-    with keys "df" and "cfg".
+    """Saves prediction dataframe, hydra config and feature names to disk.
 
     Args:
         df (pd.DataFrame): Dataframe to save.
         cfg (DictConfig): Hydra config.
+        pipe (Pipeline): Sklearn pipeline. Used to get feature names and feature
+            importances. Can potentially also save the entire model pipeline.
         run (Run): Wandb run. Used for getting name of the run.
     """
     model_args = format_dict_for_printing(cfg.model)
 
     timestamp = time.strftime("%Y_%m_%d_%H_%M")
 
-    if run and run.name:
-        run_descriptor = f"{timestamp}_{run.name}"
+    if run and run.id:
+        run_descriptor = f"{timestamp}_{run.id}"
     else:
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
-    if cfg.evaluation.save_model_predictions_on_overtaci and run:
-        # Save to overtaci formatted with date
+    if cfg.evaluation.save_model_predictions_on_overtaci:
+        # Save to overtaci
         dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:
         # Local path handling
@@ -312,6 +333,11 @@ def prediction_df_with_metadata_to_disk(
     # Write the files
     dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
     write_df_to_file(df, dir_path / "df.parquet")
+    if (feature_importance_dict := get_feature_importance_dict(pipe)) is not None:
+        dump_to_pickle(
+            obj=feature_importance_dict,
+            path=str(dir_path / "feature_importance.pkl"),
+        )
 
     msg.good(f"Saved evaluation results to {dir_path}")
 
@@ -340,3 +366,69 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
         )
 
     return date_repr
+
+
+def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
+    """Get evaluation data from a directory.
+
+    Args:
+        model_data_dir (Path): Path to model data directory.
+
+    Returns:
+        ModelEvalData: Evaluation data.
+    """
+    df = pd.read_parquet(model_data_dir / "df.parquet")
+    cfg = read_pickle(model_data_dir / "cfg.pkl")
+    if (model_data_dir / "feature_importance.pkl").exists():
+        feature_importance_dict = read_pickle(
+            str(model_data_dir / "feature_importance.pkl"),
+        )
+    else:
+        feature_importance_dict = None
+
+    return ModelEvalData(
+        df=df,
+        cfg=cfg,
+        feature_importance_dict=feature_importance_dict,
+    )
+
+def infer_col_names(
+    df: pd.DataFrame,
+    prefix: str,
+    allow_multiple: bool = True,
+) -> Union[str, list[str]]:
+    """Infer col names based on prefix."""
+    col_name = [c for c in df.columns if c.startswith(prefix)]
+
+    if len(col_name) == 1:
+        return col_name[0]
+    elif len(col_name) > 1:
+        if allow_multiple:
+            return col_name
+        raise ValueError(
+            f"Multipel columns found and allow_multiple is {allow_multiple}.",
+        )
+    else:
+        raise ValueError("More than one outcome inferred")
+
+
+def infer_outcome_col_name(
+    df: pd.DataFrame,
+    prefix: str = "outc_",
+    allow_multiple: bool = True,
+) -> Union[str, list[str]]:
+    """Infer the outcome column name from the dataframe."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def infer_predictor_col_name(
+    df: pd.DataFrame,
+    prefix: str = "pred_",
+    allow_multiple: bool = True,
+) -> Union[str, list[str]]:
+    """Get the predictors that are used in the model."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+def infer_y_hat_prob_col_name(df: pd.DataFrame, prefix="y_hat_prob", allow_multiple: False) -> str:
+    """Infer the y_hat_prob column name from the dataframe."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
