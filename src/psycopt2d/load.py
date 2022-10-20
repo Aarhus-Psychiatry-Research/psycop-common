@@ -2,6 +2,7 @@
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
+from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -11,7 +12,13 @@ from psycopmlutils.sql.loader import sql_load
 from pydantic import BaseModel, Field
 from wasabi import Printer
 
-from psycopt2d.utils import PROJECT_ROOT, coerce_to_datetime
+from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
+from psycopt2d.utils import (
+    PROJECT_ROOT,
+    coerce_to_datetime,
+    get_percent_lost,
+    infer_predictor_col_name,
+)
 
 msg = Printer(timestamp=True)
 
@@ -168,7 +175,7 @@ class DataLoader:
             pd.DataFrame: Dataset with dropped rows.
         """
         if not isinstance(n_days, timedelta):
-            n_days = timedelta(days=n_days)  # type: ignore
+            n_days_timedelt: timedelta = timedelta(days=n_days)  # type: ignore
 
         if direction not in ("ahead", "behind"):
             raise ValueError(f"Direction {direction} not supported.")
@@ -176,22 +183,23 @@ class DataLoader:
         n_rows_before_modification = dataset.shape[0]
 
         if direction == "ahead":
-            max_datetime = dataset[self.spec.pred_time_colname].max() - n_days
+            max_datetime = dataset[self.spec.pred_time_colname].max() - n_days_timedelt
             before_max_dt = dataset[self.spec.pred_time_colname] < max_datetime
             dataset = dataset[before_max_dt]
         elif direction == "behind":
-            min_datetime = dataset[self.spec.pred_time_colname].min() + n_days
+            min_datetime = dataset[self.spec.pred_time_colname].min() + n_days_timedelt
             after_min_dt = dataset[self.spec.pred_time_colname] > min_datetime
             dataset = dataset[after_min_dt]
 
         n_rows_after_modification = dataset.shape[0]
-        percent_dropped = (
-            n_rows_before_modification - n_rows_after_modification
-        ) / n_rows_before_modification
-
-        msg.info(
-            f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because the end of the dataset was within {n_days} of their prediction time when looking {direction} from their prediction time",
+        percent_dropped = get_percent_lost(
+            n_before=n_rows_after_modification, n_after=n_rows_after_modification
         )
+
+        if n_rows_before_modification - n_rows_after_modification != 0:
+            msg.info(
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because the end of the dataset was within {n_days} of their prediction time when looking {direction} from their prediction time",
+            )
 
         return dataset
 
@@ -216,13 +224,14 @@ class DataLoader:
         ]
 
         n_rows_after_modification = dataset.shape[0]
-        percent_dropped = (
-            n_rows_before_modification - n_rows_after_modification
-        ) / n_rows_before_modification
-
-        msg.info(
-            f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because patients had diabetes in the washin period.",
+        percent_dropped = get_percent_lost(
+            n_before=n_rows_after_modification, n_after=n_rows_after_modification
         )
+
+        if n_rows_before_modification - n_rows_after_modification != 0:
+            msg.info(
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because patients had diabetes in the washin period.",
+            )
 
         return dataset
 
@@ -240,33 +249,43 @@ class DataLoader:
             pd.DataFrame: Dataset with dropped columns.
         """
 
+        if not self.spec.time.lookbehind_combination:
+            raise ValueError("No lookbehind_combination provided.")
+
         # Extract all unique lookbhehinds in the dataset predictors
         lookbehinds_in_dataset = {
-            int(re.findall(r"within_(\d+)_days", col)[0])
-            for col in dataset.columns
-            if self.pred_col_name_prefix in col
+            int(infer_look_distance(col)[0])
+            for col in infer_predictor_col_name(df=dataset)
         }
 
+        # Convert list to set
+        lookbehinds_in_spec = set(self.spec.time.lookbehind_combination)
+
         # Check that all loobehinds in lookbehind_combination are used in the predictors
-        if not set(self.spec.time.lookbehind_combination).issubset(
+        if not lookbehinds_in_spec.issubset(
             lookbehinds_in_dataset,
         ):
-            raise ValueError(
-                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Lookbehinds in dataset: {lookbehinds_in_dataset}. Lookbehinds in lookbehind_combination: {self.spec.time.lookbehind_combination}.",
+            msg.warn(
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Dataset: {lookbehinds_in_dataset}. lookbehind_combination: {self.spec.time.lookbehind_combination}.",
             )
+
+            lookbehinds_to_keep = lookbehinds_in_spec.intersection(
+                lookbehinds_in_dataset
+            )
+
+            if not lookbehinds_to_keep:
+                raise ValueError("No predictors left after dropping lookbehinds.")
+
+            msg.warn(f"Training on {lookbehinds_to_keep}.")
 
         # Create a list of all predictor columns who have a lookbehind window not in lookbehind_combination list
         cols_to_drop = [
-            col
-            for col in dataset.columns
-            if any(
-                str(x) not in col and self.pred_col_name_prefix in col
-                for x in self.spec.time.lookbehind_combination
-            )
+            c
+            for c in infer_predictor_col_name(df=dataset)
+            if any(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
         ]
 
         dataset = dataset.drop(columns=cols_to_drop)
-
         return dataset
 
     def _convert_timestamp_dtype_and_nat(self, dataset: pd.DataFrame) -> pd.DataFrame:
@@ -330,13 +349,14 @@ class DataLoader:
                     cols_to_drop.append(col)
 
         n_cols_after_modification = dataset.shape[1]
-        percent_dropped = (
-            n_cols_before_modification - n_cols_after_modification
-        ) / n_cols_before_modification
-
-        msg.info(
-            f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days.",
+        percent_dropped = get_percent_lost(
+            n_before=n_cols_before_modification, n_after=n_cols_after_modification
         )
+
+        if n_cols_before_modification - n_cols_after_modification != 0:
+            msg.info(
+                f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days.",
+            )
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 

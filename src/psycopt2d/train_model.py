@@ -21,13 +21,14 @@ from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
 from psycopt2d.utils import (
+    PROJECT_ROOT,
     create_wandb_folders,
     flatten_nested_dict,
     get_feature_importance_dict,
     prediction_df_with_metadata_to_disk,
 )
 
-CONFIG_PATH = Path(__file__).parent / "config"
+CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
 TRAINING_COL_NAME_PREFIX = "pred_"
 
 # Handle wandb not playing nice with joblib

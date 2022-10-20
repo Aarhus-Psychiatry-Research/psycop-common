@@ -29,14 +29,14 @@ def infer_look_distance(
     col_name: Union[Iterable[str], str],
     regex_pattern: str = r"within_(\d+)_days",
     allow_multiple: bool = True,
-) -> list[Union[int, float]]:
+) -> list[str]:
     """Infer look distances from col names."""
     # E.g. "outc_within_1_days" = 1
     # E.g. "outc_within_2_days" = 2
     # E.g. "pred_within_3_days" = 3
     # E.g. "pred_within_3_days" = 3
 
-    look_distances: list[Union[int, float]] = []
+    look_distances: list[str] = []
 
     if isinstance(col_name, Iterable) and not isinstance(col_name, str):
         for c_name in col_name:

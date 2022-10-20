@@ -19,9 +19,10 @@ data:
   # Looking behind
   min_prediction_time_date: 2013-01-01
   min_lookbehind_days: 365 # (int): Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
+  lookbehind_combinations: choice([30, 90, 180, 365, 730], [30, 180, 730], [30, 730], [730])
 
 # Parameters that will only take effect if running with --multirun
 hydra:
   sweeper:
     params:
-      ++data.lookbehind_combinations: choice([30, 90], [30])
+      ++data.lookbehind_combinations: choice([3000], [30, 90])

@@ -397,12 +397,12 @@ def infer_col_names(
     df: pd.DataFrame,
     prefix: str,
     allow_multiple: bool = True,
-) -> Union[str, list[str]]:
+) -> list[str]:
     """Infer col names based on prefix."""
     col_name = [c for c in df.columns if c.startswith(prefix)]
 
     if len(col_name) == 1:
-        return col_name[0]
+        return [col_name[0]]
     elif len(col_name) > 1:
         if allow_multiple:
             return col_name
@@ -417,7 +417,7 @@ def infer_outcome_col_name(
     df: pd.DataFrame,
     prefix: str = "outc_",
     allow_multiple: bool = True,
-) -> Union[str, list[str]]:
+) -> list[str]:
     """Infer the outcome column name from the dataframe."""
     return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
 
@@ -438,3 +438,8 @@ def infer_y_hat_prob_col_name(
 ) -> str:
     """Infer the y_hat_prob column name from the dataframe."""
     return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def get_percent_lost(n_before: Union[int, float], n_after: Union[int, float]) -> float:
+    """Get the percent lost."""
+    return round((100 * (1 - n_after / n_before)), 2)
