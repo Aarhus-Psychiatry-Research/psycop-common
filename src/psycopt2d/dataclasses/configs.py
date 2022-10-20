@@ -1,3 +1,4 @@
+"""Dataclasses used in the project"""
 from typing import Optional
 
 import pandas as pd
@@ -8,11 +9,11 @@ from pydantic import BaseModel
 
 
 class ModelEvalData(BaseModel):
-    """Dataclass for model evaluation data"""
+    """Dataclass for model evaluation data."""
+
+    class Config:
+        arbitrary_types_allowed = True
 
     df: pd.DataFrame
     cfg: DictConfig
     feature_importance_dict: Optional[dict[str, float]] = None
-
-    class Config:
-        arbitrary_types_allowed = True

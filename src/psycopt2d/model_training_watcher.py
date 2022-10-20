@@ -143,7 +143,7 @@ class ModelTrainingWatcher:
         if "roc_auc_unweighted" in run.summary:
             return run.summary.roc_auc_unweighted
         msg.info(
-            f"Run {run_id} has no performance metric. Pinging again at next eval time."
+            f"Run {run_id} has no performance metric. Pinging again at next eval time.",
         )
         return None
 
@@ -198,8 +198,9 @@ if __name__ == "__main__":
         required=True,
     )
 
-    def float_or_none(x):
-        return None if x == "None" else float(x)
+    def float_or_none(arg: str) -> Optional[float]:
+        """Wrapper function to take float or none in argparse."""
+        return None if arg == "None" else float(arg)
 
     parser.add_argument(
         "--timeout",

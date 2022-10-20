@@ -46,7 +46,7 @@ if __name__ == "__main__":
     watcher = subprocess.Popen(
         [
             "python",
-            "src/psycopt2d/watch_wandb.py",
+            "src/psycopt2d/model_training_watcher.py",
             "--entity",
             WANDB_ENTITY,
             "--project_name",
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         time.sleep(1)
 
     msg.good(
-        f"Training finished. Stopping the watcher in {KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES} minutes..."
+        f"Training finished. Stopping the watcher in {KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES} minutes...",
     )
     time.sleep(60 * KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES)
     watcher.kill()
