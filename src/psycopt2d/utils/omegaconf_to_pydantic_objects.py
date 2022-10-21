@@ -25,7 +25,7 @@ class BaseModel(PydanticBaseModel):
 
 
 class WatcherConf(BaseModel):
-    """Configuration for watchers"""
+    """Configuration for watchers."""
 
     archive_all: bool
     keep_alive_after_training_minutes: Union[int, float]
@@ -40,7 +40,7 @@ class ProjectConf(BaseModel):
     wandb_group: str
     wandb_mode: str
     wandb_entity: str
-    watcher: WatcherConf
+    watcher: dict
     gpu: bool
 
 

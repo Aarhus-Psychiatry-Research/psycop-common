@@ -1,2 +1,0 @@
-archive_all: true
-keep_alive_after_training_minutes: 5

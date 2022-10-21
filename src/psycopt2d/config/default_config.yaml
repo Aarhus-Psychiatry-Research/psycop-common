@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - project: overtaci_test_project
+  - project: default_project
   - data: t2d_parquet
   - preprocessing: default_preprocessing
   - model: xgboost
