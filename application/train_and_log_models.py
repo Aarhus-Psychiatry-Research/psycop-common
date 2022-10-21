@@ -64,6 +64,63 @@ class LookDirectionCombination(BaseModel):
     lookahead: int
 
 
+def start_trainer(
+    cfg: FullConfig,
+    config_file_name: str,
+    cell: LookDirectionCombination,
+    wandb_group: str,
+) -> subprocess.Popen:
+    """Start a trainer"""
+    subprocess_args: list[str] = [
+        "python",
+        "src/psycopt2d/train_model.py",
+        f"model={cfg.model.model_name}",
+        f"data.min_lookbehind_days={cell.lookbehind}",
+        f"data.min_lookahead_days={cell.lookahead}",
+        f"project.wandb_group='{wandb_group}'",
+        f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookdirection_combination}",
+        f"project.wandb_mode={cfg.project.wandb_mode}",
+        "--config-name",
+        f"{config_file_name}",
+    ]
+
+    if cfg.train.n_trials_per_lookdirection_combination > 1:
+        subprocess_args.insert(2, "--multirun")
+
+    if cfg.model.model_name == "xgboost" and not cfg.train.gpu:
+        subprocess_args.insert(3, "++model.args.tree_method='auto'")
+
+    msg.info(f'{" ".join(subprocess_args)}')
+
+    return subprocess.Popen(  # pylint: disable=consider-using-with
+        args=subprocess_args,
+    )
+
+
+def start_watcher(cfg: FullConfig) -> subprocess.Popen:
+    """Start a watcher"""
+    return subprocess.Popen(  # pylint: disable=consider-using-with
+        [
+            "python",
+            "src/psycopt2d/model_training_watcher.py",
+            "--entity",
+            cfg.project.wandb_entity,
+            "--project_name",
+            cfg.project.name,
+            "--n_runs_before_eval",
+            str(cfg.project.watcher.n_runs_before_eval),
+            "--overtaci",
+            str(cfg.eval.save_model_predictions_on_overtaci),
+            "--timeout",
+            "None",
+            "--clean_wandb_dir",
+            str(cfg.project.watcher.archive_all),
+            "--verbose",
+            "True",
+        ],
+    )
+
+
 def train_models_for_each_cell_in_grid(
     cfg: FullConfig,
     possible_look_distances: PossibleLookDistanceDays,
@@ -115,62 +172,8 @@ def train_models_for_each_cell_in_grid(
         watcher.kill()
 
 
-def start_trainer(
-    cfg: FullConfig,
-    config_file_name: str,
-    cell: LookDirectionCombination,
-    wandb_group: str,
-):
-    subprocess_args: list[str] = [
-        "python",
-        "src/psycopt2d/train_model.py",
-        f"model={cfg.model.model_name}",
-        f"data.min_lookbehind_days={cell.lookbehind}",
-        f"data.min_lookahead_days={cell.lookahead}",
-        f"project.wandb_group='{wandb_group}'",
-        f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookdirection_combination}",
-        f"project.wandb_mode={cfg.project.wandb_mode}",
-        "--config-name",
-        f"{config_file_name}",
-    ]
-
-    if cfg.train.n_trials_per_lookdirection_combination > 1:
-        subprocess_args.insert(2, "--multirun")
-
-    if cfg.model.model_name == "xgboost" and not cfg.train.gpu:
-        subprocess_args.insert(3, "++model.args.tree_method='auto'")
-
-    msg.info(f'{" ".join(subprocess_args)}')
-
-    return subprocess.Popen(  # pylint: disable=consider-using-with
-        args=subprocess_args,
-    )
-
-
-def start_watcher(cfg):
-    return subprocess.Popen(  # pylint: disable=consider-using-with
-        [
-            "python",
-            "src/psycopt2d/model_training_watcher.py",
-            "--entity",
-            cfg.project.wandb_entity,
-            "--project_name",
-            cfg.project.name,
-            "--n_runs_before_eval",
-            str(cfg.project.watcher.n_runs_before_eval),
-            "--overtaci",
-            str(cfg.eval.save_model_predictions_on_overtaci),
-            "--timeout",
-            "None",
-            "--clean_wandb_dir",
-            str(cfg.project.watcher.archive_all),
-            "--verbose",
-            "True",
-        ],
-    )
-
-
 def load_cfg(config_file_name):
+    """Load config as pydantic object"""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name=config_file_name,
@@ -181,6 +184,7 @@ def load_cfg(config_file_name):
 
 
 def main():
+    """Main"""
     msg = Printer(timestamp=True)
 
     config_file_name = "integration_testing.yaml"
