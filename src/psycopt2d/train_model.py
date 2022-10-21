@@ -364,7 +364,7 @@ def main(cfg: Union[FullConfig, DictConfig]):
             "roc_auc_unweighted": roc_auc,
             "lookbehind": cfg.data.lookbehind_days,
             "lookahead": cfg.data.lookahead_days,
-        }
+        },
     )
     run.finish()
     return roc_auc

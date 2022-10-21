@@ -70,7 +70,7 @@ def start_trainer(
     cell: LookDirectionCombination,
     wandb_group: str,
 ) -> subprocess.Popen:
-    """Start a trainer"""
+    """Start a trainer."""
     subprocess_args: list[str] = [
         "python",
         "src/psycopt2d/train_model.py",
@@ -98,7 +98,7 @@ def start_trainer(
 
 
 def start_watcher(cfg: FullConfig) -> subprocess.Popen:
-    """Start a watcher"""
+    """Start a watcher."""
     return subprocess.Popen(  # pylint: disable=consider-using-with
         [
             "python",
@@ -173,7 +173,7 @@ def train_models_for_each_cell_in_grid(
 
 
 def load_cfg(config_file_name):
-    """Load config as pydantic object"""
+    """Load config as pydantic object."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
             config_name=config_file_name,
@@ -184,7 +184,7 @@ def load_cfg(config_file_name):
 
 
 def main():
-    """Main"""
+    """Main."""
     msg = Printer(timestamp=True)
 
     config_file_name = "integration_testing.yaml"
