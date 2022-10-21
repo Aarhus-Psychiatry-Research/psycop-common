@@ -83,18 +83,11 @@ def train_models_for_each_cell_in_grid(
 
     random.shuffle(lookbehind_combinations)
 
-    active_trainers: list[subprocess.Popen] = []
-
     wandb_prefix = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
 
     while lookbehind_combinations:
-        # Loop to run if enough trainers have been spawned
-        if len(active_trainers) >= cfg.train.active_trainers:
-            active_trainers = [t for t in active_trainers if t.poll() is None]
-            time.sleep(1)
-            continue
-
         combination = lookbehind_combinations.pop()
+        watcher = start_watcher(cfg=cfg)
 
         msg.info(
             f"Spawning a new trainer with lookbehind={combination.lookbehind} and lookahead={combination.lookahead}",
@@ -104,14 +97,22 @@ def train_models_for_each_cell_in_grid(
             f"{wandb_prefix}-beh-{combination.lookbehind}-ahead-{combination.lookahead}"
         )
 
-        active_trainers.append(
-            start_trainer(
-                cfg=cfg,
-                config_file_name=config_file_name,
-                cell=combination,
-                wandb_group=wandb_group,
-            )
+        trainer = start_trainer(
+            cfg=cfg,
+            config_file_name=config_file_name,
+            cell=combination,
+            wandb_group=wandb_group,
         )
+
+        while trainer.poll() is None:
+            time.sleep(1)
+
+        msg.good(
+            f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
+        )
+
+        time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
+        watcher.kill()
 
 
 def start_trainer(
@@ -169,6 +170,16 @@ def start_watcher(cfg):
     )
 
 
+def load_cfg(config_file_name):
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name=config_file_name,
+        )
+
+        cfg = omegaconf_to_pydantic_objects(cfg)
+    return cfg
+
+
 def main():
     msg = Printer(timestamp=True)
 
@@ -177,7 +188,6 @@ def main():
     cfg = load_cfg(config_file_name=config_file_name)
     # TODO: Watcher must be instantiated once for each cell in the grid, otherwise
     # it will compare max performances across all cells.
-    watcher = start_watcher(cfg)
     train = load_train_for_inference(cfg=cfg)
     possible_look_distances = infer_possible_look_distances(df=train)
 
@@ -199,24 +209,6 @@ def main():
         possible_look_distances=possible_look_distances,
         config_file_name=config_file_name,
     )
-
-    msg.good(
-        f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
-    )
-
-    time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
-    watcher.kill()
-    msg.good("Watcher stopped.")
-
-
-def load_cfg(config_file_name):
-    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
-        cfg = compose(
-            config_name=config_file_name,
-        )
-
-        cfg = omegaconf_to_pydantic_objects(cfg)
-    return cfg
 
 
 if __name__ == "__main__":

@@ -101,7 +101,6 @@ class TrainConf(BaseModel):
     n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
     n_trials_per_lookdirection_combination: int
     gpu: bool
-    active_trainers: int
 
 
 class EvalConf(BaseModel):
