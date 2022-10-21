@@ -70,15 +70,3 @@ if __name__ == "__main__":
     time.sleep(60 * KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES)
     watcher.kill()
     msg.good("Watcher stopped.")
-
-    # any_process_done = False  # pylint: disable=invalid-name
-    # for process in (trainer, watcher):
-    #     while process.poll() is None:
-    #         if any_process_done:
-    #             # kill the watcher if the trainer is done
-    #             # but allow some time to finish evaluation
-    #             time.sleep(KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES * 60)
-    #             process.kill()
-    #         time.sleep(1)
-    #     any_process_done = True  # pylint: disable=invalid-name
-    #     process.kill()
