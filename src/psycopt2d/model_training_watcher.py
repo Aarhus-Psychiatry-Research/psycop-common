@@ -111,7 +111,7 @@ class ModelTrainingWatcher:
 
             wandb_sync_stdout = self._upload_run_dir(run_folder)
 
-            if not "...done" in wandb_sync_stdout:
+            if "...done" not in wandb_sync_stdout:
                 if ".wandb file is empty" in wandb_sync_stdout:
                     if self.verbose:
                         msg.warn(f"Run {run_id} is still running. Skipping.")
