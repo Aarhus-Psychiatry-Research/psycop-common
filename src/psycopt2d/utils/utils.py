@@ -403,7 +403,7 @@ def infer_col_names(
     col_name = [c for c in df.columns if c.startswith(prefix)]
 
     if len(col_name) == 1:
-        return [col_name[0]]
+        return col_name[0]
     elif len(col_name) > 1:
         if allow_multiple:
             return col_name
