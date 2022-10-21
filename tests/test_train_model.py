@@ -7,7 +7,7 @@ from psycopt2d.models import MODELS
 from psycopt2d.train_model import main
 
 CONFIG_DIR_PATH = "../src/psycopt2d/config/"
-CONFIG_FILE_NAME = "integration_testing.yaml"
+INTEGRATION_TEST_FILE_NAME = "integration_testing.yaml"
 INTEGRATION_TESTING_MODEL_OVERRIDE = "+model=logistic-regression"
 
 
@@ -17,7 +17,7 @@ def test_main(model_name):
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
 
         cfg = compose(
-            config_name=CONFIG_FILE_NAME,
+            config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[f"+model={model_name}"],
         )
 
@@ -38,7 +38,7 @@ def test_integration_test():
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
 
         cfg = compose(
-            config_name=CONFIG_FILE_NAME,
+            config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[INTEGRATION_TESTING_MODEL_OVERRIDE],
         )
         main(cfg)
@@ -48,7 +48,7 @@ def test_crossvalidation():
     """Test crossvalidation."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
         cfg = compose(
-            config_name=CONFIG_FILE_NAME,
+            config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[INTEGRATION_TESTING_MODEL_OVERRIDE, "+data.n_splits=2"],
         )
         main(cfg)
@@ -58,7 +58,7 @@ def test_min_prediction_time_date():
     """Test crossvalidation."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
         cfg = compose(
-            config_name=CONFIG_FILE_NAME,
+            config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[
                 INTEGRATION_TESTING_MODEL_OVERRIDE,
                 "+data.min_prediction_time_date=1972-01-01",

@@ -3,6 +3,7 @@ defaults:
   - project: overtaci_test_project
   - data: t2d_parquet
   - preprocessing: default_preprocessing
+  - model: xgboost
   - training: default_training
   - evaluation: default_evaluation
   - sweeper: optuna_multithread

@@ -5,10 +5,12 @@ Usage:
 - Replace the HYDRA_ARGS string with the desired arguments for `train_model.py`
 - Run this script from project root with `python src/psycopt2d/train_and_log_models.py
 """
+import random
 import subprocess
 import time
 from pathlib import Path
 
+from hydra import compose, initialize
 from pydantic import BaseModel, Field
 from wasabi import Printer
 
@@ -18,6 +20,9 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_predictor_col_name,
 )
 from psycopt2d.load import DataLoader, DatasetSpecification, DatasetTimeSpecification
+from psycopt2d.utils import PROJECT_ROOT
+
+msg = Printer(timestamp=True)
 
 
 class PossibleLookDistanceDays(BaseModel):
@@ -75,7 +80,7 @@ class TrainConf(BaseModel):
 
     n_trials_per_cell_in_grid: int = Field(
         default=50,
-        description="Number of trials per cell in the lookahead/lookbehind grid",
+        description="Number of trials per cell in the lookahead/lookbehind grid. If n > 1, automatically triggers multirun.",
     )
 
     model_conf: str = Field(
@@ -85,17 +90,13 @@ class TrainConf(BaseModel):
 
     conf_name: str = Field(default="integration_testing.yaml")
 
-    multirun: bool = Field(
-        default=False,
-        description="Whether to use Hydra to run multiple models.",
-    )
-
     possible_look_distances: PossibleLookDistanceDays
 
 
-def load_data(dataset_spec):
+def load_train_for_inference(dataset_spec):
     """Load the data."""
     loader = DataLoader(dataset_spec)
+    msg.info("Loading datasets for look direction inference")
     return loader.load_dataset_from_dir(split_names="train")
 
 
@@ -117,7 +118,7 @@ def infer_possible_look_directions(train):
     )
 
 
-def get_dataset_spec(data_dir_path: Path):
+def get_dataset_spec(data_dir_path: Path, file_suffix: str):
     """Get dataset specification."""
     time_spec = DatasetTimeSpecification(
         drop_patient_if_outcome_before_date=None,
@@ -127,7 +128,7 @@ def get_dataset_spec(data_dir_path: Path):
     )
 
     return DatasetSpecification(
-        file_suffix="csv",
+        file_suffix=file_suffix,
         time=time_spec,
         pred_col_name_prefix="pred_",
         pred_time_colname="timestamp",
@@ -135,109 +136,162 @@ def get_dataset_spec(data_dir_path: Path):
     )
 
 
+class LookDirectionCombination(BaseModel):
+    """A combination of lookbehind and lookahead days."""
+
+    lookbehind: int
+    lookahead: int
+
+
 def train_models_for_each_cell_in_grid(
     train_conf: TrainConf,
+    wandb_conf: WandbConf,
 ):
     """Train a model for each cell in the grid of possible look distances."""
     from random_word import RandomWords
 
     random_word = RandomWords()
 
-    for lookbehind in train_conf.possible_look_distances.behind:
-        for lookahead in train_conf.possible_look_distances.ahead:
-            wandb_group = f"{random_word.get_random_word()}-{random_word.get_random_word()}-beh-{lookbehind}-ahead-{lookahead}"
+    # Create all combinations of lookbehind and lookahead days
+    lookbehind_combinations = [
+        LookDirectionCombination(lookbehind=lookbehind, lookahead=lookahead)
+        for lookbehind in train_conf.possible_look_distances.behind
+        for lookahead in train_conf.possible_look_distances.ahead
+    ]
 
-            subprocess_args: list[str] = [
-                "python",
-                "src/psycopt2d/train_model.py",
-                f"+model={train_conf.model_conf}",
-                f"data.min_lookbehind_days={lookbehind}",
-                f"data.min_lookahead_days={lookahead}",
-                f"project.wandb_group='{wandb_group}'",
-                f"hydra.sweeper.n_trials={train_conf.n_trials_per_cell_in_grid}",
-                "--config-name",
-                f"{meta_conf.conf_name}",
-            ]
+    lookbehind_combinations = [
+        comb for comb in lookbehind_combinations if comb.lookahead <= 1095
+    ]
 
-            if train_conf.multirun:
-                subprocess_args.insert(2, "--multirun")
+    random.shuffle(lookbehind_combinations)
 
-            if train_conf.model_conf == "xgboost" and not train_conf.gpu:
-                subprocess_args.insert(3, "++model.args.tree_method='auto'")
+    active_trainers: list[subprocess.Popen] = []
 
-            msg.info("Starting trainer with command")
-            msg.info(f'{" ".join(subprocess_args)}')
+    wandb_prefix = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
 
-            trainer = subprocess.Popen(  # pylint: disable=consider-using-with
+    while lookbehind_combinations:
+        # Loop to run if enough trainers have been spawned
+        if len(active_trainers) >= 4:
+            active_trainers = [t for t in active_trainers if t.poll() is None]
+            time.sleep(1)
+            continue
+
+        cell = lookbehind_combinations.pop()
+        msg.info(
+            f"Spawning a new trainer with lookbehind={cell.lookbehind} and lookahead={cell.lookahead}"
+        )
+
+        wandb_group = f"{wandb_prefix}-beh-{cell.lookbehind}-ahead-{cell.lookahead}"
+
+        subprocess_args: list[str] = [
+            "python",
+            "src/psycopt2d/train_model.py",
+            f"model={train_conf.model_conf}",
+            f"data.min_lookbehind_days={cell.lookbehind}",
+            f"data.min_lookahead_days={cell.lookahead}",
+            f"project.wandb_group='{wandb_group}'",
+            f"hydra.sweeper.n_trials={train_conf.n_trials_per_cell_in_grid}",
+            f"project.wandb_mode={wandb_conf.mode}",
+            "--config-name",
+            f"{meta_conf.conf_name}",
+        ]
+
+        if train_conf.n_trials_per_cell_in_grid > 1:
+            subprocess_args.insert(2, "--multirun")
+
+        if train_conf.model_conf == "xgboost" and not train_conf.gpu:
+            subprocess_args.insert(3, "++model.args.tree_method='auto'")
+
+        msg.info(f'{" ".join(subprocess_args)}')
+
+        active_trainers.append(
+            subprocess.Popen(  # pylint: disable=consider-using-with
                 args=subprocess_args,
             )
-
-            while trainer.poll() is None:
-                time.sleep(1)
+        )
 
 
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
 
+    CONFIG_FILE_NAME = "default_config.yaml"
+
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name=CONFIG_FILE_NAME,
+        )
+
     meta_conf = MetaConf(
-        conf_name="integration_testing.yaml",
+        conf_name=CONFIG_FILE_NAME,
         overtaci="false",
-        data_dir=Path(
-            "/Users/au484925/Desktop/psycop-t2d/tests/test_data/synth_splits/",
-        ),
+        data_dir=cfg.data.dir,
     )
 
     wandb_conf = WandbConf(
         entity="psycop",
         project_name="psycopt2d-testing",
-        mode="offline",
+        mode=cfg.project.wandb_mode,
     )
 
-    watcher_conf = WatcherConf(archive_all="true", keep_alive_after_training_minutes=5)
-    dataset_spec = get_dataset_spec(data_dir_path=meta_conf.data_dir)
-    train = load_data(dataset_spec=dataset_spec)
+    watcher_conf = WatcherConf(archive_all="false", keep_alive_after_training_minutes=5)
+
+    watcher = subprocess.Popen(  # pylint: disable=consider-using-with
+        [
+            "python",
+            "src/psycopt2d/model_training_watcher.py",
+            "--entity",
+            wandb_conf.entity,
+            "--project_name",
+            wandb_conf.project_name,
+            "--n_runs_before_eval",
+            str(watcher_conf.n_runs_before_first_eval),
+            "--overtaci",
+            meta_conf.overtaci,
+            "--timeout",
+            "None",
+            "--clean_wandb_dir",
+            watcher_conf.archive_all,
+        ],
+    )
+
+    dataset_spec = get_dataset_spec(
+        data_dir_path=meta_conf.data_dir, file_suffix=cfg.data.suffix
+    )
+    train = load_train_for_inference(dataset_spec=dataset_spec)
 
     possible_look_distances = infer_possible_look_directions(train)
 
+    # Remove "9999" from possible look distances behind
+    possible_look_distances.behind = [
+        dist for dist in possible_look_distances.behind if dist != "9999"
+    ]
+
+    msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
+    msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
+
     train_conf = TrainConf(
         conf_name=meta_conf.conf_name,
-        multirun=False,
         model_conf="xgboost",
         n_trials_per_cell_in_grid=1,
         possible_look_distances=possible_look_distances,
-        gpu=False,
+        gpu=True,
     )
 
     if not train_conf.gpu:
         msg.warn("Not using GPU for training")
 
-    # watcher = subprocess.Popen(  # pylint: disable=consider-using-with
-    #     [
-    #         "python",
-    #         "src/psycopt2d/model_training_watcher.py",
-    #         "--entity",
-    #         wandb_conf.entity,
-    #         "--project_name",
-    #         wandb_conf.project_name,
-    #         "--n_runs_before_eval",
-    #         str(watcher_conf.n_runs_before_first_eval),
-    #         "--overtaci",
-    #         meta_conf.overtaci,
-    #         "--timeout",
-    #         "None",
-    #         "--clean_wandb_dir",
-    #         watcher_conf.archive_all,
-    #     ],
-    # )
-
-    train_models_for_each_cell_in_grid(
-        train_conf=train_conf,
+    clean_dir_seconds = 0
+    msg.info(
+        f"Sleeping for {clean_dir_seconds} seconds to allow watcher to start and clean dir"
     )
+    time.sleep(clean_dir_seconds)
+
+    train_models_for_each_cell_in_grid(train_conf=train_conf, wandb_conf=wandb_conf)
 
     msg.good(
         f"Training finished. Stopping the watcher in {watcher_conf.keep_alive_after_training_minutes} minutes...",
     )
 
-    # time.sleep(60 * watcher_conf.keep_alive_after_training_minutes)
-    # watcher.kill()
+    time.sleep(60 * watcher_conf.keep_alive_after_training_minutes)
+    watcher.kill()
     msg.good("Watcher stopped.")

@@ -12,13 +12,9 @@ from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
 from psycopt2d.evaluation import evaluate_model
-from psycopt2d.utils import (
-    MODEL_PREDICTIONS_PATH,
-    PROJECT_ROOT,
-    infer_outcome_col_name,
-    infer_y_hat_prob_col_name,
-    load_evaluation_data,
-)
+from psycopt2d.utils import (MODEL_PREDICTIONS_PATH, PROJECT_ROOT,
+                             infer_outcome_col_name, infer_y_hat_prob_col_name,
+                             load_evaluation_data)
 
 # Path to the wandb directory
 WANDB_DIR = PROJECT_ROOT / "wandb"
@@ -52,11 +48,11 @@ class ModelTrainingWatcher:
         self.n_runs_before_eval = n_runs_before_eval
 
         # A queue for runs waiting to be uploaded to WandB
-        self.run_id_upload_queue = []
+        self.run_id_eval_candidates_queue = []
         self.max_performance = 0
 
         self.archive_path = WANDB_DIR / "archive"
-        self.archive_path.mkdir(exist_ok=True)
+        self.archive_path.mkdir(exist_ok=True, parents=True)
 
     def watch(self, timeout_minutes: Optional[int] = None) -> None:
         """Watch the wandb directory for new runs.
@@ -70,12 +66,12 @@ class ModelTrainingWatcher:
             timeout_minutes is None or start_time + timeout_minutes * 60 > time.time()
         ):
             self.get_new_runs_and_evaluate()
-            time.sleep(10)
+            time.sleep(1)
 
     def get_new_runs_and_evaluate(self) -> None:
         """Get new runs and evaluate the best runs."""
         self.upload_unarchived_runs()
-        if len(self.run_id_upload_queue) >= self.n_runs_before_eval:
+        if len(self.run_id_eval_candidates_queue) >= self.n_runs_before_eval:
             self.evaluate_best_runs()
 
     def _upload_run_dir(self, run_dir: Path) -> None:
@@ -87,7 +83,7 @@ class ModelTrainingWatcher:
 
     def _archive_run_dir(self, run_dir: Path) -> None:
         """Move a run to the archive folder."""
-        run_dir.rename(self.archive_path / run_dir.name)
+        run_dir.rename(target=self.archive_path / run_dir.name)
 
     def _get_run_id(self, run_dir: Path) -> str:
         """Get the run id from a run directory."""
@@ -96,11 +92,17 @@ class ModelTrainingWatcher:
     def upload_unarchived_runs(self) -> None:
         """Upload unarchived runs to wandb."""
         for run_folder in WANDB_DIR.glob(r"offline-run*"):
+            # TODO: We need some kind of test here to figure out if the run is
+            # still running or not. If it is still running, we should wait
+            # until it is finished. Otherwise, we get a "permission denied" error.
             run_id = self._get_run_id(run_folder)
 
             self._upload_run_dir(run_folder)
+
+            # TODO: If upload_run_dir fails, we should not archive the run.
+            # use return from subprocess.run to check if it failed. See docs: https://docs.python.org/3/library/subprocess.html
             self._archive_run_dir(run_folder)
-            self.run_id_upload_queue.append(run_id)
+            self.run_id_eval_candidates_queue.append(run_id)
 
     def _get_run_evaluation_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
@@ -151,7 +153,7 @@ class ModelTrainingWatcher:
         """Evaluate the best runs."""
         run_performances = {
             run_id: self._get_run_performance(run_id)
-            for run_id in self.run_id_upload_queue
+            for run_id in self.run_id_eval_candidates_queue
         }
         # sort runs by performance to not upload subpar runs
         run_performances = dict(
@@ -168,7 +170,7 @@ class ModelTrainingWatcher:
                 self.max_performance = performance
                 self._do_evaluation(run_id)
         # reset run id queue and try to upload unfinished runs next time
-        self.run_id_upload_queue = unfinished_runs
+        self.run_id_eval_candidates_queue = unfinished_runs
 
     def archive_all_runs(self) -> None:
         """Archive all runs in the wandb directory."""

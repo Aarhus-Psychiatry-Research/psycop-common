@@ -192,7 +192,7 @@ class DataLoader:
 
         n_rows_after_modification = dataset.shape[0]
         percent_dropped = get_percent_lost(
-            n_before=n_rows_after_modification,
+            n_before=n_rows_before_modification,
             n_after=n_rows_after_modification,
         )
 
@@ -210,7 +210,7 @@ class DataLoader:
 
         # Remove dates before drop_patient_if_outcome_before_date
         outcome_before_date = (
-            dataset["timestamp_first_diabetes_any"]
+            dataset["_timestamp_first_t2d"]
             < self.spec.time.drop_patient_if_outcome_before_date
         )
 
@@ -257,6 +257,7 @@ class DataLoader:
         lookbehinds_in_dataset = {
             int(infer_look_distance(col)[0])
             for col in infer_predictor_col_name(df=dataset)
+            if len(infer_look_distance(col)) > 0
         }
 
         # Convert list to set
@@ -278,13 +279,18 @@ class DataLoader:
                 raise ValueError("No predictors left after dropping lookbehinds.")
 
             msg.warn(f"Training on {lookbehinds_to_keep}.")
+        else:
+            lookbehinds_to_keep = lookbehinds_in_spec
 
         # Create a list of all predictor columns who have a lookbehind window not in lookbehind_combination list
         cols_to_drop = [
             c
             for c in infer_predictor_col_name(df=dataset)
-            if any(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
+            if all(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
         ]
+
+        cols_to_drop = [c for c in cols_to_drop if "within" in c]
+        # TODO: Add some specification of within_x_days indicating how to parse columns to find lookbehinds. Or, alternatively, use the column spec.
 
         dataset = dataset.drop(columns=cols_to_drop)
         return dataset
@@ -331,9 +337,7 @@ class DataLoader:
         n_cols_before_modification = dataset.shape[1]
 
         if direction == "behind":
-            cols_to_process = [
-                c for c in dataset.columns if self.pred_col_name_prefix in c
-            ]
+            cols_to_process = infer_predictor_col_name(df=dataset)
 
             for col in cols_to_process:
                 # Extract lookbehind days from column name use regex
@@ -344,7 +348,8 @@ class DataLoader:
                 if len(lookbehind_days_strs) > 0:
                     lookbehind_days = int(lookbehind_days_strs[0])
                 else:
-                    raise ValueError(f"Could not extract lookbehind days from {col}")
+                    msg.warn(f"Could not extract lookbehind days from {col}")
+                    continue
 
                 if lookbehind_days > look_direction_threshold:
                     cols_to_drop.append(col)
@@ -447,6 +452,7 @@ class DataLoader:
         Returns:
             pd.DataFrame: The filtered dataset
         """
+        msg.info(f"Loading {split_names}")
         # Handle input types
         for timedelta_arg in (
             self.spec.time.min_lookbehind_days,
@@ -499,12 +505,12 @@ def _init_spec_from_cfg(
         resolve=True,
     )
 
-    if data_cfg["source"] == "synthetic":
+    if data_cfg["suffix"] == "synthetic":
         split_dir_path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
         file_suffix = "csv"
     else:
         split_dir_path = data_cfg["dir"]
-        file_suffix = data_cfg["source"]
+        file_suffix = data_cfg["suffix"]
 
     time_spec = DatasetTimeSpecification(
         drop_patient_if_outcome_before_date=data_cfg[

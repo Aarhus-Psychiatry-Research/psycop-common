@@ -5,11 +5,11 @@ data:
   min_lookbehind_days: null
   min_prediction_time_date: null
   lookahead_days: 30
-  pred_col_name_prefix: "pred_"
+  pred_col_name_prefix: pred_
   pred_timestamp_col_name: timestamp
   outcome_timestamp_col_name: timestamp_outcome
   id_col_name: citizen_ids
-  source: synthetic
+  suffix: synthetic
   drop_patient_if_outcome_before_date: null
   lookbehind_combination: [30, 90]
 

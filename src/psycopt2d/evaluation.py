@@ -61,14 +61,6 @@ def evaluate_model(
     feature_importance_dict: Optional[dict[str, float]],
 ) -> None:
     """Runs the evaluation suite on the model and logs to WandB.
-    At present, this includes:
-    1. AUC
-    2. Table of performance by pred_proba threshold
-    3. Feature importance
-    4. Sensitivity by time to outcome
-    5. AUC by calendar time
-    6. AUC by time from first visit
-    7. F1 by time until diagnosis
 
     Args:
         cfg (OmegaConf): The hydra config from the run
@@ -84,7 +76,8 @@ def evaluate_model(
     msg.info("Starting model evaluation")
 
     SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
-    # When parallelising tests, this causes issues since multiple processes
+    # When running tests in parallel with pytest-xdist,
+    # this causes issues since multiple processes
     # override the same dir at once.
     # Can be solved by allowing config to override this
     # and using tmp_dir in pytest. Not worth refactoring
