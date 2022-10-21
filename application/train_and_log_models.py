@@ -9,6 +9,7 @@ import random
 import subprocess
 import time
 
+import pandas as pd
 from hydra import compose, initialize
 from pydantic import BaseModel
 from wasabi import Printer
@@ -19,10 +20,7 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_predictor_col_name,
 )
 from psycopt2d.load import DataLoader
-from psycopt2d.utils.omegaconf_to_pydantic_objects import (
-    FullConfig,
-    omegaconf_to_pydantic_objects,
-)
+from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
 
 msg = Printer(timestamp=True)
 
@@ -41,16 +39,16 @@ def load_train_for_inference(cfg: FullConfig):
     return loader.load_dataset_from_dir(split_names="train")
 
 
-def infer_possible_look_directions(train):
+def infer_possible_look_distances(df: pd.DataFrame) -> PossibleLookDistanceDays:
     """Infer the possible values for min_lookahead_days and
     min_lookbehind_days."""
     # Get potential lookaheads from outc_ columns
-    outcome_col_names = infer_outcome_col_name(df=train, allow_multiple=True)
+    outcome_col_names = infer_outcome_col_name(df=df, allow_multiple=True)
 
     possible_lookahead_days = infer_look_distance(col_name=outcome_col_names)
 
     # Get potential lookbehinds from pred_ columns
-    pred_col_names = infer_predictor_col_name(df=train, allow_multiple=True)
+    pred_col_names = infer_predictor_col_name(df=df, allow_multiple=True)
     possible_lookbehind_days = list(set(infer_look_distance(col_name=pred_col_names)))
 
     return PossibleLookDistanceDays(
@@ -83,10 +81,6 @@ def train_models_for_each_cell_in_grid(
         for lookahead in possible_look_distances.ahead
     ]
 
-    lookbehind_combinations = [
-        comb for comb in lookbehind_combinations if comb.lookahead <= 1095
-    ]
-
     random.shuffle(lookbehind_combinations)
 
     active_trainers: list[subprocess.Popen] = []
@@ -95,61 +89,65 @@ def train_models_for_each_cell_in_grid(
 
     while lookbehind_combinations:
         # Loop to run if enough trainers have been spawned
-        if len(active_trainers) >= 1:  # TODO: Add to conf.
+        if len(active_trainers) >= cfg.train.active_trainers:
             active_trainers = [t for t in active_trainers if t.poll() is None]
             time.sleep(1)
             continue
 
-        cell = lookbehind_combinations.pop()
+        combination = lookbehind_combinations.pop()
+
         msg.info(
-            f"Spawning a new trainer with lookbehind={cell.lookbehind} and lookahead={cell.lookahead}",
+            f"Spawning a new trainer with lookbehind={combination.lookbehind} and lookahead={combination.lookahead}",
         )
 
-        wandb_group = f"{wandb_prefix}-beh-{cell.lookbehind}-ahead-{cell.lookahead}"
-
-        subprocess_args: list[str] = [
-            "python",
-            "src/psycopt2d/train_model.py",
-            f"model={cfg.model.model_name}",
-            f"data.min_lookbehind_days={cell.lookbehind}",
-            f"data.min_lookahead_days={cell.lookahead}",
-            f"project.wandb_group='{wandb_group}'",
-            f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookdirection_combination}",
-            f"project.wandb_mode={cfg.project.wandb_mode}",
-            "--config-name",
-            f"{config_file_name}",
-        ]
-
-        if cfg.train.n_trials_per_lookdirection_combination > 1:
-            subprocess_args.insert(2, "--multirun")
-
-        if cfg.model.model_name == "xgboost" and not cfg.project.gpu:
-            subprocess_args.insert(3, "++model.args.tree_method='auto'")
-
-        msg.info(f'{" ".join(subprocess_args)}')
+        wandb_group = (
+            f"{wandb_prefix}-beh-{combination.lookbehind}-ahead-{combination.lookahead}"
+        )
 
         active_trainers.append(
-            subprocess.Popen(  # pylint: disable=consider-using-with
-                args=subprocess_args,
-            ),
+            start_trainer(
+                cfg=cfg,
+                config_file_name=config_file_name,
+                cell=combination,
+                wandb_group=wandb_group,
+            )
         )
 
 
-if __name__ == "__main__":
-    msg = Printer(timestamp=True)
+def start_trainer(
+    cfg: FullConfig,
+    config_file_name: str,
+    cell: LookDirectionCombination,
+    wandb_group: str,
+):
+    subprocess_args: list[str] = [
+        "python",
+        "src/psycopt2d/train_model.py",
+        f"model={cfg.model.model_name}",
+        f"data.min_lookbehind_days={cell.lookbehind}",
+        f"data.min_lookahead_days={cell.lookahead}",
+        f"project.wandb_group='{wandb_group}'",
+        f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookdirection_combination}",
+        f"project.wandb_mode={cfg.project.wandb_mode}",
+        "--config-name",
+        f"{config_file_name}",
+    ]
 
-    CONFIG_FILE_NAME = "default_config.yaml"
+    if cfg.train.n_trials_per_lookdirection_combination > 1:
+        subprocess_args.insert(2, "--multirun")
 
-    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
-        cfg = compose(
-            config_name=CONFIG_FILE_NAME,
-        )
+    if cfg.model.model_name == "xgboost" and not cfg.train.gpu:
+        subprocess_args.insert(3, "++model.args.tree_method='auto'")
 
-        cfg = omegaconf_to_pydantic_objects(cfg)
+    msg.info(f'{" ".join(subprocess_args)}')
 
-    # TODO: Watcher must be instantiated once for each cell in the grid, otherwise
-    # it will compare max performances across all cells.
-    watcher = subprocess.Popen(  # pylint: disable=consider-using-with
+    return subprocess.Popen(  # pylint: disable=consider-using-with
+        args=subprocess_args,
+    )
+
+
+def start_watcher(cfg):
+    return subprocess.Popen(  # pylint: disable=consider-using-with
         [
             "python",
             "src/psycopt2d/model_training_watcher.py",
@@ -170,31 +168,36 @@ if __name__ == "__main__":
         ],
     )
 
-    train = load_train_for_inference(cfg=cfg)
 
-    possible_look_distances = infer_possible_look_directions(train)
+def main():
+    msg = Printer(timestamp=True)
+
+    config_file_name = "integration_testing.yaml"
+
+    cfg = load_cfg(config_file_name=config_file_name)
+    # TODO: Watcher must be instantiated once for each cell in the grid, otherwise
+    # it will compare max performances across all cells.
+    watcher = start_watcher(cfg)
+    train = load_train_for_inference(cfg=cfg)
+    possible_look_distances = infer_possible_look_distances(df=train)
 
     # Remove "9999" from possible look distances behind
     possible_look_distances.behind = [
-        dist for dist in possible_look_distances.behind if dist != "9999"
+        dist
+        for dist in possible_look_distances
+        if not int(dist) > cfg.data.max_lookbehind_days
     ]
 
     msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
     msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
 
-    if not cfg.project.gpu:
+    if not cfg.train.gpu:
         msg.warn("Not using GPU for training")
-
-    CLEAN_DIR_SECONDS = 0
-    msg.info(
-        f"Sleeping for {CLEAN_DIR_SECONDS} seconds to allow watcher to start and clean dir",
-    )
-    time.sleep(CLEAN_DIR_SECONDS)
 
     train_models_for_each_cell_in_grid(
         cfg=cfg,
         possible_look_distances=possible_look_distances,
-        config_file_name=CONFIG_FILE_NAME,
+        config_file_name=config_file_name,
     )
 
     msg.good(
@@ -204,3 +207,17 @@ if __name__ == "__main__":
     time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
     watcher.kill()
     msg.good("Watcher stopped.")
+
+
+def load_cfg(config_file_name):
+    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
+        cfg = compose(
+            config_name=config_file_name,
+        )
+
+        cfg = omegaconf_to_pydantic_objects(cfg)
+    return cfg
+
+
+if __name__ == "__main__":
+    main()

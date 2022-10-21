@@ -19,10 +19,7 @@ from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
-from psycopt2d.utils.omegaconf_to_pydantic_objects import (
-    FullConfig,
-    omegaconf_to_pydantic_objects,
-)
+from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
 from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     create_wandb_folders,

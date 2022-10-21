@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
-from psycopt2d.utils.omegaconf_to_pydantic_objects import FullConfig
+from psycopt2d.utils.configs import FullConfig
 from psycopt2d.utils.utils import (
     coerce_to_datetime,
     get_percent_lost,

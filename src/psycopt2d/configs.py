@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 from pydantic import BaseModel
 
-from psycopt2d.utils.omegaconf_to_pydantic_objects import FullConfig
+from psycopt2d.utils.configs import FullConfig
 
 # pylint: disable=missing-class-docstring, too-few-public-methods
 

@@ -24,6 +24,12 @@ class BaseModel(PydanticBaseModel):
         arbitrary_types_allowed = True
 
 
+class WandbConf(BaseModel):
+    group: str
+    mode: str
+    entity: str
+
+
 class WatcherConf(BaseModel):
     """Configuration for watchers."""
 
@@ -37,11 +43,7 @@ class ProjectConf(BaseModel):
 
     name: str = "psycopt2d"
     seed: int
-    wandb_group: str
-    wandb_mode: str
-    wandb_entity: str
     watcher: WatcherConf
-    gpu: bool
 
 
 class DataConf(BaseModel):
@@ -64,12 +66,13 @@ class DataConf(BaseModel):
     min_lookahead_days: Optional[
         int
     ]  # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
-    min_lookbehind_days: Optional[int]
     drop_patient_if_outcome_before_date: Optional[Union[str, datetime]]
 
     # Looking behind
     # (int): Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
     min_prediction_time_date: Optional[Union[str, datetime]]
+    min_lookbehind_days: Optional[int]
+    max_lookbehind_days: Optional[int]
     lookbehind_combination: Optional[list[int]]
 
 
@@ -97,6 +100,8 @@ class TrainConf(BaseModel):
 
     n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
     n_trials_per_lookdirection_combination: int
+    gpu: bool
+    active_trainers: int
 
 
 class EvalConf(BaseModel):
@@ -116,6 +121,7 @@ class EvalConf(BaseModel):
 class FullConfig(BaseModel):
     """A full configuration object."""
 
+    wandb: WandbConf
     project: ProjectConf
     data: DataConf
     preprocessing: PreprocessingConf

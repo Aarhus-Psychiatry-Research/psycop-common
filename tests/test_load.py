@@ -2,7 +2,7 @@
 from hydra import compose, initialize
 
 from psycopt2d.load import load_train_and_val_from_cfg
-from psycopt2d.utils.omegaconf_to_pydantic_objects import omegaconf_to_pydantic_objects
+from psycopt2d.utils.configs import omegaconf_to_pydantic_objects
 
 
 def test_load_lookbehind_exceeds_lookbehind_threshold():

@@ -8,7 +8,7 @@ import pytest
 from hydra import compose, initialize
 from utils_for_testing import str_to_df
 
-from psycopt2d.utils.omegaconf_to_pydantic_objects import omegaconf_to_pydantic_objects
+from psycopt2d.utils.configs import omegaconf_to_pydantic_objects
 from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     drop_records_if_datediff_days_smaller_than,

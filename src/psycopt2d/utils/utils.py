@@ -19,7 +19,7 @@ from wasabi import msg
 
 from psycopt2d.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
-from psycopt2d.utils.omegaconf_to_pydantic_objects import FullConfig
+from psycopt2d.utils.configs import FullConfig
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"

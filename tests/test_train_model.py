@@ -5,7 +5,7 @@ from hydra import compose, initialize
 
 from psycopt2d.models import MODELS
 from psycopt2d.train_model import main
-from psycopt2d.utils.omegaconf_to_pydantic_objects import omegaconf_to_pydantic_objects
+from psycopt2d.utils.configs import omegaconf_to_pydantic_objects
 
 CONFIG_DIR_PATH = "../src/psycopt2d/config/"
 INTEGRATION_TEST_FILE_NAME = "integration_testing.yaml"
