@@ -20,7 +20,6 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_predictor_col_name,
 )
 from psycopt2d.load import DataLoader, DatasetSpecification, DatasetTimeSpecification
-from psycopt2d.utils.utils import PROJECT_ROOT
 
 msg = Printer(timestamp=True)
 
@@ -178,7 +177,7 @@ def train_models_for_each_cell_in_grid(
 
         cell = lookbehind_combinations.pop()
         msg.info(
-            f"Spawning a new trainer with lookbehind={cell.lookbehind} and lookahead={cell.lookahead}"
+            f"Spawning a new trainer with lookbehind={cell.lookbehind} and lookahead={cell.lookahead}",
         )
 
         wandb_group = f"{wandb_prefix}-beh-{cell.lookbehind}-ahead-{cell.lookahead}"
@@ -207,7 +206,7 @@ def train_models_for_each_cell_in_grid(
         active_trainers.append(
             subprocess.Popen(  # pylint: disable=consider-using-with
                 args=subprocess_args,
-            )
+            ),
         )
 
 
@@ -255,7 +254,8 @@ if __name__ == "__main__":
     )
 
     dataset_spec = get_dataset_spec(
-        data_dir_path=meta_conf.data_dir, file_suffix=cfg.data.suffix
+        data_dir_path=meta_conf.data_dir,
+        file_suffix=cfg.data.suffix,
     )
     train = load_train_for_inference(dataset_spec=dataset_spec)
 
@@ -280,11 +280,11 @@ if __name__ == "__main__":
     if not train_conf.gpu:
         msg.warn("Not using GPU for training")
 
-    clean_dir_seconds = 0
+    CLEAN_DIR_SECONDS = 0
     msg.info(
-        f"Sleeping for {clean_dir_seconds} seconds to allow watcher to start and clean dir"
+        f"Sleeping for {CLEAN_DIR_SECONDS} seconds to allow watcher to start and clean dir",
     )
-    time.sleep(clean_dir_seconds)
+    time.sleep(CLEAN_DIR_SECONDS)
 
     train_models_for_each_cell_in_grid(train_conf=train_conf, wandb_conf=wandb_conf)
 

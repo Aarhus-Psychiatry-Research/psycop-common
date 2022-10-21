@@ -13,7 +13,6 @@ from typing import Any, Optional, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from omegaconf.dictconfig import DictConfig
 from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg

@@ -63,7 +63,7 @@ CONFIG_DIR_PATH_REL = "../src/psycopt2d/config"
 
 
 def get_config_file_names() -> list[str]:
-    """Get all config file names"""
+    """Get all config file names."""
     config_file_paths: list[Path] = list(CONFIG_DIR_PATH_ABS.glob("*.yaml"))
     return [f"{path.stem}.yaml" for path in config_file_paths]
 

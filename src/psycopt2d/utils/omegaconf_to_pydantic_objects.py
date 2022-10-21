@@ -1,9 +1,9 @@
-"""Utilities for converting config yamls to pydantic objects. 
+"""Utilities for converting config yamls to pydantic objects.
 
 Helpful because it makes them:
 - Addressable with intellisense,
-- Refactorable with IDEs, 
-- Easier to document with docstrings and 
+- Refactorable with IDEs,
+- Easier to document with docstrings and
 - Type checkable
 """
 
@@ -11,8 +11,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
-import pydantic
-from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 from pydantic import BaseModel as PydanticBaseModel
 
@@ -21,7 +19,7 @@ class BaseModel(PydanticBaseModel):
     """Allow arbitrary types in all pydantic models."""
 
     class Config:
-        """Allow arbitrary types"""
+        """Allow arbitrary types."""
 
         arbitrary_types_allowed = True
 
@@ -65,7 +63,7 @@ class DataConf(BaseModel):
 
 
 class PreprocessingConf(BaseModel):
-    """Preprocessing config"""
+    """Preprocessing config."""
 
     convert_to_boolean: bool  # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
     convert_datetimes_to: bool  # (str): Options include ordinal or False
@@ -76,7 +74,7 @@ class PreprocessingConf(BaseModel):
 
 
 class ModelConf(BaseModel):
-    """Model configuration"""
+    """Model configuration."""
 
     model_name: str  # (str): Model, can currently take xgboost
     require_imputation: bool  # (bool): Whether the model requires imputation. (shouldn't this be false?)
@@ -84,13 +82,13 @@ class ModelConf(BaseModel):
 
 
 class TrainConf(BaseModel):
-    """Training configuration"""
+    """Training configuration."""
 
     n_splits: int  # TODO: How do we handle whether to use crossvalidation or train/val splitting?
 
 
 class EvalConf(BaseModel):
-    """Evaluation config"""
+    """Evaluation config."""
 
     threshold_percentiles: list[int]
 
@@ -125,7 +123,3 @@ def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfig:
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
     return FullConfig(**conf)
-
-
-if __name__ == "__main__":
-    main()
