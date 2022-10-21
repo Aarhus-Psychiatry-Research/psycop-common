@@ -18,7 +18,7 @@ from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
-from psycopt2d.dataclasses.configs import ModelEvalData
+from psycopt2d.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -402,7 +402,7 @@ def infer_col_names(
     col_name = [c for c in df.columns if c.startswith(prefix)]
 
     if len(col_name) == 1:
-        return [col_name[0]]
+        return col_name[0]
     elif len(col_name) > 1:
         if allow_multiple:
             return col_name
