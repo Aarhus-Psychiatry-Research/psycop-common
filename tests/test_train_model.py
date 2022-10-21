@@ -5,10 +5,11 @@ from hydra import compose, initialize
 
 from psycopt2d.models import MODELS
 from psycopt2d.train_model import main
+from psycopt2d.utils.omegaconf_to_pydantic_objects import omegaconf_to_pydantic_objects
 
 CONFIG_DIR_PATH = "../src/psycopt2d/config/"
 INTEGRATION_TEST_FILE_NAME = "integration_testing.yaml"
-INTEGRATION_TESTING_MODEL_OVERRIDE = "+model=logistic-regression"
+INTEGRATION_TESTING_MODEL_OVERRIDE = "model=logistic-regression"
 
 
 @pytest.mark.parametrize("model_name", MODELS.keys())
@@ -18,13 +19,15 @@ def test_main(model_name):
 
         cfg = compose(
             config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[f"+model={model_name}"],
+            overrides=[f"model={model_name}"],
         )
+
+        cfg = omegaconf_to_pydantic_objects(cfg)
 
         # XGBoost should train on GPU on Overtaci,
         # but CPU during integration testing
         if model_name == "xgboost":
-            cfg.model.args.tree_method = "auto"
+            cfg.model.args["tree_method"] = "auto"
 
         main(cfg)
 

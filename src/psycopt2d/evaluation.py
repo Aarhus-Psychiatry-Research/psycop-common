@@ -14,7 +14,7 @@ from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from psycopt2d.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
     plot_feature_importances,

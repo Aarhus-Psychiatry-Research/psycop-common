@@ -1,7 +1,7 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from collections.abc import Iterable
-from typing import Optional
+from typing import Optional, Union
 
 import hydra
 import numpy as np
@@ -19,7 +19,11 @@ from psycopt2d.evaluation import evaluate_model
 from psycopt2d.feature_transformers import ConvertToBoolean, DateTimeConverter
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
-from psycopt2d.utils import (
+from psycopt2d.utils.omegaconf_to_pydantic_objects import (
+    FullConfig,
+    omegaconf_to_pydantic_objects,
+)
+from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     create_wandb_folders,
     flatten_nested_dict,
@@ -302,8 +306,11 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     config_name="default_config",
     version_base="1.2",
 )
-def main(cfg):
+def main(cfg: Union[FullConfig, DictConfig]):
     """Main function for training a single model."""
+    if not isinstance(cfg, FullConfig):
+        cfg = omegaconf_to_pydantic_objects(cfg)
+
     msg = Printer(timestamp=True)
 
     create_wandb_folders()
@@ -311,7 +318,7 @@ def main(cfg):
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
-        config=flatten_nested_dict(cfg, sep="."),
+        config=flatten_nested_dict(cfg.__dict__, sep="."),
         mode=cfg.project.wandb_mode,
         group=cfg.project.wandb_group,
     )
@@ -331,7 +338,7 @@ def main(cfg):
         pipe=pipe,
         outcome_col_name=outcome_col_name,
         train_col_names=train_col_names,
-        n_splits=cfg.training.n_splits,
+        n_splits=cfg.train.n_splits,
     )
 
     # Save model predictions, feature importance, and config to disk

@@ -9,7 +9,8 @@ data:
   pred_timestamp_col_name: timestamp
   outcome_timestamp_col_name: timestamp_outcome
   id_col_name: citizen_ids
-  suffix: synthetic
+  dir: "../psycop-t2d/tests/test_data/synth_splits/"
+  suffix: csv
   drop_patient_if_outcome_before_date: null
   lookbehind_combination: [30, 90]
 

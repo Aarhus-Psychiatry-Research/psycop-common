@@ -18,8 +18,9 @@ from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
-from psycopt2d.dataclasses.configs import ModelEvalData
+from psycopt2d.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
+from psycopt2d.utils.omegaconf_to_pydantic_objects import FullConfig
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
@@ -27,6 +28,7 @@ OUTCOME_DATA_PATH = SHARED_RESOURCES_PATH / "outcome_data"
 RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
 FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -299,7 +301,7 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
 
 def prediction_df_with_metadata_to_disk(
     df: pd.DataFrame,
-    cfg: DictConfig,
+    cfg: FullConfig,
     pipe: Pipeline,
     run: Optional[Run] = None,
 ) -> None:
@@ -321,7 +323,7 @@ def prediction_df_with_metadata_to_disk(
     else:
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
-    if cfg.evaluation.save_model_predictions_on_overtaci:
+    if cfg.eval.save_model_predictions_on_overtaci:
         # Save to overtaci
         dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:

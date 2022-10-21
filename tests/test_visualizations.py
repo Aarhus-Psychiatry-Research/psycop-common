@@ -10,7 +10,7 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
-from psycopt2d.utils import positive_rate_to_pred_probs
+from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.feature_importance import plot_feature_importances

@@ -12,9 +12,13 @@ from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
 from psycopt2d.evaluation import evaluate_model
-from psycopt2d.utils import (MODEL_PREDICTIONS_PATH, PROJECT_ROOT,
-                             infer_outcome_col_name, infer_y_hat_prob_col_name,
-                             load_evaluation_data)
+from psycopt2d.utils.utils import (
+    MODEL_PREDICTIONS_PATH,
+    PROJECT_ROOT,
+    infer_outcome_col_name,
+    infer_y_hat_prob_col_name,
+    load_evaluation_data,
+)
 
 # Path to the wandb directory
 WANDB_DIR = PROJECT_ROOT / "wandb"

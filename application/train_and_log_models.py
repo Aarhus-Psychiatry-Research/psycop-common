@@ -20,7 +20,7 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_predictor_col_name,
 )
 from psycopt2d.load import DataLoader, DatasetSpecification, DatasetTimeSpecification
-from psycopt2d.utils import PROJECT_ROOT
+from psycopt2d.utils.utils import PROJECT_ROOT
 
 msg = Printer(timestamp=True)
 

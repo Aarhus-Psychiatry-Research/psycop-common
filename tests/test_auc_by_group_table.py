@@ -2,7 +2,7 @@
 # pylint: disable=missing-function-docstring
 
 from psycopt2d.tables import auc_by_group_table
-from psycopt2d.utils import bin_continuous_data
+from psycopt2d.utils.utils import bin_continuous_data
 
 
 def test_auc_by_group_table(synth_data):

@@ -3,6 +3,7 @@ import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from pathlib import Path
+from queue import Full
 from typing import Any, Optional, Union
 
 import pandas as pd
@@ -12,7 +13,8 @@ from pydantic import BaseModel, Field
 from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
-from psycopt2d.utils import (
+from psycopt2d.utils.omegaconf_to_pydantic_objects import FullConfig
+from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     coerce_to_datetime,
     get_percent_lost,
@@ -111,16 +113,16 @@ class DataLoader:
 
     def __init__(
         self,
-        spec: DatasetSpecification,
+        cfg: FullConfig,
     ):
-        self.spec = spec
+        self.cfg = cfg
 
         # File handling
-        self.dir_path = Path(spec.split_dir_path)
-        self.file_suffix = spec.file_suffix
+        self.dir_path = Path(cfg.data.dir)
+        self.file_suffix = cfg.data.suffix
 
         # Column specifications
-        self.pred_col_name_prefix = spec.pred_col_name_prefix
+        self.pred_col_name_prefix = cfg.data.pred_col_name_prefix
 
     def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
         self,
@@ -182,12 +184,18 @@ class DataLoader:
         n_rows_before_modification = dataset.shape[0]
 
         if direction == "ahead":
-            max_datetime = dataset[self.spec.pred_time_colname].max() - n_days_timedelt
-            before_max_dt = dataset[self.spec.pred_time_colname] < max_datetime
+            max_datetime = (
+                dataset[self.cfg.data.pred_timestamp_col_name].max() - n_days_timedelt
+            )
+            before_max_dt = (
+                dataset[self.cfg.data.pred_timestamp_col_name] < max_datetime
+            )
             dataset = dataset[before_max_dt]
         elif direction == "behind":
-            min_datetime = dataset[self.spec.pred_time_colname].min() + n_days_timedelt
-            after_min_dt = dataset[self.spec.pred_time_colname] > min_datetime
+            min_datetime = (
+                dataset[self.cfg.data.pred_timestamp_col_name].min() + n_days_timedelt
+            )
+            after_min_dt = dataset[self.cfg.data.pred_timestamp_col_name] > min_datetime
             dataset = dataset[after_min_dt]
 
         n_rows_after_modification = dataset.shape[0]
@@ -211,7 +219,7 @@ class DataLoader:
         # Remove dates before drop_patient_if_outcome_before_date
         outcome_before_date = (
             dataset["_timestamp_first_t2d"]
-            < self.spec.time.drop_patient_if_outcome_before_date
+            < self.cfg.data.drop_patient_if_outcome_before_date
         )
 
         patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
@@ -219,8 +227,8 @@ class DataLoader:
 
         # Removed dates before drop_patient_if_outcome_before_date
         dataset = dataset[
-            dataset[self.spec.pred_time_colname]
-            > self.spec.time.drop_patient_if_outcome_before_date
+            dataset[self.cfg.data.pred_timestamp_col_name]
+            > self.cfg.data.drop_patient_if_outcome_before_date
         ]
 
         n_rows_after_modification = dataset.shape[0]
@@ -250,7 +258,7 @@ class DataLoader:
             pd.DataFrame: Dataset with dropped columns.
         """
 
-        if not self.spec.time.lookbehind_combination:
+        if not self.cfg.data.lookbehind_combination:
             raise ValueError("No lookbehind_combination provided.")
 
         # Extract all unique lookbhehinds in the dataset predictors
@@ -261,14 +269,14 @@ class DataLoader:
         }
 
         # Convert list to set
-        lookbehinds_in_spec = set(self.spec.time.lookbehind_combination)
+        lookbehinds_in_spec = set(self.cfg.data.lookbehind_combination)
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
         if not lookbehinds_in_spec.issubset(
             lookbehinds_in_dataset,
         ):
             msg.warn(
-                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Dataset: {lookbehinds_in_dataset}. lookbehind_combination: {self.spec.time.lookbehind_combination}.",
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Dataset: {lookbehinds_in_dataset}. lookbehind_combination: {self.cfg.data.lookbehind_combination}.",
             )
 
             lookbehinds_to_keep = lookbehinds_in_spec.intersection(
@@ -384,10 +392,10 @@ class DataLoader:
         for direction in ("ahead", "behind"):
 
             if direction in ("ahead", "behind"):
-                if self.spec.time.min_lookahead_days:
-                    n_days = self.spec.time.min_lookahead_days
-                elif self.spec.time.min_lookbehind_days:
-                    n_days = self.spec.time.min_lookbehind_days
+                if self.cfg.data.min_lookahead_days:
+                    n_days = self.cfg.data.min_lookahead_days
+                elif self.cfg.data.min_lookbehind_days:
+                    n_days = self.cfg.data.min_lookbehind_days
                 else:
                     continue
 
@@ -416,23 +424,23 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
-        if self.spec.time.drop_patient_if_outcome_before_date:
+        if self.cfg.data.drop_patient_if_outcome_before_date:
             dataset = add_washin_timestamps(dataset=dataset)
 
         dataset = self._convert_timestamp_dtype_and_nat(dataset)
-        if self.spec.time.drop_patient_if_outcome_before_date:
+        if self.cfg.data.drop_patient_if_outcome_before_date:
             dataset = self._drop_patients_with_event_in_washin(dataset=dataset)
 
         # Drop if later than min prediction time date
-        if self.spec.time.min_prediction_time_date:
+        if self.cfg.data.min_prediction_time_date:
             dataset = dataset[
-                dataset[self.spec.pred_time_colname]
-                > self.spec.time.min_prediction_time_date
+                dataset[self.cfg.data.pred_timestamp_col_name]
+                > self.cfg.data.min_prediction_time_date
             ]
 
         dataset = self._drop_cols_and_rows_if_look_direction_not_met(dataset=dataset)
 
-        if self.spec.time.lookbehind_combination:
+        if self.cfg.data.lookbehind_combination:
             dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
 
         return dataset
@@ -455,15 +463,15 @@ class DataLoader:
         msg.info(f"Loading {split_names}")
         # Handle input types
         for timedelta_arg in (
-            self.spec.time.min_lookbehind_days,
-            self.spec.time.min_lookahead_days,
+            self.cfg.data.min_lookbehind_days,
+            self.cfg.data.min_lookahead_days,
         ):
             if timedelta_arg:
                 timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
 
         for date_arg in (
-            self.spec.time.drop_patient_if_outcome_before_date,
-            self.spec.time.min_prediction_time_date,
+            self.cfg.data.drop_patient_if_outcome_before_date,
+            self.cfg.data.min_prediction_time_date,
         ):
             if isinstance(date_arg, str):
                 date_arg = coerce_to_datetime(
@@ -545,16 +553,12 @@ class SplitDataset(BaseModel):
     val: pd.DataFrame
 
 
-def load_train_and_val_from_cfg(cfg: DictConfig):
+def load_train_and_val_from_cfg(cfg: FullConfig):
     """Load train and validation data from file."""
 
-    data_specification = _init_spec_from_cfg(
-        cfg,
-    )
-
-    split = DataLoader(spec=data_specification)
+    loader = DataLoader(cfg=cfg)
 
     return SplitDataset(
-        train=split.load_dataset_from_dir(split_names="train"),
-        val=split.load_dataset_from_dir(split_names="val"),
+        train=loader.load_dataset_from_dir(split_names="train"),
+        val=loader.load_dataset_from_dir(split_names="val"),
     )

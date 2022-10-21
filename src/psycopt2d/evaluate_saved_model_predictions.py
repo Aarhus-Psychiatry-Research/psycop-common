@@ -14,7 +14,7 @@ from typing import Union
 import pandas as pd
 from omegaconf import DictConfig
 
-from psycopt2d.utils import (
+from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     infer_outcome_col_name,
     infer_predictor_col_name,
