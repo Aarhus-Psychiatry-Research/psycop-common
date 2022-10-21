@@ -4,7 +4,7 @@ import subprocess
 import time
 from distutils.util import strtobool  # pylint: disable=deprecated-module
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 import wandb
 from wandb.apis.public import Api  # pylint: disable=no-name-in-module

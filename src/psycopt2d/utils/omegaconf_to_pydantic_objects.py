@@ -95,7 +95,7 @@ class ModelConf(BaseModel):
 class TrainConf(BaseModel):
     """Training configuration."""
 
-    n_splits: int  # TODO: How do we handle whether to use crossvalidation or train/val splitting?
+    n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
     n_trials_per_lookdirection_combination: int
 
 
