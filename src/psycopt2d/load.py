@@ -1,21 +1,18 @@
 """Loader for the t2d dataset."""
 import re
 from collections.abc import Iterable
-from datetime import datetime, timedelta
-from multiprocessing.sharedctypes import Value
+from datetime import timedelta
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
-from omegaconf import DictConfig, OmegaConf
 from psycopmlutils.sql.loader import sql_load
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
 from psycopt2d.utils.omegaconf_to_pydantic_objects import FullConfig
 from psycopt2d.utils.utils import (
-    PROJECT_ROOT,
     coerce_to_datetime,
     get_percent_lost,
     infer_outcome_col_name,
@@ -366,9 +363,11 @@ class DataLoader:
         return dataset
 
     def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
-        self, dataset: pd.DataFrame
+        self,
+        dataset: pd.DataFrame,
     ) -> pd.DataFrame:
-        """Keep only one outcome column with the same lookahead days as set in the config."""
+        """Keep only one outcome column with the same lookahead days as set in
+        the config."""
         outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
         col_to_drop = [
             c for c in outcome_cols if str(self.cfg.data.lookahead_days) not in c
@@ -378,7 +377,7 @@ class DataLoader:
 
         if not isinstance(infer_outcome_col_name(df), str):
             raise ValueError(
-                "Returning more than one outcome column, will cause problems during eval."
+                "Returning more than one outcome column, will cause problems during eval.",
             )
 
         return df
@@ -414,7 +413,7 @@ class DataLoader:
             dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
 
         dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
-            dataset=dataset
+            dataset=dataset,
         )
 
         return dataset

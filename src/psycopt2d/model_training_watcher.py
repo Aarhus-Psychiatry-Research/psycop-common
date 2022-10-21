@@ -13,10 +13,13 @@ from wasabi import msg
 
 from psycopt2d.configs import ModelEvalData
 from psycopt2d.evaluation import evaluate_model
-from psycopt2d.utils.utils import (MODEL_PREDICTIONS_PATH, PROJECT_ROOT,
-                                   infer_outcome_col_name,
-                                   infer_y_hat_prob_col_name,
-                                   load_evaluation_data)
+from psycopt2d.utils.utils import (
+    MODEL_PREDICTIONS_PATH,
+    PROJECT_ROOT,
+    infer_outcome_col_name,
+    infer_y_hat_prob_col_name,
+    load_evaluation_data,
+)
 
 # Path to the wandb directory
 WANDB_DIR = PROJECT_ROOT / "wandb"
@@ -114,7 +117,7 @@ class ModelTrainingWatcher:
                         msg.warn(f"Run {run_id} is still running. Skipping.")
                 else:
                     raise ValueError(
-                        f"wandb sync failed, returned: {wandb_sync_stdout}"
+                        f"wandb sync failed, returned: {wandb_sync_stdout}",
                     )
                 continue
 
