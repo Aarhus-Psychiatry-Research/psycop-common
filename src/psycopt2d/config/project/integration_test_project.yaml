@@ -6,4 +6,5 @@ wandb_entity: "psycop-t2d-testing" # Which entity to run WanDB in.
 watcher:
   archive_all: true
   keep_alive_after_training_minutes: 5
+  n_runs_before_eval: 1
 gpu: false

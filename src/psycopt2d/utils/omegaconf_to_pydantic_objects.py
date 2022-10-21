@@ -40,7 +40,7 @@ class ProjectConf(BaseModel):
     wandb_group: str
     wandb_mode: str
     wandb_entity: str
-    watcher: dict
+    watcher: WatcherConf
     gpu: bool
 
 

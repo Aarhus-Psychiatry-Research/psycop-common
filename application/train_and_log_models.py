@@ -194,7 +194,7 @@ if __name__ == "__main__":
     )
 
     msg.good(
-        f"Training finished. Stopping the watcher in {watcher_conf.keep_alive_after_training_minutes} minutes...",
+        f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
     )
 
     time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
