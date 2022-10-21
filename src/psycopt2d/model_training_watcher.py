@@ -12,9 +12,13 @@ from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
 from psycopt2d.evaluation import evaluate_model
-from psycopt2d.utils import (MODEL_PREDICTIONS_PATH, PROJECT_ROOT,
-                             infer_outcome_col_name, infer_y_hat_prob_col_name,
-                             load_evaluation_data)
+from psycopt2d.utils import (
+    MODEL_PREDICTIONS_PATH,
+    PROJECT_ROOT,
+    infer_outcome_col_name,
+    infer_y_hat_prob_col_name,
+    load_evaluation_data,
+)
 
 # Path to the wandb directory
 WANDB_DIR = PROJECT_ROOT / "wandb"
@@ -32,6 +36,7 @@ class ModelTrainingWatcher:
         model_data_dir: Where to look for evaluation results.
         overtaci: Whether the script is running on overtaci. Determines where
             to look for the evaluation results.
+        verbose: Whether to print verbose output.
     """
 
     def __init__(
@@ -40,6 +45,7 @@ class ModelTrainingWatcher:
         project_name: str,
         n_runs_before_eval: int,
         model_data_dir: Path,
+        verbose: bool = False,
     ):
         self.entity = entity
         self.project_name = project_name
@@ -47,6 +53,7 @@ class ModelTrainingWatcher:
 
         self.n_runs_before_eval = n_runs_before_eval
 
+        self.verbose = verbose
         # A queue for runs waiting to be uploaded to WandB
         self.run_id_eval_candidates_queue = []
         self.max_performance = 0
@@ -76,10 +83,16 @@ class ModelTrainingWatcher:
 
     def _upload_run_dir(self, run_dir: Path) -> None:
         """Upload a single run to wandb."""
-        subprocess.run(
+        # get stdout from subprocess.run
+        proc = subprocess.run(
             ["wandb", "sync", str(run_dir), "--project", self.project_name],
             check=True,
+            capture_output=True,
         )
+        stdout = proc.stdout.decode("utf-8")
+        if self.verbose:
+            msg.info(f"Watcher: {stdout}")
+        return stdout
 
     def _archive_run_dir(self, run_dir: Path) -> None:
         """Move a run to the archive folder."""
@@ -92,15 +105,16 @@ class ModelTrainingWatcher:
     def upload_unarchived_runs(self) -> None:
         """Upload unarchived runs to wandb."""
         for run_folder in WANDB_DIR.glob(r"offline-run*"):
-            # TODO: We need some kind of test here to figure out if the run is
-            # still running or not. If it is still running, we should wait
-            # until it is finished. Otherwise, we get a "permission denied" error.
             run_id = self._get_run_id(run_folder)
 
-            self._upload_run_dir(run_folder)
+            wandb_sync_stdout = self._upload_run_dir(run_folder)
 
             # TODO: If upload_run_dir fails, we should not archive the run.
             # use return from subprocess.run to check if it failed. See docs: https://docs.python.org/3/library/subprocess.html
+            if ".wandb file is empty" in wandb_sync_stdout:
+                if self.verbose:
+                    msg.warn(f"Run {run_id} is still running. Skipping.")
+                continue
             self._archive_run_dir(run_folder)
             self.run_id_eval_candidates_queue.append(run_id)
 
@@ -144,9 +158,10 @@ class ModelTrainingWatcher:
         run = self._get_wandb_run(run_id)
         if "roc_auc_unweighted" in run.summary:
             return run.summary.roc_auc_unweighted
-        msg.info(
-            f"Run {run_id} has no performance metric. Pinging again at next eval time.",
-        )
+        if self.verbose:
+            msg.info(
+                f"Run {run_id} has no performance metric. Pinging again at next eval time.",
+            )
         return None
 
     def evaluate_best_runs(self) -> None:
@@ -157,7 +172,11 @@ class ModelTrainingWatcher:
         }
         # sort runs by performance to not upload subpar runs
         run_performances = dict(
-            sorted(run_performances.items(), key=lambda item: item[1], reverse=True),
+            sorted(
+                run_performances.items(),
+                key=lambda item: (item[1] is not None, item[1]),
+                reverse=True,
+            ),
         )
         # get runs with auc of None (attempted upload before run finished)
         unfinished_runs = [
@@ -165,7 +184,7 @@ class ModelTrainingWatcher:
         ]
 
         for run_id, performance in run_performances.items():
-            if performance > self.max_performance:
+            if performance is not None and performance > self.max_performance:
                 msg.good(f"New record performance! AUC: {performance}")
                 self.max_performance = performance
                 self._do_evaluation(run_id)
@@ -217,6 +236,13 @@ if __name__ == "__main__":
         help="Archive all runs in the wandb dir before starting",
         required=True,
     )
+    parser.add_argument(
+        "--verbose",
+        type=lambda x: bool(strtobool(x)),
+        help="Whether to print verbose messages (default: False)",
+        required=False,
+        default=False,
+    )
     args = parser.parse_args()
 
     model_data_dir = (
@@ -230,6 +256,7 @@ if __name__ == "__main__":
         project_name=args.project_name,
         n_runs_before_eval=args.n_runs_before_eval,
         model_data_dir=model_data_dir,
+        verbose=args.verbose,
     )
     if args.clean_wandb_dir:
         watcher.archive_all_runs()
