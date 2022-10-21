@@ -14,6 +14,7 @@ from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
+from psycopt2d.utils.omegaconf_to_pydantic_objects import FullConfig
 from psycopt2d.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
@@ -37,7 +38,7 @@ def log_feature_importances(
     feature_importance_plot_path = plot_feature_importances(
         feature_names=feature_importance_dict.keys(),
         feature_importances=feature_importance_dict.values(),
-        top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+        top_n_feature_importances=cfg.eval.top_n_feature_importances,
         save_path=save_path,
     )
 
@@ -53,7 +54,7 @@ def log_feature_importances(
 
 
 def evaluate_model(
-    cfg,
+    cfg: FullConfig,
     eval_df: pd.DataFrame,
     y_col_name: str,
     y_hat_prob_col_name: str,
@@ -94,8 +95,8 @@ def evaluate_model(
     pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
     y_hat_int = np.round(y_hat_probs, 0)
 
-    date_bins_ahead: Iterable[int] = cfg.evaluation.date_bins_ahead
-    date_bins_behind: Iterable[int] = cfg.evaluation.date_bins_behind
+    date_bins_ahead: Iterable[int] = cfg.eval.date_bins_ahead
+    date_bins_behind: Iterable[int] = cfg.eval.date_bins_behind
 
     # Drop date_bins_direction if they are further away than min_lookdirection_days
     if cfg.data.min_lookbehind_days:
@@ -121,7 +122,7 @@ def evaluate_model(
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=y_hat_probs,
-        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
+        positive_rate_thresholds=cfg.eval.positive_rate_thresholds,
     )
 
     msg.info(f"AUC: {auc}")
@@ -132,7 +133,7 @@ def evaluate_model(
     performance_by_threshold_df = generate_performance_by_positive_rate_table(
         labels=y,
         pred_probs=y_hat_probs,
-        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
+        positive_rate_thresholds=cfg.eval.positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
         ids=eval_df[cfg.data.id_col_name],
         pred_timestamps=pred_timestamps,

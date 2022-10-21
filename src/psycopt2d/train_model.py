@@ -32,7 +32,6 @@ from psycopt2d.utils.utils import (
 )
 
 CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
-TRAINING_COL_NAME_PREFIX = "pred_"
 
 # Handle wandb not playing nice with joblib
 os.environ["WANDB_START_METHOD"] = "thread"

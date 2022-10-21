@@ -13,13 +13,10 @@ from wasabi import msg
 
 from psycopt2d.configs import ModelEvalData
 from psycopt2d.evaluation import evaluate_model
-from psycopt2d.utils.utils import (
-    MODEL_PREDICTIONS_PATH,
-    PROJECT_ROOT,
-    infer_outcome_col_name,
-    infer_y_hat_prob_col_name,
-    load_evaluation_data,
-)
+from psycopt2d.utils.utils import (MODEL_PREDICTIONS_PATH, PROJECT_ROOT,
+                                   infer_outcome_col_name,
+                                   infer_y_hat_prob_col_name,
+                                   load_evaluation_data)
 
 # Path to the wandb directory
 WANDB_DIR = PROJECT_ROOT / "wandb"
@@ -79,8 +76,9 @@ class ModelTrainingWatcher:
     def get_new_runs_and_evaluate(self) -> None:
         """Get new runs and evaluate the best runs."""
         self.upload_unarchived_runs()
+
         if len(self.run_id_eval_candidates_queue) >= self.n_runs_before_eval:
-            self.evaluate_best_runs()
+            self.evaluate_and_upload_records_and_archive()
 
     def _upload_run_dir(self, run_dir: Path) -> str:
         """Upload a single run to wandb."""
@@ -110,21 +108,25 @@ class ModelTrainingWatcher:
 
             wandb_sync_stdout = self._upload_run_dir(run_folder)
 
-            if ".wandb file is empty" in wandb_sync_stdout:
-                if self.verbose:
-                    msg.warn(f"Run {run_id} is still running. Skipping.")
+            if not "...done" in wandb_sync_stdout:
+                if ".wandb file is empty" in wandb_sync_stdout:
+                    if self.verbose:
+                        msg.warn(f"Run {run_id} is still running. Skipping.")
+                else:
+                    raise ValueError(
+                        f"wandb sync failed, returned: {wandb_sync_stdout}"
+                    )
                 continue
 
-            self._archive_run_dir(run_folder)
             self.run_id_eval_candidates_queue.append(run_id)
 
-    def _get_run_evaluation_dir(self, run_id: str) -> Path:
+    def _get_run_evaluation_data_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
         return list(self.model_data_dir.glob(f"*{run_id}*"))[0]
 
     def _get_eval_data(self, run_id: str) -> ModelEvalData:
         """Get the evaluation data for a single run."""
-        run_eval_dir = self._get_run_evaluation_dir(run_id)
+        run_eval_dir = self._get_run_evaluation_data_dir(run_id)
 
         return load_evaluation_data(run_eval_dir)
 
@@ -153,6 +155,9 @@ class ModelTrainingWatcher:
         """Get the wandb run object from the run id."""
         return Api().run(f"{self.entity}/{self.project_name}/{run_id}")
 
+    def _get_run_wandb_dir(self, run_id: str) -> Path:
+        return list(WANDB_DIR.glob(f"*offline-run*{run_id}*"))[0]
+
     def _get_run_performance(self, run_id: str) -> Optional[float]:
         """Get the performance of a single run and check if it failed."""
         run = self._get_wandb_run(run_id)
@@ -160,11 +165,11 @@ class ModelTrainingWatcher:
             return run.summary.roc_auc_unweighted
         if self.verbose:
             msg.info(
-                f"Run {run_id} has no performance metric. Pinging again at next eval time.",
+                f"Watcher: Run {run_id} has no performance metric. Pinging again at next eval time.",
             )
         return None
 
-    def evaluate_best_runs(self) -> None:
+    def evaluate_and_upload_records_and_archive(self) -> None:
         """Evaluate the best runs."""
         run_performances = {
             run_id: self._get_run_performance(run_id)
@@ -188,6 +193,7 @@ class ModelTrainingWatcher:
                 msg.good(f"New record performance! AUC: {performance}")
                 self.max_performance = performance
                 self._do_evaluation(run_id)
+            self._archive_run_dir(run_dir=self._get_run_wandb_dir(run_id))
         # reset run id queue and try to upload unfinished runs next time
         self.run_id_eval_candidates_queue = unfinished_runs
 
@@ -261,5 +267,5 @@ if __name__ == "__main__":
     if args.clean_wandb_dir:
         watcher.archive_all_runs()
 
-    msg.info("Starting WandB watcher")
+    msg.info("Watcher: Starting WandB watcher")
     watcher.watch(timeout_minutes=args.timeout)

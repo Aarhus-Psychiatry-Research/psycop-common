@@ -2,6 +2,7 @@
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
+from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -17,59 +18,11 @@ from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     coerce_to_datetime,
     get_percent_lost,
+    infer_outcome_col_name,
     infer_predictor_col_name,
 )
 
 msg = Printer(timestamp=True)
-
-
-class DatasetTimeSpecification(BaseModel):
-    """Specification of the time range of the dataset."""
-
-    drop_patient_if_outcome_before_date: Optional[Union[str, datetime]] = Field(
-        description="""If a patient experiences the outcome before this date, all their prediction times will be dropped.
-        Used for wash-in, to avoid including patients who were probably already experiencing the outcome before the study began.""",
-    )
-
-    min_prediction_time_date: Optional[Union[str, datetime]] = Field(
-        description="""Any prediction time before this date will be dropped.""",
-    )
-
-    min_lookbehind_days: Optional[Union[int, float]] = Field(
-        description="""If the distance from the prediction time to the start of the dataset is less than this, the prediction time will be dropped""",
-    )
-
-    min_lookahead_days: Optional[Union[int, float]] = Field(
-        description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped""",
-    )
-
-    lookbehind_combination: Optional[list[Union[int, float]]] = Field(
-        description="""List containing a combination of lookbehind windows (e.g. [30, 60, 90]) which determines which features to keep in the dataset. E.g. for the above list, only features with lookbehinds of 30, 60 or 90 days will be kept.""",
-    )
-
-
-class DatasetSpecification(BaseModel):
-    """Specification for loading a dataset."""
-
-    split_dir_path: Union[str, Path] = Field(
-        description="""Path to the directory containing the split files.""",
-    )
-
-    file_suffix: str = Field(
-        description="""Suffix of the split files. E.g. 'parquet' or 'csv'.""",
-        default="parquet",
-    )
-
-    time: DatasetTimeSpecification
-
-    pred_col_name_prefix: str = Field(
-        default="pred_",
-        description="""Prefix for the prediction column names.""",
-    )
-    pred_time_colname: str = Field(
-        default="timestamp",
-        description="""Column name for with timestamps for prediction times""",
-    )
 
 
 def load_timestamp_for_any_diabetes():
@@ -412,6 +365,24 @@ class DataLoader:
 
         return dataset
 
+    def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
+        self, dataset: pd.DataFrame
+    ) -> pd.DataFrame:
+        """Keep only one outcome column with the same lookahead days as set in the config."""
+        outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
+        col_to_drop = [
+            c for c in outcome_cols if str(self.cfg.data.lookahead_days) not in c
+        ]
+
+        df = dataset.drop(col_to_drop, axis=1)
+
+        if not isinstance(infer_outcome_col_name(df), str):
+            raise ValueError(
+                "Returning more than one outcome column, will cause problems during eval."
+            )
+
+        return df
+
     def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process dataset, namely:
 
@@ -441,6 +412,10 @@ class DataLoader:
 
         if self.cfg.data.lookbehind_combination:
             dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
+
+        dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
+            dataset=dataset
+        )
 
         return dataset
 
@@ -501,42 +476,6 @@ class DataLoader:
 
         msg.good(f"{split_names}: Returning!")
         return dataset
-
-
-def _init_spec_from_cfg(
-    cfg: DictConfig,
-) -> DatasetSpecification:
-    """Initialise a feature spec from a DictConfig."""
-    data_cfg: dict[str, Any] = OmegaConf.to_container(  # type: ignore
-        cfg.data,
-        resolve=True,
-    )
-
-    if data_cfg["suffix"] == "synthetic":
-        split_dir_path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
-        file_suffix = "csv"
-    else:
-        split_dir_path = data_cfg["dir"]
-        file_suffix = data_cfg["suffix"]
-
-    time_spec = DatasetTimeSpecification(
-        drop_patient_if_outcome_before_date=data_cfg[
-            "drop_patient_if_outcome_before_date"
-        ],
-        min_lookahead_days=data_cfg["min_lookahead_days"],
-        min_lookbehind_days=data_cfg["min_lookbehind_days"],
-        min_prediction_time_date=data_cfg["min_prediction_time_date"],
-        lookbehind_combination=data_cfg["lookbehind_combination"],
-    )
-
-    return DatasetSpecification(
-        split_dir_path=split_dir_path,
-        pred_col_name_prefix=data_cfg["pred_col_name_prefix"],
-        file_suffix=file_suffix,
-        pred_time_colname=data_cfg["pred_timestamp_col_name"],
-        n_training_samples=data_cfg["n_training_samples"],
-        time=time_spec,
-    )
 
 
 class SplitDataset(BaseModel):

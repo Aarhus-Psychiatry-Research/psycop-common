@@ -54,7 +54,7 @@ class DataConf(BaseModel):
     suffix: str  # File suffix to load.
 
     # Feature specs
-    pred_col_name_prefix: str  # (str): prefix of predictor columns
+    pred_col_name_prefix: str  # prefix of predictor columns
     pred_timestamp_col_name: str  # (str): Column name for prediction times
     outcome_timestamp_col_name: str  # (str): Column name for outcome timestamps
     id_col_name: str  # (str): Citizen colnames
@@ -122,6 +122,9 @@ class FullConfig(BaseModel):
     model: ModelConf
     train: TrainConf
     eval: EvalConf
+
+
+# ? Should FullConfig be here or in another location?
 
 
 def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfig:

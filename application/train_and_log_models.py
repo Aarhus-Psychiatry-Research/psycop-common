@@ -95,7 +95,7 @@ def train_models_for_each_cell_in_grid(
 
     while lookbehind_combinations:
         # Loop to run if enough trainers have been spawned
-        if len(active_trainers) >= 4:
+        if len(active_trainers) >= 1:  # TODO: Add to conf.
             active_trainers = [t for t in active_trainers if t.poll() is None]
             time.sleep(1)
             continue
@@ -147,6 +147,8 @@ if __name__ == "__main__":
 
         cfg = omegaconf_to_pydantic_objects(cfg)
 
+    # TODO: Watcher must be instantiated once for each cell in the grid, otherwise
+    # it will compare max performances across all cells.
     watcher = subprocess.Popen(  # pylint: disable=consider-using-with
         [
             "python",
@@ -158,11 +160,13 @@ if __name__ == "__main__":
             "--n_runs_before_eval",
             str(cfg.project.watcher.n_runs_before_eval),
             "--overtaci",
-            cfg.eval.save_model_predictions_on_overtaci,
+            str(cfg.eval.save_model_predictions_on_overtaci),
             "--timeout",
             "None",
             "--clean_wandb_dir",
-            cfg.project.watcher.archive_all,
+            str(cfg.project.watcher.archive_all),
+            "--verbose",
+            "True",
         ],
     )
 
