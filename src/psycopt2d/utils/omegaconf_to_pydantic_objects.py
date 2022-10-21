@@ -24,6 +24,14 @@ class BaseModel(PydanticBaseModel):
         arbitrary_types_allowed = True
 
 
+class WatcherConf(BaseModel):
+    """Configuration for watchers"""
+
+    archive_all: bool
+    keep_alive_after_training_minutes: Union[int, float]
+    n_runs_before_eval: int
+
+
 class ProjectConf(BaseModel):
     """Project configuration."""
 
@@ -31,6 +39,9 @@ class ProjectConf(BaseModel):
     seed: int
     wandb_group: str
     wandb_mode: str
+    wandb_entity: str
+    watcher: WatcherConf
+    gpu: bool
 
 
 class DataConf(BaseModel):
@@ -85,6 +96,7 @@ class TrainConf(BaseModel):
     """Training configuration."""
 
     n_splits: int  # TODO: How do we handle whether to use crossvalidation or train/val splitting?
+    n_trials_per_lookdirection_combination: int
 
 
 class EvalConf(BaseModel):

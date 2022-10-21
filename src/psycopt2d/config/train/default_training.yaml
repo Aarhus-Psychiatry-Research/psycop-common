@@ -1,1 +1,2 @@
 n_splits: 2 # (int, Null): Number of k-folds during CV. If Null, loads pre-defined dataset.
+n_trials_per_lookdirection_combination: 1
