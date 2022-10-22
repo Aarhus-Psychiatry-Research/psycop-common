@@ -5,7 +5,7 @@ import time
 from collections import defaultdict
 from distutils.util import strtobool  # pylint: disable=deprecated-module
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import wandb
 from pydantic import BaseModel
@@ -30,18 +30,19 @@ WANDB_DIR = PROJECT_ROOT / "wandb"
 class RunInformation(BaseModel):
     """Information about a wandb run."""
 
-    run_id: str
-    auc: float
-    lookbehind_days: int
-    lookahead_days: int
+    run_id: Optional[str]
+    auc: Optional[float]
+    lookbehind_days: Optional[Union[int, list[int]]]
+    lookahead_days: Optional[int]
     lookahead_lookbehind_combined: Optional[str] = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if self.lookahead_lookbehind_combined is None:
-            self.lookahead_lookbehind_combined = (
-                f"lookahead:{self.lookahead_days}_lookbehind:{self.lookbehind_days}"
-            )
+        if (
+            self.lookahead_lookbehind_combined is None
+            and self.lookbehind_days is not None
+        ):
+            self.lookahead_lookbehind_combined = f"lookahead:{str(self.lookahead_days)}_lookbehind:{str(self.lookbehind_days)}"
 
 
 class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
@@ -161,20 +162,29 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         finished_runs = [
             run_info for run_info in run_information if run_info.auc is not None
         ]
+        # sort to only upload the best in in each group
+        finished_runs.sort(
+            key=lambda run_info: (
+                run_info.lookahead_lookbehind_combined,
+                run_info.auc,
+            ),
+            reverse=True,
+        )
 
-        for run_info in finished_runs:
-            if (
-                run_info.auc
-                > self.max_performances[run_info.lookbehind_lookahead_combination]
-            ):
-                msg.good(
-                    f"New record performance for {run_info.lookbehind_lookahead_combination}! AUC: {run_info.auc}",
-                )
-                self.max_performances[
-                    run_info.loobehind_lookhead_combination
-                ] = run_info.auc
-                self._do_evaluation(run_info.run_id)
-            self._archive_run_dir(run_dir=self._get_run_wandb_dir(run_info.run_id))
+        if finished_runs:
+            for run_info in finished_runs:
+                if (
+                    run_info.auc
+                    > self.max_performances[run_info.lookahead_lookbehind_combined]
+                ):
+                    msg.good(
+                        f"New record performance for {run_info.lookahead_lookbehind_combined}! AUC: {run_info.auc}",
+                    )
+                    self.max_performances[
+                        run_info.lookahead_lookbehind_combined
+                    ] = run_info.auc
+                    self._do_evaluation(run_info.run_id)
+                self._archive_run_dir(run_dir=self._get_run_wandb_dir(run_info.run_id))
 
     def _get_unfinished_runs(self, run_information: list[RunInformation]) -> list[str]:
         """Get the run ids of the unfinished runs."""
@@ -186,24 +196,17 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         return RunInformation(
             run_id=run_id,
             auc=self._get_run_attribute(run, "roc_auc_unweighted"),
-            lookbehind_days=self._get_run_attribute(run, "lookbehind_days"),
-            lookahead_days=self._get_run_attribute(run, "lookahead_days"),
+            lookbehind_days=self._get_run_attribute(run, "lookbehind"),
+            lookahead_days=self._get_run_attribute(run, "lookahead"),
         )
 
     def _get_run_information_for_all_in_queue(self):
         """Get the performance and information of all runs in the evaluation
-        queue and sort by lookahead/lookbehind combination and AUC for faster
-        uploading."""
+        queue."""
         return [
             self._get_run_information(run_id)
             for run_id in self.run_id_eval_candidates_queue
-        ].sort(
-            key=lambda run_info: (
-                run_info.lookahead_lookbehind_combined,
-                run_info.auc,
-            ),
-            reverse=True,
-        )
+        ]
 
     def get_new_runs_and_evaluate(self) -> None:
         """Get new runs and evaluate the best runs."""
@@ -323,6 +326,7 @@ if __name__ == "__main__":
         model_data_dir=model_data_dir,
         verbose=args.verbose,
     )
+
     if args.clean_wandb_dir:
         watcher.archive_all_runs()
 
