@@ -315,8 +315,8 @@ def main(cfg: Union[FullConfig, DictConfig]):
         project=cfg.project.name,
         reinit=True,
         config=flatten_nested_dict(cfg.__dict__, sep="."),
-        mode=cfg.project.wandb_mode,
-        group=cfg.project.wandb_group,
+        mode=cfg.project.wandb.mode,
+        group=cfg.project.wandb.group,
     )
 
     dataset = load_train_and_val_from_cfg(cfg)
@@ -342,7 +342,7 @@ def main(cfg: Union[FullConfig, DictConfig]):
 
     # only run full evaluation if wandb mode mode is online
     # otherwise delegate to watcher script
-    if cfg.project.wandb_mode == "run":
+    if cfg.project.wandb.mode == "run":
         msg.info("Evaluating model")
         evaluate_model(
             cfg=cfg,
@@ -362,7 +362,7 @@ def main(cfg: Union[FullConfig, DictConfig]):
     run.log(
         {
             "roc_auc_unweighted": roc_auc,
-            "lookbehind": cfg.data.lookbehind_days,
+            "lookbehind": cfg.data.lookbehind_combination,
             "lookahead": cfg.data.lookahead_days,
         },
     )
