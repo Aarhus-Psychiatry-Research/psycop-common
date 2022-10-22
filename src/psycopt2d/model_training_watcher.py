@@ -96,60 +96,9 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
             self.get_new_runs_and_evaluate()
             time.sleep(1)
 
-    def get_new_runs_and_evaluate(self) -> None:
-        """Get new runs and evaluate the best runs."""
-        self.upload_unarchived_runs()
-
-        if len(self.run_id_eval_candidates_queue) >= self.n_runs_before_eval:
-            run_information = self._get_run_information_for_all_in_queue()
-            self.run_id_eval_candidates_queue = self._get_unfinished_runs(
-                run_information=run_information
-            )
-            self._evaluate_and_archive_finished_runs(run_information=run_information)
-
-    def _upload_run_dir(self, run_dir: Path) -> str:
-        """Upload a single run to wandb."""
-        # get stdout from subprocess.run
-        proc = subprocess.run(
-            ["wandb", "sync", str(run_dir), "--project", self.project_name],
-            check=True,
-            capture_output=True,
-        )
-        stdout = proc.stdout.decode("utf-8")
-        if self.verbose:
-            msg.info(f"Watcher: {stdout}")
-        return stdout
-
     def _archive_run_dir(self, run_dir: Path) -> None:
         """Move a run to the archive folder."""
         run_dir.rename(target=self.archive_path / run_dir.name)
-
-    def _get_run_id(self, run_dir: Path) -> str:
-        """Get the run id from a run directory."""
-        return run_dir.name.split("-")[-1]
-
-    def upload_unarchived_runs(self) -> None:
-        """Upload unarchived runs to wandb. Only adds runs that have finished
-        training to the evaluation queue.
-
-        Raises:
-            ValueError: If wandb sync failed
-        """
-        for run_folder in WANDB_DIR.glob(r"offline-run*"):
-            run_id = self._get_run_id(run_folder)
-
-            wandb_sync_stdout = self._upload_run_dir(run_folder)
-
-            if "...done" not in wandb_sync_stdout:
-                if ".wandb file is empty" not in wandb_sync_stdout:
-                    raise ValueError(
-                        f"wandb sync failed, returned: {wandb_sync_stdout}",
-                    )
-                if self.verbose:
-                    msg.warn(f"Run {run_id} is still running. Skipping.")
-                continue
-
-            self.run_id_eval_candidates_queue.append(run_id)
 
     def _get_run_evaluation_data_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
@@ -195,16 +144,20 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
             return run.summary[attribute]
         if self.verbose:
             msg.info(
-                f"Run {run.id} has no attribute {attribute}. Pinging again at next eval time."
+                f"Run {run.id} has no attribute {attribute}. Pinging again at next eval time.",
             )
         return None
 
     def _evaluate_and_archive_finished_runs(
-        self, run_information: list[RunInformation]
+        self,
+        run_information: list[RunInformation],
     ) -> None:
-        """Evaluate the finished runs. Test their performance against the current
-        maximum for each lookbehind/-ahead days, and fully evaluate the best performing.
-        Move all wandb run dirs to the archive folder."""
+        """Evaluate the finished runs.
+
+        Test their performance against the current maximum for each
+        lookbehind/-ahead days, and fully evaluate the best performing.
+        Move all wandb run dirs to the archive folder.
+        """
         finished_runs = [
             run_info for run_info in run_information if run_info.auc is not None
         ]
@@ -215,7 +168,7 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
                 > self.max_performances[run_info.lookbehind_lookahead_combination]
             ):
                 msg.good(
-                    f"New record performance for {run_info.lookbehind_lookahead_combination}! AUC: {run_info.auc}"
+                    f"New record performance for {run_info.lookbehind_lookahead_combination}! AUC: {run_info.auc}",
                 )
                 self.max_performances[
                     run_info.loobehind_lookhead_combination
@@ -227,9 +180,20 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         """Get the run ids of the unfinished runs."""
         return [run_info.run_id for run_info in run_information if run_info.auc is None]
 
+    def _get_run_information(self, run_id: str) -> RunInformation:
+        """Get the run information for a single run."""
+        run = self._get_wandb_run(run_id)
+        return RunInformation(
+            run_id=run_id,
+            auc=self._get_run_attribute(run, "roc_auc_unweighted"),
+            lookbehind_days=self._get_run_attribute(run, "lookbehind_days"),
+            lookahead_days=self._get_run_attribute(run, "lookahead_days"),
+        )
+
     def _get_run_information_for_all_in_queue(self):
-        """Get the performance and information of all runs in the evaluation queue
-        and sort by lookahead/lookbehind combination and AUC for faster uploading."""
+        """Get the performance and information of all runs in the evaluation
+        queue and sort by lookahead/lookbehind combination and AUC for faster
+        uploading."""
         return [
             self._get_run_information(run_id)
             for run_id in self.run_id_eval_candidates_queue
@@ -241,15 +205,56 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
             reverse=True,
         )
 
-    def _get_run_information(self, run_id: str) -> RunInformation:
-        """Get the run information for a single run."""
-        run = self._get_wandb_run(run_id)
-        return RunInformation(
-            run_id=run_id,
-            auc=self._get_run_attribute(run, "roc_auc_unweighted"),
-            lookbehind_days=self._get_run_attribute(run, "lookbehind_days"),
-            lookahead_days=self._get_run_attribute(run, "lookahead_days"),
+    def get_new_runs_and_evaluate(self) -> None:
+        """Get new runs and evaluate the best runs."""
+        self.upload_unarchived_runs()
+
+        if len(self.run_id_eval_candidates_queue) >= self.n_runs_before_eval:
+            run_information = self._get_run_information_for_all_in_queue()
+            self.run_id_eval_candidates_queue = self._get_unfinished_runs(
+                run_information=run_information,
+            )
+            self._evaluate_and_archive_finished_runs(run_information=run_information)
+
+    def _upload_run_dir(self, run_dir: Path) -> str:
+        """Upload a single run to wandb."""
+        # get stdout from subprocess.run
+        proc = subprocess.run(
+            ["wandb", "sync", str(run_dir), "--project", self.project_name],
+            check=True,
+            capture_output=True,
         )
+        stdout = proc.stdout.decode("utf-8")
+        if self.verbose:
+            msg.info(f"Watcher: {stdout}")
+        return stdout
+
+    def _get_run_id(self, run_dir: Path) -> str:
+        """Get the run id from a run directory."""
+        return run_dir.name.split("-")[-1]
+
+    def upload_unarchived_runs(self) -> None:
+        """Upload unarchived runs to wandb. Only adds runs that have finished
+        training to the evaluation queue.
+
+        Raises:
+            ValueError: If wandb sync failed
+        """
+        for run_folder in WANDB_DIR.glob(r"offline-run*"):
+            run_id = self._get_run_id(run_folder)
+
+            wandb_sync_stdout = self._upload_run_dir(run_folder)
+
+            if "...done" not in wandb_sync_stdout:
+                if ".wandb file is empty" not in wandb_sync_stdout:
+                    raise ValueError(
+                        f"wandb sync failed, returned: {wandb_sync_stdout}",
+                    )
+                if self.verbose:
+                    msg.warn(f"Run {run_id} is still running. Skipping.")
+                continue
+
+            self.run_id_eval_candidates_queue.append(run_id)
 
     def archive_all_runs(self) -> None:
         """Archive all runs in the wandb directory."""
