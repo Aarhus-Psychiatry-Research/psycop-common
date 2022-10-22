@@ -369,10 +369,13 @@ class DataLoader:
         """Keep only one outcome column with the same lookahead days as set in
         the config."""
         outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
+        # if only one outcome column, return
+        if isinstance(outcome_cols, str):
+            return dataset
+        
         col_to_drop = [
             c for c in outcome_cols if str(self.cfg.data.lookahead_days) not in c
         ]
-
         df = dataset.drop(col_to_drop, axis=1)
 
         if not isinstance(infer_outcome_col_name(df), str):
