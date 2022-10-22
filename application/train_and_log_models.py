@@ -77,9 +77,9 @@ def start_trainer(
         f"model={cfg.model.model_name}",
         f"data.min_lookbehind_days={cell.lookbehind}",
         f"data.min_lookahead_days={cell.lookahead}",
-        f"project.wandb_group='{wandb_group}'",
+        f"project.wandb.group='{wandb_group}'",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookdirection_combination}",
-        f"project.wandb_mode={cfg.project.wandb_mode}",
+        f"project.wandb.mode={cfg.project.wandb.mode}",
         "--config-name",
         f"{config_file_name}",
     ]
@@ -104,7 +104,7 @@ def start_watcher(cfg: FullConfig) -> subprocess.Popen:
             "python",
             "src/psycopt2d/model_training_watcher.py",
             "--entity",
-            cfg.project.wandb_entity,
+            cfg.project.wandb.entity,
             "--project_name",
             cfg.project.name,
             "--n_runs_before_eval",
@@ -141,10 +141,9 @@ def train_models_for_each_cell_in_grid(
     random.shuffle(lookbehind_combinations)
 
     wandb_prefix = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
-
+    watcher = start_watcher(cfg=cfg)
     while lookbehind_combinations:
         combination = lookbehind_combinations.pop()
-        watcher = start_watcher(cfg=cfg)
 
         msg.info(
             f"Spawning a new trainer with lookbehind={combination.lookbehind} and lookahead={combination.lookahead}",
@@ -164,12 +163,12 @@ def train_models_for_each_cell_in_grid(
         while trainer.poll() is None:
             time.sleep(1)
 
-        msg.good(
-            f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
-        )
+    msg.good(
+        f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
+    )
 
-        time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
-        watcher.kill()
+    time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
+    watcher.kill()
 
 
 def load_cfg(config_file_name):
@@ -187,7 +186,7 @@ def main():
     """Main."""
     msg = Printer(timestamp=True)
 
-    config_file_name = "integration_testing.yaml"
+    config_file_name = "default_config.yaml"
 
     cfg = load_cfg(config_file_name=config_file_name)
     # TODO: Watcher must be instantiated once for each cell in the grid, otherwise
@@ -198,7 +197,7 @@ def main():
     # Remove "9999" from possible look distances behind
     possible_look_distances.behind = [
         dist
-        for dist in possible_look_distances
+        for dist in possible_look_distances.behind
         if not int(dist) > cfg.data.max_lookbehind_days
     ]
 

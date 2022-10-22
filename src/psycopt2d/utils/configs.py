@@ -43,6 +43,7 @@ class ProjectConf(BaseModel):
 
     name: str = "psycopt2d"
     seed: int
+    wandb: WandbConf
     watcher: WatcherConf
 
 
@@ -120,7 +121,6 @@ class EvalConf(BaseModel):
 class FullConfig(BaseModel):
     """A full configuration object."""
 
-    wandb: WandbConf
     project: ProjectConf
     data: DataConf
     preprocessing: PreprocessingConf
