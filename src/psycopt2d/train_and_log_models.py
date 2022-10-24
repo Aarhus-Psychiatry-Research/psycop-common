@@ -16,7 +16,7 @@ from wasabi import Printer
 # RUN CONSTANTS
 CONFIG_NAME = "integration_testing.yaml"
 
-HYDRA_ARGS = f"--multirun +model=xgboost project.wandb_mode='dryrun' model.args.tree_method='auto' --config-name {CONFIG_NAME}"
+HYDRA_ARGS = f"--multirun +model=xgboost project.wandb.mode='dryrun' model.args.tree_method='auto' --config-name {CONFIG_NAME}"
 OVERTACI = "false"  # Change to "true" if running on overtaci
 
 # WATCHER CONSTANTS

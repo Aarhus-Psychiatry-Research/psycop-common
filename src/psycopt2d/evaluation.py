@@ -101,12 +101,12 @@ def evaluate_model(
     # Drop date_bins_direction if they are further away than min_lookdirection_days
     if cfg.data.min_lookbehind_days:
         date_bins_behind = [
-            b for b in date_bins_behind if cfg.data.min_lookbehind_days < b
+            b for b in date_bins_behind if cfg.data.min_lookbehind_days > b
         ]
 
     if cfg.data.min_lookahead_days:
         date_bins_ahead = [
-            b for b in date_bins_ahead if cfg.data.min_lookahead_days < abs(b)
+            b for b in date_bins_ahead if cfg.data.min_lookahead_days > abs(b)
         ]
 
     # Invert date_bins_behind to negative if it's not already

@@ -403,7 +403,7 @@ def infer_col_names(
     col_name = [c for c in df.columns if c.startswith(prefix)]
 
     if len(col_name) == 1:
-        return col_name[0]
+        return col_name
     elif len(col_name) > 1:
         if allow_multiple:
             return col_name
@@ -411,7 +411,7 @@ def infer_col_names(
             f"Multiple columns found and allow_multiple is {allow_multiple}.",
         )
     else:
-        raise ValueError("More than one outcome inferred")
+        raise ValueError("No outcomes inferred")
 
 
 def infer_outcome_col_name(

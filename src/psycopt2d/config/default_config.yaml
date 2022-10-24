@@ -6,4 +6,4 @@ defaults:
   - model: xgboost
   - train: default_training
   - eval: default_evaluation
-  - sweeper: optuna_multithread
+  - sweeper: optuna_singlethread

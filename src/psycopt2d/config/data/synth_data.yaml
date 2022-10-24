@@ -4,7 +4,6 @@ data:
   min_lookahead_days: null
   min_lookbehind_days: null
   min_prediction_time_date: null
-  lookahead_days: 30
   pred_col_name_prefix: pred_
   pred_timestamp_col_name: timestamp
   outcome_timestamp_col_name: timestamp_outcome
@@ -18,4 +17,4 @@ data:
 hydra:
   sweeper:
     params:
-      data.lookbehind_combination: choice([3000, 90], [30])
+      data.lookbehind_combination: choice([30, 90], [30])
