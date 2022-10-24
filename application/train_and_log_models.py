@@ -20,7 +20,7 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_outcome_col_name,
     infer_predictor_col_name,
 )
-from psycopt2d.load import DataLoader, load_train_from_cfg
+from psycopt2d.load import load_train_from_cfg
 from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
 
 msg = Printer(timestamp=True)

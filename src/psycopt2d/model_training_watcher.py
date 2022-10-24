@@ -4,7 +4,7 @@ import subprocess
 import time
 from distutils.util import strtobool  # pylint: disable=deprecated-module
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import wandb
 from wandb.apis.public import Api  # pylint: disable=no-name-in-module
@@ -25,7 +25,7 @@ from psycopt2d.utils.utils import (
 WANDB_DIR = PROJECT_ROOT / "wandb"
 
 
-class ModelTrainingWatcher:
+class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
     """Watch the wandb directory for new files and uploads them to wandb. Fully
     evaluates the best runs after a certain number of runs have been uploaded.
 
@@ -112,13 +112,12 @@ class ModelTrainingWatcher:
             wandb_sync_stdout = self._upload_run_dir(run_folder)
 
             if "...done" not in wandb_sync_stdout:
-                if ".wandb file is empty" in wandb_sync_stdout:
-                    if self.verbose:
-                        msg.warn(f"Run {run_id} is still running. Skipping.")
-                else:
+                if ".wandb file is empty" not in wandb_sync_stdout:
                     raise ValueError(
                         f"wandb sync failed, returned: {wandb_sync_stdout}",
                     )
+                if self.verbose:
+                    msg.warn(f"Run {run_id} is still running. Skipping.")
                 continue
 
             self.run_id_eval_candidates_queue.append(run_id)
@@ -164,8 +163,12 @@ class ModelTrainingWatcher:
     def _get_run_performance(self, run_id: str) -> Optional[float]:
         """Get the performance of a single run and check if it failed."""
         run = self._get_wandb_run(run_id)
-        if "roc_auc_unweighted" in run.summary:
-            return run.summary.roc_auc_unweighted
+
+        summary: dict[str, Any] = run.summary  # type: ignore
+
+        if "roc_auc_unweighted" in summary:
+            return run.summary["roc_auc_unweighted"]
+
         if self.verbose:
             msg.info(
                 f"Watcher: Run {run_id} has no performance metric. Pinging again at next eval time.",

@@ -1,6 +1,6 @@
 """Get performance by which threshold is used to classify positive."""
 from collections.abc import Iterable
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -9,8 +9,8 @@ from sklearn.metrics import confusion_matrix
 
 
 def performance_by_threshold(  # pylint: disable=too-many-locals
-    labels: Iterable[int],
-    pred_probs: Iterable[float],
+    labels: Sequence[int],
+    pred_probs: Sequence[float],
     positive_threshold: float,
     round_to: int = 4,
 ) -> pd.DataFrame:
@@ -26,7 +26,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
     Returns:
         pd.DataFrame
     """
-    preds = np.where(pred_probs > positive_threshold, 1, 0)
+    preds = np.where(pred_probs > positive_threshold, 1, 0)  # type: ignore
 
     conf_matrix = confusion_matrix(labels, preds)
 
@@ -141,33 +141,31 @@ def days_from_first_positive_to_diagnosis(
         ]
     ]
 
-    warning_days = df["warning_days"].agg(aggregation_method)
-
-    return warning_days
+    return df["warning_days"].agg(aggregation_method)
 
 
 def generate_performance_by_positive_rate_table(
-    labels: Iterable[int],
-    pred_probs: Iterable[float],
-    positive_rate_thresholds: Iterable[Union[int, float]],
-    pred_proba_thresholds: Iterable[float],
-    ids: Iterable[Union[int, float]],
-    pred_timestamps: Iterable[pd.Timestamp],
-    outcome_timestamps: Iterable[pd.Timestamp],
+    labels: Sequence[int],
+    pred_probs: Sequence[float],
+    positive_rate_thresholds: Sequence[Union[int, float]],
+    pred_proba_thresholds: Sequence[float],
+    ids: Sequence[Union[int, float]],
+    pred_timestamps: Sequence[pd.Timestamp],
+    outcome_timestamps: Sequence[pd.Timestamp],
     output_format: Optional[str] = "wandb_table",
 ) -> Union[pd.DataFrame, str]:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
 
     Args:
-        labels (Iterable[int]): True labels.
-        pred_probs (Iterable[float]): Predicted probabilities.
-        positive_rate_thresholds (Iterable[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
+        labels (Sequence[int]): True labels.
+        pred_probs (Sequence[float]): Predicted probabilities.
+        positive_rate_thresholds (Sequence[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
-        pred_proba_thresholds (Iterable[float]): Thresholds above which predictions are classified as positive.
-        ids (Iterable[Union[int, float]]): Ids to group on.
-        pred_timestamps (Iterable[ pd.Timestamp ]): Timestamp for each prediction time.
-        outcome_timestamps (Iterable[pd.Timestamp]): Timestamp for each outcome time.
+        pred_proba_thresholds (Sequence[float]): Thresholds above which predictions are classified as positive.
+        ids (Sequence[Union[int, float]]): Ids to group on.
+        pred_timestamps (Sequence[ pd.Timestamp ]): Timestamp for each prediction time.
+        outcome_timestamps (Sequence[pd.Timestamp]): Timestamp for each outcome time.
         output_format (str, optional): Format to output - either "df" or "wandb_table". Defaults to "df".
 
     Returns:

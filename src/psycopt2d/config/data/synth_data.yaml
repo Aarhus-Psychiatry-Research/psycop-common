@@ -1,8 +1,8 @@
 # @package _global_
 data:
   n_training_samples: null
-  min_lookahead_days: null
-  min_lookbehind_days: null
+  min_lookahead_days: 30
+  min_lookbehind_days: 100
   min_prediction_time_date: null
   pred_col_name_prefix: pred_
   pred_timestamp_col_name: timestamp

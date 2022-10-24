@@ -368,18 +368,14 @@ class DataLoader:
         outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
 
         col_to_drop = [
-            c for c in outcome_cols if str(self.cfg.data.lookahead_days) not in c
+            c for c in outcome_cols if str(self.cfg.data.min_lookahead_days) not in c
         ]
 
         # If no columns to drop, return the dataset
         if not col_to_drop:
             return dataset
 
-        if len(col_to_drop) == 1:
-            col_to_drop = col_to_drop[0]
-        else:
-            col_to_drop = outcome_cols
-
+        col_to_drop = col_to_drop[0] if len(col_to_drop) == 1 else outcome_cols
         df = dataset.drop(col_to_drop, axis=1)
 
         if not isinstance(infer_outcome_col_name(df), str):

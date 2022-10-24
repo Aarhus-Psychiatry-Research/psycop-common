@@ -307,7 +307,14 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
 def main(cfg: DictConfig):
     """Main function for training a single model."""
     # Save dictconfig for easier logging
-    dict_config: dict[str, Any] = OmegaConf.to_container(cfg)  # type: ignore
+    if isinstance(cfg, DictConfig):
+        # Create flattened dict for logging to wandb
+        # Wandb doesn't allow configs to be nested, so we
+        # flatten it.
+        dict_config_to_log: dict[str, Any] = flatten_nested_dict(OmegaConf.to_container(cfg), sep=".")  # type: ignore
+    else:
+        # For testing, we can take a FullConfig object instead. Simplifies boilerplate.
+        dict_config_to_log = cfg.__dict__
 
     if not isinstance(cfg, FullConfig):
         cfg = omegaconf_to_pydantic_objects(cfg)
@@ -319,7 +326,7 @@ def main(cfg: DictConfig):
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
-        config=flatten_nested_dict(cfg.__dict__, sep="."),
+        config=dict_config_to_log,
         mode=cfg.project.wandb.mode,
         group=cfg.project.wandb.group,
     )
