@@ -319,7 +319,7 @@ def main(cfg: DictConfig):
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
-        config=dict_config,
+        config=flatten_nested_dict(cfg.__dict__, sep="."),
         mode=cfg.project.wandb.mode,
         group=cfg.project.wandb.group,
     )

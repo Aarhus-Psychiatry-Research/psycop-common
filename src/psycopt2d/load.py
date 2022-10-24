@@ -13,9 +13,12 @@ from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
 from psycopt2d.utils.configs import FullConfig
-from psycopt2d.utils.utils import (coerce_to_datetime, get_percent_lost,
-                                   infer_outcome_col_name,
-                                   infer_predictor_col_name)
+from psycopt2d.utils.utils import (
+    coerce_to_datetime,
+    get_percent_lost,
+    infer_outcome_col_name,
+    infer_predictor_col_name,
+)
 
 msg = Printer(timestamp=True)
 
@@ -364,21 +367,24 @@ class DataLoader:
         the config."""
         outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
 
-        if not outcome_cols:
-            raise ValueError("No outcome columns found.")
+        col_to_drop = [
+            c for c in outcome_cols if str(self.cfg.data.lookahead_days) not in c
+        ]
 
-        if isinstance(outcome_cols, list):
-            col_to_drop = [
-                c for c in outcome_cols if str(self.cfg.data.min_lookahead_days) not in c
-            ]
-        elif isinstance(outcome_cols, str):
-            col_to_drop = [outcome_cols]
+        # If no columns to drop, return the dataset
+        if not col_to_drop:
+            return dataset
+
+        if len(col_to_drop) == 1:
+            col_to_drop = col_to_drop[0]
+        else:
+            col_to_drop = outcome_cols
 
         df = dataset.drop(col_to_drop, axis=1)
 
-        if not self.n_outcome_col_names(df) == 1:
+        if not isinstance(infer_outcome_col_name(df), str):
             raise ValueError(
-                f"Returning {self.n_outcome_col_names(df=df)}, will cause problems during eval.",
+                "Returning more than one outcome column, will cause problems during eval.",
             )
 
         return df

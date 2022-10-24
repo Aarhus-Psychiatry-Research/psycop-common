@@ -47,6 +47,7 @@ class ProjectConf(BaseModel):
     name: str = "psycopt2d"
     seed: int
     watcher: WatcherConf
+    wandb: WandbConf
 
 
 class DataConf(BaseModel):

@@ -7,6 +7,7 @@ import tempfile
 import time
 from collections.abc import Iterable, MutableMapping
 from datetime import date, datetime
+from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -19,7 +20,7 @@ from wasabi import msg
 
 from psycopt2d.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
-from psycopt2d.utils.configs import FullConfig
+from psycopt2d.utils.configs import BaseModel, FullConfig
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
@@ -410,6 +411,8 @@ def infer_col_names(
         raise ValueError(
             f"Multiple columns found and allow_multiple is {allow_multiple}.",
         )
+    elif len(col_name) == 0:
+        raise ValueError("No outcome col name inferred")
     else:
         raise ValueError("No outcomes inferred")
 

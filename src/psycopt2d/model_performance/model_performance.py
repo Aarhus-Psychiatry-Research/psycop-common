@@ -365,9 +365,7 @@ class ModelPerformance:
         """
         # sorting to get correct output from f1, prec, and recall
         groups = sorted(set(labels))
-        performance = {}
-
-        performance["acc-overall"] = accuracy_score(labels, predicted)
+        performance = {"acc-overall": accuracy_score(labels, predicted)}
         performance["balanced_accuracy-overall"] = balanced_accuracy_score(
             labels,
             predicted,
