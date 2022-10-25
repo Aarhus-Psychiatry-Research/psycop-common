@@ -1,13 +1,12 @@
 """Functions for evaluating a model's predictions."""
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
 from sklearn.metrics import recall_score, roc_auc_score
-from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 from wasabi import Printer
 
@@ -28,33 +27,30 @@ from psycopt2d.visualization import (
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
-from psycopt2d.visualization.sens_over_time import plot_sensitivity_by_time_to_outcome
+from psycopt2d.visualization.sens_over_time import (
+    plot_sensitivity_by_time_to_outcome_heatmap,
+)
 from psycopt2d.visualization.utils import log_image_to_wandb
 
 
 def log_feature_importances(
     cfg: DictConfig,
-    pipe: Pipeline,
-    feature_names: Iterable[str],
+    feature_importance_dict: dict[str, float],
     run: wandb_run,
     save_path: Optional[Path] = None,
 ) -> dict[str, Path]:
     """Log feature importances to wandb."""
-    # Handle EBM differently as it autogenerates interaction terms
-    if cfg.model.model_name == "ebm":
-        feature_names = pipe["model"].feature_names
-
     feature_importance_plot_path = plot_feature_importances(
-        column_names=feature_names,
-        feature_importances=pipe["model"].feature_importances_,
+        feature_names=feature_importance_dict.keys(),
+        feature_importances=feature_importance_dict.values(),
         top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
         save_path=save_path,
     )
 
     # Log as table too for readability
     feature_importances_table = generate_feature_importances_table(
-        feature_names=feature_names,
-        feature_importances=pipe["model"].feature_importances_,
+        feature_names=feature_importance_dict.keys(),
+        feature_importances=feature_importance_dict.values(),
     )
 
     run.log({"feature_importance_table": feature_importances_table})
@@ -62,30 +58,14 @@ def log_feature_importances(
     return {"feature_importance": feature_importance_plot_path}
 
 
-def log_auc_to_file(cfg: DictConfig, run: wandb_run, auc: Union[float, int]):
-    """Log AUC to file."""
-    # log AUC and run ID to a file to find the best run later
-    # Only create the file if it doesn't exists (will be auto-deleted/moved after
-    # syncing). This is to avoid creating a new file every time the script is run
-    # e.g. during a hyperparameter seacrch.
-    if cfg.project.wandb_mode in {"offline", "dryrun"}:
-        if not AUC_LOGGING_FILE_PATH.exists():
-            AUC_LOGGING_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
-            AUC_LOGGING_FILE_PATH.touch()
-            AUC_LOGGING_FILE_PATH.write_text("run_id,auc\n")
-        with open(AUC_LOGGING_FILE_PATH, "a", encoding="utf-8") as f:
-            f.write(f"{run.id},{auc}\n")
-
-
 def evaluate_model(
     cfg,
-    pipe: Pipeline,
     eval_df: pd.DataFrame,
     y_col_name: str,
-    train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
     run: wandb_run,
-):
+    feature_importance_dict: Optional[dict[str, float]],
+) -> None:
     """Runs the evaluation suite on the model and logs to WandB.
     At present, this includes:
     1. AUC
@@ -98,18 +78,24 @@ def evaluate_model(
 
     Args:
         cfg (OmegaConf): The hydra config from the run
-        pipe (Pipeline): Pipeline including the model
         eval_df (pd.DataFrame): Evalaution split
         y_col_name (str): Label column name
-        train_col_names (Iterable[str]): Column names for all predictors
         y_hat_prob_col_name (str): Column name containing pred_proba output
         run (wandb_run): WandB run to log to.
+        feature_importance_dict (Optional[dict[str, float]]): Dict of feature
+            names and their importance. If None, will not log feature importance.
     """
     msg = Printer(timestamp=True)
 
     msg.info("Starting model evaluation")
 
     SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
+    # When parallelising tests, this causes issues since multiple processes
+    # override the same dir at once.
+    # Can be solved by allowing config to override this
+    # and using tmp_dir in pytest. Not worth refactoring
+    # right now, though.
+
     if not SAVE_DIR.exists():
         SAVE_DIR.mkdir()
 
@@ -137,6 +123,27 @@ def evaluate_model(
             },
         )
 
+    date_bins_ahead: Iterable[int] = cfg.evaluation.date_bins_ahead
+    date_bins_behind: Iterable[int] = cfg.evaluation.date_bins_behind
+
+    # Drop date_bins_direction if they are further away than min_lookdirection_days
+    if cfg.data.min_lookbehind_days:
+        date_bins_behind = [
+            b for b in date_bins_behind if cfg.data.min_lookbehind_days < b
+        ]
+
+    if cfg.data.min_lookahead_days:
+        date_bins_ahead = [
+            b for b in date_bins_ahead if cfg.data.min_lookahead_days < abs(b)
+        ]
+
+    # Invert date_bins_behind to negative if it's not already
+    if min(date_bins_behind) >= 0:
+        date_bins_behind = [-d for d in date_bins_behind]
+
+    # Sort date_bins_behind and date_bins_ahead to be monotonically increasing if they aren't already
+    date_bins_behind = sorted(date_bins_behind)
+
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
         cfg.data.pred_timestamp_col_name
     ].transform("min")
@@ -150,11 +157,8 @@ def evaluate_model(
     run.log(
         {
             "roc_auc_unweighted": auc,
-            "1_minus_roc_auc_unweighted": 1 - auc,
         },
     )
-
-    log_auc_to_file(cfg, run=run, auc=auc)
 
     # Tables
     # Performance by threshold
@@ -175,35 +179,26 @@ def evaluate_model(
     plots = {}
 
     # Feature importance
-    if hasattr(pipe["model"], "feature_importances_"):
-        feature_names = train_col_names
-
+    if feature_importance_dict is not None:
         feature_importances_plot_dict = log_feature_importances(
             cfg=cfg,
-            pipe=pipe,
-            feature_names=train_col_names,
+            feature_importance_dict=feature_importance_dict,
             run=run,
             save_path=SAVE_DIR / "feature_importances.png",
         )
 
         plots.update(feature_importances_plot_dict)
 
-        # Log as table too for readability
-        feature_importances_table = generate_feature_importances_table(
-            feature_names=feature_names,
-            feature_importances=pipe["model"].feature_importances_,
-        )
-        run.log({"feature_importance_table": feature_importances_table})
-
     # Add plots
     plots.update(
         {
-            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome(
+            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome_heatmap(
                 labels=y,
                 y_hat_probs=y_hat_probs,
                 pred_proba_thresholds=pred_proba_thresholds,
                 outcome_timestamps=outcome_timestamps,
                 prediction_timestamps=pred_timestamps,
+                bins=date_bins_ahead,
                 save_path=SAVE_DIR / "sensitivity_by_time_by_threshold.png",
             ),
             "auc_by_calendar_time": plot_performance_by_calendar_time(
@@ -220,6 +215,7 @@ def evaluate_model(
                 y_hat_probs=y_hat_probs,
                 first_visit_timestamps=first_visit_timestamp,
                 prediction_timestamps=pred_timestamps,
+                bins=date_bins_ahead,
                 save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
             ),
             "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
@@ -229,6 +225,7 @@ def evaluate_model(
                 prediction_timestamps=pred_timestamps,
                 metric_fn=recall_score,
                 y_title="Sensitivty (recall)",
+                bins=date_bins_behind,
                 save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
             ),
         },
@@ -237,8 +234,5 @@ def evaluate_model(
     # Log all the figures to wandb
     for chart_name, chart_path in plots.items():
         log_image_to_wandb(chart_path=chart_path, chart_name=chart_name, run=run)
-
-    # Save results to disk
-    prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, run=run)
 
     msg.info("Finished model evaluation, logging charts to WandB")

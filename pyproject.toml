@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "psycopt2d"
-version = "0.6.1"
+version = "0.10.0"
 description = "Training scripts for the psycop-t2d project"
 authors = ["Your Name <you@example.com>"]
 
@@ -23,7 +23,7 @@ selenium = ">=4.2.0,<4.6.0"
 # pandoc = "^2.2" not compatible with PEP517, which is required for poetry install. Disabled for now: https://github.com/boisgera/pandoc/pull/49
 # interpret = ">=0.2.7,<0.3.0" Disabled becuase of errors with github actions. 
 # See https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/pull/194 for thoughts on root cause
-seaborn = ">=0.12.0, <0.12.1"
+seaborn = ">=0.12.0,<0.12.2"
 pyarrow = ">=9.0.0, <9.1.0"
 
 
