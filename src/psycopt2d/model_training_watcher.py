@@ -30,7 +30,9 @@ WANDB_DIR = PROJECT_ROOT / "wandb"
 class RunInformation(BaseModel):
     """Information about a wandb run."""
 
-    run_id: Optional[str]
+    # Attributes must be optional since runs can be uploaded,
+    # without having been sufficiently validated.
+    run_id: str
     auc: Optional[float]
     lookbehind_days: Optional[Union[int, list[int]]]
     lookahead_days: Optional[int]
@@ -122,29 +124,6 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
             msg.info(f"Watcher: {stdout}")
         return stdout
 
-    def _get_run_id(self, run_dir: Path) -> str:
-        """Get the run id from a run directory."""
-        return run_dir.name.split("-")[-1]
-
-    def upload_unarchived_runs(self) -> None:
-        """Upload unarchived runs to wandb."""
-        for run_folder in WANDB_DIR.glob(r"offline-run*"):
-            run_id = self._get_run_id(run_folder)
-
-            wandb_sync_stdout = self._upload_run_dir(run_folder)
-
-            if "...done" not in wandb_sync_stdout:
-                if ".wandb file is empty" in wandb_sync_stdout:
-                    if self.verbose:
-                        msg.warn(f"Run {run_id} is still running. Skipping.")
-                else:
-                    raise ValueError(
-                        f"wandb sync failed, returned: {wandb_sync_stdout}",
-                    )
-                continue
-
-            self.run_id_eval_candidates_queue.append(run_id)
-
     def _get_run_evaluation_data_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
         return list(self.model_data_dir.glob(f"*{run_id}*"))[0]
@@ -203,8 +182,10 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         lookbehind/-ahead days, and fully evaluate the best performing.
         Move all wandb run dirs to the archive folder.
         """
-        finished_runs = [
-            run_info for run_info in run_information if run_info.auc is not None
+        finished_runs: list[RunInformation] = [
+            run_info
+            for run_info in run_information
+            if run_info.auc and run_info.lookahead_lookbehind_combined
         ]
         # sort to only upload the best in in each group
         finished_runs.sort(
