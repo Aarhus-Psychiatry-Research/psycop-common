@@ -58,7 +58,7 @@ def test_flatten_nested_dict():
     assert expected_dict == output_dict
 
 
-CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "psycopt2d" / "config"
+CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "src" / "psycopt2d" / "config"
 CONFIG_DIR_PATH_REL = "../src/psycopt2d/config"
 
 

@@ -1,4 +1,5 @@
 """Loader for the t2d dataset."""
+import os
 import re
 from collections.abc import Iterable
 from datetime import timedelta
@@ -160,27 +161,24 @@ class DataLoader:
 
         return dataset
 
-    def _drop_patients_with_event_in_washin(self, dataset) -> pd.DataFrame:
+    def drop_patient_if_outcome_before_date(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
         """Drop patients within washin period."""
 
         n_rows_before_modification = dataset.shape[0]
 
-        # Remove dates before drop_patient_if_outcome_before_date
         outcome_before_date = (
-            dataset["_timestamp_first_t2d"]
+            dataset[self.cfg.data.outcome_timestamp_col_name]
             < self.cfg.data.drop_patient_if_outcome_before_date
         )
 
         patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
         dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
 
-        # Removed dates before drop_patient_if_outcome_before_date
-        dataset = dataset[
-            dataset[self.cfg.data.pred_timestamp_col_name]
-            > self.cfg.data.drop_patient_if_outcome_before_date
-        ]
-
         n_rows_after_modification = dataset.shape[0]
+
         percent_dropped = get_percent_lost(
             n_before=n_rows_after_modification,
             n_after=n_rows_after_modification,
@@ -225,7 +223,7 @@ class DataLoader:
             lookbehinds_in_dataset,
         ):
             msg.warn(
-                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Dataset: {lookbehinds_in_dataset}. lookbehind_combination: {self.cfg.data.lookbehind_combination}.",
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {lookbehinds_in_spec - lookbehinds_in_dataset}",
             )
 
             lookbehinds_to_keep = lookbehinds_in_spec.intersection(
@@ -369,13 +367,16 @@ class DataLoader:
         """Keep only one outcome column with the same lookahead days as set in
         the config."""
         outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
-        # if only one outcome column, return
-        if isinstance(outcome_cols, str):
-            return dataset
-        
+
         col_to_drop = [
-            c for c in outcome_cols if str(self.cfg.data.lookahead_days) not in c
+            c for c in outcome_cols if str(self.cfg.data.min_lookahead_days) not in c
         ]
+
+        # If no columns to drop, return the dataset
+        if not col_to_drop:
+            return dataset
+
+        col_to_drop = col_to_drop[0] if len(col_to_drop) == 1 else outcome_cols
         df = dataset.drop(col_to_drop, axis=1)
 
         if not isinstance(infer_outcome_col_name(df), str):
@@ -384,6 +385,10 @@ class DataLoader:
             )
 
         return df
+
+    def n_outcome_col_names(self, df: pd.DataFrame):
+        """How many outcome columns there are in a dataframe."""
+        return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
     def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process dataset, namely:
@@ -396,12 +401,10 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
-        if self.cfg.data.drop_patient_if_outcome_before_date:
-            dataset = add_washin_timestamps(dataset=dataset)
-
         dataset = self._convert_timestamp_dtype_and_nat(dataset)
+
         if self.cfg.data.drop_patient_if_outcome_before_date:
-            dataset = self._drop_patients_with_event_in_washin(dataset=dataset)
+            dataset = self.drop_patient_if_outcome_before_date(dataset=dataset)
 
         # Drop if later than min prediction time date
         if self.cfg.data.min_prediction_time_date:
@@ -493,6 +496,18 @@ class SplitDataset(BaseModel):
     val: pd.DataFrame
 
 
+def load_train_from_cfg(cfg: FullConfig) -> pd.DataFrame:
+    """Load train dataset from config.
+
+    Args:
+        cfg (FullConfig): Config
+
+    Returns:
+        pd.DataFrame: Train dataset
+    """
+    return DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+
+
 def load_train_and_val_from_cfg(cfg: FullConfig):
     """Load train and validation data from file."""
 
@@ -502,3 +517,8 @@ def load_train_and_val_from_cfg(cfg: FullConfig):
         train=loader.load_dataset_from_dir(split_names="train"),
         val=loader.load_dataset_from_dir(split_names="val"),
     )
+
+
+def get_latest_dataset_dir(path: Path) -> Path:
+    """Get the latest dataset directory by time of creation."""
+    return max(path.glob("*"), key=os.path.getctime)

@@ -1,7 +1,7 @@
 name: psycop-t2d-integration-testing
 seed: 42
 wandb:
-  mode: "offline" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+  mode: "offline" # Which mode to run WanDB in. Takes "run", "dryrun", and "disabled"
   group: "integration_testing"
   entity: "psycop-t2d-testing" # Which entity to run WanDB in.
 watcher:

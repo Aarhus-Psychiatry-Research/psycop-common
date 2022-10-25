@@ -25,6 +25,8 @@ class BaseModel(PydanticBaseModel):
 
 
 class WandbConf(BaseModel):
+    """Configuration for weights and biases."""
+
     group: str
     mode: str
     entity: str
@@ -41,6 +43,7 @@ class WatcherConf(BaseModel):
 class ProjectConf(BaseModel):
     """Project configuration."""
 
+    wandb: WandbConf
     name: str = "psycopt2d"
     seed: int
     wandb: WandbConf
@@ -63,16 +66,13 @@ class DataConf(BaseModel):
     id_col_name: str  # (str): Citizen colnames
 
     # Looking ahead
-    lookahead_days: int  # (float): Number of days from prediction time to look ahead for the outcome.
-    min_lookahead_days: Optional[
-        int
-    ]  # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
+    min_lookahead_days: int  # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
     drop_patient_if_outcome_before_date: Optional[Union[str, datetime]]
 
     # Looking behind
     # (int): Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
     min_prediction_time_date: Optional[Union[str, datetime]]
-    min_lookbehind_days: Optional[int]
+    min_lookbehind_days: int
     max_lookbehind_days: Optional[int]
     lookbehind_combination: Optional[list[int]]
 
@@ -101,6 +101,7 @@ class TrainConf(BaseModel):
 
     n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
     n_trials_per_lookdirection_combination: int
+    n_active_trainers: int  # Number of subprocesses to spawn when training
     gpu: bool
 
 

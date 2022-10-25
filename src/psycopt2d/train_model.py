@@ -1,12 +1,13 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from collections.abc import Iterable
-from typing import Optional, Union
+from typing import Any, Optional
 
 import hydra
 import numpy as np
 import pandas as pd
 import wandb
+from omegaconf import OmegaConf
 from omegaconf.dictconfig import DictConfig
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
@@ -287,7 +288,7 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     """
 
     outcome_col_name = (  # pylint: disable=invalid-name
-        f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
+        f"outc_dichotomous_t2d_within_{cfg.data.min_lookahead_days}_days_max_fallback_0"
     )
 
     train_col_names = [  # pylint: disable=invalid-name
@@ -302,8 +303,18 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     config_name="default_config",
     version_base="1.2",
 )
-def main(cfg: Union[FullConfig, DictConfig]):
+def main(cfg: DictConfig):
     """Main function for training a single model."""
+    # Save dictconfig for easier logging
+    if isinstance(cfg, DictConfig):
+        # Create flattened dict for logging to wandb
+        # Wandb doesn't allow configs to be nested, so we
+        # flatten it.
+        dict_config_to_log: dict[str, Any] = flatten_nested_dict(OmegaConf.to_container(cfg), sep=".")  # type: ignore
+    else:
+        # For testing, we can take a FullConfig object instead. Simplifies boilerplate.
+        dict_config_to_log = cfg.__dict__
+
     if not isinstance(cfg, FullConfig):
         cfg = omegaconf_to_pydantic_objects(cfg)
 
@@ -314,10 +325,13 @@ def main(cfg: Union[FullConfig, DictConfig]):
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
-        config=flatten_nested_dict(cfg.__dict__, sep="."),
+        config=dict_config_to_log,
         mode=cfg.project.wandb.mode,
         group=cfg.project.wandb.group,
     )
+
+    if run is None:
+        raise ValueError("Failed to initialise Wandb")
 
     dataset = load_train_and_val_from_cfg(cfg)
 
@@ -362,8 +376,8 @@ def main(cfg: Union[FullConfig, DictConfig]):
     run.log(
         {
             "roc_auc_unweighted": roc_auc,
-            "lookbehind": cfg.data.lookbehind_combination,
-            "lookahead": cfg.data.lookahead_days,
+            "lookbehind": max(cfg.data.lookbehind_combination),
+            "lookahead": cfg.data.min_lookahead_days,
         },
     )
     run.finish()

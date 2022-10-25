@@ -60,7 +60,7 @@ def flatten_nested_dict(
     d: dict,
     parent_key: str = "",
     sep: str = ".",
-) -> dict:
+) -> dict[str, Any]:
     """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes
@@ -81,15 +81,15 @@ def flatten_nested_dict(
         new_key = parent_key + sep + k if parent_key else k
         if isinstance(v, MutableMapping):
             items.extend(
-                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),
+                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),  # type: ignore
             )  # typing: ignore
         else:
-            items.append((new_key, v))
+            items.append((new_key, v))  # type: ignore
 
-    return dict(items)
+    return dict(items)  # type: ignore
 
 
-def drop_records_if_datediff_days_smaller_than(
+def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-return-statements
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
@@ -158,7 +158,7 @@ def calculate_performance_metrics(
         A pandas dataframe with the performance metrics.
     """
     performance_metrics = ModelPerformance.performance_metrics_from_df(
-        eval_df,
+        prediction_df=eval_df,
         prediction_col_name=prediction_probabilities_col_name,
         label_col_name=outcome_col_name,
         id_col_name=id_col_name,
@@ -246,7 +246,7 @@ def dump_to_pickle(obj: Any, path: str) -> None:
         pkl.dump(obj, f)
 
 
-def read_pickle(path: str) -> Any:
+def read_pickle(path: Union[str, Path]) -> Any:
     """Reads a pickled object from a file.
 
     Args:
@@ -403,15 +403,17 @@ def infer_col_names(
     col_name = [c for c in df.columns if c.startswith(prefix)]
 
     if len(col_name) == 1:
-        return col_name[0]
+        return col_name
     elif len(col_name) > 1:
         if allow_multiple:
             return col_name
         raise ValueError(
             f"Multiple columns found and allow_multiple is {allow_multiple}.",
         )
+    elif not col_name:
+        raise ValueError("No outcome col name inferred")
     else:
-        raise ValueError("More than one outcome inferred")
+        raise ValueError("No outcomes inferred")
 
 
 def infer_outcome_col_name(
@@ -436,7 +438,7 @@ def infer_y_hat_prob_col_name(
     df: pd.DataFrame,
     prefix="y_hat_prob",
     allow_multiple: bool = False,
-) -> str:
+) -> list[str]:
     """Infer the y_hat_prob column name from the dataframe."""
     return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
 

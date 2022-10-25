@@ -28,16 +28,17 @@ from psycopt2d.model_performance.utils import (
 class ModelPerformance:
     """Evaluators of model performance."""
 
+    @staticmethod
     def performance_metrics_from_df(
         prediction_df: pd.DataFrame,
         prediction_col_name: str,
         label_col_name: str,
-        id_col_name: Optional[str] = None,
+        id_col_name: str = None,
         metadata_col_names: Optional[list[str]] = None,
         id2label: Optional[  # pylint: disable=redefined-outer-name
             dict[int, str]
         ] = None,
-        to_wide: Optional[bool] = False,
+        to_wide: bool = False,
         binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
         """Calculate performance metrics from a dataframe.
@@ -49,7 +50,7 @@ class ModelPerformance:
             prediction_df (pd.DataFrame): Dataframe with 1 row per prediction.
             prediction_col_name (str): column containing probabilities for each class or a list of floats for binary classification.
             label_col_name (str): column containing ground truth label
-            id_col_name (str, optional): Column name for the id, used for grouping.
+            id_col_name (str): Column name for the id, used for grouping.
             metadata_col_names (Optional[list[str]], optional): Column(s) containing metadata to add to the performance dataframe.
                 Each column should only contain 1 unique value. E.g. model_name, modality.. If set to "all" will auto-detect
                 metadata columns and add them all.
@@ -60,8 +61,6 @@ class ModelPerformance:
         Returns:
             pd.Dataframe: Dataframe with performance metrics.
         """
-
-        concat_axis = 1 if to_wide else 0
 
         performance_description = ModelPerformance._evaluate_single_model(
             prediction_df=prediction_df,
@@ -93,6 +92,8 @@ class ModelPerformance:
                 binary_threshold=binary_threshold,
             )
 
+            concat_axis = 1 if to_wide else 0
+
             performance_description = pd.concat(
                 [performance_description, performance_by_id],
                 axis=concat_axis,
@@ -113,6 +114,7 @@ class ModelPerformance:
 
         return performance_description
 
+    @staticmethod
     def performance_metrics_from_file(
         jsonl_path: Union[str, Path],
         prediction_col_name: str,
@@ -122,7 +124,7 @@ class ModelPerformance:
         id2label: Optional[  # pylint: disable=redefined-outer-name
             dict[int, str]
         ] = None,
-        to_wide: Optional[bool] = False,
+        to_wide: bool = False,
         binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
         """Load a .jsonl file and returns performance metrics.
@@ -214,6 +216,7 @@ class ModelPerformance:
         ]
         return pd.concat(dfs)
 
+    @staticmethod
     def _evaluate_single_model(  # pylint: disable=too-many-locals
         prediction_df: pd.DataFrame,
         aggregate_by_id: bool,
@@ -365,9 +368,7 @@ class ModelPerformance:
         """
         # sorting to get correct output from f1, prec, and recall
         groups = sorted(set(labels))
-        performance = {}
-
-        performance["acc-overall"] = accuracy_score(labels, predicted)
+        performance = {"acc-overall": accuracy_score(labels, predicted)}
         performance["balanced_accuracy-overall"] = balanced_accuracy_score(
             labels,
             predicted,

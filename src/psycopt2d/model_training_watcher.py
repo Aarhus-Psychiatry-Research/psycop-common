@@ -34,6 +34,10 @@ class RunInformation(BaseModel):
     auc: Optional[float]
     lookbehind_days: Optional[Union[int, list[int]]]
     lookahead_days: Optional[int]
+
+    # Concatenated lookbehind_days and lookahead_days string for
+    # max_performances scoreboard. Allows to only fully evaluate
+    # the models that set new high scores.
     lookahead_lookbehind_combined: Optional[str] = None
 
     def __init__(self, **kwargs):
@@ -100,6 +104,29 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
     def _archive_run_dir(self, run_dir: Path) -> None:
         """Move a run to the archive folder."""
         run_dir.rename(target=self.archive_path / run_dir.name)
+
+    def _get_run_id(self, run_dir: Path) -> str:
+        """Get the run id from a run directory."""
+        return run_dir.name.split("-")[-1]
+
+    def upload_unarchived_runs(self) -> None:
+        """Upload unarchived runs to wandb."""
+        for run_folder in WANDB_DIR.glob(r"offline-run*"):
+            run_id = self._get_run_id(run_folder)
+
+            wandb_sync_stdout = self._upload_run_dir(run_folder)
+
+            if "...done" not in wandb_sync_stdout:
+                if ".wandb file is empty" in wandb_sync_stdout:
+                    if self.verbose:
+                        msg.warn(f"Run {run_id} is still running. Skipping.")
+                else:
+                    raise ValueError(
+                        f"wandb sync failed, returned: {wandb_sync_stdout}",
+                    )
+                continue
+
+            self.run_id_eval_candidates_queue.append(run_id)
 
     def _get_run_evaluation_data_dir(self, run_id: str) -> Path:
         """Get the evaluation path for a single run."""
@@ -186,7 +213,9 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
                     self._do_evaluation(run_info.run_id)
                 self._archive_run_dir(run_dir=self._get_run_wandb_dir(run_info.run_id))
 
-    def _get_unfinished_runs(self, run_information: list[RunInformation]) -> list[str]:
+    def _get_unfinished_run_ids(
+        self, run_information: list[RunInformation]
+    ) -> list[str]:
         """Get the run ids of the unfinished runs."""
         return [run_info.run_id for run_info in run_information if run_info.auc is None]
 
@@ -213,11 +242,11 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         self.upload_unarchived_runs()
 
         if len(self.run_id_eval_candidates_queue) >= self.n_runs_before_eval:
-            run_information = self._get_run_information_for_all_in_queue()
-            self.run_id_eval_candidates_queue = self._get_unfinished_runs(
-                run_information=run_information,
+            run_infos = self._get_run_information_for_all_in_queue()
+            self.run_id_eval_candidates_queue = self._get_unfinished_run_ids(
+                run_information=run_infos,
             )
-            self._evaluate_and_archive_finished_runs(run_information=run_information)
+            self._evaluate_and_archive_finished_runs(run_information=run_infos)
 
     def _upload_run_dir(self, run_dir: Path) -> str:
         """Upload a single run to wandb."""
