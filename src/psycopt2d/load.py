@@ -162,7 +162,8 @@ class DataLoader:
         return dataset
 
     def drop_patient_if_outcome_before_date(
-        self, dataset: pd.DataFrame
+        self,
+        dataset: pd.DataFrame,
     ) -> pd.DataFrame:
         """Drop patients within washin period."""
 

@@ -1,8 +1,7 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from collections.abc import Iterable
-from multiprocessing.sharedctypes import Value
-from typing import Any, Hashable, Optional, Union
+from typing import Any, Optional
 
 import hydra
 import numpy as np

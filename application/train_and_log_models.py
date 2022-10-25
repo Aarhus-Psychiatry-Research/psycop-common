@@ -9,6 +9,7 @@ import random
 import subprocess
 import time
 from pathlib import Path
+from queue import Full
 
 import pandas as pd
 from hydra import compose, initialize
@@ -65,8 +66,8 @@ def infer_possible_look_distances(df: pd.DataFrame) -> PossibleLookDistanceDays:
 class LookDirectionCombination(BaseModel):
     """A combination of lookbehind and lookahead days."""
 
-    lookbehind: int
-    lookahead: int
+    behind_days: int
+    ahead_days: int
 
 
 def start_trainer(
@@ -81,7 +82,7 @@ def start_trainer(
         "src/psycopt2d/train_model.py",
         f"model={cfg.model.model_name}",
         f"data.min_lookbehind_days={max(cfg.data.lookbehind_combination)}",
-        f"data.min_lookahead_days={cell.lookahead}",
+        f"data.min_lookahead_days={cell.ahead_days}",
         f"project.wandb.group='{wandb_group_override}'",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookdirection_combination}",
         f"project.wandb.mode={cfg.project.wandb.mode}",
@@ -137,11 +138,6 @@ def train_models_for_each_cell_in_grid(
     random_word = RandomWords()
 
     # Create all combinations of lookbehind and lookahead days
-    lookbehind_combinations = [
-        LookDirectionCombination(lookbehind=lookbehind, lookahead=lookahead)
-        for lookbehind in possible_look_distances.behind
-        for lookahead in possible_look_distances.ahead
-    ]
 
     random.shuffle(lookbehind_combinations)
 
@@ -187,7 +183,7 @@ def train_models_for_each_cell_in_grid(
                 config_file_name=config_file_name,
                 cell=combination,
                 wandb_group_override=wandb_group,
-            )
+            ),
         )
 
 
@@ -212,24 +208,11 @@ def main():
 
     if cfg.project.wandb.mode == "run":
         msg.warn(
-            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training."
+            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
         )
 
-    # TODO: Watcher must be instantiated once for each cell in the grid, otherwise
-    # it will compare max performances across all cells.
     train = load_train_raw(cfg=cfg)
-    possible_look_distances = infer_possible_look_distances(df=train)
-
-    # Remove "9999" from possible look distances behind
-    if cfg.data.max_lookbehind_days:
-        possible_look_distances.behind = [
-            dist
-            for dist in possible_look_distances.behind
-            if not int(dist) > cfg.data.max_lookbehind_days
-        ]
-
-    msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
-    msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
+    possible_look_distances = get_possible_look_distances(msg, cfg, train)
 
     if not cfg.train.gpu:
         msg.warn("Not using GPU for training")
@@ -239,6 +222,48 @@ def main():
         possible_look_distances=possible_look_distances,
         config_file_name=config_file_name,
     )
+
+
+def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFrame):
+    """Some look_ahead and look_behind distances will result in 0 valid prediction times. Only return combinations which will allow some prediction times.
+
+    E.g. if we only have 4 years of data:
+    - min_lookahead = 2 years
+    - min_lookbehind = 3 years
+
+    Will mean that no rows satisfy the criteria.
+    """
+
+    possible_look_distances = infer_possible_look_distances(df=train)
+
+    lookbehind_combinations = [
+        LookDirectionCombination(behind_days=behind_days, ahead_days=ahead_days)
+        for behind_days in possible_look_distances.behind
+        for ahead_days in possible_look_distances.ahead
+    ]
+
+    # Don't try look distance combinations which will result in 0 rows
+    max_date_interval_in_dataset = max(train[cfg.data.pred_timestamp_col_name]) - max(
+        train[cfg.data.pred_timestamp_col_name]
+    )
+
+    possible_look_distances = [
+        dist
+        for dist in lookbehind_combinations
+        if ((dist.ahead + dist.behind_days) < max_date_interval_in_dataset)
+    ]
+
+    # Remove "9999" from possible look distances behind
+    if cfg.data.max_lookbehind_days:
+        possible_look_distances.behind = [
+            dist
+            for dist in possible_look_distances.behind
+            if int(dist) <= cfg.data.max_lookbehind_days
+        ]
+
+    msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
+    msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
+    return possible_look_distances
 
 
 if __name__ == "__main__":

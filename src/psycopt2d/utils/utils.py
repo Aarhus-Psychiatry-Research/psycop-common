@@ -7,7 +7,6 @@ import tempfile
 import time
 from collections.abc import Iterable, MutableMapping
 from datetime import date, datetime
-from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -20,7 +19,7 @@ from wasabi import msg
 
 from psycopt2d.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
-from psycopt2d.utils.configs import BaseModel, FullConfig
+from psycopt2d.utils.configs import FullConfig
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
