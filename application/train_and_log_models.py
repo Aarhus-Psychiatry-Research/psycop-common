@@ -148,7 +148,7 @@ def train_models_for_each_cell_in_grid(
     active_trainers: list[subprocess.Popen] = []
 
     wandb_prefix = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
-    watcher = start_watcher(cfg=cfg)
+
     while lookbehind_combinations or active_trainers:
         # Wait until there is a free slot in the trainers group
         if len(active_trainers) >= cfg.train.n_active_trainers:
@@ -173,11 +173,11 @@ def train_models_for_each_cell_in_grid(
             msg.warn(f"No rows for {combination}, continuing")
             continue
 
-        # watcher = start_watcher(cfg=cfg)
         msg.info(
             f"Spawning a new trainer with lookbehind={combination.lookbehind} and lookahead={combination.lookahead}",
         )
         wandb_group = f"{wandb_prefix}"
+
         active_trainers.append(
             start_trainer(
                 cfg=cfg,
@@ -186,13 +186,6 @@ def train_models_for_each_cell_in_grid(
                 wandb_group_override=wandb_group,
             ),
         )
-
-    msg.good(
-        f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
-    )
-
-    time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
-    watcher.kill()
 
 
 def load_cfg(config_file_name):
@@ -269,11 +262,20 @@ def main():
     if not cfg.train.gpu:
         msg.warn("Not using GPU for training")
 
+    watcher = start_watcher(cfg=cfg)
+
     train_models_for_each_cell_in_grid(
         cfg=cfg,
         possible_look_distances=possible_look_distances,
         config_file_name=config_file_name,
     )
+
+    msg.good(
+        f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
+    )
+
+    time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
+    watcher.kill()
 
 
 if __name__ == "__main__":
