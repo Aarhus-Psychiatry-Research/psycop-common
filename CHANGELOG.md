@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2022-10-25)
+### Feature
+* Added methods for feature selection ([`8c087d7`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/8c087d74d83991ae668f98470e411e86bb0471be))
+
+### Fix
+* Errors introduce on merge ([`b774066`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b77406679235bb61b362d6983045b0513edacec8))
+
 ## v0.10.0 (2022-10-20)
 ### Feature
 * Script to run (multirun) training and wandb watcher simultaneously ([`b8954bf`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b8954bf85b5814b304aa56efd9e161b53bc93f55))
