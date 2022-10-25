@@ -188,7 +188,7 @@ def train_models_for_each_cell_in_grid(
         )
 
 
-def load_cfg(config_file_name):
+def load_cfg(config_file_name) -> FullConfig:
     """Load config as pydantic object."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
@@ -199,7 +199,9 @@ def load_cfg(config_file_name):
     return cfg
 
 
-def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFrame):
+def get_possible_look_distances(
+    msg: Printer, cfg: FullConfig, train: pd.DataFrame
+) -> list[PossibleLookDistanceDays]:
     """Some look_ahead and look_behind distances will result in 0 valid
     prediction times. Only return combinations which will allow some prediction
     times.
@@ -227,7 +229,7 @@ def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFra
     possible_look_distances = [
         dist
         for dist in lookbehind_combinations
-        if ((dist.ahead + dist.behind_days) < max_date_interval_in_dataset)
+        if ((dist.ahead_days + dist.behind_days) < max_date_interval_in_dataset)
     ]
 
     # Remove "9999" from possible look distances behind
@@ -240,6 +242,7 @@ def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFra
 
     msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
     msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
+
     return possible_look_distances
 
 
@@ -251,10 +254,8 @@ def main():
 
     cfg = load_cfg(config_file_name=config_file_name)
 
-    if cfg.project.wandb.mode == "run":
-        msg.warn(
-            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
-        )
+    # Override for testing
+    cfg.train.n_active_trainers = 1
 
     train = load_train_raw(cfg=cfg)
     possible_look_distances = get_possible_look_distances(msg, cfg, train)
@@ -262,7 +263,12 @@ def main():
     if not cfg.train.gpu:
         msg.warn("Not using GPU for training")
 
-    watcher = start_watcher(cfg=cfg)
+    if cfg.project.wandb.mode == "run":
+        msg.warn(
+            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
+        )
+    else:
+        watcher = start_watcher(cfg=cfg)
 
     train_models_for_each_cell_in_grid(
         cfg=cfg,
@@ -270,12 +276,13 @@ def main():
         config_file_name=config_file_name,
     )
 
-    msg.good(
-        f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
-    )
+    if cfg.project.wand.mode != "run":
+        msg.good(
+            f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
+        )
 
-    time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
-    watcher.kill()
+        time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
+        watcher.kill()
 
 
 if __name__ == "__main__":

@@ -389,6 +389,8 @@ def main(cfg: DictConfig):
             y_hat_prob_col_name="y_hat_prob",
             feature_importance_dict=get_feature_importance_dict(pipe),
             run=run,
+            pipe=pipe,
+            train_col_names=train_col_names,
         )
 
     roc_auc = roc_auc_score(

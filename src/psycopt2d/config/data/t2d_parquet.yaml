@@ -25,4 +25,4 @@ data:
 hydra:
   sweeper:
     params:
-      ++data.lookbehind_combination: choice([30, 90, 180, 365, 730], [30, 180, 730], [30, 730], [730], [365], [90], [30])
+      ++data.lookbehind_combination: choice([30, 90, 180, 365, 730], [30, 180, 730], [730], [365], [90], [30])

@@ -3,7 +3,7 @@ seed: 42
 
 wandb:
   entity: "psycop" # Which entity to run WanDB in.
-  mode: "run" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+  mode: "offline" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
   group: "psycop-t2d" # Which group to run WanDB in.
 
 watcher:
