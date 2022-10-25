@@ -3,6 +3,7 @@
 import pytest
 from hydra import compose, initialize
 
+from psycopt2d.load import load_train_from_cfg
 from psycopt2d.models import MODELS
 from psycopt2d.train_model import main
 from psycopt2d.utils.configs import omegaconf_to_pydantic_objects
@@ -73,13 +74,15 @@ def test_min_prediction_time_date():
 def test_feature_selection():
     """Test feature selection."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
+
         cfg = compose(
             config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[
                 INTEGRATION_TESTING_MODEL_OVERRIDE,
                 "preprocessing.feature_selection.name=f_classif",
-                "preprocessing.feature_selection.params.percentile=10",
+                "preprocessing.feature_selection.params.percentile=100",
                 # "project.wandb_mode=run",
             ],
         )
+
         main(cfg)
