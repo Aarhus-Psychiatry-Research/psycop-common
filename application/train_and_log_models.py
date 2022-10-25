@@ -9,6 +9,7 @@ import random
 import subprocess
 import time
 from pathlib import Path
+from typing import Union
 
 import pandas as pd
 from hydra import compose, initialize
@@ -26,11 +27,11 @@ from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
 msg = Printer(timestamp=True)
 
 
-class LookDistances(BaseModel):
+class LookDistance(BaseModel):
     """A distance of ahead and behind."""
 
-    ahead: list[str]
-    behind: list[str]
+    behind_days: list[Union[int, float]]
+    ahead_days: list[Union[int, float]]
 
 
 def load_train_raw(cfg: FullConfig):
@@ -44,7 +45,7 @@ def load_train_raw(cfg: FullConfig):
     raise ValueError(f"Returned {len(file)} files")
 
 
-def infer_possible_look_distances(df: pd.DataFrame) -> LookDistances:
+def infer_possible_look_distances(df: pd.DataFrame) -> LookDistance:
     """Infer the possible values for min_lookahead_days and
     min_lookbehind_days."""
     # Get potential lookaheads from outc_ columns
@@ -56,23 +57,16 @@ def infer_possible_look_distances(df: pd.DataFrame) -> LookDistances:
     pred_col_names = infer_predictor_col_name(df=df, allow_multiple=True)
     possible_lookbehind_days = list(set(infer_look_distance(col_name=pred_col_names)))
 
-    return LookDistances(
-        ahead=possible_lookahead_days,
-        behind=possible_lookbehind_days,
+    return LookDistance(
+        behind_days=possible_lookahead_days,
+        ahead_days=possible_lookbehind_days,
     )
-
-
-class LookDirectionCombination(BaseModel):
-    """A combination of lookbehind and lookahead days."""
-
-    behind_days: int
-    ahead_days: int
 
 
 def start_trainer(
     cfg: FullConfig,
     config_file_name: str,
-    cell: LookDirectionCombination,
+    cell: LookDistance,
     wandb_group_override: str,
 ) -> subprocess.Popen:
     """Start a trainer."""
@@ -128,7 +122,7 @@ def start_watcher(cfg: FullConfig) -> subprocess.Popen:
 
 def train_models_for_each_cell_in_grid(
     cfg: FullConfig,
-    possible_look_distances: LookDistances,
+    possible_look_distances: list[LookDistance],
     config_file_name: str,
 ):
     """Train a model for each cell in the grid of possible look distances."""
@@ -136,20 +130,13 @@ def train_models_for_each_cell_in_grid(
 
     random_word = RandomWords()
 
-    # Create all combinations of lookbehind and lookahead days
-    lookbehind_combinations = [
-        LookDirectionCombination(lookbehind=lookbehind, lookahead=lookahead)
-        for lookbehind in possible_look_distances.behind
-        for lookahead in possible_look_distances.ahead
-    ]
-
-    random.shuffle(lookbehind_combinations)
+    random.shuffle(possible_look_distances)
 
     active_trainers: list[subprocess.Popen] = []
 
     wandb_prefix = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
 
-    while lookbehind_combinations or active_trainers:
+    while possible_look_distances or active_trainers:
         # Wait until there is a free slot in the trainers group
         if len(active_trainers) >= cfg.train.n_active_trainers:
             # Drop trainers if they have finished
@@ -160,7 +147,7 @@ def train_models_for_each_cell_in_grid(
 
         # Start a new trainer
 
-        combination = lookbehind_combinations.pop()
+        combination = possible_look_distances.pop()
 
         # Check if any rows in the given combinatin of lookbehind and lookahead days
         cfg_for_checking_any_rows = cfg.copy()
@@ -201,7 +188,7 @@ def load_cfg(config_file_name) -> FullConfig:
 
 def get_possible_look_distances(
     msg: Printer, cfg: FullConfig, train: pd.DataFrame
-) -> list[LookDirectionCombination]:
+) -> list[LookDistance]:
     """Some look_ahead and look_behind distances will result in 0 valid
     prediction times. Only return combinations which will allow some prediction
     times.
@@ -216,9 +203,9 @@ def get_possible_look_distances(
     look_combinations_in_dataset = infer_possible_look_distances(df=train)
 
     look_distance_combinations = [
-        LookDirectionCombination(behind_days=behind_days, ahead_days=ahead_days)
-        for behind_days in look_combinations_in_dataset.behind
-        for ahead_days in look_combinations_in_dataset.ahead
+        LookDistance(behind_days=behind_days, ahead_days=ahead_days)
+        for behind_days in look_combinations_in_dataset.ahead_days
+        for ahead_days in look_combinations_in_dataset.behind_days
     ]
 
     # Don't try look distance combinations which will result in 0 rows
