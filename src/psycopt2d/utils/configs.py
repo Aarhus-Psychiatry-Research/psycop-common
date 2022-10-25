@@ -78,7 +78,7 @@ class DataConf(BaseModel):
 
 
 class FeatureSelectionConf(BaseModel):
-    """Configuration for feature selection methods"""
+    """Configuration for feature selection methods."""
 
     name: Optional[str]
     params: Optional[dict]

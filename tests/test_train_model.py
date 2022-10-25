@@ -74,7 +74,7 @@ def test_feature_selection():
     """Test feature selection."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
         cfg = compose(
-            config_name=CONFIG_FILE_NAME,
+            config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[
                 INTEGRATION_TESTING_MODEL_OVERRIDE,
                 "preprocessing.feature_selection.name=f_classif",
