@@ -199,15 +199,17 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         if finished_runs:
             for run_info in finished_runs:
                 if (
-                    run_info.auc
-                    > self.max_performances[run_info.lookahead_lookbehind_combined]
+                    run_info.auc  # type: ignore
+                    > self.max_performances[
+                        run_info.lookahead_lookbehind_combined  # type: ignore
+                    ]
                 ):
                     msg.good(
                         f"New record performance for {run_info.lookahead_lookbehind_combined}! AUC: {run_info.auc}",
                     )
                     self.max_performances[
-                        run_info.lookahead_lookbehind_combined
-                    ] = run_info.auc
+                        run_info.lookahead_lookbehind_combined  # type: ignore
+                    ] = run_info.auc  # type: ignore
                     self._do_evaluation(run_info.run_id)
                 self._archive_run_dir(run_dir=self._get_run_wandb_dir(run_info.run_id))
 

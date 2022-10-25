@@ -26,8 +26,8 @@ from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
 msg = Printer(timestamp=True)
 
 
-class PossibleLookDistanceDays(BaseModel):
-    """Possible look distances."""
+class LookDistances(BaseModel):
+    """A distance of ahead and behind."""
 
     ahead: list[str]
     behind: list[str]
@@ -44,7 +44,7 @@ def load_train_raw(cfg: FullConfig):
     raise ValueError(f"Returned {len(file)} files")
 
 
-def infer_possible_look_distances(df: pd.DataFrame) -> PossibleLookDistanceDays:
+def infer_possible_look_distances(df: pd.DataFrame) -> LookDistances:
     """Infer the possible values for min_lookahead_days and
     min_lookbehind_days."""
     # Get potential lookaheads from outc_ columns
@@ -56,7 +56,7 @@ def infer_possible_look_distances(df: pd.DataFrame) -> PossibleLookDistanceDays:
     pred_col_names = infer_predictor_col_name(df=df, allow_multiple=True)
     possible_lookbehind_days = list(set(infer_look_distance(col_name=pred_col_names)))
 
-    return PossibleLookDistanceDays(
+    return LookDistances(
         ahead=possible_lookahead_days,
         behind=possible_lookbehind_days,
     )
@@ -128,7 +128,7 @@ def start_watcher(cfg: FullConfig) -> subprocess.Popen:
 
 def train_models_for_each_cell_in_grid(
     cfg: FullConfig,
-    possible_look_distances: PossibleLookDistanceDays,
+    possible_look_distances: LookDistances,
     config_file_name: str,
 ):
     """Train a model for each cell in the grid of possible look distances."""
@@ -164,8 +164,8 @@ def train_models_for_each_cell_in_grid(
 
         # Check if any rows in the given combinatin of lookbehind and lookahead days
         cfg_for_checking_any_rows = cfg.copy()
-        cfg_for_checking_any_rows.data.min_lookbehind_days = combination.lookbehind
-        cfg_for_checking_any_rows.data.min_lookahead_days = combination.lookahead
+        cfg_for_checking_any_rows.data.min_lookbehind_days = combination.behind_days
+        cfg_for_checking_any_rows.data.min_lookahead_days = combination.ahead_days
 
         train = load_train_from_cfg(cfg=cfg)
 
@@ -174,7 +174,7 @@ def train_models_for_each_cell_in_grid(
             continue
 
         msg.info(
-            f"Spawning a new trainer with lookbehind={combination.lookbehind} and lookahead={combination.lookahead}",
+            f"Spawning a new trainer with lookbehind={combination.behind_days} and lookahead={combination.ahead_days}",
         )
         wandb_group = f"{wandb_prefix}"
 
@@ -201,7 +201,7 @@ def load_cfg(config_file_name) -> FullConfig:
 
 def get_possible_look_distances(
     msg: Printer, cfg: FullConfig, train: pd.DataFrame
-) -> list[PossibleLookDistanceDays]:
+) -> list[LookDirectionCombination]:
     """Some look_ahead and look_behind distances will result in 0 valid
     prediction times. Only return combinations which will allow some prediction
     times.
@@ -213,37 +213,36 @@ def get_possible_look_distances(
     Will mean that no rows satisfy the criteria.
     """
 
-    possible_look_distances = infer_possible_look_distances(df=train)
+    look_combinations_in_dataset = infer_possible_look_distances(df=train)
 
-    lookbehind_combinations = [
+    look_distance_combinations = [
         LookDirectionCombination(behind_days=behind_days, ahead_days=ahead_days)
-        for behind_days in possible_look_distances.behind
-        for ahead_days in possible_look_distances.ahead
+        for behind_days in look_combinations_in_dataset.behind
+        for ahead_days in look_combinations_in_dataset.ahead
     ]
 
     # Don't try look distance combinations which will result in 0 rows
-    max_date_interval_in_dataset = max(train[cfg.data.pred_timestamp_col_name]) - max(
+    max_distance_in_dataset_days = max(train[cfg.data.pred_timestamp_col_name]) - max(
         train[cfg.data.pred_timestamp_col_name],
     )
 
-    possible_look_distances = [
+    look_combinations_without_rows = [
         dist
-        for dist in lookbehind_combinations
-        if ((dist.ahead_days + dist.behind_days) < max_date_interval_in_dataset)
+        for dist in look_distance_combinations
+        if ((dist.ahead_days + dist.behind_days)) > max_distance_in_dataset_days
     ]
 
-    # Remove "9999" from possible look distances behind
-    if cfg.data.max_lookbehind_days:
-        possible_look_distances.behind = [
-            dist
-            for dist in possible_look_distances.behind
-            if int(dist) <= cfg.data.max_lookbehind_days
-        ]
+    msg.info(
+        f"Not fitting model to {look_combinations_without_rows}, since no rows satisfy the criteria."
+    )
 
-    msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
-    msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
+    look_combinations_with_rows = [
+        dist
+        for dist in look_distance_combinations
+        if ((dist.ahead_days + dist.behind_days) < max_distance_in_dataset_days)
+    ]
 
-    return possible_look_distances
+    return look_combinations_with_rows
 
 
 def main():
