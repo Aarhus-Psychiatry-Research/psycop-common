@@ -8,15 +8,19 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 
+
+from psycopt2d.utils import bin_continuous_data
 from psycopt2d.visualization.utils import calc_performance
 from psycopt2d.visualization.base_charts import plot_basic_chart
 
 
 def create_performance_by_n_hba1c(
     labels: Iterable[int],
-    y_hat: Iterable[int],
+    y_hat: Iterable[int, float],
     n_hba1c: Iterable[int],
-    metric_fn: Callable,
+    bins: tuple = (0, 1, 2, 5, 10, 100),
+    pretty_bins: Optional[bool] = True,
+    metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
     """Calculate performance by number of HbA1c measurements.
 
@@ -24,6 +28,9 @@ def create_performance_by_n_hba1c(
         labels (Iterable[int]): True labels
         y_hat (Iterable[int]): Predicted label or probability depending on metric
         n_hba1c (Iterable[int]): Number of HbA1c measurements
+        bins (Iterable[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
+            bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
         bin_period (str): How to bin time. "M" for year/month, "Y" for year
 
@@ -32,7 +39,11 @@ def create_performance_by_n_hba1c(
     """
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "n_hba1c": n_hba1c})
 
-    output_df = df.groupby("n_hba1c").apply(calc_performance, metric_fn)
+    # bin data
+    if pretty_bins:
+        df["n_hba1c_binned"] = bin_continuous_data(df["n_hba1c"], bins=bins)
+
+    output_df = df.groupby("n_hba1c_binned").apply(calc_performance, metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
@@ -40,17 +51,24 @@ def create_performance_by_n_hba1c(
 
 def plot_performance_by_n_hba1c(
     labels: Iterable[int],
-    y_hat_probs: Iterable[int],
+    y_hat: Iterable[int, float],
     n_hba1c: Iterable[int],
     save_path: Optional[Path] = None,
+    bins: tuple = (0, 1, 2, 5, 10, 100),
+    pretty_bins: Optional[bool] = True,
+    metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
     """Plot bar plot of AUC by number of HbA1c measurements.
 
     Args:
         labels (Iterable[int]): True labels
-        y_hat_probs (Iterable[int]): Predicted probabilities
+        y_hat (Iterable[int]): Predicted label or probability depending on metric
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamps of the predictions
         n_hba1c (Iterable[int]): Number of HbA1c measurements
+        bins (Iterable[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
+            bins look like "1-7" instead of "[1-7)". Defaults to True.
+        metric_fn (Callable): Callable which returns the metric to calculate
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
@@ -59,14 +77,16 @@ def plot_performance_by_n_hba1c(
 
     df = create_performance_by_n_hba1c(
         labels=labels,
-        y_hat=y_hat_probs,
+        y_hat=y_hat,
         n_hba1c=n_hba1c,
-        metric_fn=roc_auc_score,
+        metric_fn=metric_fn,
+        bins=bins,
+        pretty_bins=pretty_bins,
     )
 
-    sort_order = np.arange(n_hba1c.values)
+    sort_order = sorted(df["n_hba1c_binned"].unique())
     return plot_basic_chart(
-        x_values=df["n_hba1c"],
+        x_values=df["n_hba1c_binned"],
         y_values=df["metric"],
         x_title="Number of HbA1c measurements",
         y_title="AUC",

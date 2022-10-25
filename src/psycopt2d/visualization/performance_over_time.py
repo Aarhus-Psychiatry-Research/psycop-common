@@ -18,7 +18,7 @@ from psycopt2d.visualization.utils import calc_performance
 
 def create_performance_by_calendar_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[int],
+    y_hat: Iterable[int, float],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -27,7 +27,7 @@ def create_performance_by_calendar_time_df(
 
     Args:
         labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label or probability depending on metric
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
         bin_period (str): How to bin time. "M" for year/month, "Y" for year
@@ -46,7 +46,7 @@ def create_performance_by_calendar_time_df(
 
 def plot_performance_by_calendar_time(
     labels: Iterable[int],
-    y_hat: Iterable[int],
+    y_hat: Iterable[int, float],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -57,7 +57,7 @@ def plot_performance_by_calendar_time(
 
     Args:
         labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label of probability depending on metric
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Function which returns the metric.
         bin_period (str): Which time period to bin on. Takes "M" or "Y".
@@ -88,7 +88,7 @@ def plot_performance_by_calendar_time(
 
 def create_performance_by_time_from_event_df(
     labels: Iterable[int],
-    y_hat: Iterable[int],
+    y_hat: Iterable[int, float],
     event_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
@@ -102,7 +102,7 @@ def create_performance_by_time_from_event_df(
 
     Args:
         labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted probabilities or labels depending on metric
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         event_timestamps (Iterable[pd.Timestamp]): Timestamp of event (e.g. first visit)
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
         metric_fn (Callable): Which performance metric function to use (e.g. roc_auc_score)
@@ -206,7 +206,7 @@ def plot_auc_by_time_from_first_visit(
 
 def plot_metric_by_time_until_diagnosis(
     labels: Iterable[int],
-    y_hat: Iterable[int],
+    y_hat: Iterable[int, float],
     diagnosis_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: Iterable[int] = (
@@ -228,7 +228,7 @@ def plot_metric_by_time_until_diagnosis(
 
     Args:
         labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         diagnosis_timestamps (Iterable[pd.Timestamp]): Timestamp of diagnosis
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
         bins (list, optional): Bins to group by. Negative values indicate days after
