@@ -1,5 +1,7 @@
 # @package _global_
 data:
+  dir: tests/test_data/synth_splits
+  suffix: csv
   n_training_samples: null
   min_lookahead_days: 30
   min_lookbehind_days: 100
@@ -8,9 +10,13 @@ data:
   pred_timestamp_col_name: timestamp
   outcome_timestamp_col_name: timestamp_outcome
   id_col_name: citizen_ids
-  dir: "../psycop-t2d/tests/test_data/synth_splits/"
-  suffix: csv
+
+  # Looking ahead
+  lookahead_days: 30
   drop_patient_if_outcome_before_date: null
+
+  # Looking behind
+  max_lookbehind_days: 1850
   lookbehind_combination: [30, 90]
 
 # Parameters that will only take effect if running with --multirun

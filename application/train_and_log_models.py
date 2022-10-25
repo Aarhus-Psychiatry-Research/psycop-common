@@ -137,13 +137,18 @@ def train_models_for_each_cell_in_grid(
     random_word = RandomWords()
 
     # Create all combinations of lookbehind and lookahead days
+    lookbehind_combinations = [
+        LookDirectionCombination(lookbehind=lookbehind, lookahead=lookahead)
+        for lookbehind in possible_look_distances.behind
+        for lookahead in possible_look_distances.ahead
+    ]
 
     random.shuffle(lookbehind_combinations)
 
     active_trainers: list[subprocess.Popen] = []
 
     wandb_prefix = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
-
+    watcher = start_watcher(cfg=cfg)
     while lookbehind_combinations or active_trainers:
         # Wait until there is a free slot in the trainers group
         if len(active_trainers) >= cfg.train.n_active_trainers:
@@ -161,9 +166,6 @@ def train_models_for_each_cell_in_grid(
         cfg_for_checking_any_rows = cfg.copy()
         cfg_for_checking_any_rows.data.min_lookbehind_days = combination.lookbehind
         cfg_for_checking_any_rows.data.min_lookahead_days = combination.lookahead
-        # TODO: Can be refactored by
-        # 1) Inferring the dataset length from max/min of prediction time
-        # 2) Checking if combination.lookbehind + combination.lookahead < dataset length
 
         train = load_train_from_cfg(cfg=cfg)
 
@@ -185,6 +187,13 @@ def train_models_for_each_cell_in_grid(
             ),
         )
 
+    msg.good(
+        f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
+    )
+
+    time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
+    watcher.kill()
+
 
 def load_cfg(config_file_name):
     """Load config as pydantic object."""
@@ -195,32 +204,6 @@ def load_cfg(config_file_name):
 
         cfg = omegaconf_to_pydantic_objects(cfg)
     return cfg
-
-
-def main():
-    """Main."""
-    msg = Printer(timestamp=True)
-
-    config_file_name = "default_config.yaml"
-
-    cfg = load_cfg(config_file_name=config_file_name)
-
-    if cfg.project.wandb.mode == "run":
-        msg.warn(
-            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
-        )
-
-    train = load_train_raw(cfg=cfg)
-    possible_look_distances = get_possible_look_distances(msg, cfg, train)
-
-    if not cfg.train.gpu:
-        msg.warn("Not using GPU for training")
-
-    train_models_for_each_cell_in_grid(
-        cfg=cfg,
-        possible_look_distances=possible_look_distances,
-        config_file_name=config_file_name,
-    )
 
 
 def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFrame):
@@ -265,6 +248,32 @@ def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFra
     msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
     msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
     return possible_look_distances
+
+
+def main():
+    """Main."""
+    msg = Printer(timestamp=True)
+
+    config_file_name = "default_config.yaml"
+
+    cfg = load_cfg(config_file_name=config_file_name)
+
+    if cfg.project.wandb.mode == "run":
+        msg.warn(
+            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
+        )
+
+    train = load_train_raw(cfg=cfg)
+    possible_look_distances = get_possible_look_distances(msg, cfg, train)
+
+    if not cfg.train.gpu:
+        msg.warn("Not using GPU for training")
+
+    train_models_for_each_cell_in_grid(
+        cfg=cfg,
+        possible_look_distances=possible_look_distances,
+        config_file_name=config_file_name,
+    )
 
 
 if __name__ == "__main__":
