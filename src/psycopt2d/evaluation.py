@@ -133,8 +133,8 @@ def evaluate_model(
                 "feature_selection_table": feature_selection_table(
                     feature_names=train_col_names,
                     selected_feature_names=selected_features,
-                )
-            }
+                ),
+            },
         )
 
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
@@ -151,7 +151,7 @@ def evaluate_model(
         {
             "roc_auc_unweighted": auc,
             "1_minus_roc_auc_unweighted": 1 - auc,
-        }
+        },
     )
 
     log_auc_to_file(cfg, run=run, auc=auc)

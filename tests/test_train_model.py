@@ -68,7 +68,7 @@ def test_min_prediction_time_date():
 
 
 def test_feature_selection():
-    """Test feature selection"""
+    """Test feature selection."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
         cfg = compose(
             config_name=CONFIG_FILE_NAME,
