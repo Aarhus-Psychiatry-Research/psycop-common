@@ -1,7 +1,7 @@
 """table_test_auc_by_group_table."""
 # pylint: disable=missing-function-docstring
 
-from psycopt2d.tables import auc_by_group_table
+from psycopt2d.tables import auc_by_group_df
 from psycopt2d.utils import bin_continuous_data
 
 
@@ -11,7 +11,7 @@ def test_auc_by_group_table(synth_data):
         bins=[0, 18, 30, 50, 120],
     )
 
-    table = auc_by_group_table(
+    table = auc_by_group_df(
         synth_data,
         pred_probs_col_name="pred_prob",
         outcome_col_name="label",

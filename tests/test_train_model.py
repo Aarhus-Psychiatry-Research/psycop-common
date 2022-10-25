@@ -48,8 +48,8 @@ def test_crossvalidation():
     """Test crossvalidation."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
         cfg = compose(
-            config_name="integration_testing.yaml",
-            overrides=["+model=logistic-regression", "+training.n_splits=2"],
+            config_name=CONFIG_FILE_NAME,
+            overrides=[INTEGRATION_TESTING_MODEL_OVERRIDE, "+data.n_splits=2"],
         )
         main(cfg)
 
@@ -76,10 +76,7 @@ def test_feature_selection():
                 INTEGRATION_TESTING_MODEL_OVERRIDE,
                 "preprocessing.feature_selection_method=f_classif",
                 "preprocessing.feature_selection_params.percentile=10",
-                #"project.wandb_mode=run",
+                # "project.wandb_mode=run",
             ],
         )
         main(cfg)
-
-
-

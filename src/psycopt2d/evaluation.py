@@ -5,7 +5,6 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-import wandb
 from omegaconf.dictconfig import DictConfig
 from sklearn.metrics import recall_score, roc_auc_score
 from sklearn.pipeline import Pipeline
@@ -121,15 +120,22 @@ def evaluate_model(
     outcome_timestamps = eval_df[cfg.data.outcome_timestamp_col_name]
     pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
     y_hat_int = np.round(y_hat_probs, 0)
-    
-    if 'feature_selection' in pipe["preprocessing"].named_steps:
-        selected_features = eval_df[train_col_names].columns[pipe["preprocessing"]["feature_selection"].get_support()].to_list()
 
-        run.log({"feature_selection_table": feature_selection_table(
-            feature_names=train_col_names,
-            selected_feature_names=selected_features,
-        )})
+    if "feature_selection" in pipe["preprocessing"].named_steps:
+        selected_features = (
+            eval_df[train_col_names]
+            .columns[pipe["preprocessing"]["feature_selection"].get_support()]
+            .to_list()
+        )
 
+        run.log(
+            {
+                "feature_selection_table": feature_selection_table(
+                    feature_names=train_col_names,
+                    selected_feature_names=selected_features,
+                )
+            }
+        )
 
     first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
         cfg.data.pred_timestamp_col_name
@@ -141,10 +147,12 @@ def evaluate_model(
     )
 
     msg.info(f"AUC: {auc}")
-    run.log({
-        "roc_auc_unweighted": auc, 
-        "1_minus_roc_auc_unweighted": 1 - auc,
-        })
+    run.log(
+        {
+            "roc_auc_unweighted": auc,
+            "1_minus_roc_auc_unweighted": 1 - auc,
+        }
+    )
 
     log_auc_to_file(cfg, run=run, auc=auc)
 
