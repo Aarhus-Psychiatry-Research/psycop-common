@@ -79,8 +79,7 @@ def test_feature_selection():
             overrides=[
                 INTEGRATION_TESTING_MODEL_OVERRIDE,
                 "preprocessing.feature_selection.name=f_classif",
-                "preprocessing.feature_selection.params.percentile=100",
-                # "project.wandb_mode=run",
+                "preprocessing.feature_selection.params.percentile=10",
             ],
         )
 
