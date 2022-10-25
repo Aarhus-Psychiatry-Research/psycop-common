@@ -64,23 +64,23 @@ def create_preprocessing_pipeline(cfg):
             ("z-score-normalization", StandardScaler()),
         )
 
-    if cfg.preprocessing.feature_selection_method == "f_classif":
+    if cfg.preprocessing.feature_selection.name == "f_classif":
         steps.append(
             (
                 "feature_selection",
                 SelectPercentile(
                     f_classif,
-                    percentile=cfg.preprocessing.feature_selection_params.percentile,
+                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
                 ),
             ),
         )
-    if cfg.preprocessing.feature_selection_method == "chi2":
+    if cfg.preprocessing.feature_selection.name == "chi2":
         steps.append(
             (
                 "feature_selection",
                 SelectPercentile(
                     chi2,
-                    percentile=cfg.preprocessing.feature_selection_params.percentile,
+                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
                 ),
             ),
         )
@@ -351,7 +351,7 @@ def main(cfg: DictConfig):
         config=dict_config_to_log,
         mode=cfg.project.wandb.mode,
         group=cfg.project.wandb.group,
-        entity=cfg.project.wandb_entity,
+        entity=cfg.project.wandb.entity,
     )
 
     if run is None:

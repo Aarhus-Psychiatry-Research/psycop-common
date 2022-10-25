@@ -77,6 +77,13 @@ class DataConf(BaseModel):
     lookbehind_combination: Optional[list[int]]
 
 
+class FeatureSelectionConf(BaseModel):
+    """Configuration for feature selection methods"""
+
+    name: Optional[str]
+    params: Optional[dict]
+
+
 class PreprocessingConf(BaseModel):
     """Preprocessing config."""
 
@@ -86,6 +93,7 @@ class PreprocessingConf(BaseModel):
     transform: Optional[
         str
     ]  # (str|null): Transformation applied to all predictors after imputation. Options include "z-score-normalization"
+    feature_selection: FeatureSelectionConf
 
 
 class ModelConf(BaseModel):
@@ -128,9 +136,6 @@ class FullConfig(BaseModel):
     model: ModelConf
     train: TrainConf
     eval: EvalConf
-
-
-# ? Should FullConfig be here or in another location?
 
 
 def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfig:
