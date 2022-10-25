@@ -9,7 +9,6 @@ import random
 import subprocess
 import time
 from pathlib import Path
-from queue import Full
 
 import pandas as pd
 from hydra import compose, initialize
@@ -225,7 +224,9 @@ def main():
 
 
 def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFrame):
-    """Some look_ahead and look_behind distances will result in 0 valid prediction times. Only return combinations which will allow some prediction times.
+    """Some look_ahead and look_behind distances will result in 0 valid
+    prediction times. Only return combinations which will allow some prediction
+    times.
 
     E.g. if we only have 4 years of data:
     - min_lookahead = 2 years
@@ -244,7 +245,7 @@ def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFra
 
     # Don't try look distance combinations which will result in 0 rows
     max_date_interval_in_dataset = max(train[cfg.data.pred_timestamp_col_name]) - max(
-        train[cfg.data.pred_timestamp_col_name]
+        train[cfg.data.pred_timestamp_col_name],
     )
 
     possible_look_distances = [
