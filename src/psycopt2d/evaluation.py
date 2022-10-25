@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
 from sklearn.metrics import recall_score, roc_auc_score
+from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 from wasabi import Printer
 
@@ -15,12 +16,7 @@ from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
 from psycopt2d.tables.tables import feature_selection_table
-from psycopt2d.utils import (
-    AUC_LOGGING_FILE_PATH,
-    PROJECT_ROOT,
-    positive_rate_to_pred_probs,
-    prediction_df_with_metadata_to_disk,
-)
+from psycopt2d.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
     plot_feature_importances,
@@ -61,7 +57,9 @@ def log_feature_importances(
 def evaluate_model(
     cfg,
     eval_df: pd.DataFrame,
+    pipe: Pipeline,
     y_col_name: str,
+    train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
     run: wandb_run,
     feature_importance_dict: Optional[dict[str, float]],
@@ -78,8 +76,10 @@ def evaluate_model(
 
     Args:
         cfg (OmegaConf): The hydra config from the run
+        pipe (Pipeline): Pipeline including the model
         eval_df (pd.DataFrame): Evalaution split
         y_col_name (str): Label column name
+        train_col_names (Iterable[str]): Column names for all predictors
         y_hat_prob_col_name (str): Column name containing pred_proba output
         run (wandb_run): WandB run to log to.
         feature_importance_dict (Optional[dict[str, float]]): Dict of feature
