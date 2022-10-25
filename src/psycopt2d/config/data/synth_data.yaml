@@ -1,5 +1,7 @@
 # @package _global_
 data:
+  dir: tests/test_data/synth_splits
+  suffix: csv
   n_training_samples: null
   min_lookahead_days: 30
   min_lookbehind_days: 100
