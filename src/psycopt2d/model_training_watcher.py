@@ -109,6 +109,23 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         """Get the run id from a run directory."""
         return run_dir.name.split("-")[-1]
 
+    def _upload_run_dir(self, run_dir: Path) -> str:
+        """Upload a single run to wandb."""
+        # get stdout from subprocess.run
+        proc = subprocess.run(
+            ["wandb", "sync", str(run_dir), "--project", self.project_name],
+            check=True,
+            capture_output=True,
+        )
+        stdout = proc.stdout.decode("utf-8")
+        if self.verbose:
+            msg.info(f"Watcher: {stdout}")
+        return stdout
+
+    def _get_run_id(self, run_dir: Path) -> str:
+        """Get the run id from a run directory."""
+        return run_dir.name.split("-")[-1]
+
     def upload_unarchived_runs(self) -> None:
         """Upload unarchived runs to wandb."""
         for run_folder in WANDB_DIR.glob(r"offline-run*"):
@@ -214,7 +231,8 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
                 self._archive_run_dir(run_dir=self._get_run_wandb_dir(run_info.run_id))
 
     def _get_unfinished_run_ids(
-        self, run_information: list[RunInformation]
+        self,
+        run_information: list[RunInformation],
     ) -> list[str]:
         """Get the run ids of the unfinished runs."""
         return [run_info.run_id for run_info in run_information if run_info.auc is None]
@@ -247,23 +265,6 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
                 run_information=run_infos,
             )
             self._evaluate_and_archive_finished_runs(run_information=run_infos)
-
-    def _upload_run_dir(self, run_dir: Path) -> str:
-        """Upload a single run to wandb."""
-        # get stdout from subprocess.run
-        proc = subprocess.run(
-            ["wandb", "sync", str(run_dir), "--project", self.project_name],
-            check=True,
-            capture_output=True,
-        )
-        stdout = proc.stdout.decode("utf-8")
-        if self.verbose:
-            msg.info(f"Watcher: {stdout}")
-        return stdout
-
-    def _get_run_id(self, run_dir: Path) -> str:
-        """Get the run id from a run directory."""
-        return run_dir.name.split("-")[-1]
 
     def upload_unarchived_runs(self) -> None:
         """Upload unarchived runs to wandb. Only adds runs that have finished

@@ -206,32 +206,6 @@ def load_cfg(config_file_name):
     return cfg
 
 
-def main():
-    """Main."""
-    msg = Printer(timestamp=True)
-
-    config_file_name = "default_config.yaml"
-
-    cfg = load_cfg(config_file_name=config_file_name)
-
-    if cfg.project.wandb.mode == "run":
-        msg.warn(
-            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
-        )
-
-    train = load_train_raw(cfg=cfg)
-    possible_look_distances = get_possible_look_distances(msg, cfg, train)
-
-    if not cfg.train.gpu:
-        msg.warn("Not using GPU for training")
-
-    train_models_for_each_cell_in_grid(
-        cfg=cfg,
-        possible_look_distances=possible_look_distances,
-        config_file_name=config_file_name,
-    )
-
-
 def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFrame):
     """Some look_ahead and look_behind distances will result in 0 valid
     prediction times. Only return combinations which will allow some prediction
@@ -274,6 +248,32 @@ def get_possible_look_distances(msg: Printer, cfg: FullConfig, train: pd.DataFra
     msg.info(f"Possible lookbehind days: {possible_look_distances.behind}")
     msg.info(f"Possible lookahead days: {possible_look_distances.ahead}")
     return possible_look_distances
+
+
+def main():
+    """Main."""
+    msg = Printer(timestamp=True)
+
+    config_file_name = "default_config.yaml"
+
+    cfg = load_cfg(config_file_name=config_file_name)
+
+    if cfg.project.wandb.mode == "run":
+        msg.warn(
+            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
+        )
+
+    train = load_train_raw(cfg=cfg)
+    possible_look_distances = get_possible_look_distances(msg, cfg, train)
+
+    if not cfg.train.gpu:
+        msg.warn("Not using GPU for training")
+
+    train_models_for_each_cell_in_grid(
+        cfg=cfg,
+        possible_look_distances=possible_look_distances,
+        config_file_name=config_file_name,
+    )
 
 
 if __name__ == "__main__":
