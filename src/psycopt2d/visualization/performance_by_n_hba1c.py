@@ -1,5 +1,5 @@
 """Plotting function for performance by number of HbA1c measurements."""
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional, Union
 
@@ -10,9 +10,9 @@ from psycopt2d.visualization.utils import create_performance_by_input
 
 
 def plot_performance_by_n_hba1c(
-    labels: Iterable[int],
-    y_hat: Iterable[int, float],
-    n_hba1c: Iterable[int],
+    labels: Sequence[int],
+    y_hat: Sequence[int, float],
+    n_hba1c: Sequence[int],
     save_path: Optional[Path] = None,
     bins: tuple = (0, 1, 2, 5, 10),
     pretty_bins: Optional[bool] = True,
@@ -22,10 +22,10 @@ def plot_performance_by_n_hba1c(
     measurements.
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label or probability depending on metric
-        n_hba1c (Iterable[int]): Number of HbA1c measurements
-        bins (Iterable[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        labels (Sequence[int]): True labels
+        y_hat (Sequence[int]): Predicted label or probability depending on metric
+        n_hba1c (Sequence[int]): Number of HbA1c measurements
+        bins (Sequence[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate

@@ -1,5 +1,5 @@
 """Plotting function for performance by age at time of predictio."""
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional, Union
 
@@ -10,9 +10,9 @@ from psycopt2d.visualization.utils import create_performance_by_input
 
 
 def plot_performance_by_age(
-    labels: Iterable[int],
-    y_hat: Iterable[int, float],
-    age: Iterable[int, float],
+    labels: Sequence[int],
+    y_hat: Sequence[int, float],
+    age: Sequence[int, float],
     save_path: Optional[Path] = None,
     bins: tuple = (18, 25, 35, 50, 70),
     pretty_bins: Optional[bool] = True,
@@ -21,10 +21,10 @@ def plot_performance_by_age(
     """Plot bar plot of performance (default AUC) by age at time of prediction.
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label or probability depending on metric
-        age (Iterable[int, float]): Age at time of prediction
-        bins (Iterable[float]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
+        labels (Sequence[int]): True labels
+        y_hat (Sequence[int]): Predicted label or probability depending on metric
+        age (Sequence[int, float]): Age at time of prediction
+        bins (Sequence[float]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "18-25" instead of "[18-25])". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate

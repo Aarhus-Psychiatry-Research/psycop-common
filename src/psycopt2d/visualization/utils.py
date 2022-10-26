@@ -1,7 +1,7 @@
 # pylint: skip-file
-from collections.abc import Callable, Iterable
+from collections.abc import Callable,  Sequence
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -55,7 +55,7 @@ def create_performance_by_input(
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
     """Calculate performance by given input values, e.g. age or number of hbac1
-    measurements.bio
+    measurements.bio.
 
     Args:
         labels (Sequence[int]): True labels
