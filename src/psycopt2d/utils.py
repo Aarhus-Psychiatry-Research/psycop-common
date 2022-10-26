@@ -210,9 +210,6 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     return pd.cut(series, bins=bins, labels=labels)
 
 
-ß
-
-
 def positive_rate_to_pred_probs(
     pred_probs: pd.Series,
     positive_rate_thresholds: Iterable,
