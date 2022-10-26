@@ -1,4 +1,4 @@
-"""Plotting function for performance by age
+"""Plotting function for performance by age at time of predictio
 """
 from collections.abc import Callable, Iterable
 from pathlib import Path

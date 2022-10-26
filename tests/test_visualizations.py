@@ -42,6 +42,7 @@ def df():
         df[col] = pd.to_datetime(df[col])
 
     df["n_hba1c"] = np.random.randint(0, 8, df.shape[0])
+
     df["age"] = np.random.uniform(18, 90, df.shape[0])
 
     return df

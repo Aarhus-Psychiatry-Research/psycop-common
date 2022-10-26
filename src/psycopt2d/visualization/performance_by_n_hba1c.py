@@ -1,4 +1,4 @@
-"""Plotting function for performance by age
+"""Plotting function for performance by number of HbA1c measurements.
 """
 from collections.abc import Callable, Iterable
 from pathlib import Path

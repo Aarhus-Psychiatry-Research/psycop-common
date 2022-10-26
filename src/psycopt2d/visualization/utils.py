@@ -55,7 +55,7 @@ def create_performance_by_input(
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
-    """Calculate performance by given input values, e.g. age or number of Hbac1 measurements.
+    """Calculate performance by given input values, e.g. age or number of hbac1 measurements.
 
     Args:
         labels (Iterable[int]): True labels
