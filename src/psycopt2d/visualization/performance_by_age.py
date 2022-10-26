@@ -19,7 +19,7 @@ def plot_performance_by_age(
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
-    """Plot bar plot of performance (default AUC) by number of HbA1c measurements.
+    """Plot bar plot of performance (default AUC) by age at time of prediction.
 
     Args:
         labels (Iterable[int]): True labels
