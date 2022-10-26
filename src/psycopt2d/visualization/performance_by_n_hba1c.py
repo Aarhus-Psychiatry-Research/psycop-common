@@ -1,4 +1,5 @@
 """Plotting function for performance by number of HbA1c measurements."""
+
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional, Union
@@ -14,7 +15,7 @@ def plot_performance_by_n_hba1c(
     y_hat: Sequence[int, float],
     n_hba1c: Sequence[int],
     save_path: Optional[Path] = None,
-    bins: Sequence[int, float] = [0, 1, 2, 5, 10],
+    bins: Sequence[int, float] = (0, 1, 2, 5, 10),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
@@ -25,7 +26,7 @@ def plot_performance_by_n_hba1c(
         labels (Sequence[int]): True labels
         y_hat (Sequence[int]): Predicted label or probability depending on metric
         n_hba1c (Sequence[int]): Number of HbA1c measurements
-        bins (Sequence[int, float]): Bins to group by. Defaults to [0, 1, 2, 5, 10, 100].
+        bins (Sequence[int, float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate

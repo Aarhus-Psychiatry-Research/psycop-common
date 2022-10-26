@@ -193,6 +193,9 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     8      51+
     """
     labels = []
+
+    if isinstance(bins, tuple):
+        bins = list(bins)
     # Apend maximum value from series ot bins set upper cut-off if larger than maximum bins value
     if series.max() > max(bins):
         bins.append(series.max())

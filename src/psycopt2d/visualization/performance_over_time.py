@@ -3,6 +3,7 @@
 2. AUC by time from first visit
 3. AUC by time until diagnosis
 """
+
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Optional, Union
@@ -110,7 +111,7 @@ def create_performance_by_time_from_event_df(
         Can either be 'prediction-event' or 'event-prediction'.
         bins (Iterable[float]): Bins to group by.
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
-            bins look like "1-7" instead of "[1-7)". Defaults to True.
+            bins look like "1-7" instead of "[1-7]". Defaults to True.
         drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
 
     Returns:
@@ -160,7 +161,7 @@ def plot_auc_by_time_from_first_visit(
     y_hat_probs: Iterable[int],
     first_visit_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: Iterable[int] = [0, 28, 182, 365, 730, 1825],
+    bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
     pretty_bins: Optional[bool] = True,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
@@ -171,7 +172,7 @@ def plot_auc_by_time_from_first_visit(
         y_hat_probs (Iterable[int]): Predicted probabilities
         first_visit_timestamps (Iterable[pd.Timestamp]): Timestamps of the first visit
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamps of the predictions
-        bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
+        bins (Iterable[int]): Bins to group by. Defaults to (0, 28, 182, 365, 730, 1825).
         pretty_bins (bool, optional): Prettify bin names. I.e. make
         bins look like "1-7" instead of "[1-7)" Defaults to True.
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -209,14 +210,14 @@ def plot_metric_by_time_until_diagnosis(
     y_hat: Iterable[int, float],
     diagnosis_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: Iterable[int] = [
+    bins: Iterable[int] = (
         -1825,
         -730,
         -365,
         -182,
         -28,
         -0,
-    ],
+        ),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
@@ -232,7 +233,7 @@ def plot_metric_by_time_until_diagnosis(
         diagnosis_timestamps (Iterable[pd.Timestamp]): Timestamp of diagnosis
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
         bins (list, optional): Bins to group by. Negative values indicate days after
-        diagnosis. Defaults to [ -1825, -730, -365, -182, -28, -14, -7, -1, 0, 1, 7, 14, 28, 182, 365, 730, 1825] (which is stupid).
+        diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         pretty_bins (bool, optional): Whether to prettify bin names. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
