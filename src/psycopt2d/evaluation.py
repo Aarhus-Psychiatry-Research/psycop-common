@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
 from sklearn.metrics import recall_score, roc_auc_score
-from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 from wasabi import Printer
 
@@ -15,7 +14,6 @@ from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.tables.tables import feature_selection_table
 from psycopt2d.utils.configs import FullConfig
 from psycopt2d.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 from psycopt2d.visualization import (

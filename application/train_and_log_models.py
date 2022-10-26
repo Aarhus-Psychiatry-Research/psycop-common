@@ -21,7 +21,6 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_outcome_col_name,
     infer_predictor_col_name,
 )
-from psycopt2d.load import load_train_from_cfg
 from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
 
 msg = Printer(timestamp=True)
@@ -185,7 +184,9 @@ def load_cfg(config_file_name) -> FullConfig:
 
 
 def get_possible_look_distances(
-    msg: Printer, cfg: FullConfig, train: pd.DataFrame
+    msg: Printer,
+    cfg: FullConfig,
+    train: pd.DataFrame,
 ) -> list[LookDistance]:
     """Some look_ahead and look_behind distances will result in 0 valid
     prediction times. Only return combinations which will allow some prediction
@@ -211,11 +212,11 @@ def get_possible_look_distances(
     look_combinations_without_rows = [
         dist
         for dist in look_combinations_in_dataset
-        if ((dist.ahead_days + dist.behind_days)) > max_distance_in_dataset_days
+        if (dist.ahead_days + dist.behind_days) > max_distance_in_dataset_days
     ]
 
     msg.info(
-        f"Not fitting model to {look_combinations_without_rows}, since no rows satisfy the criteria."
+        f"Not fitting model to {look_combinations_without_rows}, since no rows satisfy the criteria.",
     )
 
     look_combinations_with_rows = [

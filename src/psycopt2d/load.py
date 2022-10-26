@@ -13,9 +13,11 @@ from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
 from psycopt2d.utils.configs import FullConfig
-from psycopt2d.utils.utils import (coerce_to_datetime, get_percent_lost,
-                                   infer_outcome_col_name,
-                                   infer_predictor_col_name)
+from psycopt2d.utils.utils import (
+    get_percent_lost,
+    infer_outcome_col_name,
+    infer_predictor_col_name,
+)
 
 msg = Printer(timestamp=True)
 
