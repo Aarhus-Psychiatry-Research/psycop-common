@@ -1,12 +1,15 @@
 # pylint: skip-file
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from pathlib import Path
+from typing import Optional
 
 import wandb
 from wandb.sdk.wandb_run import Run as wandb_run
 
 import numpy as np
 import pandas as pd
+
+from psycopt2d.utils import bin_continuous_data
 from sklearn.metrics import roc_auc_score
 
 
@@ -41,3 +44,44 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
         return np.nan
     else:
         return metric(df["y"], df["y_hat"])
+
+
+def create_performance_by_input(
+    labels: Iterable[int],
+    y_hat: Iterable[int, float],
+    input: Iterable[int, float],
+    input_name: str,
+    bins: tuple = (0, 1, 2, 5, 10, 100),
+    pretty_bins: Optional[bool] = True,
+    metric_fn: Callable = roc_auc_score,
+) -> pd.DataFrame:
+    """Calculate performance by given input values, e.g. age or number of Hbac1 measurements.
+
+    Args:
+        labels (Iterable[int]): True labels
+        y_hat (Iterable[int]): Predicted label or probability depending on metric
+        input (Iterable[int, float]): Input values to calculate performance by
+        input_name (str): Name of the input
+        bins (Iterable[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
+            bins look like "1-7" instead of "[1-7)". Defaults to True.
+        metric_fn (Callable): Callable which returns the metric to calculate
+
+    Returns:
+        pd.DataFrame: Dataframe ready for plotting
+    """
+    df = pd.DataFrame({"y": labels, "y_hat": y_hat, input_name: input})
+
+    # bin data
+    if pretty_bins:
+        df[f"{input_name}_binned"] = bin_continuous_data(df[input_name], bins=bins)
+
+        output_df = df.groupby(f"{input_name}_binned").apply(
+            calc_performance, metric_fn
+        )
+
+    else:
+        output_df = df.groupby(input_name).apply(calc_performance, metric_fn)
+
+    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
+    return output_df
