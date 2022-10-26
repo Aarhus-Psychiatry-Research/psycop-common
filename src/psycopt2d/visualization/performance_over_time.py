@@ -160,7 +160,7 @@ def plot_auc_by_time_from_first_visit(
     y_hat_probs: Iterable[int],
     first_visit_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: tuple = (0, 28, 182, 365, 730, 1825),
+    bins: Iterable[int] = [0, 28, 182, 365, 730, 1825],
     pretty_bins: Optional[bool] = True,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
@@ -209,14 +209,14 @@ def plot_metric_by_time_until_diagnosis(
     y_hat: Iterable[int, float],
     diagnosis_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
-    bins: Iterable[int] = (
+    bins: Iterable[int] = [
         -1825,
         -730,
         -365,
         -182,
         -28,
         -0,
-    ),
+    ],
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",

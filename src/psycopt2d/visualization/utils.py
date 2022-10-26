@@ -1,5 +1,5 @@
 # pylint: skip-file
-from collections.abc import Callable,  Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional
 
@@ -50,7 +50,7 @@ def create_performance_by_input(
     y_hat: Sequence[int, float],
     input: Sequence[int, float],
     input_name: str,
-    bins: tuple = (0, 1, 2, 5, 10, 100),
+    bins: Sequence[int, float] = [0, 1, 2, 5, 10],
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
@@ -62,7 +62,7 @@ def create_performance_by_input(
         y_hat (Sequence[int]): Predicted label or probability depending on metric
         input (Sequence[int, float]): Input values to calculate performance by
         input_name (str): Name of the input
-        bins (Iterable[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        bins (Sequence[int, float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
