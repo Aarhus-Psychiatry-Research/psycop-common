@@ -12,7 +12,7 @@ def plot_basic_chart(
     y_values: Iterable,
     x_title: str,
     y_title: str,
-    plot_type: Optional[Union[list[str], str]],
+    plot_type: Union[list[str], str],
     sort_x: Optional[Iterable[int]] = None,
     sort_y: Optional[Iterable[int]] = None,
     fig_size: Optional[tuple] = (10, 10),

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "psycopt2d"
-version = "0.10.0"
+version = "0.12.0"
 description = "Training scripts for the psycop-t2d project"
 authors = ["Your Name <you@example.com>"]
 
@@ -25,6 +25,7 @@ selenium = ">=4.2.0,<4.6.0"
 # See https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/pull/194 for thoughts on root cause
 seaborn = ">=0.12.0,<0.12.2"
 pyarrow = ">=9.0.0, <9.1.0"
+Random-Word = "^1.0.11"
 
 
 [tool.poetry.dev-dependencies]

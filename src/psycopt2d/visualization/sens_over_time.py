@@ -8,9 +8,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from psycopt2d.evaluation_class_v2 import EvalDataset
 
-from psycopt2d.utils import PROJECT_ROOT, round_floats_to_edge
+from psycopt2d.evaluation_class_v2 import EvalDataset
+from psycopt2d.utils.utils import PROJECT_ROOT, round_floats_to_edge
 
 
 def create_sensitivity_by_time_to_outcome_df(
@@ -296,7 +296,7 @@ def plot_sensitivity_by_time_to_outcome_heatmap(
 
     Examples:
         >>> from pathlib import Path
-        >>> from psycopt2d.utils import positive_rate_to_pred_probs
+        >>> from psycopt2d.utils.utils import positive_rate_to_pred_probs
 
         >>> repo_path = Path(__file__).parent.parent.parent.parent
         >>> path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"

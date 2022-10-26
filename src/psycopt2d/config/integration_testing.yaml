@@ -3,6 +3,7 @@ defaults:
   - project: integration_test_project
   - data: synth_data
   - preprocessing: default_preprocessing
-  - training: default_training
-  - evaluation: evaluation_synth
+  - train: default_training
+  - model: xgboost
+  - eval: evaluation_synth
   - sweeper: optuna_singlethread

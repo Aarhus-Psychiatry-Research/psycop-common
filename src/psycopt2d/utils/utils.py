@@ -13,13 +13,13 @@ from typing import Any, Optional, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from omegaconf.dictconfig import DictConfig
 from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
-from psycopt2d.dataclasses.configs import ModelEvalData
+from psycopt2d.configs import ModelEvalData
 from psycopt2d.model_performance import ModelPerformance
+from psycopt2d.utils.configs import FullConfig
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
@@ -27,7 +27,8 @@ OUTCOME_DATA_PATH = SHARED_RESOURCES_PATH / "outcome_data"
 RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
 FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -59,7 +60,7 @@ def flatten_nested_dict(
     d: dict,
     parent_key: str = "",
     sep: str = ".",
-) -> dict:
+) -> dict[str, Any]:
     """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes
@@ -80,15 +81,15 @@ def flatten_nested_dict(
         new_key = parent_key + sep + k if parent_key else k
         if isinstance(v, MutableMapping):
             items.extend(
-                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),
+                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),  # type: ignore
             )  # typing: ignore
         else:
-            items.append((new_key, v))
+            items.append((new_key, v))  # type: ignore
 
-    return dict(items)
+    return dict(items)  # type: ignore
 
 
-def drop_records_if_datediff_days_smaller_than(
+def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-return-statements
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
@@ -157,7 +158,7 @@ def calculate_performance_metrics(
         A pandas dataframe with the performance metrics.
     """
     performance_metrics = ModelPerformance.performance_metrics_from_df(
-        eval_df,
+        prediction_df=eval_df,
         prediction_col_name=prediction_probabilities_col_name,
         label_col_name=outcome_col_name,
         id_col_name=id_col_name,
@@ -245,7 +246,7 @@ def dump_to_pickle(obj: Any, path: str) -> None:
         pkl.dump(obj, f)
 
 
-def read_pickle(path: str) -> Any:
+def read_pickle(path: Union[str, Path]) -> Any:
     """Reads a pickled object from a file.
 
     Args:
@@ -299,7 +300,7 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
 
 def prediction_df_with_metadata_to_disk(
     df: pd.DataFrame,
-    cfg: DictConfig,
+    cfg: FullConfig,
     pipe: Pipeline,
     run: Optional[Run] = None,
 ) -> None:
@@ -321,7 +322,7 @@ def prediction_df_with_metadata_to_disk(
     else:
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
-    if cfg.evaluation.save_model_predictions_on_overtaci:
+    if cfg.eval.save_model_predictions_on_overtaci:
         # Save to overtaci
         dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:
@@ -393,19 +394,55 @@ def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
     )
 
 
-def infer_outcome_col_name(df: pd.DataFrame, prefix: str = "outc_") -> str:
+def infer_col_names(
+    df: pd.DataFrame,
+    prefix: str,
+    allow_multiple: bool = True,
+) -> list[str]:
+    """Infer col names based on prefix."""
+    col_name = [c for c in df.columns if c.startswith(prefix)]
+
+    if len(col_name) == 1:
+        return col_name
+    elif len(col_name) > 1:
+        if allow_multiple:
+            return col_name
+        raise ValueError(
+            f"Multiple columns found and allow_multiple is {allow_multiple}.",
+        )
+    elif not col_name:
+        raise ValueError("No outcome col name inferred")
+    else:
+        raise ValueError("No outcomes inferred")
+
+
+def infer_outcome_col_name(
+    df: pd.DataFrame,
+    prefix: str = "outc_",
+    allow_multiple: bool = True,
+) -> list[str]:
     """Infer the outcome column name from the dataframe."""
-    outcome_name = [c for c in df.columns if c.startswith(prefix)]
-    if len(outcome_name) == 1:
-        return outcome_name[0]
-    else:
-        raise ValueError("More than one outcome inferred")
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
 
 
-def infer_y_hat_prob_col_name(df: pd.DataFrame) -> str:
+def infer_predictor_col_name(
+    df: pd.DataFrame,
+    prefix: str = "pred_",
+    allow_multiple: bool = True,
+) -> Union[str, list[str]]:
+    """Get the predictors that are used in the model."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def infer_y_hat_prob_col_name(
+    df: pd.DataFrame,
+    prefix="y_hat_prob",
+    allow_multiple: bool = False,
+) -> list[str]:
     """Infer the y_hat_prob column name from the dataframe."""
-    y_hat_prob_name = [c for c in df.columns if c.startswith("y_hat_prob")]
-    if len(y_hat_prob_name) == 1:
-        return y_hat_prob_name[0]
-    else:
-        raise ValueError("More than one y_hat_prob inferred")
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def get_percent_lost(n_before: Union[int, float], n_after: Union[int, float]) -> float:
+    """Get the percent lost."""
+    return round((100 * (1 - n_after / n_before)), 2)

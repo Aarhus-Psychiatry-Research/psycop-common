@@ -7,6 +7,7 @@ Usage:
 - Replace the HYDRA_ARGS string with the desired arguments for `train_model.py`
 - Run this script from project root with `python src/psycopt2d/train_and_log_models.py`
 """
+
 import subprocess
 import time
 
@@ -16,7 +17,7 @@ from wasabi import Printer
 # RUN CONSTANTS
 CONFIG_NAME = "integration_testing.yaml"
 
-HYDRA_ARGS = f"--multirun +model=xgboost project.wandb_mode='dryrun' model.args.tree_method='auto' --config-name {CONFIG_NAME}"
+HYDRA_ARGS = f"--multirun project.wandb.mode='dryrun' model.args.tree_method='auto' --config-name {CONFIG_NAME}"
 OVERTACI = "false"  # Change to "true" if running on overtaci
 
 # WATCHER CONSTANTS
@@ -70,15 +71,3 @@ if __name__ == "__main__":
     time.sleep(60 * KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES)
     watcher.kill()
     msg.good("Watcher stopped.")
-
-    # any_process_done = False  # pylint: disable=invalid-name
-    # for process in (trainer, watcher):
-    #     while process.poll() is None:
-    #         if any_process_done:
-    #             # kill the watcher if the trainer is done
-    #             # but allow some time to finish evaluation
-    #             time.sleep(KEEP_WATCHER_ALIVE_AFTER_TRAINING_FINISHED_MINUTES * 60)
-    #             process.kill()
-    #         time.sleep(1)
-    #     any_process_done = True  # pylint: disable=invalid-name
-    #     process.kill()

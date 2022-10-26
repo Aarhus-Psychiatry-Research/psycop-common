@@ -12,7 +12,7 @@ import pandas as pd
 from psycopt2d.evaluation_class_v2 import EvalDataset
 from sklearn.metrics import f1_score, roc_auc_score
 
-from psycopt2d.utils import bin_continuous_data, round_floats_to_edge
+from psycopt2d.utils.utils import bin_continuous_data, round_floats_to_edge
 from psycopt2d.visualization.base_charts import plot_basic_chart
 
 
