@@ -14,7 +14,7 @@ def plot_performance_by_age(
     y_hat: Iterable[int, float],
     age: Iterable[int, float],
     save_path: Optional[Path] = None,
-    bins: tuple = (18, 25, 35, 50, 70, 100),
+    bins: tuple = (18, 25, 35, 50, 70),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:

@@ -14,7 +14,7 @@ def plot_performance_by_n_hba1c(
     y_hat: Iterable[int, float],
     n_hba1c: Iterable[int],
     save_path: Optional[Path] = None,
-    bins: tuple = (0, 1, 2, 5, 10, 100),
+    bins: tuple = (0, 1, 2, 5, 10),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:

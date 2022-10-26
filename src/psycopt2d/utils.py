@@ -173,7 +173,7 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
 
     Args:
         series (pd.Series): Series with continuous data such as age
-        bins (list[int]): Desired bins. Last value in the list should be abitrairly high as this represents an upper cut-off.
+        bins (list[int]): Desired bins. Last value creates a bin from the last value to infinity.
 
     Returns:
         pd.Series: Binned data
@@ -193,15 +193,24 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     8      51+
     """
     labels = []
+    # Apend maximum value from series ot bins set upper cut-off if larger than maximum bins value
+    if series.max() > max(bins):
+        bins.append(series.max())
+
+    # Create bin labels
     for i, bin_v in enumerate(bins):
+        # If not the final bin
         if i < len(bins) - 2:
+            # If the difference between the current bin and the next bin is 1, the bin label is a single value and not an interval
             if (bins[i + 1] - bin_v) == 1:
                 labels.append(f"{bin_v}")
+            # Else generate bin labels as intervals
             else:
                 if i == 0:
                     labels.append(f"{bin_v}-{bins[i+1]}")
                 elif i < len(bins) - 2:
                     labels.append(f"{bin_v+1}-{bins[i+1]}")
+        # If the final bin, the label is the final bin value and a plus sign
         elif i == len(bins) - 2:
             labels.append(f"{bin_v+1}+")
         else:

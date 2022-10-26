@@ -1,7 +1,7 @@
 # pylint: skip-file
 from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -46,21 +46,21 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
 
 
 def create_performance_by_input(
-    labels: Iterable[int],
-    y_hat: Iterable[int, float],
-    input: Iterable[int, float],
+    labels: Sequence[int],
+    y_hat: Sequence[int, float],
+    input: Sequence[int, float],
     input_name: str,
     bins: tuple = (0, 1, 2, 5, 10, 100),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
     """Calculate performance by given input values, e.g. age or number of hbac1
-    measurements.
+    measurements.bio
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label or probability depending on metric
-        input (Iterable[int, float]): Input values to calculate performance by
+        labels (Sequence[int]): True labels
+        y_hat (Sequence[int]): Predicted label or probability depending on metric
+        input (Sequence[int, float]): Input values to calculate performance by
         input_name (str): Name of the input
         bins (Iterable[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
