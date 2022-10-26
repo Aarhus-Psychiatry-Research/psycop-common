@@ -193,7 +193,7 @@ def plot_auc_by_time_from_first_visit(
         Union[None, Path]: Path to saved figure or None if not saved.
     """
     eval_df = pd.DataFrame(
-        {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps}
+        {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
     )
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")

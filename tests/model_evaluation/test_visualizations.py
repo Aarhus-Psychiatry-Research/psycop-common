@@ -10,6 +10,7 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
+from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_basic_chart
@@ -38,11 +39,11 @@ def df():
     return df
 
 
-def test_prob_over_time(df, tmp_path):
+def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path):
     plot_prob_over_time(
-        patient_id=df["dw_ek_borger"],
-        timestamp=df["timestamp"],
-        pred_prob=df["pred_prob"],
+        patient_id=synth_eval_dataset.ids,
+        timestamp=synth_eval_dataset.pred_timestamps,
+        pred_prob=synth_eval_dataset.y_hat_probs,
         outcome_timestamp=df["timestamp_t2d_diag"],
         label=df["label"],
         look_behind_distance=500,
@@ -78,10 +79,9 @@ def test_plot_bar_chart(df):
 
 
 def test_plot_performance_by_calendar_time(df):
+
+    synth_eval_dataset
     plot_metric_by_calendar_time(
-        eval_dataset.y=df["label"],
-        eval_dataset.y_hat_probs=df["pred"],
-        eval_dataset.pred_timestamps=df["timestamp"],
         bin_period="M",
         metric_fn=roc_auc_score,
         y_title="AUC",
@@ -90,10 +90,6 @@ def test_plot_performance_by_calendar_time(df):
 
 def test_plot_metric_until_diagnosis(df):
     plot_metric_by_time_until_diagnosis(
-        eval_dataset.y=df["label"],
-        eval_dataset.y_hat_int=df["pred"],
-        eval_dataset.outcome_timestamps=df["timestamp_t2d_diag"],
-        eval_dataset.prediction_timestamps=df["timestamp"],
         metric_fn=f1_score,
         y_title="F1",
     )
@@ -101,10 +97,7 @@ def test_plot_metric_until_diagnosis(df):
 
 def test_plot_auc_time_from_first_visit(df):
     plot_auc_by_time_from_first_visit(
-        eval_dataset.y=df["label"],
-        eval_dataset.y_hat_probs=df["pred_prob"],
         first_visit_timestamps=df["timestamp_first_pred_time"],
-        eval_dataset.pred_timestamps=df["timestamp"],
     )
 
 
@@ -117,10 +110,6 @@ def test_plot_sens_by_time_to_outcome(df, tmp_path):
     )
 
     plot_sensitivity_by_time_to_outcome_heatmap(  # noqa
-        eval_dataset.y=df["label"],
-        eval_dataset.y_hat_probs=df["pred_prob"],
-        eval_dataset.outcome_timestamps=df["timestamp_t2d_diag"],
-        eval_dataset.pred_timestamps=df["timestamp"],
         pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
         save_path=tmp_path,
