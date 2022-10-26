@@ -1,4 +1,5 @@
 """Plotting function for performance by age at time of predictio."""
+
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional, Union
@@ -14,7 +15,7 @@ def plot_performance_by_age(
     y_hat: Sequence[int, float],
     age: Sequence[int, float],
     save_path: Optional[Path] = None,
-    bins: Sequence[int, float] = [18, 25, 35, 50, 70],
+    bins: Sequence[int, float] = (18, 25, 35, 50, 70),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
@@ -24,7 +25,7 @@ def plot_performance_by_age(
         labels (Sequence[int]): True labels
         y_hat (Sequence[int]): Predicted label or probability depending on metric
         age (Sequence[int, float]): Age at time of prediction
-        bins (Sequence[int, float]): Bins to group by. Defaults to [18, 25, 35, 50, 70, 100].
+        bins (Sequence[int, float]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "18-25" instead of "[18-25])". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
