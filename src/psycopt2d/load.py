@@ -338,9 +338,9 @@ class DataLoader:
         for direction in ("ahead", "behind"):
 
             if direction in ("ahead", "behind"):
-                if self.cfg.data.min_lookahead_days:
+                if direction == "ahead":
                     n_days = self.cfg.data.min_lookahead_days
-                elif self.cfg.data.min_lookbehind_days:
+                elif direction == "behind":
                     n_days = self.cfg.data.min_lookbehind_days
                 else:
                     continue

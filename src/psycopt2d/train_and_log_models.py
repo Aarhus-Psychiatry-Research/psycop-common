@@ -8,8 +8,6 @@ Usage:
 - Run this script from project root with `python src/psycopt2d/train_and_log_models.py`
 """
 
-# TODO: Should be unified with the other train_and_log_models in application. Will be done when merging parent branch.
-
 import subprocess
 import time
 
