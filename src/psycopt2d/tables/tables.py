@@ -28,47 +28,6 @@ def _calc_auc_and_n(
     return pd.Series([auc, n], index=["AUC", "N"])
 
 
-def auc_by_group_df(
-    df: pd.DataFrame,
-    pred_probs_col_name: str,
-    outcome_col_name: str,
-    groups: Union[list[str], str],
-) -> pd.DataFrame:
-    """Create table with AUC per group.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing predicted probabilities, labels,
-            and groups to stratify by.
-        pred_probs_col_name (str): The column containing the predicted probabilities
-        outcome_col_name (str): The column containing the labels
-        groups (Union[list[str], str]): The (categorical) groups to
-            stratify the table by.
-
-    Returns:
-        pd.DataFrame: DataFrame with results
-    """
-    if isinstance(groups, str):
-        groups = [groups]
-
-    # Group by the groups/bins
-    summarize_performance_fn = partial(
-        _calc_auc_and_n,
-        pred_probs_col_name=pred_probs_col_name,
-        outcome_col_name=outcome_col_name,
-    )
-
-    groups_df = []
-    for group in groups:
-        table = df.groupby(group).apply(summarize_performance_fn)
-        # Rename index for consistent naming
-        table = table.rename_axis("Value")
-        # Add group as index
-        table = pd.concat({group: table}, names=["Group"])
-        groups_df.append(table)
-
-    return pd.concat(groups_df)
-
-
 def output_table(
     output_format: str,
     df: pd.DataFrame,

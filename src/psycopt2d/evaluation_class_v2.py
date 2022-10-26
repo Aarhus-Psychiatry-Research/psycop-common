@@ -1,19 +1,23 @@
 """_summary_"""
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Optional
 
 import pandas as pd
 import wandb
 from omegaconf import DictConfig
-from pydantic import BaseModel
 from sklearn.metrics import recall_score
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 
+from psycopt2d.evaluation_dataclasses import (
+    ArtifactContainer,
+    ArtifactSpecification,
+    EvalDataset,
+)
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import positive_rate_to_pred_probs
+from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
@@ -25,30 +29,6 @@ from psycopt2d.visualization.sens_over_time import (
 from psycopt2d.visualization.utils import log_image_to_wandb
 
 
-class EvalDataset(BaseModel):
-    ids: pd.Series
-    pred_timestamps: pd.Series
-    outcome_timestamps: pd.Series
-    y: pd.Series
-    y_hat_probs: pd.Series
-    y_hat_int: pd.Series
-
-
-class ArtifactSpecification(BaseModel):
-    label: str
-    artifact_generator_fn: Callable[[Any], Union[pd.DataFrame, Path]]
-    kwargs: dict
-
-
-class ArtifactContainer(BaseModel):
-    label: str
-    artifact: Union[Path, pd.DataFrame]
-
-
-class PipeMetadata(BaseModel):
-    feature_importances: dict[str, float]
-
-
 class ModelEvaluator:
     def __init__(self, eval_dataset: EvalDataset):
         self.eval_dataset = eval_dataset
@@ -57,8 +37,9 @@ class ModelEvaluator:
     def add_artifact(
         self,
         artifact_spec: ArtifactSpecification,
-        kwargs: Optional[dict] = None,
     ):
+        kwargs = {} if artifact_spec.kwargs is None else artifact_spec.kwargs
+
         artifact = artifact_spec.artifact_generator_fn(
             eval_dataset=self.eval_dataset, **kwargs
         )
