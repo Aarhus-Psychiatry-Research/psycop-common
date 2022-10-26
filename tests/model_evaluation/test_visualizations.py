@@ -79,7 +79,6 @@ def test_plot_bar_chart(df):
 
 
 def test_plot_performance_by_calendar_time(df):
-
     synth_eval_dataset
     plot_metric_by_calendar_time(
         bin_period="M",
