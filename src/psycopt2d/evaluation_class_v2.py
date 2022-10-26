@@ -2,27 +2,27 @@
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any, Optional, Union
-from omegaconf import DictConfig
 
 import pandas as pd
+import wandb
+from omegaconf import DictConfig
+from pydantic import BaseModel
+from sklearn.metrics import recall_score
+from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
+
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
 from psycopt2d.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
-    plot_metric_by_time_until_diagnosis,
     plot_metric_by_calendar_time,
+    plot_metric_by_time_until_diagnosis,
 )
-
 from psycopt2d.visualization.sens_over_time import (
     plot_sensitivity_by_time_to_outcome_heatmap,
 )
 from psycopt2d.visualization.utils import log_image_to_wandb
-from pydantic import BaseModel
-from sklearn.metrics import recall_score
-import wandb
-from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 
 
 class EvalDataset(BaseModel):
@@ -30,7 +30,7 @@ class EvalDataset(BaseModel):
     pred_timestamps: pd.Series
     outcome_timestamps: pd.Series
     y: pd.Series
-    y_hat_prob: pd.Series
+    y_hat_probs: pd.Series
     y_hat_int: pd.Series
 
 
@@ -147,7 +147,7 @@ def run_full_evaluation(
                 "pred_proba_thresholds": pred_proba_thresholds,
                 "positive_rate_thresholds": cfg.evaluation.positive_rate_thresholds,
                 "output_format": "df",
-            },s
+            },
         ),
     )
 
@@ -156,7 +156,3 @@ def run_full_evaluation(
         evaluator.add_artifact(artifact_spec=artifact_spec)
 
     evaluator.upload_artifacts(run=run)
-
-
-if __name__ == "__main__":
-    run_full_evaluation()
