@@ -98,7 +98,7 @@ def test_plot_performance_by_age(df):
     plot_performance_by_age(
         labels=df["label"],
         y_hat=df["pred"],
-        n_hba1c=df["age"],
+        age=df["age"],
     )
 
 
