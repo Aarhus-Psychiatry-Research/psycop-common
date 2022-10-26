@@ -2,10 +2,10 @@
 # pylint: disable=missing-function-docstring
 
 from psycopt2d.tables import auc_by_group_df
-from psycopt2d.utils import bin_continuous_data
+from psycopt2d.utils.utils import bin_continuous_data
 
 
-def test_auc_by_group_table(synth_data):
+def test_auc_by_group_df(synth_data):
     synth_data["Age bins"] = bin_continuous_data(
         synth_data["age"],
         bins=[0, 18, 30, 50, 120],

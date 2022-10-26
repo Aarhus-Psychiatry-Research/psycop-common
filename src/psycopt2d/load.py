@@ -1,68 +1,25 @@
 """Loader for the t2d dataset."""
+import os
 import re
 from collections.abc import Iterable
-from datetime import datetime, timedelta
+from datetime import timedelta
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
-from omegaconf import DictConfig, OmegaConf
 from psycopmlutils.sql.loader import sql_load
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from wasabi import Printer
 
-from psycopt2d.utils import PROJECT_ROOT, coerce_to_datetime
+from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
+from psycopt2d.utils.configs import FullConfig
+from psycopt2d.utils.utils import (
+    get_percent_lost,
+    infer_outcome_col_name,
+    infer_predictor_col_name,
+)
 
 msg = Printer(timestamp=True)
-
-
-class DatasetTimeSpecification(BaseModel):
-    """Specification of the time range of the dataset."""
-
-    drop_patient_if_outcome_before_date: Optional[Union[str, datetime]] = Field(
-        description="""If a patient experiences the outcome before this date, all their prediction times will be dropped.
-        Used for wash-in, to avoid including patients who were probably already experiencing the outcome before the study began.""",
-    )
-
-    min_prediction_time_date: Optional[Union[str, datetime]] = Field(
-        description="""Any prediction time before this date will be dropped.""",
-    )
-
-    min_lookbehind_days: Optional[Union[int, float]] = Field(
-        description="""If the distance from the prediction time to the start of the dataset is less than this, the prediction time will be dropped""",
-    )
-
-    min_lookahead_days: Optional[Union[int, float]] = Field(
-        description="""If the distance from the prediction time to the end of the dataset is less than this, the prediction time will be dropped""",
-    )
-
-    lookbehind_combination: Optional[list[Union[int, float]]] = Field(
-        description="""List containing a combination of lookbehind windows (e.g. [30, 60, 90]) which determines which features to keep in the dataset. E.g. for the above list, only features with lookbehinds of 30, 60 or 90 days will be kept.""",
-    )
-
-
-class DatasetSpecification(BaseModel):
-    """Specification for loading a dataset."""
-
-    split_dir_path: Union[str, Path] = Field(
-        description="""Path to the directory containing the split files.""",
-    )
-
-    file_suffix: str = Field(
-        description="""Suffix of the split files. E.g. 'parquet' or 'csv'.""",
-        default="parquet",
-    )
-
-    time: DatasetTimeSpecification
-
-    pred_col_name_prefix: str = Field(
-        default="pred_",
-        description="""Prefix for the prediction column names.""",
-    )
-    pred_time_colname: str = Field(
-        default="timestamp",
-        description="""Column name for with timestamps for prediction times""",
-    )
 
 
 def load_timestamp_for_any_diabetes():
@@ -105,16 +62,16 @@ class DataLoader:
 
     def __init__(
         self,
-        spec: DatasetSpecification,
+        cfg: FullConfig,
     ):
-        self.spec = spec
+        self.cfg = cfg
 
         # File handling
-        self.dir_path = Path(spec.split_dir_path)
-        self.file_suffix = spec.file_suffix
+        self.dir_path = Path(cfg.data.dir)
+        self.file_suffix = cfg.data.suffix
 
         # Column specifications
-        self.pred_col_name_prefix = spec.pred_col_name_prefix
+        self.pred_col_name_prefix = cfg.data.pred_col_name_prefix
 
     def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
         self,
@@ -168,7 +125,7 @@ class DataLoader:
             pd.DataFrame: Dataset with dropped rows.
         """
         if not isinstance(n_days, timedelta):
-            n_days = timedelta(days=n_days)  # type: ignore
+            n_days_timedelt: timedelta = timedelta(days=n_days)  # type: ignore
 
         if direction not in ("ahead", "behind"):
             raise ValueError(f"Direction {direction} not supported.")
@@ -176,53 +133,60 @@ class DataLoader:
         n_rows_before_modification = dataset.shape[0]
 
         if direction == "ahead":
-            max_datetime = dataset[self.spec.pred_time_colname].max() - n_days
-            before_max_dt = dataset[self.spec.pred_time_colname] < max_datetime
+            max_datetime = (
+                dataset[self.cfg.data.pred_timestamp_col_name].max() - n_days_timedelt
+            )
+            before_max_dt = (
+                dataset[self.cfg.data.pred_timestamp_col_name] < max_datetime
+            )
             dataset = dataset[before_max_dt]
         elif direction == "behind":
-            min_datetime = dataset[self.spec.pred_time_colname].min() + n_days
-            after_min_dt = dataset[self.spec.pred_time_colname] > min_datetime
+            min_datetime = (
+                dataset[self.cfg.data.pred_timestamp_col_name].min() + n_days_timedelt
+            )
+            after_min_dt = dataset[self.cfg.data.pred_timestamp_col_name] > min_datetime
             dataset = dataset[after_min_dt]
 
         n_rows_after_modification = dataset.shape[0]
-        percent_dropped = (
-            n_rows_before_modification - n_rows_after_modification
-        ) / n_rows_before_modification
-
-        msg.info(
-            f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because the end of the dataset was within {n_days} of their prediction time when looking {direction} from their prediction time",
+        percent_dropped = get_percent_lost(
+            n_before=n_rows_before_modification,
+            n_after=n_rows_after_modification,
         )
+
+        if n_rows_before_modification - n_rows_after_modification != 0:
+            msg.info(
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because the end of the dataset was within {n_days} of their prediction time when looking {direction} from their prediction time",
+            )
 
         return dataset
 
-    def _drop_patients_with_event_in_washin(self, dataset) -> pd.DataFrame:
+    def drop_patient_if_outcome_before_date(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
         """Drop patients within washin period."""
 
         n_rows_before_modification = dataset.shape[0]
 
-        # Remove dates before drop_patient_if_outcome_before_date
         outcome_before_date = (
-            dataset["timestamp_first_diabetes_any"]
-            < self.spec.time.drop_patient_if_outcome_before_date
+            dataset[self.cfg.data.outcome_timestamp_col_name]
+            < self.cfg.data.drop_patient_if_outcome_before_date
         )
 
         patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
         dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
 
-        # Removed dates before drop_patient_if_outcome_before_date
-        dataset = dataset[
-            dataset[self.spec.pred_time_colname]
-            > self.spec.time.drop_patient_if_outcome_before_date
-        ]
-
         n_rows_after_modification = dataset.shape[0]
-        percent_dropped = (
-            n_rows_before_modification - n_rows_after_modification
-        ) / n_rows_before_modification
 
-        msg.info(
-            f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because patients had diabetes in the washin period.",
+        percent_dropped = get_percent_lost(
+            n_before=n_rows_after_modification,
+            n_after=n_rows_after_modification,
         )
+
+        if n_rows_before_modification - n_rows_after_modification != 0:
+            msg.info(
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because patients had diabetes in the washin period.",
+            )
 
         return dataset
 
@@ -240,33 +204,49 @@ class DataLoader:
             pd.DataFrame: Dataset with dropped columns.
         """
 
+        if not self.cfg.data.lookbehind_combination:
+            raise ValueError("No lookbehind_combination provided.")
+
         # Extract all unique lookbhehinds in the dataset predictors
         lookbehinds_in_dataset = {
-            int(re.findall(r"within_(\d+)_days", col)[0])
-            for col in dataset.columns
-            if self.pred_col_name_prefix in col
+            int(infer_look_distance(col)[0])
+            for col in infer_predictor_col_name(df=dataset)
+            if len(infer_look_distance(col)) > 0
         }
 
+        # Convert list to set
+        lookbehinds_in_spec = set(self.cfg.data.lookbehind_combination)
+
         # Check that all loobehinds in lookbehind_combination are used in the predictors
-        if not set(self.spec.time.lookbehind_combination).issubset(
+        if not lookbehinds_in_spec.issubset(
             lookbehinds_in_dataset,
         ):
-            raise ValueError(
-                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset. Lookbehinds in dataset: {lookbehinds_in_dataset}. Lookbehinds in lookbehind_combination: {self.spec.time.lookbehind_combination}.",
+            msg.warn(
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {lookbehinds_in_spec - lookbehinds_in_dataset}",
             )
+
+            lookbehinds_to_keep = lookbehinds_in_spec.intersection(
+                lookbehinds_in_dataset,
+            )
+
+            if not lookbehinds_to_keep:
+                raise ValueError("No predictors left after dropping lookbehinds.")
+
+            msg.warn(f"Training on {lookbehinds_to_keep}.")
+        else:
+            lookbehinds_to_keep = lookbehinds_in_spec
 
         # Create a list of all predictor columns who have a lookbehind window not in lookbehind_combination list
         cols_to_drop = [
-            col
-            for col in dataset.columns
-            if any(
-                str(x) not in col and self.pred_col_name_prefix in col
-                for x in self.spec.time.lookbehind_combination
-            )
+            c
+            for c in infer_predictor_col_name(df=dataset)
+            if all(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
         ]
 
-        dataset = dataset.drop(columns=cols_to_drop)
+        cols_to_drop = [c for c in cols_to_drop if "within" in c]
+        # ? Add some specification of within_x_days indicating how to parse columns to find lookbehinds. Or, alternatively, use the column spec.
 
+        dataset = dataset.drop(columns=cols_to_drop)
         return dataset
 
     def _convert_timestamp_dtype_and_nat(self, dataset: pd.DataFrame) -> pd.DataFrame:
@@ -311,9 +291,7 @@ class DataLoader:
         n_cols_before_modification = dataset.shape[1]
 
         if direction == "behind":
-            cols_to_process = [
-                c for c in dataset.columns if self.pred_col_name_prefix in c
-            ]
+            cols_to_process = infer_predictor_col_name(df=dataset)
 
             for col in cols_to_process:
                 # Extract lookbehind days from column name use regex
@@ -324,19 +302,22 @@ class DataLoader:
                 if len(lookbehind_days_strs) > 0:
                     lookbehind_days = int(lookbehind_days_strs[0])
                 else:
-                    raise ValueError(f"Could not extract lookbehind days from {col}")
+                    msg.warn(f"Could not extract lookbehind days from {col}")
+                    continue
 
                 if lookbehind_days > look_direction_threshold:
                     cols_to_drop.append(col)
 
         n_cols_after_modification = dataset.shape[1]
-        percent_dropped = (
-            n_cols_before_modification - n_cols_after_modification
-        ) / n_cols_before_modification
-
-        msg.info(
-            f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days.",
+        percent_dropped = get_percent_lost(
+            n_before=n_cols_before_modification,
+            n_after=n_cols_after_modification,
         )
+
+        if n_cols_before_modification - n_cols_after_modification != 0:
+            msg.info(
+                f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days.",
+            )
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
@@ -357,10 +338,10 @@ class DataLoader:
         for direction in ("ahead", "behind"):
 
             if direction in ("ahead", "behind"):
-                if self.spec.time.min_lookahead_days:
-                    n_days = self.spec.time.min_lookahead_days
-                elif self.spec.time.min_lookbehind_days:
-                    n_days = self.spec.time.min_lookbehind_days
+                if direction == "ahead":
+                    n_days = self.cfg.data.min_lookahead_days
+                elif direction == "behind":
+                    n_days = self.cfg.data.min_lookbehind_days
                 else:
                     continue
 
@@ -378,6 +359,35 @@ class DataLoader:
 
         return dataset
 
+    def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Keep only one outcome column with the same lookahead days as set in
+        the config."""
+        outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
+
+        col_to_drop = [
+            c for c in outcome_cols if str(self.cfg.data.min_lookahead_days) not in c
+        ]
+
+        # If no columns to drop, return the dataset
+        if not col_to_drop:
+            return dataset
+
+        df = dataset.drop(col_to_drop, axis=1)
+
+        if not len(infer_outcome_col_name(df)) == 1:
+            raise ValueError(
+                "Returning more than one outcome column, will cause problems during eval.",
+            )
+
+        return df
+
+    def n_outcome_col_names(self, df: pd.DataFrame):
+        """How many outcome columns there are in a dataframe."""
+        return len(infer_outcome_col_name(df=df, allow_multiple=True))
+
     def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process dataset, namely:
 
@@ -389,24 +399,26 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
-        if self.spec.time.drop_patient_if_outcome_before_date:
-            dataset = add_washin_timestamps(dataset=dataset)
-
         dataset = self._convert_timestamp_dtype_and_nat(dataset)
-        if self.spec.time.drop_patient_if_outcome_before_date:
-            dataset = self._drop_patients_with_event_in_washin(dataset=dataset)
+
+        if self.cfg.data.drop_patient_if_outcome_before_date:
+            dataset = self.drop_patient_if_outcome_before_date(dataset=dataset)
 
         # Drop if later than min prediction time date
-        if self.spec.time.min_prediction_time_date:
+        if self.cfg.data.min_prediction_time_date:
             dataset = dataset[
-                dataset[self.spec.pred_time_colname]
-                > self.spec.time.min_prediction_time_date
+                dataset[self.cfg.data.pred_timestamp_col_name]
+                > self.cfg.data.min_prediction_time_date
             ]
 
         dataset = self._drop_cols_and_rows_if_look_direction_not_met(dataset=dataset)
 
-        if self.spec.time.lookbehind_combination:
+        if self.cfg.data.lookbehind_combination:
             dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
+
+        dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
+            dataset=dataset,
+        )
 
         return dataset
 
@@ -425,22 +437,7 @@ class DataLoader:
         Returns:
             pd.DataFrame: The filtered dataset
         """
-        # Handle input types
-        for timedelta_arg in (
-            self.spec.time.min_lookbehind_days,
-            self.spec.time.min_lookahead_days,
-        ):
-            if timedelta_arg:
-                timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
-
-        for date_arg in (
-            self.spec.time.drop_patient_if_outcome_before_date,
-            self.spec.time.min_prediction_time_date,
-        ):
-            if isinstance(date_arg, str):
-                date_arg = coerce_to_datetime(
-                    date_repr=date_arg,
-                )
+        msg.info(f"Loading {split_names}")
 
         # Concat splits if multiple are given
         if isinstance(split_names, (list, tuple)):
@@ -468,42 +465,6 @@ class DataLoader:
         return dataset
 
 
-def _init_spec_from_cfg(
-    cfg: DictConfig,
-) -> DatasetSpecification:
-    """Initialise a feature spec from a DictConfig."""
-    data_cfg: dict[str, Any] = OmegaConf.to_container(  # type: ignore
-        cfg.data,
-        resolve=True,
-    )
-
-    if data_cfg["source"] == "synthetic":
-        split_dir_path = PROJECT_ROOT / "tests" / "test_data" / "synth_splits"
-        file_suffix = "csv"
-    else:
-        split_dir_path = data_cfg["dir"]
-        file_suffix = data_cfg["source"]
-
-    time_spec = DatasetTimeSpecification(
-        drop_patient_if_outcome_before_date=data_cfg[
-            "drop_patient_if_outcome_before_date"
-        ],
-        min_lookahead_days=data_cfg["min_lookahead_days"],
-        min_lookbehind_days=data_cfg["min_lookbehind_days"],
-        min_prediction_time_date=data_cfg["min_prediction_time_date"],
-        lookbehind_combination=data_cfg["lookbehind_combination"],
-    )
-
-    return DatasetSpecification(
-        split_dir_path=split_dir_path,
-        pred_col_name_prefix=data_cfg["pred_col_name_prefix"],
-        file_suffix=file_suffix,
-        pred_time_colname=data_cfg["pred_timestamp_col_name"],
-        n_training_samples=data_cfg["n_training_samples"],
-        time=time_spec,
-    )
-
-
 class SplitDataset(BaseModel):
     """A dataset split into train, test and optionally validation."""
 
@@ -517,16 +478,29 @@ class SplitDataset(BaseModel):
     val: pd.DataFrame
 
 
-def load_train_and_val_from_cfg(cfg: DictConfig):
+def load_train_from_cfg(cfg: FullConfig) -> pd.DataFrame:
+    """Load train dataset from config.
+
+    Args:
+        cfg (FullConfig): Config
+
+    Returns:
+        pd.DataFrame: Train dataset
+    """
+    return DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+
+
+def load_train_and_val_from_cfg(cfg: FullConfig):
     """Load train and validation data from file."""
 
-    data_specification = _init_spec_from_cfg(
-        cfg,
-    )
-
-    split = DataLoader(spec=data_specification)
+    loader = DataLoader(cfg=cfg)
 
     return SplitDataset(
-        train=split.load_dataset_from_dir(split_names="train"),
-        val=split.load_dataset_from_dir(split_names="val"),
+        train=loader.load_dataset_from_dir(split_names="train"),
+        val=loader.load_dataset_from_dir(split_names="val"),
     )
+
+
+def get_latest_dataset_dir(path: Path) -> Path:
+    """Get the latest dataset directory by time of creation."""
+    return max(path.glob("*"), key=os.path.getctime)

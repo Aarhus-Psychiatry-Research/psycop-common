@@ -14,7 +14,7 @@ from psycopt2d.tables.performance_by_threshold import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import positive_rate_to_pred_probs
+from psycopt2d.utils.utils import positive_rate_to_pred_probs
 
 
 @pytest.fixture(scope="function")

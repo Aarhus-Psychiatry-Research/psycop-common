@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
 from sklearn.metrics import recall_score, roc_auc_score
-from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 from wasabi import Printer
 
@@ -15,8 +14,8 @@ from psycopt2d.tables import generate_feature_importances_table
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.tables.tables import feature_selection_table
-from psycopt2d.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from psycopt2d.utils.configs import FullConfig
+from psycopt2d.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
     plot_feature_importances,
@@ -39,7 +38,7 @@ def log_feature_importances(
     feature_importance_plot_path = plot_feature_importances(
         feature_names=feature_importance_dict.keys(),
         feature_importances=feature_importance_dict.values(),
-        top_n_feature_importances=cfg.evaluation.top_n_feature_importances,
+        top_n_feature_importances=cfg.eval.top_n_feature_importances,
         save_path=save_path,
     )
 
@@ -55,24 +54,14 @@ def log_feature_importances(
 
 
 def evaluate_model(
-    cfg,
+    cfg: FullConfig,
     eval_df: pd.DataFrame,
-    pipe: Pipeline,
     y_col_name: str,
-    train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
     run: wandb_run,
     feature_importance_dict: Optional[dict[str, float]],
 ) -> None:
     """Runs the evaluation suite on the model and logs to WandB.
-    At present, this includes:
-    1. AUC
-    2. Table of performance by pred_proba threshold
-    3. Feature importance
-    4. Sensitivity by time to outcome
-    5. AUC by calendar time
-    6. AUC by time from first visit
-    7. F1 by time until diagnosis
 
     Args:
         cfg (OmegaConf): The hydra config from the run
@@ -84,13 +73,16 @@ def evaluate_model(
         run (wandb_run): WandB run to log to.
         feature_importance_dict (Optional[dict[str, float]]): Dict of feature
             names and their importance. If None, will not log feature importance.
+        selected_features (Optional[list[str]]): List of selected features after preprocessing.
+            Used for plotting.
     """
     msg = Printer(timestamp=True)
 
     msg.info("Starting model evaluation")
 
     SAVE_DIR = PROJECT_ROOT / ".tmp"  # pylint: disable=invalid-name
-    # When parallelising tests, this causes issues since multiple processes
+    # When running tests in parallel with pytest-xdist,
+    # this causes issues since multiple processes
     # override the same dir at once.
     # Can be solved by allowing config to override this
     # and using tmp_dir in pytest. Not worth refactoring
@@ -107,34 +99,18 @@ def evaluate_model(
     pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
     y_hat_int = np.round(y_hat_probs, 0)
 
-    if "feature_selection" in pipe["preprocessing"].named_steps:
-        selected_features = (
-            eval_df[train_col_names]
-            .columns[pipe["preprocessing"]["feature_selection"].get_support()]
-            .to_list()
-        )
-
-        run.log(
-            {
-                "feature_selection_table": feature_selection_table(
-                    feature_names=train_col_names,
-                    selected_feature_names=selected_features,
-                ),
-            },
-        )
-
-    date_bins_ahead: Iterable[int] = cfg.evaluation.date_bins_ahead
-    date_bins_behind: Iterable[int] = cfg.evaluation.date_bins_behind
+    date_bins_ahead: Iterable[int] = cfg.eval.date_bins_ahead
+    date_bins_behind: Iterable[int] = cfg.eval.date_bins_behind
 
     # Drop date_bins_direction if they are further away than min_lookdirection_days
     if cfg.data.min_lookbehind_days:
         date_bins_behind = [
-            b for b in date_bins_behind if cfg.data.min_lookbehind_days < b
+            b for b in date_bins_behind if cfg.data.min_lookbehind_days > b
         ]
 
     if cfg.data.min_lookahead_days:
         date_bins_ahead = [
-            b for b in date_bins_ahead if cfg.data.min_lookahead_days < abs(b)
+            b for b in date_bins_ahead if cfg.data.min_lookahead_days > abs(b)
         ]
 
     # Invert date_bins_behind to negative if it's not already
@@ -150,7 +126,7 @@ def evaluate_model(
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=y_hat_probs,
-        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
+        positive_rate_thresholds=cfg.eval.positive_rate_thresholds,
     )
 
     msg.info(f"AUC: {auc}")
@@ -165,7 +141,7 @@ def evaluate_model(
     performance_by_threshold_df = generate_performance_by_positive_rate_table(
         labels=y,
         pred_probs=y_hat_probs,
-        positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
+        positive_rate_thresholds=cfg.eval.positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
         ids=eval_df[cfg.data.id_col_name],
         pred_timestamps=pred_timestamps,

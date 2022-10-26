@@ -1,4 +1,5 @@
 name: psycop-t2d-testing
 seed: 42
-wandb_mode: "run" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+wandb_mode: "offline" # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+wandb_group: "psycop-t2d"
 wandb_entity: "psycop" # Optional[str]

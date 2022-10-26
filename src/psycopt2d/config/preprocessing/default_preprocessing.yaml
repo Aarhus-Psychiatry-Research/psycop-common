@@ -2,6 +2,7 @@ convert_to_boolean: False # (Boolean): Convert all prediction values (except gen
 convert_datetimes_to: False # (str): Options include ordinal or False
 imputation_method: "most_frequent" # (str): Options include 2most_frequent"
 transform: null # (str|null): Transformation applied to all predictors after imputation. Options include "z-score-normalization"
-feature_selection_method: null
-feature_selection_params:
-  percentile: 10 # (int): Percent of features to keep. Defaults to 10.
+feature_selection:
+  name: null
+  params:
+    percentile: 10 # (int): Percent of features to keep. Defaults to 10.

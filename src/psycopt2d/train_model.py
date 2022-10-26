@@ -1,14 +1,13 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from collections.abc import Iterable
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import hydra
 import numpy as np
 import pandas as pd
 import wandb
+from omegaconf import OmegaConf
 from omegaconf.dictconfig import DictConfig
 from sklearn.feature_selection import SelectPercentile, chi2, f_classif
 from sklearn.impute import SimpleImputer
@@ -25,15 +24,16 @@ from psycopt2d.preprocessing.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
 )
-from psycopt2d.utils import (
+from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
+from psycopt2d.utils.utils import (
+    PROJECT_ROOT,
     create_wandb_folders,
     flatten_nested_dict,
     get_feature_importance_dict,
     prediction_df_with_metadata_to_disk,
 )
 
-CONFIG_PATH = Path(__file__).parent / "config"
-TRAINING_COL_NAME_PREFIX = "pred_"
+CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
 
 # Handle wandb not playing nice with joblib
 os.environ["WANDB_START_METHOD"] = "thread"
@@ -64,23 +64,23 @@ def create_preprocessing_pipeline(cfg):
             ("z-score-normalization", StandardScaler()),
         )
 
-    if cfg.preprocessing.feature_selection_method == "f_classif":
+    if cfg.preprocessing.feature_selection.name == "f_classif":
         steps.append(
             (
                 "feature_selection",
                 SelectPercentile(
                     f_classif,
-                    percentile=cfg.preprocessing.feature_selection_params.percentile,
+                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
                 ),
             ),
         )
-    if cfg.preprocessing.feature_selection_method == "chi2":
+    if cfg.preprocessing.feature_selection.name == "chi2":
         steps.append(
             (
                 "feature_selection",
                 SelectPercentile(
                     chi2,
-                    percentile=cfg.preprocessing.feature_selection_params.percentile,
+                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
                 ),
             ),
         )
@@ -311,7 +311,7 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     """
 
     outcome_col_name = (  # pylint: disable=invalid-name
-        f"outc_dichotomous_t2d_within_{cfg.data.lookahead_days}_days_max_fallback_0"
+        f"outc_dichotomous_t2d_within_{cfg.data.min_lookahead_days}_days_max_fallback_0"
     )
 
     train_col_names = [  # pylint: disable=invalid-name
@@ -326,23 +326,36 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     config_name="default_config",
     version_base="1.2",
 )
-def main(cfg):
+def main(cfg: DictConfig):
     """Main function for training a single model."""
+    # Save dictconfig for easier logging
+    if isinstance(cfg, DictConfig):
+        # Create flattened dict for logging to wandb
+        # Wandb doesn't allow configs to be nested, so we
+        # flatten it.
+        dict_config_to_log: dict[str, Any] = flatten_nested_dict(OmegaConf.to_container(cfg), sep=".")  # type: ignore
+    else:
+        # For testing, we can take a FullConfig object instead. Simplifies boilerplate.
+        dict_config_to_log = cfg.__dict__
+
+    if not isinstance(cfg, FullConfig):
+        cfg = omegaconf_to_pydantic_objects(cfg)
+
     msg = Printer(timestamp=True)
 
     create_wandb_folders()
 
-    # Get today's date as str
-    today_str = datetime.now().strftime("%Y-%m-%d")
-
     run = wandb.init(
         project=cfg.project.name,
         reinit=True,
-        config=flatten_nested_dict(cfg, sep="."),
-        mode=cfg.project.wandb_mode,
-        group=today_str,
-        entity=cfg.project.wandb_entity,
+        config=dict_config_to_log,
+        mode=cfg.project.wandb.mode,
+        group=cfg.project.wandb.group,
+        entity=cfg.project.wandb.entity,
     )
+
+    if run is None:
+        raise ValueError("Failed to initialise Wandb")
 
     dataset = load_train_and_val_from_cfg(cfg)
 
@@ -359,7 +372,7 @@ def main(cfg):
         pipe=pipe,
         outcome_col_name=outcome_col_name,
         train_col_names=train_col_names,
-        n_splits=cfg.training.n_splits,
+        n_splits=cfg.train.n_splits,
     )
 
     # Save model predictions, feature importance, and config to disk
@@ -367,7 +380,7 @@ def main(cfg):
 
     # only run full evaluation if wandb mode mode is online
     # otherwise delegate to watcher script
-    if cfg.project.wandb_mode == "run":
+    if cfg.project.wandb.mode == "run":
         msg.info("Evaluating model")
         evaluate_model(
             cfg=cfg,
@@ -376,6 +389,8 @@ def main(cfg):
             y_hat_prob_col_name="y_hat_prob",
             feature_importance_dict=get_feature_importance_dict(pipe),
             run=run,
+            pipe=pipe,
+            train_col_names=train_col_names,
         )
 
     roc_auc = roc_auc_score(
@@ -384,7 +399,13 @@ def main(cfg):
     )
 
     msg.info(f"ROC AUC: {roc_auc}")
-    run.log({"roc_auc_unweighted": roc_auc})
+    run.log(
+        {
+            "roc_auc_unweighted": roc_auc,
+            "lookbehind": max(cfg.data.lookbehind_combination),
+            "lookahead": cfg.data.min_lookahead_days,
+        },
+    )
     run.finish()
     return roc_auc
 
