@@ -19,8 +19,11 @@ from psycopt2d.visualization.performance_over_time import (
     plot_metric_by_time_until_diagnosis,
     plot_performance_by_calendar_time,
 )
-from psycopt2d.visualization.performance_over_n_hba1c import (
+from psycopt2d.visualization.performance_by_n_hba1c import (
     plot_performance_by_n_hba1c,
+)
+from psycopt2d.visualization.performance_by_age import (
+    plot_performance_by_age,
 )
 from psycopt2d.visualization.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
@@ -88,6 +91,14 @@ def test_plot_performance_by_n_hba1c(df):
         labels=df["label"],
         y_hat=df["pred"],
         n_hba1c=df["n_hba1c"],
+    )
+
+
+def test_plot_performance_by_age(df):
+    plot_performance_by_age(
+        labels=df["label"],
+        y_hat=df["pred"],
+        n_hba1c=df["age"],
     )
 
 
