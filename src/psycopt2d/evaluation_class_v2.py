@@ -1,7 +1,6 @@
 """_summary_"""
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 import wandb

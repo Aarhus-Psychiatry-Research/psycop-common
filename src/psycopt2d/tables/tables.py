@@ -1,6 +1,5 @@
 """Tables for evaluation of models."""
 from collections.abc import Iterable, Sequence
-from functools import partial
 from typing import Union
 
 import pandas as pd
