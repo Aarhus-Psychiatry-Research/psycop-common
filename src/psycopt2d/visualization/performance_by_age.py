@@ -1,13 +1,12 @@
-"""Plotting function for performance by age at time of predictio
-"""
+"""Plotting function for performance by age at time of predictio."""
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Optional, Union
 
 from sklearn.metrics import roc_auc_score
 
-from psycopt2d.visualization.utils import create_performance_by_input
 from psycopt2d.visualization.base_charts import plot_basic_chart
+from psycopt2d.visualization.utils import create_performance_by_input
 
 
 def plot_performance_by_age(

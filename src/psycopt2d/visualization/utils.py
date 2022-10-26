@@ -3,14 +3,13 @@ from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Optional
 
-import wandb
-from wandb.sdk.wandb_run import Run as wandb_run
-
 import numpy as np
 import pandas as pd
+import wandb
+from sklearn.metrics import roc_auc_score
+from wandb.sdk.wandb_run import Run as wandb_run
 
 from psycopt2d.utils import bin_continuous_data
-from sklearn.metrics import roc_auc_score
 
 
 def log_image_to_wandb(chart_path: Path, chart_name: str, run: wandb_run):
@@ -55,7 +54,8 @@ def create_performance_by_input(
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
-    """Calculate performance by given input values, e.g. age or number of hbac1 measurements.
+    """Calculate performance by given input values, e.g. age or number of hbac1
+    measurements.
 
     Args:
         labels (Iterable[int]): True labels
@@ -77,7 +77,8 @@ def create_performance_by_input(
         df[f"{input_name}_binned"] = bin_continuous_data(df[input_name], bins=bins)
 
         output_df = df.groupby(f"{input_name}_binned").apply(
-            calc_performance, metric_fn
+            calc_performance,
+            metric_fn,
         )
 
     else:

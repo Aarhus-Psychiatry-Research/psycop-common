@@ -1,13 +1,12 @@
-"""Plotting function for performance by number of HbA1c measurements.
-"""
+"""Plotting function for performance by number of HbA1c measurements."""
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Optional, Union
 
 from sklearn.metrics import roc_auc_score
 
-from psycopt2d.visualization.utils import create_performance_by_input
 from psycopt2d.visualization.base_charts import plot_basic_chart
+from psycopt2d.visualization.utils import create_performance_by_input
 
 
 def plot_performance_by_n_hba1c(
@@ -19,7 +18,8 @@ def plot_performance_by_n_hba1c(
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
-    """Plot bar plot of performance (default AUC) by number of HbA1c measurements.
+    """Plot bar plot of performance (default AUC) by number of HbA1c
+    measurements.
 
     Args:
         labels (Iterable[int]): True labels
