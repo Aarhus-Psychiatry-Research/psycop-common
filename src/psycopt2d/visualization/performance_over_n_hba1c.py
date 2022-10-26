@@ -32,7 +32,6 @@ def create_performance_by_n_hba1c(
         pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
-        bin_period (str): How to bin time. "M" for year/month, "Y" for year
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting

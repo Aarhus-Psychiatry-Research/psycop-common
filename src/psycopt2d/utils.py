@@ -173,7 +173,7 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
 
     Args:
         series (pd.Series): Series with continuous data such as age
-        bins (list[int]): Desired bins
+        bins (list[int]): Desired bins. Last value in the list should be abitrairly high as this represents an upper cut-off.
 
     Returns:
         pd.Series: Binned data
@@ -194,16 +194,23 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     """
     labels = []
     for i, bin_v in enumerate(bins):
-        if i == 0:
-            labels.append(f"{bin_v}-{bins[i+1]}")
-        elif i < len(bins) - 2:
-            labels.append(f"{bin_v+1}-{bins[i+1]}")
+        if i < len(bins) - 2:
+            if (bins[i + 1] - bin_v) == 1:
+                labels.append(f"{bin_v}")
+            else:
+                if i == 0:
+                    labels.append(f"{bin_v}-{bins[i+1]}")
+                elif i < len(bins) - 2:
+                    labels.append(f"{bin_v+1}-{bins[i+1]}")
         elif i == len(bins) - 2:
             labels.append(f"{bin_v+1}+")
         else:
             continue
 
     return pd.cut(series, bins=bins, labels=labels)
+
+
+ß
 
 
 def positive_rate_to_pred_probs(
