@@ -41,13 +41,13 @@ def test_generate_performance_by_threshold_table(synth_data):
     )
 
     table = generate_performance_by_positive_rate_table(
-        labels=df["label"],
-        pred_probs=df["pred_prob"],
-        ids=df["dw_ek_borger"],
+        eval_dataset.y=df["label"],
+        eval_dataset.y_hat_probs=df["pred_prob"],
+        eval_dataset.ids=df["dw_ek_borger"],
         positive_rate_thresholds=positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
-        pred_timestamps=df["timestamp"],
-        outcome_timestamps=df["timestamp_t2d_diag"],
+        eval_dataset.pred_timestamps=df["timestamp"],
+        eval_dataset.outcome_timestamps=df["timestamp_t2d_diag"],
         output_format="df",
     )
 

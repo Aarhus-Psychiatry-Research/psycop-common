@@ -9,6 +9,7 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
+from psycopt2d.evaluation_class_v2 import EvalDataset
 from sklearn.metrics import f1_score, roc_auc_score
 
 from psycopt2d.utils import bin_continuous_data, round_floats_to_edge
@@ -65,33 +66,29 @@ def create_performance_by_calendar_time_df(
     return output_df
 
 
-def plot_performance_by_calendar_time(
-    labels: Iterable[int],
-    y_hat: Iterable[int],
-    timestamps: Iterable[pd.Timestamp],
-    metric_fn: Callable,
-    bin_period: str,
+def plot_metric_by_calendar_time(
+    eval_dataset: EvalDataset,
     y_title: str,
+    bin_period: str = "Y",
     save_path: Optional[str] = None,
+    metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label of probability depending on metric
-        timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
-        metric_fn (Callable): Function which returns the metric.
-        bin_period (str): Which time period to bin on. Takes "M" or "Y".
+        eval_dataset (EvalDataset): EvalDataset object
         y_title (str): Title of y-axis.
+        bin_period (str): Which time period to bin on. Takes "M" or "Y".
         save_path (str, optional): Path to save figure. Defaults to None.
+        metric_fn (Callable): Function which returns the metric.
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
     df = create_performance_by_calendar_time_df(
-        labels=labels,
-        y_hat=y_hat,
-        timestamps=timestamps,
+        labels=eval_dataset.y,
+        y_hat=eval_dataset.y_hat_probs,
+        timestamps=eval_dataset.pred_timestamps,
         metric_fn=metric_fn,
         bin_period=bin_period,
     )
@@ -177,20 +174,15 @@ def create_performance_by_time_from_event_df(
 
 
 def plot_auc_by_time_from_first_visit(
-    labels: Iterable[int],
-    y_hat_probs: Iterable[int],
+    eval_dataset: EvalDataset,
     first_visit_timestamps: Iterable[pd.Timestamp],
-    prediction_timestamps: Iterable[pd.Timestamp],
     bins: tuple = (0, 28, 182, 365, 730, 1825),
-    pretty_bins: Optional[bool] = True,
+    prettify_bins: Optional[bool] = True,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time to first visit.
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat_probs (Iterable[int]): Predicted probabilities
-        first_visit_timestamps (Iterable[pd.Timestamp]): Timestamps of the first visit
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamps of the predictions
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
         pretty_bins (bool, optional): Prettify bin names. I.e. make
@@ -200,18 +192,25 @@ def plot_auc_by_time_from_first_visit(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
+    eval_df = pd.DataFrame({"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps})
+    
+    first_visit_timestamps = eval_df.groupby("ids")[
+        "pred_timestamps"
+    ].transform("min")
 
     df = create_performance_by_time_from_event_df(
-        labels=labels,
-        y_hat=y_hat_probs,
+        labels=eval_dataset.y,
+        y_hat=eval_dataset.y_hat_probs,
         event_timestamps=first_visit_timestamps,
-        prediction_timestamps=prediction_timestamps,
+        prediction_timestamps=eval_dataset.pred_timestamps,
         direction="prediction-event",
         bins=bins,
-        pretty_bins=pretty_bins,
+        pretty_bins=prettify_bins,
         drop_na_events=False,
         metric_fn=roc_auc_score,
     )
+
+
 
     sort_order = np.arange(len(df))
     return plot_basic_chart(
@@ -226,10 +225,7 @@ def plot_auc_by_time_from_first_visit(
 
 
 def plot_metric_by_time_until_diagnosis(
-    labels: Iterable[int],
-    y_hat: Iterable[int],
-    diagnosis_timestamps: Iterable[pd.Timestamp],
-    prediction_timestamps: Iterable[pd.Timestamp],
+    eval_dataset: EvalDataset,
     bins: Iterable[int] = (
         -1825,
         -730,
@@ -238,7 +234,7 @@ def plot_metric_by_time_until_diagnosis(
         -28,
         -0,
     ),
-    pretty_bins: Optional[bool] = True,
+    pretty_bins: bool = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
     save_path: Optional[Path] = None,
@@ -248,10 +244,7 @@ def plot_metric_by_time_until_diagnosis(
     removed.
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label
-        diagnosis_timestamps (Iterable[pd.Timestamp]): Timestamp of diagnosis
-        prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
+        eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Negative values indicate days after
         diagnosis. Defaults to [ -1825, -730, -365, -182, -28, -14, -7, -1, 0, 1, 7, 14, 28, 182, 365, 730, 1825] (which is stupid).
         pretty_bins (bool, optional): Whether to prettify bin names. Defaults to True.
@@ -263,10 +256,10 @@ def plot_metric_by_time_until_diagnosis(
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
     df = create_performance_by_time_from_event_df(
-        labels=labels,
-        y_hat=y_hat,
-        event_timestamps=diagnosis_timestamps,
-        prediction_timestamps=prediction_timestamps,
+        labels=eval_dataset.y,
+        y_hat=eval_dataset.y_hat_int,
+        event_timestamps=eval_dataset.outcome_timestamps,
+        prediction_timestamps=eval_dataset.prediction_timestamps,
         direction="event-prediction",
         bins=bins,
         pretty_bins=pretty_bins,

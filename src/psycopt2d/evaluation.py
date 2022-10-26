@@ -19,7 +19,7 @@ from psycopt2d.visualization import (
     plot_auc_by_time_from_first_visit,
     plot_feature_importances,
     plot_metric_by_time_until_diagnosis,
-    plot_performance_by_calendar_time,
+    plot_metric_by_calendar_time,
 )
 from psycopt2d.visualization.sens_over_time import (
     plot_sensitivity_by_time_to_outcome_heatmap,
@@ -122,9 +122,7 @@ def evaluate_model(
     # Sort date_bins_behind and date_bins_ahead to be monotonically increasing if they aren't already
     date_bins_behind = sorted(date_bins_behind)
 
-    first_visit_timestamp = eval_df.groupby(cfg.data.id_col_name)[
-        cfg.data.pred_timestamp_col_name
-    ].transform("min")
+    
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=y_hat_probs,
@@ -137,13 +135,8 @@ def evaluate_model(
     # Tables
     # Performance by threshold
     performance_by_threshold_df = generate_performance_by_positive_rate_table(
-        labels=y,
-        pred_probs=y_hat_probs,
         positive_rate_thresholds=cfg.evaluation.positive_rate_thresholds,
         pred_proba_thresholds=pred_proba_thresholds,
-        ids=eval_df[cfg.data.id_col_name],
-        pred_timestamps=pred_timestamps,
-        outcome_timestamps=outcome_timestamps,
     )
     run.log(
         {"performance_by_threshold": performance_by_threshold_df},
@@ -162,48 +155,6 @@ def evaluate_model(
         )
 
         plots.update(feature_importances_plot_dict)
-
-    # Add plots
-    plots.update(
-        {
-            "sensitivity_by_time_by_threshold": plot_sensitivity_by_time_to_outcome_heatmap(
-                labels=y,
-                y_hat_probs=y_hat_probs,
-                pred_proba_thresholds=pred_proba_thresholds,
-                outcome_timestamps=outcome_timestamps,
-                prediction_timestamps=pred_timestamps,
-                bins=date_bins_ahead,
-                save_path=SAVE_DIR / "sensitivity_by_time_by_threshold.png",
-            ),
-            "auc_by_calendar_time": plot_performance_by_calendar_time(
-                labels=y,
-                y_hat=y_hat_probs,
-                timestamps=pred_timestamps,
-                bin_period="Y",
-                metric_fn=roc_auc_score,
-                y_title="AUC",
-                save_path=SAVE_DIR / "auc_by_calendar_time.png",
-            ),
-            "auc_by_time_from_first_visit": plot_auc_by_time_from_first_visit(
-                labels=y,
-                y_hat_probs=y_hat_probs,
-                first_visit_timestamps=first_visit_timestamp,
-                prediction_timestamps=pred_timestamps,
-                bins=date_bins_ahead,
-                save_path=SAVE_DIR / "auc_by_time_from_first_visit.png",
-            ),
-            "recall_by_time_to_diagnosis": plot_metric_by_time_until_diagnosis(
-                labels=y,
-                y_hat=y_hat_int,
-                diagnosis_timestamps=outcome_timestamps,
-                prediction_timestamps=pred_timestamps,
-                metric_fn=recall_score,
-                y_title="Sensitivty (recall)",
-                bins=date_bins_behind,
-                save_path=SAVE_DIR / "recall_by_time_to_diagnosis.png",
-            ),
-        },
-    )
 
     # Log all the figures to wandb
     for chart_name, chart_path in plots.items():

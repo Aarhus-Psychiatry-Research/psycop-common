@@ -31,8 +31,8 @@ if __name__ == "__main__":
 
     # Do whatever extra evaluation you want to here
     p = plot_auc_by_time_from_first_visit(
-        labels=eval_data.df[y_col_name],
-        y_hat_probs=eval_data.df[y_hat_prob_name],
+        eval_dataset.y=eval_data.df[y_col_name],
+        eval_dataset.y_hat_probs=eval_data.df[y_hat_prob_name],
         first_visit_timestamps=first_visit_timestamp,
-        prediction_timestamps=eval_data.df[eval_data.cfg.data.pred_timestamp_col_name],
+        eval_dataset.pred_timestamps=eval_data.df[eval_data.cfg.data.pred_timestamp_col_name],
     )
