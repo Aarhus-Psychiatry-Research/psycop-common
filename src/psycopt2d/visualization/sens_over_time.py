@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from psycopt2d.evaluation_class_v2 import EvalDataset
-from psycopt2d.utils.utils import PROJECT_ROOT, round_floats_to_edge
+from psycopt2d.utils.utils import round_floats_to_edge
 
 
 def create_sensitivity_by_time_to_outcome_df(

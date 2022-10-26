@@ -13,7 +13,7 @@ from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-m
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from psycopt2d.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
@@ -63,14 +63,16 @@ class ModelEvaluator:
             eval_dataset=self.eval_dataset, **kwargs
         )
         self.artifact_containers.append(
-            ArtifactContainer(label=artifact_spec.label, artifact=artifact)
+            ArtifactContainer(label=artifact_spec.label, artifact=artifact),
         )
 
     def upload_artifacts(self, run: wandb_run):
         for artifact in self.artifact_containers:
             if isinstance(artifact.artifact, Path):
                 log_image_to_wandb(
-                    chart_path=artifact.artifact, chart_name=artifact.label, run=run
+                    chart_path=artifact.artifact,
+                    chart_name=artifact.label,
+                    run=run,
                 )
             elif isinstance(artifact.artifact, pd.DataFrame):
                 wandb_table = wandb.Table(dataframe=artifact.artifact)

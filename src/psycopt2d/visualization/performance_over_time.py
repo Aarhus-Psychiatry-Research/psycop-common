@@ -9,9 +9,9 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from psycopt2d.evaluation_class_v2 import EvalDataset
 from sklearn.metrics import f1_score, roc_auc_score
 
+from psycopt2d.evaluation_class_v2 import EvalDataset
 from psycopt2d.utils.utils import bin_continuous_data, round_floats_to_edge
 from psycopt2d.visualization.base_charts import plot_basic_chart
 
@@ -192,11 +192,11 @@ def plot_auc_by_time_from_first_visit(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    eval_df = pd.DataFrame({"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps})
-    
-    first_visit_timestamps = eval_df.groupby("ids")[
-        "pred_timestamps"
-    ].transform("min")
+    eval_df = pd.DataFrame(
+        {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps}
+    )
+
+    first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
     df = create_performance_by_time_from_event_df(
         labels=eval_dataset.y,
@@ -209,8 +209,6 @@ def plot_auc_by_time_from_first_visit(
         drop_na_events=False,
         metric_fn=roc_auc_score,
     )
-
-
 
     sort_order = np.arange(len(df))
     return plot_basic_chart(

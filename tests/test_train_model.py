@@ -3,7 +3,6 @@
 import pytest
 from hydra import compose, initialize
 
-from psycopt2d.load import load_train_from_cfg
 from psycopt2d.models import MODELS
 from psycopt2d.train_model import main
 from psycopt2d.utils.configs import omegaconf_to_pydantic_objects

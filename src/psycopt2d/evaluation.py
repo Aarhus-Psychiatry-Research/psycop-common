@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from omegaconf.dictconfig import DictConfig
-from sklearn.metrics import recall_score, roc_auc_score
+from sklearn.metrics import roc_auc_score
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 from wasabi import Printer
 
@@ -16,15 +16,7 @@ from psycopt2d.tables.performance_by_threshold import (
 )
 from psycopt2d.utils.configs import FullConfig
 from psycopt2d.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
-from psycopt2d.visualization import (
-    plot_auc_by_time_from_first_visit,
-    plot_feature_importances,
-    plot_metric_by_calendar_time,
-    plot_metric_by_time_until_diagnosis,
-)
-from psycopt2d.visualization.sens_over_time import (
-    plot_sensitivity_by_time_to_outcome_heatmap,
-)
+from psycopt2d.visualization import plot_feature_importances
 from psycopt2d.visualization.utils import log_image_to_wandb
 
 

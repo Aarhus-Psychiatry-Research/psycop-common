@@ -16,8 +16,8 @@ from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.feature_importance import plot_feature_importances
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
-    plot_metric_by_time_until_diagnosis,
     plot_metric_by_calendar_time,
+    plot_metric_by_time_until_diagnosis,
 )
 from psycopt2d.visualization.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
