@@ -10,7 +10,7 @@ from psycopt2d.visualization.utils import create_performance_by_input
 from psycopt2d.visualization.base_charts import plot_basic_chart
 
 
-def plot_performance_by_n_hba1c(
+def plot_performance_by_n_age(
     labels: Iterable[int],
     y_hat: Iterable[int, float],
     age: Iterable[int, float],
