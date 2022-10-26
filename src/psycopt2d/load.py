@@ -13,12 +13,9 @@ from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
 from psycopt2d.utils.configs import FullConfig
-from psycopt2d.utils.utils import (
-    coerce_to_datetime,
-    get_percent_lost,
-    infer_outcome_col_name,
-    infer_predictor_col_name,
-)
+from psycopt2d.utils.utils import (coerce_to_datetime, get_percent_lost,
+                                   infer_outcome_col_name,
+                                   infer_predictor_col_name)
 
 msg = Printer(timestamp=True)
 
@@ -376,10 +373,9 @@ class DataLoader:
         if not col_to_drop:
             return dataset
 
-        col_to_drop = col_to_drop[0] if len(col_to_drop) == 1 else outcome_cols
         df = dataset.drop(col_to_drop, axis=1)
 
-        if not isinstance(infer_outcome_col_name(df), str):
+        if not len(infer_outcome_col_name(df)) == 1:
             raise ValueError(
                 "Returning more than one outcome column, will cause problems during eval.",
             )
@@ -440,22 +436,6 @@ class DataLoader:
             pd.DataFrame: The filtered dataset
         """
         msg.info(f"Loading {split_names}")
-        # Handle input types
-        for timedelta_arg in (
-            self.cfg.data.min_lookbehind_days,
-            self.cfg.data.min_lookahead_days,
-        ):
-            if timedelta_arg:
-                timedelta_arg = timedelta(days=timedelta_arg)  # type: ignore
-
-        for date_arg in (
-            self.cfg.data.drop_patient_if_outcome_before_date,
-            self.cfg.data.min_prediction_time_date,
-        ):
-            if isinstance(date_arg, str):
-                date_arg = coerce_to_datetime(
-                    date_repr=date_arg,
-                )
 
         # Concat splits if multiple are given
         if isinstance(split_names, (list, tuple)):

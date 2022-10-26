@@ -58,9 +58,7 @@ def log_feature_importances(
 def evaluate_model(
     cfg: FullConfig,
     eval_df: pd.DataFrame,
-    pipe: Pipeline,
     y_col_name: str,
-    train_col_names: Iterable[str],
     y_hat_prob_col_name: str,
     run: wandb_run,
     feature_importance_dict: Optional[dict[str, float]],
@@ -77,6 +75,8 @@ def evaluate_model(
         run (wandb_run): WandB run to log to.
         feature_importance_dict (Optional[dict[str, float]]): Dict of feature
             names and their importance. If None, will not log feature importance.
+        selected_features (Optional[list[str]]): List of selected features after preprocessing.
+            Used for plotting.
     """
     msg = Printer(timestamp=True)
 
@@ -100,22 +100,6 @@ def evaluate_model(
     outcome_timestamps = eval_df[cfg.data.outcome_timestamp_col_name]
     pred_timestamps = eval_df[cfg.data.pred_timestamp_col_name]
     y_hat_int = np.round(y_hat_probs, 0)
-
-    if "feature_selection" in pipe["preprocessing"].named_steps:
-        selected_features = (
-            eval_df[train_col_names]
-            .columns[pipe["preprocessing"]["feature_selection"].get_support()]
-            .to_list()
-        )
-
-        run.log(
-            {
-                "feature_selection_table": feature_selection_table(
-                    feature_names=train_col_names,
-                    selected_feature_names=selected_features,
-                ),
-            },
-        )
 
     date_bins_ahead: Iterable[int] = cfg.eval.date_bins_ahead
     date_bins_behind: Iterable[int] = cfg.eval.date_bins_behind

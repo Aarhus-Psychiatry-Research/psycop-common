@@ -23,7 +23,6 @@ from psycopt2d.utils.utils import (
     load_evaluation_data,
 )
 
-# Path to the wandb directory
 WANDB_DIR = PROJECT_ROOT / "wandb"
 
 
@@ -119,7 +118,9 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
             check=True,
             capture_output=True,
         )
+
         stdout = proc.stdout.decode("utf-8")
+
         if self.verbose:
             msg.info(f"Watcher: {stdout}")
         return stdout
@@ -139,8 +140,8 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         # get evaluation data
         eval_data = self._get_eval_data(run_id)
         # infer required column names
-        y_col_name = infer_outcome_col_name(df=eval_data.df, prefix="outc_")
-        y_hat_prob_col_name = infer_y_hat_prob_col_name(df=eval_data.df)
+        y_col_name = infer_outcome_col_name(df=eval_data.df, prefix="outc_")[0]
+        y_hat_prob_col_name = infer_y_hat_prob_col_name(df=eval_data.df)[0]
         # get wandb run
         run: Run = wandb.init(project=self.project_name, entity=self.entity, id=run_id)  # type: ignore
 
@@ -261,7 +262,7 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
 
             wandb_sync_stdout = self._upload_run_dir(run_folder)
 
-            if "...done" not in wandb_sync_stdout:
+            if "... done" not in wandb_sync_stdout:
                 if ".wandb file is empty" not in wandb_sync_stdout:
                     raise ValueError(
                         f"wandb sync failed, returned: {wandb_sync_stdout}",

@@ -22,6 +22,7 @@ class BaseModel(PydanticBaseModel):
         """Allow arbitrary types."""
 
         arbitrary_types_allowed = True
+        allow_mutation = False
 
 
 class WandbConf(BaseModel):
@@ -38,6 +39,7 @@ class WatcherConf(BaseModel):
     archive_all: bool
     keep_alive_after_training_minutes: Union[int, float]
     n_runs_before_eval: int
+    verbose: bool
 
 
 class ProjectConf(BaseModel):
@@ -46,7 +48,6 @@ class ProjectConf(BaseModel):
     wandb: WandbConf
     name: str = "psycopt2d"
     seed: int
-    wandb: WandbConf
     watcher: WatcherConf
 
 

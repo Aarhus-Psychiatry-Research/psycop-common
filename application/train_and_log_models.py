@@ -30,22 +30,27 @@ msg = Printer(timestamp=True)
 class LookDistance(BaseModel):
     """A distance of ahead and behind."""
 
-    behind_days: list[Union[int, float]]
-    ahead_days: list[Union[int, float]]
+    behind_days: Union[int, float]
+    ahead_days: Union[int, float]
 
 
 def load_train_raw(cfg: FullConfig):
     """Load the data."""
     path = Path(cfg.data.dir)
-    file = list(path.glob(pattern=r"*train*"))
+    file_names = list(path.glob(pattern=r"*train*"))
 
-    if len(file) == 1:
-        return pd.read_parquet(file)
+    if len(file_names) == 1:
+        file_name = file_names[0]
+        file_suffix = file_name.suffix
+        if file_suffix == ".parquet":
+            return pd.read_parquet(file_name)
+        elif file_suffix == ".csv":
+            return pd.read_csv(file_name)
 
-    raise ValueError(f"Returned {len(file)} files")
+    raise ValueError(f"Returned {len(file_names)} files")
 
 
-def infer_possible_look_distances(df: pd.DataFrame) -> LookDistance:
+def infer_possible_look_distances(df: pd.DataFrame) -> list[LookDistance]:
     """Infer the possible values for min_lookahead_days and
     min_lookbehind_days."""
     # Get potential lookaheads from outc_ columns
@@ -57,10 +62,14 @@ def infer_possible_look_distances(df: pd.DataFrame) -> LookDistance:
     pred_col_names = infer_predictor_col_name(df=df, allow_multiple=True)
     possible_lookbehind_days = list(set(infer_look_distance(col_name=pred_col_names)))
 
-    return LookDistance(
-        behind_days=possible_lookahead_days,
-        ahead_days=possible_lookbehind_days,
-    )
+    return [
+        LookDistance(
+            behind_days=lookbehind_days,
+            ahead_days=lookahead_days,
+        )
+        for lookahead_days in possible_lookahead_days
+        for lookbehind_days in possible_lookbehind_days
+    ]
 
 
 def start_trainer(
@@ -149,17 +158,6 @@ def train_models_for_each_cell_in_grid(
 
         combination = possible_look_distances.pop()
 
-        # Check if any rows in the given combinatin of lookbehind and lookahead days
-        cfg_for_checking_any_rows = cfg.copy()
-        cfg_for_checking_any_rows.data.min_lookbehind_days = combination.behind_days
-        cfg_for_checking_any_rows.data.min_lookahead_days = combination.ahead_days
-
-        train = load_train_from_cfg(cfg=cfg)
-
-        if train.shape[0] == 0:
-            msg.warn(f"No rows for {combination}, continuing")
-            continue
-
         msg.info(
             f"Spawning a new trainer with lookbehind={combination.behind_days} and lookahead={combination.ahead_days}",
         )
@@ -202,20 +200,17 @@ def get_possible_look_distances(
 
     look_combinations_in_dataset = infer_possible_look_distances(df=train)
 
-    look_distance_combinations = [
-        LookDistance(behind_days=behind_days, ahead_days=ahead_days)
-        for behind_days in look_combinations_in_dataset.ahead_days
-        for ahead_days in look_combinations_in_dataset.behind_days
-    ]
-
     # Don't try look distance combinations which will result in 0 rows
-    max_distance_in_dataset_days = max(train[cfg.data.pred_timestamp_col_name]) - max(
-        train[cfg.data.pred_timestamp_col_name],
-    )
+    max_distance_in_dataset_days = (
+        max(train[cfg.data.pred_timestamp_col_name])
+        - min(
+            train[cfg.data.pred_timestamp_col_name],
+        )
+    ).days
 
     look_combinations_without_rows = [
         dist
-        for dist in look_distance_combinations
+        for dist in look_combinations_in_dataset
         if ((dist.ahead_days + dist.behind_days)) > max_distance_in_dataset_days
     ]
 
@@ -225,7 +220,7 @@ def get_possible_look_distances(
 
     look_combinations_with_rows = [
         dist
-        for dist in look_distance_combinations
+        for dist in look_combinations_in_dataset
         if ((dist.ahead_days + dist.behind_days) < max_distance_in_dataset_days)
     ]
 
@@ -240,9 +235,8 @@ def main():
 
     cfg = load_cfg(config_file_name=config_file_name)
 
-    # Override for testing
-    cfg.train.n_active_trainers = 1
-
+    # Load dataset without dropping any rows for inferring
+    # which look distances to grid search over
     train = load_train_raw(cfg=cfg)
     possible_look_distances = get_possible_look_distances(msg, cfg, train)
 
