@@ -217,7 +217,7 @@ def plot_metric_by_time_until_diagnosis(
         -182,
         -28,
         -0,
-        ),
+    ),
     pretty_bins: Optional[bool] = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
