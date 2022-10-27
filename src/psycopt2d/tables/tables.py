@@ -1,5 +1,5 @@
 """Tables for evaluation of models."""
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from typing import Union
 
 import pandas as pd
@@ -57,7 +57,6 @@ def generate_feature_importances_table(
     """
     feature_names = list(feature_importance_dict.keys())
     feature_importances = list(feature_importance_dict.values())
-
 
     df = pd.DataFrame(
         {"predictor": feature_names, "feature_importance": feature_importances},

@@ -1,6 +1,5 @@
 """Generate feature importances chart."""
 
-from collections.abc import Iterable
 from pathlib import Path
 from textwrap import wrap
 from typing import Optional, Union
@@ -25,8 +24,7 @@ def plot_feature_importances(
     classes are perfectly split.
 
     Args:
-        feature_names (Iterable[str]): Column/feature names
-        feature_importances (Iterable[float]): Feature importances
+        feature_importance_dict (Iterable[str]): Dict with feature_names as keys and importances as values.
         top_n_feature_importances (int): Top n features to plot
         save_path (Optional[Path], optional): Path to save the plot. Defaults to None.
 
