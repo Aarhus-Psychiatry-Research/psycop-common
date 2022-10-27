@@ -151,20 +151,15 @@ def generate_performance_by_positive_rate_table(
     positive_rate_thresholds: Iterable[Union[int, float]],
     pred_proba_thresholds: Iterable[float],
     output_format: Optional[str] = "df",
-    **kwargs,
 ) -> Union[pd.DataFrame, str]:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
 
     Args:
-        labels (Sequence[int]): True labels.
-        pred_probs (Sequence[float]): Predicted probabilities.
+        eval_dataset (EvalDataset): EvalDataset object.
         positive_rate_thresholds (Sequence[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
         pred_proba_thresholds (Sequence[float]): Thresholds above which predictions are classified as positive.
-        ids (Sequence[Union[int, float]]): Ids to group on.
-        pred_timestamps (Sequence[ pd.Timestamp ]): Timestamp for each prediction time.
-        outcome_timestamps (Sequence[pd.Timestamp]): Timestamp for each outcome time.
         output_format (str, optional): Format to output - either "df" or "wandb_table". Defaults to "df".
 
     Returns:

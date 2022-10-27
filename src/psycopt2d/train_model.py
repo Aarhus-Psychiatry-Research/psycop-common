@@ -1,7 +1,6 @@
 """Training script for training a single model for predicting t2d."""
 import os
 from collections.abc import Iterable
-from queue import Full
 from typing import Any, Optional
 
 import hydra
@@ -413,7 +412,10 @@ def main(cfg: DictConfig):
 
     # Save model predictions, feature importance, and config to disk
     eval_data_to_disk(
-        eval_dataset=eval_ds, cfg=cfg, pipe_metadata=pipe_metadata, run=run
+        eval_dataset=eval_ds,
+        cfg=cfg,
+        pipe_metadata=pipe_metadata,
+        run=run,
     )
 
     # only run full evaluation if wandb mode mode is online

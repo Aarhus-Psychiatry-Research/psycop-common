@@ -1,7 +1,7 @@
 """_summary_"""
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import pandas as pd
 import wandb
@@ -32,14 +32,16 @@ from psycopt2d.visualization.utils import log_image_to_wandb
 
 
 def upload_artifacts(
-    artifact_containers: Iterable[ArtifactContainer], run: wandb_run
+    artifact_containers: Iterable[ArtifactContainer],
+    run: wandb_run,
 ) -> None:
+    """Upload artifacts to wandb."""
     allowed_artifact_types = [Path, pd.DataFrame]
 
     for artifact_container in artifact_containers:
         if artifact_container.artifact not in allowed_artifact_types:
             raise TypeError(
-                f"Type of artifact is {type(artifact_container.artifact)}, must be one of {allowed_artifact_types}"
+                f"Type of artifact is {type(artifact_container.artifact)}, must be one of {allowed_artifact_types}",
             )
 
         if isinstance(artifact_container.artifact, Path):
@@ -53,58 +55,13 @@ def upload_artifacts(
             run.log_artifact({artifact_container.label: wandb_table})
 
 
-def run_full_evaluation(
-    cfg: FullConfig,
-    eval_dataset: EvalDataset,
-    save_dir: Path,
-    run: wandb_run,
-    pipe_metadata: Optional[PipeMetadata] = None,
-):
-    df = pd.DataFrame()
-
-    eval_dataset = eval_dataset(
-        ids=df["dw_ek_borger"],
-        pred_timestamps=df["pred_timestamps"],
-        outcome_timestamps=df["outcome_timestamps"],
-        y=df["y"],
-        y_hat_probs=df["y_hat_prob"],
-        y_hat_int=df["y_hat_int"],
-    )
-
-    lookahead_bins, lookbehind_bins = filter_plot_bins(cfg=cfg)
-
-    artifact_containers = add_base_plots(
-        cfg=cfg,
-        eval_dataset=eval_dataset,
-        lookahead_bins=lookahead_bins,
-        lookbehind_bins=lookbehind_bins,
-        save_dir=save_dir,
-    )
-
-    if pipe_metadata and pipe_metadata.feature_importances:
-        artifact_containers += [
-            ArtifactContainer(
-                label="feature_importances",
-                artifact=plot_feature_importances(
-                    feature_importance_dict=pipe_metadata.feature_importances,
-                    save_path=save_dir / "feature_importances.png",
-                ),
-            ),
-            ArtifactContainer(
-                label="feature_importances",
-                artifact=generate_feature_importances_table(
-                    feature_importance_dict=pipe_metadata.feature_importances,
-                    output_format="df",
-                ),
-            ),
-        ]
-
-    upload_artifacts(run=run, artifact_containers=artifact_containers)
-
-
 def filter_plot_bins(
     cfg: FullConfig,
 ):
+    """Remove bins that don't make sense given the other items in the config.
+
+    E.g. it doesn't make sense to plot bins with no contents.
+    """
     # Bins for plotting
     lookahead_bins: Iterable[int] = cfg.eval.lookahead_bins
     lookbehind_bins: Iterable[int] = cfg.eval.lookbehind_bins
@@ -128,12 +85,13 @@ def filter_plot_bins(
 
 
 def add_base_plots(
-    cfg,
-    eval_dataset,
-    save_dir,
+    cfg: FullConfig,
+    eval_dataset: EvalDataset,
+    save_dir: Path,
     lookahead_bins: Sequence[Union[int, float]],
     lookbehind_bins: Sequence[Union[int, float]],
-):
+) -> list[ArtifactContainer]:
+    """A collection of plots that are always generated."""
     pred_proba_percentiles = positive_rate_to_pred_probs(
         pred_probs=eval_dataset.y_hat_probs,
         positive_rate_thresholds=cfg.eval.positive_rate_thresholds,
@@ -185,3 +143,53 @@ def add_base_plots(
             ),
         ),
     ]
+
+
+def run_full_evaluation(
+    cfg: FullConfig,
+    eval_dataset: EvalDataset,
+    save_dir: Path,
+    run: wandb_run,
+    pipe_metadata: Optional[PipeMetadata] = None,
+):
+    """Run the full evaluation and upload to wandb."""
+    df = pd.DataFrame()
+
+    eval_dataset = eval_dataset(
+        ids=df["dw_ek_borger"],
+        pred_timestamps=df["pred_timestamps"],
+        outcome_timestamps=df["outcome_timestamps"],
+        y=df["y"],
+        y_hat_probs=df["y_hat_prob"],
+        y_hat_int=df["y_hat_int"],
+    )
+
+    lookahead_bins, lookbehind_bins = filter_plot_bins(cfg=cfg)
+
+    artifact_containers = add_base_plots(
+        cfg=cfg,
+        eval_dataset=eval_dataset,
+        lookahead_bins=lookahead_bins,
+        lookbehind_bins=lookbehind_bins,
+        save_dir=save_dir,
+    )
+
+    if pipe_metadata and pipe_metadata.feature_importances:
+        artifact_containers += [
+            ArtifactContainer(
+                label="feature_importances",
+                artifact=plot_feature_importances(
+                    feature_importance_dict=pipe_metadata.feature_importances,
+                    save_path=save_dir / "feature_importances.png",
+                ),
+            ),
+            ArtifactContainer(
+                label="feature_importances",
+                artifact=generate_feature_importances_table(
+                    feature_importance_dict=pipe_metadata.feature_importances,
+                    output_format="df",
+                ),
+            ),
+        ]
+
+    upload_artifacts(run=run, artifact_containers=artifact_containers)

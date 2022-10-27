@@ -18,8 +18,6 @@ from psycopt2d.evaluation_dataclasses import ModelEvalData
 from psycopt2d.utils.utils import (
     MODEL_PREDICTIONS_PATH,
     PROJECT_ROOT,
-    infer_outcome_col_name,
-    infer_y_hat_prob_col_name,
     load_evaluation_data,
 )
 

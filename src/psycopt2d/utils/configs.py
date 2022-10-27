@@ -55,6 +55,8 @@ class ProjectConf(BaseModel):
 
 
 class ColumnNames(BaseModel):
+    """Column names in the data."""
+
     pred_prefix: str  # prefix of predictor columns
     pred_timestamp: str  # (str): Column name for prediction times
     outcome_timestamp: str  # (str): Column name for outcome timestamps

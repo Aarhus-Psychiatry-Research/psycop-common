@@ -1,7 +1,6 @@
 from collections.abc import Callable
-from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Union
 
 import pandas as pd
 
@@ -9,6 +8,8 @@ from psycopt2d.utils.configs import BaseModel, FullConfig
 
 
 class EvalDataset(BaseModel):
+    """Evaluation dataset. Makes the interfaces of our evaluation functions simpler and consistent."""
+
     class Config:
         allow_mutation = True
 
@@ -21,13 +22,9 @@ class EvalDataset(BaseModel):
     age: Optional[pd.Series]
 
 
-class ArtifactSpecification(BaseModel):
-    label: str
-    artifact_generator_fn: Callable[[Any], Union[pd.DataFrame, Path]]
-    kwargs: Optional[dict] = None
-
-
 class ArtifactContainer(BaseModel):
+    """A container for artifacts."""
+
     label: str
     # We're not a big fan of the naming here, super open to suggestions!
     # We need to keep the artifact and its labeled coupled, hence the
@@ -36,6 +33,8 @@ class ArtifactContainer(BaseModel):
 
 
 class PipeMetadata(BaseModel):
+    """Metadata for a pipe. Currently only has feature_importances, but makes it easy to add more - e.g. which features were dropped."""
+
     class Config:
         allow_mutation = True
 
