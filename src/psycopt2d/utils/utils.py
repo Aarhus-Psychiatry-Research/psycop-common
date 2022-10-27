@@ -311,7 +311,7 @@ def eval_data_to_disk(
     """Saves prediction dataframe, hydra config and feature names to disk.
 
     Args:
-        evaluation_dataset (EvalDataset): Evaluation dataset.
+        eval_dataset (EvalDataset): Evaluation dataset.
         cfg (FullConfig): Full config.
         pipe_metadata (PipeMetadata): Pipe metadata.
         run (Run): Wandb run. Used for getting name of the run.

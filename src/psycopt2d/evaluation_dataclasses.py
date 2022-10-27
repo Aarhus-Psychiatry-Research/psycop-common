@@ -1,6 +1,6 @@
-from collections.abc import Callable
+"""Dataclasses for evaluation."""
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -8,9 +8,15 @@ from psycopt2d.utils.configs import BaseModel, FullConfig
 
 
 class EvalDataset(BaseModel):
-    """Evaluation dataset. Makes the interfaces of our evaluation functions simpler and consistent."""
+    """Evaluation dataset.
+
+    Makes the interfaces of our evaluation functions simpler and
+    consistent.
+    """
 
     class Config:
+        """Configuration of Pydantic model."""
+
         allow_mutation = True
 
     ids: pd.Series
@@ -33,9 +39,14 @@ class ArtifactContainer(BaseModel):
 
 
 class PipeMetadata(BaseModel):
-    """Metadata for a pipe. Currently only has feature_importances, but makes it easy to add more - e.g. which features were dropped."""
+    """Metadata for a pipe.
+
+    Currently only has feature_importances, but makes it easy to add more - e.g. which features were dropped.
+    """
 
     class Config:
+        """Configuration of Pydantic model."""
+
         allow_mutation = True
 
     feature_importances: Optional[dict[str, float]] = None
