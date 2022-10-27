@@ -12,12 +12,9 @@ from pydantic import BaseModel
 from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
-from psycopt2d.utils.configs import FullConfig
-from psycopt2d.utils.utils import (
-    get_percent_lost,
-    infer_outcome_col_name,
-    infer_predictor_col_name,
-)
+from psycopt2d.utils.configs import FullConfigSchema
+from psycopt2d.utils.utils import (get_percent_lost, infer_outcome_col_name,
+                                   infer_predictor_col_name)
 
 msg = Printer(timestamp=True)
 
@@ -62,7 +59,7 @@ class DataLoader:
 
     def __init__(
         self,
-        cfg: FullConfig,
+        cfg: FullConfigSchema,
     ):
         self.cfg = cfg
 
@@ -169,7 +166,7 @@ class DataLoader:
         n_rows_before_modification = dataset.shape[0]
 
         outcome_before_date = (
-            dataset[self.cfg.data.outcome_timestamp_col_name]
+            dataset[self.cfg.data.col_name.outcome_timestamp]
             < self.cfg.data.drop_patient_if_outcome_before_date
         )
 
@@ -249,7 +246,8 @@ class DataLoader:
         dataset = dataset.drop(columns=cols_to_drop)
         return dataset
 
-    def _convert_timestamp_dtype_and_nat(self, dataset: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
         convert 0's to NaT."""
         timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
@@ -399,7 +397,7 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
-        dataset = self._convert_timestamp_dtype_and_nat(dataset)
+        dataset = self.convert_timestamp_dtype_and_nat(dataset)
 
         if self.cfg.data.drop_patient_if_outcome_before_date:
             dataset = self.drop_patient_if_outcome_before_date(dataset=dataset)
@@ -478,7 +476,7 @@ class SplitDataset(BaseModel):
     val: pd.DataFrame
 
 
-def load_train_from_cfg(cfg: FullConfig) -> pd.DataFrame:
+def load_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     """Load train dataset from config.
 
     Args:
@@ -490,7 +488,7 @@ def load_train_from_cfg(cfg: FullConfig) -> pd.DataFrame:
     return DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
 
 
-def load_train_and_val_from_cfg(cfg: FullConfig):
+def load_train_and_val_from_cfg(cfg: FullConfigSchema):
     """Load train and validation data from file."""
 
     loader = DataLoader(cfg=cfg)

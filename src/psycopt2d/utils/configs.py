@@ -138,8 +138,8 @@ class EvalConf(BaseModel):
     lookbehind_bins: list[int]
 
 
-class FullConfig(BaseModel):
-    """A full configuration object."""
+class FullConfigSchema(BaseModel):
+    """A recipe for a full configuration object."""
 
     project: ProjectConf
     data: DataConf
@@ -149,7 +149,7 @@ class FullConfig(BaseModel):
     eval: EvalConf
 
 
-def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfig:
+def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
     Args:
@@ -159,4 +159,4 @@ def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfig:
         FullConfig: Pydantic object
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
-    return FullConfig(**conf)
+    return FullConfigSchema(**conf)

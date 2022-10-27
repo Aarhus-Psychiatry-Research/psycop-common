@@ -17,6 +17,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
+from psycopt2d.evaluate_model import run_full_evaluation
 from psycopt2d.evaluation_dataclasses import EvalDataset, PipeMetadata
 
 # from psycopt2d.evaluation import evaluate_model
@@ -26,11 +27,11 @@ from psycopt2d.preprocessing.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
 )
-from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
+from psycopt2d.utils.configs import FullConfigSchema, omegaconf_to_pydantic_objects
 from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     create_wandb_folders,
-    eval_data_to_disk,
+    eval_ds_cfg_pipe_to_disk,
     flatten_nested_dict,
 )
 
@@ -40,7 +41,7 @@ CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
 os.environ["WANDB_START_METHOD"] = "thread"
 
 
-def create_preprocessing_pipeline(cfg: FullConfig):
+def create_preprocessing_pipeline(cfg: FullConfigSchema):
     """Create preprocessing pipeline based on config."""
     steps = []
 
@@ -103,7 +104,7 @@ def create_model(cfg):
 
 
 def stratified_cross_validation(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     pipe: Pipeline,
     train_df: pd.DataFrame,
     train_col_names: Iterable[str],
@@ -151,7 +152,7 @@ def stratified_cross_validation(
 
 
 def train_and_eval_on_crossvalidation(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
     pipe: Pipeline,
@@ -205,7 +206,7 @@ def train_and_eval_on_crossvalidation(
 
 
 def train_and_eval_on_val_split(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
     pipe: Pipeline,
@@ -368,7 +369,7 @@ def main(cfg: DictConfig):
         # For testing, we can take a FullConfig object instead. Simplifies boilerplate.
         dict_config_to_log = cfg.__dict__
 
-    if not isinstance(cfg, FullConfig):
+    if not isinstance(cfg, FullConfigSchema):
         cfg = omegaconf_to_pydantic_objects(cfg)
 
     msg = Printer(timestamp=True)
@@ -411,27 +412,23 @@ def main(cfg: DictConfig):
         pipe_metadata.feature_importances = pipe["model"].feature_importances_
 
     # Save model predictions, feature importance, and config to disk
-    eval_data_to_disk(
+    eval_ds_cfg_pipe_to_disk(
         eval_dataset=eval_ds,
         cfg=cfg,
         pipe_metadata=pipe_metadata,
         run=run,
     )
 
-    # only run full evaluation if wandb mode mode is online
-    # otherwise delegate to watcher script
-    # if cfg.project.wandb.mode == "run":
-    #     msg.info("Evaluating model")
-    #     evaluate_model(
-    #         cfg=cfg,
-    #         eval_df=eval_df,
-    #         y_col_name=outcome_col_name,
-    #         y_hat_prob_col_name="y_hat_prob",
-    #         feature_importance_dict=get_feature_importance_dict(pipe),
-    #         run=run,
-    #         pipe=pipe,
-    #         train_col_names=train_col_names,
-    #     )
+    if cfg.project.wandb.mode == "run":
+        msg.info("Evaluating model")
+
+        run_full_evaluation(
+            cfg=cfg,
+            eval_dataset=eval_ds,
+            run=run,
+            pipe_metadata=pipe_metadata,
+            save_dir=PROJECT_ROOT / "wandb" / "plots" / run.name,
+        )
 
     roc_auc = roc_auc_score(
         eval_ds.y,

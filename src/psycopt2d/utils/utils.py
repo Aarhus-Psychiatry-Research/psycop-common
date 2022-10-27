@@ -19,7 +19,7 @@ from wasabi import msg
 
 from psycopt2d.evaluation_dataclasses import (
     EvalDataset,
-    FullConfig,
+    FullConfigSchema,
     ModelEvalData,
     PipeMetadata,
 )
@@ -128,7 +128,8 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
 
 
 def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
-    """Rounds a float to the lowest value it is larger than.
+    """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
+    0.9 will be rounded to 0, 1.8 will be rounded to 1, etc.
 
     Args:
         series (pd.Series): The series of floats to round to bin edges.
@@ -138,7 +139,10 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
         A numpy ndarray with the borders.
     """
     _, edges = pd.cut(series, bins=bins, retbins=True)
-    labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
+    labels = [  # pylint: disable=unsubscriptable-object
+        f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]"  # pylint: disable=unsubscriptable-object
+        for i in range(len(bins) - 1)
+    ]
 
     return pd.cut(series, bins=bins, labels=labels)
 
@@ -239,7 +243,7 @@ def positive_rate_to_pred_probs(
     return pd.Series(pred_probs).quantile(thresholds).tolist()
 
 
-def dump_to_pickle(obj: Any, path: str) -> None:
+def dump_to_pickle(obj: Any, path: Union[str, Path]) -> None:
     """Pickles an object to a file.
 
     Args:
@@ -271,7 +275,7 @@ def write_df_to_file(
 
     Args:
         df: Dataset
-        file_path (str): File name.
+        file_path (str): File path. Infers file type from suffix.
     """
 
     file_suffix = file_path.suffix
@@ -302,9 +306,9 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
         return None
 
 
-def eval_data_to_disk(
+def eval_ds_cfg_pipe_to_disk(
     eval_dataset: EvalDataset,
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     pipe_metadata: PipeMetadata,
     run: Optional[Run] = None,
 ) -> None:
@@ -335,11 +339,23 @@ def eval_data_to_disk(
     dir_path.mkdir(parents=True, exist_ok=True)
 
     # Write the files
-    dump_to_pickle(eval_dataset, str(dir_path / "evaluation_dataset.pkl"))
-    dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
-    dump_to_pickle(pipe_metadata, str(dir_path / "pipe_metadata.pkl"))
+    eval_dataset_to_disk(eval_dataset, dir_path / "evaluation_dataset.parquet")
+    dump_to_pickle(cfg, dir_path / "cfg.pkl")
+    dump_to_pickle(pipe_metadata, dir_path / "pipe_metadata.pkl")
 
     msg.good(f"Saved evaluation results to {dir_path}")
+
+
+def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
+    df_template = {}
+
+    for col_name, series in eval_dataset.__dict__.items():
+        if series is not None:
+            df_template[col_name] = series
+
+    df = pd.DataFrame(df_template)
+
+    write_df_to_file(df=df, file_path=file_path)
 
 
 def create_wandb_folders():

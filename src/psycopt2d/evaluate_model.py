@@ -17,7 +17,7 @@ from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
 from psycopt2d.tables.tables import generate_feature_importances_table
-from psycopt2d.utils.configs import FullConfig
+from psycopt2d.utils.configs import FullConfigSchema
 from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization.feature_importance import plot_feature_importances
 from psycopt2d.visualization.performance_over_time import (
@@ -56,7 +56,7 @@ def upload_artifacts(
 
 
 def filter_plot_bins(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
 ):
     """Remove bins that don't make sense given the other items in the config.
 
@@ -81,11 +81,14 @@ def filter_plot_bins(
     if min(lookbehind_bins) >= 0:
         lookbehind_bins = [-d for d in lookbehind_bins]
 
+        # Sort so they're monotonically increasing
+        lookbehind_bins = sorted(lookbehind_bins)
+
     return lookahead_bins, lookbehind_bins
 
 
 def add_base_plots(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     eval_dataset: EvalDataset,
     save_dir: Path,
     lookahead_bins: Sequence[Union[int, float]],
@@ -146,25 +149,26 @@ def add_base_plots(
 
 
 def run_full_evaluation(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     eval_dataset: EvalDataset,
     save_dir: Path,
     run: wandb_run,
     pipe_metadata: Optional[PipeMetadata] = None,
 ):
-    """Run the full evaluation and upload to wandb."""
-    df = pd.DataFrame()
+    """Run the full evaluation and upload to wandb.
 
-    eval_dataset = eval_dataset(
-        ids=df["dw_ek_borger"],
-        pred_timestamps=df["pred_timestamps"],
-        outcome_timestamps=df["outcome_timestamps"],
-        y=df["y"],
-        y_hat_probs=df["y_hat_prob"],
-        y_hat_int=df["y_hat_int"],
-    )
+    Args:
+        cfg: The config for the evaluation.
+        eval_dataset: The dataset to evaluate.
+        save_dir: The directory to save plots to.
+        run: The wandb run to upload to.
+        pipe_metadata: The metadata for the pipe.
 
+    """
     lookahead_bins, lookbehind_bins = filter_plot_bins(cfg=cfg)
+
+    # Create the directory if it doesn't exist
+    save_dir.mkdir(parents=True, exist_ok=True)
 
     artifact_containers = add_base_plots(
         cfg=cfg,

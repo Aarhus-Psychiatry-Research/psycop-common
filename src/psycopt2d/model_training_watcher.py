@@ -15,6 +15,7 @@ from wasabi import msg
 
 from psycopt2d.evaluate_model import run_full_evaluation
 from psycopt2d.evaluation_dataclasses import ModelEvalData
+from psycopt2d.utils.configs import FullConfigSchema
 from psycopt2d.utils.utils import (
     MODEL_PREDICTIONS_PATH,
     PROJECT_ROOT,
@@ -22,6 +23,30 @@ from psycopt2d.utils.utils import (
 )
 
 WANDB_DIR = PROJECT_ROOT / "wandb"
+
+
+def start_watcher(cfg: FullConfigSchema) -> subprocess.Popen:
+    """Start a watcher."""
+    return subprocess.Popen(  # pylint: disable=consider-using-with
+        [
+            "python",
+            "src/psycopt2d/model_training_watcher.py",
+            "--entity",
+            cfg.project.wandb.entity,
+            "--project_name",
+            cfg.project.name,
+            "--n_runs_before_eval",
+            str(cfg.project.watcher.n_runs_before_eval),
+            "--overtaci",
+            str(cfg.eval.save_model_predictions_on_overtaci),
+            "--timeout",
+            "None",
+            "--clean_wandb_dir",
+            str(cfg.project.watcher.archive_all),
+            "--verbose",
+            "True",
+        ],
+    )
 
 
 class RunInformation(BaseModel):

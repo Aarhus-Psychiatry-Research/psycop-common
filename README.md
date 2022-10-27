@@ -21,7 +21,7 @@ python src/psycopt2d/train_model.py --config-name test_config.yaml +model=xgboos
 
 To test new integrations with WandB:
 ```python
-python src/psycopt2d/train_model.py +model=xgboost project.wandb.mode="run" --config-name integration_testing.yaml
+python src/psycopt2d/train_model.py +model=xgboost project.wandb.mode="run" --config-name integration_test.yaml
 ```
 
 

@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from psycopt2d.utils.configs import BaseModel, FullConfig
+from psycopt2d.utils.configs import BaseModel, FullConfigSchema
 
 
 class EvalDataset(BaseModel):
@@ -56,5 +56,5 @@ class ModelEvalData(BaseModel):
     """Dataclass for model evaluation data."""
 
     eval_dataset: EvalDataset
-    cfg: FullConfig
+    cfg: FullConfigSchema
     pipe_metadata: Optional[PipeMetadata] = None

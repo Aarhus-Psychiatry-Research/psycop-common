@@ -8,7 +8,7 @@ from psycopt2d.train_model import main
 from psycopt2d.utils.configs import omegaconf_to_pydantic_objects
 
 CONFIG_DIR_PATH = "../src/psycopt2d/config/"
-INTEGRATION_TEST_FILE_NAME = "integration_testing.yaml"
+INTEGRATION_TEST_FILE_NAME = "integration_test.yaml"
 INTEGRATION_TESTING_MODEL = "model=logistic-regression"
 
 

@@ -10,7 +10,7 @@ def test_load_lookbehind_exceeds_lookbehind_threshold():
     lookbehind threshold."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
-            config_name="integration_testing.yaml",
+            config_name="integration_test.yaml",
             overrides=["data.min_lookbehind_days=60"],
         )
 
@@ -25,7 +25,7 @@ def test_load_lookbehind_not_in_lookbehind_combination():
     specified lookbehind combination list."""
     with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
         cfg = compose(
-            config_name="integration_testing.yaml",
+            config_name="integration_test.yaml",
             overrides=["data.lookbehind_combination=[30]"],
         )
 

@@ -97,7 +97,7 @@ def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
 
 def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
     plot_auc_by_time_from_first_visit(
-        eval_dataset=synth_eval_dataset
+        eval_dataset=synth_eval_dataset,
     )
 
 
