@@ -17,7 +17,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
-from psycopt2d.evaluation import evaluate_model
+# from psycopt2d.evaluation import evaluate_model
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
 from psycopt2d.preprocessing.feature_transformers import (
@@ -380,18 +380,18 @@ def main(cfg: DictConfig):
 
     # only run full evaluation if wandb mode mode is online
     # otherwise delegate to watcher script
-    if cfg.project.wandb.mode == "run":
-        msg.info("Evaluating model")
-        evaluate_model(
-            cfg=cfg,
-            eval_df=eval_df,
-            y_col_name=outcome_col_name,
-            y_hat_prob_col_name="y_hat_prob",
-            feature_importance_dict=get_feature_importance_dict(pipe),
-            run=run,
-            pipe=pipe,
-            train_col_names=train_col_names,
-        )
+    # if cfg.project.wandb.mode == "run":
+    #     msg.info("Evaluating model")
+    #     evaluate_model(
+    #         cfg=cfg,
+    #         eval_df=eval_df,
+    #         y_col_name=outcome_col_name,
+    #         y_hat_prob_col_name="y_hat_prob",
+    #         feature_importance_dict=get_feature_importance_dict(pipe),
+    #         run=run,
+    #         pipe=pipe,
+    #         train_col_names=train_col_names,
+    #     )
 
     roc_auc = roc_auc_score(
         eval_df[outcome_col_name],

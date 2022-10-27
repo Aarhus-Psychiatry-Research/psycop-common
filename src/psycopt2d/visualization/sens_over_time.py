@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from psycopt2d.evaluation_class_v2 import EvalDataset
+from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.utils.utils import round_floats_to_edge
 
 
@@ -283,6 +283,8 @@ def plot_sensitivity_by_time_to_outcome_heatmap(
     positive rate thresholds.
 
     Args:
+        eval_dataset (EvalDataset): EvalDataset object.
+        pred_proba_thresholds (list[float]): List of positive rate thresholds.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
         color_map (str, optional): Colormap to use. Defaults to "PuBu".
         colorbar_label (str, optional): Colorbar label. Defaults to "Sensitivity".

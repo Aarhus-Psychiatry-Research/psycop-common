@@ -43,20 +43,21 @@ def output_table(
 
 
 def generate_feature_importances_table(
-    feature_names: Iterable[str],
-    feature_importances: Iterable[str],
+    feature_importance_dict: dict[str, float],
     output_format: str = "wandb_table",
 ) -> Union[pd.DataFrame, wandb.Table]:
     """Generate table with feature importances.
 
     Args:
-        feature_names (Iterable[str]): The names of the columns to generate feature_importances for
-        feature_importances (Iterable[str]): The feature importances
+        feature_importance_dict (dict[str, float]): Dictionary with feature importances
         output_format (str, optional): The output format. Takes one of "html", "df", "wandb_table". Defaults to "wandb_table".
 
     Returns:
         Union[pd.DataFrame, wandb.Table]: The table with feature importances
     """
+    feature_names = list(feature_importance_dict.keys())
+    feature_importances = list(feature_importance_dict.values())
+
 
     df = pd.DataFrame(
         {"predictor": feature_names, "feature_importance": feature_importances},

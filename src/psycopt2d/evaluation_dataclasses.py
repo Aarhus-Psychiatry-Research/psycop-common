@@ -1,6 +1,6 @@
 from pathlib import Path
-from typing import Any, Callable, Optional, Union
-
+from typing import Any, Optional, Union
+from collections.abc import Callable
 import pandas as pd
 
 from psycopt2d.utils.configs import BaseModel
@@ -31,4 +31,4 @@ class ArtifactContainer(BaseModel):
 
 
 class PipeMetadata(BaseModel):
-    feature_importances: dict[str, float]
+    feature_importances: Optional[dict[str, float]] = None

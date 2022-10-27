@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from utils_for_testing import add_age_gender
 
-from psycopt2d.evaluation_class_v2 import EvalDataset
+from psycopt2d.evaluation_dataclasses import EvalDataset
 
 
 @pytest.fixture(scope="function")

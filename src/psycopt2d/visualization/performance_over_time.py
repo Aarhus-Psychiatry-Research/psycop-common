@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score
 
-from psycopt2d.evaluation_class_v2 import EvalDataset
+from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.utils.utils import bin_continuous_data, round_floats_to_edge
 from psycopt2d.visualization.base_charts import plot_basic_chart
 
@@ -175,7 +175,6 @@ def create_performance_by_time_from_event_df(
 
 def plot_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
-    first_visit_timestamps: Iterable[pd.Timestamp],
     bins: tuple = (0, 28, 182, 365, 730, 1825),
     prettify_bins: Optional[bool] = True,
     save_path: Optional[Path] = None,
@@ -183,9 +182,9 @@ def plot_auc_by_time_from_first_visit(
     """Plot AUC as a function of time to first visit.
 
     Args:
-        prediction_timestamps (Iterable[pd.Timestamp]): Timestamps of the predictions
+        eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
-        pretty_bins (bool, optional): Prettify bin names. I.e. make
+        prettify_bins (bool, optional): Prettify bin names. I.e. make
         bins look like "1-7" instead of "[1-7)" Defaults to True.
         save_path (Path, optional): Path to save figure. Defaults to None.
 
@@ -257,7 +256,7 @@ def plot_metric_by_time_until_diagnosis(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_int,
         event_timestamps=eval_dataset.outcome_timestamps,
-        prediction_timestamps=eval_dataset.prediction_timestamps,
+        prediction_timestamps=eval_dataset.pred_timestamps,
         direction="event-prediction",
         bins=bins,
         pretty_bins=pretty_bins,

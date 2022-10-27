@@ -3,6 +3,8 @@ from collections.abc import Iterable
 from pathlib import Path
 
 import pandas as pd
+from psycopt2d.tables.tables import generate_feature_importances_table
+from psycopt2d.visualization.feature_importance import plot_feature_importances
 import wandb
 from omegaconf import DictConfig
 from sklearn.metrics import recall_score
@@ -12,6 +14,7 @@ from psycopt2d.evaluation_dataclasses import (
     ArtifactContainer,
     ArtifactSpecification,
     EvalDataset,
+    PipeMetadata,
 )
 from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
@@ -47,24 +50,24 @@ class ModelEvaluator:
         )
 
     def upload_artifacts(self, run: wandb_run):
-        for artifact in self.artifact_containers:
-            if isinstance(artifact.artifact, Path):
+        for artifact_container in self.artifact_containers:
+            if isinstance(artifact_container.artifact, Path):
                 log_image_to_wandb(
-                    chart_path=artifact.artifact,
-                    chart_name=artifact.label,
+                    chart_path=artifact_container.artifact,
+                    chart_name=artifact_container.label,
                     run=run,
                 )
-            elif isinstance(artifact.artifact, pd.DataFrame):
-                wandb_table = wandb.Table(dataframe=artifact.artifact)
-                run.log_artifact({artifact.label: wandb_table})
+            elif isinstance(artifact_container.artifact, pd.DataFrame):
+                wandb_table = wandb.Table(dataframe=artifact_container.artifact)
+                run.log_artifact({artifact_container.label: wandb_table})
             else:
-                raise ValueError("Artifact type is ")
+                raise ValueError(f"Artifact type is {type(artifact_container.artifact)}")
 
 
 def run_full_evaluation(
     cfg: DictConfig,
     eval_dataset: EvalDataset,
-    artifact_specification: ArtifactSpecification,
+    pipe_metadata: PipeMetadata,
     save_dir: Path,
     run: wandb_run,
 ):
@@ -104,25 +107,25 @@ def run_full_evaluation(
 
     evaluator = ModelEvaluator(eval_dataset=eval_dataset)
 
-    artifact_specifications = (
-        artifact_specification(
+    artifact_specifications = [
+        ArtifactSpecification(
             label="sensitivity_by_time_by_threshold",
             artifact_generator_fn=plot_sensitivity_by_time_to_outcome_heatmap,
         ),
-        artifact_specification(
+        ArtifactSpecification(
             label="auc_by_time_from_first_visit",
             artifact_generator_fn=plot_auc_by_time_from_first_visit,
         ),
-        artifact_specification(
+        ArtifactSpecification(
             label="auc_by_calendar_time",
             artifact_generator_fn=plot_metric_by_calendar_time,
         ),
-        artifact_specification(
+        ArtifactSpecification(
             label="recall_by_time_to_diagnosis",
             artifact_generator_fn=plot_metric_by_time_until_diagnosis,
             kwargs={"metric": recall_score, "y_title": "Sensitivity (recall)"},
         ),
-        artifact_specification(
+        ArtifactSpecification(
             label="performance_by_threshold",
             artifact_generator_fn=generate_performance_by_positive_rate_table,
             kwargs={
@@ -131,10 +134,26 @@ def run_full_evaluation(
                 "output_format": "df",
             },
         ),
-    )
+    ]
+
+    if pipe_metadata.feature_importances:
+        artifact_specifications.append(
+            ArtifactSpecification(
+                label="feature_importances",
+                artifact_generator_fn = plot_feature_importances,
+                kwargs={"feature_importance_dict": pipe_metadata.feature_importances},
+            ),
+            ArtifactSpecification(
+                label="feature_importances",
+                artifact_generator_fn = generate_feature_importances_table,
+                kwargs={"feature_importance_dict": pipe_metadata.feature_importances, "output_format": "df"},
+            )
+        )
+
+
 
     for artifact_spec in artifact_specifications:
-        artifact_spec.kwargs["save_path"] = save_dir / artifact_spec.name
+        artifact_spec.kwargs["save_path"] = save_dir / artifact_spec.label
         evaluator.add_artifact(artifact_spec=artifact_spec)
 
     evaluator.upload_artifacts(run=run)

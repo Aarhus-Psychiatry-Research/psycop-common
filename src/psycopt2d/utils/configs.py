@@ -23,6 +23,7 @@ class BaseModel(PydanticBaseModel):
 
         arbitrary_types_allowed = True
         allow_mutation = False
+        extras = "forbid"
 
 
 class WandbConf(BaseModel):
