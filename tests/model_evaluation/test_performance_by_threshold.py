@@ -8,10 +8,10 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 
 import pandas as pd
 
-from psycopt2d.evaluation_class_v2 import (
+from psycopt2d.evaluation_dataclasses import (
+    ArtifactContainer,
     ArtifactSpecification,
     EvalDataset,
-    ModelEvaluator,
 )
 from psycopt2d.tables.performance_by_threshold import (
     days_from_first_positive_to_diagnosis,
@@ -21,8 +21,6 @@ from psycopt2d.utils.utils import positive_rate_to_pred_probs
 
 
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
-    model_evaluator = ModelEvaluator(eval_dataset=synth_eval_dataset)
-
     positive_rate_thresholds = [0.9, 0.5, 0.1]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
@@ -30,19 +28,17 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
         positive_rate_thresholds=positive_rate_thresholds,
     )
 
-    table_spec = ArtifactSpecification(
+    table_spec = ArtifactContainer(
         label="performance_by_threshold_table",
-        artifact_generator_fn=generate_performance_by_positive_rate_table,
-        kwargs={
-            "positive_rate_thresholds": positive_rate_thresholds,
-            "pred_proba_thresholds": pred_proba_thresholds,
-            "output_format": "df",
-        },
+        artifact=generate_performance_by_positive_rate_table(
+            eval_dataset=synth_eval_dataset,
+            positive_rate_thresholds=positive_rate_thresholds,
+            pred_proba_thresholds=pred_proba_thresholds,
+            output_format="df",
+        ),
     )
 
-    model_evaluator.add_artifact(artifact_spec=table_spec)
-
-    output_table = model_evaluator.artifact_containers[0].artifact
+    output_table = table_spec.artifact
 
     expected_df = pd.DataFrame(
         {

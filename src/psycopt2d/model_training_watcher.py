@@ -13,8 +13,8 @@ from wandb.apis.public import Api  # pylint: disable=no-name-in-module
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
-from psycopt2d.configs import ModelEvalData
-from psycopt2d.evaluation import evaluate_model
+from psycopt2d.evaluate_model import run_full_evaluation
+from psycopt2d.evaluation_dataclasses import ModelEvalData
 from psycopt2d.utils.utils import (
     MODEL_PREDICTIONS_PATH,
     PROJECT_ROOT,
@@ -138,22 +138,19 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
     def _do_evaluation(self, run_id: str) -> None:
         """Do the full evaluation of the run and upload to wandb."""
         # get evaluation data
-        eval_data = self._get_eval_data(run_id)
-        # infer required column names
-        y_col_name = infer_outcome_col_name(df=eval_data.df, prefix="outc_")[0]
-        y_hat_prob_col_name = infer_y_hat_prob_col_name(df=eval_data.df)[0]
-        # get wandb run
+        eval_data = self._get_eval_data(run_id=run_id)
+
         run: Run = wandb.init(project=self.project_name, entity=self.entity, id=run_id)  # type: ignore
 
         # run evaluation
-        evaluate_model(
+        run_full_evaluation(
             cfg=eval_data.cfg,
-            eval_df=eval_data.df,
-            y_col_name=y_col_name,
-            y_hat_prob_col_name=y_hat_prob_col_name,
+            eval_dataset=eval_data.eval_dataset,
+            pipe_metadata=eval_data.pipe_metadata,
             run=run,
-            feature_importance_dict=eval_data.feature_importance_dict,
+            save_dir=PROJECT_ROOT / "wandb" / run.name / ".tmp",
         )
+
         run.finish()
 
     def _get_wandb_run(self, run_id: str) -> Run:

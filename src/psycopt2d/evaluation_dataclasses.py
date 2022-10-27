@@ -1,19 +1,24 @@
-from pathlib import Path
-from typing import Any, Optional, Union
 from collections.abc import Callable
+from datetime import date, datetime
+from pathlib import Path
+from typing import Any, Optional, Sequence, Union
+
 import pandas as pd
 
-from psycopt2d.utils.configs import BaseModel
+from psycopt2d.utils.configs import BaseModel, FullConfig
 
 
 class EvalDataset(BaseModel):
+    class Config:
+        allow_mutation = True
+
     ids: pd.Series
     pred_timestamps: pd.Series
     outcome_timestamps: pd.Series
     y: pd.Series
     y_hat_probs: pd.Series
     y_hat_int: pd.Series
-    age: pd.Series
+    age: Optional[pd.Series]
 
 
 class ArtifactSpecification(BaseModel):
@@ -31,4 +36,15 @@ class ArtifactContainer(BaseModel):
 
 
 class PipeMetadata(BaseModel):
+    class Config:
+        allow_mutation = True
+
     feature_importances: Optional[dict[str, float]] = None
+
+
+class ModelEvalData(BaseModel):
+    """Dataclass for model evaluation data."""
+
+    eval_dataset: EvalDataset
+    cfg: FullConfig
+    pipe_metadata: Optional[PipeMetadata] = None

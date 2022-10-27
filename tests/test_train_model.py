@@ -9,7 +9,7 @@ from psycopt2d.utils.configs import omegaconf_to_pydantic_objects
 
 CONFIG_DIR_PATH = "../src/psycopt2d/config/"
 INTEGRATION_TEST_FILE_NAME = "integration_testing.yaml"
-INTEGRATION_TESTING_MODEL_OVERRIDE = "model=logistic-regression"
+INTEGRATION_TESTING_MODEL = "model=logistic-regression"
 
 
 @pytest.mark.parametrize("model_name", MODELS.keys())
@@ -42,7 +42,7 @@ def test_integration_test():
 
         cfg = compose(
             config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[INTEGRATION_TESTING_MODEL_OVERRIDE],
+            overrides=[INTEGRATION_TESTING_MODEL],
         )
         main(cfg)
 
@@ -52,8 +52,9 @@ def test_crossvalidation():
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
         cfg = compose(
             config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[INTEGRATION_TESTING_MODEL_OVERRIDE, "+data.n_splits=2"],
+            overrides=[INTEGRATION_TESTING_MODEL, "train.n_splits=2"],
         )
+
         main(cfg)
 
 
@@ -63,8 +64,8 @@ def test_min_prediction_time_date():
         cfg = compose(
             config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[
-                INTEGRATION_TESTING_MODEL_OVERRIDE,
-                "+data.min_prediction_time_date=1972-01-01",
+                INTEGRATION_TESTING_MODEL,
+                "data.min_prediction_time_date=1972-01-01",
             ],
         )
         main(cfg)
@@ -77,7 +78,7 @@ def test_feature_selection():
         cfg = compose(
             config_name=INTEGRATION_TEST_FILE_NAME,
             overrides=[
-                INTEGRATION_TESTING_MODEL_OVERRIDE,
+                INTEGRATION_TESTING_MODEL,
                 "preprocessing.feature_selection.name=f_classif",
                 "preprocessing.feature_selection.params.percentile=10",
             ],

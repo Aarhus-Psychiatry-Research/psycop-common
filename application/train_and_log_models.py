@@ -203,9 +203,9 @@ def get_possible_look_distances(
 
     # Don't try look distance combinations which will result in 0 rows
     max_distance_in_dataset_days = (
-        max(train[cfg.data.pred_timestamp_col_name])
+        max(train[cfg.data.col_name.pred_timestamp])
         - min(
-            train[cfg.data.pred_timestamp_col_name],
+            train[cfg.data.col_name.pred_timestamp],
         )
     ).days
 

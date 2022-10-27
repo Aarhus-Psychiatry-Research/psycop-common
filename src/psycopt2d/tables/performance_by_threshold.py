@@ -7,7 +7,7 @@ import pandas as pd
 import wandb
 from sklearn.metrics import confusion_matrix
 
-from psycopt2d.evaluation_class_v2 import EvalDataset
+from psycopt2d.evaluation_dataclasses import EvalDataset
 
 
 def performance_by_threshold(  # pylint: disable=too-many-locals

@@ -17,9 +17,13 @@ from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
-from psycopt2d.configs import ModelEvalData
+from psycopt2d.evaluation_dataclasses import (
+    EvalDataset,
+    FullConfig,
+    ModelEvalData,
+    PipeMetadata,
+)
 from psycopt2d.model_performance import ModelPerformance
-from psycopt2d.utils.configs import FullConfig
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
@@ -298,19 +302,18 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
         return None
 
 
-def prediction_df_with_metadata_to_disk(
-    df: pd.DataFrame,
+def eval_data_to_disk(
+    eval_dataset: EvalDataset,
     cfg: FullConfig,
-    pipe: Pipeline,
+    pipe_metadata: PipeMetadata,
     run: Optional[Run] = None,
 ) -> None:
     """Saves prediction dataframe, hydra config and feature names to disk.
 
     Args:
-        df (pd.DataFrame): Dataframe to save.
-        cfg (DictConfig): Hydra config.
-        pipe (Pipeline): Sklearn pipeline. Used to get feature names and feature
-            importances. Can potentially also save the entire model pipeline.
+        evaluation_dataset (EvalDataset): Evaluation dataset.
+        cfg (FullConfig): Full config.
+        pipe_metadata (PipeMetadata): Pipe metadata.
         run (Run): Wandb run. Used for getting name of the run.
     """
     model_args = format_dict_for_printing(cfg.model)
@@ -332,13 +335,9 @@ def prediction_df_with_metadata_to_disk(
     dir_path.mkdir(parents=True, exist_ok=True)
 
     # Write the files
+    dump_to_pickle(eval_dataset, str(dir_path / "evaluation_dataset.pkl"))
     dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
-    write_df_to_file(df, dir_path / "df.parquet")
-    if (feature_importance_dict := get_feature_importance_dict(pipe)) is not None:
-        dump_to_pickle(
-            obj=feature_importance_dict,
-            path=str(dir_path / "feature_importance.pkl"),
-        )
+    dump_to_pickle(pipe_metadata, str(dir_path / "pipe_metadata.pkl"))
 
     msg.good(f"Saved evaluation results to {dir_path}")
 
@@ -378,19 +377,14 @@ def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
     Returns:
         ModelEvalData: Evaluation data.
     """
-    df = pd.read_parquet(model_data_dir / "df.parquet")
+    eval_dataset = read_pickle(model_data_dir / "evaluation_dataset.pkl")
     cfg = read_pickle(model_data_dir / "cfg.pkl")
-    if (model_data_dir / "feature_importance.pkl").exists():
-        feature_importance_dict = read_pickle(
-            str(model_data_dir / "feature_importance.pkl"),
-        )
-    else:
-        feature_importance_dict = None
+    pipe_metadata = read_pickle(model_data_dir / "pipe_metadata.pkl")
 
     return ModelEvalData(
-        df=df,
+        eval_dataset=eval_dataset,
         cfg=cfg,
-        feature_importance_dict=feature_importance_dict,
+        pipe_metadata=pipe_metadata,
     )
 
 

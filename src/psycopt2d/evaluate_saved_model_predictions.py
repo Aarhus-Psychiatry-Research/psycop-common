@@ -76,8 +76,8 @@ if __name__ == "__main__":
 
     y_hat_prob_name = infer_y_hat_prob_col_name(eval_data.df)
 
-    first_visit_timestamp = eval_data.df.groupby(eval_data.cfg.data.id_col_name)[
-        eval_data.cfg.data.pred_timestamp_col_name
+    first_visit_timestamp = eval_data.df.groupby(eval_data.cfg.data.col_name.id)[
+        eval_data.cfg.data.col_name.pred_timestamp
     ].transform("min")
 
     # Do whatever extra evaluation you want to here

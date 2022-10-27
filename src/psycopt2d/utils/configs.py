@@ -13,6 +13,7 @@ from typing import Optional, Union
 
 from omegaconf import DictConfig, OmegaConf
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic import Extra
 
 
 class BaseModel(PydanticBaseModel):
@@ -23,7 +24,7 @@ class BaseModel(PydanticBaseModel):
 
         arbitrary_types_allowed = True
         allow_mutation = False
-        extras = "forbid"
+        extra = Extra.forbid
 
 
 class WandbConf(BaseModel):
@@ -50,6 +51,15 @@ class ProjectConf(BaseModel):
     name: str = "psycopt2d"
     seed: int
     watcher: WatcherConf
+    gpu: bool
+
+
+class ColumnNames(BaseModel):
+    pred_prefix: str  # prefix of predictor columns
+    pred_timestamp: str  # (str): Column name for prediction times
+    outcome_timestamp: str  # (str): Column name for outcome timestamps
+    id: str  # (str): Citizen colnames
+    age: Optional[str]  # Name of the age column
 
 
 class DataConf(BaseModel):
@@ -62,10 +72,7 @@ class DataConf(BaseModel):
     suffix: str  # File suffix to load.
 
     # Feature specs
-    pred_col_name_prefix: str  # prefix of predictor columns
-    pred_timestamp_col_name: str  # (str): Column name for prediction times
-    outcome_timestamp_col_name: str  # (str): Column name for outcome timestamps
-    id_col_name: str  # (str): Citizen colnames
+    col_name: ColumnNames
 
     # Looking ahead
     min_lookahead_days: int  # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
@@ -90,7 +97,7 @@ class PreprocessingConf(BaseModel):
     """Preprocessing config."""
 
     convert_to_boolean: bool  # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
-    convert_datetimes_to: bool  # (str): Options include ordinal or False
+    convert_datetimes_to_ordinal: bool  # (str): Whether to convert datetimes to ordinal.
     imputation_method: Optional[str]  # (str): Options include "most_frequent"
     transform: Optional[
         str
@@ -125,8 +132,8 @@ class EvalConf(BaseModel):
 
     positive_rate_thresholds: list[int]
     save_model_predictions_on_overtaci: bool
-    date_bins_ahead: list[int]
-    date_bins_behind: list[int]
+    lookahead_bins: list[int]
+    lookbehind_bins: list[int]
 
 
 class FullConfig(BaseModel):
