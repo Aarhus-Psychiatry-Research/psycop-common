@@ -6,13 +6,13 @@ data:
   min_lookahead_days: 30
   min_lookbehind_days: 100
   min_prediction_time_date: null
-  pred_col_name_prefix: pred_
-  pred_timestamp_col_name: timestamp
-  outcome_timestamp_col_name: timestamp_outcome
-  id_col_name: citizen_ids
+  col_name:
+    pred_prefix: pred_
+    pred_timestamp: timestamp
+    outcome_timestamp: timestamp_outcome
+    id: citizen_ids
 
   # Looking ahead
-  lookahead_days: 30
   drop_patient_if_outcome_before_date: null
 
   # Looking behind

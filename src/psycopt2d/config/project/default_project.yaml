@@ -1,5 +1,6 @@
 name: psycop-t2d
 seed: 42
+gpu: true
 
 wandb:
   entity: "psycop" # Which entity to run WanDB in.
