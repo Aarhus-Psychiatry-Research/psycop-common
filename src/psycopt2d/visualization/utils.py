@@ -1,6 +1,5 @@
 # pylint: skip-file
 from collections.abc import Callable, Sequence
-from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Optional, Union
 
@@ -47,6 +46,25 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
         return metric(df["y"], df["y_hat"])
 
 
+def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
+    """Selects the input to use for the metric function.
+
+    Args:
+        metric_fn (Callable): Metric function
+        eval_dataset (EvalDataset): Evaluation dataset
+
+    Returns:
+        str: Input name
+    """
+
+    fn2input = {roc_auc_score: eval_dataset.y_hat_int}
+
+    if metric_fn in fn2input:
+        return fn2input[metric_fn]
+    else:
+        raise ValueError(f"Don't know which input to use for {metric_fn}")
+
+
 def create_performance_by_input(
     eval_dataset: EvalDataset,
     input: Sequence[Union[int, float]],
@@ -76,7 +94,7 @@ def create_performance_by_input(
             "y": eval_dataset.y,
             "y_hat": metric_fn_to_input(metric_fn=metric_fn, eval_dataset=eval_dataset),
             input_name: input,
-        }
+        },
     )
 
     # bin data
@@ -93,22 +111,3 @@ def create_performance_by_input(
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
-
-
-def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
-    """Selects the input to use for the metric function.
-
-    Args:
-        metric_fn (Callable): Metric function
-        eval_dataset (EvalDataset): Evaluation dataset
-
-    Returns:
-        str: Input name
-    """
-
-    fn2input = {roc_auc_score: eval_dataset.y_hat_int}
-
-    if metric_fn in fn2input:
-        return fn2input[metric_fn]
-    else:
-        raise ValueError(f"Don't know which input to use for {metric_fn}")
