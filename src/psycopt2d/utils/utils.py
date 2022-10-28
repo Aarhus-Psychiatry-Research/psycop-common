@@ -183,7 +183,7 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
 
     Args:
         series (pd.Series): Series with continuous data such as age
-        bins (list[int]): Desired bins
+        bins (list[int]): Desired bins. Last value creates a bin from the last value to infinity.
 
     Returns:
         pd.Series: Binned data
@@ -203,11 +203,25 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     8      51+
     """
     labels = []
+
+    if isinstance(bins, tuple):
+        bins = list(bins)
+    # Apend maximum value from series ot bins set upper cut-off if larger than maximum bins value
+    if series.max() > max(bins):
+        bins.append(series.max())
+
+    # Create bin labels
     for i, bin_v in enumerate(bins):
-        if i == 0:
-            labels.append(f"{bin_v}-{bins[i+1]}")
-        elif i < len(bins) - 2:
-            labels.append(f"{bin_v+1}-{bins[i+1]}")
+        # If not the final bin
+        if i < len(bins) - 2:
+            # If the difference between the current bin and the next bin is 1, the bin label is a single value and not an interval
+            if (bins[i + 1] - bin_v) == 1:
+                labels.append(f"{bin_v}")
+            # Else generate bin labels as intervals
+            elif i == 0:
+                labels.append(f"{bin_v}-{bins[i+1]}")
+            else:
+                labels.append(f"{bin_v+1}-{bins[i+1]}")
         elif i == len(bins) - 2:
             labels.append(f"{bin_v+1}+")
         else:
@@ -311,13 +325,23 @@ def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
 
     Handles csv and parquet files based on suffix.
     """
+    # Add base columns and custom columns
     df_template = {
         col_name: series
         for col_name, series in eval_dataset.__dict__.items()
         if series is not None
+    } | {
+        col_name: series
+        for col_name, series in eval_dataset.custom.__dict__.items()
+        if series is not None
     }
 
-    df = pd.DataFrame(df_template)
+    # Remove items that aren't series, e.g. the top level CustomColumns object
+    template_filtered = {
+        k: v for k, v in df_template.items() if isinstance(v, pd.Series)
+    }
+
+    df = pd.DataFrame(template_filtered)
 
     write_df_to_file(df=df, file_path=file_path)
 

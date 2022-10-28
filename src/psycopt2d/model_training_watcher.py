@@ -185,7 +185,7 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
 
     def _get_run_attribute(self, run: Run, attribute: str) -> Any:
         """Get an attribute from a wandb run."""
-        if attribute in run.summary:
+        if attribute in run.summary:  # type: ignore
             return run.summary[attribute]
         if self.verbose:
             msg.info(

@@ -6,11 +6,15 @@ data:
   min_lookahead_days: 30
   min_lookbehind_days: 100
   min_prediction_time_date: null
+  pred_prefix: pred_
+
   col_name:
-    pred_prefix: pred_
     pred_timestamp: timestamp
     outcome_timestamp: timestamp_outcome
     id: citizen_ids
+    age: pred_age
+    custom:
+      n_hba1c: hba1c_within_9999_days_count_nan
 
   # Looking ahead
   drop_patient_if_outcome_before_date: null

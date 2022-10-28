@@ -1,16 +1,33 @@
 """Generate synth data with outcome."""
-
 import numpy as np
 from psycopmlutils.synth_data_generator.synth_prediction_times_generator import (
     generate_synth_data,
 )
 
+from psycopt2d.utils.utils import PROJECT_ROOT
+
 
 def test_synth_data_generator():
     """Test synth data generator."""
+    override_dataset_on_test_run = False
+
     column_specifications = [
         {"citizen_ids": {"column_type": "uniform_int", "min": 0, "max": 1_200_001}},
         {"timestamp": {"column_type": "datetime_uniform", "min": 0, "max": 5 * 365}},
+        {
+            "pred_age": {
+                "column_type": "uniform_int",
+                "min": 18,
+                "max": 90,
+            },
+        },
+        {
+            "hba1c_within_9999_days_count_nan": {
+                "column_type": "uniform_int",
+                "min": 0,
+                "max": 8,
+            },
+        },
         {
             "timestamp_outcome": {
                 "column_type": "datetime_uniform",
@@ -66,6 +83,17 @@ def test_synth_data_generator():
             logistic_outcome_model="1*pred_hba1c_within_100_days_max_fallback_nan+1*pred_hdl_within_100_days_max_fallback_nan",
             prob_outcome=0.08,
         )
+
+        if override_dataset_on_test_run:
+            # Save to csv
+            synth_df.to_csv(
+                PROJECT_ROOT
+                / "tests"
+                / "test_data"
+                / "synth_splits"
+                / f"synth_{split}.csv",
+                index=False,
+            )
 
         synth_df.describe()
 

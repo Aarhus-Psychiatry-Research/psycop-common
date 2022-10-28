@@ -3,6 +3,7 @@
 2. AUC by time from first visit
 3. AUC by time until diagnosis
 """
+
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Optional, Union
@@ -14,33 +15,12 @@ from sklearn.metrics import f1_score, roc_auc_score
 from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.utils.utils import bin_continuous_data, round_floats_to_edge
 from psycopt2d.visualization.base_charts import plot_basic_chart
-
-
-def _calc_performance(df: pd.DataFrame, metric: Callable) -> float:
-    """Calculates performance metrics of a df with 'y' and 'y_hat' columns.
-
-    Args:
-        df (pd.DataFrame): dataframe
-        metric (Callable): which metric to calculate
-
-    Returns:
-        float: performance
-    """
-    if df.empty:
-        return np.nan
-    elif metric is roc_auc_score and len(df["y"].unique()) == 1:
-        # msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan") This was hit almost once per month, making it very hard to read.
-        # Many of our models probably try to predict the majority class.
-        # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
-        # For now, suppressing this message.
-        return np.nan
-    else:
-        return metric(df["y"], df["y_hat"])
+from psycopt2d.visualization.utils import calc_performance
 
 
 def create_performance_by_calendar_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[int],
+    y_hat: Iterable[Union[int, float]],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -49,7 +29,7 @@ def create_performance_by_calendar_time_df(
 
     Args:
         labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted label or probability depending on metric
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
         bin_period (str): How to bin time. "M" for year/month, "Y" for year
@@ -60,7 +40,7 @@ def create_performance_by_calendar_time_df(
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
     df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
 
-    output_df = df.groupby("time_bin").apply(_calc_performance, metric_fn)
+    output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
@@ -106,13 +86,13 @@ def plot_metric_by_calendar_time(
 
 def create_performance_by_time_from_event_df(
     labels: Iterable[int],
-    y_hat: Iterable[int],
+    y_hat: Iterable[Union[int, float]],
     event_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     direction: str,
     bins: Iterable[float],
-    pretty_bins: Optional[bool] = True,
+    prettify_bins: Optional[bool] = True,
     drop_na_events: Optional[bool] = True,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
@@ -120,15 +100,15 @@ def create_performance_by_time_from_event_df(
 
     Args:
         labels (Iterable[int]): True labels
-        y_hat (Iterable[int]): Predicted probabilities or labels depending on metric
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         event_timestamps (Iterable[pd.Timestamp]): Timestamp of event (e.g. first visit)
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
         metric_fn (Callable): Which performance metric function to use (e.g. roc_auc_score)
         direction (str): Which direction to calculate time difference.
         Can either be 'prediction-event' or 'event-prediction'.
         bins (Iterable[float]): Bins to group by.
-        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
-            bins look like "1-7" instead of "[1-7)". Defaults to True.
+        prettify_bins (bool, optional): Whether to prettify bin names. I.e. make
+            bins look like "1-7" instead of "[1-7]". Defaults to True.
         drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
 
     Returns:
@@ -164,11 +144,11 @@ def create_performance_by_time_from_event_df(
         )
 
     # bin data
-    bin_fn = bin_continuous_data if pretty_bins else round_floats_to_edge
+    bin_fn = bin_continuous_data if prettify_bins else round_floats_to_edge
     df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
 
     # Calc performance and prettify output
-    output_df = df.groupby("days_from_event_binned").apply(_calc_performance, metric_fn)
+    output_df = df.groupby("days_from_event_binned").apply(calc_performance, metric_fn)
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
 
@@ -204,7 +184,7 @@ def plot_auc_by_time_from_first_visit(
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="prediction-event",
         bins=bins,
-        pretty_bins=prettify_bins,
+        prettify_bins=prettify_bins,
         drop_na_events=False,
         metric_fn=roc_auc_score,
     )
@@ -231,7 +211,7 @@ def plot_metric_by_time_until_diagnosis(
         -28,
         -0,
     ),
-    pretty_bins: bool = True,
+    prettify_bins: bool = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
     save_path: Optional[Path] = None,
@@ -243,8 +223,8 @@ def plot_metric_by_time_until_diagnosis(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Negative values indicate days after
-        diagnosis. Defaults to [ -1825, -730, -365, -182, -28, -14, -7, -1, 0, 1, 7, 14, 28, 182, 365, 730, 1825] (which is stupid).
-        pretty_bins (bool, optional): Whether to prettify bin names. Defaults to True.
+        diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
+        prettify_bins (bool, optional): Whether to prettify bin names. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -259,7 +239,7 @@ def plot_metric_by_time_until_diagnosis(
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="event-prediction",
         bins=bins,
-        pretty_bins=pretty_bins,
+        prettify_bins=prettify_bins,
         drop_na_events=True,
         metric_fn=metric_fn,
     )

@@ -8,7 +8,7 @@ from psycopt2d.utils.config_schemas import convert_omegaconf_to_pydantic_object
 from psycopt2d.utils.utils import PROJECT_ROOT
 
 CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "src" / "psycopt2d" / "config"
-CONFIG_DIR_PATH_REL = "../../src/psycopt2d/config"
+CONFIG_DIR_PATH_REL = "../src/psycopt2d/config"
 
 
 def get_config_file_names() -> list[str]:

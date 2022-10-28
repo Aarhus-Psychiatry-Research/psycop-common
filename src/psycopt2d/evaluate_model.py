@@ -20,6 +20,8 @@ from psycopt2d.tables.tables import generate_feature_importances_table
 from psycopt2d.utils.config_schemas import FullConfigSchema
 from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization.feature_importance import plot_feature_importances
+from psycopt2d.visualization.performance_by_age import plot_performance_by_age
+from psycopt2d.visualization.performance_by_n_hba1c import plot_performance_by_n_hba1c
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
@@ -87,7 +89,7 @@ def filter_plot_bins(
     return lookahead_bins, lookbehind_bins
 
 
-def create_default_plot_artifacts(
+def create_base_plot_artifacts(
     cfg: FullConfigSchema,
     eval_dataset: EvalDataset,
     save_dir: Path,
@@ -145,6 +147,29 @@ def create_default_plot_artifacts(
                 output_format="df",
             ),
         ),
+        ArtifactContainer(
+            label="performance_by_age",
+            artifact=plot_performance_by_age(
+                eval_dataset=eval_dataset,
+                save_path=save_dir / "performance_by_age.png",
+            ),
+        ),
+    ]
+
+
+def create_custom_plot_artifacts(
+    eval_dataset: EvalDataset,
+    save_dir: Path,
+) -> list[ArtifactContainer]:
+    """A collection of plots that are always generated."""
+    return [
+        ArtifactContainer(
+            label="performance_by_age",
+            artifact=plot_performance_by_n_hba1c(
+                eval_dataset=eval_dataset,
+                save_path=save_dir / "performance_by_age.png",
+            ),
+        ),
     ]
 
 
@@ -171,11 +196,16 @@ def run_full_evaluation(
     # Create the directory if it doesn't exist
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    artifact_containers = create_default_plot_artifacts(
+    artifact_containers = create_base_plot_artifacts(
         cfg=cfg,
         eval_dataset=eval_dataset,
         lookahead_bins=lookahead_bins,
         lookbehind_bins=lookbehind_bins,
+        save_dir=save_dir,
+    )
+
+    artifact_containers += create_custom_plot_artifacts(
+        eval_dataset=eval_dataset,
         save_dir=save_dir,
     )
 

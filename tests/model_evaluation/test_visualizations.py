@@ -15,6 +15,8 @@ from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.feature_importance import plot_feature_importances
+from psycopt2d.visualization.performance_by_age import plot_performance_by_age
+from psycopt2d.visualization.performance_by_n_hba1c import plot_performance_by_n_hba1c
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
@@ -35,6 +37,10 @@ def df():
     # Convert all timestamp cols to datetime[64]ns
     for col in [col for col in df.columns if "timestamp" in col]:
         df[col] = pd.to_datetime(df[col])
+
+    df["n_hba1c"] = np.random.randint(0, 8, df.shape[0])
+
+    df["age"] = np.random.uniform(18, 90, df.shape[0])
 
     return df
 
@@ -76,6 +82,20 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
         y_title="Sensitivity",
         plot_type="bar",
     )
+
+
+def test_plot_performance_by_n_hba1c(synth_eval_dataset: EvalDataset):
+    synth_eval_dataset.custom.Config.allow_mutation = True
+    synth_eval_dataset.custom.n_hba1c = np.random.randint(
+        0,
+        8,
+        len(synth_eval_dataset.ids),
+    )
+    plot_performance_by_n_hba1c(eval_dataset=synth_eval_dataset)
+
+
+def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
+    plot_performance_by_age(eval_dataset=synth_eval_dataset)
 
 
 def test_plot_performance_by_calendar_time(synth_eval_dataset: EvalDataset):
