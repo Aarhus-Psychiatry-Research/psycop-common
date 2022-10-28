@@ -306,6 +306,22 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
         return None
 
 
+def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
+    """Write EvalDataset to disk.
+
+    Handles csv and parquet files based on suffix.
+    """
+    df_template = {
+        col_name: series
+        for col_name, series in eval_dataset.__dict__.items()
+        if series is not None
+    }
+
+    df = pd.DataFrame(df_template)
+
+    write_df_to_file(df=df, file_path=file_path)
+
+
 def eval_ds_cfg_pipe_to_disk(
     eval_dataset: EvalDataset,
     cfg: FullConfigSchema,
@@ -344,18 +360,6 @@ def eval_ds_cfg_pipe_to_disk(
     dump_to_pickle(pipe_metadata, dir_path / "pipe_metadata.pkl")
 
     msg.good(f"Saved evaluation results to {dir_path}")
-
-
-def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
-    df_template = {}
-
-    for col_name, series in eval_dataset.__dict__.items():
-        if series is not None:
-            df_template[col_name] = series
-
-    df = pd.DataFrame(df_template)
-
-    write_df_to_file(df=df, file_path=file_path)
 
 
 def create_wandb_folders():

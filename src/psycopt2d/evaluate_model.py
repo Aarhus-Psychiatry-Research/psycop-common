@@ -163,7 +163,6 @@ def run_full_evaluation(
         save_dir: The directory to save plots to.
         run: The wandb run to upload to.
         pipe_metadata: The metadata for the pipe.
-
     """
     lookahead_bins, lookbehind_bins = filter_plot_bins(cfg=cfg)
 

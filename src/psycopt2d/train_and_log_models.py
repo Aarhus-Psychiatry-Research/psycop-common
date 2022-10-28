@@ -15,7 +15,7 @@ from hydra import compose, initialize
 from wasabi import Printer
 
 # RUN CONSTANTS
-CONFIG_NAME = "integration_test.yaml"
+CONFIG_NAME = "integration_config.yaml"
 
 HYDRA_ARGS = f"--multirun project.wandb.mode='dryrun' model.args.tree_method='auto' --config-name {CONFIG_NAME}"
 OVERTACI = "false"  # Change to "true" if running on overtaci

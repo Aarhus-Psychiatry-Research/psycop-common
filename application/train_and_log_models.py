@@ -223,7 +223,9 @@ def main():
     train = load_train_raw(cfg=cfg)
 
     possible_look_distances = get_possible_look_distances(
-        msg=msg, cfg=cfg, train_df=train
+        msg=msg,
+        cfg=cfg,
+        train_df=train,
     )
 
     if not cfg.train.gpu:
