@@ -6,11 +6,11 @@ Helpful because it makes them:
 - Easier to document with docstrings and
 - Type checkable
 """
-
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
+import torch
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 from pydantic import BaseModel as PydanticBaseModel
@@ -198,7 +198,8 @@ def load_cfg_as_omegaconf(
         # correctly working
         cfg: FullConfigSchema = cfg  # type: ignore
 
-        if not cfg.project.gpu and cfg.model.name == "xgboost":
+        gpu = torch.cuda.is_available()
+        if not gpu and cfg.model.name == "xgboost":
             cfg.model.args["tree_method"] = "auto"
 
         return cfg

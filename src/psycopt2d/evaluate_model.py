@@ -31,7 +31,7 @@ from psycopt2d.visualization.sens_over_time import (
 from psycopt2d.visualization.utils import log_image_to_wandb
 
 
-def upload_artifacts(
+def upload_artifacts_to_wandb(
     artifact_containers: Iterable[ArtifactContainer],
     run: wandb_run,
 ) -> None:
@@ -87,7 +87,7 @@ def filter_plot_bins(
     return lookahead_bins, lookbehind_bins
 
 
-def add_base_plots(
+def create_default_plot_artifacts(
     cfg: FullConfigSchema,
     eval_dataset: EvalDataset,
     save_dir: Path,
@@ -171,7 +171,7 @@ def run_full_evaluation(
     # Create the directory if it doesn't exist
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    artifact_containers = add_base_plots(
+    artifact_containers = create_default_plot_artifacts(
         cfg=cfg,
         eval_dataset=eval_dataset,
         lookahead_bins=lookahead_bins,
@@ -201,4 +201,4 @@ def run_full_evaluation(
         raise ValueError("Must pass a run to be able to upload to wandb.")
 
     if upload_to_wandb and run:
-        upload_artifacts(run=run, artifact_containers=artifact_containers)
+        upload_artifacts_to_wandb(run=run, artifact_containers=artifact_containers)
