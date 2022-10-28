@@ -2,7 +2,7 @@
 from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -149,9 +149,9 @@ def _generate_sensitivity_array(
 
 def _annotate_heatmap(
     image: matplotlib.image.AxesImage,
-    data: Optional[np.array] = None,
-    value_formatter: Optional[str] = "{x:.2f}",
-    textcolors: Optional[tuple] = ("black", "white"),
+    data: Optional[np.ndarray] = None,
+    value_formatter: str = "{x:.2f}",
+    textcolors: tuple = ("black", "white"),
     threshold: Optional[float] = None,
     **textkw,
 ):
@@ -170,21 +170,21 @@ def _annotate_heatmap(
     """
 
     if not isinstance(data, (list, np.ndarray)):
-        data = image.get_array()
+        data: np.ndarray = image.get_array()  # type: ignore
 
     # Normalize the threshold to the images color range.
     if threshold is not None:
         threshold = image.norm(threshold)
     else:
-        threshold = image.norm(data.max()) / 2.0
+        threshold = image.norm(data.max()) / 2.0  # type: ignore
 
-    # Set default alignment to center, but allow it to be
-    # overwritten by textkw.
-    test_kwargs = dict(
-        horizontalalignment="center",
-        verticalalignment="center",
+    test_kwargs = (
+        dict(
+            horizontalalignment="center",
+            verticalalignment="center",
+        )
+        | textkw
     )
-    test_kwargs.update(textkw)
 
     # Get the formatter in case a string is supplied
     if isinstance(value_formatter, str):
@@ -193,17 +193,18 @@ def _annotate_heatmap(
     # Loop over the data and create a `Text` for each "pixel".
     # Change the text's color depending on the data.
     texts = []
-    for heat_row_idx in range(data.shape[0]):
-        for heat_col_idx in range(data.shape[1]):
+
+    for heat_row_idx in range(data.shape[0]):  # type: ignore
+        for heat_col_idx in range(data.shape[1]):  # type: ignore
             test_kwargs.update(
                 color=textcolors[
-                    int(image.norm(data[heat_row_idx, heat_col_idx]) > threshold)
+                    int(image.norm(data[heat_row_idx, heat_col_idx]) > threshold)  # type: ignore
                 ],
             )
             text = image.axes.text(
                 heat_col_idx,
                 heat_row_idx,
-                value_formatter(data[heat_row_idx, heat_col_idx], None),
+                value_formatter(data[heat_row_idx, heat_col_idx], None),  # type: ignore
                 **test_kwargs,
             )
             texts.append(text)
@@ -255,7 +256,7 @@ def _format_sens_by_time_heatmap(
     axes.tick_params(which="minor", bottom=False, left=False)
 
     # Add annotations
-    _ = _annotate_heatmap(image, value_formatter="{x:.1f}")
+    _ = _annotate_heatmap(image, value_formatter="{x:.1f}")  # type: ignore
 
     # Set axis labels and title
     axes.set(

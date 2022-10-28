@@ -20,7 +20,7 @@ from psycopt2d.visualization.utils import calc_performance
 
 def create_performance_by_calendar_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[int, float],
+    y_hat: Iterable[Union[int, float]],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -86,7 +86,7 @@ def plot_metric_by_calendar_time(
 
 def create_performance_by_time_from_event_df(
     labels: Iterable[int],
-    y_hat: Iterable[int, float],
+    y_hat: Iterable[Union[int, float]],
     event_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,

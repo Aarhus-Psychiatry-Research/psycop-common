@@ -67,7 +67,7 @@ class ModelPerformance:
             aggregate_by_id=False,
             prediction_col_name=prediction_col_name,
             label_col_name=label_col_name,
-            id_col_name=id_col_name,
+            id_col_name=id_col_name,  # type: ignore
             to_wide=to_wide,
             id2label=id2label,
             binary_threshold=binary_threshold,
@@ -166,6 +166,7 @@ class ModelPerformance:
             binary_threshold=binary_threshold,
         )
 
+    @staticmethod
     def performance_metrics_from_folder(
         folder: Union[str, Path],
         pattern: str,
@@ -419,18 +420,18 @@ class ModelPerformance:
         performance = pd.melt(performance)
         # split score and class into two columns
         if add_level_prefix:
-            performance[["level", "score_type", "class"]] = performance[
+            performance[["level", "score_type", "class"]] = performance[  # type: ignore
                 "variable"
             ].str.split("-", 2, expand=True)
             # drop unused columns and re-arrange
-            return performance[["level", "class", "score_type", "value"]]
+            return performance[["level", "class", "score_type", "value"]]  # type: ignore
         else:
-            performance[["score_type", "class"]] = performance["variable"].str.split(
+            performance[["score_type", "class"]] = performance["variable"].str.split(  # type: ignore
                 "-",
                 1,
                 expand=True,
             )
-            return performance[["class", "score_type", "value"]]
+            return performance[["class", "score_type", "value"]]  # type: ignore
 
 
 if __name__ == "__main__":
@@ -464,7 +465,7 @@ if __name__ == "__main__":
         prediction_col_name="scores",
         id_col_name="id",
         id2label=id2label,
-        metadata_col_names="all",
+        metadata_col_names="all",  # type: ignore
         to_wide=False,
     )
 

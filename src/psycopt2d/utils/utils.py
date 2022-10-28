@@ -218,12 +218,10 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
             if (bins[i + 1] - bin_v) == 1:
                 labels.append(f"{bin_v}")
             # Else generate bin labels as intervals
+            elif i == 0:
+                labels.append(f"{bin_v}-{bins[i+1]}")
             else:
-                if i == 0:
-                    labels.append(f"{bin_v}-{bins[i+1]}")
-                elif i < len(bins) - 2:
-                    labels.append(f"{bin_v+1}-{bins[i+1]}")
-        # If the final bin, the label is the final bin value and a plus sign
+                labels.append(f"{bin_v+1}-{bins[i+1]}")
         elif i == len(bins) - 2:
             labels.append(f"{bin_v+1}+")
         else:
@@ -327,20 +325,16 @@ def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
 
     Handles csv and parquet files based on suffix.
     """
+    # Add base columns and custom columns
     df_template = {
         col_name: series
         for col_name, series in eval_dataset.__dict__.items()
         if series is not None
+    } | {
+        col_name: series
+        for col_name, series in eval_dataset.custom.__dict__.items()
+        if series is not None
     }
-
-    # Add custom columns
-    df_template.update(
-        {
-            col_name: series
-            for col_name, series in eval_dataset.custom.__dict__.items()
-            if series is not None
-        },
-    )
 
     # Remove items that aren't series, e.g. the top level CustomColumns object
     template_filtered = {
