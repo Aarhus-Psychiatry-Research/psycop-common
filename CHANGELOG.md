@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.0 (2022-10-28)
+### Feature
+* Automatically infer whther GPU is present ([`407521d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/407521dc26aa5ff9ec783c5e50cb30bf94f12a7d))
+
+### Fix
+* Remove incorrect toml header ([`58c99f3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/58c99f31ae496dd23761b9c7a5be64e46b73b5df))
+* Type error and import error ([`125081d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/125081d81a50df076bfabe463f9207d9e03a6a38))
+* Dict fixes and circular imports ([`152a376`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/152a376ccbfd3b86e135f8abfbda2e7cbbdaca07))
+
 ## v0.12.0 (2022-10-26)
 ### Feature
 * Add watcher to main training script ([`917d42e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/917d42e08c0e51b5ae6e7c5271eb827409613fb4))
