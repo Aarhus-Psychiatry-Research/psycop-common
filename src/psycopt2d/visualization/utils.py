@@ -1,5 +1,6 @@
 # pylint: skip-file
 from collections.abc import Callable, Sequence
+from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Optional, Union
 
@@ -9,6 +10,7 @@ import wandb
 from sklearn.metrics import roc_auc_score
 from wandb.sdk.wandb_run import Run as wandb_run
 
+from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.utils.utils import bin_continuous_data
 
 
@@ -46,11 +48,10 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
 
 
 def create_performance_by_input(
-    labels: Sequence[int],
-    y_hat: Sequence[Union[int, float]],
+    eval_dataset: EvalDataset,
     input: Sequence[Union[int, float]],
     input_name: str,
-    bins: Sequence[Union[int, float]] = [0, 1, 2, 5, 10],
+    bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
     prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
@@ -70,7 +71,13 @@ def create_performance_by_input(
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
-    df = pd.DataFrame({"y": labels, "y_hat": y_hat, input_name: input})
+    df = pd.DataFrame(
+        {
+            "y": eval_dataset.y,
+            "y_hat": metric_fn_to_input(metric_fn=metric_fn, eval_dataset=eval_dataset),
+            input_name: input,
+        }
+    )
 
     # bin data
     if prettify_bins:
@@ -86,3 +93,22 @@ def create_performance_by_input(
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
+
+
+def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
+    """Selects the input to use for the metric function.
+
+    Args:
+        metric_fn (Callable): Metric function
+        eval_dataset (EvalDataset): Evaluation dataset
+
+    Returns:
+        str: Input name
+    """
+
+    fn2input = {roc_auc_score: eval_dataset.y_hat_int}
+
+    if metric_fn in fn2input:
+        return fn2input[metric_fn]
+    else:
+        raise ValueError(f"Don't know which input to use for {metric_fn}")
