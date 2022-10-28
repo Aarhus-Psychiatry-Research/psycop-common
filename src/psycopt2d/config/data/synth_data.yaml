@@ -6,8 +6,9 @@ data:
   min_lookahead_days: 30
   min_lookbehind_days: 100
   min_prediction_time_date: null
+  pred_prefix: pred_
+
   col_name:
-    pred_prefix: pred_
     pred_timestamp: timestamp
     outcome_timestamp: timestamp_outcome
     id: citizen_ids
