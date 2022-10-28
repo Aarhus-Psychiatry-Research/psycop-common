@@ -20,10 +20,6 @@ class EvalDataset(BaseModel):
     consistent.
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.Config.allow_mutation = True
-
     ids: pd.Series
     pred_timestamps: pd.Series
     outcome_timestamps: pd.Series
@@ -32,6 +28,10 @@ class EvalDataset(BaseModel):
     y_hat_int: pd.Series
     age: Optional[pd.Series]
     custom: Optional[CustomColumns] = CustomColumns(n_hba1c=None)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.Config.allow_mutation = True
 
 
 class ArtifactContainer(BaseModel):
