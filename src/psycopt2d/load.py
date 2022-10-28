@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
-from psycopt2d.utils.configs import FullConfig
+from psycopt2d.utils.config_schemas import FullConfigSchema
 from psycopt2d.utils.utils import (
     get_percent_lost,
     infer_outcome_col_name,
@@ -62,7 +62,7 @@ class DataLoader:
 
     def __init__(
         self,
-        cfg: FullConfig,
+        cfg: FullConfigSchema,
     ):
         self.cfg = cfg
 
@@ -71,7 +71,7 @@ class DataLoader:
         self.file_suffix = cfg.data.suffix
 
         # Column specifications
-        self.pred_col_name_prefix = cfg.data.pred_col_name_prefix
+        self.pred_col_name_prefix = cfg.data.col_name.pred_prefix
 
     def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
         self,
@@ -134,17 +134,17 @@ class DataLoader:
 
         if direction == "ahead":
             max_datetime = (
-                dataset[self.cfg.data.pred_timestamp_col_name].max() - n_days_timedelt
+                dataset[self.cfg.data.col_name.pred_timestamp].max() - n_days_timedelt
             )
             before_max_dt = (
-                dataset[self.cfg.data.pred_timestamp_col_name] < max_datetime
+                dataset[self.cfg.data.col_name.pred_timestamp] < max_datetime
             )
             dataset = dataset[before_max_dt]
         elif direction == "behind":
             min_datetime = (
-                dataset[self.cfg.data.pred_timestamp_col_name].min() + n_days_timedelt
+                dataset[self.cfg.data.col_name.pred_timestamp].min() + n_days_timedelt
             )
-            after_min_dt = dataset[self.cfg.data.pred_timestamp_col_name] > min_datetime
+            after_min_dt = dataset[self.cfg.data.col_name.pred_timestamp] > min_datetime
             dataset = dataset[after_min_dt]
 
         n_rows_after_modification = dataset.shape[0]
@@ -169,7 +169,7 @@ class DataLoader:
         n_rows_before_modification = dataset.shape[0]
 
         outcome_before_date = (
-            dataset[self.cfg.data.outcome_timestamp_col_name]
+            dataset[self.cfg.data.col_name.outcome_timestamp]
             < self.cfg.data.drop_patient_if_outcome_before_date
         )
 
@@ -249,7 +249,8 @@ class DataLoader:
         dataset = dataset.drop(columns=cols_to_drop)
         return dataset
 
-    def _convert_timestamp_dtype_and_nat(self, dataset: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
         convert 0's to NaT."""
         timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
@@ -399,7 +400,7 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
-        dataset = self._convert_timestamp_dtype_and_nat(dataset)
+        dataset = self.convert_timestamp_dtype_and_nat(dataset)
 
         if self.cfg.data.drop_patient_if_outcome_before_date:
             dataset = self.drop_patient_if_outcome_before_date(dataset=dataset)
@@ -407,7 +408,7 @@ class DataLoader:
         # Drop if later than min prediction time date
         if self.cfg.data.min_prediction_time_date:
             dataset = dataset[
-                dataset[self.cfg.data.pred_timestamp_col_name]
+                dataset[self.cfg.data.col_name.pred_timestamp]
                 > self.cfg.data.min_prediction_time_date
             ]
 
@@ -478,7 +479,7 @@ class SplitDataset(BaseModel):
     val: pd.DataFrame
 
 
-def load_train_from_cfg(cfg: FullConfig) -> pd.DataFrame:
+def load_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     """Load train dataset from config.
 
     Args:
@@ -490,7 +491,7 @@ def load_train_from_cfg(cfg: FullConfig) -> pd.DataFrame:
     return DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
 
 
-def load_train_and_val_from_cfg(cfg: FullConfig):
+def load_train_and_val_from_cfg(cfg: FullConfigSchema):
     """Load train and validation data from file."""
 
     loader = DataLoader(cfg=cfg)

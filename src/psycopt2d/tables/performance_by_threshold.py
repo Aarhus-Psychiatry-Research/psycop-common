@@ -7,6 +7,8 @@ import pandas as pd
 import wandb
 from sklearn.metrics import confusion_matrix
 
+from psycopt2d.evaluation_dataclasses import EvalDataset
+
 
 def performance_by_threshold(  # pylint: disable=too-many-locals
     labels: Sequence[int],
@@ -145,27 +147,19 @@ def days_from_first_positive_to_diagnosis(
 
 
 def generate_performance_by_positive_rate_table(
-    labels: Sequence[int],
-    pred_probs: Sequence[float],
-    positive_rate_thresholds: Sequence[Union[int, float]],
-    pred_proba_thresholds: Sequence[float],
-    ids: Sequence[Union[int, float]],
-    pred_timestamps: Sequence[pd.Timestamp],
-    outcome_timestamps: Sequence[pd.Timestamp],
-    output_format: Optional[str] = "wandb_table",
+    eval_dataset: EvalDataset,
+    positive_rate_thresholds: Iterable[Union[int, float]],
+    pred_proba_thresholds: Iterable[float],
+    output_format: Optional[str] = "df",
 ) -> Union[pd.DataFrame, str]:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
 
     Args:
-        labels (Sequence[int]): True labels.
-        pred_probs (Sequence[float]): Predicted probabilities.
+        eval_dataset (EvalDataset): EvalDataset object.
         positive_rate_thresholds (Sequence[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
         pred_proba_thresholds (Sequence[float]): Thresholds above which predictions are classified as positive.
-        ids (Sequence[Union[int, float]]): Ids to group on.
-        pred_timestamps (Sequence[ pd.Timestamp ]): Timestamp for each prediction time.
-        outcome_timestamps (Sequence[pd.Timestamp]): Timestamp for each outcome time.
         output_format (str, optional): Format to output - either "df" or "wandb_table". Defaults to "df".
 
     Returns:
@@ -181,18 +175,18 @@ def generate_performance_by_positive_rate_table(
     # For each percentile, calculate relevant performance metrics
     for threshold_value in pred_proba_thresholds:
         threshold_metrics = performance_by_threshold(
-            labels=labels,
-            pred_probs=pred_probs,
+            labels=eval_dataset.y,
+            pred_probs=eval_dataset.y_hat_probs,
             positive_threshold=threshold_value,
         )
 
         threshold_metrics[  # pylint: disable=unsupported-assignment-operation
             "total_warning_days"
         ] = days_from_first_positive_to_diagnosis(
-            ids=ids,
-            pred_probs=pred_probs,
-            pred_timestamps=pred_timestamps,
-            outcome_timestamps=outcome_timestamps,
+            ids=eval_dataset.ids,
+            pred_probs=eval_dataset.y_hat_probs,
+            pred_timestamps=eval_dataset.pred_timestamps,
+            outcome_timestamps=eval_dataset.outcome_timestamps,
             positive_rate_threshold=threshold_value,
             aggregation_method="sum",
         )
@@ -201,10 +195,10 @@ def generate_performance_by_positive_rate_table(
             "mean_warning_days"
         ] = round(
             days_from_first_positive_to_diagnosis(
-                ids=ids,
-                pred_probs=pred_probs,
-                pred_timestamps=pred_timestamps,
-                outcome_timestamps=outcome_timestamps,
+                ids=eval_dataset.ids,
+                pred_probs=eval_dataset.y_hat_probs,
+                pred_timestamps=eval_dataset.pred_timestamps,
+                outcome_timestamps=eval_dataset.outcome_timestamps,
                 positive_rate_threshold=threshold_value,
                 aggregation_method="mean",
             ),

@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Union
 
 import pandas as pd
-from hydra import compose, initialize
 from pydantic import BaseModel
 from wasabi import Printer
 
@@ -21,7 +20,8 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_outcome_col_name,
     infer_predictor_col_name,
 )
-from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
+from psycopt2d.load import DataLoader
+from psycopt2d.utils.config_schemas import FullConfigSchema, load_cfg_as_pydantic
 
 msg = Printer(timestamp=True)
 
@@ -33,7 +33,7 @@ class LookDistance(BaseModel):
     ahead_days: Union[int, float]
 
 
-def load_train_raw(cfg: FullConfig):
+def load_train_raw(cfg: FullConfigSchema):
     """Load the data."""
     path = Path(cfg.data.dir)
     file_names = list(path.glob(pattern=r"*train*"))
@@ -42,9 +42,13 @@ def load_train_raw(cfg: FullConfig):
         file_name = file_names[0]
         file_suffix = file_name.suffix
         if file_suffix == ".parquet":
-            return pd.read_parquet(file_name)
+            df = pd.read_parquet(file_name)
         elif file_suffix == ".csv":
-            return pd.read_csv(file_name)
+            df = pd.read_csv(file_name)
+
+        df = DataLoader.convert_timestamp_dtype_and_nat(dataset=df)
+
+        return df
 
     raise ValueError(f"Returned {len(file_names)} files")
 
@@ -72,7 +76,7 @@ def infer_possible_look_distances(df: pd.DataFrame) -> list[LookDistance]:
 
 
 def start_trainer(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     config_file_name: str,
     cell: LookDistance,
     wandb_group_override: str,
@@ -81,7 +85,7 @@ def start_trainer(
     subprocess_args: list[str] = [
         "python",
         "src/psycopt2d/train_model.py",
-        f"model={cfg.model.model_name}",
+        f"model={cfg.model.name}",
         f"data.min_lookbehind_days={max(cfg.data.lookbehind_combination)}",
         f"data.min_lookahead_days={cell.ahead_days}",
         f"project.wandb.group='{wandb_group_override}'",
@@ -94,7 +98,7 @@ def start_trainer(
     if cfg.train.n_trials_per_lookdirection_combination > 1:
         subprocess_args.insert(2, "--multirun")
 
-    if cfg.model.model_name == "xgboost" and not cfg.train.gpu:
+    if cfg.model.name == "xgboost" and not cfg.train.gpu:
         subprocess_args.insert(3, "++model.args.tree_method='auto'")
 
     msg.info(f'{" ".join(subprocess_args)}')
@@ -104,32 +108,8 @@ def start_trainer(
     )
 
 
-def start_watcher(cfg: FullConfig) -> subprocess.Popen:
-    """Start a watcher."""
-    return subprocess.Popen(  # pylint: disable=consider-using-with
-        [
-            "python",
-            "src/psycopt2d/model_training_watcher.py",
-            "--entity",
-            cfg.project.wandb.entity,
-            "--project_name",
-            cfg.project.name,
-            "--n_runs_before_eval",
-            str(cfg.project.watcher.n_runs_before_eval),
-            "--overtaci",
-            str(cfg.eval.save_model_predictions_on_overtaci),
-            "--timeout",
-            "None",
-            "--clean_wandb_dir",
-            str(cfg.project.watcher.archive_all),
-            "--verbose",
-            "True",
-        ],
-    )
-
-
 def train_models_for_each_cell_in_grid(
-    cfg: FullConfig,
+    cfg: FullConfigSchema,
     possible_look_distances: list[LookDistance],
     config_file_name: str,
 ):
@@ -172,21 +152,10 @@ def train_models_for_each_cell_in_grid(
         )
 
 
-def load_cfg(config_file_name) -> FullConfig:
-    """Load config as pydantic object."""
-    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
-        cfg = compose(
-            config_name=config_file_name,
-        )
-
-        cfg = omegaconf_to_pydantic_objects(cfg)
-    return cfg
-
-
 def get_possible_look_distances(
     msg: Printer,
-    cfg: FullConfig,
-    train: pd.DataFrame,
+    cfg: FullConfigSchema,
+    train_df: pd.DataFrame,
 ) -> list[LookDistance]:
     """Some look_ahead and look_behind distances will result in 0 valid
     prediction times. Only return combinations which will allow some prediction
@@ -199,13 +168,13 @@ def get_possible_look_distances(
     Will mean that no rows satisfy the criteria.
     """
 
-    look_combinations_in_dataset = infer_possible_look_distances(df=train)
+    look_combinations_in_dataset = infer_possible_look_distances(df=train_df)
 
     # Don't try look distance combinations which will result in 0 rows
     max_distance_in_dataset_days = (
-        max(train[cfg.data.pred_timestamp_col_name])
+        max(train_df[cfg.data.col_name.pred_timestamp])
         - min(
-            train[cfg.data.pred_timestamp_col_name],
+            train_df[cfg.data.col_name.pred_timestamp],
         )
     ).days
 
@@ -215,9 +184,10 @@ def get_possible_look_distances(
         if (dist.ahead_days + dist.behind_days) > max_distance_in_dataset_days
     ]
 
-    msg.info(
-        f"Not fitting model to {look_combinations_without_rows}, since no rows satisfy the criteria.",
-    )
+    if look_combinations_without_rows:
+        msg.info(
+            f"Not fitting model to {look_combinations_without_rows}, since no rows satisfy the criteria.",
+        )
 
     look_combinations_with_rows = [
         dist
@@ -232,38 +202,28 @@ def main():
     """Main."""
     msg = Printer(timestamp=True)
 
-    config_file_name = "default_config.yaml"
+    config_file_name = "integration_config.yaml"
 
-    cfg = load_cfg(config_file_name=config_file_name)
+    cfg = load_cfg_as_pydantic(config_file_name=config_file_name)
 
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
     train = load_train_raw(cfg=cfg)
-    possible_look_distances = get_possible_look_distances(msg, cfg, train)
+
+    possible_look_distances = get_possible_look_distances(
+        msg=msg,
+        cfg=cfg,
+        train_df=train,
+    )
 
     if not cfg.train.gpu:
         msg.warn("Not using GPU for training")
-
-    if cfg.project.wandb.mode == "run":
-        msg.warn(
-            f"wandb.mode is {cfg.project.wandb.mode}, not using the watcher. This will substantially slow down training.",
-        )
-    else:
-        watcher = start_watcher(cfg=cfg)
 
     train_models_for_each_cell_in_grid(
         cfg=cfg,
         possible_look_distances=possible_look_distances,
         config_file_name=config_file_name,
     )
-
-    if cfg.project.wand.mode != "run":
-        msg.good(
-            f"Training finished. Stopping the watcher in {cfg.project.watcher.keep_alive_after_training_minutes} minutes...",
-        )
-
-        time.sleep(60 * cfg.project.watcher.keep_alive_after_training_minutes)
-        watcher.kill()
 
 
 if __name__ == "__main__":

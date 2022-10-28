@@ -6,23 +6,35 @@ Helpful because it makes them:
 - Easier to document with docstrings and
 - Type checkable
 """
-
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
+import torch
+from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic import Extra
 
 
 class BaseModel(PydanticBaseModel):
-    """Allow arbitrary types in all pydantic models."""
+    """."""
 
     class Config:
-        """Allow arbitrary types."""
+        """An pydantic basemodel, which doesn't allow attributes that are not
+        defined in the class."""
 
-        arbitrary_types_allowed = True
         allow_mutation = False
+        arbitrary_types_allowed = True
+        extra = Extra.forbid
+
+    def __init__(
+        self,
+        allow_mutation: bool = False,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.Config.allow_mutation = allow_mutation
 
 
 class WandbConf(BaseModel):
@@ -49,6 +61,17 @@ class ProjectConf(BaseModel):
     name: str = "psycopt2d"
     seed: int
     watcher: WatcherConf
+    gpu: bool
+
+
+class ColumnNames(BaseModel):
+    """Column names in the data."""
+
+    pred_prefix: str  # prefix of predictor columns
+    pred_timestamp: str  # (str): Column name for prediction times
+    outcome_timestamp: str  # (str): Column name for outcome timestamps
+    id: str  # (str): Citizen colnames
+    age: Optional[str]  # Name of the age column
 
 
 class DataConf(BaseModel):
@@ -61,10 +84,7 @@ class DataConf(BaseModel):
     suffix: str  # File suffix to load.
 
     # Feature specs
-    pred_col_name_prefix: str  # prefix of predictor columns
-    pred_timestamp_col_name: str  # (str): Column name for prediction times
-    outcome_timestamp_col_name: str  # (str): Column name for outcome timestamps
-    id_col_name: str  # (str): Citizen colnames
+    col_name: ColumnNames
 
     # Looking ahead
     min_lookahead_days: int  # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
@@ -89,7 +109,7 @@ class PreprocessingConf(BaseModel):
     """Preprocessing config."""
 
     convert_to_boolean: bool  # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
-    convert_datetimes_to: bool  # (str): Options include ordinal or False
+    convert_datetimes_to_ordinal: bool  # (str): Whether to convert datetimes to ordinal.
     imputation_method: Optional[str]  # (str): Options include "most_frequent"
     transform: Optional[
         str
@@ -100,7 +120,7 @@ class PreprocessingConf(BaseModel):
 class ModelConf(BaseModel):
     """Model configuration."""
 
-    model_name: str  # (str): Model, can currently take xgboost
+    name: str  # (str): Model, can currently take xgboost
     require_imputation: bool  # (bool): Whether the model requires imputation. (shouldn't this be false?)
     args: dict
 
@@ -117,6 +137,8 @@ class TrainConf(BaseModel):
 class EvalConf(BaseModel):
     """Evaluation config."""
 
+    force: bool = False  # (bool): Whether to force evaluation even if wandb is not "run". Used for testing.
+
     threshold_percentiles: list[int]
 
     # top n features to plot. A table with all features is also logged
@@ -124,12 +146,12 @@ class EvalConf(BaseModel):
 
     positive_rate_thresholds: list[int]
     save_model_predictions_on_overtaci: bool
-    date_bins_ahead: list[int]
-    date_bins_behind: list[int]
+    lookahead_bins: list[int]
+    lookbehind_bins: list[int]
 
 
-class FullConfig(BaseModel):
-    """A full configuration object."""
+class FullConfigSchema(BaseModel):
+    """A recipe for a full configuration object."""
 
     project: ProjectConf
     data: DataConf
@@ -139,14 +161,55 @@ class FullConfig(BaseModel):
     eval: EvalConf
 
 
-def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfig:
+def convert_omegaconf_to_pydantic_object(
+    conf: DictConfig,
+    allow_mutation: bool = False,
+) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
     Args:
         conf (DictConfig): Omegaconf DictConfig
+        allow_mutation (bool, optional): Whether to make the pydantic object mutable. Defaults to False.
 
     Returns:
         FullConfig: Pydantic object
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
-    return FullConfig(**conf)
+    return FullConfigSchema(**conf, allow_mutation=allow_mutation)
+
+
+def load_cfg_as_omegaconf(
+    config_file_name: str,
+    overrides: Optional[list[str]] = None,
+) -> DictConfig:
+    """Load config as omegaconf object."""
+    with initialize(version_base=None, config_path="../config/"):
+        if overrides:
+            cfg = compose(
+                config_name=config_file_name,
+                overrides=overrides,
+            )
+        else:
+            cfg = compose(
+                config_name=config_file_name,
+            )
+
+        # Override the type so we can get autocomplete and renaming
+        # correctly working
+        cfg: FullConfigSchema = cfg  # type: ignore
+
+        gpu = torch.cuda.is_available()
+        if not gpu and cfg.model.name == "xgboost":
+            cfg.model.args["tree_method"] = "auto"
+
+        return cfg
+
+
+def load_cfg_as_pydantic(
+    config_file_name,
+    allow_mutation: bool = False,
+) -> FullConfigSchema:
+    """Load config as pydantic object."""
+    cfg = load_cfg_as_omegaconf(config_file_name=config_file_name)
+
+    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)

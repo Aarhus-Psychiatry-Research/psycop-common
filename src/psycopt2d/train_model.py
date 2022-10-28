@@ -17,20 +17,26 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
-from psycopt2d.evaluation import evaluate_model
+from psycopt2d.evaluate_model import run_full_evaluation
+from psycopt2d.evaluation_dataclasses import EvalDataset, PipeMetadata
+
+# from psycopt2d.evaluation import evaluate_model
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
 from psycopt2d.preprocessing.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
 )
-from psycopt2d.utils.configs import FullConfig, omegaconf_to_pydantic_objects
+from psycopt2d.utils.config_schemas import (
+    FullConfigSchema,
+    convert_omegaconf_to_pydantic_object,
+)
 from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     create_wandb_folders,
+    eval_ds_cfg_pipe_to_disk,
     flatten_nested_dict,
     get_feature_importance_dict,
-    prediction_df_with_metadata_to_disk,
 )
 
 CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
@@ -39,13 +45,13 @@ CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
 os.environ["WANDB_START_METHOD"] = "thread"
 
 
-def create_preprocessing_pipeline(cfg):
+def create_preprocessing_pipeline(cfg: FullConfigSchema):
     """Create preprocessing pipeline based on config."""
     steps = []
 
-    if cfg.preprocessing.convert_datetimes_to:
+    if cfg.preprocessing.convert_datetimes_to_ordinal:
         dtconverter = DateTimeConverter(
-            convert_to=cfg.preprocessing.convert_datetimes_to,
+            convert_to=cfg.preprocessing.convert_datetimes_to_ordinal,
         )
         steps.append(("DateTimeConverter", dtconverter))
 
@@ -88,10 +94,10 @@ def create_preprocessing_pipeline(cfg):
     return Pipeline(steps)
 
 
-def create_model(cfg):
+def create_model(cfg: FullConfigSchema):
     """Instantiate and return a model object based on settings in the config
     file."""
-    model_dict = MODELS.get(cfg.model.model_name)
+    model_dict = MODELS.get(cfg.model.name)
 
     model_args = model_dict["static_hyperparameters"]
 
@@ -102,7 +108,7 @@ def create_model(cfg):
 
 
 def stratified_cross_validation(
-    cfg,
+    cfg: FullConfigSchema,
     pipe: Pipeline,
     train_df: pd.DataFrame,
     train_col_names: Iterable[str],
@@ -120,7 +126,7 @@ def stratified_cross_validation(
     folds = StratifiedGroupKFold(n_splits=n_splits).split(
         X=X,
         y=y,
-        groups=train_df[cfg.data.id_col_name],
+        groups=train_df[cfg.data.col_name.id],
     )
 
     # Perform CV and get out of fold predictions
@@ -150,14 +156,14 @@ def stratified_cross_validation(
 
 
 def train_and_eval_on_crossvalidation(
-    cfg: DictConfig,
+    cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: Iterable[str],
     n_splits: int,
-) -> pd.DataFrame:
+) -> EvalDataset:
     """Train model on cross validation folds and return evaluation dataset.
 
     Args:
@@ -177,7 +183,7 @@ def train_and_eval_on_crossvalidation(
     msg.info("Concatenating train and val for crossvalidation")
     train_val = pd.concat([train, val], ignore_index=True)
 
-    eval_dataset = stratified_cross_validation(
+    df = stratified_cross_validation(
         cfg=cfg,
         pipe=pipe,
         train_df=train_val,
@@ -186,21 +192,36 @@ def train_and_eval_on_crossvalidation(
         n_splits=n_splits,
     )
 
-    eval_dataset.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
+    df.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
+
+    eval_dataset = EvalDataset(
+        ids=df[cfg.data.col_name.id],
+        y=df[outcome_col_name],
+        y_hat_probs=df["y_hat_prob"],
+        y_hat_int=df["y_hat_prob"].round(),
+        pred_timestamps=df[cfg.data.col_name.pred_timestamp],
+        outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
+    )
+
+    if cfg.data.col_name.age:
+        eval_dataset.age = df[cfg.data.col_name.age]
+
     return eval_dataset
 
 
 def train_and_eval_on_val_split(
+    cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-) -> pd.DataFrame:
+) -> EvalDataset:
     """Train model on pre-defined train and validation split and return
     evaluation dataset.
 
     Args:
+        cfg (FullConfig): Config object
         train: Training dataset
         val: Validation dataset
         pipe: Pipeline
@@ -224,24 +245,37 @@ def train_and_eval_on_val_split(
         f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
     )
 
-    eval_dataset = val
-    eval_dataset["y_hat_prob"] = y_val_hat_prob
+    df = val
+    df["y_hat_prob"] = y_val_hat_prob
+
+    eval_dataset = EvalDataset(
+        ids=df[cfg.data.col_name.id],
+        y=df[outcome_col_name],
+        y_hat_probs=df["y_hat_prob"],
+        y_hat_int=df["y_hat_prob"].round(),
+        pred_timestamps=df[cfg.data.col_name.pred_timestamp],
+        outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
+    )
+
+    if cfg.data.col_name.age:
+        eval_dataset.age = df[cfg.data.col_name.age]
+
     return eval_dataset
 
 
 def train_and_get_model_eval_df(
-    cfg: DictConfig,
+    cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
     n_splits: Optional[int],
-) -> pd.DataFrame:
+) -> EvalDataset:
     """Train model and return evaluation dataset.
 
     Args:
-        cfg (DictConfig): Config object
+        cfg (FullConfigSchema): Config object
         train: Training dataset
         val: Validation dataset
         pipe: Pipeline
@@ -254,11 +288,12 @@ def train_and_get_model_eval_df(
     """
     # Set feature names if model is EBM to get interpretable feature importance
     # output
-    if cfg.model.model_name in ("ebm", "xgboost"):
+    if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names
 
     if n_splits is None:  # train on pre-defined splits
         eval_dataset = train_and_eval_on_val_split(
+            cfg=cfg,
             train=train,
             val=val,
             pipe=pipe,
@@ -315,7 +350,7 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     )
 
     train_col_names = [  # pylint: disable=invalid-name
-        c for c in train.columns if c.startswith(cfg.data.pred_col_name_prefix)
+        c for c in train.columns if c.startswith(cfg.data.col_name.pred_prefix)
     ]
 
     return outcome_col_name, train_col_names
@@ -338,8 +373,8 @@ def main(cfg: DictConfig):
         # For testing, we can take a FullConfig object instead. Simplifies boilerplate.
         dict_config_to_log = cfg.__dict__
 
-    if not isinstance(cfg, FullConfig):
-        cfg = omegaconf_to_pydantic_objects(cfg)
+    if not isinstance(cfg, FullConfigSchema):
+        cfg = convert_omegaconf_to_pydantic_object(cfg)
 
     msg = Printer(timestamp=True)
 
@@ -365,7 +400,7 @@ def main(cfg: DictConfig):
     outcome_col_name, train_col_names = get_col_names(cfg, dataset.train)
 
     msg.info("Training model")
-    eval_df = train_and_get_model_eval_df(
+    eval_ds = train_and_get_model_eval_df(
         cfg=cfg,
         train=dataset.train,
         val=dataset.val,
@@ -375,27 +410,36 @@ def main(cfg: DictConfig):
         n_splits=cfg.train.n_splits,
     )
 
-    # Save model predictions, feature importance, and config to disk
-    prediction_df_with_metadata_to_disk(df=eval_df, cfg=cfg, pipe=pipe, run=run)
+    pipe_metadata = PipeMetadata()
 
-    # only run full evaluation if wandb mode mode is online
-    # otherwise delegate to watcher script
-    if cfg.project.wandb.mode == "run":
-        msg.info("Evaluating model")
-        evaluate_model(
+    if hasattr(pipe["model"], "feature_importances_"):
+        pipe_metadata.feature_importances = get_feature_importance_dict(pipe=pipe)
+
+    # Save model predictions, feature importance, and config to disk
+    eval_ds_cfg_pipe_to_disk(
+        eval_dataset=eval_ds,
+        cfg=cfg,
+        pipe_metadata=pipe_metadata,
+        run=run,
+    )
+
+    if cfg.project.wandb.mode == "run" or cfg.eval.force:
+        msg.info("Evaluating model.")
+
+        upload_to_wandb = cfg.project.wandb.mode == "run"
+
+        run_full_evaluation(
             cfg=cfg,
-            eval_df=eval_df,
-            y_col_name=outcome_col_name,
-            y_hat_prob_col_name="y_hat_prob",
-            feature_importance_dict=get_feature_importance_dict(pipe),
+            eval_dataset=eval_ds,
             run=run,
-            pipe=pipe,
-            train_col_names=train_col_names,
+            pipe_metadata=pipe_metadata,
+            save_dir=PROJECT_ROOT / "wandb" / "plots" / run.name,
+            upload_to_wandb=upload_to_wandb,
         )
 
     roc_auc = roc_auc_score(
-        eval_df[outcome_col_name],
-        eval_df["y_hat_prob"],
+        eval_ds.y,
+        eval_ds.y_hat_probs,
     )
 
     msg.info(f"ROC AUC: {roc_auc}")
