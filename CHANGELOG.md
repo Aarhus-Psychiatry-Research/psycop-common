@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.0 (2022-10-28)
+### Feature
+* Generalise performance by input while retaining evaldataset ([`9d0a583`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9d0a5832ab83a8296c3911dfae6d63d85c3e43b6))
+* Add the plots to default plotting ([`f48981b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f48981b61a20de814d133da70b19bc0bd51ec06a))
+* Adding performance by age ([`350850a`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/350850a90b85f57293be5fc2b26e04dcd4a332f8))
+* Add performance by N HbA1c plot ([`d50510e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d50510eab66bb4c05405777e194f00a906874092))
+
+### Fix
+* Yaml ordering ([`be21601`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/be21601231bc54b0b5b26d20023430a92ba3b1f0))
+* Check if tuple ([`9c58559`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9c585598127d37a285e71cf82a9669960e93881d))
+* Check if tuple ([`2ad86e1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/2ad86e1a4c2f71e6091a36f1780a71c4249fbf70))
+* Test works ([`cb62855`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cb62855ed8ea94dc086829db2cc0c445cc34aade))
+* Pretty bins function ([`a840aeb`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a840aebf63b13fbad8d93b527e0472fe34e46505))
+
 ## v0.13.0 (2022-10-28)
 ### Feature
 * Automatically infer whther GPU is present ([`407521d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/407521dc26aa5ff9ec783c5e50cb30bf94f12a7d))
