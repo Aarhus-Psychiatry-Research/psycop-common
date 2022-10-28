@@ -13,10 +13,10 @@ from psycopt2d.visualization.utils import create_performance_by_input
 
 def plot_performance_by_n_hba1c(
     eval_dataset: EvalDataset,
-    save_path: Optional[Path] = None,
     bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
     prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
+    save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by number of HbA1c
     measurements.

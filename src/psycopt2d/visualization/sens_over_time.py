@@ -2,7 +2,7 @@
 from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -269,7 +269,7 @@ def _format_sens_by_time_heatmap(
     return fig, axes
 
 
-def plot_sensitivity_by_time_to_outcome_heatmap(
+def plot_sensitivity_by_time_to_outcome_heatmap(  # pylint: disable=too-many-locals
     eval_dataset: EvalDataset,
     pred_proba_thresholds: list[float],
     bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
