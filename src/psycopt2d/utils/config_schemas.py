@@ -64,14 +64,18 @@ class ProjectConf(BaseModel):
     gpu: bool
 
 
+class CustomColNames(BaseModel):
+    n_hba1c: str
+
+
 class ColumnNames(BaseModel):
     """Column names in the data."""
 
-    pred_prefix: str  # prefix of predictor columns
     pred_timestamp: str  # (str): Column name for prediction times
     outcome_timestamp: str  # (str): Column name for outcome timestamps
     id: str  # (str): Citizen colnames
-    age: Optional[str]  # Name of the age column
+    age: str  # Name of the age column
+    custom: CustomColNames
 
 
 class DataConf(BaseModel):
@@ -85,6 +89,7 @@ class DataConf(BaseModel):
 
     # Feature specs
     col_name: ColumnNames
+    pred_prefix: str  # prefix of predictor columns
 
     # Looking ahead
     min_lookahead_days: int  # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days

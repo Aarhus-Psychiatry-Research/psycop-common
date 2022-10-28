@@ -71,7 +71,7 @@ class DataLoader:
         self.file_suffix = cfg.data.suffix
 
         # Column specifications
-        self.pred_col_name_prefix = cfg.data.col_name.pred_prefix
+        self.pred_col_name_prefix = cfg.data.pred_prefix
 
     def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
         self,

@@ -201,10 +201,11 @@ def train_and_eval_on_crossvalidation(
         y_hat_int=df["y_hat_prob"].round(),
         pred_timestamps=df[cfg.data.col_name.pred_timestamp],
         outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
+        age=df[cfg.data.col_name.age],
     )
 
-    if cfg.data.col_name.age:
-        eval_dataset.age = df[cfg.data.col_name.age]
+    if cfg.data.col_name.custom.n_hba1c:
+        eval_dataset.custom.n_hba1c = df[cfg.data.col_name.custom.n_hba1c]
 
     return eval_dataset
 
@@ -255,10 +256,8 @@ def train_and_eval_on_val_split(
         y_hat_int=df["y_hat_prob"].round(),
         pred_timestamps=df[cfg.data.col_name.pred_timestamp],
         outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
+        age=df[cfg.data.col_name.age],
     )
-
-    if cfg.data.col_name.age:
-        eval_dataset.age = df[cfg.data.col_name.age]
 
     return eval_dataset
 
@@ -350,7 +349,7 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     )
 
     train_col_names = [  # pylint: disable=invalid-name
-        c for c in train.columns if c.startswith(cfg.data.col_name.pred_prefix)
+        c for c in train.columns if c.startswith(cfg.data.pred_prefix)
     ]
 
     return outcome_col_name, train_col_names

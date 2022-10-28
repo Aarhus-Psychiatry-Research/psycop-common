@@ -20,10 +20,9 @@ class EvalDataset(BaseModel):
     consistent.
     """
 
-    class Config:
-        """Configuration of Pydantic model."""
-
-        allow_mutation = True
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.Config.allow_mutation = True
 
     ids: pd.Series
     pred_timestamps: pd.Series

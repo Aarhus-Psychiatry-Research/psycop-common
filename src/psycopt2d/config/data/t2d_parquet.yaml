@@ -14,12 +14,15 @@ data:
   min_lookahead_days: 1825
 
   # Feature specs
+  pred_prefix: pred_
+
   col_name:
-    pred_prefix: pred_
     pred_timestamp: timestamp
     outcome_timestamp: _timestamp_first_t2d
     id: dw_ek_borger
     age: pred_age_in_years
+    custom:
+      n_hba1c: hba1c_within_9999_days_count_fallback_0
 
   max_lookbehind_days: 3650
   lookbehind_combination: [30, 90, 180, 365, 730]
