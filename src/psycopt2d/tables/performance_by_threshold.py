@@ -1,5 +1,5 @@
 """Get performance by which threshold is used to classify positive."""
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import Optional, Union
 
 import numpy as np
@@ -7,10 +7,12 @@ import pandas as pd
 import wandb
 from sklearn.metrics import confusion_matrix
 
+from psycopt2d.evaluation_dataclasses import EvalDataset
+
 
 def performance_by_threshold(  # pylint: disable=too-many-locals
-    labels: Iterable[int],
-    pred_probs: Iterable[float],
+    labels: Sequence[int],
+    pred_probs: Sequence[float],
     positive_threshold: float,
     round_to: int = 4,
 ) -> pd.DataFrame:
@@ -26,7 +28,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
     Returns:
         pd.DataFrame
     """
-    preds = np.where(pred_probs > positive_threshold, 1, 0)
+    preds = np.where(pred_probs > positive_threshold, 1, 0)  # type: ignore
 
     conf_matrix = confusion_matrix(labels, preds)
 
@@ -141,33 +143,23 @@ def days_from_first_positive_to_diagnosis(
         ]
     ]
 
-    warning_days = df["warning_days"].agg(aggregation_method)
-
-    return warning_days
+    return df["warning_days"].agg(aggregation_method)
 
 
 def generate_performance_by_positive_rate_table(
-    labels: Iterable[int],
-    pred_probs: Iterable[float],
+    eval_dataset: EvalDataset,
     positive_rate_thresholds: Iterable[Union[int, float]],
     pred_proba_thresholds: Iterable[float],
-    ids: Iterable[Union[int, float]],
-    pred_timestamps: Iterable[pd.Timestamp],
-    outcome_timestamps: Iterable[pd.Timestamp],
-    output_format: Optional[str] = "wandb_table",
+    output_format: Optional[str] = "df",
 ) -> Union[pd.DataFrame, str]:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
 
     Args:
-        labels (Iterable[int]): True labels.
-        pred_probs (Iterable[float]): Predicted probabilities.
-        positive_rate_thresholds (Iterable[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
+        eval_dataset (EvalDataset): EvalDataset object.
+        positive_rate_thresholds (Sequence[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
-        pred_proba_thresholds (Iterable[float]): Thresholds above which predictions are classified as positive.
-        ids (Iterable[Union[int, float]]): Ids to group on.
-        pred_timestamps (Iterable[ pd.Timestamp ]): Timestamp for each prediction time.
-        outcome_timestamps (Iterable[pd.Timestamp]): Timestamp for each outcome time.
+        pred_proba_thresholds (Sequence[float]): Thresholds above which predictions are classified as positive.
         output_format (str, optional): Format to output - either "df" or "wandb_table". Defaults to "df".
 
     Returns:
@@ -183,18 +175,18 @@ def generate_performance_by_positive_rate_table(
     # For each percentile, calculate relevant performance metrics
     for threshold_value in pred_proba_thresholds:
         threshold_metrics = performance_by_threshold(
-            labels=labels,
-            pred_probs=pred_probs,
+            labels=eval_dataset.y,
+            pred_probs=eval_dataset.y_hat_probs,
             positive_threshold=threshold_value,
         )
 
         threshold_metrics[  # pylint: disable=unsupported-assignment-operation
             "total_warning_days"
         ] = days_from_first_positive_to_diagnosis(
-            ids=ids,
-            pred_probs=pred_probs,
-            pred_timestamps=pred_timestamps,
-            outcome_timestamps=outcome_timestamps,
+            ids=eval_dataset.ids,
+            pred_probs=eval_dataset.y_hat_probs,
+            pred_timestamps=eval_dataset.pred_timestamps,
+            outcome_timestamps=eval_dataset.outcome_timestamps,
             positive_rate_threshold=threshold_value,
             aggregation_method="sum",
         )
@@ -203,10 +195,10 @@ def generate_performance_by_positive_rate_table(
             "mean_warning_days"
         ] = round(
             days_from_first_positive_to_diagnosis(
-                ids=ids,
-                pred_probs=pred_probs,
-                pred_timestamps=pred_timestamps,
-                outcome_timestamps=outcome_timestamps,
+                ids=eval_dataset.ids,
+                pred_probs=eval_dataset.y_hat_probs,
+                pred_timestamps=eval_dataset.pred_timestamps,
+                outcome_timestamps=eval_dataset.outcome_timestamps,
                 positive_rate_threshold=threshold_value,
                 aggregation_method="mean",
             ),

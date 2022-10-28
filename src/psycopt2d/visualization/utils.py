@@ -1,7 +1,7 @@
 # pylint: skip-file
 from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -9,7 +9,7 @@ import wandb
 from sklearn.metrics import roc_auc_score
 from wandb.sdk.wandb_run import Run as wandb_run
 
-from psycopt2d.utils import bin_continuous_data
+from psycopt2d.utils.utils import bin_continuous_data
 
 
 def log_image_to_wandb(chart_path: Path, chart_name: str, run: wandb_run):
@@ -47,11 +47,11 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
 
 def create_performance_by_input(
     labels: Sequence[int],
-    y_hat: Sequence[int, float],
-    input: Sequence[int, float],
+    y_hat: Sequence[Union[int, float]],
+    input: Sequence[Union[int, float]],
     input_name: str,
-    bins: Sequence[int, float] = [0, 1, 2, 5, 10],
-    pretty_bins: Optional[bool] = True,
+    bins: Sequence[Union[int, float]] = [0, 1, 2, 5, 10],
+    prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
     """Calculate performance by given input values, e.g. age or number of hbac1
@@ -60,10 +60,10 @@ def create_performance_by_input(
     Args:
         labels (Sequence[int]): True labels
         y_hat (Sequence[int]): Predicted label or probability depending on metric
-        input (Sequence[int, float]): Input values to calculate performance by
+        input (Sequence[Union[int, float]]): Input values to calculate performance by
         input_name (str): Name of the input
-        bins (Sequence[int, float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
-        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
+        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        prettify_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
 
@@ -73,7 +73,7 @@ def create_performance_by_input(
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, input_name: input})
 
     # bin data
-    if pretty_bins:
+    if prettify_bins:
         df[f"{input_name}_binned"] = bin_continuous_data(df[input_name], bins=bins)
 
         output_df = df.groupby(f"{input_name}_binned").apply(

@@ -5,51 +5,36 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 
 # pylint: disable=missing-function-docstring
 
-from pathlib import Path
 
 import pandas as pd
-import pytest
 
+from psycopt2d.evaluation_dataclasses import ArtifactContainer, EvalDataset
 from psycopt2d.tables.performance_by_threshold import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils import positive_rate_to_pred_probs
+from psycopt2d.utils.utils import positive_rate_to_pred_probs
 
 
-@pytest.fixture(scope="function")
-def synth_data():
-    """Load synthetic data."""
-    csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
-    df = pd.read_csv(csv_path)
-
-    # Convert all timestamp cols to datetime
-    for col in [col for col in df.columns if "timestamp" in col]:
-        df[col] = pd.to_datetime(df[col])
-
-    return df
-
-
-def test_generate_performance_by_threshold_table(synth_data):
-    df = synth_data
-
+def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
     positive_rate_thresholds = [0.9, 0.5, 0.1]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
-        pred_probs=df["pred_prob"],
+        pred_probs=synth_eval_dataset.y_hat_probs,
         positive_rate_thresholds=positive_rate_thresholds,
     )
 
-    table = generate_performance_by_positive_rate_table(
-        labels=df["label"],
-        pred_probs=df["pred_prob"],
-        ids=df["dw_ek_borger"],
-        positive_rate_thresholds=positive_rate_thresholds,
-        pred_proba_thresholds=pred_proba_thresholds,
-        pred_timestamps=df["timestamp"],
-        outcome_timestamps=df["timestamp_t2d_diag"],
-        output_format="df",
+    table_spec = ArtifactContainer(
+        label="performance_by_threshold_table",
+        artifact=generate_performance_by_positive_rate_table(
+            eval_dataset=synth_eval_dataset,
+            positive_rate_thresholds=positive_rate_thresholds,
+            pred_proba_thresholds=pred_proba_thresholds,
+            output_format="df",
+        ),
     )
+
+    output_table = table_spec.artifact
 
     expected_df = pd.DataFrame(
         {
@@ -74,19 +59,17 @@ def test_generate_performance_by_threshold_table(synth_data):
         },
     )
 
-    for col in table.columns:
-        table[col].equals(expected_df[col])
+    for col in output_table.columns:
+        output_table[col].equals(expected_df[col])
 
 
-def test_time_from_flag_to_diag(synth_data):
-    df = synth_data
-
+def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
     # Threshold = 0.5
     val = days_from_first_positive_to_diagnosis(
-        ids=df["dw_ek_borger"],
-        pred_probs=df["pred_prob"],
-        pred_timestamps=df["timestamp"],
-        outcome_timestamps=df["timestamp_t2d_diag"],
+        ids=synth_eval_dataset.ids,
+        pred_probs=synth_eval_dataset.y_hat_probs,
+        pred_timestamps=synth_eval_dataset.pred_timestamps,
+        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         positive_rate_threshold=0.5,
     )
 
@@ -94,10 +77,10 @@ def test_time_from_flag_to_diag(synth_data):
 
     # Threshold = 0.2
     val = days_from_first_positive_to_diagnosis(
-        ids=df["dw_ek_borger"],
-        pred_probs=df["pred_prob"],
-        pred_timestamps=df["timestamp"],
-        outcome_timestamps=df["timestamp_t2d_diag"],
+        ids=synth_eval_dataset.ids,
+        pred_probs=synth_eval_dataset.y_hat_probs,
+        pred_timestamps=synth_eval_dataset.pred_timestamps,
+        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         positive_rate_threshold=0.2,
     )
 

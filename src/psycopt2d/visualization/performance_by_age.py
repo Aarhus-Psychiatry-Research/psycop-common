@@ -6,27 +6,24 @@ from typing import Optional, Union
 
 from sklearn.metrics import roc_auc_score
 
+from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.utils import create_performance_by_input
 
 
 def plot_performance_by_age(
-    labels: Sequence[int],
-    y_hat: Sequence[int, float],
-    age: Sequence[int, float],
+    eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
-    bins: Sequence[int, float] = (18, 25, 35, 50, 70),
-    pretty_bins: Optional[bool] = True,
+    bins: Sequence[Union[int, float]] = (18, 25, 35, 50, 70),
+    prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by age at time of prediction.
 
     Args:
-        labels (Sequence[int]): True labels
-        y_hat (Sequence[int]): Predicted label or probability depending on metric
-        age (Sequence[int, float]): Age at time of prediction
-        bins (Sequence[int, float]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
-        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
+        eval_dataset: EvalDataset object
+        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
+        prettify_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "18-25" instead of "[18-25])". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -36,13 +33,13 @@ def plot_performance_by_age(
     """
 
     df = create_performance_by_input(
-        labels=labels,
-        y_hat=y_hat,
-        input=age,
+        labels=eval_dataset.y,
+        y_hat=eval_dataset.y_hat_int,
+        input=eval_dataset.age,
         input_name="age",
         metric_fn=metric_fn,
         bins=bins,
-        pretty_bins=pretty_bins,
+        prettify_bins=prettify_bins,
     )
 
     sort_order = sorted(df["age_binned"].unique())

@@ -6,28 +6,25 @@ from typing import Optional, Union
 
 from sklearn.metrics import roc_auc_score
 
+from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.utils import create_performance_by_input
 
 
 def plot_performance_by_n_hba1c(
-    labels: Sequence[int],
-    y_hat: Sequence[int, float],
-    n_hba1c: Sequence[int],
+    eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
-    bins: Sequence[int, float] = (0, 1, 2, 5, 10),
-    pretty_bins: Optional[bool] = True,
+    bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
+    prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by number of HbA1c
     measurements.
 
     Args:
-        labels (Sequence[int]): True labels
-        y_hat (Sequence[int]): Predicted label or probability depending on metric
-        n_hba1c (Sequence[int]): Number of HbA1c measurements
-        bins (Sequence[int, float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
-        pretty_bins (bool, optional): Whether to prettify bin names. I.e. make
+        eval_dataset: EvalDataset object
+        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        prettify_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -37,13 +34,13 @@ def plot_performance_by_n_hba1c(
     """
 
     df = create_performance_by_input(
-        labels=labels,
-        y_hat=y_hat,
-        input=n_hba1c,
+        labels=eval_dataset.y,
+        y_hat=eval_dataset.y_hat_int,
+        input=eval_dataset.custom.n_hba1c,
         input_name="n_hba1c",
         metric_fn=metric_fn,
         bins=bins,
-        pretty_bins=pretty_bins,
+        prettify_bins=prettify_bins,
     )
 
     sort_order = sorted(df["n_hba1c_binned"].unique())

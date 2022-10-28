@@ -10,7 +10,8 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
-from psycopt2d.utils import positive_rate_to_pred_probs
+from psycopt2d.evaluation_dataclasses import EvalDataset
+from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.feature_importance import plot_feature_importances
@@ -18,8 +19,8 @@ from psycopt2d.visualization.performance_by_age import plot_performance_by_age
 from psycopt2d.visualization.performance_by_n_hba1c import plot_performance_by_n_hba1c
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
+    plot_metric_by_calendar_time,
     plot_metric_by_time_until_diagnosis,
-    plot_performance_by_calendar_time,
 )
 from psycopt2d.visualization.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
@@ -44,34 +45,34 @@ def df():
     return df
 
 
-def test_prob_over_time(df, tmp_path):
+def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path):
     plot_prob_over_time(
-        patient_id=df["dw_ek_borger"],
-        timestamp=df["timestamp"],
-        pred_prob=df["pred_prob"],
-        outcome_timestamp=df["timestamp_t2d_diag"],
-        label=df["label"],
+        patient_id=synth_eval_dataset.ids,
+        timestamp=synth_eval_dataset.pred_timestamps,
+        pred_prob=synth_eval_dataset.y_hat_probs,
+        outcome_timestamp=synth_eval_dataset.outcome_timestamps,
+        label=synth_eval_dataset.y,
         look_behind_distance=500,
         save_path=tmp_path,
     )
 
 
-def test_get_sens_by_time_to_outcome_df(df):
+def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
     create_sensitivity_by_time_to_outcome_df(
-        labels=df["label"],
-        y_hat_probs=df["pred"],
-        outcome_timestamps=df["timestamp_t2d_diag"],
-        prediction_timestamps=df["timestamp"],
+        labels=synth_eval_dataset.y,
+        y_hat_probs=synth_eval_dataset.y_hat_probs,
+        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
+        prediction_timestamps=synth_eval_dataset.pred_timestamps,
         pred_proba_threshold=0.5,
     )
 
 
-def test_plot_bar_chart(df):
+def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
     plot_df = create_sensitivity_by_time_to_outcome_df(
-        labels=df["label"],
-        y_hat_probs=df["pred"],
-        outcome_timestamps=df["timestamp_t2d_diag"],
-        prediction_timestamps=df["timestamp"],
+        labels=synth_eval_dataset.y,
+        y_hat_probs=synth_eval_dataset.y_hat_probs,
+        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
+        prediction_timestamps=synth_eval_dataset.pred_timestamps,
         pred_proba_threshold=0.5,
     )
     plot_basic_chart(
@@ -83,66 +84,53 @@ def test_plot_bar_chart(df):
     )
 
 
-def test_plot_performance_by_n_hba1c(df):
-    plot_performance_by_n_hba1c(
-        labels=df["label"],
-        y_hat=df["pred"],
-        n_hba1c=df["n_hba1c"],
+def test_plot_performance_by_n_hba1c(synth_eval_dataset: EvalDataset):
+    synth_eval_dataset.custom.Config.allow_mutation = True
+    synth_eval_dataset.custom.n_hba1c = np.random.randint(
+        0,
+        8,
+        len(synth_eval_dataset.ids),
     )
+    plot_performance_by_n_hba1c(eval_dataset=synth_eval_dataset)
 
 
-def test_plot_performance_by_age(df):
-    plot_performance_by_age(
-        labels=df["label"],
-        y_hat=df["pred"],
-        age=df["age"],
-    )
+def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
+    plot_performance_by_age(eval_dataset=synth_eval_dataset)
 
 
-def test_plot_performance_by_calendar_time(df):
-    plot_performance_by_calendar_time(
-        labels=df["label"],
-        y_hat=df["pred"],
-        timestamps=df["timestamp"],
+def test_plot_performance_by_calendar_time(synth_eval_dataset: EvalDataset):
+    plot_metric_by_calendar_time(
+        eval_dataset=synth_eval_dataset,
         bin_period="M",
         metric_fn=roc_auc_score,
         y_title="AUC",
     )
 
 
-def test_plot_metric_until_diagnosis(df):
+def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
     plot_metric_by_time_until_diagnosis(
-        labels=df["label"],
-        y_hat=df["pred"],
-        diagnosis_timestamps=df["timestamp_t2d_diag"],
-        prediction_timestamps=df["timestamp"],
+        eval_dataset=synth_eval_dataset,
         metric_fn=f1_score,
         y_title="F1",
     )
 
 
-def test_plot_auc_time_from_first_visit(df):
+def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
     plot_auc_by_time_from_first_visit(
-        labels=df["label"],
-        y_hat_probs=df["pred_prob"],
-        first_visit_timestamps=df["timestamp_first_pred_time"],
-        prediction_timestamps=df["timestamp"],
+        eval_dataset=synth_eval_dataset,
     )
 
 
-def test_plot_sens_by_time_to_outcome(df, tmp_path):
+def test_plot_sens_by_time_to_outcome(synth_eval_dataset: EvalDataset, tmp_path):
     positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
-        pred_probs=df["pred_prob"],
+        pred_probs=synth_eval_dataset.y_hat_probs,
         positive_rate_thresholds=positive_rate_thresholds,
     )
 
     plot_sensitivity_by_time_to_outcome_heatmap(  # noqa
-        labels=df["label"],
-        y_hat_probs=df["pred_prob"],
-        outcome_timestamps=df["timestamp_t2d_diag"],
-        prediction_timestamps=df["timestamp"],
+        eval_dataset=synth_eval_dataset,
         pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
         save_path=tmp_path,
@@ -156,9 +144,10 @@ def test_plot_feature_importances():
     # generate 10 random nubmers between 0 and 1
     feature_importance = np.random.rand(n_features)
 
+    feature_importance_dict = dict(zip(feature_names, feature_importance))
+
     plot_feature_importances(
-        feature_names,
-        feature_importances=feature_importance,
+        feature_importance_dict=feature_importance_dict,
         top_n_feature_importances=n_features,
         save_path="tmp",
     )

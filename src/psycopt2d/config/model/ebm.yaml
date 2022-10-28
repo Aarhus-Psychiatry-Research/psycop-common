@@ -1,8 +1,8 @@
 # @package _global_
 model:
-  model_name: ebm # (str): Model name, explainable boosting machine
+  name: ebm # (str): Model name, explainable boosting machine
   require_imputation: true # (bool): Whether the model requires imputation.
-  args:   # Documentiation: https://interpret.ml/docs/ebm.html#api
+  args: # Documentiation: https://interpret.ml/docs/ebm.html#api
     max_bins: 256
     max_interaction_bins: 32
     binning: quantile

@@ -1,6 +1,6 @@
 # @package _global_
 model:
-  model_name: xgboost # (str): Model, can currently take xgboost
+  name: xgboost # (str): Model, can currently take xgboost
   require_imputation: true # (bool): Whether the model requires imputation. (shouldn't this be false?)
   args:
     n_estimators: 100

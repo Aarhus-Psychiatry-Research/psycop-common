@@ -2,6 +2,65 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.0 (2022-10-26)
+### Feature
+* Add watcher to main training script ([`917d42e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/917d42e08c0e51b5ae6e7c5271eb827409613fb4))
+* Make watcher store separate max performance per lookbehind/lookahead combination ([`091a3c0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/091a3c02af4150dcccb46c60753f0b7380e5f588))
+* Add watcher ([`bb63f53`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/bb63f531cd1405160cc8137bebf8b42428a336f5))
+* Init training script ([`1ff62ff`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1ff62ffd59f82470b33dcc8a4f2308508078a36d))
+* Intermediate refactor ([`c82fa61`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c82fa61c984fe999b35ed86a6bc4e035cd8507bb))
+
+### Fix
+* Failing tests ([`65dc59a`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/65dc59a10e390f60917862cfd4239f306ad1059d))
+* Watcher is working ([`7fd5ba1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/7fd5ba1ca2ce5e238c8e34d9a2d0347abf4134d9))
+* Type errors ([`faa43dc`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/faa43dc302e6c236cf141737b5b3aded4ad1ea0a))
+* Type errors ([`45a9add`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/45a9addcec7c891dc2ec7ba11c77311c73eaa4b1))
+* Feature_selection_test requires more than 1 pred col ([`7c9f0c8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/7c9f0c8dcbf40b05f3708bfdc534bb558fd9bea2))
+* Minor fixes after merge ([`4bd3e7e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4bd3e7ea8225ae57410920dbb729ca626421364c))
+* Add data dir to synth dataset ([`bbb7dea`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/bbb7dea2c323c187542f4e88693771c1079df03c))
+* Run_id is required ([`43e6ba4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/43e6ba49d376b6bc1470ee70c09c253e6143ffc8))
+* Failing tests ([`315fd3f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/315fd3f3308c6d805cf26573a37af534c9500d41))
+* Look correct lookbehind in trainer ([`a350443`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a350443f0f8c3ce5c1e865267ed1cc9b0a9cf251))
+* Various bugs in watcher ([`615b17c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/615b17c7be9634a286666785079f1443eceb9751))
+* Correct output if only 1 outcome col ([`9beedfc`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9beedfca0bcf6281f18f096ebc5924d3f6f95030))
+* Misc. fixes and refactor ([`420da4c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/420da4cb4af70ab28a1504da861acd8b7d3c3f86))
+* Failing tests ([`1999b65`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1999b6554df20757e6eb473ebf7f539851311657))
+* Remove artefact code ([`dce563e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/dce563e61c1b9579759aaffced60a1f2d4ec5a75))
+* Infer col names return list if len 1 ([`5c0503b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/5c0503b091ab386840a9b45446e3850a52355606))
+* Make watcher not archive runs that haven't finished ([`76ba99d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/76ba99d42c2ec8957642ae14615d19543dfa3fe3))
+* Misc. minor fixes for training ([`1dbd900`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1dbd900efae2807b1d3525c6c018c29c52e543b0))
+* Add wandb_group to project struct ([`3f8ccbb`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3f8ccbb02de841bcefe36cbe861e7924c35ff492))
+
+### Documentation
+* Typo ([`d8bd92d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d8bd92df0f0303ab5fa9afa40bb28148fc191f37))
+
+## v0.11.0 (2022-10-25)
+### Feature
+* Added methods for feature selection ([`8c087d7`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/8c087d74d83991ae668f98470e411e86bb0471be))
+
+### Fix
+* Errors introduce on merge ([`b774066`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b77406679235bb61b362d6983045b0513edacec8))
+
+## v0.10.0 (2022-10-20)
+### Feature
+* Script to run (multirun) training and wandb watcher simultaneously ([`b8954bf`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b8954bf85b5814b304aa56efd9e161b53bc93f55))
+* Sort performance before logging and try uploading again next time if no auc ([`ba70ea8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ba70ea890857b24571589529847f54828b89a4cb))
+* Wandb watcher for asynchronous uploading of runs to wandb. ([`f6cae88`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f6cae888080d730548a9bb3df15489ea1ff28921))
+
+### Fix
+* Make `metric_by_time_to_diagnosis` and `auc_by_calender_time` plots include both scatter and line ([`3d123d8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3d123d8a190dd2bcc398f348f79e8fd832d42b71))
+* Correct name of wandb run ([`4821b99`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4821b993eecb35ccd351a6c5fe467e39bb1b8a11))
+* Save model predictions on overtaci ([`9b65f6f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9b65f6f5c1b2830a438870dc095165b48946b0ff))
+
+## v0.9.0 (2022-10-19)
+### Feature
+* Check for meaningful lookbehind_combination ([`297f7c4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/297f7c41b87520c1044944dabc3aa4805cadb3c3))
+
+### Fix
+* Error caused by merge ([`b77679d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b77679d45d6b8895db776f29fcb8cb2d0d5158f6))
+* Convert to sets in check ([`722a282`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/722a282cb9d46498cead7dbd04006ad59b8162d2))
+* Convert omegaconf types to generics ([`c85e2d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c85e2d52f650192478e497c866e84c872272a53d))
+
 ## v0.8.0 (2022-10-19)
 ### Feature
 * Log how many rows and cols are dropped ([`9bd5720`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9bd572008b250e7ba181f5436dbd8fe9b92e9e13))

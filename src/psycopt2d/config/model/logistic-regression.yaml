@@ -1,8 +1,8 @@
 # @package _global_
 model:
-  model_name: logistic-regression # (str): Model name
+  name: logistic-regression # (str): Model name
   require_imputation: True # (bool): Whether the model requires imputation.
-  args:   # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+  args: # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
     dual: False
     tol: 0.0001
     C: 1.0

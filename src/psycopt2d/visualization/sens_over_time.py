@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from psycopt2d.utils import PROJECT_ROOT, round_floats_to_edge
+from psycopt2d.evaluation_dataclasses import EvalDataset
+from psycopt2d.utils.utils import round_floats_to_edge
 
 
 def create_sensitivity_by_time_to_outcome_df(
@@ -268,11 +269,8 @@ def _format_sens_by_time_heatmap(
 
 
 def plot_sensitivity_by_time_to_outcome_heatmap(
-    labels: Iterable[int],
-    y_hat_probs: Iterable[int],
+    eval_dataset: EvalDataset,
     pred_proba_thresholds: list[float],
-    outcome_timestamps: Iterable[pd.Timestamp],
-    prediction_timestamps: Iterable[pd.Timestamp],
     bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
     color_map: Optional[str] = "PuBu",
     colorbar_label: Optional[str] = "Sensitivity",
@@ -285,11 +283,8 @@ def plot_sensitivity_by_time_to_outcome_heatmap(
     positive rate thresholds.
 
     Args:
-        labels (Iterable[int]): True labels of the data.
-        y_hat_probs (Iterable[int]): Predicted probability of class 1.
-        pred_proba_thresholds (Iterable[float]): list of pred_proba thresholds to plot, above which predictions are classified as positive.
-        outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
-        prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
+        eval_dataset (EvalDataset): EvalDataset object.
+        pred_proba_thresholds (list[float]): List of positive rate thresholds.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
         color_map (str, optional): Colormap to use. Defaults to "PuBu".
         colorbar_label (str, optional): Colorbar label. Defaults to "Sensitivity".
@@ -303,7 +298,7 @@ def plot_sensitivity_by_time_to_outcome_heatmap(
 
     Examples:
         >>> from pathlib import Path
-        >>> from psycopt2d.utils import positive_rate_to_pred_probs
+        >>> from psycopt2d.utils.utils import positive_rate_to_pred_probs
 
         >>> repo_path = Path(__file__).parent.parent.parent.parent
         >>> path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
@@ -332,10 +327,10 @@ def plot_sensitivity_by_time_to_outcome_heatmap(
 
     func = partial(
         create_sensitivity_by_time_to_outcome_df,
-        labels=labels,
-        y_hat_probs=y_hat_probs,
-        outcome_timestamps=outcome_timestamps,
-        prediction_timestamps=prediction_timestamps,
+        labels=eval_dataset.y,
+        y_hat_probs=eval_dataset.y_hat_probs,
+        outcome_timestamps=eval_dataset.outcome_timestamps,
+        prediction_timestamps=eval_dataset.pred_timestamps,
         bins=bins,
     )
 
@@ -378,29 +373,3 @@ def plot_sensitivity_by_time_to_outcome_heatmap(
         plt.savefig(save_path)
         plt.close()
     return save_path
-
-
-if __name__ == "__main__":
-    from psycopt2d.utils import positive_rate_to_pred_probs
-
-    path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"
-    df = pd.read_csv(path)
-
-    for col in [col for col in df.columns if "timestamp" in col]:
-        df[col] = pd.to_datetime(df[col])
-
-    positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
-
-    pred_proba_thresholds = positive_rate_to_pred_probs(
-        pred_probs=df["pred_prob"],
-        positive_rate_thresholds=positive_rate_thresholds,
-    )
-
-    plot_sensitivity_by_time_to_outcome_heatmap(
-        labels=df["label"],
-        y_hat_probs=df["pred_prob"],
-        pred_proba_thresholds=pred_proba_thresholds,
-        outcome_timestamps=df["timestamp_t2d_diag"],
-        prediction_timestamps=df["timestamp"],
-        bins=[0, 28, 182, 365, 730, 1825],
-    )

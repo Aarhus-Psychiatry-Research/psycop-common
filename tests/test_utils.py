@@ -1,10 +1,11 @@
 """Testing of the utils module."""
 # pylint: disable=missing-function-docstring
+
 import numpy as np
 import pandas as pd
 from utils_for_testing import str_to_df
 
-from psycopt2d.utils import (
+from psycopt2d.utils.utils import (
     drop_records_if_datediff_days_smaller_than,
     flatten_nested_dict,
 )

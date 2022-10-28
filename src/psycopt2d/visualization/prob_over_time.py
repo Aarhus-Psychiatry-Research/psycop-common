@@ -141,7 +141,7 @@ def plot_prob_over_time(
 
 
 if __name__ == "__main__":
-    from psycopt2d.utils import PROJECT_ROOT
+    from psycopt2d.utils.utils import PROJECT_ROOT
 
     path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(path)

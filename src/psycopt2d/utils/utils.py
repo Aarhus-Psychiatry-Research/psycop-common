@@ -13,10 +13,16 @@ from typing import Any, Optional, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from omegaconf.dictconfig import DictConfig
+from sklearn.pipeline import Pipeline
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
+from psycopt2d.evaluation_dataclasses import (
+    EvalDataset,
+    FullConfigSchema,
+    ModelEvalData,
+    PipeMetadata,
+)
 from psycopt2d.model_performance import ModelPerformance
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -25,8 +31,8 @@ OUTCOME_DATA_PATH = SHARED_RESOURCES_PATH / "outcome_data"
 RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
 FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-AUC_LOGGING_FILE_PATH = PROJECT_ROOT / ".aucs" / "aucs.txt"
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -58,7 +64,7 @@ def flatten_nested_dict(
     d: dict,
     parent_key: str = "",
     sep: str = ".",
-) -> dict:
+) -> dict[str, Any]:
     """Recursively flatten an infinitely nested dict.
 
     E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes
@@ -79,15 +85,15 @@ def flatten_nested_dict(
         new_key = parent_key + sep + k if parent_key else k
         if isinstance(v, MutableMapping):
             items.extend(
-                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),
+                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),  # type: ignore
             )  # typing: ignore
         else:
-            items.append((new_key, v))
+            items.append((new_key, v))  # type: ignore
 
-    return dict(items)
+    return dict(items)  # type: ignore
 
 
-def drop_records_if_datediff_days_smaller_than(
+def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-return-statements
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
@@ -122,7 +128,8 @@ def drop_records_if_datediff_days_smaller_than(
 
 
 def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
-    """Rounds a float to the lowest value it is larger than.
+    """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
+    0.9 will be rounded to 0, 1.8 will be rounded to 1, etc.
 
     Args:
         series (pd.Series): The series of floats to round to bin edges.
@@ -132,7 +139,10 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
         A numpy ndarray with the borders.
     """
     _, edges = pd.cut(series, bins=bins, retbins=True)
-    labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
+    labels = [  # pylint: disable=unsubscriptable-object
+        f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]"  # pylint: disable=unsubscriptable-object
+        for i in range(len(bins) - 1)
+    ]
 
     return pd.cut(series, bins=bins, labels=labels)
 
@@ -156,7 +166,7 @@ def calculate_performance_metrics(
         A pandas dataframe with the performance metrics.
     """
     performance_metrics = ModelPerformance.performance_metrics_from_df(
-        eval_df,
+        prediction_df=eval_df,
         prediction_col_name=prediction_probabilities_col_name,
         label_col_name=outcome_col_name,
         id_col_name=id_col_name,
@@ -249,7 +259,7 @@ def positive_rate_to_pred_probs(
     return pd.Series(pred_probs).quantile(thresholds).tolist()
 
 
-def dump_to_pickle(obj: Any, path: str) -> None:
+def dump_to_pickle(obj: Any, path: Union[str, Path]) -> None:
     """Pickles an object to a file.
 
     Args:
@@ -260,7 +270,7 @@ def dump_to_pickle(obj: Any, path: str) -> None:
         pkl.dump(obj, f)
 
 
-def read_pickle(path: str) -> Any:
+def read_pickle(path: Union[str, Path]) -> Any:
     """Reads a pickled object from a file.
 
     Args:
@@ -281,7 +291,7 @@ def write_df_to_file(
 
     Args:
         df: Dataset
-        file_path (str): File name.
+        file_path (str): File path. Infers file type from suffix.
     """
 
     file_suffix = file_path.suffix
@@ -294,30 +304,79 @@ def write_df_to_file(
         raise ValueError(f"Invalid file suffix {file_suffix}")
 
 
-def prediction_df_with_metadata_to_disk(
-    df: pd.DataFrame,
-    cfg: DictConfig,
-    run: Optional[Run] = None,
-) -> None:
-    """Saves prediction dataframe and hydra config to disk. Stored as a dict
-    with keys "df" and "cfg".
+def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]:
+    """Checks whether the model has feature importances and returns them as a
+    dictionary. Return None if not.
 
     Args:
-        df (pd.DataFrame): Dataframe to save.
-        cfg (DictConfig): Hydra config.
+        pipe (Pipeline): Sklearn pipeline.
+
+    Returns:
+        Union[None, dict[str, float]]: Dictionary of feature importances.
+    """
+    if hasattr(pipe["model"], "feature_importances_"):
+        return dict(
+            zip(pipe["model"].feature_names, pipe["model"].feature_importances_),
+        )
+    else:
+        return None
+
+
+def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
+    """Write EvalDataset to disk.
+
+    Handles csv and parquet files based on suffix.
+    """
+    df_template = {
+        col_name: series
+        for col_name, series in eval_dataset.__dict__.items()
+        if series is not None
+    }
+
+    # Add custom columns
+    df_template.update(
+        {
+            col_name: series
+            for col_name, series in eval_dataset.custom.__dict__.items()
+            if series is not None
+        },
+    )
+
+    # Remove items that aren't series, e.g. the top level CustomColumns object
+    template_filtered = {
+        k: v for k, v in df_template.items() if isinstance(v, pd.Series)
+    }
+
+    df = pd.DataFrame(template_filtered)
+
+    write_df_to_file(df=df, file_path=file_path)
+
+
+def eval_ds_cfg_pipe_to_disk(
+    eval_dataset: EvalDataset,
+    cfg: FullConfigSchema,
+    pipe_metadata: PipeMetadata,
+    run: Optional[Run] = None,
+) -> None:
+    """Saves prediction dataframe, hydra config and feature names to disk.
+
+    Args:
+        eval_dataset (EvalDataset): Evaluation dataset.
+        cfg (FullConfig): Full config.
+        pipe_metadata (PipeMetadata): Pipe metadata.
         run (Run): Wandb run. Used for getting name of the run.
     """
     model_args = format_dict_for_printing(cfg.model)
 
     timestamp = time.strftime("%Y_%m_%d_%H_%M")
 
-    if run and run.name:
-        run_descriptor = f"{timestamp}_{run.name}"
+    if run and run.id:
+        run_descriptor = f"{timestamp}_{run.id}"
     else:
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
-    if cfg.evaluation.save_model_predictions_on_overtaci and run:
-        # Save to overtaci formatted with date
+    if cfg.eval.save_model_predictions_on_overtaci:
+        # Save to overtaci
         dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
     else:
         # Local path handling
@@ -326,8 +385,9 @@ def prediction_df_with_metadata_to_disk(
     dir_path.mkdir(parents=True, exist_ok=True)
 
     # Write the files
-    dump_to_pickle(cfg, str(dir_path / "cfg.pkl"))
-    write_df_to_file(df, dir_path / "df.parquet")
+    eval_dataset_to_disk(eval_dataset, dir_path / "evaluation_dataset.parquet")
+    dump_to_pickle(cfg, dir_path / "cfg.pkl")
+    dump_to_pickle(pipe_metadata, dir_path / "pipe_metadata.pkl")
 
     msg.good(f"Saved evaluation results to {dir_path}")
 
@@ -356,3 +416,77 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
         )
 
     return date_repr
+
+
+def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
+    """Get evaluation data from a directory.
+
+    Args:
+        model_data_dir (Path): Path to model data directory.
+
+    Returns:
+        ModelEvalData: Evaluation data.
+    """
+    eval_dataset = read_pickle(model_data_dir / "evaluation_dataset.pkl")
+    cfg = read_pickle(model_data_dir / "cfg.pkl")
+    pipe_metadata = read_pickle(model_data_dir / "pipe_metadata.pkl")
+
+    return ModelEvalData(
+        eval_dataset=eval_dataset,
+        cfg=cfg,
+        pipe_metadata=pipe_metadata,
+    )
+
+
+def infer_col_names(
+    df: pd.DataFrame,
+    prefix: str,
+    allow_multiple: bool = True,
+) -> list[str]:
+    """Infer col names based on prefix."""
+    col_name = [c for c in df.columns if c.startswith(prefix)]
+
+    if len(col_name) == 1:
+        return col_name
+    elif len(col_name) > 1:
+        if allow_multiple:
+            return col_name
+        raise ValueError(
+            f"Multiple columns found and allow_multiple is {allow_multiple}.",
+        )
+    elif not col_name:
+        raise ValueError("No outcome col name inferred")
+    else:
+        raise ValueError("No outcomes inferred")
+
+
+def infer_outcome_col_name(
+    df: pd.DataFrame,
+    prefix: str = "outc_",
+    allow_multiple: bool = True,
+) -> list[str]:
+    """Infer the outcome column name from the dataframe."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def infer_predictor_col_name(
+    df: pd.DataFrame,
+    prefix: str = "pred_",
+    allow_multiple: bool = True,
+) -> Union[str, list[str]]:
+    """Get the predictors that are used in the model."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def infer_y_hat_prob_col_name(
+    df: pd.DataFrame,
+    prefix="y_hat_prob",
+    allow_multiple: bool = False,
+) -> list[str]:
+    """Infer the y_hat_prob column name from the dataframe."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def get_percent_lost(n_before: Union[int, float], n_after: Union[int, float]) -> float:
+    """Get the percent lost."""
+    return round((100 * (1 - n_after / n_before)), 2)
