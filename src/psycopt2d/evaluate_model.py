@@ -1,6 +1,6 @@
 """_summary_"""
 from collections.abc import Iterable, Sequence
-from pathlib import Path
+from pathlib import Path, PosixPath, WindowsPath
 from typing import Optional, Union
 
 import pandas as pd
@@ -36,10 +36,10 @@ def upload_artifacts(
     run: wandb_run,
 ) -> None:
     """Upload artifacts to wandb."""
-    allowed_artifact_types = [Path, pd.DataFrame]
+    allowed_artifact_types = [Path, WindowsPath, PosixPath, pd.DataFrame]
 
     for artifact_container in artifact_containers:
-        if artifact_container.artifact not in allowed_artifact_types:
+        if type(artifact_container.artifact) not in allowed_artifact_types:
             raise TypeError(
                 f"Type of artifact is {type(artifact_container.artifact)}, must be one of {allowed_artifact_types}",
             )
@@ -52,7 +52,7 @@ def upload_artifacts(
             )
         elif isinstance(artifact_container.artifact, pd.DataFrame):
             wandb_table = wandb.Table(dataframe=artifact_container.artifact)
-            run.log_artifact({artifact_container.label: wandb_table})
+            run.log({artifact_container.label: wandb_table})
 
 
 def filter_plot_bins(

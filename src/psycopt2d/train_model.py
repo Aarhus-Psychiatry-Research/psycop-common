@@ -33,6 +33,7 @@ from psycopt2d.utils.utils import (
     create_wandb_folders,
     eval_ds_cfg_pipe_to_disk,
     flatten_nested_dict,
+    get_feature_importance_dict,
 )
 
 CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
@@ -409,7 +410,7 @@ def main(cfg: DictConfig):
     pipe_metadata = PipeMetadata()
 
     if hasattr(pipe["model"], "feature_importances_"):
-        pipe_metadata.feature_importances = pipe["model"].feature_importances_
+        pipe_metadata.feature_importances = get_feature_importance_dict(pipe=pipe)
 
     # Save model predictions, feature importance, and config to disk
     eval_ds_cfg_pipe_to_disk(
