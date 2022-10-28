@@ -15,7 +15,7 @@ from wasabi import msg
 
 from psycopt2d.evaluate_model import run_full_evaluation
 from psycopt2d.evaluation_dataclasses import ModelEvalData
-from psycopt2d.utils.configs import FullConfigSchema
+from psycopt2d.utils.config_schemas import FullConfigSchema
 from psycopt2d.utils.utils import (
     MODEL_PREDICTIONS_PATH,
     PROJECT_ROOT,

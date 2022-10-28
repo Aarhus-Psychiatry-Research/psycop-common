@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Union
 
 import pandas as pd
-from hydra import compose, initialize
 from pydantic import BaseModel
 from wasabi import Printer
 
@@ -22,7 +21,7 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_predictor_col_name,
 )
 from psycopt2d.load import DataLoader
-from psycopt2d.utils.configs import FullConfigSchema, load_cfg_as_pydantic
+from psycopt2d.utils.config_schemas import FullConfigSchema, load_cfg_as_pydantic
 
 msg = Printer(timestamp=True)
 

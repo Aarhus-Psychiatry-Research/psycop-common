@@ -1,6 +1,5 @@
 """Testing of the utils module."""
 # pylint: disable=missing-function-docstring
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -52,9 +51,3 @@ def test_flatten_nested_dict():
     output_dict = flatten_nested_dict(input_dict)
 
     assert expected_dict == output_dict
-
-
-def get_config_file_names() -> list[str]:
-    """Get all config file names."""
-    config_file_paths: list[Path] = list(CONFIG_DIR_PATH_ABS.glob("*.yaml"))
-    return [f"{path.stem}.yaml" for path in config_file_paths]

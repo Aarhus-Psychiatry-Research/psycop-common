@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from psycopt2d.utils.configs import BaseModel, FullConfigSchema
+from psycopt2d.utils.config_schemas import BaseModel, FullConfigSchema
 
 
 class EvalDataset(BaseModel):
@@ -44,11 +44,11 @@ class PipeMetadata(BaseModel):
     Currently only has feature_importances, but makes it easy to add more - e.g. which features were dropped.
     """
 
+    feature_importances: Optional[dict[str, float]] = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
-
-    feature_importances: Optional[dict[str, float]] = None
 
 
 class ModelEvalData(BaseModel):

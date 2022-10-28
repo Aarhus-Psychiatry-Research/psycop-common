@@ -9,7 +9,6 @@ Helpful because it makes them:
 
 from datetime import datetime
 from pathlib import Path
-from queue import Full
 from typing import Optional, Union
 
 from hydra import compose, initialize
@@ -22,7 +21,8 @@ class BaseModel(PydanticBaseModel):
     """."""
 
     class Config:
-        """An pydantic basemodel, which doesn't allow attributes that are not defined in the class."""
+        """An pydantic basemodel, which doesn't allow attributes that are not
+        defined in the class."""
 
         allow_mutation = False
         arbitrary_types_allowed = True
@@ -162,7 +162,8 @@ class FullConfigSchema(BaseModel):
 
 
 def convert_omegaconf_to_pydantic_object(
-    conf: DictConfig, allow_mutation: bool = False
+    conf: DictConfig,
+    allow_mutation: bool = False,
 ) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
@@ -204,7 +205,8 @@ def load_cfg_as_omegaconf(
 
 
 def load_cfg_as_pydantic(
-    config_file_name, allow_mutation: bool = False
+    config_file_name,
+    allow_mutation: bool = False,
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
     cfg = load_cfg_as_omegaconf(config_file_name=config_file_name)

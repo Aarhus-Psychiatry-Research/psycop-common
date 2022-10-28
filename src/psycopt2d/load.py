@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
-from psycopt2d.utils.configs import FullConfigSchema
+from psycopt2d.utils.config_schemas import FullConfigSchema
 from psycopt2d.utils.utils import (
     get_percent_lost,
     infer_outcome_col_name,

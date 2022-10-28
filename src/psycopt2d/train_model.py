@@ -27,7 +27,7 @@ from psycopt2d.preprocessing.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
 )
-from psycopt2d.utils.configs import (
+from psycopt2d.utils.config_schemas import (
     FullConfigSchema,
     convert_omegaconf_to_pydantic_object,
 )

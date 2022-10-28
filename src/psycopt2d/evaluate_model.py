@@ -17,7 +17,7 @@ from psycopt2d.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
 from psycopt2d.tables.tables import generate_feature_importances_table
-from psycopt2d.utils.configs import FullConfigSchema
+from psycopt2d.utils.config_schemas import FullConfigSchema
 from psycopt2d.utils.utils import positive_rate_to_pred_probs
 from psycopt2d.visualization.feature_importance import plot_feature_importances
 from psycopt2d.visualization.performance_over_time import (

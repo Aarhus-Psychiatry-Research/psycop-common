@@ -5,7 +5,7 @@ import pytest
 
 from psycopt2d.models import MODELS
 from psycopt2d.train_model import main
-from psycopt2d.utils.configs import FullConfigSchema, load_cfg_as_omegaconf
+from psycopt2d.utils.config_schemas import FullConfigSchema, load_cfg_as_omegaconf
 
 INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
 
@@ -15,7 +15,8 @@ def test_main(model_name):
     """Test main using a variety of model."""
 
     cfg: FullConfigSchema = load_cfg_as_omegaconf(
-        config_file_name=INTEGRATION_TEST_FILE_NAME, overrides=[f"model={model_name}"]
+        config_file_name=INTEGRATION_TEST_FILE_NAME,
+        overrides=[f"model={model_name}"],
     )
 
     main(cfg)
