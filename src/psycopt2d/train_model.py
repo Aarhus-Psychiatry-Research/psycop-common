@@ -27,7 +27,10 @@ from psycopt2d.preprocessing.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
 )
-from psycopt2d.utils.configs import FullConfigSchema, omegaconf_to_pydantic_objects
+from psycopt2d.utils.configs import (
+    FullConfigSchema,
+    convert_omegaconf_to_pydantic_object,
+)
 from psycopt2d.utils.utils import (
     PROJECT_ROOT,
     create_wandb_folders,
@@ -91,10 +94,10 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     return Pipeline(steps)
 
 
-def create_model(cfg):
+def create_model(cfg: FullConfigSchema):
     """Instantiate and return a model object based on settings in the config
     file."""
-    model_dict = MODELS.get(cfg.model.model_name)
+    model_dict = MODELS.get(cfg.model.name)
 
     model_args = model_dict["static_hyperparameters"]
 
@@ -261,7 +264,7 @@ def train_and_eval_on_val_split(
 
 
 def train_and_get_model_eval_df(
-    cfg: DictConfig,
+    cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
     pipe: Pipeline,
@@ -272,7 +275,7 @@ def train_and_get_model_eval_df(
     """Train model and return evaluation dataset.
 
     Args:
-        cfg (DictConfig): Config object
+        cfg (FullConfigSchema): Config object
         train: Training dataset
         val: Validation dataset
         pipe: Pipeline
@@ -285,7 +288,7 @@ def train_and_get_model_eval_df(
     """
     # Set feature names if model is EBM to get interpretable feature importance
     # output
-    if cfg.model.model_name in ("ebm", "xgboost"):
+    if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names
 
     if n_splits is None:  # train on pre-defined splits
@@ -371,7 +374,7 @@ def main(cfg: DictConfig):
         dict_config_to_log = cfg.__dict__
 
     if not isinstance(cfg, FullConfigSchema):
-        cfg = omegaconf_to_pydantic_objects(cfg)
+        cfg = convert_omegaconf_to_pydantic_object(cfg)
 
     msg = Printer(timestamp=True)
 
@@ -420,8 +423,10 @@ def main(cfg: DictConfig):
         run=run,
     )
 
-    if cfg.project.wandb.mode == "run":
-        msg.info("Evaluating model")
+    if cfg.project.wandb.mode == "run" or cfg.eval.force:
+        msg.info("Evaluating model.")
+
+        upload_to_wandb = cfg.project.wandb.mode == "run"
 
         run_full_evaluation(
             cfg=cfg,
@@ -429,6 +434,7 @@ def main(cfg: DictConfig):
             run=run,
             pipe_metadata=pipe_metadata,
             save_dir=PROJECT_ROOT / "wandb" / "plots" / run.name,
+            upload_to_wandb=upload_to_wandb,
         )
 
     roc_auc = roc_auc_score(

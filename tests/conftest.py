@@ -6,6 +6,9 @@ import pytest
 from utils_for_testing import add_age_gender
 
 from psycopt2d.evaluation_dataclasses import EvalDataset
+from psycopt2d.utils.configs import FullConfigSchema, load_cfg_as_pydantic
+
+CONFIG_DIR_PATH_REL = "../src/psycopt2d/config"
 
 
 @pytest.fixture(scope="function")
@@ -27,4 +30,18 @@ def synth_eval_dataset() -> EvalDataset:
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         age=df["age"],
+    )
+
+
+@pytest.fixture(scope="function")
+def immuteable_test_config() -> FullConfigSchema:
+    return load_cfg_as_pydantic(
+        config_file_name="integration_config.yaml", allow_mutation=False
+    )
+
+
+@pytest.fixture(scope="function")
+def muteable_test_config() -> FullConfigSchema:
+    return load_cfg_as_pydantic(
+        config_file_name="integration_config.yaml", allow_mutation=True
     )

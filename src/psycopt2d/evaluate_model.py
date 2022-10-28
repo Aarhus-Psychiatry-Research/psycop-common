@@ -152,17 +152,19 @@ def run_full_evaluation(
     cfg: FullConfigSchema,
     eval_dataset: EvalDataset,
     save_dir: Path,
-    run: wandb_run,
     pipe_metadata: Optional[PipeMetadata] = None,
+    run: Optional[wandb_run] = None,
+    upload_to_wandb: bool = True,
 ):
-    """Run the full evaluation and upload to wandb.
+    """Run the full evaluation. Uploads to wandb if upload_to_wandb is true.
 
     Args:
         cfg: The config for the evaluation.
         eval_dataset: The dataset to evaluate.
         save_dir: The directory to save plots to.
-        run: The wandb run to upload to.
+        run: The wandb run to upload to. Determines whether to upload to wandb.
         pipe_metadata: The metadata for the pipe.
+        upload_to_wandb: Whether to upload to wandb.
     """
     lookahead_bins, lookbehind_bins = filter_plot_bins(cfg=cfg)
 
@@ -195,4 +197,8 @@ def run_full_evaluation(
             ),
         ]
 
-    upload_artifacts(run=run, artifact_containers=artifact_containers)
+    if upload_to_wandb and run is None:
+        raise ValueError("Must pass a run to be able to upload to wandb.")
+
+    if upload_to_wandb and run:
+        upload_artifacts(run=run, artifact_containers=artifact_containers)

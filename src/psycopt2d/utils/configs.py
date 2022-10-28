@@ -9,22 +9,32 @@ Helpful because it makes them:
 
 from datetime import datetime
 from pathlib import Path
+from queue import Full
 from typing import Optional, Union
 
+from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 
 
 class BaseModel(PydanticBaseModel):
-    """Allow arbitrary types in all pydantic models."""
+    """."""
 
     class Config:
-        """Allow arbitrary types."""
+        """An pydantic basemodel, which doesn't allow attributes that are not defined in the class."""
 
-        arbitrary_types_allowed = True
         allow_mutation = False
+        arbitrary_types_allowed = True
         extra = Extra.forbid
+
+    def __init__(
+        self,
+        allow_mutation: bool = False,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.Config.allow_mutation = allow_mutation
 
 
 class WandbConf(BaseModel):
@@ -110,7 +120,7 @@ class PreprocessingConf(BaseModel):
 class ModelConf(BaseModel):
     """Model configuration."""
 
-    model_name: str  # (str): Model, can currently take xgboost
+    name: str  # (str): Model, can currently take xgboost
     require_imputation: bool  # (bool): Whether the model requires imputation. (shouldn't this be false?)
     args: dict
 
@@ -126,6 +136,8 @@ class TrainConf(BaseModel):
 
 class EvalConf(BaseModel):
     """Evaluation config."""
+
+    force: bool = False  # (bool): Whether to force evaluation even if wandb is not "run". Used for testing.
 
     threshold_percentiles: list[int]
 
@@ -149,14 +161,52 @@ class FullConfigSchema(BaseModel):
     eval: EvalConf
 
 
-def omegaconf_to_pydantic_objects(conf: DictConfig) -> FullConfigSchema:
+def convert_omegaconf_to_pydantic_object(
+    conf: DictConfig, allow_mutation: bool = False
+) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
     Args:
         conf (DictConfig): Omegaconf DictConfig
+        allow_mutation (bool, optional): Whether to make the pydantic object mutable. Defaults to False.
 
     Returns:
         FullConfig: Pydantic object
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
-    return FullConfigSchema(**conf)
+    return FullConfigSchema(**conf, allow_mutation=allow_mutation)
+
+
+def load_cfg_as_omegaconf(
+    config_file_name: str,
+    overrides: Optional[list[str]] = None,
+) -> DictConfig:
+    """Load config as omegaconf object."""
+    with initialize(version_base=None, config_path="../config/"):
+        if overrides:
+            cfg = compose(
+                config_name=config_file_name,
+                overrides=overrides,
+            )
+        else:
+            cfg = compose(
+                config_name=config_file_name,
+            )
+
+        # Override the type so we can get autocomplete and renaming
+        # correctly working
+        cfg: FullConfigSchema = cfg  # type: ignore
+
+        if not cfg.project.gpu and cfg.model.name == "xgboost":
+            cfg.model.args["tree_method"] = "auto"
+
+        return cfg
+
+
+def load_cfg_as_pydantic(
+    config_file_name, allow_mutation: bool = False
+) -> FullConfigSchema:
+    """Load config as pydantic object."""
+    cfg = load_cfg_as_omegaconf(config_file_name=config_file_name)
+
+    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)

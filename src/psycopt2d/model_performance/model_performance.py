@@ -52,7 +52,7 @@ class ModelPerformance:
             label_col_name (str): column containing ground truth label
             id_col_name (str): Column name for the id, used for grouping.
             metadata_col_names (Optional[list[str]], optional): Column(s) containing metadata to add to the performance dataframe.
-                Each column should only contain 1 unique value. E.g. model_name, modality.. If set to "all" will auto-detect
+                Each column should only contain 1 unique value. E.g. name, modality.. If set to "all" will auto-detect
                 metadata columns and add them all.
             id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.
@@ -135,7 +135,7 @@ class ModelPerformance:
             label_col_name (str): column containing ground truth label
             id_col_name (str, optional): Column name for the id, used for grouping.
             metadata_col_names (Optional[list[str]], optional): Column(s) containing metadata to add to the performance dataframe.
-                Each column should only contain 1 unique value. E.g. model_name, modality.. If set to "all" will auto-detect
+                Each column should only contain 1 unique value. E.g. name, modality.. If set to "all" will auto-detect
                 metadata columns and add them all.
             id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.

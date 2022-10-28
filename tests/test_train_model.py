@@ -1,87 +1,54 @@
 """Test that the model trains correctly."""
 
+
 import pytest
-from hydra import compose, initialize
 
 from psycopt2d.models import MODELS
 from psycopt2d.train_model import main
-from psycopt2d.utils.configs import omegaconf_to_pydantic_objects
+from psycopt2d.utils.configs import FullConfigSchema, load_cfg_as_omegaconf
 
-CONFIG_DIR_PATH = "../src/psycopt2d/config/"
 INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
-INTEGRATION_TESTING_MODEL = "model=logistic-regression"
 
 
 @pytest.mark.parametrize("model_name", MODELS.keys())
 def test_main(model_name):
-    """test main using a variety of model."""
-    with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
+    """Test main using a variety of model."""
 
-        cfg = compose(
-            config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[f"model={model_name}"],
-        )
+    cfg: FullConfigSchema = load_cfg_as_omegaconf(
+        config_file_name=INTEGRATION_TEST_FILE_NAME, overrides=[f"model={model_name}"]
+    )
 
-        cfg = omegaconf_to_pydantic_objects(cfg)
-
-        # XGBoost should train on GPU on Overtaci,
-        # but CPU during integration testing
-        if model_name == "xgboost":
-            cfg.model.args["tree_method"] = "auto"
-
-        main(cfg)
+    main(cfg)
 
 
 @pytest.mark.pre_push_test
-def test_integration_test():
+def test_integration_test(muteable_test_config: FullConfigSchema):
     """test main using the logistic model.
 
     Used for quickly testing functions before a push.
     """
-    with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
-
-        cfg = compose(
-            config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[INTEGRATION_TESTING_MODEL],
-        )
-        main(cfg)
+    cfg = muteable_test_config
+    cfg.eval.force = True
+    main(cfg)
 
 
-def test_crossvalidation():
+def test_crossvalidation(muteable_test_config: FullConfigSchema):
     """Test crossvalidation."""
-    with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
-        cfg = compose(
-            config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[INTEGRATION_TESTING_MODEL, "train.n_splits=2"],
-        )
-
-        main(cfg)
+    cfg = muteable_test_config
+    cfg.train.n_splits = 2
+    main(cfg)
 
 
-def test_min_prediction_time_date():
-    """Test crossvalidation."""
-    with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
-        cfg = compose(
-            config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[
-                INTEGRATION_TESTING_MODEL,
-                "data.min_prediction_time_date=1972-01-01",
-            ],
-        )
-        main(cfg)
+def test_min_prediction_time_date(muteable_test_config: FullConfigSchema):
+    """Test minimum prediction times correctly resolving the string."""
+    cfg = muteable_test_config
+    cfg.data.min_prediction_time_date = "1972-01-01"
+    main(cfg)
 
 
-def test_feature_selection():
+def test_feature_selection(muteable_test_config: FullConfigSchema):
     """Test feature selection."""
-    with initialize(version_base=None, config_path=CONFIG_DIR_PATH):
-
-        cfg = compose(
-            config_name=INTEGRATION_TEST_FILE_NAME,
-            overrides=[
-                INTEGRATION_TESTING_MODEL,
-                "preprocessing.feature_selection.name=f_classif",
-                "preprocessing.feature_selection.params.percentile=10",
-            ],
-        )
-
-        main(cfg)
+    cfg = muteable_test_config
+    cfg.preprocessing.feature_selection.name = "f_classif"
+    cfg.preprocessing.feature_selection.params["percentile"] = 10
+    main(cfg)

@@ -22,7 +22,7 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_predictor_col_name,
 )
 from psycopt2d.load import DataLoader
-from psycopt2d.utils.configs import FullConfigSchema, omegaconf_to_pydantic_objects
+from psycopt2d.utils.configs import FullConfigSchema, load_cfg_as_pydantic
 
 msg = Printer(timestamp=True)
 
@@ -86,7 +86,7 @@ def start_trainer(
     subprocess_args: list[str] = [
         "python",
         "src/psycopt2d/train_model.py",
-        f"model={cfg.model.model_name}",
+        f"model={cfg.model.name}",
         f"data.min_lookbehind_days={max(cfg.data.lookbehind_combination)}",
         f"data.min_lookahead_days={cell.ahead_days}",
         f"project.wandb.group='{wandb_group_override}'",
@@ -99,7 +99,7 @@ def start_trainer(
     if cfg.train.n_trials_per_lookdirection_combination > 1:
         subprocess_args.insert(2, "--multirun")
 
-    if cfg.model.model_name == "xgboost" and not cfg.train.gpu:
+    if cfg.model.name == "xgboost" and not cfg.train.gpu:
         subprocess_args.insert(3, "++model.args.tree_method='auto'")
 
     msg.info(f'{" ".join(subprocess_args)}')
@@ -151,17 +151,6 @@ def train_models_for_each_cell_in_grid(
                 wandb_group_override=wandb_group,
             ),
         )
-
-
-def load_cfg(config_file_name) -> FullConfigSchema:
-    """Load config as pydantic object."""
-    with initialize(version_base=None, config_path="../src/psycopt2d/config/"):
-        cfg = compose(
-            config_name=config_file_name,
-        )
-
-        cfg = omegaconf_to_pydantic_objects(cfg)
-    return cfg
 
 
 def get_possible_look_distances(
@@ -216,7 +205,7 @@ def main():
 
     config_file_name = "integration_config.yaml"
 
-    cfg = load_cfg(config_file_name=config_file_name)
+    cfg = load_cfg_as_pydantic(config_file_name=config_file_name)
 
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over

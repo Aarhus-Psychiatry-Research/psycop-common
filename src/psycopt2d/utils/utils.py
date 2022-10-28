@@ -24,6 +24,7 @@ from psycopt2d.evaluation_dataclasses import (
     PipeMetadata,
 )
 from psycopt2d.model_performance import ModelPerformance
+from psycopt2d.utils.configs import convert_omegaconf_to_pydantic_object
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"

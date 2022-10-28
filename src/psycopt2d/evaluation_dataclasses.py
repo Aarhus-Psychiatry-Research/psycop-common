@@ -44,10 +44,9 @@ class PipeMetadata(BaseModel):
     Currently only has feature_importances, but makes it easy to add more - e.g. which features were dropped.
     """
 
-    class Config:
-        """Configuration of Pydantic model."""
-
-        allow_mutation = True
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.Config.allow_mutation = True
 
     feature_importances: Optional[dict[str, float]] = None
 
