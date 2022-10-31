@@ -1,5 +1,4 @@
-threshold_percentiles: [95, 97, 98, 99, 99.5, 99.7, 99.9]
-top_n_feature_importances: 10 # top n features to plot. A table with all features is also logged
+top_n_feature_importances: 10
 positive_rate_thresholds: [5, 3, 2, 1, 0.5, 0.3, 0.1]
 save_model_predictions_on_overtaci: true
 lookahead_bins: [0, 28, 182, 365, 730, 1825]

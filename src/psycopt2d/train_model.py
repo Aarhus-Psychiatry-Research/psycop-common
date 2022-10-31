@@ -107,7 +107,7 @@ def create_model(cfg: FullConfigSchema):
     return model_dict["model"](**model_args)
 
 
-def stratified_cross_validation(
+def stratified_cross_validation(  # pylint: disable=too-many-locals
     cfg: FullConfigSchema,
     pipe: Pipeline,
     train_df: pd.DataFrame,

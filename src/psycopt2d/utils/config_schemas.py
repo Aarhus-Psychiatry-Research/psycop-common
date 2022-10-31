@@ -1,5 +1,4 @@
 """Utilities for converting config yamls to pydantic objects.
-
 Helpful because it makes them:
 - Addressable with intellisense,
 - Refactorable with IDEs,
@@ -74,62 +73,79 @@ class CustomColNames(BaseModel):
 class ColumnNames(BaseModel):
     """Column names in the data."""
 
-    pred_timestamp: str  # (str): Column name for prediction times
-    outcome_timestamp: str  # (str): Column name for outcome timestamps
-    id: str  # (str): Citizen colnames
+    pred_timestamp: str  # Column name for prediction times
+    outcome_timestamp: str  # Column name for outcome timestamps
+    id: str  # Citizen colnames
     age: str  # Name of the age column
-    custom: CustomColNames
+
+    custom: Optional[CustomColNames] = None
+    # Column names that are custom to the given prediction problem.
 
 
 class DataConf(BaseModel):
     """Data configuration."""
 
-    n_training_samples: Optional[
-        int
-    ]  # (int, null): Number of training samples to use, defaults to null in which cases it uses all samples.
-    dir: Union[Path, str]
+    n_training_samples: Optional[int]
+    # Number of training samples to use, defaults to null in which cases it uses all samples.
+
+    dir: Union[Path, str]  # Location of the dataset
     suffix: str  # File suffix to load.
 
     # Feature specs
     col_name: ColumnNames
+
     pred_prefix: str  # prefix of predictor columns
 
     # Looking ahead
-    min_lookahead_days: int  # (int): Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
-    drop_patient_if_outcome_before_date: Optional[Union[str, datetime]]
+    min_lookahead_days: int
+    # Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
 
-    # Looking behind
-    # (int): Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
+    drop_patient_if_outcome_before_date: Optional[Union[str, datetime]]
+    # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
+
     min_prediction_time_date: Optional[Union[str, datetime]]
+    # Drop all prediction times before this date.
+
     min_lookbehind_days: int
-    max_lookbehind_days: Optional[int]
+    # Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
+
     lookbehind_combination: Optional[list[int]]
+    # Which combination of features to use. Only uses features that have "within_X_days" in their column name, where X is any of the numbers in this list.
 
 
 class FeatureSelectionConf(BaseModel):
     """Configuration for feature selection methods."""
 
     name: Optional[str]
+    # Which feature selection method to use.
+
     params: Optional[dict]
+    # Parameters for the feature selection method.
 
 
 class PreprocessingConf(BaseModel):
     """Preprocessing config."""
 
-    convert_to_boolean: bool  # (Boolean): Convert all prediction values (except gender) to boolean. Defaults to False
-    convert_datetimes_to_ordinal: bool  # (str): Whether to convert datetimes to ordinal.
-    imputation_method: Optional[str]  # (str): Options include "most_frequent"
-    transform: Optional[
-        str
-    ]  # (str|null): Transformation applied to all predictors after imputation. Options include "z-score-normalization"
+    convert_to_boolean: bool
+    # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivty test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
+
+    convert_datetimes_to_ordinal: bool
+    # Whether to convert datetimes to ordinal.
+
+    imputation_method: Optional[str]
+    # How to replace missing values. Currently implemented are "most frequent".
+
+    transform: Optional[str]
+    # Transformation applied to all predictors after imputation. Options include "z-score-normalization"
+
     feature_selection: FeatureSelectionConf
 
 
 class ModelConf(BaseModel):
     """Model configuration."""
 
-    name: str  # (str): Model, can currently take xgboost
-    require_imputation: bool  # (bool): Whether the model requires imputation. (shouldn't this be false?)
+    name: str  # Model, can currently take xgboost
+    require_imputation: bool  # Whether the model requires imputation. (shouldn't this be false?)
     args: dict
 
 
@@ -145,17 +161,22 @@ class TrainConf(BaseModel):
 class EvalConf(BaseModel):
     """Evaluation config."""
 
-    force: bool = False  # (bool): Whether to force evaluation even if wandb is not "run". Used for testing.
+    force: bool = False
+    # Whether to force evaluation even if wandb is not "run". Used for testing.
 
-    threshold_percentiles: list[int]
-
-    # top n features to plot. A table with all features is also logged
     top_n_feature_importances: int
+    # How many feature_importances to plot. Plots the most important n features. A table with all features is also logged.
 
     positive_rate_thresholds: list[int]
+    # The threshold mapping a model's predicted probability to a binary outcome can be computed if we know, which positive rate we're targeting. We can't know beforehand which positive rate is best, beause it's a trade-off between false-positives and false-negatives. Therefore, we compute performacne for a range of positive rates.
+
     save_model_predictions_on_overtaci: bool
+
     lookahead_bins: list[int]
+    # List of lookahead distances for plotting. Will create bins in between each distances. E.g. if specifying 1, 5, 10, will bin evaluation as follows: [0, 1], [1, 5], [5, 10], [10, inf].
+
     lookbehind_bins: list[int]
+    # List of lookbehidn distances for plotting. Will create bins in between each distances. E.g. if specifying 1, 5, 10, will bin evaluation as follows: [0, 1], [1, 5], [5, 10], [10, inf].
 
 
 class FullConfigSchema(BaseModel):
@@ -174,11 +195,9 @@ def convert_omegaconf_to_pydantic_object(
     allow_mutation: bool = False,
 ) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
-
     Args:
         conf (DictConfig): Omegaconf DictConfig
         allow_mutation (bool, optional): Whether to make the pydantic object mutable. Defaults to False.
-
     Returns:
         FullConfig: Pydantic object
     """
