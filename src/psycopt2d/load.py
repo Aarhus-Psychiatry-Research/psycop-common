@@ -64,7 +64,7 @@ class DataLoader:
         self,
         cfg: FullConfigSchema,
     ):
-        self.cfg = cfg
+        self.cfg: FullConfigSchema = cfg
 
         # File handling
         self.dir_path = Path(cfg.data.dir)
@@ -160,17 +160,17 @@ class DataLoader:
 
         return dataset
 
-    def drop_patient_if_outcome_before_date(
+    def _drop_patient_if_excluded(
         self,
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
-        """Drop patients within washin period."""
+        """Drop patients that have an exclusion event within the washin period."""
 
         n_rows_before_modification = dataset.shape[0]
 
         outcome_before_date = (
-            dataset[self.cfg.data.col_name.outcome_timestamp]
-            < self.cfg.data.drop_patient_if_outcome_before_date
+            dataset[self.cfg.data.col_name.exclusion_timestamp]
+            < self.cfg.data.drop_patient_if_exclusion_before_date
         )
 
         patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
@@ -187,6 +187,8 @@ class DataLoader:
             msg.info(
                 f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because patients had diabetes in the washin period.",
             )
+        else:
+            msg.info("No patients met exclusion criteria. Didn't drop any.")
 
         return dataset
 
@@ -389,6 +391,14 @@ class DataLoader:
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
+    def _drop_rows_after_event_time(self, dataset: pd.Dataframe):
+        """Drop all rows where timestamp is >= outcome timestamp"""
+
+        return dataset[
+            dataset[self.cfg.data.col_name.pred_timestamp]
+            < dataset[self.cfg.data.col_name.outcome_timestamp]
+        ]
+
     def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process dataset, namely:
 
@@ -402,8 +412,10 @@ class DataLoader:
         """
         dataset = self.convert_timestamp_dtype_and_nat(dataset)
 
-        if self.cfg.data.drop_patient_if_outcome_before_date:
-            dataset = self.drop_patient_if_outcome_before_date(dataset=dataset)
+        dataset = self._drop_rows_after_event_time(dataset=dataset)
+
+        if self.cfg.data.drop_patient_if_exclusion_before_date:
+            dataset = self._drop_patient_if_excluded(dataset=dataset)
 
         # Drop if later than min prediction time date
         if self.cfg.data.min_prediction_time_date:

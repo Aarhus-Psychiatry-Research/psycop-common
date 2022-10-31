@@ -15,6 +15,13 @@ def test_synth_data_generator():
         {"citizen_ids": {"column_type": "uniform_int", "min": 0, "max": 1_200_001}},
         {"timestamp": {"column_type": "datetime_uniform", "min": 0, "max": 5 * 365}},
         {
+            "timestamp_exclusion": {
+                "column_type": "datetime_uniform",
+                "min": 0,
+                "max": 5 * 365,
+            }
+        },
+        {
             "pred_age": {
                 "column_type": "uniform_int",
                 "min": 18,
