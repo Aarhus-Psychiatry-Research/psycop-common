@@ -19,7 +19,7 @@ def test_synth_data_generator():
                 "column_type": "datetime_uniform",
                 "min": 0,
                 "max": 5 * 365,
-            }
+            },
         },
         {
             "pred_age": {

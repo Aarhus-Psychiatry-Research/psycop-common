@@ -164,7 +164,8 @@ class DataLoader:
         self,
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
-        """Drop patients that have an exclusion event within the washin period."""
+        """Drop patients that have an exclusion event within the washin
+        period."""
 
         n_rows_before_modification = dataset.shape[0]
 
@@ -392,7 +393,7 @@ class DataLoader:
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
     def _drop_rows_after_event_time(self, dataset: pd.Dataframe):
-        """Drop all rows where timestamp is >= outcome timestamp"""
+        """Drop all rows where timestamp is >= outcome timestamp."""
 
         return dataset[
             dataset[self.cfg.data.col_name.pred_timestamp]
