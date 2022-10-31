@@ -156,7 +156,8 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
 
 
 def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.DataFrame):
-    """Create an evaluation dataset object from a dataframe and FullConfigSchema."""
+    """Create an evaluation dataset object from a dataframe and
+    FullConfigSchema."""
 
     eval_dataset = EvalDataset(
         ids=df[cfg.data.col_name.id],

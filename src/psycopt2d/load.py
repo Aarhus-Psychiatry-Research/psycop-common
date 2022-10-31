@@ -388,11 +388,11 @@ class DataLoader:
 
         return df
 
-    def n_outcome_col_names(self, df: pd.DataFrame):
+    def n_outcome_col_names(self, df: pd.DataFrame) -> int:
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
-    def _drop_rows_after_event_time(self, dataset: pd.Dataframe):
+    def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop all rows where timestamp is >= outcome timestamp."""
 
         return dataset[
