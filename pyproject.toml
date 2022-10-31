@@ -26,7 +26,7 @@ selenium = ">=4.2.0,<4.6.0"
 seaborn = ">=0.12.0,<0.12.2"
 pyarrow = ">=9.0.0, <9.1.0"
 Random-Word = ">=1.0.11, <=1.0.12"
-torch = ">=1.12.1, <=1.12.2"
+torch = ">=1.12.1,<1.13.1"
 
 
 [tool.poetry.dev-dependencies]
