@@ -174,8 +174,10 @@ class DataLoader:
             < self.cfg.data.drop_patient_if_exclusion_before_date
         )
 
-        patients_to_drop = set(dataset["dw_ek_borger"][outcome_before_date].unique())
-        dataset = dataset[~dataset["dw_ek_borger"].isin(patients_to_drop)]
+        patients_to_drop = set(
+            dataset[self.cfg.data.col_name.id][outcome_before_date].unique(),
+        )
+        dataset = dataset[~dataset[self.cfg.data.col_name.id].isin(patients_to_drop)]
 
         n_rows_after_modification = dataset.shape[0]
 
