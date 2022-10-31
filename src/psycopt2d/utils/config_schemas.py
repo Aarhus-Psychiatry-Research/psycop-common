@@ -1,5 +1,6 @@
-"""Utilities for converting config yamls to pydantic objects.
-Helpful because it makes them:
+"""Utilities for converting config yamls to pydantic objects. Helpful because
+it makes them:
+
 - Addressable with intellisense,
 - Refactorable with IDEs,
 - Easier to document with docstrings and
@@ -195,6 +196,7 @@ def convert_omegaconf_to_pydantic_object(
     allow_mutation: bool = False,
 ) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
+
     Args:
         conf (DictConfig): Omegaconf DictConfig
         allow_mutation (bool, optional): Whether to make the pydantic object mutable. Defaults to False.
