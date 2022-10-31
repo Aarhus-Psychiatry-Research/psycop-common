@@ -385,6 +385,11 @@ class DataLoader:
 
         return df
 
+    def _keep_only_if_older_than_min_age(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Keep only rows that are older than the minimum age specified in the
+        config."""
+        return dataset[dataset[self.cfg.data.col_name.age] >= self.cfg.data.min_age]
+
     def n_outcome_col_names(self, df: pd.DataFrame):
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
@@ -400,7 +405,10 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
-        dataset = self.convert_timestamp_dtype_and_nat(dataset)
+        dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
+
+        if self.cfg.data.min_age:
+            dataset = self._keep_only_if_older_than_min_age(dataset=dataset)
 
         if self.cfg.data.drop_patient_if_outcome_before_date:
             dataset = self.drop_patient_if_outcome_before_date(dataset=dataset)

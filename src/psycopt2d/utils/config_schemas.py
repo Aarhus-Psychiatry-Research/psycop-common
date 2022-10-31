@@ -37,7 +37,7 @@ class BaseModel(PydanticBaseModel):
         self.Config.allow_mutation = allow_mutation
 
 
-class WandbConf(BaseModel):
+class WandbSchema(BaseModel):
     """Configuration for weights and biases."""
 
     group: str
@@ -45,7 +45,7 @@ class WandbConf(BaseModel):
     entity: str
 
 
-class WatcherConf(BaseModel):
+class WatcherSchema(BaseModel):
     """Configuration for watchers."""
 
     archive_all: bool
@@ -54,13 +54,13 @@ class WatcherConf(BaseModel):
     verbose: bool
 
 
-class ProjectConf(BaseModel):
+class ProjectSchema(BaseModel):
     """Project configuration."""
 
-    wandb: WandbConf
+    wandb: WandbSchema
     name: str = "psycopt2d"
     seed: int
-    watcher: WatcherConf
+    watcher: WatcherSchema
     gpu: bool
 
 
@@ -71,7 +71,7 @@ class CustomColNames(BaseModel):
     n_hba1c: str
 
 
-class ColumnNames(BaseModel):
+class ColumnNamesSchema(BaseModel):
     """Column names in the data."""
 
     pred_timestamp: str  # Column name for prediction times
@@ -83,7 +83,7 @@ class ColumnNames(BaseModel):
     # Column names that are custom to the given prediction problem.
 
 
-class DataConf(BaseModel):
+class DataSchema(BaseModel):
     """Data configuration."""
 
     n_training_samples: Optional[int]
@@ -93,9 +93,11 @@ class DataConf(BaseModel):
     suffix: str  # File suffix to load.
 
     # Feature specs
-    col_name: ColumnNames
+    col_name: ColumnNamesSchema
 
     pred_prefix: str  # prefix of predictor columns
+
+    min_age: Union[int, float]  # Minimum age to include in the dataset
 
     # Looking ahead
     min_lookahead_days: int
@@ -114,7 +116,7 @@ class DataConf(BaseModel):
     # Which combination of features to use. Only uses features that have "within_X_days" in their column name, where X is any of the numbers in this list.
 
 
-class FeatureSelectionConf(BaseModel):
+class FeatureSelectionSchema(BaseModel):
     """Configuration for feature selection methods."""
 
     name: Optional[str]
@@ -124,7 +126,7 @@ class FeatureSelectionConf(BaseModel):
     # Parameters for the feature selection method.
 
 
-class PreprocessingConf(BaseModel):
+class PreprocessingConfigSchema(BaseModel):
     """Preprocessing config."""
 
     convert_to_boolean: bool
@@ -139,10 +141,10 @@ class PreprocessingConf(BaseModel):
     transform: Optional[str]
     # Transformation applied to all predictors after imputation. Options include "z-score-normalization"
 
-    feature_selection: FeatureSelectionConf
+    feature_selection: FeatureSelectionSchema
 
 
-class ModelConf(BaseModel):
+class ModelConfSchema(BaseModel):
     """Model configuration."""
 
     name: str  # Model, can currently take xgboost
@@ -150,7 +152,7 @@ class ModelConf(BaseModel):
     args: dict
 
 
-class TrainConf(BaseModel):
+class TrainConfSchema(BaseModel):
     """Training configuration."""
 
     n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
@@ -159,7 +161,7 @@ class TrainConf(BaseModel):
     gpu: bool
 
 
-class EvalConf(BaseModel):
+class EvalConfSchema(BaseModel):
     """Evaluation config."""
 
     force: bool = False
@@ -183,12 +185,12 @@ class EvalConf(BaseModel):
 class FullConfigSchema(BaseModel):
     """A recipe for a full configuration object."""
 
-    project: ProjectConf
-    data: DataConf
-    preprocessing: PreprocessingConf
-    model: ModelConf
-    train: TrainConf
-    eval: EvalConf
+    project: ProjectSchema
+    data: DataSchema
+    preprocessing: PreprocessingConfigSchema
+    model: ModelConfSchema
+    train: TrainConfSchema
+    eval: EvalConfSchema
 
 
 def convert_omegaconf_to_pydantic_object(
