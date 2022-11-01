@@ -69,9 +69,9 @@ def filter_plot_bins(
     lookbehind_bins: Iterable[int] = cfg.eval.lookbehind_bins
 
     # Drop date_bins_direction if they are further away than min_lookdirection_days
-    if cfg.data.min_lookbehind_days:
+    if cfg.data.lookbehind_combination:
         lookbehind_bins = [
-            b for b in lookbehind_bins if cfg.data.min_lookbehind_days < b
+            b for b in lookbehind_bins if max(cfg.data.lookbehind_combination) < b
         ]
 
     if cfg.data.min_lookahead_days:

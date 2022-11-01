@@ -4,7 +4,6 @@ data:
   suffix: csv
   n_training_samples: null
   min_lookahead_days: 30
-  min_lookbehind_days: 100
   min_prediction_time_date: null
   pred_prefix: pred_
   min_age: 18

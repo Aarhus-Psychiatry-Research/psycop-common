@@ -11,7 +11,6 @@ data:
 
   # Prediction time exclusion criteria
   min_prediction_time_date: 2013-01-01
-  min_lookbehind_days: 730
   min_lookahead_days: 1825
 
   # Feature specs

@@ -334,7 +334,6 @@ class DataLoader:
         """Drop columns if they are outside the specification. Specifically:
 
         - min_lookahead_days is insufficient for the column's lookahead
-        - min_lookbehind_days is insufficient for the column's lookbehind
         - The dataset doesn't stretch far enough for the prediction time's lookahead
         - The dataset doesn't stretch far enough for the prediction time's lookbehind
 
@@ -347,7 +346,7 @@ class DataLoader:
                 if direction == "ahead":
                     n_days = self.cfg.data.min_lookahead_days
                 elif direction == "behind":
-                    n_days = self.cfg.data.min_lookbehind_days
+                    n_days = max(self.cfg.data.lookbehind_combination)
                 else:
                     continue
 
