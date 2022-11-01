@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.0 (2022-11-01)
+### Feature
+* Add min_age ([`3ebd3fe`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3ebd3fec7cc5c2da54b9de8ebb0dcf7be9fa54cb))
+* Add exclusion timestamps to dataset processing ([`cbc34a6`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cbc34a68eee6e0916a997f0b171e3b1943e8454d))
+
+### Fix
+* Old dw_ek_borger ([`0a7a23d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0a7a23d011edcfa7921c7da79b2a350e476786cf))
+
+### Documentation
+* Linting ([`d349339`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d3493391341ec2d8e9bc64f97ff942b9d69dcc68))
+* Improve config docs ([`4d77b2f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4d77b2f143fbfaebdc5c2ac9fd02f862333f0efd))
+
 ## v0.14.0 (2022-10-28)
 ### Feature
 * Generalise performance by input while retaining evaldataset ([`9d0a583`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9d0a5832ab83a8296c3911dfae6d63d85c3e43b6))
