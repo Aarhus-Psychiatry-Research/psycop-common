@@ -7,7 +7,7 @@ data:
   min_age: 18
 
   # Patient exclusion criteria
-  drop_patient_if_outcome_before_date: 2013-01-01
+  drop_patient_if_exclusion_before_date: 2013-01-01
 
   # Prediction time exclusion criteria
   min_prediction_time_date: 2013-01-01
@@ -19,9 +19,10 @@ data:
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: _timestamp_first_t2d
+    outcome_timestamp: timestamp_first_t2d_hba1c
     id: dw_ek_borger
     age: pred_age_in_years
+    exclusion_timestamp: timestamp_exclusion
     custom:
       n_hba1c: hba1c_within_9999_days_count_fallback_0
 

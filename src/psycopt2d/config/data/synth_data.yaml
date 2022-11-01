@@ -14,11 +14,12 @@ data:
     outcome_timestamp: timestamp_outcome
     id: citizen_ids
     age: pred_age
+    exclusion_timestamp: timestamp_exclusion
     custom:
       n_hba1c: hba1c_within_9999_days_count_nan
 
   # Looking ahead
-  drop_patient_if_outcome_before_date: null
+  drop_patient_if_exclusion_before_date: 1971-01-01
 
   # Looking behind
   lookbehind_combination: [30, 60, 100]
