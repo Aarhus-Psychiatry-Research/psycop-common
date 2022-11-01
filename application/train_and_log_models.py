@@ -20,7 +20,7 @@ from psycopt2d.evaluate_saved_model_predictions import (
     infer_outcome_col_name,
     infer_predictor_col_name,
 )
-from psycopt2d.load import DataLoader
+from psycopt2d.load import DataLoader, load_train_raw
 from psycopt2d.utils.config_schemas import FullConfigSchema, load_cfg_as_pydantic
 
 msg = Printer(timestamp=True)
@@ -31,26 +31,6 @@ class LookDistance(BaseModel):
 
     behind_days: Union[int, float]
     ahead_days: Union[int, float]
-
-
-def load_train_raw(cfg: FullConfigSchema):
-    """Load the data."""
-    path = Path(cfg.data.dir)
-    file_names = list(path.glob(pattern=r"*train*"))
-
-    if len(file_names) == 1:
-        file_name = file_names[0]
-        file_suffix = file_name.suffix
-        if file_suffix == ".parquet":
-            df = pd.read_parquet(file_name)
-        elif file_suffix == ".csv":
-            df = pd.read_csv(file_name)
-
-        df = DataLoader.convert_timestamp_dtype_and_nat(dataset=df)
-
-        return df
-
-    raise ValueError(f"Returned {len(file_names)} files")
 
 
 def infer_possible_look_distances(df: pd.DataFrame) -> list[LookDistance]:
