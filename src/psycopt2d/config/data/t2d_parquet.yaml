@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_416_features_2022_10_20_11_12
+  dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_416_features_2022_10_31_15_58
   suffix: parquet
   min_age: 18
 
@@ -19,7 +19,7 @@ data:
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: _timestamp_first_t2d
+    outcome_timestamp: _timestamp_first_t2d_hba1c
     id: dw_ek_borger
     age: pred_age_in_years
     custom:

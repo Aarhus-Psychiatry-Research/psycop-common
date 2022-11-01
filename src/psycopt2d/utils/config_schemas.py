@@ -10,7 +10,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional, Union
 
-import torch
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 from pydantic import BaseModel as PydanticBaseModel
@@ -253,7 +252,10 @@ def load_cfg_as_omegaconf(
         # correctly working
         cfg: FullConfigSchema = cfg  # type: ignore
 
+        import torch
+
         gpu = torch.cuda.is_available()
+
         if not gpu and cfg.model.name == "xgboost":
             cfg.model.args["tree_method"] = "auto"
 

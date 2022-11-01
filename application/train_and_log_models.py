@@ -202,7 +202,7 @@ def main():
     """Main."""
     msg = Printer(timestamp=True)
 
-    config_file_name = "integration_config.yaml"
+    config_file_name = "default_config.yaml"
 
     cfg = load_cfg_as_pydantic(config_file_name=config_file_name)
 

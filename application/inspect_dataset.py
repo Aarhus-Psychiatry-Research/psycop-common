@@ -10,6 +10,8 @@ def main():
     cfg = load_cfg_as_pydantic(config_file_name=config_file_name)
     df = load_train_from_cfg(cfg=cfg)  # noqa pylint: disable=unused-variable
 
+    pass
+
 
 if __name__ == "__main__":
     main()
