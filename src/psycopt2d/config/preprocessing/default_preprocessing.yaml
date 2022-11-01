@@ -1,8 +1,18 @@
-convert_to_boolean: false
-convert_datetimes_to_ordinal: false
-imputation_method: "most_frequent" # (str): Options include 2most_frequent"
-transform: null # (str|null): Transformation applied to all predictors after imputation. Options include "z-score-normalization"
-feature_selection:
-  name: null
-  params:
-    percentile: 10 # (int): Percent of features to keep. Defaults to 10.
+# @package _global
+preprocessing:
+  convert_to_boolean: false
+  convert_datetimes_to_ordinal: false
+  imputation_method: "most_frequent" # (str): Options include "most_frequent"
+  transform: null # (str|null): Transformation applied to all predictors after imputation. Options include "z-score-normalization"
+  feature_selection:
+    name: null
+    params:
+      percentile: 10 # (int): Percent of features to keep. Defaults to 10.
+
+hydra:
+  sweeper:
+    params:
+      ++preprocessing.imputation_method: choice("most_frequent", "mean", "median", "null")
+      ++preprocessing.transform: choice("z-score-normalization", "null")
+      ++preprocessing.feature_selection.name: choice("chi2", "null")
+      ++preprocessing.feature_selection.params.percentile: tag(log, interval(1, 100))
