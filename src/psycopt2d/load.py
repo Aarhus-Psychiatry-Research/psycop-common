@@ -395,7 +395,7 @@ class DataLoader:
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
-        """Drop all rows where timestamp is >= outcome timestamp."""
+        """Drop all rows where prediction timestamp is < outcome timestamp."""
 
         return dataset[
             dataset[self.cfg.data.col_name.pred_timestamp]
