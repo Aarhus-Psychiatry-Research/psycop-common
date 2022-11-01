@@ -8,7 +8,7 @@ it makes them:
 """
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import torch
 from hydra import compose, initialize
@@ -35,6 +35,26 @@ class BaseModel(PydanticBaseModel):
     ):
         super().__init__(**kwargs)
         self.Config.allow_mutation = allow_mutation
+
+        self.__transform_attributes_with_str_to_object(
+            input_string="null", output_object=None
+        )
+        self.__transform_attributes_with_str_to_object(
+            input_string="false", output_object=False
+        )
+        self.__transform_attributes_with_str_to_object(
+            input_string="true", output_object=True
+        )
+
+    def __transform_attributes_with_str_to_object(
+        self,
+        output_object: Any,
+        input_string: str = "str",
+    ):
+        for key, value in self.__dict__.items():
+            if isinstance(value, str):
+                if value.lower() == input_string.lower():
+                    self.__dict__[key] = output_object
 
 
 class WandbSchema(BaseModel):
@@ -119,10 +139,10 @@ class DataSchema(BaseModel):
 class FeatureSelectionSchema(BaseModel):
     """Configuration for feature selection methods."""
 
-    name: Optional[str]
+    name: Optional[str] = None
     # Which feature selection method to use.
 
-    params: Optional[dict]
+    params: Optional[dict] = None
     # Parameters for the feature selection method.
 
 
@@ -136,7 +156,8 @@ class PreprocessingConfigSchema(BaseModel):
     # Whether to convert datetimes to ordinal.
 
     imputation_method: Optional[str]
-    # How to replace missing values. Currently implemented are "most frequent".
+    # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
+    # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
 
     transform: Optional[str]
     # Transformation applied to all predictors after imputation. Options include "z-score-normalization"
@@ -244,3 +265,13 @@ def load_cfg_as_pydantic(
     cfg = load_cfg_as_omegaconf(config_file_name=config_file_name)
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
+
+
+class TestClass(BaseModel):
+    test_attribute: str = "false"
+
+
+if __name__ == "__main__":
+    test = TestClass(test_attribute="false")
+
+    pass

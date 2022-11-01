@@ -59,37 +59,56 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
     if cfg.model.require_imputation:
-        steps.append(
-            ("Imputation", SimpleImputer(strategy=cfg.preprocessing.imputation_method)),
-        )
-    if cfg.preprocessing.transform in {
-        "z-score-normalization",
-        "z-score-normalisation",
-    }:
-        steps.append(
-            ("z-score-normalization", StandardScaler()),
-        )
+        if cfg.preprocessing.imputation_method:
+            steps.append(
+                (
+                    "Imputation",
+                    SimpleImputer(strategy=cfg.preprocessing.imputation_method),
+                ),
+            )
+        else:
+            raise ValueError(
+                f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file.",
+            )
 
-    if cfg.preprocessing.feature_selection.name == "f_classif":
-        steps.append(
-            (
-                "feature_selection",
-                SelectPercentile(
-                    f_classif,
-                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
+    if cfg.preprocessing.transform:
+        if cfg.preprocessing.transform in {
+            "z-score-normalization",
+            "z-score-normalisation",
+        }:
+            steps.append(
+                ("z-score-normalization", StandardScaler()),
+            )
+        else:
+            raise ValueError(
+                f"{cfg.preprocessing.transform} is not implemented. See above",
+            )
+
+    if cfg.preprocessing.feature_selection.name:
+        if cfg.preprocessing.feature_selection.name == "f_classif":
+            steps.append(
+                (
+                    "feature_selection",
+                    SelectPercentile(
+                        f_classif,
+                        percentile=cfg.preprocessing.feature_selection.params[
+                            "percentile"
+                        ],
+                    ),
                 ),
-            ),
-        )
-    if cfg.preprocessing.feature_selection.name == "chi2":
-        steps.append(
-            (
-                "feature_selection",
-                SelectPercentile(
-                    chi2,
-                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
+            )
+        if cfg.preprocessing.feature_selection.name == "chi2":
+            steps.append(
+                (
+                    "feature_selection",
+                    SelectPercentile(
+                        chi2,
+                        percentile=cfg.preprocessing.feature_selection.params[
+                            "percentile"
+                        ],
+                    ),
                 ),
-            ),
-        )
+            )
 
     return Pipeline(steps)
 
