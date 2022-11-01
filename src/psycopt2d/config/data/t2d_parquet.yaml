@@ -4,6 +4,7 @@ data:
   n_training_samples: null
   dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_416_features_2022_10_20_11_12
   suffix: parquet
+  min_age: 18
 
   # Patient exclusion criteria
   drop_patient_if_exclusion_before_date: 2013-01-01
