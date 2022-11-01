@@ -100,6 +100,8 @@ class ColumnNamesSchema(BaseModel):
     outcome_timestamp: str  # Column name for outcome timestamps
     id: str  # Citizen colnames
     age: str  # Name of the age column
+    exclusion_timestamp: str  # Name of the exclusion timestamps column.
+    # Drops all visits whose pred_timestamp <= exclusion_timestamp.
 
     custom: Optional[CustomColNames] = None
     # Column names that are custom to the given prediction problem.
@@ -125,7 +127,7 @@ class DataSchema(BaseModel):
     min_lookahead_days: int
     # Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
 
-    drop_patient_if_outcome_before_date: Optional[Union[str, datetime]]
+    drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]]
     # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
 
     min_prediction_time_date: Optional[Union[str, datetime]]
