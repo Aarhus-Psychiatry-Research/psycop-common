@@ -1,4 +1,4 @@
-# @package _global
+# @package _global_
 preprocessing:
   convert_to_boolean: false
   convert_datetimes_to_ordinal: false
