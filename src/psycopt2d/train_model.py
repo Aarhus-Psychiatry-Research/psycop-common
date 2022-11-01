@@ -155,6 +155,28 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     return train_df
 
 
+def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.DataFrame):
+    """Create an evaluation dataset object from a dataframe and
+    FullConfigSchema."""
+
+    eval_dataset = EvalDataset(
+        ids=df[cfg.data.col_name.id],
+        y=df[outcome_col_name],
+        y_hat_probs=df["y_hat_prob"],
+        y_hat_int=df["y_hat_prob"].round(),
+        pred_timestamps=df[cfg.data.col_name.pred_timestamp],
+        outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
+        age=df[cfg.data.col_name.age],
+        exclusion_timestamps=df[cfg.data.col_name.exclusion_timestamp],
+    )
+
+    if cfg.data.col_name.custom:
+        if cfg.data.col_name.custom.n_hba1c:
+            eval_dataset.custom.n_hba1c = df[cfg.data.col_name.custom.n_hba1c]
+
+    return eval_dataset
+
+
 def train_and_eval_on_crossvalidation(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
@@ -194,20 +216,7 @@ def train_and_eval_on_crossvalidation(
 
     df.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
 
-    eval_dataset = EvalDataset(
-        ids=df[cfg.data.col_name.id],
-        y=df[outcome_col_name],
-        y_hat_probs=df["y_hat_prob"],
-        y_hat_int=df["y_hat_prob"].round(),
-        pred_timestamps=df[cfg.data.col_name.pred_timestamp],
-        outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
-        age=df[cfg.data.col_name.age],
-    )
-
-    if cfg.data.col_name.custom.n_hba1c:
-        eval_dataset.custom.n_hba1c = df[cfg.data.col_name.custom.n_hba1c]
-
-    return eval_dataset
+    return create_eval_dataset(cfg=cfg, outcome_col_name=outcome_col_name, df=df)
 
 
 def train_and_eval_on_val_split(
@@ -249,17 +258,7 @@ def train_and_eval_on_val_split(
     df = val
     df["y_hat_prob"] = y_val_hat_prob
 
-    eval_dataset = EvalDataset(
-        ids=df[cfg.data.col_name.id],
-        y=df[outcome_col_name],
-        y_hat_probs=df["y_hat_prob"],
-        y_hat_int=df["y_hat_prob"].round(),
-        pred_timestamps=df[cfg.data.col_name.pred_timestamp],
-        outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
-        age=df[cfg.data.col_name.age],
-    )
-
-    return eval_dataset
+    return create_eval_dataset(cfg=cfg, outcome_col_name=outcome_col_name, df=df)
 
 
 def train_and_get_model_eval_df(

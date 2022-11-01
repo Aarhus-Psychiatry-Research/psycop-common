@@ -26,7 +26,8 @@ class EvalDataset(BaseModel):
     y: pd.Series
     y_hat_probs: pd.Series
     y_hat_int: pd.Series
-    age: Optional[pd.Series]
+    age: Optional[pd.Series] = None
+    exclusion_timestamps: Optional[pd.Series] = None
     custom: Optional[CustomColumns] = CustomColumns(n_hba1c=None)
 
     def __init__(self, **kwargs):
