@@ -28,24 +28,6 @@ class BaseModel(PydanticBaseModel):
         arbitrary_types_allowed = True
         extra = Extra.forbid
 
-    def __init__(
-        self,
-        allow_mutation: bool = False,
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
-        self.Config.allow_mutation = allow_mutation
-
-        self.__transform_attributes_with_str_to_object(
-            input_string="null", output_object=None
-        )
-        self.__transform_attributes_with_str_to_object(
-            input_string="false", output_object=False
-        )
-        self.__transform_attributes_with_str_to_object(
-            input_string="true", output_object=True
-        )
-
     def __transform_attributes_with_str_to_object(
         self,
         output_object: Any,
@@ -55,6 +37,27 @@ class BaseModel(PydanticBaseModel):
             if isinstance(value, str):
                 if value.lower() == input_string.lower():
                     self.__dict__[key] = output_object
+
+    def __init__(
+        self,
+        allow_mutation: bool = False,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.Config.allow_mutation = allow_mutation
+
+        self.__transform_attributes_with_str_to_object(
+            input_string="null",
+            output_object=None,
+        )
+        self.__transform_attributes_with_str_to_object(
+            input_string="false",
+            output_object=False,
+        )
+        self.__transform_attributes_with_str_to_object(
+            input_string="true",
+            output_object=True,
+        )
 
 
 class WandbSchema(BaseModel):
@@ -265,13 +268,3 @@ def load_cfg_as_pydantic(
     cfg = load_cfg_as_omegaconf(config_file_name=config_file_name)
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
-
-
-class TestClass(BaseModel):
-    test_attribute: str = "false"
-
-
-if __name__ == "__main__":
-    test = TestClass(test_attribute="false")
-
-    pass
