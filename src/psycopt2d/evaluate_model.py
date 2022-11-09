@@ -166,7 +166,6 @@ def run_full_evaluation(
         cfg=cfg,
         eval_dataset=eval_dataset,
         lookahead_bins=cfg.eval.lookahead_bins,
-        lookbehind_bins=cfg.eval.lookbehind_bins,
         save_dir=save_dir,
     )
 
