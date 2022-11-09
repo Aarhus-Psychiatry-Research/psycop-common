@@ -107,6 +107,15 @@ def test_plot_performance_by_calendar_time(synth_eval_dataset: EvalDataset):
     )
 
 
+def test_plot_performance_by_calendar_time_quarterly(synth_eval_dataset: EvalDataset):
+    plot_metric_by_calendar_time(
+        eval_dataset=synth_eval_dataset,
+        bin_period="Q",
+        metric_fn=roc_auc_score,
+        y_title="AUC",
+    )
+
+
 def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
     plot_metric_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,

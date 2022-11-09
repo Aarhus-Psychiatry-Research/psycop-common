@@ -32,13 +32,17 @@ def create_performance_by_calendar_time_df(
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
-        bin_period (str): How to bin time. "M" for year/month, "Y" for year
+        bin_period (str): How to bin time. "M" for year/month, "Y" for year, "Q" for quarter
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
-    df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
+
+    if bin_period == "Q":
+        df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq="Q")
+    else:
+        df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
 
     output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
 
