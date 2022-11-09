@@ -1,7 +1,8 @@
-from sklearn.metrics import roc_curve, roc_auc_score
-from typing import Optional, Union
-import matplotlib.pyplot as plt
 from pathlib import Path
+from typing import Optional, Union
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_auc_score, roc_curve
 
 from psycopt2d.evaluation_dataclasses import EvalDataset
 
@@ -20,6 +21,8 @@ def plot_auc_roc(
     """
     fpr, tpr, _ = roc_curve(eval_dataset.y, eval_dataset.y_hat_probs)
     auc = roc_auc_score(eval_dataset.y, eval_dataset.y_hat_probs)
+
+    plt.figure(figsize=fig_size)
     plt.plot(fpr, tpr, label="AUC score = " + str(auc))
     plt.title("AUC ROC Curve")
     plt.legend(loc=4)
