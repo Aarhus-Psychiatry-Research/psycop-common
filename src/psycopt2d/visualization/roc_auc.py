@@ -15,7 +15,7 @@ def plot_auc_roc(
     """Plot AUC ROC curve.
 
     Args:
-        eval_dataset (EvalDataset): Evaluation dataset
+        eval_dataset (EvalDataset): Evaluation dataset.
         fig_size (Optional[tuple], optional): figure size. Defaults to None.
         save_path (Optional[Path], optional): path to save figure. Defaults to None.
 
