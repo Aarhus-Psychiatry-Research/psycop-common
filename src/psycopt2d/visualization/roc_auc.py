@@ -18,6 +18,9 @@ def plot_auc_roc(
         eval_dataset (EvalDataset): Evaluation dataset
         fig_size (Optional[tuple], optional): figure size. Defaults to None.
         save_path (Optional[Path], optional): path to save figure. Defaults to None.
+
+    Returns:
+        Union[None, Path]: None if save_path is None, else path to saved figure
     """
     fpr, tpr, _ = roc_curve(eval_dataset.y, eval_dataset.y_hat_probs)
     auc = roc_auc_score(eval_dataset.y, eval_dataset.y_hat_probs)
