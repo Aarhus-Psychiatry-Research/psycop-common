@@ -412,7 +412,7 @@ class DataLoader:
 
         - Drop patients with outcome before drop_patient_if_outcome_before_date
         - Process timestamp columns
-        - Drop visits where mmin_lookahead, min_lookbehind or min_prediction_time_date are not met
+        - Drop visits where min_lookahead, min_lookbehind or min_prediction_time_date are not met
         - Drop features with lookbehinds not in lookbehind_combination
 
         Returns:

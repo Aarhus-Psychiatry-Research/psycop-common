@@ -163,7 +163,7 @@ def plot_auc_by_time_from_first_visit(
     prettify_bins: Optional[bool] = True,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
-    """Plot AUC as a function of time to first visit.
+    """Plot AUC as a function of time from first visit.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
