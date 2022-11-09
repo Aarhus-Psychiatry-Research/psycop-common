@@ -32,7 +32,6 @@ def plot_auc_roc(
     plt.legend(loc=4)
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
-    plt.show()
 
     if save_path is not None:
         plt.savefig(save_path)
