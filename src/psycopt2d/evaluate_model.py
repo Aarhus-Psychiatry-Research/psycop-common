@@ -27,6 +27,7 @@ from psycopt2d.visualization.performance_over_time import (
     plot_metric_by_calendar_time,
     plot_metric_by_time_until_diagnosis,
 )
+from psycopt2d.visualization.roc_auc import plot_auc_roc
 from psycopt2d.visualization.sens_over_time import (
     plot_sensitivity_by_time_to_outcome_heatmap,
 )
@@ -126,6 +127,13 @@ def create_base_plot_artifacts(
                 eval_dataset=eval_dataset,
                 y_title="AUC",
                 save_path=save_dir / "auc_by_calendar_time.png",
+            ),
+        ),
+        ArtifactContainer(
+            label="auc_roc",
+            artifact=plot_auc_roc(
+                eval_dataset=eval_dataset,
+                save_path=save_dir / "auc_roc.png",
             ),
         ),
         ArtifactContainer(
