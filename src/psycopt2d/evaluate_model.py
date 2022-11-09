@@ -62,7 +62,6 @@ def create_base_plot_artifacts(
     eval_dataset: EvalDataset,
     save_dir: Path,
     lookahead_bins: Sequence[Union[int, float]],
-    lookbehind_bins: Sequence[Union[int, float]],
 ) -> list[ArtifactContainer]:
     """A collection of plots that are always generated."""
     pred_proba_percentiles = positive_rate_to_pred_probs(
