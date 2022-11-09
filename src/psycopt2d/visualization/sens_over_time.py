@@ -150,7 +150,6 @@ def _generate_sensitivity_array(
 def _annotate_heatmap(
     image: matplotlib.image.AxesImage,
     data: Optional[np.ndarray] = None,
-    value_formatter: str = "{x:.2f}",
     textcolors: tuple = ("black", "white"),
     threshold: Optional[float] = None,
     **textkw,
@@ -160,7 +159,6 @@ def _annotate_heatmap(
     Args:
         image (matplotlib.image.AxesImage): The AxesImage to be labeled.
         data (np.ndarray): Data used to annotate. If None, the image's data is used. Defaults to None.
-        value_formatter (str, optional): The format of the annotations inside the heatmap. This should either use the string format method, e.g. "$ {x:.2f}", or be a :class:`matplotlib.ticker.Formatter`. Defaults to "{x:.2f}".
         textcolors (tuple, optional): A pair of colors. The first is used for values below a threshold, the second for those above. Defaults to ("black", "white").
         threshold (float, optional): Value in data units according to which the colors from textcolors are applied. If None (the default) uses the middle of the colormap as separation. Defaults to None.
         **kwargs (dict, optional): All other arguments are forwarded to each call to `text` used to create the text labels. Defaults to {}.
@@ -186,10 +184,6 @@ def _annotate_heatmap(
         | textkw
     )
 
-    # Get the formatter in case a string is supplied
-    if isinstance(value_formatter, str):
-        value_formatter = matplotlib.ticker.StrMethodFormatter(value_formatter)
-
     # Loop over the data and create a `Text` for each "pixel".
     # Change the text's color depending on the data.
     texts = []
@@ -204,7 +198,7 @@ def _annotate_heatmap(
             text = image.axes.text(
                 heat_col_idx,
                 heat_row_idx,
-                value_formatter(data[heat_row_idx, heat_col_idx], None),  # type: ignore
+                str(data[heat_row_idx, heat_col_idx]),  # type: ignore
                 **test_kwargs,
             )
             texts.append(text)
@@ -256,7 +250,7 @@ def _format_sens_by_time_heatmap(
     axes.tick_params(which="minor", bottom=False, left=False)
 
     # Add annotations
-    _ = _annotate_heatmap(image, value_formatter="{x:.1f}")  # type: ignore
+    _ = _annotate_heatmap(image)  # type: ignore
 
     # Set axis labels and title
     axes.set(
