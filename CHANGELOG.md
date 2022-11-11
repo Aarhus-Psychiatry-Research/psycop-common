@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.0 (2022-11-11)
+### Feature
+* Add auc roc plot to evaluat_model ([`b1fff1b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b1fff1bd1e79d4b8e3085270f819cb78f38c4615))
+* ROC-AUC for eval ([`4bb748e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4bb748ea932e1c1e3a3abd105e5d49f1292a3bbe))
+
+### Fix
+* Remove plt.show ([`f50aa1d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f50aa1d1220812306e849bb71bae4a5193014ab4))
+* Unused argument ([`e2adf61`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/e2adf617db649fbdc2180749fd75cbda1db8ba06))
+
 ## v0.15.0 (2022-11-01)
 ### Feature
 * Add min_age ([`3ebd3fe`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3ebd3fec7cc5c2da54b9de8ebb0dcf7be9fa54cb))
