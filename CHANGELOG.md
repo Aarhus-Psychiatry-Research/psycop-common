@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.0 (2022-11-14)
+### Feature
+* Adjustments to eval ([`81c0f93`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/81c0f9314c839485b847dfbeaad50210c02f307e))
+
+### Fix
+* Smaller xticks fontsize ([`2a00325`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/2a003251bbb7df70a7d3cba8e95b30c89e272019))
+* Review comments ([`f5e5a42`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f5e5a4250ddbf894a66d26306727844e8e748c18))
+* Remove unused arg ([`a60659f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a60659fc2b229ab79e494a8b9492523bce74e571))
+* Remove unused args ([`51e6b74`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/51e6b74241f6c72d71c1b5ef8b51c79d0d3c94b6))
+* Keep two decimals on heatmap annotations ([`cd498e3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cd498e33fc464d9ce2eb82d6e9a00da6290f0691))
+* Remove automatic bin trimming, not needed ([`beae28b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/beae28ba9e05f9aaafd27fe8be2679ea989801fb))
+
 ## v0.16.0 (2022-11-11)
 ### Feature
 * Add auc roc plot to evaluat_model ([`b1fff1b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b1fff1bd1e79d4b8e3085270f819cb78f38c4615))
