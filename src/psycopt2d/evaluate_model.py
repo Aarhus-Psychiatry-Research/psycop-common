@@ -1,7 +1,7 @@
 """_summary_"""
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from pathlib import Path, PosixPath, WindowsPath
-from typing import Optional, Union
+from typing import Optional
 
 import pandas as pd
 import wandb
