@@ -20,6 +20,7 @@ from psycopt2d.visualization.performance_by_n_hba1c import plot_performance_by_n
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
+    plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
 from psycopt2d.visualization.roc_auc import plot_auc_roc
@@ -99,21 +100,33 @@ def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
     plot_performance_by_age(eval_dataset=synth_eval_dataset)
 
 
-def test_plot_performance_by_calendar_time(synth_eval_dataset: EvalDataset):
+@pytest.mark.parametrize(
+    "bin_period",
+    ["M", "Q", "Y"],
+)
+def test_plot_performance_by_calendar_time(
+    synth_eval_dataset: EvalDataset,
+    bin_period: str,
+):
     plot_metric_by_calendar_time(
         eval_dataset=synth_eval_dataset,
-        bin_period="M",
+        bin_period=bin_period,
         metric_fn=roc_auc_score,
-        y_title="AUC",
     )
 
 
-def test_plot_performance_by_calendar_time_quarterly(synth_eval_dataset: EvalDataset):
-    plot_metric_by_calendar_time(
+@pytest.mark.parametrize(
+    "bin_period",
+    ["H", "D", "M"],
+)
+def test_plot_performance_by_cyclic_time(
+    synth_eval_dataset: EvalDataset,
+    bin_period: str,
+):
+    plot_metric_by_cyclic_time(
         eval_dataset=synth_eval_dataset,
-        bin_period="Q",
+        bin_period=bin_period,
         metric_fn=roc_auc_score,
-        y_title="AUC",
     )
 
 
