@@ -9,7 +9,12 @@ import pandas as pd
 import wandb
 from omegaconf import OmegaConf
 from omegaconf.dictconfig import DictConfig
-from sklearn.feature_selection import SelectPercentile, chi2, f_classif
+from sklearn.feature_selection import (
+    SelectPercentile,
+    chi2,
+    f_classif,
+    mutual_info_classif,
+)
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
@@ -86,6 +91,16 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
                 "feature_selection",
                 SelectPercentile(
                     chi2,
+                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
+                ),
+            ),
+        )
+    if cfg.preprocessing.feature_selection.name == "mutual_info_classif":
+        steps.append(
+            (
+                "feature_selection",
+                SelectPercentile(
+                    mutual_info_classif,
                     percentile=cfg.preprocessing.feature_selection.params["percentile"],
                 ),
             ),
