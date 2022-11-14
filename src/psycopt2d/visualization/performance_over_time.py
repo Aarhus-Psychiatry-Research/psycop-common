@@ -92,8 +92,8 @@ def create_performance_by_cyclic_time_df(
     metric_fn: Callable,
     bin_period: str,
 ) -> pd.DataFrame:
-    """Calculate performance by cyclic time period of prediction time data frame.
-    Cyclic time periods include e.g. day of week, hour of day, etc.
+    """Calculate performance by cyclic time period of prediction time data
+    frame. Cyclic time periods include e.g. day of week, hour of day, etc.
 
     Args:
         labels (Iterable[int]): True labels
@@ -127,7 +127,7 @@ def create_performance_by_cyclic_time_df(
         )
     else:
         raise ValueError(
-            "bin_period must be 'H' for hour of day or 'D' for day of week"
+            "bin_period must be 'H' for hour of day or 'D' for day of week",
         )
 
     output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
@@ -144,9 +144,8 @@ def plot_metric_by_cyclic_time(
     save_path: Optional[str] = None,
     metric_fn: Callable = roc_auc_score,
 ) -> Union[None, Path]:
-    """Plot performance by cyclic time period of prediction time.
-    Cyclic time periods include e.g. day of week, hour of day, etc.
-
+    """Plot performance by cyclic time period of prediction time. Cyclic time
+    periods include e.g. day of week, hour of day, etc.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
