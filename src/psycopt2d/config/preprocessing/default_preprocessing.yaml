@@ -1,8 +1,8 @@
 convert_to_boolean: false
 convert_datetimes_to_ordinal: false
-imputation_method: "most_frequent" # (str): Options include 2most_frequent"
+imputation_method: "most_frequent" # (str): Options include "most_frequent"
 transform: null # (str|null): Transformation applied to all predictors after imputation. Options include "z-score-normalization"
-feature_selection:
-  name: null
+feature_selection: 
+  name: null # (str) Options include "f_classif", "chi2" and "mutual_info_classif". Default to use is "mutual_info_classif".
   params:
     percentile: 10 # (int): Percent of features to keep. Defaults to 10.
