@@ -32,13 +32,14 @@ def create_performance_by_calendar_time_df(
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
-        bin_period (str): How to bin time. "M" for year/month, "Y" for year
+        bin_period (str): How to bin time. "M" for year/month, "Y" for year, "Q" for quarter
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
-    df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
+
+    df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
     output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
 
@@ -159,7 +160,7 @@ def plot_auc_by_time_from_first_visit(
     prettify_bins: Optional[bool] = True,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
-    """Plot AUC as a function of time to first visit.
+    """Plot AUC as a function of time from first visit.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object

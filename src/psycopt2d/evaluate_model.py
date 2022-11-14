@@ -1,7 +1,7 @@
 """_summary_"""
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from pathlib import Path, PosixPath, WindowsPath
-from typing import Optional, Union
+from typing import Optional
 
 import pandas as pd
 import wandb
@@ -58,44 +58,10 @@ def upload_artifacts_to_wandb(
             run.log({artifact_container.label: wandb_table})
 
 
-def filter_plot_bins(
-    cfg: FullConfigSchema,
-):
-    """Remove bins that don't make sense given the other items in the config.
-
-    E.g. it doesn't make sense to plot bins with no contents.
-    """
-    # Bins for plotting
-    lookahead_bins: Iterable[int] = cfg.eval.lookahead_bins
-    lookbehind_bins: Iterable[int] = cfg.eval.lookbehind_bins
-
-    # Drop date_bins_direction if they are further away than min_lookdirection_days
-    if cfg.data.min_lookbehind_days:
-        lookbehind_bins = [
-            b for b in lookbehind_bins if cfg.data.min_lookbehind_days < b
-        ]
-
-    if cfg.data.min_lookahead_days:
-        lookahead_bins = [
-            b for b in lookahead_bins if cfg.data.min_lookahead_days < abs(b)
-        ]
-
-    # Invert date_bins_behind to negative if it's not already
-    if min(lookbehind_bins) >= 0:
-        lookbehind_bins = [-d for d in lookbehind_bins]
-
-        # Sort so they're monotonically increasing
-        lookbehind_bins = sorted(lookbehind_bins)
-
-    return lookahead_bins, lookbehind_bins
-
-
 def create_base_plot_artifacts(
     cfg: FullConfigSchema,
     eval_dataset: EvalDataset,
     save_dir: Path,
-    lookahead_bins: Sequence[Union[int, float]],
-    lookbehind_bins: Sequence[Union[int, float]],
 ) -> list[ArtifactContainer]:
     """A collection of plots that are always generated."""
     pred_proba_percentiles = positive_rate_to_pred_probs(
@@ -103,13 +69,15 @@ def create_base_plot_artifacts(
         positive_rate_thresholds=cfg.eval.positive_rate_thresholds,
     )
 
+    lookahead_bins = cfg.eval.lookahead_bins
+
     return [
         ArtifactContainer(
             label="sensitivity_by_time_by_threshold",
             artifact=plot_sensitivity_by_time_to_outcome_heatmap(
                 eval_dataset=eval_dataset,
                 pred_proba_thresholds=pred_proba_percentiles,
-                bins=lookbehind_bins,
+                bins=lookahead_bins,
                 save_path=save_dir / "sensitivity_by_time_by_threshold.png",
             ),
         ),
@@ -117,7 +85,7 @@ def create_base_plot_artifacts(
             label="auc_by_time_from_first_visit",
             artifact=plot_auc_by_time_from_first_visit(
                 eval_dataset=eval_dataset,
-                bins=lookbehind_bins,
+                bins=lookahead_bins,
                 save_path=save_dir / "auc_by_time_from_first_visit.png",
             ),
         ),
@@ -199,7 +167,6 @@ def run_full_evaluation(
         pipe_metadata: The metadata for the pipe.
         upload_to_wandb: Whether to upload to wandb.
     """
-    lookahead_bins, lookbehind_bins = filter_plot_bins(cfg=cfg)
 
     # Create the directory if it doesn't exist
     save_dir.mkdir(parents=True, exist_ok=True)
@@ -207,8 +174,6 @@ def run_full_evaluation(
     artifact_containers = create_base_plot_artifacts(
         cfg=cfg,
         eval_dataset=eval_dataset,
-        lookahead_bins=lookahead_bins,
-        lookbehind_bins=lookbehind_bins,
         save_dir=save_dir,
     )
 
