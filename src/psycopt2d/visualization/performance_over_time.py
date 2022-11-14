@@ -32,7 +32,7 @@ def create_performance_by_calendar_time_df(
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
-        bin_period (str): How to bin time. "M" for year/month, "Y" for year, "Q" for quarter
+        bin_period (str): How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
@@ -41,7 +41,7 @@ def create_performance_by_calendar_time_df(
 
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
-    output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
+    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
@@ -60,7 +60,7 @@ def plot_metric_by_calendar_time(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         y_title (str): Title of y-axis. Defaults to "AUC".
-        bin_period (str): Which time period to bin on. Takes "M" or "Y".
+        bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
         save_path (str, optional): Path to save figure. Defaults to None.
         metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
 
@@ -78,7 +78,11 @@ def plot_metric_by_calendar_time(
     return plot_basic_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
-        x_title="Calendar time",
+        x_title="Month"
+        if bin_period == "M"
+        else "Quarter"
+        if bin_period == "Q"
+        else "Year",
         y_title=y_title,
         sort_x=sort_order,
         plot_type=["line", "scatter"],
@@ -152,7 +156,7 @@ def create_performance_by_cyclic_time_df(
             "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year",
         )
 
-    output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
+    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
@@ -190,7 +194,7 @@ def plot_metric_by_cyclic_time(
     return plot_basic_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
-        x_title="Time of day"
+        x_title="Hour of day"
         if bin_period == "H"
         else "Day of week"
         if bin_period == "D"

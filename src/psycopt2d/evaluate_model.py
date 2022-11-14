@@ -98,7 +98,7 @@ def create_base_plot_artifacts(
             ),
         ),
         ArtifactContainer(
-            label="auc_by_time_of_day",
+            label="auc_by_hour_of_day",
             artifact=plot_metric_by_cyclic_time(
                 eval_dataset=eval_dataset,
                 bin_period="H",
