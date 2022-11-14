@@ -105,7 +105,8 @@ def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
     ["M", "Q", "Y"],
 )
 def test_plot_performance_by_calendar_time(
-    synth_eval_dataset: EvalDataset, bin_period: str
+    synth_eval_dataset: EvalDataset,
+    bin_period: str,
 ):
     plot_metric_by_calendar_time(
         eval_dataset=synth_eval_dataset,
@@ -119,7 +120,8 @@ def test_plot_performance_by_calendar_time(
     ["H", "D", "M"],
 )
 def test_plot_performance_by_cyclic_time(
-    synth_eval_dataset: EvalDataset, bin_period: str
+    synth_eval_dataset: EvalDataset,
+    bin_period: str,
 ):
     plot_metric_by_cyclic_time(
         eval_dataset=synth_eval_dataset,
