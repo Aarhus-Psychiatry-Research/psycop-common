@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.0 (2022-11-14)
+### Feature
+* Add month of year ([`826961c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/826961cda1217322714d3b6ec29db1df3f0fc9c0))
+* Performance by cyclic time ([`348e2f8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/348e2f863cb09d6962b0d9423b383b4542066c3f))
+
+### Fix
+* Review comments ([`447cfb9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/447cfb947a5a55759e63df70ae5718a37120694c))
+* Parameterise tests ([`bf37a95`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/bf37a95f82ef411bdd1920bf5b44d8a2882cbd53))
+* Add plots to applicatrion ([`a2edd96`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a2edd9658b2a03cac2dca114bdbaeb2eea4f8fdd))
+
 ## v0.18.0 (2022-11-14)
 ### Feature
 * Feature sel for NAs and negative values ([`9391f41`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9391f417d67cb3cafdd928b06999d1c29fdce914))
