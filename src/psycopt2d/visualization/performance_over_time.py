@@ -44,6 +44,7 @@ def create_performance_by_calendar_time_df(
     output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
+
     return output_df
 
 
