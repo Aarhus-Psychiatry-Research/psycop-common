@@ -62,6 +62,7 @@ def plot_basic_chart(
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)
+    plt.xticks(fontsize=7)
     plt.xticks(rotation=45)
     if save_path is not None:
         plt.savefig(save_path)
