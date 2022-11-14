@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.0 (2022-11-14)
+### Feature
+* Feature sel for NAs and negative values ([`9391f41`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9391f417d67cb3cafdd928b06999d1c29fdce914))
+
+### Fix
+* Add documentation to cfg file ([`0976ee1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0976ee1fbcdd66ecdf1ea91834e4cbd61024e8e1))
+
 ## v0.17.0 (2022-11-14)
 ### Feature
 * Adjustments to eval ([`81c0f93`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/81c0f9314c839485b847dfbeaad50210c02f307e))
