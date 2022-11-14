@@ -100,7 +100,7 @@ def create_performance_by_cyclic_time_df(
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
-        bin_period (str): Which cyclic time period to bin on. Takes "D" for day of week and "H" for hour of day.
+        bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
@@ -125,9 +125,30 @@ def create_performance_by_cyclic_time_df(
             ],
             ordered=True,
         )
+    elif bin_period == "M":
+        df["time_bin"] = pd.to_datetime(df["timestamp"]).dt.strftime("%B")
+        # Sort months correctly
+        df["time_bin"] = pd.Categorical(
+            df["time_bin"],
+            categories=[
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+            ],
+            ordered=True,
+        )
     else:
         raise ValueError(
-            "bin_period must be 'H' for hour of day or 'D' for day of week",
+            "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year",
         )
 
     output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
@@ -150,7 +171,7 @@ def plot_metric_by_cyclic_time(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         y_title (str): Title for y-axis (metric name). Defaults to "AUC"
-        bin_period (str): Which cyclic time period to bin on. Takes "D" for day of week and "H" for hour of day.
+        bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
         save_path (str, optional): Path to save figure. Defaults to None.
         metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
 
@@ -168,7 +189,11 @@ def plot_metric_by_cyclic_time(
     return plot_basic_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
-        x_title="Time of day" if bin_period == "H" else "Day of week",
+        x_title="Time of day"
+        if bin_period == "H"
+        else "Day of week"
+        if bin_period == "D"
+        else "Month of year",
         y_title=y_title,
         plot_type=["line", "scatter"],
         save_path=save_path,

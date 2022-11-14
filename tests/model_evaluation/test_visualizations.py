@@ -111,7 +111,7 @@ def test_plot_performance_by_calendar_time(synth_eval_dataset: EvalDataset):
 def test_plot_performance_by_cyclic_time(synth_eval_dataset: EvalDataset):
     plot_metric_by_cyclic_time(
         eval_dataset=synth_eval_dataset,
-        bin_period="H",
+        bin_period="M",
         metric_fn=roc_auc_score,
     )
 
