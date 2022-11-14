@@ -61,13 +61,14 @@ def create_base_plot_artifacts(
     cfg: FullConfigSchema,
     eval_dataset: EvalDataset,
     save_dir: Path,
-    lookahead_bins: Sequence[Union[int, float]],
 ) -> list[ArtifactContainer]:
     """A collection of plots that are always generated."""
     pred_proba_percentiles = positive_rate_to_pred_probs(
         pred_probs=eval_dataset.y_hat_probs,
         positive_rate_thresholds=cfg.eval.positive_rate_thresholds,
     )
+
+    lookahead_bins = cfg.eval.lookahead_bins
 
     return [
         ArtifactContainer(
@@ -165,7 +166,6 @@ def run_full_evaluation(
     artifact_containers = create_base_plot_artifacts(
         cfg=cfg,
         eval_dataset=eval_dataset,
-        lookahead_bins=cfg.eval.lookahead_bins,
         save_dir=save_dir,
     )
 

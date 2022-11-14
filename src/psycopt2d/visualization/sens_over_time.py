@@ -250,7 +250,7 @@ def _format_sens_by_time_heatmap(
     axes.tick_params(which="minor", bottom=False, left=False)
 
     # Add annotations
-    _ = _annotate_heatmap(image)  # type: ignore
+    _annotate_heatmap(image)  # type: ignore
 
     # Set axis labels and title
     axes.set(

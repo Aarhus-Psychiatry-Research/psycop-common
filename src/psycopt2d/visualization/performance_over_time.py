@@ -39,10 +39,7 @@ def create_performance_by_calendar_time_df(
     """
     df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
 
-    if bin_period == "Q":
-        df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq="Q").format()
-    else:
-        df["time_bin"] = df["timestamp"].astype(f"datetime64[{bin_period}]")
+    df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
     output_df = df.groupby("time_bin").apply(calc_performance, metric_fn)
 
