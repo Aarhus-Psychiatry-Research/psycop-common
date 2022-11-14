@@ -25,6 +25,7 @@ from psycopt2d.visualization.performance_by_n_hba1c import plot_performance_by_n
 from psycopt2d.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
+    plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
 from psycopt2d.visualization.roc_auc import plot_auc_roc
@@ -93,7 +94,30 @@ def create_base_plot_artifacts(
             label="auc_by_calendar_time",
             artifact=plot_metric_by_calendar_time(
                 eval_dataset=eval_dataset,
-                y_title="AUC",
+                save_path=save_dir / "auc_by_calendar_time.png",
+            ),
+        ),
+        ArtifactContainer(
+            label="auc_by_time_of_day",
+            artifact=plot_metric_by_cyclic_time(
+                eval_dataset=eval_dataset,
+                bin_period="H",
+                save_path=save_dir / "auc_by_calendar_time.png",
+            ),
+        ),
+        ArtifactContainer(
+            label="auc_by_day_of_week",
+            artifact=plot_metric_by_cyclic_time(
+                eval_dataset=eval_dataset,
+                bin_period="D",
+                save_path=save_dir / "auc_by_calendar_time.png",
+            ),
+        ),
+        ArtifactContainer(
+            label="auc_by_month_of_year",
+            artifact=plot_metric_by_cyclic_time(
+                eval_dataset=eval_dataset,
+                bin_period="M",
                 save_path=save_dir / "auc_by_calendar_time.png",
             ),
         ),
