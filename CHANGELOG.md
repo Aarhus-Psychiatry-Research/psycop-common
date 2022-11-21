@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.1 (2022-11-21)
+### Fix
+* Update integration testing readme instruction ([`c4d54c3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c4d54c32bfb39096e5ae82ee60b8bef9815043f2))
+* Naming and logging of eval_dataset.parquet to disk ([`052c9f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/052c9f06d37b77b5c135ec447bd4926304b99a47))
+
 ## v0.19.0 (2022-11-14)
 ### Feature
 * Add month of year ([`826961c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/826961cda1217322714d3b6ec29db1df3f0fc9c0))
