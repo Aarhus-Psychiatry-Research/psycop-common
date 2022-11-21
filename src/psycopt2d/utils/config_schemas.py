@@ -8,7 +8,7 @@ it makes them:
 """
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Any, Optional, Union
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf

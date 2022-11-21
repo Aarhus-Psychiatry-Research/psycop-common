@@ -55,7 +55,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             (
                 "DropDateTimeColumns",
                 DropDateTimeColumns(pred_prefix=cfg.data.pred_prefix),
-            )
+            ),
         )
 
     if cfg.preprocessing.convert_datetimes_to_ordinal:
