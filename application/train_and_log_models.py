@@ -10,6 +10,8 @@ import subprocess
 import time
 
 import pandas as pd
+import wandb
+from random_word import RandomWords
 from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import (
@@ -59,17 +61,13 @@ def train_models_for_each_cell_in_grid(
     cfg: FullConfigSchema,
     possible_lookahead_days: list[int],
     config_file_name: str,
+    wandb_prefix: str,
 ):
     """Train a model for each cell in the grid of possible look distances."""
-    from random_word import RandomWords
-
-    random_word = RandomWords()
 
     random.shuffle(possible_lookahead_days)
 
     active_trainers: list[subprocess.Popen] = []
-
-    wandb_prefix = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
 
     lookahead_days_queue = possible_lookahead_days.copy()
 
@@ -164,6 +162,17 @@ def main():
 
     cfg = load_cfg_as_pydantic(config_file_name=config_file_name)
 
+    random_word = RandomWords()
+    wandb_group = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
+
+    wandb.init(
+        project=cfg.project.name,
+        mode=cfg.project.wandb.mode,
+        group=random_word,
+        entity=cfg.project.wandb.entity,
+        name="process_manager",
+    )
+
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
     train = load_train_raw(cfg=cfg)
@@ -176,8 +185,9 @@ def main():
 
     train_models_for_each_cell_in_grid(
         cfg=cfg,
-        possible_lookahead_days=[730],
+        possible_lookahead_days=possible_lookaheads,
         config_file_name=config_file_name,
+        wandb_prefix=wandb_group,
     )
 
 
