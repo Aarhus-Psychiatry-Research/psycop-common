@@ -10,6 +10,43 @@ from sklearn.metrics import confusion_matrix
 from psycopt2d.evaluation_dataclasses import EvalDataset
 
 
+def _get_true_positives(
+    ids: Iterable[Union[float, str]],
+    pred_probs: Iterable[Union[float, str]],
+    pred_timestamps: Iterable[pd.Timestamp],
+    outcome_timestamps: Iterable[pd.Timestamp],
+    positive_rate_threshold: Optional[float] = 0.5,
+):
+    """Get dataframe containing only true positives.
+
+    Args:
+        ids (Iterable[Union[float, str]]): Iterable of patient IDs.
+        pred_probs (Iterable[Union[float, str]]): Predicted probabilities.
+        pred_timestamps (Iterable[pd.Timestamp]): Timestamps for each prediction time.
+        outcome_timestamps (Iterable[pd.Timestamp]): Timestamps of patient outcome.
+        positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
+
+    Returns:
+        pd.DataFrame: Dataframe containing only true positives."""
+
+    # Generate df
+    df = pd.DataFrame(
+        {
+            "id": ids,
+            "pred_probs": pred_probs,
+            "pred_timestamps": pred_timestamps,
+            "outcome_timestamps": outcome_timestamps,
+        },
+    )
+
+    # Keep only true positives
+    df["true_positive"] = (df["pred_probs"] >= positive_rate_threshold) & (
+        df["outcome_timestamps"].notnull()
+    )
+
+    return df[df["true_positive"]]
+
+
 def performance_by_threshold(  # pylint: disable=too-many-locals
     labels: Sequence[int],
     pred_probs: Sequence[float],
@@ -98,23 +135,16 @@ def days_from_first_positive_to_diagnosis(
         aggregation_method (str, optional): How to aggregate the warning days. Defaults to "sum".
 
     Returns:
-        float: _description_
+        float: Total number of days from first positive prediction to outcome.
     """
-    # Generate df
-    df = pd.DataFrame(
-        {
-            "id": ids,
-            "pred_probs": pred_probs,
-            "pred_timestamps": pred_timestamps,
-            "outcome_timestamps": outcome_timestamps,
-        },
+    # Generate df with only true positives
+    df = _get_true_positives(
+        ids=ids,
+        pred_probs=pred_probs,
+        pred_timestamps=pred_timestamps,
+        outcome_timestamps=outcome_timestamps,
+        positive_rate_threshold=positive_rate_threshold,
     )
-
-    # Keep only true positives
-    df["true_positive"] = (df["pred_probs"] >= positive_rate_threshold) & (
-        df["outcome_timestamps"].notnull()
-    )
-    df = df[df["true_positive"]]
 
     # Find timestamp of first positive prediction
     df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
@@ -144,6 +174,38 @@ def days_from_first_positive_to_diagnosis(
     ]
 
     return df["warning_days"].agg(aggregation_method)
+
+
+def prop_with_at_least_one_true_positve(
+    ids: Iterable[Union[float, str]],
+    pred_probs: Iterable[Union[float, str]],
+    pred_timestamps: Iterable[pd.Timestamp],
+    outcome_timestamps: Iterable[pd.Timestamp],
+    positive_rate_threshold: Optional[float] = 0.5,
+) -> float:
+    """Get proportion of patients with at least one true positive prediction.
+
+    Args:
+        ids (Iterable[Union[float, str]]): Iterable of patient IDs.
+        pred_probs (Iterable[Union[float, str]]): Predicted probabilities.
+        pred_timestamps (Iterable[pd.Timestamp]): Timestamps for each prediction time.
+        outcome_timestamps (Iterable[pd.Timestamp]): Timestamps of patient outcome.
+        positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
+
+    Returns:
+        float: Proportion of thresholds with at least one true positive.
+    """
+    # Generate df with only true positives
+    df = _get_true_positives(
+        ids=ids,
+        pred_probs=pred_probs,
+        pred_timestamps=pred_timestamps,
+        outcome_timestamps=outcome_timestamps,
+        positive_rate_threshold=positive_rate_threshold,
+    )
+
+    # Return number of unique patients with at least one true positive
+    return round(df["id"].nunique() / len(set(ids)), 3)
 
 
 def generate_performance_by_positive_rate_table(
@@ -203,6 +265,16 @@ def generate_performance_by_positive_rate_table(
                 aggregation_method="mean",
             ),
             0,
+        )
+
+        threshold_metrics[  # pylint: disable=unsupported-assignment-operation
+            "prop_with_at_least_one_true_positive"
+        ] = prop_with_at_least_one_true_positve(
+            ids=eval_dataset.ids,
+            pred_probs=eval_dataset.y_hat_probs,
+            pred_timestamps=eval_dataset.pred_timestamps,
+            outcome_timestamps=eval_dataset.outcome_timestamps,
+            positive_rate_threshold=threshold_value,
         )
 
         rows.append(threshold_metrics)
