@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_416_features_2022_10_31_15_58
+  dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_1090_features_2022_11_18_14_10
   suffix: parquet
   min_age: 18
 
@@ -23,7 +23,7 @@ data:
     age: pred_age_in_years
     exclusion_timestamp: _timestamp_exclusion
     custom:
-      n_hba1c: hba1c_within_9999_days_count_fallback_0
+      n_hba1c: eval_hba1c_within_9999_days_count_fallback_nan
 
   lookbehind_combination: [30, 90, 180, 365, 730]
 

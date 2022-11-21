@@ -65,18 +65,18 @@ def filter_plot_bins(
     E.g. it doesn't make sense to plot bins with no contents.
     """
     # Bins for plotting
-    lookahead_bins: Iterable[int] = cfg.eval.lookahead_bins
-    lookbehind_bins: Iterable[int] = cfg.eval.lookbehind_bins
+    lookahead_bins: Sequence[int] = cfg.eval.lookahead_bins
+    lookbehind_bins: Sequence[int] = cfg.eval.lookbehind_bins
 
     # Drop date_bins_direction if they are further away than min_lookdirection_days
     if cfg.data.lookbehind_combination:
         lookbehind_bins = [
-            b for b in lookbehind_bins if max(cfg.data.lookbehind_combination) < b
+            b for b in lookbehind_bins if max(cfg.data.lookbehind_combination) > b
         ]
 
     if cfg.data.min_lookahead_days:
         lookahead_bins = [
-            b for b in lookahead_bins if cfg.data.min_lookahead_days < abs(b)
+            b for b in lookahead_bins if cfg.data.min_lookahead_days > abs(b)
         ]
 
     # Invert date_bins_behind to negative if it's not already
@@ -85,6 +85,11 @@ def filter_plot_bins(
 
         # Sort so they're monotonically increasing
         lookbehind_bins = sorted(lookbehind_bins)
+
+    if len(lookahead_bins) == 0:
+        raise ValueError("No lookahead bins to plot!")
+    elif len(lookbehind_bins) == 0:
+        raise ValueError("No lookbehind bins to plot!")
 
     return lookahead_bins, lookbehind_bins
 
@@ -164,10 +169,10 @@ def create_custom_plot_artifacts(
     """A collection of plots that are always generated."""
     return [
         ArtifactContainer(
-            label="performance_by_age",
+            label="performance_by_n_hba1c",
             artifact=plot_performance_by_n_hba1c(
                 eval_dataset=eval_dataset,
-                save_path=save_dir / "performance_by_age.png",
+                save_path=save_dir / "performance_by_n_hba1c.png",
             ),
         ),
     ]

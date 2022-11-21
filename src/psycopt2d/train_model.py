@@ -49,6 +49,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     """Create preprocessing pipeline based on config."""
     steps = []
 
+    # Conversion
     if cfg.preprocessing.convert_datetimes_to_ordinal:
         dtconverter = DateTimeConverter(
             convert_to=cfg.preprocessing.convert_datetimes_to_ordinal,
@@ -58,32 +59,23 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     if cfg.preprocessing.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
-    if cfg.model.require_imputation:
-        if cfg.preprocessing.imputation_method:
-            steps.append(
-                (
-                    "Imputation",
-                    SimpleImputer(strategy=cfg.preprocessing.imputation_method),
-                ),
-            )
-        else:
-            raise ValueError(
-                f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file.",
-            )
+    # Imputation
+    if cfg.model.require_imputation and not cfg.preprocessing.imputation_method:
+        raise ValueError(
+            f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file.",
+        )
 
-    if cfg.preprocessing.transform:
-        if cfg.preprocessing.transform in {
-            "z-score-normalization",
-            "z-score-normalisation",
-        }:
-            steps.append(
-                ("z-score-normalization", StandardScaler()),
-            )
-        else:
-            raise ValueError(
-                f"{cfg.preprocessing.transform} is not implemented. See above",
-            )
+    if cfg.preprocessing.imputation_method:
+        steps.append(
+            (
+                "Imputation",
+                SimpleImputer(strategy=cfg.preprocessing.imputation_method),
+            ),
+        )
 
+    # Feature selection
+    # Important to do this before scaling, since chi2
+    # requires non-negative values
     if cfg.preprocessing.feature_selection.name:
         if cfg.preprocessing.feature_selection.name == "f_classif":
             steps.append(
@@ -97,7 +89,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
                     ),
                 ),
             )
-        if cfg.preprocessing.feature_selection.name == "chi2":
+        elif cfg.preprocessing.feature_selection.name == "chi2":
             steps.append(
                 (
                     "feature_selection",
@@ -108,6 +100,27 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
                         ],
                     ),
                 ),
+            )
+        else:
+            raise ValueError(
+                f"Unknown feature selection method {cfg.preprocessing.feature_selection.name}",
+            )
+
+    # Feature scaling
+    # Important to do this after feature selection, since
+    # half of the values in z-score normalisation will be negative,
+    # which is not allowed for chi2
+    if cfg.preprocessing.transform:
+        if cfg.preprocessing.transform in {
+            "z-score-normalization",
+            "z-score-normalisation",
+        }:
+            steps.append(
+                ("z-score-normalization", StandardScaler()),
+            )
+        else:
+            raise ValueError(
+                f"{cfg.preprocessing.transform} is not implemented. See above",
             )
 
     return Pipeline(steps)
@@ -142,6 +155,8 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
 
     # Create folds
     msg.info("Creating folds")
+    msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
+
     folds = StratifiedGroupKFold(n_splits=n_splits).split(
         X=X,
         y=y,

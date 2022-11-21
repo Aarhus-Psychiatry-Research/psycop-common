@@ -1,6 +1,5 @@
 name: psycop-t2d-integration-testing
 seed: 42
-gpu: false
 
 wandb:
   mode: disabled # Which mode to run WanDB in. Takes "run", "dryrun", and "disabled"

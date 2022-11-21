@@ -8,7 +8,7 @@ it makes them:
 """
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
@@ -83,7 +83,6 @@ class ProjectSchema(BaseModel):
     name: str = "psycopt2d"
     seed: int
     watcher: WatcherSchema
-    gpu: bool
 
 
 class CustomColNames(BaseModel):
@@ -133,9 +132,6 @@ class DataSchema(BaseModel):
     min_prediction_time_date: Optional[Union[str, datetime]]
     # Drop all prediction times before this date.
 
-    min_lookbehind_days: int
-    # Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
-
     lookbehind_combination: Optional[list[int]]
     # Which combination of features to use. Only uses features that have "within_X_days" in their column name, where X is any of the numbers in this list.
 
@@ -156,7 +152,10 @@ class PreprocessingConfigSchema(BaseModel):
     convert_to_boolean: bool
     # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivty test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
 
-    convert_datetimes_to_ordinal: bool
+    convert_booleans_to_int: bool
+    # Whether to convert columns containing booleans to int
+
+    convert_datetimes_to_ordinal: Literal["ordinal", "None"]
     # Whether to convert datetimes to ordinal.
 
     imputation_method: Optional[str]
@@ -181,9 +180,8 @@ class TrainConfSchema(BaseModel):
     """Training configuration."""
 
     n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
-    n_trials_per_lookdirection_combination: int
+    n_trials_per_lookahead: int
     n_active_trainers: int  # Number of subprocesses to spawn when training
-    gpu: bool
 
 
 class EvalConfSchema(BaseModel):
@@ -256,7 +254,7 @@ def load_cfg_as_omegaconf(
 
         import torch
 
-        gpu = torch.cuda.is_available()
+        gpu = True
 
         if not gpu and cfg.model.name == "xgboost":
             cfg.model.args["tree_method"] = "auto"

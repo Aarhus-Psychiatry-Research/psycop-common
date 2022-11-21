@@ -1,7 +1,7 @@
 # @package _global_
 model:
-  name: xgboost # (str): Model, can currently take xgboost
-  require_imputation: true # (bool): Whether the model requires imputation. (shouldn't this be false?)
+  name: xgboost
+  require_imputation: false
   args:
     n_estimators: 100
     tree_method: gpu_hist # set to gpu_hist to enable GPU training (default auto)

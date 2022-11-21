@@ -7,5 +7,4 @@ hydra:
   sweeper:
     sampler:
       seed: 123
-    n_trials: 3
     direction: maximize

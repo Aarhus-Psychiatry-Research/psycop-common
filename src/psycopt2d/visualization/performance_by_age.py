@@ -42,10 +42,11 @@ def plot_performance_by_age(
     )
 
     sort_order = sorted(df["age_binned"].unique())
+
     return plot_basic_chart(
         x_values=df["age_binned"],
         y_values=df["metric"],
-        x_title="Number of HbA1c measurements",
+        x_title="Age",
         y_title="AUC",
         sort_x=sort_order,
         plot_type=["bar"],
