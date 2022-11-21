@@ -392,9 +392,18 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
         train_col_names: Names of the columns to use for training
     """
 
-    outcome_col_name = (  # pylint: disable=invalid-name
-        f"outc_dichotomous_t2d_within_{cfg.data.min_lookahead_days}_days_max_fallback_0"
-    )
+    potential_outcome_col_names = [
+        c
+        for c in train.columns
+        if cfg.data.outc_prefix in c and {cfg.data.min_lookahead_days} in c
+    ]
+
+    if len(potential_outcome_col_names) != 1:
+        raise ValueError(
+            "More than one outcome column found. Please make outcome column names unambiguous."
+        )
+
+    outcome_col_name = potential_outcome_col_names[0]
 
     train_col_names = [  # pylint: disable=invalid-name
         c for c in train.columns if c.startswith(cfg.data.pred_prefix)

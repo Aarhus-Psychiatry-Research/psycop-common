@@ -120,6 +120,7 @@ class DataSchema(BaseModel):
     col_name: ColumnNamesSchema
 
     pred_prefix: str  # prefix of predictor columns
+    outc_prefix: str  # prefix of outcome columns
 
     min_age: Union[int, float]  # Minimum age to include in the dataset
 

@@ -15,6 +15,7 @@ data:
 
   # Feature specs
   pred_prefix: pred_
+  outc_prefix: outc_
 
   col_name:
     pred_timestamp: timestamp

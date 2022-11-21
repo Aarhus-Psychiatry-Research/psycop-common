@@ -6,6 +6,7 @@ data:
   min_lookahead_days: 30
   min_prediction_time_date: null
   pred_prefix: pred_
+  outc_prefix: outc_
   min_age: 18
 
   col_name:
