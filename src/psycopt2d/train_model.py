@@ -401,7 +401,7 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
 
     if len(potential_outcome_col_names) != 1:
         raise ValueError(
-            "More than one outcome column found. Please make outcome column names unambiguous."
+            "More than one outcome column found. Please make outcome column names unambiguous.",
         )
 
     outcome_col_name = potential_outcome_col_names[0]
