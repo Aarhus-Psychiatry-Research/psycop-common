@@ -1,5 +1,4 @@
 """Tables for evaluation of models."""
-from collections.abc import Sequence
 from typing import Union
 
 import pandas as pd
@@ -81,10 +80,11 @@ def generate_selected_features_table(
 
     feature_names = list(selected_features_dict.keys())
     is_selected = list(selected_features_dict.values())
-    
+
     df = pd.DataFrame(
         {
-            "predictor": feature_names, "selected": is_selected,
+            "predictor": feature_names,
+            "selected": is_selected,
         },
     )
 
