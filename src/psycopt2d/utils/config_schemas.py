@@ -187,6 +187,7 @@ class TrainConfSchema(BaseModel):
     n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
     n_trials_per_lookahead: int
     n_active_trainers: int  # Number of subprocesses to spawn when training
+    n_jobs_per_trainer: int
 
 
 class EvalConfSchema(BaseModel):

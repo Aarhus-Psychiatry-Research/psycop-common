@@ -35,6 +35,7 @@ def start_trainer(
         f"project.wandb.group='{wandb_group_override}'",
         f"project.wandb.mode={cfg.project.wandb.mode}",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",
+        f"hydra.sweeper.n_jobs={cfg.train.n_jobs_per_trainer}",
         f"model={cfg.model.name}",
         f"data.min_lookahead_days={lookahead_days}",
         "--config-name",
@@ -175,7 +176,7 @@ def main():
 
     train_models_for_each_cell_in_grid(
         cfg=cfg,
-        possible_lookahead_days=possible_lookaheads,
+        possible_lookahead_days=[730],
         config_file_name=config_file_name,
     )
 
