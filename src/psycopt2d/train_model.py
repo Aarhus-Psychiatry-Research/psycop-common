@@ -1,5 +1,6 @@
 """Training script for training a single model for predicting t2d."""
 import os
+import time
 from collections.abc import Iterable
 from typing import Any, Optional
 
@@ -395,7 +396,7 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     potential_outcome_col_names = [
         c
         for c in train.columns
-        if cfg.data.outc_prefix in c and {cfg.data.min_lookahead_days} in c
+        if cfg.data.outc_prefix in c and str(cfg.data.min_lookahead_days) in c
     ]
 
     if len(potential_outcome_col_names) != 1:
@@ -447,6 +448,13 @@ def main(cfg: DictConfig):
 
     if run is None:
         raise ValueError("Failed to initialise Wandb")
+
+    # Add random delay based on cfg.train.random_delay_per_job to avoid
+    # each job needing the same resources (GPU, disk, network) at the same time
+    if cfg.train.random_delay_per_job_seconds:
+        delay = np.random.randint(0, cfg.train.random_delay_per_job_seconds)
+        msg.info(f"Delaying job by {delay} seconds to avoid resource competition")
+        time.sleep(delay)
 
     dataset = load_train_and_val_from_cfg(cfg)
 
