@@ -168,7 +168,6 @@ def prop_with_at_least_one_true_positve(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
-        outcome_timestamps (Iterable[pd.Timestamp]): Timestamps of patient outcome.
         positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
 
     Returns:
