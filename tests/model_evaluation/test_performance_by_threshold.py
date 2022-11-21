@@ -56,6 +56,7 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
             "total_warning_days": {0: 609757.0, 1: 2619787.0, 2: 4612729.0},
             "warning_days_per_false_positive": {0: 64.2, 1: 55.2, 2: 88.1},
             "mean_warning_days": {0: 1252, 1: 1332, 2: 1451},
+            "prop_with_at_least_one_true_positive": {0: 0.0503, 1: 0.0311, 2: 0.0077},
         },
     )
 

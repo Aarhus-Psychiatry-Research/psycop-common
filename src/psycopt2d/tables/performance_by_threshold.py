@@ -205,7 +205,7 @@ def prop_with_at_least_one_true_positve(
     )
 
     # Return number of unique patients with at least one true positive
-    return round(df["id"].nunique() / len(set(ids)), 3)
+    return round(df["id"].nunique() / len(set(ids)), 4)
 
 
 def generate_performance_by_positive_rate_table(
