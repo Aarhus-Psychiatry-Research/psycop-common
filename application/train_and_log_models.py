@@ -168,7 +168,7 @@ def main():
     wandb.init(
         project=cfg.project.name,
         mode=cfg.project.wandb.mode,
-        group=random_word,
+        group=wandb_group,
         entity=cfg.project.wandb.entity,
         name="process_manager",
     )
