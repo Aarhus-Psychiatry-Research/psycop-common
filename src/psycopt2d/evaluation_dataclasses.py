@@ -52,6 +52,7 @@ class PipeMetadata(BaseModel):
     """
 
     feature_importances: Optional[dict[str, float]] = None
+    selected_features: Optional[dict[str, bool]] = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

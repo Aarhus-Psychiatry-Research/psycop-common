@@ -320,6 +320,25 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
         return None
 
 
+def get_selected_features_dict(pipe: Pipeline, train_col_names: list[str]) -> Union[None, dict[str, bool]]:
+    """Checks whether the model has performed feature selection and returns the results as a dictionary. Return None if not.
+
+    Args:
+        pipe (Pipeline): Sklearn pipeline.
+        train_col_names (list[str]): List of column names in the training set.
+
+    Returns:
+        Union[None, dict[str, bool]]: Dictionary of selected features.
+    """
+    if hasattr(pipe["preprocessing"].named_steps, "feature_selection"):
+        is_selected = [int(i) for i in pipe["preprocessing"]["feature_selection"].get_support()]
+        return dict(
+            zip(train_col_names, is_selected),
+        )
+    else:
+        return None
+
+
 def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
     """Write EvalDataset to disk.
 
