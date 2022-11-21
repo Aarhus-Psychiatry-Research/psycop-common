@@ -424,13 +424,17 @@ class DataLoader:
         preds = dataset[infer_predictor_col_name(df=dataset)]
 
         # Get all columns with negative values
-        cols_with_negative = preds.columns[(preds < 0).any()].tolist()
+        cols_with_numerical_values = preds.select_dtypes(include=["number"]).columns
 
-        df_to_replace = dataset[cols_with_negative]
+        numerical_columns_with_negative_values = [
+            c for c in cols_with_numerical_values if preds[c].min() < 0
+        ]
+
+        df_to_replace = dataset[numerical_columns_with_negative_values]
 
         # Convert to NaN
         df_to_replace[df_to_replace < 0] = np.nan
-        dataset[cols_with_negative] = df_to_replace
+        dataset[numerical_columns_with_negative_values] = df_to_replace
 
         return dataset
 
