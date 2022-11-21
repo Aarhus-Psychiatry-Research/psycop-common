@@ -2,6 +2,61 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.1 (2022-11-21)
+### Fix
+* Update integration testing readme instruction ([`c4d54c3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c4d54c32bfb39096e5ae82ee60b8bef9815043f2))
+* Naming and logging of eval_dataset.parquet to disk ([`052c9f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/052c9f06d37b77b5c135ec447bd4926304b99a47))
+
+## v0.19.0 (2022-11-14)
+### Feature
+* Add month of year ([`826961c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/826961cda1217322714d3b6ec29db1df3f0fc9c0))
+* Performance by cyclic time ([`348e2f8`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/348e2f863cb09d6962b0d9423b383b4542066c3f))
+
+### Fix
+* Review comments ([`447cfb9`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/447cfb947a5a55759e63df70ae5718a37120694c))
+* Parameterise tests ([`bf37a95`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/bf37a95f82ef411bdd1920bf5b44d8a2882cbd53))
+* Add plots to applicatrion ([`a2edd96`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a2edd9658b2a03cac2dca114bdbaeb2eea4f8fdd))
+
+## v0.18.0 (2022-11-14)
+### Feature
+* Feature sel for NAs and negative values ([`9391f41`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9391f417d67cb3cafdd928b06999d1c29fdce914))
+
+### Fix
+* Add documentation to cfg file ([`0976ee1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0976ee1fbcdd66ecdf1ea91834e4cbd61024e8e1))
+
+## v0.17.0 (2022-11-14)
+### Feature
+* Adjustments to eval ([`81c0f93`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/81c0f9314c839485b847dfbeaad50210c02f307e))
+
+### Fix
+* Smaller xticks fontsize ([`2a00325`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/2a003251bbb7df70a7d3cba8e95b30c89e272019))
+* Review comments ([`f5e5a42`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f5e5a4250ddbf894a66d26306727844e8e748c18))
+* Remove unused arg ([`a60659f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/a60659fc2b229ab79e494a8b9492523bce74e571))
+* Remove unused args ([`51e6b74`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/51e6b74241f6c72d71c1b5ef8b51c79d0d3c94b6))
+* Keep two decimals on heatmap annotations ([`cd498e3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cd498e33fc464d9ce2eb82d6e9a00da6290f0691))
+* Remove automatic bin trimming, not needed ([`beae28b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/beae28ba9e05f9aaafd27fe8be2679ea989801fb))
+
+## v0.16.0 (2022-11-11)
+### Feature
+* Add auc roc plot to evaluat_model ([`b1fff1b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b1fff1bd1e79d4b8e3085270f819cb78f38c4615))
+* ROC-AUC for eval ([`4bb748e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4bb748ea932e1c1e3a3abd105e5d49f1292a3bbe))
+
+### Fix
+* Remove plt.show ([`f50aa1d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/f50aa1d1220812306e849bb71bae4a5193014ab4))
+* Unused argument ([`e2adf61`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/e2adf617db649fbdc2180749fd75cbda1db8ba06))
+
+## v0.15.0 (2022-11-01)
+### Feature
+* Add min_age ([`3ebd3fe`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3ebd3fec7cc5c2da54b9de8ebb0dcf7be9fa54cb))
+* Add exclusion timestamps to dataset processing ([`cbc34a6`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/cbc34a68eee6e0916a997f0b171e3b1943e8454d))
+
+### Fix
+* Old dw_ek_borger ([`0a7a23d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0a7a23d011edcfa7921c7da79b2a350e476786cf))
+
+### Documentation
+* Linting ([`d349339`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d3493391341ec2d8e9bc64f97ff942b9d69dcc68))
+* Improve config docs ([`4d77b2f`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4d77b2f143fbfaebdc5c2ac9fd02f862333f0efd))
+
 ## v0.14.0 (2022-10-28)
 ### Feature
 * Generalise performance by input while retaining evaldataset ([`9d0a583`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9d0a5832ab83a8296c3911dfae6d63d85c3e43b6))
