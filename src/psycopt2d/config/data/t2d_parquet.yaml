@@ -18,7 +18,7 @@ data:
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: _timestamp_first_t2d_hba1c
+    outcome_timestamp: _t2d
     id: dw_ek_borger
     age: pred_age_in_years
     exclusion_timestamp: _timestamp_exclusion
