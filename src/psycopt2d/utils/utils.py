@@ -327,7 +327,7 @@ def get_selected_features_dict(
         train_col_names (list[str]): List of column names in the training set.
 
     Returns:
-        Union[None, dict[str, bool]]: Dictionary of selected features.
+        Union[None, dict[str, int]]: Dictionary of selected features. 0 if not selected, 1 if selected.
     """
     is_selected = [
         int(i) for i in pipe["preprocessing"]["feature_selection"].get_support()
