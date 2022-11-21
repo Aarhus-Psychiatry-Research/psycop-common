@@ -83,6 +83,7 @@ class ProjectSchema(BaseModel):
     name: str = "psycopt2d"
     seed: int
     watcher: WatcherSchema
+    gpu: bool
 
 
 class CustomColNames(BaseModel):
@@ -256,7 +257,7 @@ def load_cfg_as_omegaconf(
         # correctly working
         cfg: FullConfigSchema = cfg  # type: ignore
 
-        gpu = True
+        gpu = cfg.project.gpu
 
         if not gpu and cfg.model.name == "xgboost":
             cfg.model.args["tree_method"] = "auto"
