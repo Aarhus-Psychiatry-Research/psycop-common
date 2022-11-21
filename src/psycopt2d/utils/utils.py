@@ -365,7 +365,7 @@ def eval_ds_cfg_pipe_to_disk(
     timestamp = time.strftime("%Y_%m_%d_%H_%M")
 
     if run and run.id:
-        run_descriptor = f"{timestamp}_{run.id}"
+        run_descriptor = f"{timestamp}_{run.name}"
     else:
         run_descriptor = f"{timestamp}_{model_args}"[:100]
 
