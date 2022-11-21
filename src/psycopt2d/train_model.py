@@ -82,35 +82,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     # Feature selection
     # Important to do this before scaling, since chi2
     # requires non-negative values
-    if cfg.preprocessing.feature_selection.name:
-        if cfg.preprocessing.feature_selection.name == "f_classif":
-            steps.append(
-                (
-                    "feature_selection",
-                    SelectPercentile(
-                        f_classif,
-                        percentile=cfg.preprocessing.feature_selection.params[
-                            "percentile"
-                        ],
-                    ),
-                ),
-            )
-        elif cfg.preprocessing.feature_selection.name == "chi2":
-            steps.append(
-                (
-                    "feature_selection",
-                    SelectPercentile(
-                        chi2,
-                        percentile=cfg.preprocessing.feature_selection.params[
-                            "percentile"
-                        ],
-                    ),
-                ),
-            )
-        else:
-            raise ValueError(
-                f"Unknown feature selection method {cfg.preprocessing.feature_selection.name}",
-            )
+    steps += get_feature_selection_steps(cfg)
 
     # Feature scaling
     # Important to do this after feature selection, since
@@ -130,6 +102,43 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             )
 
     return Pipeline(steps)
+
+
+def get_feature_selection_steps(cfg):
+    """Add feature selection steps to the preprocessing pipeline."""
+    new_steps = []
+
+    if cfg.preprocessing.feature_selection.name:
+        if cfg.preprocessing.feature_selection.name == "f_classif":
+            new_steps.append(
+                (
+                    "feature_selection",
+                    SelectPercentile(
+                        f_classif,
+                        percentile=cfg.preprocessing.feature_selection.params[
+                            "percentile"
+                        ],
+                    ),
+                ),
+            )
+        elif cfg.preprocessing.feature_selection.name == "chi2":
+            new_steps.append(
+                (
+                    "feature_selection",
+                    SelectPercentile(
+                        chi2,
+                        percentile=cfg.preprocessing.feature_selection.params[
+                            "percentile"
+                        ],
+                    ),
+                ),
+            )
+        else:
+            raise ValueError(
+                f"Unknown feature selection method {cfg.preprocessing.feature_selection.name}",
+            )
+
+    return new_steps
 
 
 def create_model(cfg: FullConfigSchema):
