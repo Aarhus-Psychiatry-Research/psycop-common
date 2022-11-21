@@ -155,15 +155,19 @@ class PreprocessingConfigSchema(BaseModel):
     convert_booleans_to_int: bool
     # Whether to convert columns containing booleans to int
 
-    convert_datetimes_to_ordinal: Literal["ordinal", "None"]
+    drop_datetime_predictor_columns: bool
+    # Whether to drop datetime columns prefixed with data.pred_prefix.
+    # Typically, we don't want to use these as features, since they are unlikely to generalise into the future.
+
+    convert_datetimes_to_ordinal: bool
     # Whether to convert datetimes to ordinal.
 
     imputation_method: Optional[str]
     # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
     # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
 
-    transform: Optional[str]
-    # Transformation applied to all predictors after imputation. Options include "z-score-normalization"
+    scaling: Optional[str]
+    # Scaling applied to all predictors after imputation. Options include "z-score-normalization".
 
     feature_selection: FeatureSelectionSchema
 

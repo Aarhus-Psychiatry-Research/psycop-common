@@ -23,6 +23,7 @@ from psycopt2d.evaluation_dataclasses import EvalDataset, PipeMetadata
 # from psycopt2d.evaluation import evaluate_model
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
+from psycopt2d.preprocessing.feature_selectors import DropDateTimeColumns
 from psycopt2d.preprocessing.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
@@ -48,12 +49,17 @@ os.environ["WANDB_START_METHOD"] = "thread"
 def create_preprocessing_pipeline(cfg: FullConfigSchema):
     """Create preprocessing pipeline based on config."""
     steps = []
-
     # Conversion
-    if cfg.preprocessing.convert_datetimes_to_ordinal:
-        dtconverter = DateTimeConverter(
-            convert_to=cfg.preprocessing.convert_datetimes_to_ordinal,
+    if cfg.preprocessing.drop_datetime_predictor_columns:
+        steps.append(
+            (
+                "DropDateTimeColumns",
+                DropDateTimeColumns(pred_prefix=cfg.data.pred_prefix),
+            )
         )
+
+    if cfg.preprocessing.convert_datetimes_to_ordinal:
+        dtconverter = DateTimeConverter()
         steps.append(("DateTimeConverter", dtconverter))
 
     if cfg.preprocessing.convert_to_boolean:
@@ -110,8 +116,8 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     # Important to do this after feature selection, since
     # half of the values in z-score normalisation will be negative,
     # which is not allowed for chi2
-    if cfg.preprocessing.transform:
-        if cfg.preprocessing.transform in {
+    if cfg.preprocessing.scaling:
+        if cfg.preprocessing.scaling in {
             "z-score-normalization",
             "z-score-normalisation",
         }:
@@ -120,7 +126,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             )
         else:
             raise ValueError(
-                f"{cfg.preprocessing.transform} is not implemented. See above",
+                f"{cfg.preprocessing.scaling} is not implemented. See above",
             )
 
     return Pipeline(steps)
