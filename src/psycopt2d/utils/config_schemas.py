@@ -252,8 +252,6 @@ def load_cfg_as_omegaconf(
         # correctly working
         cfg: FullConfigSchema = cfg  # type: ignore
 
-        import torch
-
         gpu = True
 
         if not gpu and cfg.model.name == "xgboost":

@@ -8,7 +8,6 @@ Usage:
 import random
 import subprocess
 import time
-from distutils.command.config import config
 
 import pandas as pd
 from wasabi import Printer

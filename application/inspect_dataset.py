@@ -12,8 +12,6 @@ def main():
 
     df_filtered = load_train_from_cfg(cfg=cfg)  # noqa pylint: disable=unused-variable
 
-    pass
-
 
 if __name__ == "__main__":
     main()

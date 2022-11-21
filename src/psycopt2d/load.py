@@ -193,7 +193,7 @@ class DataLoader:
             )
         else:
             msg.info(
-                f"No rows met exclusion criteria before {self.cfg.data.drop_patient_if_exclusion_before_date}. Didn't drop any."
+                f"No rows met exclusion criteria before {self.cfg.data.drop_patient_if_exclusion_before_date}. Didn't drop any.",
             )
 
         return dataset
@@ -448,7 +448,7 @@ class DataLoader:
         # Super hacky rename, needs to be removed before merging. Figure out how to add eval columns when creating the dataset.
         dataset = dataset.rename(
             {
-                "pred_hba1c_within_9999_days_count_fallback_nan": self.cfg.data.col_name.custom.n_hba1c
+                "pred_hba1c_within_9999_days_count_fallback_nan": self.cfg.data.col_name.custom.n_hba1c,
             },
             axis=1,
         )

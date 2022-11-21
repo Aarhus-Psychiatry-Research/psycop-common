@@ -96,7 +96,8 @@ def test_plot_performance_by_n_hba1c(synth_eval_dataset: EvalDataset):
 
 def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
     plot_performance_by_age(
-        eval_dataset=synth_eval_dataset, save_path=PROJECT_ROOT / "test.png"
+        eval_dataset=synth_eval_dataset,
+        save_path=PROJECT_ROOT / "test.png",
     )
 
 
