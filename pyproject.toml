@@ -81,6 +81,10 @@ extension-pkg-whitelist = "pydantic"
 markers = [
     "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds.",
 ]
+pythonpath = [
+  "."
+]
+
 
 [tool.isort]
 known_third_party = ["wandb"]

@@ -3,7 +3,30 @@
 
 import numpy as np
 import pandas as pd
-from utils_for_testing import str_to_df
+
+
+def str_to_df(string, convert_timestamp_to_datetime: bool = True) -> pd.DataFrame:
+    """Convert a string to a dataframe.
+
+    Args:
+        string (str): String to convert to a dataframe. String should be a csv.
+        convert_timestamp_to_datetime (bool, optional): Whether to convert
+            timestamp columns to datetime. Defaults to True.
+
+    Returns:
+        pd.DataFrame: The dataframe
+    """
+
+    from io import StringIO
+
+    df = pd.read_table(StringIO(string), sep=",", index_col=False)
+
+    if convert_timestamp_to_datetime:
+        df = convert_cols_with_matching_colnames_to_datetime(df, "timestamp")
+
+    # Drop "Unnamed" cols
+    return df.loc[:, ~df.columns.str.contains("^Unnamed")]
+
 
 from psycopt2d.utils.utils import (
     drop_records_if_datediff_days_smaller_than,
