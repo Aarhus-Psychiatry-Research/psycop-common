@@ -48,7 +48,8 @@ class ArtifactContainer(BaseModel):
 class PipeMetadata(BaseModel):
     """Metadata for a pipe.
 
-    Currently only has feature_importances and selected_features, but makes it easy to add more.
+    Currently only has feature_importances and selected_features, but
+    makes it easy to add more.
     """
 
     feature_importances: Optional[dict[str, float]] = None
