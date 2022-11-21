@@ -138,10 +138,7 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
     # Threshold = 0.5
     val = days_from_first_positive_to_diagnosis(
-        ids=synth_eval_dataset.ids,
-        pred_probs=synth_eval_dataset.y_hat_probs,
-        pred_timestamps=synth_eval_dataset.pred_timestamps,
-        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
+        eval_dataset=synth_eval_dataset,
         positive_rate_threshold=0.5,
     )
 
@@ -149,10 +146,7 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
 
     # Threshold = 0.2
     val = days_from_first_positive_to_diagnosis(
-        ids=synth_eval_dataset.ids,
-        pred_probs=synth_eval_dataset.y_hat_probs,
-        pred_timestamps=synth_eval_dataset.pred_timestamps,
-        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
+        eval_dataset=synth_eval_dataset,
         positive_rate_threshold=0.2,
     )
 
