@@ -18,9 +18,11 @@ class DropDateTimeColumns(BaseEstimator, TransformerMixin):
         self.pred_prefix = pred_prefix
 
     def fit(self, _, y=None):  # pylint: disable=unused-argument
+        """Fit the transformer."""
         return self
 
     def transform(self, X, y=None):  # pylint: disable=unused-argument
+        """Transform the data."""
         columns_to_drop = [c for c in X.columns if X[c].dtype in self.drop_dypes]
         columns_to_drop = [c for c in columns_to_drop if c.startswith(self.pred_prefix)]
 

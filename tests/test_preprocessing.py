@@ -1,3 +1,4 @@
+"""Test custom preprocessing steps."""
 from psycopt2d.load import load_train_from_cfg
 from psycopt2d.train_model import create_preprocessing_pipeline
 from psycopt2d.utils.config_schemas import FullConfigSchema
