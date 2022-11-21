@@ -10,7 +10,7 @@ from sklearn.metrics import confusion_matrix
 from psycopt2d.evaluation_dataclasses import EvalDataset
 
 
-def _get_true_positives(
+def get_true_positives(
     eval_dataset: EvalDataset,
     positive_rate_threshold: Optional[float] = 0.5,
 ):
@@ -125,7 +125,7 @@ def days_from_first_positive_to_diagnosis(
         float: Total number of days from first positive prediction to outcome.
     """
     # Generate df with only true positives
-    df = _get_true_positives(
+    df = get_true_positives(
         eval_dataset=eval_dataset,
         positive_rate_threshold=positive_rate_threshold,
     )
@@ -174,7 +174,7 @@ def prop_with_at_least_one_true_positve(
         float: Proportion of thresholds with at least one true positive.
     """
     # Generate df with only true positives
-    df = _get_true_positives(
+    df = get_true_positives(
         eval_dataset=eval_dataset,
         positive_rate_threshold=positive_rate_threshold,
     )
