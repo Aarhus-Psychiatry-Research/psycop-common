@@ -4,6 +4,11 @@
 import numpy as np
 import pandas as pd
 
+from psycopt2d.utils.utils import (
+    drop_records_if_datediff_days_smaller_than,
+    flatten_nested_dict,
+)
+
 
 def convert_cols_with_matching_colnames_to_datetime(
     df: pd.DataFrame,
@@ -47,12 +52,6 @@ def str_to_df(string, convert_timestamp_to_datetime: bool = True) -> pd.DataFram
 
     # Drop "Unnamed" cols
     return df.loc[:, ~df.columns.str.contains("^Unnamed")]
-
-
-from psycopt2d.utils.utils import (
-    drop_records_if_datediff_days_smaller_than,
-    flatten_nested_dict,
-)
 
 
 def test_drop_records_if_datediff_days_smaller_than():
