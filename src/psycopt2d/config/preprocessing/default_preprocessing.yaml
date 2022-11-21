@@ -2,9 +2,10 @@
 preprocessing:
   convert_to_boolean: false
   convert_booleans_to_int: true
-  convert_datetimes_to_ordinal: ordinal
+  drop_datetime_predictor_columns: true
+  convert_datetimes_to_ordinal: false
   imputation_method: most_frequent
-  transform: z-score-normalisation
+  scaling: z-score-normalisation
   feature_selection:
     name: chi2
     params:
