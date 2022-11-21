@@ -1,5 +1,5 @@
 """Get performance by which threshold is used to classify positive."""
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from typing import Optional, Union
 
 import numpy as np
@@ -21,7 +21,8 @@ def _get_true_positives(
         positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
 
     Returns:
-        pd.DataFrame: Dataframe containing only true positives."""
+        pd.DataFrame: Dataframe containing only true positives.
+    """
 
     # Generate df
     df = pd.DataFrame(
