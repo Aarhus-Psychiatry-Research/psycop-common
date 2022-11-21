@@ -321,7 +321,8 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
 
 
 def get_selected_features_dict(
-    pipe: Pipeline, train_col_names: list[str]
+    pipe: Pipeline,
+    train_col_names: list[str],
 ) -> Union[None, dict[str, bool]]:
     """Checks whether the model has performed feature selection and returns the
     results as a dictionary. Return None if not.

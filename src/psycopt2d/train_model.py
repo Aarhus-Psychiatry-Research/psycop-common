@@ -435,7 +435,8 @@ def main(cfg: DictConfig):
         pipe_metadata.feature_importances = get_feature_importance_dict(pipe=pipe)
     if hasattr(pipe["preprocessing"].named_steps, "feature_selection"):
         pipe_metadata.selected_features = get_selected_features_dict(
-            pipe=pipe, train_col_names=train_col_names
+            pipe=pipe,
+            train_col_names=train_col_names,
         )
 
     # Save model predictions, feature importance, and config to disk
