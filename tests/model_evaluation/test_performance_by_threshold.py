@@ -38,38 +38,107 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
 
     expected_df = pd.DataFrame(
         {
-            "threshold_percentile": {0: 90.0, 1: 50.0, 2: 10.0},
-            "true_prevalence": {0: 0.0502, 1: 0.0502, 2: 0.0502},
-            "positive_rate": {0: 0.1, 1: 0.5, 2: 0.5511},
-            "negative_rate": {0: 0.9, 1: 0.5, 2: 0.4489},
-            "PPV": {0: 0.0508, 1: 0.0502, 2: 0.0502},
-            "NPV": {0: 0.9498, 1: 0.9497, 2: 0.9497},
-            "sensitivity": {0: 0.1011, 1: 0.4997, 2: 0.5503},
-            "specificity": {0: 0.9001, 1: 0.5, 2: 0.4488},
-            "FPR": {0: 0.0999, 1: 0.5, 2: 0.5512},
-            "FNR": {0: 0.8989, 1: 0.5003, 2: 0.4497},
-            "accuracy": {0: 0.8599, 1: 0.5, 2: 0.4539},
-            "true_positives": {0: 508, 1: 2510, 2: 2764},
-            "true_negatives": {0: 85485, 1: 47487, 2: 42627},
-            "false_positives": {0: 9492, 1: 47490, 2: 52350},
-            "false_negatives": {0: 4515, 1: 2513, 2: 2259},
-            "total_warning_days": {0: 609757.0, 1: 2619787.0, 2: 4612729.0},
-            "warning_days_per_false_positive": {0: 64.2, 1: 55.2, 2: 88.1},
-            "mean_warning_days": {0: 1252, 1: 1332, 2: 1451},
+            "true_prevalence": [
+                0.0502,
+                0.0502,
+                0.0502,
+            ],
+            "positive_rate": [
+                0.5511,
+                0.5,
+                0.1,
+            ],
+            "negative_rate": [
+                0.4489,
+                0.5,
+                0.9,
+            ],
+            "PPV": [
+                0.0502,
+                0.0502,
+                0.0508,
+            ],
+            "NPV": [
+                0.9497,
+                0.9497,
+                0.9498,
+            ],
+            "sensitivity": [
+                0.5503,
+                0.4997,
+                0.1011,
+            ],
+            "specificity": [
+                0.4488,
+                0.5,
+                0.9001,
+            ],
+            "FPR": [
+                0.5512,
+                0.5,
+                0.0999,
+            ],
+            "FNR": [
+                0.4497,
+                0.5003,
+                0.8989,
+            ],
+            "accuracy": [
+                0.4539,
+                0.5,
+                0.8599,
+            ],
+            "true_positives": [
+                2764,
+                2510,
+                508,
+            ],
+            "true_negatives": [
+                42627,
+                47487,
+                85485,
+            ],
+            "false_positives": [
+                52350,
+                47490,
+                9492,
+            ],
+            "false_negatives": [
+                2259,
+                2513,
+                4515,
+            ],
+            "total_warning_days": [
+                4612729.0,
+                2619787.0,
+                609757.0,
+            ],
+            "warning_days_per_false_positive": [
+                88.1,
+                55.2,
+                64.2,
+            ],
+            "mean_warning_days": [
+                1451.0,
+                1332.0,
+                1252.0,
+            ],
+            "prop_with_at_least_one_true_positive": [
+                0.0503,
+                0.0311,
+                0.0077,
+            ],
         },
     )
 
     for col in output_table.columns:
-        output_table[col].equals(expected_df[col])
+        assert output_table[col].equals(expected_df[col])
 
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
     # Threshold = 0.5
     val = days_from_first_positive_to_diagnosis(
-        ids=synth_eval_dataset.ids,
-        pred_probs=synth_eval_dataset.y_hat_probs,
-        pred_timestamps=synth_eval_dataset.pred_timestamps,
-        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
+        eval_dataset=synth_eval_dataset,
         positive_rate_threshold=0.5,
     )
 
@@ -77,10 +146,7 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
 
     # Threshold = 0.2
     val = days_from_first_positive_to_diagnosis(
-        ids=synth_eval_dataset.ids,
-        pred_probs=synth_eval_dataset.y_hat_probs,
-        pred_timestamps=synth_eval_dataset.pred_timestamps,
-        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
+        eval_dataset=synth_eval_dataset,
         positive_rate_threshold=0.2,
     )
 
