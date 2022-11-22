@@ -22,17 +22,6 @@ def test_main(model_name):
     main(cfg)
 
 
-def test_current_config_with_synth_dataset():
-    """Test main using a variety of model."""
-
-    cfg: FullConfigSchema = load_cfg_as_omegaconf(
-        config_file_name="default_config.yaml",
-        overrides=["data=synth_data"],
-    )
-
-    main(cfg)
-
-
 @pytest.mark.pre_push_test
 def test_integration_test(muteable_test_config: FullConfigSchema):
     """Test main using the logistic model.
