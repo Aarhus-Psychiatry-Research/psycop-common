@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.0 (2022-11-22)
+### Feature
+* Performance by citizen ID ([`9a2031a`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9a2031a60ae7e494bb2270e835d13bd4453e7e99))
+
+### Fix
+* Tests ([`7dfc2b1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/7dfc2b12b58a113c2f10707801813aa7c85d49c7))
+* Wrong argument passed ([`de58ac6`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/de58ac6396b31ee06ac11fbc5ed31dbcb1537da5))
+* Test works ([`d8233dd`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d8233dd22dab63e4ef571ee183f623c61ed7195b))
+* Create test ([`729bf81`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/729bf81f661f96eee8b2c2e58e9d586ddd3b5745))
+
 ## v0.19.1 (2022-11-21)
 ### Fix
 * Update integration testing readme instruction ([`c4d54c3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c4d54c32bfb39096e5ae82ee60b8bef9815043f2))
