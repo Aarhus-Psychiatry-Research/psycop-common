@@ -8,7 +8,6 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from diskcache import Cache
 from psycopmlutils.sql.loader import sql_load
 from pydantic import BaseModel
 from wasabi import Printer
@@ -18,7 +17,6 @@ from psycopt2d.utils.config_schemas import FullConfigSchema
 from psycopt2d.utils.pd_cache_decorator import cache_pandas_result
 from psycopt2d.utils.utils import (
     FEATURE_SETS_PATH,
-    PROJECT_ROOT,
     get_percent_lost,
     infer_outcome_col_name,
     infer_predictor_col_name,
