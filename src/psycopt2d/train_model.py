@@ -1,5 +1,6 @@
 """Training script for training a single model for predicting t2d."""
 import os
+import time
 from collections.abc import Iterable
 from typing import Any, Optional
 
@@ -28,6 +29,7 @@ from psycopt2d.evaluation_dataclasses import EvalDataset, PipeMetadata
 # from psycopt2d.evaluation import evaluate_model
 from psycopt2d.load import load_train_and_val_from_cfg
 from psycopt2d.models import MODELS
+from psycopt2d.preprocessing.feature_selectors import DropDateTimeColumns
 from psycopt2d.preprocessing.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
@@ -50,49 +52,73 @@ CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
 os.environ["WANDB_START_METHOD"] = "thread"
 
 
+def get_feature_selection_steps(cfg):
+    """Add feature selection steps to the preprocessing pipeline."""
+    new_steps = []
+
+    if cfg.preprocessing.feature_selection.name:
+        if cfg.preprocessing.feature_selection.name == "f_classif":
+            new_steps.append(
+                (
+                    "feature_selection",
+                    SelectPercentile(
+                        f_classif,
+                        percentile=cfg.preprocessing.feature_selection.params[
+                            "percentile"
+                        ],
+                    ),
+                ),
+            )
+        elif cfg.preprocessing.feature_selection.name == "chi2":
+            new_steps.append(
+                (
+                    "feature_selection",
+                    SelectPercentile(
+                        chi2,
+                        percentile=cfg.preprocessing.feature_selection.params[
+                            "percentile"
+                        ],
+                    ),
+                ),
+            )
+        else:
+            raise ValueError(
+                f"Unknown feature selection method {cfg.preprocessing.feature_selection.name}",
+            )
+
+    return new_steps
+
+
 def create_preprocessing_pipeline(cfg: FullConfigSchema):
     """Create preprocessing pipeline based on config."""
     steps = []
+    # Conversion
+    if cfg.preprocessing.drop_datetime_predictor_columns:
+        steps.append(
+            (
+                "DropDateTimeColumns",
+                DropDateTimeColumns(pred_prefix=cfg.data.pred_prefix),
+            ),
+        )
 
     if cfg.preprocessing.convert_datetimes_to_ordinal:
-        dtconverter = DateTimeConverter(
-            convert_to=cfg.preprocessing.convert_datetimes_to_ordinal,
-        )
+        dtconverter = DateTimeConverter()
         steps.append(("DateTimeConverter", dtconverter))
 
     if cfg.preprocessing.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
-    if cfg.model.require_imputation:
-        steps.append(
-            ("Imputation", SimpleImputer(strategy=cfg.preprocessing.imputation_method)),
-        )
-    if cfg.preprocessing.transform in {
-        "z-score-normalization",
-        "z-score-normalisation",
-    }:
-        steps.append(
-            ("z-score-normalization", StandardScaler()),
+    # Imputation
+    if cfg.model.require_imputation and not cfg.preprocessing.imputation_method:
+        raise ValueError(
+            f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file.",
         )
 
-    if cfg.preprocessing.feature_selection.name == "f_classif":
+    if cfg.preprocessing.imputation_method:
         steps.append(
             (
-                "feature_selection",
-                SelectPercentile(
-                    f_classif,
-                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
-                ),
-            ),
-        )
-    if cfg.preprocessing.feature_selection.name == "chi2":
-        steps.append(
-            (
-                "feature_selection",
-                SelectPercentile(
-                    chi2,
-                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
-                ),
+                "Imputation",
+                SimpleImputer(strategy=cfg.preprocessing.imputation_method),
             ),
         )
     if cfg.preprocessing.feature_selection.name == "mutual_info_classif":
@@ -105,6 +131,28 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
                 ),
             ),
         )
+
+    # Feature selection
+    # Important to do this before scaling, since chi2
+    # requires non-negative values
+    steps += get_feature_selection_steps(cfg)
+
+    # Feature scaling
+    # Important to do this after feature selection, since
+    # half of the values in z-score normalisation will be negative,
+    # which is not allowed for chi2
+    if cfg.preprocessing.scaling:
+        if cfg.preprocessing.scaling in {
+            "z-score-normalization",
+            "z-score-normalisation",
+        }:
+            steps.append(
+                ("z-score-normalization", StandardScaler()),
+            )
+        else:
+            raise ValueError(
+                f"{cfg.preprocessing.scaling} is not implemented. See above",
+            )
 
     return Pipeline(steps)
 
@@ -138,6 +186,8 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
 
     # Create folds
     msg.info("Creating folds")
+    msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
+
     folds = StratifiedGroupKFold(n_splits=n_splits).split(
         X=X,
         y=y,
@@ -358,9 +408,18 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
         train_col_names: Names of the columns to use for training
     """
 
-    outcome_col_name = (  # pylint: disable=invalid-name
-        f"outc_dichotomous_t2d_within_{cfg.data.min_lookahead_days}_days_max_fallback_0"
-    )
+    potential_outcome_col_names = [
+        c
+        for c in train.columns
+        if cfg.data.outc_prefix in c and str(cfg.data.min_lookahead_days) in c
+    ]
+
+    if len(potential_outcome_col_names) != 1:
+        raise ValueError(
+            "More than one outcome column found. Please make outcome column names unambiguous.",
+        )
+
+    outcome_col_name = potential_outcome_col_names[0]
 
     train_col_names = [  # pylint: disable=invalid-name
         c for c in train.columns if c.startswith(cfg.data.pred_prefix)
@@ -404,6 +463,13 @@ def main(cfg: DictConfig):
 
     if run is None:
         raise ValueError("Failed to initialise Wandb")
+
+    # Add random delay based on cfg.train.random_delay_per_job to avoid
+    # each job needing the same resources (GPU, disk, network) at the same time
+    if cfg.train.random_delay_per_job_seconds:
+        delay = np.random.randint(0, cfg.train.random_delay_per_job_seconds)
+        msg.info(f"Delaying job by {delay} seconds to avoid resource competition")
+        time.sleep(delay)
 
     dataset = load_train_and_val_from_cfg(cfg)
 

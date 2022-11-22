@@ -1,14 +1,28 @@
 """Define fixtures for tests."""
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
-from utils_for_testing import add_age_gender
 
 from psycopt2d.evaluation_dataclasses import EvalDataset
 from psycopt2d.utils.config_schemas import FullConfigSchema, load_cfg_as_pydantic
 
 CONFIG_DIR_PATH_REL = "../src/psycopt2d/config"
+
+
+def add_age_gender(df):
+    """Add age and gender columns to dataframe.
+
+    Args:
+        df (pd.DataFrame): The dataframe to add age
+    """
+
+    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
+    ids["age"] = np.random.randint(17, 95, len(ids))
+    ids["gender"] = np.where(ids["dw_ek_borger"] > 30_000, "F", "M")
+
+    return df.merge(ids)
 
 
 @pytest.fixture(scope="function")

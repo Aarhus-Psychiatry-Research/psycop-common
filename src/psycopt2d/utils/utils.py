@@ -467,7 +467,7 @@ def infer_predictor_col_name(
     df: pd.DataFrame,
     prefix: str = "pred_",
     allow_multiple: bool = True,
-) -> Union[str, list[str]]:
+) -> list[str]:
     """Get the predictors that are used in the model."""
     return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
 

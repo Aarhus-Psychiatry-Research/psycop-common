@@ -1,6 +1,5 @@
 name: psycop-t2d
 seed: 42
-gpu: true
 
 wandb:
   entity: psycop # Which entity to run WanDB in.
@@ -12,3 +11,5 @@ watcher:
   keep_alive_after_training_minutes: 5
   n_runs_before_eval: 1
   verbose: true
+
+gpu: true

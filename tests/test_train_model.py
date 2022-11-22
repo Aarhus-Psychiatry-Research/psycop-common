@@ -24,7 +24,7 @@ def test_main(model_name):
 
 @pytest.mark.pre_push_test
 def test_integration_test(muteable_test_config: FullConfigSchema):
-    """test main using the logistic model.
+    """Test main using the logistic model.
 
     Used for quickly testing functions before a push.
     """

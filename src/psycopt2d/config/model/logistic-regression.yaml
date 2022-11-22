@@ -22,4 +22,4 @@ hydra:
       ++model.args.C: interval(1e-8, 1.0)
       ++model.args.l1_ratio: interval(1e-8, 1.0)
       # preprocessing
-      ++preprocessing.transform: choice(null, "z-score-normalization")
+      ++preprocessing.scaling: choice(null, "z-score-normalization")

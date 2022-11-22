@@ -8,9 +8,8 @@ it makes them:
 """
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
-import torch
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 from pydantic import BaseModel as PydanticBaseModel
@@ -28,6 +27,16 @@ class BaseModel(PydanticBaseModel):
         arbitrary_types_allowed = True
         extra = Extra.forbid
 
+    def __transform_attributes_with_str_to_object(
+        self,
+        output_object: Any,
+        input_string: str = "str",
+    ):
+        for key, value in self.__dict__.items():
+            if isinstance(value, str):
+                if value.lower() == input_string.lower():
+                    self.__dict__[key] = output_object
+
     def __init__(
         self,
         allow_mutation: bool = False,
@@ -35,6 +44,19 @@ class BaseModel(PydanticBaseModel):
     ):
         super().__init__(**kwargs)
         self.Config.allow_mutation = allow_mutation
+
+        self.__transform_attributes_with_str_to_object(
+            input_string="null",
+            output_object=None,
+        )
+        self.__transform_attributes_with_str_to_object(
+            input_string="false",
+            output_object=False,
+        )
+        self.__transform_attributes_with_str_to_object(
+            input_string="true",
+            output_object=True,
+        )
 
 
 class WandbSchema(BaseModel):
@@ -98,6 +120,7 @@ class DataSchema(BaseModel):
     col_name: ColumnNamesSchema
 
     pred_prefix: str  # prefix of predictor columns
+    outc_prefix: str  # prefix of outcome columns
 
     min_age: Union[int, float]  # Minimum age to include in the dataset
 
@@ -111,9 +134,6 @@ class DataSchema(BaseModel):
     min_prediction_time_date: Optional[Union[str, datetime]]
     # Drop all prediction times before this date.
 
-    min_lookbehind_days: int
-    # Drop all prediction times where (prediction_timestamp) - (min timestamp in the dataset) is less than min_lookbehind_days
-
     lookbehind_combination: Optional[list[int]]
     # Which combination of features to use. Only uses features that have "within_X_days" in their column name, where X is any of the numbers in this list.
 
@@ -121,10 +141,10 @@ class DataSchema(BaseModel):
 class FeatureSelectionSchema(BaseModel):
     """Configuration for feature selection methods."""
 
-    name: Optional[str]
+    name: Optional[str] = None
     # Which feature selection method to use.
 
-    params: Optional[dict]
+    params: Optional[dict] = None
     # Parameters for the feature selection method.
 
 
@@ -134,14 +154,22 @@ class PreprocessingConfigSchema(BaseModel):
     convert_to_boolean: bool
     # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivty test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
 
+    convert_booleans_to_int: bool
+    # Whether to convert columns containing booleans to int
+
+    drop_datetime_predictor_columns: bool
+    # Whether to drop datetime columns prefixed with data.pred_prefix.
+    # Typically, we don't want to use these as features, since they are unlikely to generalise into the future.
+
     convert_datetimes_to_ordinal: bool
     # Whether to convert datetimes to ordinal.
 
     imputation_method: Optional[str]
-    # How to replace missing values. Currently implemented are "most frequent".
+    # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
+    # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
 
-    transform: Optional[str]
-    # Transformation applied to all predictors after imputation. Options include "z-score-normalization"
+    scaling: Optional[str]
+    # Scaling applied to all predictors after imputation. Options include "z-score-normalization".
 
     feature_selection: FeatureSelectionSchema
 
@@ -158,9 +186,13 @@ class TrainConfSchema(BaseModel):
     """Training configuration."""
 
     n_splits: int  # ? How do we handle whether to use crossvalidation or train/val splitting?
-    n_trials_per_lookdirection_combination: int
-    n_active_trainers: int  # Number of subprocesses to spawn when training
-    gpu: bool
+    n_trials_per_lookahead: int
+    n_active_trainers: int  # Number of lookahead windows to train for at once
+    n_jobs_per_trainer: int  # Number of jobs to run in parallel for each lookahead window
+    random_delay_per_job_seconds: Optional[
+        int
+    ] = None  # Add random delay based on cfg.train.random_delay_per_job to avoid
+    # each job needing the same resources (GPU, disk, network) at the same time
 
 
 class EvalConfSchema(BaseModel):
@@ -231,7 +263,8 @@ def load_cfg_as_omegaconf(
         # correctly working
         cfg: FullConfigSchema = cfg  # type: ignore
 
-        gpu = torch.cuda.is_available()
+        gpu = cfg.project.gpu
+
         if not gpu and cfg.model.name == "xgboost":
             cfg.model.args["tree_method"] = "auto"
 
@@ -241,8 +274,9 @@ def load_cfg_as_omegaconf(
 def load_cfg_as_pydantic(
     config_file_name,
     allow_mutation: bool = False,
+    overrides: Optional[list[str]] = None,
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
-    cfg = load_cfg_as_omegaconf(config_file_name=config_file_name)
+    cfg = load_cfg_as_omegaconf(config_file_name=config_file_name, overrides=overrides)
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)

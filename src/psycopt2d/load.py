@@ -6,6 +6,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Union
 
+import numpy as np
 import pandas as pd
 from psycopmlutils.sql.loader import sql_load
 from pydantic import BaseModel
@@ -188,10 +189,12 @@ class DataLoader:
 
         if n_rows_before_modification - n_rows_after_modification != 0:
             msg.info(
-                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because patients had diabetes in the washin period.",
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because they met exclusion criteria before {self.cfg.data.drop_patient_if_exclusion_before_date}.",
             )
         else:
-            msg.info("No patients met exclusion criteria. Didn't drop any.")
+            msg.info(
+                f"No rows met exclusion criteria before {self.cfg.data.drop_patient_if_exclusion_before_date}. Didn't drop any.",
+            )
 
         return dataset
 
@@ -334,7 +337,6 @@ class DataLoader:
         """Drop columns if they are outside the specification. Specifically:
 
         - min_lookahead_days is insufficient for the column's lookahead
-        - min_lookbehind_days is insufficient for the column's lookbehind
         - The dataset doesn't stretch far enough for the prediction time's lookahead
         - The dataset doesn't stretch far enough for the prediction time's lookbehind
 
@@ -347,7 +349,7 @@ class DataLoader:
                 if direction == "ahead":
                     n_days = self.cfg.data.min_lookahead_days
                 elif direction == "behind":
-                    n_days = self.cfg.data.min_lookbehind_days
+                    n_days = max(self.cfg.data.lookbehind_combination)
                 else:
                     continue
 
@@ -400,12 +402,41 @@ class DataLoader:
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
-        """Drop all rows where prediction timestamp is < outcome timestamp."""
+        """Drop all rows where prediction timestamp is after the outcome."""
 
-        return dataset[
+        rows_to_drop = (
             dataset[self.cfg.data.col_name.pred_timestamp]
-            < dataset[self.cfg.data.col_name.outcome_timestamp]
+            > dataset[self.cfg.data.col_name.outcome_timestamp]
+        )
+
+        return dataset[~rows_to_drop]
+
+    def _convert_boolean_dtypes_to_int(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Convert boolean dtypes to int."""
+        for col in dataset.columns:
+            if dataset[col].dtype == bool:
+                dataset[col] = dataset[col].astype(int)
+
+        return dataset
+
+    def _negative_values_to_nan(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Convert negative values to NaN."""
+        preds = dataset[infer_predictor_col_name(df=dataset)]
+
+        # Get all columns with negative values
+        cols_with_numerical_values = preds.select_dtypes(include=["number"]).columns
+
+        numerical_columns_with_negative_values = [
+            c for c in cols_with_numerical_values if preds[c].min() < 0
         ]
+
+        df_to_replace = dataset[numerical_columns_with_negative_values]
+
+        # Convert to NaN
+        df_to_replace[df_to_replace < 0] = np.nan
+        dataset[numerical_columns_with_negative_values] = df_to_replace
+
+        return dataset
 
     def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process dataset, namely:
@@ -418,7 +449,25 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
+        # Super hacky rename, needs to be removed before merging. Figure out how to add eval columns when creating the dataset.
+        dataset = dataset.rename(
+            {
+                "pred_hba1c_within_9999_days_count_fallback_nan": self.cfg.data.col_name.custom.n_hba1c,
+            },
+            axis=1,
+        )
+
+        # Super hacky transformation of negative weights (?!) for chi-square.
+        # In the future, we want to:
+        # 1. Fix this in the feature generation for t2d
+        # 2a. See if there's a way of using feature selection that permits negative values, or
+        # 2b. Always use z-score normalisation?
+        dataset = self._negative_values_to_nan(dataset=dataset)
+
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
+
+        if self.cfg.preprocessing.convert_booleans_to_int:
+            dataset = self._convert_boolean_dtypes_to_int(dataset=dataset)
 
         if self.cfg.data.min_age:
             dataset = self._keep_only_if_older_than_min_age(dataset=dataset)
@@ -528,3 +577,23 @@ def load_train_and_val_from_cfg(cfg: FullConfigSchema):
 def get_latest_dataset_dir(path: Path) -> Path:
     """Get the latest dataset directory by time of creation."""
     return max(path.glob("*"), key=os.path.getctime)
+
+
+def load_train_raw(cfg: FullConfigSchema):
+    """Load the data."""
+    path = Path(cfg.data.dir)
+    file_names = list(path.glob(pattern=r"*train*"))
+
+    if len(file_names) == 1:
+        file_name = file_names[0]
+        file_suffix = file_name.suffix
+        if file_suffix == ".parquet":
+            df = pd.read_parquet(file_name)
+        elif file_suffix == ".csv":
+            df = pd.read_csv(file_name)
+
+        df = DataLoader.convert_timestamp_dtype_and_nat(dataset=df)
+
+        return df
+
+    raise ValueError(f"Returned {len(file_names)} files")

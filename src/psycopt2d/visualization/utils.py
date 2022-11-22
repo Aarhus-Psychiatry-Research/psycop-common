@@ -57,7 +57,7 @@ def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
         str: Input name
     """
 
-    fn2input = {roc_auc_score: eval_dataset.y_hat_int}
+    fn2input = {roc_auc_score: eval_dataset.y_hat_probs}
 
     if metric_fn in fn2input:
         return fn2input[metric_fn]

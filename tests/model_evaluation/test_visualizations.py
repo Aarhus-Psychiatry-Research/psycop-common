@@ -11,7 +11,7 @@ import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
 from psycopt2d.evaluation_dataclasses import EvalDataset
-from psycopt2d.utils.utils import positive_rate_to_pred_probs
+from psycopt2d.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 from psycopt2d.visualization import plot_prob_over_time
 from psycopt2d.visualization.base_charts import plot_basic_chart
 from psycopt2d.visualization.feature_importance import plot_feature_importances
@@ -97,7 +97,10 @@ def test_plot_performance_by_n_hba1c(synth_eval_dataset: EvalDataset):
 
 
 def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
-    plot_performance_by_age(eval_dataset=synth_eval_dataset)
+    plot_performance_by_age(
+        eval_dataset=synth_eval_dataset,
+        save_path=PROJECT_ROOT / "test.png",
+    )
 
 
 @pytest.mark.parametrize(

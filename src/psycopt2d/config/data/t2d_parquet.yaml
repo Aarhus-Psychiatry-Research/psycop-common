@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_416_features_2022_10_20_11_12
+  dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_1090_features_2022_11_18_14_10
   suffix: parquet
   min_age: 18
 
@@ -11,22 +11,24 @@ data:
 
   # Prediction time exclusion criteria
   min_prediction_time_date: 2013-01-01
-  min_lookbehind_days: 730
   min_lookahead_days: 1825
 
   # Feature specs
   pred_prefix: pred_
+  outc_prefix: outc_
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: timestamp_first_t2d_hba1c
+    outcome_timestamp: _t2d
     id: dw_ek_borger
     age: pred_age_in_years
-    exclusion_timestamp: timestamp_exclusion
+    exclusion_timestamp: _timestamp_exclusion
     custom:
-      n_hba1c: hba1c_within_9999_days_count_fallback_0
+      n_hba1c: eval_hba1c_within_9999_days_count_fallback_nan
 
   lookbehind_combination: [30, 90, 180, 365, 730]
+
+  
 
 # Parameters that will only take effect if running with --multirun
 hydra:

@@ -102,7 +102,7 @@ def create_base_plot_artifacts(
             artifact=plot_metric_by_cyclic_time(
                 eval_dataset=eval_dataset,
                 bin_period="H",
-                save_path=save_dir / "auc_by_calendar_time.png",
+                save_path=save_dir / "auc_by_hour_of_day.png",
             ),
         ),
         ArtifactContainer(
@@ -110,7 +110,7 @@ def create_base_plot_artifacts(
             artifact=plot_metric_by_cyclic_time(
                 eval_dataset=eval_dataset,
                 bin_period="D",
-                save_path=save_dir / "auc_by_calendar_time.png",
+                save_path=save_dir / "auc_by_day_of_week.png",
             ),
         ),
         ArtifactContainer(
@@ -118,7 +118,7 @@ def create_base_plot_artifacts(
             artifact=plot_metric_by_cyclic_time(
                 eval_dataset=eval_dataset,
                 bin_period="M",
-                save_path=save_dir / "auc_by_calendar_time.png",
+                save_path=save_dir / "auc_by_month_of_year.png",
             ),
         ),
         ArtifactContainer(
@@ -164,10 +164,10 @@ def create_custom_plot_artifacts(
     """A collection of plots that are always generated."""
     return [
         ArtifactContainer(
-            label="performance_by_age",
+            label="performance_by_n_hba1c",
             artifact=plot_performance_by_n_hba1c(
                 eval_dataset=eval_dataset,
-                save_path=save_dir / "performance_by_age.png",
+                save_path=save_dir / "performance_by_n_hba1c.png",
             ),
         ),
     ]

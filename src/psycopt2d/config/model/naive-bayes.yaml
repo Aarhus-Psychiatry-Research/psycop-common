@@ -10,4 +10,4 @@ hydra:
   sweeper:
     params:
       # preprocessing
-      ++preprocessing.transform: choice(null, "z-score-normalization")
+      ++preprocessing.scaling: choice(null, "z-score-normalization")
