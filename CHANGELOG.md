@@ -2,6 +2,26 @@
 
 <!--next-version-placeholder-->
 
+## v0.21.0 (2022-11-22)
+### Feature
+* Allow overrides when loading cfg as pydantic ([`5c58a7e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/5c58a7e50559df645e571e739b45e24a69b86e60))
+* Add logging of superprocess ([`1cb5d92`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1cb5d92865a2a8de7eb296ce404cff77da32b871))
+* Add random delay to decrease resource competition ([`9d146ef`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9d146ef5a48f16386995bd4f029765ba57e7557a))
+* Dynamically infer outcome column names ([`fa3c168`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/fa3c16842c53e29cf7cdbaf4d0301fc3a97567cb))
+* Drop datetime predictors ([`3203d14`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3203d14fc41f6470b3e9e48cb627f559cd4d10d7))
+* Also load unfiltered df in dataset inspection ([`ef1a954`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ef1a95466a795bb5bf6c3a7245ec0605a0b88754))
+* Use exclusion criteria ([`11a7058`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/11a7058ea75e4b5c95511d4605b7696b7480877a))
+* Add example of dataset inspection ([`bb38f11`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/bb38f11b01cd9231522ee5ca7f8050b977a932e1))
+* Update config schemas ([`ecb3964`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ecb3964d91fd00a575f68a39f611415a6247b99d))
+
+### Fix
+* Cyclic time plots override one another ([`df8510d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/df8510df30aa1ee984dab134b742ea6324674298))
+* Convert negative values to nan ([`516c42b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/516c42bf71d061dc519533a2257b78be79f581bb))
+
+### Documentation
+* Pylint ([`0a6a0e4`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0a6a0e4b40f7227e9a7a79cc78f51d9d81dd14b4))
+* Expand docs ([`0bfcd4e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/0bfcd4eb8590355c02d57d1993da43e377633069))
+
 ## v0.20.0 (2022-11-22)
 ### Feature
 * Performance by citizen ID ([`9a2031a`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9a2031a60ae7e494bb2270e835d13bd4453e7e99))
