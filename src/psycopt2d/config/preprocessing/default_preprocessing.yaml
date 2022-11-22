@@ -16,5 +16,5 @@ hydra:
     params:
       ++preprocessing.imputation_method: choice("most_frequent", "mean", "median", "null")
       ++preprocessing.scaling: choice("z-score-normalization", "null")
-      ++preprocessing.feature_selection.name: choice("chi2", "null")
+      ++preprocessing.feature_selection.name: choice("mutual_info_classif", "null")
       ++preprocessing.feature_selection.params.percentile: int(tag(log, interval(1, 90)))
