@@ -1,4 +1,4 @@
-"""Pandas cache decorator"""
+"""Pandas cache decorator."""
 import pathlib
 from functools import wraps
 
@@ -23,7 +23,7 @@ def cache_pandas_result(cache_dir: pathlib.Path, hard_reset: bool = False):
                 raise TypeError("cache_dir should be a pathlib.Path object")
 
             # Hash args to a string
-            hash_str = str(hash((args, kwargs, func.__name__)))
+            hash_str = str(hash((args, tuple(kwargs), func.__name__)))
 
             cache_file_path = cache_dir / (f"{hash_str}.trc.pqt")
 
