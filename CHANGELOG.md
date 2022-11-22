@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.22.0 (2022-11-22)
+### Feature
+* Cache dataset processing ([`d2eac6e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d2eac6ef17d4a37d85138c238de428f9a84349ec))
+* Use mutual_info_classif ([`5c650d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/5c650d3de4a3d08ad5101ce098fbe2f03cca79f2))
+
+### Fix
+* Convert to tuple  before hashing ([`9bd67c0`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/9bd67c07c80ba219cc58f43c12b6016983bb0554))
+
 ## v0.21.0 (2022-11-22)
 ### Feature
 * Allow overrides when loading cfg as pydantic ([`5c58a7e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/5c58a7e50559df645e571e739b45e24a69b86e60))
