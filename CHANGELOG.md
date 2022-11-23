@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.24.0 (2022-11-23)
+### Feature
+* Expand diff decorator to rows ([`daf0c45`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/daf0c45753254d027819b27d0a7d5b2a68aff5b2))
+
 ## v0.23.0 (2022-11-23)
 ### Feature
 * Print diff for each processing step ([`83c4689`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/83c468901ec1ebdad6ee86cc681712b7b5212ed8))
