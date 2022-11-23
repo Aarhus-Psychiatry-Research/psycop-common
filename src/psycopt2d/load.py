@@ -459,6 +459,13 @@ class DataLoader:
             axis=1,
         )
 
+        # Super hacky transformation of negative weights (?!) for chi-square.
+        # In the future, we want to:
+        # 1. Fix this in the feature generation for t2d
+        # 2a. See if there's a way of using feature selection that permits negative values, or
+        # 2b. Always use z-score normalisation?
+        dataset = self._negative_values_to_nan(dataset=dataset)
+
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
         if self.cfg.preprocessing.convert_booleans_to_int:
