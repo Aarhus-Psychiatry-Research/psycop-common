@@ -15,9 +15,7 @@ from wasabi import Printer
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
 from psycopt2d.utils.config_schemas import FullConfigSchema
 from psycopt2d.utils.dataframe_modifier_timestamp_decorator import print_diff_rows
-from psycopt2d.utils.pd_cache_decorator import cache_pandas_result
 from psycopt2d.utils.utils import (
-    FEATURE_SETS_PATH,
     get_percent_lost,
     infer_outcome_col_name,
     infer_predictor_col_name,

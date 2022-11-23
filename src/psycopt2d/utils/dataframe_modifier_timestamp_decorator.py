@@ -1,4 +1,4 @@
-"""Pandas cache decorator."""
+"""Print the difference in rows between the input and output dataframes."""
 import functools
 
 import pandas as pd
@@ -6,6 +6,8 @@ from wasabi import Printer
 
 
 def print_diff_rows(func):
+    """Print the difference in rows between the input and output dataframes."""
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         msg = Printer(timestamp=True)
@@ -26,7 +28,8 @@ def print_diff_rows(func):
         result = func(*args, **kwargs)
 
         percent_diff = round(
-            (n_rows_before_func - result.shape[0]) / n_rows_before_func, 2
+            (n_rows_before_func - result.shape[0]) / n_rows_before_func,
+            2,
         )
 
         msg.info(f"{func.__name__}: Dropped {percent_diff}% of rows")
