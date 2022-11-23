@@ -44,6 +44,7 @@ from psycopt2d.utils.utils import (
     eval_ds_cfg_pipe_to_disk,
     flatten_nested_dict,
     get_feature_importance_dict,
+    get_selected_features_dict,
 )
 
 CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
@@ -493,6 +494,11 @@ def main(cfg: DictConfig):
 
     if hasattr(pipe["model"], "feature_importances_"):
         pipe_metadata.feature_importances = get_feature_importance_dict(pipe=pipe)
+    if hasattr(pipe["preprocessing"].named_steps, "feature_selection"):
+        pipe_metadata.selected_features = get_selected_features_dict(
+            pipe=pipe,
+            train_col_names=train_col_names,
+        )
 
     # Save model predictions, feature importance, and config to disk
     eval_ds_cfg_pipe_to_disk(

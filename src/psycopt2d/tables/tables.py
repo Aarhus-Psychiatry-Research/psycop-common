@@ -1,5 +1,4 @@
 """Tables for evaluation of models."""
-from collections.abc import Sequence
 from typing import Union
 
 import pandas as pd
@@ -66,31 +65,30 @@ def generate_feature_importances_table(
     return output_table(output_format=output_format, df=df)
 
 
-def feature_selection_table(
-    feature_names: Sequence[str],
-    selected_feature_names: Sequence[str],
+def generate_selected_features_table(
+    selected_features_dict: dict[str, bool],
     output_format: str = "wandb_table",
     removed_first: bool = True,
 ) -> Union[pd.DataFrame, wandb.Table]:
     """Get table with feature selection results.
 
     Args:
-        feature_names (Sequence[str]): The names of the features
-        selected_feature_names (Sequence[str]): The names of the selected features
+        selected_features_dict (dict[str, bool]): Dictionary with feature selection results
         output_format (str, optional): The output format. Takes one of "html", "df", "wandb_table". Defaults to "wandb_table".
         removed_first (bool, optional): Ordering of features in the table, whether the removed features are first. Defaults to True.
     """
 
+    feature_names = list(selected_features_dict.keys())
+    is_selected = list(selected_features_dict.values())
+
     df = pd.DataFrame(
         {
-            "train_col_names": feature_names,
-            "is_removed": [
-                0 if i in selected_feature_names else 1 for i in feature_names
-            ],
+            "predictor": feature_names,
+            "selected": is_selected,
         },
     )
 
     # Sort df so removed columns appear first
-    df = df.sort_values("is_removed", ascending=removed_first)
+    df = df.sort_values("selected", ascending=removed_first)
 
     return output_table(output_format=output_format, df=df)

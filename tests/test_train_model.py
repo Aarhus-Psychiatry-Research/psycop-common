@@ -50,6 +50,6 @@ def test_min_prediction_time_date(muteable_test_config: FullConfigSchema):
 def test_feature_selection(muteable_test_config: FullConfigSchema):
     """Test feature selection."""
     cfg = muteable_test_config
-    cfg.preprocessing.feature_selection.name = "f_classif"
+    cfg.preprocessing.feature_selection.name = "mutual_info_classif"
     cfg.preprocessing.feature_selection.params["percentile"] = 10
     main(cfg)

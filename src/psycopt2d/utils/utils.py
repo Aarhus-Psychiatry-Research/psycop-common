@@ -303,8 +303,7 @@ def write_df_to_file(
 
 
 def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]:
-    """Checks whether the model has feature importances and returns them as a
-    dictionary. Return None if not.
+    """Returns feature importances as a dict.
 
     Args:
         pipe (Pipeline): Sklearn pipeline.
@@ -312,12 +311,30 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
     Returns:
         Union[None, dict[str, float]]: Dictionary of feature importances.
     """
-    if hasattr(pipe["model"], "feature_importances_"):
-        return dict(
-            zip(pipe["model"].feature_names, pipe["model"].feature_importances_),
-        )
-    else:
-        return None
+    return dict(
+        zip(pipe["model"].feature_names, pipe["model"].feature_importances_),
+    )
+
+
+def get_selected_features_dict(
+    pipe: Pipeline,
+    train_col_names: list[str],
+) -> Union[None, dict[str, bool]]:
+    """Returns results from feature selection as a dict.
+
+    Args:
+        pipe (Pipeline): Sklearn pipeline.
+        train_col_names (list[str]): List of column names in the training set.
+
+    Returns:
+        Union[None, dict[str, int]]: Dictionary of selected features. 0 if not selected, 1 if selected.
+    """
+    is_selected = [
+        int(i) for i in pipe["preprocessing"]["feature_selection"].get_support()
+    ]
+    return dict(
+        zip(train_col_names, is_selected),
+    )
 
 
 def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
