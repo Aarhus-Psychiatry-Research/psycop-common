@@ -164,7 +164,7 @@ class PreprocessingConfigSchema(BaseModel):
     convert_datetimes_to_ordinal: bool
     # Whether to convert datetimes to ordinal.
 
-    imputation_method: Optional[str]
+    imputation_method: Optional[str] = ...
     # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
     # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
 
