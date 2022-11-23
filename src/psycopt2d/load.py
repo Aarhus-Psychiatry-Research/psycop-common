@@ -14,6 +14,7 @@ from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
 from psycopt2d.utils.config_schemas import FullConfigSchema
+from psycopt2d.utils.dataframe_modifier_timestamp_decorator import print_diff_rows
 from psycopt2d.utils.pd_cache_decorator import cache_pandas_result
 from psycopt2d.utils.utils import (
     FEATURE_SETS_PATH,
@@ -93,6 +94,8 @@ class DataLoader:
         Returns:
             pd.DataFrame: The dataset
         """
+        msg.info(f"Loading {split_name}")
+
         if self.file_suffix not in ("csv", "parquet"):
             raise ValueError(f"File suffix {self.file_suffix} not supported.")
 
@@ -163,6 +166,7 @@ class DataLoader:
 
         return dataset
 
+    @print_diff_rows
     def _drop_patient_if_excluded(
         self,
         dataset: pd.DataFrame,
@@ -200,6 +204,7 @@ class DataLoader:
 
         return dataset
 
+    @print_diff_rows
     def _drop_cols_not_in_lookbehind_combination(
         self,
         dataset: pd.DataFrame,
@@ -260,6 +265,7 @@ class DataLoader:
         return dataset
 
     @staticmethod
+    @print_diff_rows
     def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
         convert 0's to NaT."""
@@ -332,6 +338,7 @@ class DataLoader:
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
+    @print_diff_rows
     def _drop_cols_and_rows_if_look_direction_not_met(
         self,
         dataset: pd.DataFrame,
@@ -369,6 +376,7 @@ class DataLoader:
 
         return dataset
 
+    @print_diff_rows
     def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
         self,
         dataset: pd.DataFrame,
@@ -399,10 +407,12 @@ class DataLoader:
         config."""
         return dataset[dataset[self.cfg.data.col_name.age] >= self.cfg.data.min_age]
 
+    @print_diff_rows
     def n_outcome_col_names(self, df: pd.DataFrame) -> int:
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
+    @print_diff_rows
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop all rows where prediction timestamp is after the outcome."""
 
@@ -413,6 +423,7 @@ class DataLoader:
 
         return dataset[~rows_to_drop]
 
+    @print_diff_rows
     def _convert_boolean_dtypes_to_int(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert boolean dtypes to int."""
         for col in dataset.columns:
@@ -421,6 +432,7 @@ class DataLoader:
 
         return dataset
 
+    @print_diff_rows
     def _negative_values_to_nan(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert negative values to NaN."""
         preds = dataset[infer_predictor_col_name(df=dataset)]
@@ -451,6 +463,9 @@ class DataLoader:
         Returns:
             pd.DataFrame: Processed dataset
         """
+        msg = Printer(timestamp=True)
+        msg.info("Processing dataset")
+
         # Super hacky rename, needs to be removed before merging. Figure out how to add eval columns when creating the dataset.
         dataset = dataset.rename(
             {
@@ -495,9 +510,10 @@ class DataLoader:
             dataset=dataset,
         )
 
+        msg.info("Finished processing dataset")
+
         return dataset
 
-    @cache_pandas_result(cache_dir=FEATURE_SETS_PATH / "dataset_cache")
     def load_dataset_from_dir(
         self,
         split_names: Union[Iterable[str], str],
