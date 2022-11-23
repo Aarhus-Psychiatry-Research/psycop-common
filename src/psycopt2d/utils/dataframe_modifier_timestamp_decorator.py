@@ -5,12 +5,15 @@ import pandas as pd
 from wasabi import Printer
 
 
-def print_diff_rows(func):
+def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=True):
     """Print the difference in rows between the input and output dataframes."""
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         msg = Printer(timestamp=True)
+
+        if print_when_starting:
+            msg.info(f"{func.__name__}: Starting")
 
         arg_dfs = [arg for arg in args if isinstance(arg, pd.DataFrame)]
         kwargs_dfs = [arg for arg in kwargs.values() if isinstance(arg, pd.DataFrame)]
@@ -21,18 +24,28 @@ def print_diff_rows(func):
 
         df = potential_dfs[0]
 
-        n_rows_before_func = df.shape[0]
+        for dim in ("rows", "columns"):
+            dim_int = 0 if dim == "rows" else 1
 
-        msg.info(f"{func.__name__}: {n_rows_before_func} rows before function")
+            n_in_dim_before_func = df.shape[dim_int]
 
-        result = func(*args, **kwargs)
+            msg.info(f"{func.__name__}: {n_in_dim_before_func} {dim} before function")
 
-        percent_diff = round(
-            (n_rows_before_func - result.shape[0]) / n_rows_before_func,
-            2,
-        )
+            result = func(*args, **kwargs)
 
-        msg.info(f"{func.__name__}: Dropped {percent_diff}% of rows")
+            diff = df.shape[dim_int] - n_in_dim_before_func
+
+            if diff != 0:
+                percent_diff = round(
+                    (n_in_dim_before_func - result.shape[dim_int])
+                    / n_in_dim_before_func,
+                    2,
+                )
+
+                msg.info(f"{func.__name__}: Dropped {diff} ({percent_diff}%) {dim}")
+            else:
+                if print_when_no_diff:
+                    msg.info(f"{func.__name__}: No {dim} dropped")
 
         return result
 

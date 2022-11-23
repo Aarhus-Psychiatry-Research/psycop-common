@@ -14,7 +14,9 @@ from wasabi import Printer
 
 from psycopt2d.evaluate_saved_model_predictions import infer_look_distance
 from psycopt2d.utils.config_schemas import FullConfigSchema
-from psycopt2d.utils.dataframe_modifier_timestamp_decorator import print_diff_rows
+from psycopt2d.utils.dataframe_modifier_timestamp_decorator import (
+    print_df_dimensions_diff,
+)
 from psycopt2d.utils.utils import (
     get_percent_lost,
     infer_outcome_col_name,
@@ -164,7 +166,7 @@ class DataLoader:
 
         return dataset
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def _drop_patient_if_excluded(
         self,
         dataset: pd.DataFrame,
@@ -202,7 +204,7 @@ class DataLoader:
 
         return dataset
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def _drop_cols_not_in_lookbehind_combination(
         self,
         dataset: pd.DataFrame,
@@ -263,7 +265,7 @@ class DataLoader:
         return dataset
 
     @staticmethod
-    @print_diff_rows
+    @print_df_dimensions_diff
     def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
         convert 0's to NaT."""
@@ -336,7 +338,7 @@ class DataLoader:
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def _drop_cols_and_rows_if_look_direction_not_met(
         self,
         dataset: pd.DataFrame,
@@ -374,7 +376,7 @@ class DataLoader:
 
         return dataset
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
         self,
         dataset: pd.DataFrame,
@@ -405,12 +407,12 @@ class DataLoader:
         config."""
         return dataset[dataset[self.cfg.data.col_name.age] >= self.cfg.data.min_age]
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def n_outcome_col_names(self, df: pd.DataFrame) -> int:
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop all rows where prediction timestamp is after the outcome."""
 
@@ -421,7 +423,7 @@ class DataLoader:
 
         return dataset[~rows_to_drop]
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def _convert_boolean_dtypes_to_int(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert boolean dtypes to int."""
         for col in dataset.columns:
@@ -430,7 +432,7 @@ class DataLoader:
 
         return dataset
 
-    @print_diff_rows
+    @print_df_dimensions_diff
     def _negative_values_to_nan(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert negative values to NaN."""
         preds = dataset[infer_predictor_col_name(df=dataset)]
