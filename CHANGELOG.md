@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.23.0 (2022-11-23)
+### Feature
+* Print diff for each processing step ([`83c4689`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/83c468901ec1ebdad6ee86cc681712b7b5212ed8))
+
+### Fix
+* Allow none as imputation method ([`af0127c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/af0127cb7002383572279e4e79515d4e6a244bb9))
+
 ## v0.22.0 (2022-11-22)
 ### Feature
 * Cache dataset processing ([`d2eac6e`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/d2eac6ef17d4a37d85138c238de428f9a84349ec))
