@@ -49,7 +49,7 @@ def plot_performance_by_n_hba1c(
         x_title="Number of HbA1c measurements",
         y_title="AUC",
         sort_x=sort_order,
-        y_lim=(0, 1),
+        y_limits=(0, 1),
         plot_type=["bar"],
         save_path=save_path,
     )

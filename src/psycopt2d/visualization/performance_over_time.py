@@ -85,7 +85,7 @@ def plot_metric_by_calendar_time(
         else "Year",
         y_title=y_title,
         sort_x=sort_order,
-        y_lim=(0, 1),
+        y_limits=(0, 1),
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
@@ -201,7 +201,7 @@ def plot_metric_by_cyclic_time(
         if bin_period == "D"
         else "Month of year",
         y_title=y_title,
-        y_lim=(0, 1),
+        y_limits=(0, 1),
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
@@ -319,7 +319,7 @@ def plot_auc_by_time_from_first_visit(
         x_title="Days from first visit",
         y_title="AUC",
         sort_x=sort_order,
-        y_lim=(0, 1),
+        y_limits=(0, 1),
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
@@ -375,7 +375,7 @@ def plot_metric_by_time_until_diagnosis(
         x_title="Days to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
-        y_lim=(0, 1),
+        y_limits=(0, 1),
         plot_type=["scatter", "line"],
         save_path=save_path,
     )

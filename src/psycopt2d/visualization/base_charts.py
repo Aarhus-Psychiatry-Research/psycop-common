@@ -15,7 +15,7 @@ def plot_basic_chart(
     plot_type: Union[list[str], str],
     sort_x: Optional[Iterable[int]] = None,
     sort_y: Optional[Iterable[int]] = None,
-    y_lim: Optional[tuple[float, float]] = None,
+    y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple] = (10, 10),
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
@@ -66,8 +66,8 @@ def plot_basic_chart(
     plt.ylabel(y_title)
     plt.xticks(fontsize=7)
     plt.xticks(rotation=45)
-    if y_lim is not None:
-        plt.ylim(y_lim)
+    if y_limits is not None:
+        plt.ylim(y_limits)
 
     if save_path is not None:
         plt.savefig(save_path)
