@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.25.0 (2022-11-29)
+### Feature
+* Set min,max for y_axis on performance plots ([`6381ca7`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6381ca731b91b0bfff3cf81b5e752536ae9aec92))
+* Log which features remain after feature selection ([`51c4746`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/51c47464e371b222016bc7169a187755ee480401))
+
+### Fix
+* Removed redundant attribute checks ([`3427844`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3427844439944c00bf7a1428af29ea70b9e4de2c))
+
+### Documentation
+* Updated name in docstring ([`2b75ab1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/2b75ab1f30d2422d6dbe77797b87f4094c1c460e))
+* Output type hint and docstring edit ([`4d9d505`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/4d9d505b565caa04007415517959478f76e20dcc))
+
 ## v0.24.0 (2022-11-23)
 ### Feature
 * Expand diff decorator to rows ([`daf0c45`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/daf0c45753254d027819b27d0a7d5b2a68aff5b2))
