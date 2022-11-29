@@ -82,6 +82,18 @@ def get_feature_selection_steps(cfg):
                     ),
                 ),
             )
+        elif cfg.preprocessing.feature_selection.name == "mutual_info_classif":
+            new_steps.append(
+                (
+                    "feature_selection",
+                    SelectPercentile(
+                        mutual_info_classif,
+                        percentile=cfg.preprocessing.feature_selection.params[
+                            "percentile"
+                        ],
+                    ),
+                ),
+            )
         else:
             raise ValueError(
                 f"Unknown feature selection method {cfg.preprocessing.feature_selection.name}",
@@ -120,16 +132,6 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             (
                 "Imputation",
                 SimpleImputer(strategy=cfg.preprocessing.imputation_method),
-            ),
-        )
-    if cfg.preprocessing.feature_selection.name == "mutual_info_classif":
-        steps.append(
-            (
-                "feature_selection",
-                SelectPercentile(
-                    mutual_info_classif,
-                    percentile=cfg.preprocessing.feature_selection.params["percentile"],
-                ),
             ),
         )
 

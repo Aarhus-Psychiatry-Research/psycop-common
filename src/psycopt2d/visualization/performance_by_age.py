@@ -49,6 +49,7 @@ def plot_performance_by_age(
         x_title="Age",
         y_title="AUC",
         sort_x=sort_order,
+        y_lim=(0, 1),
         plot_type=["bar"],
         save_path=save_path,
     )
