@@ -31,7 +31,7 @@ def plot_basic_chart(
             Options are combinations of ["bar", "hbar", "line", "scatter"] Defaults to "bar".
         sort_x (Optional[Iterable[int]], optional): order of values on the x-axis. Defaults to None.
         sort_y (Optional[Iterable[int]], optional): order of values on the y-axis. Defaults to None.
-        y_lim (Optional[tuple[float, float]], optional): y-axis limits. Defaults to None.
+        y_limits (Optional[tuple[float, float]], optional): y-axis limits. Defaults to None.
         fig_size (Optional[tuple], optional): figure size. Defaults to None.
         save_path (Optional[Path], optional): path to save figure. Defaults to None.
 
