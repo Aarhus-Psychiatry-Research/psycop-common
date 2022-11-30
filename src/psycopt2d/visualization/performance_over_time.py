@@ -54,7 +54,7 @@ def plot_metric_by_calendar_time(
     bin_period: str = "Y",
     save_path: Optional[str] = None,
     metric_fn: Callable = roc_auc_score,
-    y_limits: tuple[float, float] = (0.5, 1.0),
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
 
@@ -64,7 +64,7 @@ def plot_metric_by_calendar_time(
         bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
         save_path (str, optional): Path to save figure. Defaults to None.
         metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
-        y_limits (tuple[float, float]): Limits of y-axis. Defaults to (0.5, 1.0).
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
@@ -172,7 +172,7 @@ def plot_metric_by_cyclic_time(
     bin_period: str = "Y",
     save_path: Optional[str] = None,
     metric_fn: Callable = roc_auc_score,
-    y_limits: tuple[float, float] = (0.5, 1.0),
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by cyclic time period of prediction time. Cyclic time
     periods include e.g. day of week, hour of day, etc.
@@ -183,7 +183,7 @@ def plot_metric_by_cyclic_time(
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
         save_path (str, optional): Path to save figure. Defaults to None.
         metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
-        y_limits (tuple[float, float]): Limits of y-axis. Defaults to (0.5, 1.0).
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
@@ -284,7 +284,7 @@ def plot_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: tuple = (0, 28, 182, 365, 730, 1825),
     prettify_bins: Optional[bool] = True,
-    y_limits: tuple[float, float] = (0.5, 1.0),
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time from first visit.
@@ -294,7 +294,7 @@ def plot_auc_by_time_from_first_visit(
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
         prettify_bins (bool, optional): Prettify bin names. I.e. make
         bins look like "1-7" instead of "[1-7)" Defaults to True.
-        y_limits (tuple[float, float]): Limits of y-axis. Defaults to (0.5, 1.0).
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:

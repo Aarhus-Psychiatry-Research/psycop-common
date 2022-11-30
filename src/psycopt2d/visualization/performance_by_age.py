@@ -17,7 +17,7 @@ def plot_performance_by_age(
     bins: Sequence[Union[int, float]] = (18, 25, 35, 50, 70),
     prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
-    y_limits: tuple[float, float] = (0.5, 1.0),
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by age at time of prediction.
 

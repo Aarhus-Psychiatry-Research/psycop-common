@@ -16,7 +16,7 @@ def plot_performance_by_n_hba1c(
     bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
     prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
-    y_limits: tuple[float, float] = (0.5, 1.0),
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by number of HbA1c
