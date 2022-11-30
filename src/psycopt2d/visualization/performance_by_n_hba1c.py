@@ -16,6 +16,7 @@ def plot_performance_by_n_hba1c(
     bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
     prettify_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
+    y_limits: tuple[float, float] = (0.5, 1.0),
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by number of HbA1c
@@ -27,6 +28,7 @@ def plot_performance_by_n_hba1c(
         prettify_bins (bool, optional): Whether to prettify bin names. I.e. make
             bins look like "1-7" instead of "[1-7)". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
+        y_limits (tuple[float, float]): y-axis limits. Defaults to (0.5, 1.0).
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
@@ -49,7 +51,7 @@ def plot_performance_by_n_hba1c(
         x_title="Number of HbA1c measurements",
         y_title="AUC",
         sort_x=sort_order,
-        y_limits=(0, 1),
+        y_limits=y_limits,
         plot_type=["bar"],
         save_path=save_path,
     )
