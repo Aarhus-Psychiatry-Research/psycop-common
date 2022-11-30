@@ -358,7 +358,7 @@ def plot_metric_by_time_until_diagnosis(
         prettify_bins (bool, optional): Whether to prettify bin names. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
-        y_limits (tuple[float, float]): Limits of y-axis. Defaults to None.
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
