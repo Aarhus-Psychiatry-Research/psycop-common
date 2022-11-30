@@ -28,7 +28,7 @@ def plot_performance_by_age(
             bins look like "18-25" instead of "[18-25])". Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
         save_path (Path, optional): Path to save figure. Defaults to None.
-        y_limits (tuple[float, float]): y-axis limits. Defaults to (0.5, 1.0).
+        y_limits (tuple[float, float], optional): y-axis limits. Defaults to (0.5, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
