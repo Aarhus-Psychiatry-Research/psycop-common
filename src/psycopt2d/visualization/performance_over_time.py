@@ -54,6 +54,7 @@ def plot_metric_by_calendar_time(
     bin_period: str = "Y",
     save_path: Optional[str] = None,
     metric_fn: Callable = roc_auc_score,
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
 
@@ -63,6 +64,7 @@ def plot_metric_by_calendar_time(
         bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
         save_path (str, optional): Path to save figure. Defaults to None.
         metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
@@ -85,7 +87,7 @@ def plot_metric_by_calendar_time(
         else "Year",
         y_title=y_title,
         sort_x=sort_order,
-        y_limits=(0, 1),
+        y_limits=y_limits,
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
@@ -170,6 +172,7 @@ def plot_metric_by_cyclic_time(
     bin_period: str = "Y",
     save_path: Optional[str] = None,
     metric_fn: Callable = roc_auc_score,
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by cyclic time period of prediction time. Cyclic time
     periods include e.g. day of week, hour of day, etc.
@@ -180,6 +183,7 @@ def plot_metric_by_cyclic_time(
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
         save_path (str, optional): Path to save figure. Defaults to None.
         metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
@@ -201,7 +205,7 @@ def plot_metric_by_cyclic_time(
         if bin_period == "D"
         else "Month of year",
         y_title=y_title,
-        y_limits=(0, 1),
+        y_limits=y_limits,
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
@@ -280,6 +284,7 @@ def plot_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: tuple = (0, 28, 182, 365, 730, 1825),
     prettify_bins: Optional[bool] = True,
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time from first visit.
@@ -289,6 +294,7 @@ def plot_auc_by_time_from_first_visit(
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
         prettify_bins (bool, optional): Prettify bin names. I.e. make
         bins look like "1-7" instead of "[1-7)" Defaults to True.
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
@@ -319,7 +325,7 @@ def plot_auc_by_time_from_first_visit(
         x_title="Days from first visit",
         y_title="AUC",
         sort_x=sort_order,
-        y_limits=(0, 1),
+        y_limits=y_limits,
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
@@ -338,6 +344,7 @@ def plot_metric_by_time_until_diagnosis(
     prettify_bins: bool = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
+    y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plots performance of a specified performance metric in bins of time
@@ -351,6 +358,7 @@ def plot_metric_by_time_until_diagnosis(
         prettify_bins (bool, optional): Whether to prettify bin names. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
@@ -375,7 +383,7 @@ def plot_metric_by_time_until_diagnosis(
         x_title="Days to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
-        y_limits=(0, 1),
+        y_limits=y_limits,
         plot_type=["scatter", "line"],
         save_path=save_path,
     )
