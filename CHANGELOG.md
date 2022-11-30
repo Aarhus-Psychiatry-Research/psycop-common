@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.26.0 (2022-11-30)
+### Feature
+* Type hints ([`544569c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/544569c2b9a89087aedc44a2a3298e55dd792de9))
+* Set min for y-axis on performance_by_whatev ([`144542b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/144542bf0ce0607576ddd4863c4b6458105433d5))
+
+### Documentation
+* Adding optional ([`c94a1f5`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/c94a1f5ead861b3b05ac0d55c2f189a8e0ef5ec1))
+* Adding optional ([`b07ff52`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/b07ff52d9eb6bc4f0193f473f23990ea42799c08))
+
 ## v0.25.0 (2022-11-29)
 ### Feature
 * Set min,max for y_axis on performance plots ([`6381ca7`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6381ca731b91b0bfff3cf81b5e752536ae9aec92))
