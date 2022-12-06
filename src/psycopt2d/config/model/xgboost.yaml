@@ -14,7 +14,7 @@ hydra:
       ++model.args.n_estimators: int(tag(log, interval(100, 1200)))
       ++model.args.alpha: tag(log, interval(1e-8, 0.1))
       ++model.args.lambda: tag(log, interval(1e-8, 1.0))
-      ++model.args.max_depth: int(interval(4, 15))
+      ++model.args.max_depth: int(interval(1, 10))
       ++model.args.learning_rate: tag(log, interval(1e-8, 1)) # Multiplier during boosting, [0,1]. Lower numbers mean more conservative boosting. Default is 0.3
       ++model.args.gamma: tag(log, interval(1e-8, 0.001)) # Threshold for loss reduction per node split. If lower than threshold, stops adding nodes to branch.
       ++model.args.grow_policy: choice("depthwise", "lossguide")
