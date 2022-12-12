@@ -11,13 +11,13 @@
 To get started using psycop-feature-generation simply install it using pip by running the following line in your terminal:
 
 ```
-pip install git+https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation.git
+pip install psycop-feature-generation
 ```
 
 or using poetry
 
 ```
-poetry add git+https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation.git#main
+poetry add psycop-feature-generation
 ```
 
 ## 🎓 Project
