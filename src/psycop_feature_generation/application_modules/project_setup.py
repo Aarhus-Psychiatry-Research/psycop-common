@@ -3,7 +3,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Literal, Sequence, Union
+from typing import Literal, Sequence
 
 import wandb
 from timeseriesflattener.feature_spec_objects import BaseModel, PredictorSpec

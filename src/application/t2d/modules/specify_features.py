@@ -10,7 +10,7 @@ from timeseriesflattener.feature_spec_objects import (
     StaticSpec,
 )
 
-from application.t2d.modules.project_setup import ProjectInfo
+from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 
 
 class SpecSet(BaseModel):
@@ -137,8 +137,8 @@ def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpe
 def get_feature_specs(project_info: ProjectInfo) -> list[AnySpec]:
     """Get a spec set."""
     return (
-        get_temporal_predictor_specs(project_info=project_info)
-        + get_static_predictor_specs(project_info=project_info)
-        + get_outcome_specs(project_info=project_info)
-        + get_metadata_specs(project_info=project_info)
+            get_temporal_predictor_specs(project_info=project_info)
+            + get_static_predictor_specs(project_info=project_info)
+            + get_outcome_specs(project_info=project_info)
+            + get_metadata_specs(project_info=project_info)
     )

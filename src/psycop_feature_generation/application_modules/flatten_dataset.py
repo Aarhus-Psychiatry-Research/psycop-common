@@ -10,16 +10,15 @@ from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 
 
 def create_flattened_dataset(
-    feature_specs: list[AnySpec],
-    prediction_times_df: pd.DataFrame,
-    drop_pred_times_with_insufficient_look_distance: bool,
-    project_info: ProjectInfo,
+        feature_specs: list[AnySpec],
+        prediction_times_df: pd.DataFrame,
+        drop_pred_times_with_insufficient_look_distance: bool,
+        project_info: ProjectInfo,
 ) -> pd.DataFrame:
     """Create flattened dataset.
 
     Args:
         feature_specs (list[AnySpec]): List of feature specifications of any type.
-        prediction_times_df (pd.DataFrame): Prediction times.
         project_info (ProjectInfo): Project info.
         drop_pred_times_with_insufficient_look_distance (bool): Whether to drop prediction times with insufficient look distance.
             See timeseriesflattener tutorial for more info.

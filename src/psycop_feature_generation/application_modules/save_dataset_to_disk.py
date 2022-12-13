@@ -6,16 +6,16 @@ import numpy as np
 import pandas as pd
 
 import psycop_feature_generation.loaders
-from application.t2d.modules.project_setup import ProjectInfo
+from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from psycop_feature_generation.utils import write_df_to_file
 
 log = logging.getLogger(__name__)
 
 
 def save_split_to_disk(
-    project_info: ProjectInfo,
-    split_df: pd.DataFrame,
-    split_name: str,
+        project_info: ProjectInfo,
+        split_df: pd.DataFrame,
+        split_name: str,
 ):
     """Save split to disk."""
     # Version table with current date and time
@@ -32,9 +32,9 @@ def save_split_to_disk(
 
 
 def filter_by_split_ids(
-    flattened_df: pd.DataFrame,
-    split_id_df: pd.DataFrame,
-    split_name: str,
+        flattened_df: pd.DataFrame,
+        split_id_df: pd.DataFrame,
+        split_name: str,
 ):
     """Filter dataframe by split ids."""
     # Find IDs which are in split_ids, but not in flattened_df
@@ -63,8 +63,8 @@ def get_split_id_df(split_name: Literal["train", "val", "test"]) -> pd.DataFrame
 
 
 def split_and_save_dataset_to_disk(
-    flattened_df: pd.DataFrame,
-    project_info: ProjectInfo,
+        flattened_df: pd.DataFrame,
+        project_info: ProjectInfo,
 ):
     """Split and save to disk.
 

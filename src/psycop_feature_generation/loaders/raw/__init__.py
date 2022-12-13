@@ -1,6 +1,5 @@
 """Import all raw loaders."""
 
-from ....application.t2d.modules import *  # noqa
 from ...data_checks.raw.check_predictor_lists import (  # noqa
     check_feature_combinations_return_correct_dfs,
 )
