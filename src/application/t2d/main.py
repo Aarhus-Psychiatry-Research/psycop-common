@@ -5,6 +5,7 @@ maturity.
 """
 
 import logging
+from xml.etree.ElementInclude import include
 
 import coloredlogs
 import wandb
@@ -54,7 +55,7 @@ def main():
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
-        prediction_times_df=physical_visits_to_psychiatry(),
+        prediction_times_df=physical_visits_to_psychiatry(timestamps_only=True),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
     )

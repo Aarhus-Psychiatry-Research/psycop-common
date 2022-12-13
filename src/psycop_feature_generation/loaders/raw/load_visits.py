@@ -11,6 +11,7 @@ from psycop_feature_generation.utils import data_loaders
 
 log = logging.getLogger(__name__)
 
+
 @data_loaders.register("physical_visits")
 def physical_visits(
     shak_code: Optional[int] = None,
@@ -96,9 +97,16 @@ def physical_visits(
 
 
 @data_loaders.register("physical_visits_to_psychiatry")
-def physical_visits_to_psychiatry(n_rows: Optional[int] = None) -> pd.DataFrame:
+def physical_visits_to_psychiatry(
+    n_rows: Optional[int] = None, timestamps_only: bool = True
+) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
-    return physical_visits(shak_code=6600, shak_sql_operator="=", n_rows=n_rows)
+    df = physical_visits(shak_code=6600, shak_sql_operator="=", n_rows=n_rows)
+
+    if timestamps_only:
+        df = df.drop("value", axis=1)
+
+    return df
 
 
 @data_loaders.register("physical_visits_to_somatic")
