@@ -6,8 +6,13 @@ import psutil
 
 from application.t2d.modules.specify_features import SpecSet
 from psycop_feature_generation.timeseriesflattener import FlattenedDataset
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import AnySpec, StaticSpec, TemporalSpec, \
-    OutcomeSpec, PredictorSpec
+from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+    AnySpec,
+    StaticSpec,
+    TemporalSpec,
+    OutcomeSpec,
+    PredictorSpec,
+)
 
 
 def add_metadata_to_ds(

@@ -9,12 +9,12 @@ from psycop_feature_generation.utils import write_df_to_file
 
 
 def split_and_save_dataset_to_disk(
-        flattened_df: pd.DataFrame,
-        out_dir: Path,
-        file_prefix: str,
-        file_suffix: str,
-        split_ids_dict: Optional[dict[str, pd.Series]] = None,
-        splits: Optional[list[str]] = None,
+    flattened_df: pd.DataFrame,
+    out_dir: Path,
+    file_prefix: str,
+    file_suffix: str,
+    split_ids_dict: Optional[dict[str, pd.Series]] = None,
+    splits: Optional[list[str]] = None,
 ):
     """Split and save to disk.
 

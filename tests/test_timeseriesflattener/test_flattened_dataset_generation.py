@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from application.t2d.modules.flattened_dataset_description import (
+from application.t2d.modules.describe_flattened_dataset import (
     save_feature_set_description_to_disk,
 )
 from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk

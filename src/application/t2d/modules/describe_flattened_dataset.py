@@ -9,12 +9,12 @@ from psycop_feature_generation.data_checks.flattened.feature_describer import (
 
 
 def save_feature_set_description_to_disk(
-        predictor_specs: list,
-        flattened_dataset_file_dir: Path,
-        out_dir: Path,
-        file_suffix: str,
-        describe_splits: bool = True,
-        compare_splits: bool = True,
+    predictor_specs: list,
+    flattened_dataset_file_dir: Path,
+    out_dir: Path,
+    file_suffix: str,
+    describe_splits: bool = True,
+    compare_splits: bool = True,
 ):
     """Describe output.
 
