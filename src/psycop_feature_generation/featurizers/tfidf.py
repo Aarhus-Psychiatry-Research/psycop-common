@@ -1,6 +1,4 @@
 """Train a TF-IDF featurizer on train set of all clinical notes."""
-from pathlib import Path
-
 import dill as pkl
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer

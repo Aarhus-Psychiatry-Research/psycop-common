@@ -1,3 +1,4 @@
+"""Feature specification module."""
 import numpy as np
 from timeseriesflattener.feature_spec_objects import (
     AnySpec,

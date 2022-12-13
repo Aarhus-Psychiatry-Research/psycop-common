@@ -14,7 +14,7 @@ from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
 
 
 @pytest.fixture()
-def predictor_specs(df):
+def predictor_specs():
     return [
         PredictorSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
@@ -27,7 +27,7 @@ def predictor_specs(df):
 
 
 @pytest.fixture()
-def static_spec(df):
+def static_spec():
     return [
         StaticSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),

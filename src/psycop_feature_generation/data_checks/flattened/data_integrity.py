@@ -411,7 +411,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
             Should only be used for debugging.
         split_names (list[str]): list of splits to check (train, val, test)
         out_dir (Optional[Path]): Path to the directory where the reports should be saved
-        file_suffix (str, optional): Suffix of the files to load. Must be either "csv" or "parquet". Defaults to "parquet".
+        dataset_format (str, optional): Format of the files to load. Must be either "csv" or "parquet". Defaults to "parquet".
         describe_splits (bool, optional): Whether to describe each split. Defaults to True.
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """

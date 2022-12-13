@@ -1,5 +1,5 @@
-# """Load text data from a database and featurise it using a tf-idf
-# vectorizer."""
+"""Load text data from a database and featurise it using a tf-idf
+vectorizer."""
 
 # # pylint: disable=E0211,E0213,missing-function-docstring
 

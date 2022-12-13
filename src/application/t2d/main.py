@@ -6,7 +6,7 @@ maturity.
 
 import wandb
 
-import psycop_feature_generation.loaders.raw  # noqa
+import psycop_feature_generation.loaders.raw  # noqa pylint: disable=unused-import
 from application.t2d.modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )

@@ -1,5 +1,6 @@
 """Import all raw loaders."""
 
+from ....application.t2d.modules import *  # noqa
 from ...data_checks.raw.check_predictor_lists import (  # noqa
     check_feature_combinations_return_correct_dfs,
 )
@@ -14,4 +15,3 @@ from .load_structured_sfi import *  # noqa
 from .load_t2d_outcomes import *  # noqa
 from .load_visits import *  # noqa
 from .sql_load import *  # noqa
-from .t2d_loaders import *  # noqa

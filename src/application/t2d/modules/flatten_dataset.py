@@ -1,6 +1,4 @@
-import time
-from pathlib import Path
-
+"""Flatten the dataset."""
 import pandas as pd
 import psutil
 from timeseriesflattener.feature_cache.cache_to_disk import DiskCache

@@ -84,7 +84,7 @@ def from_physical_visits(
 
     Args:
         icd_code (str): Substring to match diagnoses for. Matches any diagnoses, whether a-diagnosis, b-diagnosis etc. # noqa: DAR102
-        output_col_name_override (str, optional): Name of new column string. Defaults to "value".
+        output_col_name (str, optional): Name of new column string. Defaults to "value".
         n_rows: Number of rows to return. Defaults to None.
         wildcard_icd_code (bool, optional): Whether to match on icd_code*. Defaults to False.
 
