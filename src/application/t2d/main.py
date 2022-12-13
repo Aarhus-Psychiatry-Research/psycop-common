@@ -15,7 +15,7 @@ from application.t2d.modules.describe_flattened_dataset import (
 from application.t2d.modules.flatten_dataset import create_flattened_dataset
 from application.t2d.modules.project_setup import get_project_info, init_wandb
 from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk
-from application.t2d.modules.specify_features import get_spec_set
+from application.t2d.modules.specify_features import get_feature_specs
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 from psycop_feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
@@ -24,8 +24,8 @@ from psycop_feature_generation.utils import FEATURE_SETS_PATH
 
 
 def main(
-        proj_name: str,
-        feature_sets_path: Path,
+    proj_name: str,
+    feature_sets_path: Path,
 ):
     """Main function for loading, generating and evaluating a flattened
     dataset.
@@ -34,7 +34,7 @@ def main(
         proj_name (str): Name of project.
         feature_sets_path (Path): Path to where feature sets should be stored.
     """
-    feature_specs = get_spec_set()
+    feature_specs = get_feature_specs()
 
     project_info = get_project_info(
         n_predictors=len(feature_specs.temporal_predictors),
@@ -63,7 +63,7 @@ def main(
 
     save_feature_set_description_to_disk(
         predictor_specs=feature_specs.temporal_predictors
-                        + feature_specs.static_predictors,
+        + feature_specs.static_predictors,
         flattened_dataset_file_dir=save_dir,
         out_dir=save_dir,
         file_suffix="parquet",

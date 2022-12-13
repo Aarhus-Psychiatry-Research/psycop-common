@@ -31,7 +31,7 @@ def get_static_predictor_specs():
     ]
 
 
-def get_metadata_specs():
+def get_metadata_specs() -> list[AnySpec]:
     """Get metadata specs."""
     return [
         StaticSpec(
@@ -62,7 +62,7 @@ def get_outcome_specs():
         interval_days=[year * 365 for year in (1, 2, 3, 4, 5)],
         resolve_multiple_fn=["max"],
         fallback=[0],
-        incident=[True],
+        incident=True,
         allowed_nan_value_prop=[0],
     ).create_combinations()
 
@@ -127,11 +127,11 @@ def get_temporal_predictor_specs() -> list[PredictorSpec]:
     return unresolved_temporal_predictor_specs
 
 
-def get_spec_set() -> SpecSet:
+def get_feature_specs() -> list[AnySpec]:
     """Get a spec set."""
-    return SpecSet(
-        temporal_predictors=get_temporal_predictor_specs(),
-        static_predictors=get_static_predictor_specs(),
-        outcomes=get_outcome_specs(),
-        metadata=get_metadata_specs(),
+    return (
+        get_temporal_predictor_specs()
+        + get_static_predictor_specs()
+        + get_outcome_specs()
+        + get_metadata_specs()
     )
