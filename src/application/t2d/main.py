@@ -39,6 +39,9 @@ def main(
         project_name=project_name,
     )
 
+    # Use wandb to keep track of your dataset generations
+    # Makes it easier to find paths on wandb, as well as
+    # allows monitoring and automatic slack alert on failure
     init_wandb(
         wandb_project_name=project_info.project_name,
         predictor_specs=feature_specs.temporal_predictors,
