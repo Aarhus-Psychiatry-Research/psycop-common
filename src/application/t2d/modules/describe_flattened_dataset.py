@@ -5,9 +5,6 @@ from application.t2d.modules.project_setup import ProjectInfo
 from psycop_feature_generation.data_checks.flattened.data_integrity import (
     save_feature_set_integrity_from_dir,
 )
-from psycop_feature_generation.data_checks.flattened.feature_describer import (
-    save_feature_description_from_dir,
-)
 
 
 def save_flattened_dataset_description_to_disk(
