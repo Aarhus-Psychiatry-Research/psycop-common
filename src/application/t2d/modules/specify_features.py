@@ -92,26 +92,26 @@ def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpe
     interval_days = [30, 90, 180, 365, 730]
     allowed_nan_value_prop = [0]
 
-    # lab_results = PredictorGroupSpec(
-    #     values_loader=(
-    #         "hba1c",
-    #         "alat",
-    #         "hdl",
-    #         "ldl",
-    #         "scheduled_glc",
-    #         "unscheduled_p_glc",
-    #         "triglycerides",
-    #         "fasting_ldl",
-    #         "crp",
-    #         "egfr",
-    #         "albumine_creatinine_ratio",
-    #     ),
-    #     resolve_multiple_fn=resolve_multiple,
-    #     lookbehind_days=interval_days,
-    #     fallback=[np.nan],
-    #     allowed_nan_value_prop=allowed_nan_value_prop,
-    #     prefix=project_info.prefix.predictor,
-    # ).create_combinations()
+    lab_results = PredictorGroupSpec(
+        values_loader=(
+            "hba1c",
+            # "alat",
+            # "hdl",
+            # "ldl",
+            # "scheduled_glc",
+            # "unscheduled_p_glc",
+            # "triglycerides",
+            # "fasting_ldl",
+            # "crp",
+            # "egfr",
+            # "albumine_creatinine_ratio",
+        ),
+        resolve_multiple_fn=resolve_multiple,
+        lookbehind_days=interval_days,
+        fallback=[np.nan],
+        allowed_nan_value_prop=allowed_nan_value_prop,
+        prefix=project_info.prefix.predictor,
+    ).create_combinations()
 
     # diagnoses = PredictorGroupSpec(
     #     values_loader=(
@@ -136,16 +136,16 @@ def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpe
     #     prefix=project_info.prefix.predictor,
     # ).create_combinations()
 
-    medications = PredictorGroupSpec(
-        values_loader=("antipsychotics",),
-        lookbehind_days=interval_days,
-        resolve_multiple_fn=resolve_multiple,
-        fallback=[0],
-        allowed_nan_value_prop=allowed_nan_value_prop,
-        prefix=project_info.prefix.predictor,
-    ).create_combinations()
+    # medications = PredictorGroupSpec(
+    #     values_loader=("antipsychotics",),
+    #     lookbehind_days=interval_days,
+    #     resolve_multiple_fn=resolve_multiple,
+    #     fallback=[0],
+    #     allowed_nan_value_prop=allowed_nan_value_prop,
+    #     prefix=project_info.prefix.predictor,
+    # ).create_combinations()
 
-    return medications  # + lab_results + diagnoses + demographics
+    return lab_results  # + medications + diagnoses + demographics
 
 
 def get_feature_specs(project_info: ProjectInfo) -> list[_AnySpec]:

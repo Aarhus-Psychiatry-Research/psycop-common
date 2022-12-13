@@ -66,7 +66,6 @@ def main():
     )
 
     save_flattened_dataset_description_to_disk(
-        feature_specs=feature_specs,
         project_info=project_info,
     )
 
