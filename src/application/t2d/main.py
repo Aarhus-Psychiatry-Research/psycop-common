@@ -22,9 +22,6 @@ from psycop_feature_generation.loaders.raw.load_visits import (
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset.
-
-    Args:
-        project_name (str): Name of project.
     """
     project_info = get_project_info(
         project_name="t2d",
