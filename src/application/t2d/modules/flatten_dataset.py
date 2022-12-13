@@ -37,6 +37,10 @@ def create_flattened_dataset(
             feature_cache_dir=project_info.feature_set_path / "feature_cache",
         ),
         drop_pred_times_with_insufficient_look_distance=drop_pred_times_with_insufficient_look_distance,
+        predictor_col_name_prefix=project_info.prefix.predictor,
+        outcome_col_name_prefix=project_info.prefix.outcome,
+        timestamp_col_name=project_info.col_names.timestamp,
+        entity_id_col_name=project_info.col_names.id,
     )
 
     flattened_dataset.add_age(

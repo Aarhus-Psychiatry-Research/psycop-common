@@ -33,7 +33,6 @@ def main():
     # Makes it easier to find paths on wandb, as well as
     # allows monitoring and automatic slack alert on failure
     init_wandb(
-        wandb_project_name=project_info.project_name,
         feature_specs=feature_specs,
         project_info=project_info,
     )

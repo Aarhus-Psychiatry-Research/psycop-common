@@ -1,4 +1,5 @@
 """Describe flattened dataset.""" ""
+import logging
 from typing import Optional
 
 from timeseriesflattener.feature_spec_objects import AnySpec
@@ -7,6 +8,8 @@ from application.t2d.modules.project_setup import ProjectInfo
 from psycop_feature_generation.data_checks.flattened.data_integrity import (
     save_feature_set_integrity_from_dir,
 )
+
+log = logging.getLogger(__name__)
 
 
 def save_flattened_dataset_description_to_disk(
@@ -23,6 +26,17 @@ def save_flattened_dataset_description_to_disk(
         describe_splits (bool, optional): Whether to describe each split. Defaults to True.
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
+    feature_set_description_path = (
+        project_info.feature_set_path / "feature_set_description"
+    )
+    split_feature_distribution_comparison_path = (
+        project_info.feature_set_path / "split_feature_distribution_comparison_path"
+    )
+
+    log.info(
+        f"Saving flattened dataset description to disk. Check {feature_set_description_path} and {split_feature_distribution_comparison_path} to validate that your dataset is not broken in some way."
+    )
+
     for method in ("describe", "compare"):
         # Describe the feature set
         if method == "describe" and describe_splits:
@@ -35,7 +49,7 @@ def save_flattened_dataset_description_to_disk(
             ]
 
             compare_splits_in_method = False
-            out_dir = (project_info.feature_set_path / "feature_set_description",)
+            out_dir = feature_set_description_path
 
         # Compare train, val and test, to make sure they have the same categories
         if method == "compare" and compare_splits:
@@ -44,7 +58,7 @@ def save_flattened_dataset_description_to_disk(
             # Don't describe specs in comparison, to avoid leakage by describing features in val and test
             specs_to_describe = None
             compare_splits_in_method = True
-            out_dir = (project_info.feature_set_path / "data_integrity",)
+            out_dir = split_feature_distribution_comparison_path
 
         save_feature_set_integrity_from_dir(
             splits=splits,

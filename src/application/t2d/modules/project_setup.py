@@ -19,15 +19,23 @@ class Prefixes(BaseModel):
     eval: str = "eval"
 
 
+class ColNames(BaseModel):
+    """Column names for feature specs."""
+
+    timestamp = "timestamp"
+    id = "dw_ek_borger"
+
+
 class ProjectInfo(BaseModel):
     """Collection of project info."""
 
     project_name: str
     project_path: Path
     feature_set_path: Path
-    feature_set_id: str
+    feature_set_prefix: str
     dataset_format: Literal["parquet", "csv"] = "parquet"
     prefix: Prefixes = Prefixes()
+    col_names: ColNames = ColNames()
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -84,13 +92,12 @@ def get_project_info(
     return ProjectInfo(
         project_path=proj_path,
         feature_set_path=feature_set_path,
-        feature_set_id=feature_set_id,
+        feature_set_prefix=feature_set_id,
         project_name=project_name,
     )
 
 
 def init_wandb(
-    wandb_project_name: str,
     feature_specs: Sequence[PredictorSpec],
     project_info: ProjectInfo,
 ) -> None:
@@ -98,7 +105,6 @@ def init_wandb(
     Slack notifications if failing, and track logs.
 
     Args:
-        wandb_project_name (str): Name of wandb project.
         feature_specs (Iterable[dict[str, Any]]): List of predictor specs.
         project_info (ProjectInfo): Project info.
     """
@@ -125,4 +131,4 @@ def init_wandb(
             parents=True,
         )
 
-    wandb.init(project=wandb_project_name, config=feature_settings)
+    wandb.init(project=project_info.project_name, config=feature_settings)
