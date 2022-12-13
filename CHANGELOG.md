@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2022-12-13)
+### Feature
+* Add wandb alert on exception ([`3ff6e37`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3ff6e3797910bb159e23496da6d863097b646267))
+
+### Documentation
+* Improve create_flattened_dataset docs ([`637edfe`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/637edfe86b49540e44f7b8879e57e9be82890b10))
+* Misc. docs ([`4eac2ba`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/4eac2ba37913852e86e47cb679379f5678af8783))
+* Fix github test badge ([`dffeedc`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/dffeedc33c3ff7360eac67d4edcb0ff2c05fb3e0))
+
 ## v0.10.0 (2022-11-21)
 ### Feature
 * Add n_hba1c_within_n_lookahead_days ([`e84b591`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e84b5918724a55b721ec4d1a7291533227fe9ef8))
