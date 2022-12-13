@@ -14,4 +14,3 @@ from .load_structured_sfi import *  # noqa
 from .load_t2d_outcomes import *  # noqa
 from .load_visits import *  # noqa
 from .sql_load import *  # noqa
-from .t2d_loaders import *  # noqa

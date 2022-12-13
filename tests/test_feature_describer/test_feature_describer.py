@@ -2,22 +2,19 @@
 import numpy as np
 import pandas as pd
 import pytest
+from timeseriesflattener.feature_spec_objects import PredictorSpec, StaticSpec
 
 from psycop_feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_df,
     generate_feature_description_row,
 )
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
-    PredictorSpec,
-    StaticSpec,
-)
-from psycop_feature_generation.utils import PROJECT_ROOT
+from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
 
 # pylint: disable=redefined-outer-name, missing-function-docstring
 
 
 @pytest.fixture()
-def predictor_specs(df):
+def predictor_specs(df):  # pylint: disable=unused-argument
     return [
         PredictorSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
@@ -25,17 +22,19 @@ def predictor_specs(df):
             resolve_multiple_fn="max",
             fallback=np.nan,
             feature_name="hba1c",
+            input_col_name_override="hba1c",
         ),
     ]
 
 
 @pytest.fixture()
-def static_spec(df):
+def static_spec(df):  # pylint: disable=unused-argument
     return [
         StaticSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
             prefix="pred",
             feature_name="hba1c",
+            input_col_name_override="hba1c",
         ),
     ]
 
@@ -44,7 +43,7 @@ def static_spec(df):
 def df():
     """Load the synthetic flattened data set."""
     return pd.read_csv(
-        PROJECT_ROOT
+        RELATIVE_PROJECT_ROOT
         / "tests/test_data/flattened/generated_with_outcome/synth_flattened_with_outcome.csv",
     )
 

@@ -1,22 +1,15 @@
 """Utilites for testing."""
 
-from collections.abc import Sequence
 from io import StringIO
-from typing import Any, Optional, Union
 
 import numpy as np
 import pandas as pd
 import pytest
 from pandas import DataFrame
-from pandas.testing import assert_series_equal
 
 from psycop_feature_generation.loaders.synth.raw.load_synth_data import (
     load_synth_outcome,
     load_synth_prediction_times,
-)
-from psycop_feature_generation.timeseriesflattener import FlattenedDataset
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
-    TemporalSpec,
 )
 from psycop_feature_generation.utils import data_loaders
 
@@ -74,44 +67,6 @@ def str_to_df(
 
     # Drop "Unnamed" cols
     return df.loc[:, ~df.columns.str.contains("^Unnamed")]
-
-
-def assert_flattened_data_as_expected(
-    prediction_times_df: Union[pd.DataFrame, str],
-    output_spec: TemporalSpec,
-    expected_df: Optional[pd.DataFrame] = None,
-    expected_values: Optional[Sequence[Any]] = None,
-):
-    """Take a prediction times df and output spec and assert that the flattened data is as expected."""
-    if isinstance(prediction_times_df, str):
-        prediction_times_df = str_to_df(prediction_times_df)
-
-    flattened_ds = FlattenedDataset(
-        prediction_times_df=prediction_times_df,
-        n_workers=4,
-    )
-
-    flattened_ds.add_temporal_col_to_flattened_dataset(output_spec=output_spec)
-
-    if expected_df:
-        for col in expected_df.columns:
-            assert_series_equal(
-                left=flattened_ds.df[col],
-                right=expected_df[col],
-                check_dtype=False,
-            )
-    elif expected_values:
-        output = flattened_ds.df[output_spec.get_col_str()].values.tolist()
-        expected = list(expected_values)
-
-        for i, expected_val in enumerate(expected):
-            # NaN != NaN, hence specific handling
-            if np.isnan(expected_val):
-                assert np.isnan(output[i])
-            else:
-                assert expected_val == output[i]
-    else:
-        raise ValueError("Must provide an expected set of data")
 
 
 @data_loaders.register("load_event_times")

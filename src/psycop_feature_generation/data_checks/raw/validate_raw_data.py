@@ -1,6 +1,6 @@
 """Functions for validating raw data – in the sense of data returned from a
 loader."""
-import time
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
@@ -16,7 +16,6 @@ from psycop_feature_generation.data_checks.flattened.feature_describer import (
     create_unicode_hist,
 )
 from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
-from psycop_feature_generation.utils import RAW_DATA_VALIDATION_PATH
 
 
 def median_absolute_deviation(series: pd.Series) -> float:
@@ -107,6 +106,7 @@ def highlight_large_deviation(
 
 
 def validate_raw_data(
+    save_path: Path,
     df: pd.DataFrame,
     feature_set_name: str,
     deviation_baseline_column: Optional[str] = "median",
@@ -123,6 +123,7 @@ def validate_raw_data(
     named `feature_set_name`.
 
     Args:
+        save_path (Path): Path to save the validation results to.
         df (pd.DataFrame): Dataframe to validate.
         feature_set_name (str): Name of the feature set.
         deviation_baseline_column (Optional[str], optional): Which metric to use as
@@ -140,11 +141,7 @@ def validate_raw_data(
     msg = Printer(timestamp=True)
     failed_checks = {}
 
-    savepath = (
-        RAW_DATA_VALIDATION_PATH / feature_set_name / time.strftime("%Y_%m_%d_%H_%M")
-    )
-    if not savepath.exists():
-        savepath.mkdir(parents=True)
+    save_path.mkdir(parents=True, exist_ok=True)
 
     # check if `timestamp` and `dw_ek_borger` columns exist
     timestamp_col_name = "timestamp" if "timestamp" in df.columns else None
@@ -165,7 +162,7 @@ def validate_raw_data(
 
     with msg.loading("Running data integrity checks..."):
         suite_results = integ_suite.run(d_set)
-        suite_results.save_as_html(str(savepath / "data_integrity.html"))
+        suite_results.save_as_html(str(save_path / "data_integrity.html"))
         failed_checks["data_integrity"] = get_failed_check_names(suite_results)
 
     msg.good("Finished data integrity checks.")
@@ -183,7 +180,7 @@ def validate_raw_data(
 
     data_description = pd.DataFrame(data_description)
     data_description["prop NaT"] = get_na_prob(df[timestamp_col_name])  # type: ignore
-    data_description.to_csv(savepath / "data_description.csv", index=False)  # type: ignore
+    data_description.to_csv(save_path / "data_description.csv", index=False)  # type: ignore
     # Highlight rows with large deviations from the baseline
     data_description = data_description.style.apply(  # type: ignore
         func=highlight_large_deviation,
@@ -195,12 +192,12 @@ def validate_raw_data(
 
     save_df_to_pretty_html_table(
         data_description,
-        savepath / "data_description.html",
+        save_path / "data_description.html",
         title=f"Data description - {feature_set_name}",
         subtitle=f"Yellow rows indicate {deviation_threshold_ratio}x deviations from the {deviation_baseline_column}\n(99th/1st percentile within {deviation_baseline_column} +- {deviation_variation_column} * threshold={deviation_threshold_ratio}) from the baseline.)",
     )
 
-    msg.info(f"All files saved to {savepath}")
+    msg.info(f"All files saved to {save_path}")
     if failed_checks:
         print(
             f"The following checks failed - look through the generated reports!\n{failed_checks}",

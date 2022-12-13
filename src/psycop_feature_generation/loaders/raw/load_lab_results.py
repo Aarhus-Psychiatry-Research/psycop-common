@@ -262,7 +262,8 @@ def blood_sample(
 
 @data_loaders.register("hba1c")
 def hba1c(
-    n_rows: Optional[int] = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id="NPU27300",
@@ -379,7 +380,8 @@ def fasting_triglycerides(
 
 @data_loaders.register("hdl")
 def hdl(
-    n_rows: Optional[int] = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id="NPU01567",
@@ -390,7 +392,8 @@ def hdl(
 
 @data_loaders.register("ldl")
 def ldl(
-    n_rows: Optional[int] = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id=["NPU01568", "AAB00101"],
@@ -413,7 +416,8 @@ def fasting_ldl(
 
 @data_loaders.register("alat")
 def alat(
-    n_rows: Optional[int] = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id="NPU19651",
@@ -424,7 +428,8 @@ def alat(
 
 @data_loaders.register("asat")
 def asat(
-    n_rows: Optional[int] = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id="NPU19654",
@@ -459,7 +464,8 @@ def leukocytes(
 
 @data_loaders.register("crp")
 def crp(
-    n_rows: Optional[int] = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id="NPU19748",
@@ -482,7 +488,8 @@ def creatinine(
 
 @data_loaders.register("egfr")
 def egfr(
-    n_rows: Optional[int] = None, values_to_load: str = "numerical_and_coerce"
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id=["DNK35302", "DNK35131", "AAB00345", "AAB00343"],
