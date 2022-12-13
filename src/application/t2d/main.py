@@ -4,8 +4,6 @@ Uses T2D-features. WIP, will be migrated to psycop-t2d when reaching
 maturity.
 """
 
-from pathlib import Path
-
 import wandb
 
 import psycop_feature_generation.loaders.raw  # noqa
@@ -16,11 +14,6 @@ from application.t2d.modules.flatten_dataset import create_flattened_dataset
 from application.t2d.modules.project_setup import get_project_info, init_wandb
 from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk
 from application.t2d.modules.specify_features import get_feature_specs
-from psycop_feature_generation.loaders.raw.load_demographic import birthdays
-from psycop_feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
-from psycop_feature_generation.utils import FEATURE_SETS_PATH
 
 
 def main(
