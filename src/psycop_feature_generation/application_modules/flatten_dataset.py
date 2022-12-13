@@ -20,7 +20,8 @@ def create_flattened_dataset(
     Args:
         feature_specs (list[AnySpec]): List of feature specifications of any type.
         project_info (ProjectInfo): Project info.
-        prediction_times_df (pd.DataFrame): Prediction times.
+        prediction_times_df (pd.DataFrame): Prediction times dataframe.
+            Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
         drop_pred_times_with_insufficient_look_distance (bool): Whether to drop prediction times with insufficient look distance.
             See timeseriesflattener tutorial for more info.
 
