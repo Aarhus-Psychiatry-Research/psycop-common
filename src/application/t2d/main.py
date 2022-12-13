@@ -4,6 +4,9 @@ Uses T2D-features. WIP, will be migrated to psycop-t2d when reaching
 maturity.
 """
 
+import logging
+
+import coloredlogs
 import wandb
 
 from application.t2d.modules.specify_features import get_feature_specs
@@ -22,6 +25,13 @@ from psycop_feature_generation.application_modules.save_dataset_to_disk import (
 )
 from psycop_feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
+)
+
+log = logging.getLogger(__name__)
+
+coloredlogs.install(
+    level=logging.INFO,
+    fmt="%(asctime)s [%(levelname)s] %(message)s",
 )
 
 
@@ -62,6 +72,7 @@ def main():
     )
 
     wandb.log_artifact("poetry.lock", name="poetry_lock_file", type="poetry_lock")
+
 
 if __name__ == "__main__":
     main()

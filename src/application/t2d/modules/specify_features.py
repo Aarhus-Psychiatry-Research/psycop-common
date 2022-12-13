@@ -1,5 +1,7 @@
 """Feature specification module."""
 import numpy as np
+
+from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     OutcomeGroupSpec,
@@ -10,7 +12,7 @@ from timeseriesflattener.feature_spec_objects import (
     _AnySpec,
 )
 
-from psycop_feature_generation.application_modules.project_setup import ProjectInfo
+log = logging.getLogger(__name__)
 
 
 class SpecSet(BaseModel):
@@ -35,6 +37,8 @@ def get_static_predictor_specs(project_info: ProjectInfo):
 
 def get_metadata_specs(project_info: ProjectInfo) -> list[_AnySpec]:
     """Get metadata specs."""
+    log.info("–––––––– Generating metadata specs. ––––––––")
+    
     return [
         StaticSpec(
             values_loader="t2d",
@@ -61,6 +65,8 @@ def get_metadata_specs(project_info: ProjectInfo) -> list[_AnySpec]:
 
 def get_outcome_specs(project_info: ProjectInfo):
     """Get outcome specs."""
+    log.info("–––––––– Generating outcome specs. ––––––––")
+    
     return OutcomeGroupSpec(
         values_loader=["t2d"],
         lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
@@ -74,6 +80,8 @@ def get_outcome_specs(project_info: ProjectInfo):
 
 def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpec]:
     """Generate predictor spec list."""
+    log.info("–––––––– Generating temporal predictor specs. ––––––––")
+    
     resolve_multiple = ["max", "min", "mean", "latest", "count"]
     interval_days = [30, 90, 180, 365, 730]
     allowed_nan_value_prop = [0]
@@ -136,6 +144,7 @@ def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpe
 
 def get_feature_specs(project_info: ProjectInfo) -> list[_AnySpec]:
     """Get a spec set."""
+
     return (
         get_temporal_predictor_specs(project_info=project_info)
         + get_static_predictor_specs(project_info=project_info)

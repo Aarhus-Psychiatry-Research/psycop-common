@@ -1,4 +1,5 @@
 """Setup for the project."""
+import logging
 import sys
 import tempfile
 import time
@@ -6,9 +7,11 @@ from pathlib import Path
 from typing import Literal, Sequence
 
 import wandb
-from timeseriesflattener.feature_spec_objects import BaseModel, PredictorSpec
 
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
+from timeseriesflattener.feature_spec_objects import BaseModel, PredictorSpec
+
+log = logging.getLogger(__name__)
 
 
 class Prefixes(BaseModel):
@@ -79,6 +82,7 @@ def get_project_info(
     Returns:
         tuple[Path, str]: Tuple of project path, and feature_set_id
     """
+    log.info("Setting up project")
     proj_path = SHARED_RESOURCES_PATH / project_name
 
     current_user = Path().home().name
