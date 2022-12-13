@@ -6,7 +6,6 @@ maturity.
 
 import wandb
 
-import psycop_feature_generation.loaders.raw  # noqa pylint: disable=unused-import
 from application.t2d.modules.specify_features import get_feature_specs
 from psycop_feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
@@ -63,3 +62,6 @@ def main():
     )
 
     wandb.log_artifact("poetry.lock", name="poetry_lock_file", type="poetry_lock")
+
+if __name__ == "__main__":
+    main()

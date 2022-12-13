@@ -2,7 +2,7 @@
 import pandas as pd
 import psutil
 from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
-from timeseriesflattener.feature_spec_objects import AnySpec
+from timeseriesflattener.feature_spec_objects import _AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
@@ -14,7 +14,7 @@ from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 
 @wandb_alert_on_exception
 def create_flattened_dataset(
-    feature_specs: list[AnySpec],
+    feature_specs: list[_AnySpec],
     prediction_times_df: pd.DataFrame,
     drop_pred_times_with_insufficient_look_distance: bool,
     project_info: ProjectInfo,
@@ -22,7 +22,7 @@ def create_flattened_dataset(
     """Create flattened dataset.
 
     Args:
-        feature_specs (list[AnySpec]): List of feature specifications of any type.
+        feature_specs (list[_AnySpec]): List of feature specifications of any type.
         project_info (ProjectInfo): Project info.
         prediction_times_df (pd.DataFrame): Prediction times dataframe.
             Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.

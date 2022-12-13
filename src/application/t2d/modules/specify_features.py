@@ -1,13 +1,13 @@
 """Feature specification module."""
 import numpy as np
 from timeseriesflattener.feature_spec_objects import (
-    AnySpec,
     BaseModel,
     OutcomeGroupSpec,
     OutcomeSpec,
     PredictorGroupSpec,
     PredictorSpec,
     StaticSpec,
+    _AnySpec,
 )
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
@@ -19,7 +19,7 @@ class SpecSet(BaseModel):
     temporal_predictors: list[PredictorSpec]
     static_predictors: list[StaticSpec]
     outcomes: list[OutcomeSpec]
-    metadata: list[AnySpec]
+    metadata: list[_AnySpec]
 
 
 def get_static_predictor_specs(project_info: ProjectInfo):
@@ -33,7 +33,7 @@ def get_static_predictor_specs(project_info: ProjectInfo):
     ]
 
 
-def get_metadata_specs(project_info: ProjectInfo) -> list[AnySpec]:
+def get_metadata_specs(project_info: ProjectInfo) -> list[_AnySpec]:
     """Get metadata specs."""
     return [
         StaticSpec(
@@ -66,7 +66,7 @@ def get_outcome_specs(project_info: ProjectInfo):
         lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
         resolve_multiple_fn=["max"],
         fallback=[0],
-        incident=True,
+        incident=[True],
         allowed_nan_value_prop=[0],
         prefix=project_info.prefix.outcome,
     ).create_combinations()
@@ -134,7 +134,7 @@ def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpe
     return lab_results + diagnoses + medications + demographics
 
 
-def get_feature_specs(project_info: ProjectInfo) -> list[AnySpec]:
+def get_feature_specs(project_info: ProjectInfo) -> list[_AnySpec]:
     """Get a spec set."""
     return (
         get_temporal_predictor_specs(project_info=project_info)
