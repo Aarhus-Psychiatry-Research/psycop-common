@@ -7,6 +7,9 @@ import pandas as pd
 
 import psycop_feature_generation.loaders
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
+from psycop_feature_generation.application_modules.wandb_utils import (
+    wandb_alert_on_exception,
+)
 from psycop_feature_generation.utils import write_df_to_file
 
 log = logging.getLogger(__name__)
@@ -62,6 +65,7 @@ def get_split_id_df(split_name: Literal["train", "val", "test"]) -> pd.DataFrame
     return split_id_df
 
 
+@wandb_alert_on_exception
 def split_and_save_dataset_to_disk(
     flattened_df: pd.DataFrame,
     project_info: ProjectInfo,

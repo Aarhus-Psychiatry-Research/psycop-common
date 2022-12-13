@@ -6,9 +6,13 @@ from timeseriesflattener.feature_spec_objects import AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
+from psycop_feature_generation.application_modules.wandb_utils import (
+    wandb_alert_on_exception,
+)
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 
 
+@wandb_alert_on_exception
 def create_flattened_dataset(
     feature_specs: list[AnySpec],
     prediction_times_df: pd.DataFrame,

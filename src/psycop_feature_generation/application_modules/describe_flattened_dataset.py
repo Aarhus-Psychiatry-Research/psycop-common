@@ -5,6 +5,9 @@ from typing import Optional
 from timeseriesflattener.feature_spec_objects import AnySpec
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
+from psycop_feature_generation.application_modules.wandb_utils import (
+    wandb_alert_on_exception,
+)
 from psycop_feature_generation.data_checks.flattened.data_integrity import (
     save_feature_set_integrity_from_dir,
 )
@@ -12,6 +15,7 @@ from psycop_feature_generation.data_checks.flattened.data_integrity import (
 log = logging.getLogger(__name__)
 
 
+@wandb_alert_on_exception
 def save_flattened_dataset_description_to_disk(
     project_info: ProjectInfo,
     feature_specs: list[AnySpec],
