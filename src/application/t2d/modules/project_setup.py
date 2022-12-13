@@ -4,7 +4,10 @@ import time
 from pathlib import Path
 from typing import Sequence, Union
 
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import BaseModel, PredictorSpec
+from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+    BaseModel,
+    PredictorSpec,
+)
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
 
 
@@ -20,12 +23,12 @@ class ProjectInfo(BaseModel):
         # Iterate over each attribute. If the attribute is a Path, create it if it does not exist.
         for attr in self.__dict__:
             if isinstance(attr, Path):
-                attr.mkdir(exist_ok=True)
+                attr.mkdir(exist_ok=True, parents=True)
 
 
 def get_project_info(
-        n_predictors: int,
-        project_name: str,
+    n_predictors: int,
+    project_name: str,
 ) -> ProjectInfo:
     """Setup for main.
 
@@ -41,22 +44,22 @@ def get_project_info(
     current_user = Path().home().name
     feature_set_id = f"psycop_{project_name}_{current_user}_{n_predictors}_features_{time.strftime('%Y_%m_%d_%H_%M')}"
 
-    save_dir = create_feature_set_path(
+    feature_set_path = create_feature_set_path(
         feature_set_id=feature_set_id,
         proj_path=proj_path,
     )
 
     return ProjectInfo(
         project_path=proj_path,
-        feature_set_path=save_dir,
+        feature_set_path=feature_set_path,
         feature_set_id=feature_set_id,
         project_name=project_name,
     )
 
 
 def create_feature_set_path(
-        proj_path: Path,
-        feature_set_id: str,
+    proj_path: Path,
+    feature_set_id: str,
 ) -> Path:
     """Create save directory.
 
@@ -72,16 +75,15 @@ def create_feature_set_path(
     # Create directory to store all files related to this run
     save_dir = proj_path / "feature_sets" / feature_set_id
 
-    if not save_dir.exists():
-        save_dir.mkdir()
+    save_dir.mkdir(exist_ok=True, parents=True)
 
     return save_dir
 
 
 def init_wandb(
-        wandb_project_name: str,
-        predictor_specs: Sequence[PredictorSpec],
-        save_dir: Union[Path, str],
+    wandb_project_name: str,
+    predictor_specs: Sequence[PredictorSpec],
+    save_dir: Union[Path, str],
 ) -> None:
     """Initialise wandb logging. Allows to use wandb to track progress, send
     Slack notifications if failing, and track logs.
