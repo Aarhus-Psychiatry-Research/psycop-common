@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import AnyStr
-from application.t2d.modules.project_setup import ProjectInfo
 
+from application.t2d.modules.project_setup import ProjectInfo
 from psycop_feature_generation.data_checks.flattened.data_integrity import (
     save_feature_set_integrity_from_dir,
 )

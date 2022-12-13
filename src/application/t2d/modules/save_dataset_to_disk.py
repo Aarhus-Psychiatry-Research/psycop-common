@@ -27,7 +27,9 @@ def save_split_to_disk(
 
 
 def filter_by_split_ids(
-    flattened_df: pd.DataFrame, split_name: str, split_ids: pd.Series
+    flattened_df: pd.DataFrame,
+    split_name: str,
+    split_ids: pd.Series,
 ):
     """Filter dataframe by split ids."""
     msg = Printer(timestamp=True)
@@ -70,7 +72,9 @@ def split_and_save_dataset_to_disk(
         split_ids = get_split_ids(split_name=split_name)
 
         split_df = filter_by_split_ids(
-            flattened_df=flattened_df, split_name=split_name, split_ids=split_ids
+            flattened_df=flattened_df,
+            split_name=split_name,
+            split_ids=split_ids,
         )
 
         save_split_to_disk(

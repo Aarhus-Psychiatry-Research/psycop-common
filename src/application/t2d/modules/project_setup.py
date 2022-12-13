@@ -112,7 +112,8 @@ def init_wandb(
             parents=True,
         )
         (RELATIVE_PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True, parents=True
+            exist_ok=True,
+            parents=True,
         )
 
     wandb.init(project=wandb_project_name, config=feature_settings)

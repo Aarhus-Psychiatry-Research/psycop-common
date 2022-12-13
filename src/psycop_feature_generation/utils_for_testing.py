@@ -80,7 +80,8 @@ def assert_flattened_data_as_expected(
     expected_df: Optional[pd.DataFrame] = None,
     expected_values: Optional[Sequence[Any]] = None,
 ):
-    """Take a prediction times df and output spec and assert that the flattened data is as expected."""
+    """Take a prediction times df and output spec and assert that the flattened
+    data is as expected."""
     if isinstance(prediction_times_df, str):
         prediction_times_df = str_to_df(prediction_times_df)
 

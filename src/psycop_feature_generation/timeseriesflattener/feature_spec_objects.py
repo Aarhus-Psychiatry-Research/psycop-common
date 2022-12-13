@@ -19,7 +19,9 @@ msg = Printer(timestamp=True)
 
 @cache
 def load_df_with_cache(
-    loader_fn: Callable, kwargs: dict[str, Any], feature_name: str
+    loader_fn: Callable,
+    kwargs: dict[str, Any],
+    feature_name: str,
 ) -> pd.DataFrame:
     msg.info(f"{feature_name}: Loading values")
     df = loader_fn(**kwargs)
@@ -38,7 +40,8 @@ def resolve_values_df(data: dict[str, Any]):
         raise ValueError("Either values_loader or df must be specified.")
 
     if in_dict_and_not_none(d=data, key="values_loader") and in_dict_and_not_none(
-        key="values_df", d=data
+        key="values_df",
+        d=data,
     ):
         raise ValueError("Only one of values_loader or df can be specified.")
 
@@ -113,12 +116,21 @@ class AnySpec(BaseModel):
         # type hint so that mypy doesn't complain.
         self.values_df: pd.DataFrame = self.values_df
 
+    def get_col_str(self) -> str:
+        """Create column name for the output column."""
+        col_str = f"{self.prefix}_{self.feature_name}"
+
+        return col_str
+
     def __eq__(self, other):
-        """Trying to run `spec in list_of_specs` works for all attributes except for df,
-        since the truth value of a dataframe is ambiguous. To remedy this, we use pandas'
+        """Trying to run `spec in list_of_specs` works for all attributes
+        except for df, since the truth value of a dataframe is ambiguous. To
+        remedy this, we use pandas'.
+
         .equals() method for comparing the dfs, and get the combined truth value.
 
-        We need to override the __eq__ method."""
+        We need to override the __eq__ method.
+        """
         other_attributes_equal = all(
             getattr(self, attr) == getattr(other, attr)
             for attr in self.__dict__
@@ -129,20 +141,14 @@ class AnySpec(BaseModel):
 
         return other_attributes_equal and dfs_equal
 
-    def get_col_str(self) -> str:
-        """Create column name for the output column."""
-        col_str = f"{self.prefix}_{self.feature_name}"
-
-        return col_str
-
 
 class StaticSpec(AnySpec):
     """Specification for a static feature."""
 
 
 class TemporalSpec(AnySpec):
-    """The minimum specification required for all collapsed time series (temporal features),
-    whether looking ahead or behind.
+    """The minimum specification required for all collapsed time series
+    (temporal features), whether looking ahead or behind.
 
     Mostly used for inheritance below.
     """
@@ -234,7 +240,10 @@ class OutcomeSpec(TemporalSpec):
 
 class MinGroupSpec(BaseModel):
     """Minimum specification for a group of features, whether they're looking
-    ahead or behind. Used to generate combinations of features."""
+    ahead or behind.
+
+    Used to generate combinations of features.
+    """
 
     values_loader: list[str]
     # Loader for the df. Tries to resolve from the resolve_multiple_nfs registry,
@@ -266,7 +275,7 @@ class MinGroupSpec(BaseModel):
 
         # Check that all passed loaders are valid
         invalid_loaders = list(
-            set(self.values_loader) - set(data_loaders.get_all().keys())
+            set(self.values_loader) - set(data_loaders.get_all().keys()),
         )
         if len(invalid_loaders) != 0:
             nl = "\n"  # New line variable as f-string can't handle backslashes
@@ -274,7 +283,7 @@ class MinGroupSpec(BaseModel):
                 f"""Some loader strings could not be resolved in the data_loaders catalogue. Did you make a typo? If you want to add your own loaders to the catalogue, see explosion / catalogue on GitHub for info. 
                 {nl*2}Loaders that could not be resolved:"""
                 f"""{nl}{nl.join(str(loader) for loader in invalid_loaders)}{nl}{nl}"""
-                f"""Available loaders:{nl}{nl.join(str(loader) for loader in data_loaders.get_all().keys())}"""
+                f"""Available loaders:{nl}{nl.join(str(loader) for loader in data_loaders.get_all().keys())}""",
             )
 
         if self.output_col_name_override:
