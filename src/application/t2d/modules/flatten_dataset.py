@@ -27,9 +27,6 @@ def create_flattened_dataset(
     Returns:
         FlattenedDataset: Flattened dataset.
     """
-    cache = DiskCache(
-        feature_cache_dir=project_info.feature_set_path / "feature_cache",
-    )
 
     flattened_dataset = TimeseriesFlattener(
         prediction_times_df=physical_visits_to_psychiatry(),
@@ -37,7 +34,9 @@ def create_flattened_dataset(
             len(feature_specs),
             psutil.cpu_count(logical=False),
         ),
-        cache=cache,
+        cache=DiskCache(
+            feature_cache_dir=project_info.feature_set_path / "feature_cache",
+        ),
         drop_pred_times_with_insufficient_look_distance=False,
     )
 

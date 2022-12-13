@@ -395,7 +395,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
     n_rows: Optional[int] = None,
     split_names: Iterable[str] = ("train", "val", "test"),
     out_dir: Optional[Path] = None,
-    file_suffix: str = "parquet",
+    dataset_format: str = "parquet",
     describe_splits: bool = True,
     compare_splits: bool = True,
 ) -> None:
@@ -415,9 +415,9 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
         describe_splits (bool, optional): Whether to describe each split. Defaults to True.
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
-    if file_suffix not in ("parquet", "csv"):
+    if dataset_format not in ("parquet", "csv"):
         raise ValueError(
-            f"file_suffix must be either 'parquet' or 'csv', got {file_suffix}",
+            f"file_suffix must be either 'parquet' or 'csv', got {dataset_format}",
         )
 
     if out_dir is None:
@@ -431,7 +431,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
         feature_set_dir=feature_set_dir,
         split="train",
         nrows=n_rows,
-        file_suffix=file_suffix,
+        file_suffix=dataset_format,
     )
 
     failed_checks = (
@@ -440,7 +440,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
 
     # Check if file splits exist before running checks
     for split_name in split_names:
-        file = list(feature_set_dir.glob(f"*{split_name}*{file_suffix}"))
+        file = list(feature_set_dir.glob(f"*{split_name}*{dataset_format}"))
 
         if not file:  # pylint: disable=consider-using-assignment-expr
             raise ValueError(f"{split_name} split not found in {feature_set_dir}")
@@ -463,7 +463,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
                 out_dir=out_dir,
                 outcome_checks_dir=outcome_checks_dir,
                 train_outcomes_df=train_outcomes_df,
-                file_suffix=file_suffix,
+                file_suffix=dataset_format,
             )
 
             # Add all keys in failures to failed_checks
@@ -479,5 +479,5 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
             n_rows=n_rows,
             out_dir=out_dir,
             train_outcome_df=train_outcomes_df,
-            file_suffix=file_suffix,
+            file_suffix=dataset_format,
         )

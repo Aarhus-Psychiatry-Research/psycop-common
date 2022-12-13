@@ -198,7 +198,7 @@ def test_all_non_online_elements_in_pipeline(
         predictor_specs=predictor_combinations,
         flattened_dataset_file_dir=tmp_path,
         out_dir=tmp_path,
-        file_suffix="parquet",
+        load_file_format="parquet",
         describe_splits=True,
         compare_splits=True,
     )

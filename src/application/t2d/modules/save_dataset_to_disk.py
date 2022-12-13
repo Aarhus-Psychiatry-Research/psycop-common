@@ -15,7 +15,7 @@ def save_split_to_disk(
 ):
     # Version table with current date and time
     filename = (
-        f"{project_info.feature_set_id}_{split_name}.{project_info.output_format}"
+        f"{project_info.feature_set_id}_{split_name}.{project_info.dataset_format}"
     )
     msg.info(f"Saving {filename} to disk")
 

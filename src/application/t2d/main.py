@@ -32,12 +32,11 @@ def main(
     Args:
         project_name (str): Name of project.
     """
-    feature_specs = get_feature_specs()
-
     project_info = get_project_info(
-        n_predictors=len(feature_specs.temporal_predictors),
         project_name=project_name,
     )
+
+    feature_specs = get_feature_specs(project_info=project_info)
 
     # Use wandb to keep track of your dataset generations
     # Makes it easier to find paths on wandb, as well as
@@ -60,11 +59,9 @@ def main(
     )
 
     save_feature_set_description_to_disk(
-        predictor_specs=feature_specs.temporal_predictors
-        + feature_specs.static_predictors,
-        flattened_dataset_file_dir=save_dir,
-        out_dir=save_dir,
-        file_suffix="parquet",
+        feature_specs=feature_specs,
+        load_file_format="parquet",
+        project_info=project_info,
     )
 
     wandb.log_artifact("poetry.lock", name="poetry_lock_file", type="poetry_lock")

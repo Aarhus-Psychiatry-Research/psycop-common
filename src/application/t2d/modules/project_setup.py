@@ -9,12 +9,19 @@ from timeseriesflattener.feature_spec_objects import BaseModel, PredictorSpec
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
 
 
+class Prefixes(BaseModel):
+    predictor: str = "pred"
+    outcome: str = "outc"
+    eval: str = "eval"
+
+
 class ProjectInfo(BaseModel):
     project_name: str
     project_path: Path
     feature_set_path: Path
     feature_set_id: str
-    output_format: str: Literal["parquet", "csv"] = "parquet"
+    dataset_format: Literal["parquet", "csv"] = "parquet"
+    prefix: Prefixes = Prefixes()
 
     def __init__():
         super().__init__()
@@ -26,13 +33,11 @@ class ProjectInfo(BaseModel):
 
 
 def get_project_info(
-    n_predictors: int,
     project_name: str,
 ) -> ProjectInfo:
     """Setup for main.
 
     Args:
-        n_predictors (int): Number of predictors.
         feature_sets_path (Path): Path to feature sets.
         project_name (str): Name of project.
     Returns:
@@ -41,7 +46,7 @@ def get_project_info(
     proj_path = SHARED_RESOURCES_PATH / project_name
 
     current_user = Path().home().name
-    feature_set_id = f"psycop_{project_name}_{current_user}_{n_predictors}_features_{time.strftime('%Y_%m_%d_%H_%M')}"
+    feature_set_id = f"psycop_{project_name}_{current_user}_features_{time.strftime('%Y_%m_%d_%H_%M')}"
 
     feature_set_path = create_feature_set_path(
         feature_set_id=feature_set_id,
