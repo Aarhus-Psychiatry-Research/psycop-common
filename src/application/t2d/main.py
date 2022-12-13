@@ -24,6 +24,9 @@ from psycop_feature_generation.application_modules.project_setup import (
 from psycop_feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
+from psycop_feature_generation.application_modules.wandb_utils import (
+    wandb_alert_on_exception,
+)
 from psycop_feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
@@ -36,22 +39,10 @@ coloredlogs.install(
 )
 
 
+@wandb_alert_on_exception
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""
-    project_info = get_project_info(
-        project_name="t2d",
-    )
-
-    feature_specs = get_feature_specs(project_info=project_info)
-
-    # Use wandb to keep track of your dataset generations
-    # Makes it easier to find paths on wandb, as well as
-    # allows monitoring and automatic slack alert on failure
-    init_wandb(
-        feature_specs=feature_specs,
-        project_info=project_info,
-    )
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
@@ -73,4 +64,22 @@ def main():
 
 
 if __name__ == "__main__":
+    # Run elements that are required before wandb init first,
+    # then run the rest in main so you can wrap it all in
+    # wandb_alert_on_exception, which will send a slack alert
+    # if you have wandb alerts set up in wandb
+    project_info = get_project_info(
+        project_name="t2d",
+    )
+
+    feature_specs = get_feature_specs(project_info=project_info)
+
+    # Use wandb to keep track of your dataset generations
+    # Makes it easier to find paths on wandb, as well as
+    # allows monitoring and automatic slack alert on failure
+    init_wandb(
+        feature_specs=feature_specs,
+        project_info=project_info,
+    )
+
     main()
