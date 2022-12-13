@@ -14,7 +14,7 @@ from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
 
 
 @pytest.fixture()
-def predictor_specs():
+def predictor_specs(df):  # pylint: disable=unused-argument
     return [
         PredictorSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
@@ -22,17 +22,19 @@ def predictor_specs():
             resolve_multiple_fn="max",
             fallback=np.nan,
             feature_name="hba1c",
+            input_col_name_override="hba1c",
         ),
     ]
 
 
 @pytest.fixture()
-def static_spec():
+def static_spec(df):  # pylint: disable=unused-argument
     return [
         StaticSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
             prefix="pred",
             feature_name="hba1c",
+            input_col_name_override="hba1c",
         ),
     ]
 
