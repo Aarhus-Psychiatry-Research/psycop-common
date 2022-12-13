@@ -24,20 +24,19 @@ from psycop_feature_generation.utils import FEATURE_SETS_PATH
 
 
 def main(
-    proj_name: str,
+    project_name: str,
 ):
     """Main function for loading, generating and evaluating a flattened
     dataset.
 
     Args:
-        proj_name (str): Name of project.
-        feature_sets_path (Path): Path to where feature sets should be stored.
+        project_name (str): Name of project.
     """
     feature_specs = get_feature_specs()
 
     project_info = get_project_info(
         n_predictors=len(feature_specs.temporal_predictors),
-        proj_name=proj_name,
+        project_name=project_name,
     )
 
     init_wandb(
@@ -47,10 +46,8 @@ def main(
     )
 
     flattened_df = create_flattened_dataset(
-        prediction_times=,
-        spec_set=feature_specs,
-        proj_path=proj_path,
-        birthdays=birthdays(),
+        feature_specs=feature_specs,
+        project_info=project_info,
     )
 
     split_and_save_dataset_to_disk(
@@ -73,5 +70,5 @@ def main(
 
 if __name__ == "__main__":
     main(
-        proj_name="t2d",
+        project_name="t2d",
     )
