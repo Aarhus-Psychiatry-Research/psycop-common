@@ -7,13 +7,12 @@ from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 from application.t2d.modules.project_setup import ProjectInfo
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
-from psycop_feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
 
 
 def create_flattened_dataset(
     feature_specs: list[AnySpec],
+    prediction_times_df: pd.DataFrame,
+    drop_pred_times_with_insufficient_look_distance: bool,
     project_info: ProjectInfo,
 ) -> pd.DataFrame:
     """Create flattened dataset.
@@ -27,7 +26,7 @@ def create_flattened_dataset(
     """
 
     flattened_dataset = TimeseriesFlattener(
-        prediction_times_df=physical_visits_to_psychiatry(),
+        prediction_times_df=prediction_times_df,
         n_workers=min(
             len(feature_specs),
             psutil.cpu_count(logical=False),
@@ -35,7 +34,7 @@ def create_flattened_dataset(
         cache=DiskCache(
             feature_cache_dir=project_info.feature_set_path / "feature_cache",
         ),
-        drop_pred_times_with_insufficient_look_distance=False,
+        drop_pred_times_with_insufficient_look_distance=drop_pred_times_with_insufficient_look_distance,
     )
 
     flattened_dataset.add_age(

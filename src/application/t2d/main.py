@@ -14,6 +14,9 @@ from application.t2d.modules.flatten_dataset import create_flattened_dataset
 from application.t2d.modules.project_setup import get_project_info, init_wandb
 from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk
 from application.t2d.modules.specify_features import get_feature_specs
+from psycop_feature_generation.loaders.raw.load_visits import (
+    physical_visits_to_psychiatry,
+)
 
 
 def main(
@@ -26,7 +29,7 @@ def main(
         project_name (str): Name of project.
     """
     project_info = get_project_info(
-        project_name=project_name,
+        project_name="t2d",
     )
 
     feature_specs = get_feature_specs(project_info=project_info)
@@ -43,6 +46,8 @@ def main(
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
         project_info=project_info,
+        prediction_times_df=physical_visits_to_psychiatry(),
+        drop_pred_times_with_insufficient_look_distance=False,
     )
 
     split_and_save_dataset_to_disk(
@@ -58,9 +63,3 @@ def main(
     )
 
     wandb.log_artifact("poetry.lock", name="poetry_lock_file", type="poetry_lock")
-
-
-if __name__ == "__main__":
-    main(
-        project_name="t2d",
-    )
