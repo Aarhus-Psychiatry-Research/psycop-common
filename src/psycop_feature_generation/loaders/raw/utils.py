@@ -32,7 +32,6 @@ def str_to_sql_match_logic(
     return f"{base_query}'"
 
 
-
 def list_to_sql_logic(
     codes_to_match: list[str],
     code_sql_col_name: str,

@@ -140,7 +140,11 @@ def concat_medications(
 # data_loaders primarly used in psychiatry
 @data_loaders.register("antipsychotics")
 def antipsychotics(n_rows: Optional[int] = None) -> pd.DataFrame:
-    """All antipsyhotics, except Lithium. Lithium is typically considered a mood stabilizer, not an antipsychotic."""
+    """All antipsyhotics, except Lithium.
+
+    Lithium is typically considered a mood stabilizer, not an
+    antipsychotic.
+    """
     return load(
         atc_code="N05A",
         load_prescribed=True,
@@ -199,7 +203,10 @@ def second_gen_antipsychotics(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 @data_loaders.register("top_10_weight_gaining_antipsychotics")
 def top_10_weight_gaining_antipsychotics(n_rows: Optional[int] = None) -> pd.DataFrame:
-    """Top 10 weight gaining antipsychotics based on Huhn et al. 2019. Only 5 of them are marketed in Denmark."""
+    """Top 10 weight gaining antipsychotics based on Huhn et al.
+
+    2019. Only 5 of them are marketed in Denmark.
+    """
     return load(
         atc_code=[
             "N05AH03",
@@ -631,7 +638,7 @@ def diuretics(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 @data_loaders.register("gerd_drugs")
 def gerd_drugs(n_rows: Optional[int] = None) -> pd.DataFrame:
-    """Gastroesophageal reflux disease (GERD) drugs"""
+    """Gastroesophageal reflux disease (GERD) drugs."""
     return load(
         atc_code="A02",
         load_prescribed=False,
