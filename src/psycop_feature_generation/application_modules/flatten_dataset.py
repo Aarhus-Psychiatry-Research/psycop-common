@@ -37,7 +37,7 @@ def create_flattened_dataset(
         prediction_times_df=prediction_times_df,
         n_workers=min(
             len(feature_specs),
-            psutil.cpu_count(logical=False),
+            psutil.cpu_count(logical=True),
         ),
         cache=DiskCache(
             feature_cache_dir=project_info.project_path / "feature_cache",
