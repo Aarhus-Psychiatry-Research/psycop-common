@@ -16,7 +16,7 @@ from timeseriesflattener.feature_spec_objects import (
 from timeseriesflattener.flattened_dataset import FlattenedDataset
 
 from application.t2d.modules.describe_flattened_dataset import (
-    save_feature_set_description_to_disk,
+    save_flattened_dataset_description_to_disk,
 )
 from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk
 
@@ -194,7 +194,7 @@ def test_all_non_online_elements_in_pipeline(
         output_format="parquet",
     )
 
-    save_feature_set_description_to_disk(
+    save_flattened_dataset_description_to_disk(
         predictor_specs=predictor_combinations,
         flattened_dataset_file_dir=tmp_path,
         out_dir=tmp_path,

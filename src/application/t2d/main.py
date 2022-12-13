@@ -10,7 +10,7 @@ import wandb
 
 import psycop_feature_generation.loaders.raw  # noqa
 from application.t2d.modules.describe_flattened_dataset import (
-    save_feature_set_description_to_disk,
+    save_flattened_dataset_description_to_disk,
 )
 from application.t2d.modules.flatten_dataset import create_flattened_dataset
 from application.t2d.modules.project_setup import get_project_info, init_wandb
@@ -58,7 +58,7 @@ def main(
         output_format="parquet",
     )
 
-    save_feature_set_description_to_disk(
+    save_flattened_dataset_description_to_disk(
         feature_specs=feature_specs,
         load_file_format="parquet",
         project_info=project_info,
