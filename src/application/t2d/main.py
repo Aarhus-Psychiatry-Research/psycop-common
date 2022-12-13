@@ -19,9 +19,7 @@ from psycop_feature_generation.loaders.raw.load_visits import (
 )
 
 
-def main(
-    project_name: str,
-):
+def main():
     """Main function for loading, generating and evaluating a flattened
     dataset.
 
@@ -39,15 +37,15 @@ def main(
     # allows monitoring and automatic slack alert on failure
     init_wandb(
         wandb_project_name=project_info.project_name,
-        predictor_specs=feature_specs.temporal_predictors,
-        feature_set_path=project_info.feature_set_path,  # Save-dir as argument because we want to log the path
+        feature_specs=feature_specs,
+        project_info=project_info,
     )
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
-        project_info=project_info,
         prediction_times_df=physical_visits_to_psychiatry(),
         drop_pred_times_with_insufficient_look_distance=False,
+        project_info=project_info,
     )
 
     split_and_save_dataset_to_disk(

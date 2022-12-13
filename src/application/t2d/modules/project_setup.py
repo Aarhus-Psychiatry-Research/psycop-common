@@ -91,21 +91,25 @@ def get_project_info(
 
 def init_wandb(
     wandb_project_name: str,
-    predictor_specs: Sequence[PredictorSpec],
-    feature_set_path: Union[Path, str],
+    feature_specs: Sequence[PredictorSpec],
+    project_info: ProjectInfo,
 ) -> None:
     """Initialise wandb logging. Allows to use wandb to track progress, send
     Slack notifications if failing, and track logs.
 
     Args:
         wandb_project_name (str): Name of wandb project.
-        predictor_specs (Iterable[dict[str, Any]]): List of predictor specs.
-        feature_set_path (Union[Path, str]): Path to save dir.
+        feature_specs (Iterable[dict[str, Any]]): List of predictor specs.
+        project_info (ProjectInfo): Project info.
     """
 
     feature_settings = {
-        "feature_set_path": feature_set_path,
-        "predictor_list": [spec.__dict__ for spec in predictor_specs],
+        "feature_set_path": project_info.feature_set_path,
+        "predictor_list": [
+            spec.__dict__
+            for spec in feature_specs
+            if spec.prefix == project_info.prefix.predictor
+        ],
     }
 
     # on Overtaci, the wandb tmp directory is not automatically created,

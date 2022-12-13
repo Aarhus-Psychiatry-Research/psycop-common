@@ -20,6 +20,8 @@ def create_flattened_dataset(
     Args:
         feature_specs (list[AnySpec]): List of feature specifications of any type.
         project_info (ProjectInfo): Project info.
+        drop_pred_times_with_insufficient_look_distance (bool): Whether to drop prediction times with insufficient look distance.
+            See timeseriesflattener tutorial for more info.
 
     Returns:
         FlattenedDataset: Flattened dataset.
