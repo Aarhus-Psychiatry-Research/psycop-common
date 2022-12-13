@@ -34,7 +34,7 @@ def save_flattened_dataset_description_to_disk(
     )
 
     log.info(
-        f"Saving flattened dataset description to disk. Check {feature_set_description_path} and {split_feature_distribution_comparison_path} to validate that your dataset is not broken in some way."
+        f"Saving flattened dataset description to disk. Check {feature_set_description_path} and {split_feature_distribution_comparison_path} to validate that your dataset is not broken in some way.",
     )
 
     for method in ("describe", "compare"):

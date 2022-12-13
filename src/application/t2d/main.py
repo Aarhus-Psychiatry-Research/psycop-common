@@ -11,9 +11,16 @@ from application.t2d.modules.specify_features import get_feature_specs
 from psycop_feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
-from psycop_feature_generation.application_modules.flatten_dataset import create_flattened_dataset
-from psycop_feature_generation.application_modules.project_setup import get_project_info, init_wandb
-from psycop_feature_generation.application_modules.save_dataset_to_disk import split_and_save_dataset_to_disk
+from psycop_feature_generation.application_modules.flatten_dataset import (
+    create_flattened_dataset,
+)
+from psycop_feature_generation.application_modules.project_setup import (
+    get_project_info,
+    init_wandb,
+)
+from psycop_feature_generation.application_modules.save_dataset_to_disk import (
+    split_and_save_dataset_to_disk,
+)
 from psycop_feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
@@ -21,8 +28,7 @@ from psycop_feature_generation.loaders.raw.load_visits import (
 
 def main():
     """Main function for loading, generating and evaluating a flattened
-    dataset.
-    """
+    dataset."""
     project_info = get_project_info(
         project_name="t2d",
     )

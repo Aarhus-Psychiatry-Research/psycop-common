@@ -13,10 +13,10 @@ log = logging.getLogger(__name__)
 
 
 def save_flattened_dataset_description_to_disk(
-        project_info: ProjectInfo,
-        feature_specs: list[AnySpec],
-        describe_splits: bool = True,
-        compare_splits: bool = True,
+    project_info: ProjectInfo,
+    feature_specs: list[AnySpec],
+    describe_splits: bool = True,
+    compare_splits: bool = True,
 ):
     """Describe output.
 
@@ -27,14 +27,14 @@ def save_flattened_dataset_description_to_disk(
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
     feature_set_description_path = (
-            project_info.feature_set_path / "feature_set_description"
+        project_info.feature_set_path / "feature_set_description"
     )
     split_feature_distribution_comparison_path = (
-            project_info.feature_set_path / "split_feature_distribution_comparison_path"
+        project_info.feature_set_path / "split_feature_distribution_comparison_path"
     )
 
     log.info(
-        f"Saving flattened dataset description to disk. Check {feature_set_description_path} and {split_feature_distribution_comparison_path} to validate that your dataset is not broken in some way."
+        f"Saving flattened dataset description to disk. Check {feature_set_description_path} and {split_feature_distribution_comparison_path} to validate that your dataset is not broken in some way.",
     )
 
     for method in ("describe", "compare"):

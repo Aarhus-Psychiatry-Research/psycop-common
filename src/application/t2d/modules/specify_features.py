@@ -137,8 +137,8 @@ def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpe
 def get_feature_specs(project_info: ProjectInfo) -> list[AnySpec]:
     """Get a spec set."""
     return (
-            get_temporal_predictor_specs(project_info=project_info)
-            + get_static_predictor_specs(project_info=project_info)
-            + get_outcome_specs(project_info=project_info)
-            + get_metadata_specs(project_info=project_info)
+        get_temporal_predictor_specs(project_info=project_info)
+        + get_static_predictor_specs(project_info=project_info)
+        + get_outcome_specs(project_info=project_info)
+        + get_metadata_specs(project_info=project_info)
     )
