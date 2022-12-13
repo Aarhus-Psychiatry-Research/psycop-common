@@ -63,12 +63,10 @@ def main():
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
         project_info=project_info,
-        output_format="parquet",
     )
 
     save_flattened_dataset_description_to_disk(
         feature_specs=feature_specs,
-        load_file_format="parquet",
         project_info=project_info,
     )
 
