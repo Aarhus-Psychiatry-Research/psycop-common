@@ -14,6 +14,7 @@ class ProjectInfo(BaseModel):
     project_path: Path
     feature_set_path: Path
     feature_set_id: str
+    output_format: str: Literal["parquet", "csv"] = "parquet"
 
     def __init__():
         super().__init__()

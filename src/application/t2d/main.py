@@ -52,9 +52,8 @@ def main(
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
-        out_dir=save_dir,
-        file_prefix=feature_set_id,
-        file_suffix="parquet",
+        project_info=project_info,
+        output_format="parquet",
     )
 
     save_feature_set_description_to_disk(

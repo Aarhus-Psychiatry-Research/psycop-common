@@ -191,7 +191,7 @@ def test_all_non_online_elements_in_pipeline(
         file_prefix="integration",
         split_ids_dict=split_ids,
         splits=splits,
-        file_suffix="parquet",
+        output_format="parquet",
     )
 
     save_feature_set_description_to_disk(
