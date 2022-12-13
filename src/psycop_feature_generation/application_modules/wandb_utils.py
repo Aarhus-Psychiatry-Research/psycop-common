@@ -11,7 +11,7 @@ def wandb_alert_on_exception(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            wandb.alert(traceback.format_exc())
+            wandb.alert(title="Run crashed", text=traceback.format_exc())
             raise e
 
     return wrapper
