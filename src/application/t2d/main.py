@@ -42,6 +42,7 @@ coloredlogs.install(
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""
+    feature_specs = get_feature_specs(project_info=project_info)
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
@@ -71,13 +72,10 @@ if __name__ == "__main__":
         project_name="t2d",
     )
 
-    feature_specs = get_feature_specs(project_info=project_info)
-
     # Use wandb to keep track of your dataset generations
     # Makes it easier to find paths on wandb, as well as
     # allows monitoring and automatic slack alert on failure
     init_wandb(
-        feature_specs=feature_specs,
         project_info=project_info,
     )
 
