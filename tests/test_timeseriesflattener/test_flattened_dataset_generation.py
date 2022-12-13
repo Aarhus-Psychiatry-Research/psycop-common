@@ -9,15 +9,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from application.t2d.generate_features_and_write_to_disk import (
+from application.t2d.modules.flattened_dataset_description import (
     save_feature_set_description_to_disk,
-    split_and_save_dataset_to_disk,
 )
-from psycop_feature_generation.loaders.synth.raw.load_synth_data import (
-    load_synth_prediction_times,
-    synth_predictor_binary,
-    synth_predictor_float,
-)
+from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk
 from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
     OutcomeSpec,
     PredictorGroupSpec,
@@ -25,10 +20,6 @@ from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
 )
 from psycop_feature_generation.timeseriesflattener.flattened_dataset import (
     FlattenedDataset,
-)
-from psycop_feature_generation.utils_for_testing import (
-    synth_outcome,
-    synth_prediction_times,
 )
 
 base_float_predictor_combinations = PredictorGroupSpec(
@@ -94,9 +85,9 @@ def check_dfs_have_same_contents_by_column(df1, df2):
 
 
 def create_flattened_df(
-    cache_dir: Path,
-    predictor_specs: Iterable[TemporalSpec],
-    prediction_times_df: pd.DataFrame,
+        cache_dir: Path,
+        predictor_specs: Iterable[TemporalSpec],
+        prediction_times_df: pd.DataFrame,
 ):
     """Create a dataset df for testing."""
     flat_ds = FlattenedDataset(
@@ -117,11 +108,10 @@ def create_flattened_df(
     [base_float_predictor_combinations, base_binary_predictor_combinations],
 )
 def test_cache_hitting(
-    tmp_path,
-    synth_prediction_times,
-    predictor_specs,
+        tmp_path,
+        synth_prediction_times,
+        predictor_specs,
 ):
-
     # Create the cache
     first_df = create_flattened_df(
         cache_dir=tmp_path,
@@ -149,10 +139,10 @@ def test_cache_hitting(
     [base_float_predictor_combinations, base_binary_predictor_combinations],
 )
 def test_all_non_online_elements_in_pipeline(
-    tmp_path,
-    synth_prediction_times,
-    synth_outcome,
-    predictor_combinations,
+        tmp_path,
+        synth_prediction_times,
+        synth_outcome,
+        predictor_combinations,
 ):
     """Test that the splitting and saving to disk works as expected."""
 
