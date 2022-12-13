@@ -14,7 +14,6 @@ import pandas as pd
 data_loaders = catalogue.create("timeseriesflattener", "data_loaders")
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
-FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
 RELATIVE_PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 

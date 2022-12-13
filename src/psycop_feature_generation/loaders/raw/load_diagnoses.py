@@ -55,7 +55,7 @@ def concat_from_physical_visits(
     dfs = [
         load_from_codes(
             codes_to_match=icd_codes,
-            column_name="diagnosegruppestreng",
+            code_col_name="diagnosegruppestreng",
             output_col_name=output_col_name,
             match_with_wildcard=wildcard_icd_code,
             n_rows=n_rows,
@@ -638,6 +638,16 @@ def behavioural_disorders(n_rows: Optional[int] = None) -> pd.DataFrame:
 def tics_and_misc(n_rows: Optional[int] = None) -> pd.DataFrame:
     return from_physical_visits(
         icd_code=["f95", "f98"],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+    )
+
+
+@data_loaders.register("gerd")
+def gerd(n_rows: Optional[int] = None) -> pd.DataFrame:
+    """Gastroesophageal reflux disease (GERD) diagnoses"""
+    return from_physical_visits(
+        icd_code="k21",
         wildcard_icd_code=True,
         n_rows=n_rows,
     )
