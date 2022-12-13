@@ -11,7 +11,7 @@ from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
     PredictorSpec,
     StaticSpec,
 )
-from psycop_feature_generation.utils import PROJECT_ROOT
+from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
 
 # pylint: disable=redefined-outer-name, missing-function-docstring
 
@@ -44,7 +44,7 @@ def static_spec(df):
 def df():
     """Load the synthetic flattened data set."""
     return pd.read_csv(
-        PROJECT_ROOT
+        RELATIVE_PROJECT_ROOT
         / "tests/test_data/flattened/generated_with_outcome/synth_flattened_with_outcome.csv",
     )
 

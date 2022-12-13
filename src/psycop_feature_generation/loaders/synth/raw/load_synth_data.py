@@ -4,7 +4,7 @@ from typing import Optional
 
 import pandas as pd
 
-from psycop_feature_generation.utils import PROJECT_ROOT, data_loaders
+from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT, data_loaders
 
 
 def load_raw_test_csv(filename: str, n_rows: Optional[int] = None) -> pd.DataFrame:
@@ -15,7 +15,7 @@ def load_raw_test_csv(filename: str, n_rows: Optional[int] = None) -> pd.DataFra
         n_rows (int, optional): Number of rows to load. Defaults to None.
     """
     df = pd.read_csv(
-        PROJECT_ROOT / "tests" / "test_data" / "raw" / filename,
+        RELATIVE_PROJECT_ROOT / "tests" / "test_data" / "raw" / filename,
         nrows=n_rows,
     )
 

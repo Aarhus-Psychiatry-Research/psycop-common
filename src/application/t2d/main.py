@@ -19,30 +19,22 @@ from application.t2d.modules.flattened_dataset_description import (
     save_feature_set_description_to_disk,
 )
 from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk
-from application.t2d.modules.specify_features import (
-    SpecSet,
-    get_static_predictor_specs,
-    get_metadata_specs,
-    get_outcome_specs,
-    get_temporal_predictor_specs,
-)
+from application.t2d.modules.specify_features import get_spec_set
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 from psycop_feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
 from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+    BaseModel,
     PredictorSpec,
 )
-from psycop_feature_generation.utils import (
-    FEATURE_SETS_PATH,
-    PROJECT_ROOT,
-)
+from psycop_feature_generation.utils import FEATURE_SETS_PATH, RELATIVE_PROJECT_ROOT
 
 
 def init_wandb(
-        wandb_project_name: str,
-        predictor_specs: Sequence[PredictorSpec],
-        save_dir: Union[Path, str],
+    wandb_project_name: str,
+    predictor_specs: Sequence[PredictorSpec],
+    save_dir: Union[Path, str],
 ) -> None:
     """Initialise wandb logging. Allows to use wandb to track progress, send
     Slack notifications if failing, and track logs.
@@ -66,14 +58,16 @@ def init_wandb(
             exist_ok=True,
             parents=True,
         )
-        (PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
+        (RELATIVE_PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(
+            exist_ok=True, parents=True
+        )
 
     wandb.init(project=wandb_project_name, config=feature_settings)
 
 
-def create_save_dir_path(
-        proj_path: Path,
-        feature_set_id: str,
+def create_feature_set_path(
+    proj_path: Path,
+    feature_set_id: str,
 ) -> Path:
     """Create save directory.
 
@@ -95,34 +89,55 @@ def create_save_dir_path(
     return save_dir
 
 
-def setup_for_main(
-        n_predictors: int,
-        feature_sets_path: Path,
-        proj_name: str,
-) -> tuple[Path, str]:
+def get_project_info(
+    n_predictors: int,
+    project_name: str,
+) -> ProjectInfo:
     """Setup for main.
 
     Args:
         n_predictors (int): Number of predictors.
         feature_sets_path (Path): Path to feature sets.
-        proj_name (str): Name of project.
+        project_name (str): Name of project.
     Returns:
         tuple[Path, str]: Tuple of project path, and feature_set_id
     """
-    proj_path = feature_sets_path / proj_name
-
-    if not proj_path.exists():
-        proj_path.mkdir()
+    proj_path = SHARED_RESOURCES_PATH / project_name
 
     current_user = Path().home().name
-    feature_set_id = f"psycop_{proj_name}_{current_user}_{n_predictors}_features_{time.strftime('%Y_%m_%d_%H_%M')}"
+    feature_set_id = f"psycop_{project_name}_{current_user}_{n_predictors}_features_{time.strftime('%Y_%m_%d_%H_%M')}"
 
-    return proj_path, feature_set_id
+    save_dir = create_feature_set_path(
+        feature_set_id=feature_set_id,
+        proj_path=proj_path,
+    )
+
+    return ProjectInfo(
+        project_path=proj_path,
+        feature_set_path=save_dir,
+        feature_set_id=feature_set_id,
+        project_name=project_name,
+    )
+
+
+class ProjectInfo(BaseModel):
+    project_name: str
+    project_path: Path
+    feature_set_path: Path
+    feature_set_id: str
+
+    def __init__():
+        super().__init__()
+
+        # Iterate over each attribute. If the attribute is a Path, create it if it does not exist.
+        for attr in self.__dict__:
+            if isinstance(attr, Path):
+                attr.mkdir(exist_ok=True)
 
 
 def main(
-        proj_name: str,
-        feature_sets_path: Path,
+    proj_name: str,
+    feature_sets_path: Path,
 ):
     """Main function for loading, generating and evaluating a flattened
     dataset.
@@ -131,50 +146,38 @@ def main(
         proj_name (str): Name of project.
         feature_sets_path (Path): Path to where feature sets should be stored.
     """
-    spec_set = 
-    
-    SpecSet(
-        temporal_predictors=get_temporal_predictor_specs(),
-        static_predictors=get_static_predictor_specs(),
-        outcomes=get_outcome_specs(),
-        metadata=get_metadata_specs(),
-    )
+    feature_specs = get_spec_set()
 
-    proj_path, feature_set_id = setup_for_main(
-        n_predictors=len(spec_set.temporal_predictors),
-        feature_sets_path=feature_sets_path,
+    project_info = get_project_info(
+        n_predictors=len(feature_specs.temporal_predictors),
         proj_name=proj_name,
     )
 
-    out_dir = create_save_dir_path(
-        feature_set_id=feature_set_id,
-        proj_path=proj_path,
-    )
-
     init_wandb(
-        wandb_project_name=proj_name,
-        predictor_specs=spec_set.temporal_predictors,
-        save_dir=out_dir,  # Save-dir as argument because we want to log the path
+        wandb_project_name=project_info.project_name,
+        predictor_specs=feature_specs.temporal_predictors,
+        save_dir=project_info.feature_set_path,  # Save-dir as argument because we want to log the path
     )
 
     flattened_df = create_flattened_dataset(
         prediction_times=physical_visits_to_psychiatry(),
-        spec_set=spec_set,
+        spec_set=feature_specs,
         proj_path=proj_path,
         birthdays=birthdays(),
     )
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
-        out_dir=out_dir,
+        out_dir=save_dir,
         file_prefix=feature_set_id,
         file_suffix="parquet",
     )
 
     save_feature_set_description_to_disk(
-        predictor_specs=spec_set.temporal_predictors + spec_set.static_predictors,
-        flattened_dataset_file_dir=out_dir,
-        out_dir=out_dir,
+        predictor_specs=feature_specs.temporal_predictors
+        + feature_specs.static_predictors,
+        flattened_dataset_file_dir=save_dir,
+        out_dir=save_dir,
         file_suffix="parquet",
     )
 

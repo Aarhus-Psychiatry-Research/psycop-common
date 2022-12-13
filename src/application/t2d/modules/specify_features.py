@@ -1,7 +1,14 @@
 import numpy as np
 
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import BaseModel, PredictorSpec, StaticSpec, \
-    OutcomeSpec, AnySpec, OutcomeGroupSpec, PredictorGroupSpec
+from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+    AnySpec,
+    BaseModel,
+    OutcomeGroupSpec,
+    OutcomeSpec,
+    PredictorGroupSpec,
+    PredictorSpec,
+    StaticSpec,
+)
 
 
 class SpecSet(BaseModel):
@@ -118,3 +125,13 @@ def get_temporal_predictor_specs() -> list[PredictorSpec]:
     ).create_combinations()
 
     return unresolved_temporal_predictor_specs
+
+
+def get_spec_set() -> SpecSet:
+    """Get a spec set."""
+    return SpecSet(
+        temporal_predictors=get_temporal_predictor_specs(),
+        static_predictors=get_static_predictor_specs(),
+        outcomes=get_outcome_specs(),
+        metadata=get_metadata_specs(),
+    )
