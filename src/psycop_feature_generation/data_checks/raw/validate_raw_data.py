@@ -1,6 +1,5 @@
 """Functions for validating raw data – in the sense of data returned from a
 loader."""
-import time
 from pathlib import Path
 from typing import Optional
 

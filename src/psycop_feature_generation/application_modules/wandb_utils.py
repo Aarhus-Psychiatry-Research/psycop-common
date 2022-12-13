@@ -1,9 +1,12 @@
+"""Wandb utils.""" ""
 import traceback
 
 import wandb
 
 
 def wandb_alert_on_exception(func):
+    """Alerts wandb on exception."""
+
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)

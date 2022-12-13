@@ -1,8 +1,5 @@
 """Describe flattened dataset.""" ""
 import logging
-from typing import Optional
-
-from timeseriesflattener.feature_spec_objects import AnySpec
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from psycop_feature_generation.application_modules.wandb_utils import (
@@ -18,7 +15,6 @@ log = logging.getLogger(__name__)
 @wandb_alert_on_exception
 def save_flattened_dataset_description_to_disk(
     project_info: ProjectInfo,
-    feature_specs: list[AnySpec],
     describe_splits: bool = True,
     compare_splits: bool = True,
 ):
@@ -26,7 +22,6 @@ def save_flattened_dataset_description_to_disk(
 
     Args:
         project_info (ProjectInfo): Project info
-        feature_specs (list): List of feature specs
         describe_splits (bool, optional): Whether to describe each split. Defaults to True.
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
@@ -46,12 +41,6 @@ def save_flattened_dataset_description_to_disk(
         if method == "describe" and describe_splits:
             splits = ["train"]
 
-            specs_to_describe: Optional[list[AnySpec]] = [
-                spec
-                for spec in feature_specs
-                if spec.prefix == project_info.prefix.predictor
-            ]
-
             compare_splits_in_method = False
             out_dir = feature_set_description_path
 
@@ -60,14 +49,12 @@ def save_flattened_dataset_description_to_disk(
             splits = ["train", "val", "test"]
 
             # Don't describe specs in comparison, to avoid leakage by describing features in val and test
-            specs_to_describe = None
             compare_splits_in_method = True
             out_dir = split_feature_distribution_comparison_path
 
         save_feature_set_integrity_from_dir(
             splits=splits,
             out_dir=out_dir,
-            feature_specs=specs_to_describe,
             dataset_format=project_info.dataset_format,
             describe_splits=describe_splits,
             compare_splits=compare_splits_in_method,

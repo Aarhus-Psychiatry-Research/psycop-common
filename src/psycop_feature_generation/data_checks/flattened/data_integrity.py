@@ -295,7 +295,7 @@ def get_split_as_ds_dict(
 
 def run_validation_requiring_split_comparison(
     feature_set_dir: Path,
-    split_names: Iterable[str],
+    splits: Iterable[str],
     file_suffix: str,
     out_dir: Path,
     train_outcome_df: pd.DataFrame,
@@ -305,7 +305,7 @@ def run_validation_requiring_split_comparison(
 
     Args:
         feature_set_dir (Path): Path to a directory containing train/val/test files
-        split_names (list[str]): list of splits to check (train, val, test)
+        splits (list[str]): list of splits to check (train, val, test)
         file_suffix (str): File suffix of the train/val/test files
         out_dir (Path): Path to the directory where the reports should be saved
         train_outcome_df (pd.DataFrame): The train outcomes.
@@ -320,7 +320,7 @@ def run_validation_requiring_split_comparison(
 
     split_dicts = {}
 
-    for split_name in split_names:
+    for split_name in splits:
         split_dicts[split_name] = get_split_as_ds_dict(
             feature_set_dir=feature_set_dir,
             n_rows=n_rows,
@@ -393,7 +393,7 @@ def run_validation_requiring_split_comparison(
 def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statements
     feature_set_dir: Path,
     n_rows: Optional[int] = None,
-    split_names: Iterable[str] = ("train", "val", "test"),
+    splits: Iterable[str] = ("train", "val", "test"),
     out_dir: Optional[Path] = None,
     dataset_format: str = "parquet",
     describe_splits: bool = True,
@@ -409,7 +409,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
         feature_set_dir (Path): Path to a directory containing train/val/test files
         n_rows (Optional[int]): Whether to only load a subset of the data.
             Should only be used for debugging.
-        split_names (list[str]): list of splits to check (train, val, test)
+        splits (list[str]): list of splits to check (train, val, test)
         out_dir (Optional[Path]): Path to the directory where the reports should be saved
         dataset_format (str, optional): Format of the files to load. Must be either "csv" or "parquet". Defaults to "parquet".
         describe_splits (bool, optional): Whether to describe each split. Defaults to True.
@@ -439,7 +439,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
     )  # Collect failed checks for error messages at the end of the function
 
     # Check if file splits exist before running checks
-    for split_name in split_names:
+    for split_name in splits:
         file = list(feature_set_dir.glob(f"*{split_name}*{dataset_format}"))
 
         if not file:  # pylint: disable=consider-using-assignment-expr
@@ -456,7 +456,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
 
     if describe_splits:
         # Check train data integrity
-        if "train" in split_names:
+        if "train" in splits:
             failures = check_train_data_integrity(
                 feature_set_dir=feature_set_dir,
                 n_rows=n_rows,
@@ -475,7 +475,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
         # require a label
         run_validation_requiring_split_comparison(
             feature_set_dir=feature_set_dir,
-            split_names=split_names,
+            splits=splits,
             n_rows=n_rows,
             out_dir=out_dir,
             train_outcome_df=train_outcomes_df,
