@@ -3,21 +3,24 @@ from pathlib import Path
 
 import pandas as pd
 import psutil
-
-from application.t2d.modules.specify_features import SpecSet
-from psycop_feature_generation.timeseriesflattener import FlattenedDataset
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_spec_objects import (
     AnySpec,
-    StaticSpec,
-    TemporalSpec,
     OutcomeSpec,
     PredictorSpec,
+    StaticSpec,
+    TemporalSpec,
+)
+from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+
+from application.t2d.modules.specify_features import SpecSet
+from psycop_feature_generation.loaders.raw.load_visits import (
+    physical_visits_to_psychiatry,
 )
 
 
 def add_metadata_to_ds(
-        specs: list[AnySpec],
-        flattened_dataset: FlattenedDataset,
+    specs: list[AnySpec],
+    flattened_dataset: FlattenedDataset,
 ) -> FlattenedDataset:
     """Add metadata.
 
@@ -41,8 +44,8 @@ def add_metadata_to_ds(
 
 
 def add_outcomes_to_ds(
-        flattened_dataset: FlattenedDataset,
-        outcome_specs: list[OutcomeSpec],
+    flattened_dataset: FlattenedDataset,
+    outcome_specs: list[OutcomeSpec],
 ) -> FlattenedDataset:
     """Add outcomes.
 
@@ -66,10 +69,10 @@ def add_outcomes_to_ds(
 
 
 def add_predictors_to_ds(
-        temporal_predictor_specs: list[PredictorSpec],
-        static_predictor_specs: list[AnySpec],
-        birthdays: pd.DataFrame,
-        flattened_dataset: FlattenedDataset,
+    temporal_predictor_specs: list[PredictorSpec],
+    static_predictor_specs: list[AnySpec],
+    birthdays: pd.DataFrame,
+    flattened_dataset: FlattenedDataset,
 ):
     """Add predictors.
 
@@ -109,10 +112,10 @@ def add_predictors_to_ds(
 
 
 def create_flattened_dataset(
-        prediction_times: pd.DataFrame,
-        birthdays: pd.DataFrame,
-        spec_set: SpecSet,
-        proj_path: Path,
+    prediction_times: pd.DataFrame,
+    birthdays: pd.DataFrame,
+    feature_specs: list[AnySpec],
+    proj_path: Path,
 ) -> pd.DataFrame:
     """Create flattened dataset.
 
@@ -127,34 +130,17 @@ def create_flattened_dataset(
     """
     msg = Printer(timestamp=True)
 
-    msg.info(f"Generating {len(spec_set.temporal_predictors)} features")
+    msg.info(f"Generating {len(feature_specs.temporal_predictors)} features")
 
     msg.info("Initialising flattened dataset")
 
     flattened_dataset = FlattenedDataset(
-        prediction_times_df=prediction_times,
+        prediction_times_df=physical_visits_to_psychiatry(),
         n_workers=min(
-            len(spec_set.temporal_predictors),
+            len(feature_specs),
             psutil.cpu_count(logical=False),
         ),
         feature_cache_dir=proj_path / "feature_cache",
     )
 
-    flattened_dataset = add_metadata_to_ds(
-        flattened_dataset=flattened_dataset,
-        specs=spec_set.metadata,
-    )
-
-    flattened_dataset = add_outcomes_to_ds(
-        outcome_specs=spec_set.outcomes,
-        flattened_dataset=flattened_dataset,
-    )
-
-    flattened_dataset = add_predictors_to_ds(
-        temporal_predictor_specs=spec_set.temporal_predictors,
-        static_predictor_specs=spec_set.static_predictors,
-        flattened_dataset=flattened_dataset,
-        birthdays=birthdays,
-    )
-
-    return flattened_dataset.df
+    return flattened_dataset.get_df()

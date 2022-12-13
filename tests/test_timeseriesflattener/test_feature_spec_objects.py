@@ -1,11 +1,11 @@
 """Test that feature spec objects work as intended."""
 import pandas as pd
 import pytest
+from timeseriesflattener.feature_spec_objects import AnySpec
 
 from psycop_feature_generation.loaders.synth.raw.load_synth_data import (  # pylint: disable=unused-import
     synth_predictor_float,
 )
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import AnySpec
 
 
 def test_anyspec_init():

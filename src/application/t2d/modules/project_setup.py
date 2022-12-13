@@ -4,10 +4,8 @@ import time
 from pathlib import Path
 from typing import Sequence, Union
 
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
-    BaseModel,
-    PredictorSpec,
-)
+from timeseriesflattener.feature_spec_objects import BaseModel, PredictorSpec
+
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
 
 
@@ -83,7 +81,7 @@ def create_feature_set_path(
 def init_wandb(
     wandb_project_name: str,
     predictor_specs: Sequence[PredictorSpec],
-    save_dir: Union[Path, str],
+    feature_set_path: Union[Path, str],
 ) -> None:
     """Initialise wandb logging. Allows to use wandb to track progress, send
     Slack notifications if failing, and track logs.
@@ -91,11 +89,11 @@ def init_wandb(
     Args:
         wandb_project_name (str): Name of wandb project.
         predictor_specs (Iterable[dict[str, Any]]): List of predictor specs.
-        save_dir (Union[Path, str]): Path to save dir.
+        feature_set_path (Union[Path, str]): Path to save dir.
     """
 
     feature_settings = {
-        "save_path": save_dir,
+        "feature_set_path": feature_set_path,
         "predictor_list": [spec.__dict__ for spec in predictor_specs],
     }
 

@@ -5,16 +5,16 @@
 import numpy as np
 import pandas as pd
 import pytest
-
-from psycop_feature_generation.loaders.raw.load_text import (  # noqa pylint: disable=unused-import; load_synth_notes,
-    _chunk_text,
-)
-from psycop_feature_generation.timeseriesflattener import FlattenedDataset
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_spec_objects import (
     AnySpec,
     OutcomeSpec,
     PredictorGroupSpec,
     PredictorSpec,
+)
+from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+
+from psycop_feature_generation.loaders.raw.load_text import (  # noqa pylint: disable=unused-import; load_synth_notes,
+    _chunk_text,
 )
 from psycop_feature_generation.utils_for_testing import (
     assert_flattened_data_as_expected,

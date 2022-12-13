@@ -1,6 +1,5 @@
 import numpy as np
-
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_spec_objects import (
     AnySpec,
     BaseModel,
     OutcomeGroupSpec,

@@ -8,19 +8,17 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 import pytest
+from timeseriesflattener.feature_spec_objects import (
+    OutcomeSpec,
+    PredictorGroupSpec,
+    TemporalSpec,
+)
+from timeseriesflattener.flattened_dataset import FlattenedDataset
 
 from application.t2d.modules.describe_flattened_dataset import (
     save_feature_set_description_to_disk,
 )
 from application.t2d.modules.save_dataset_to_disk import split_and_save_dataset_to_disk
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
-    OutcomeSpec,
-    PredictorGroupSpec,
-    TemporalSpec,
-)
-from psycop_feature_generation.timeseriesflattener.flattened_dataset import (
-    FlattenedDataset,
-)
 
 base_float_predictor_combinations = PredictorGroupSpec(
     values_loader=["synth_predictor_float"],
@@ -85,9 +83,9 @@ def check_dfs_have_same_contents_by_column(df1, df2):
 
 
 def create_flattened_df(
-        cache_dir: Path,
-        predictor_specs: Iterable[TemporalSpec],
-        prediction_times_df: pd.DataFrame,
+    cache_dir: Path,
+    predictor_specs: Iterable[TemporalSpec],
+    prediction_times_df: pd.DataFrame,
 ):
     """Create a dataset df for testing."""
     flat_ds = FlattenedDataset(
@@ -108,9 +106,9 @@ def create_flattened_df(
     [base_float_predictor_combinations, base_binary_predictor_combinations],
 )
 def test_cache_hitting(
-        tmp_path,
-        synth_prediction_times,
-        predictor_specs,
+    tmp_path,
+    synth_prediction_times,
+    predictor_specs,
 ):
     # Create the cache
     first_df = create_flattened_df(
@@ -139,10 +137,10 @@ def test_cache_hitting(
     [base_float_predictor_combinations, base_binary_predictor_combinations],
 )
 def test_all_non_online_elements_in_pipeline(
-        tmp_path,
-        synth_prediction_times,
-        synth_outcome,
-        predictor_combinations,
+    tmp_path,
+    synth_prediction_times,
+    synth_outcome,
+    predictor_combinations,
 ):
     """Test that the splitting and saving to disk works as expected."""
 

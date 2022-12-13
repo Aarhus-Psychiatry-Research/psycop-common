@@ -16,20 +16,16 @@ import tqdm
 from catalogue import Registry  # noqa # pylint: disable=unused-import
 from dask.diagnostics import ProgressBar
 from pandas import DataFrame
-from wasabi import Printer, msg
-
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_spec_objects import (
     AnySpec,
     OutcomeSpec,
     PredictorSpec,
     TemporalSpec,
 )
-from psycop_feature_generation.timeseriesflattener.flattened_ds_validator import (
-    ValidateInitFlattenedDataset,
-)
-from psycop_feature_generation.timeseriesflattener.resolve_multiple_functions import (
-    resolve_multiple_fns,
-)
+from timeseriesflattener.flattened_ds_validator import ValidateInitFlattenedDataset
+from timeseriesflattener.resolve_multiple_functions import resolve_multiple_fns
+from wasabi import Printer, msg
+
 from psycop_feature_generation.utils import load_dataset_from_file, write_df_to_file
 
 ProgressBar().register()

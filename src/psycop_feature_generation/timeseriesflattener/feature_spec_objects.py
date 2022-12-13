@@ -9,11 +9,9 @@ import pandas as pd
 from frozendict import frozendict  # type: ignore
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
+from timeseriesflattener.resolve_multiple_functions import resolve_multiple_fns
 from wasabi import Printer
 
-from psycop_feature_generation.timeseriesflattener.resolve_multiple_functions import (
-    resolve_multiple_fns,
-)
 from psycop_feature_generation.utils import data_loaders
 
 msg = Printer(timestamp=True)

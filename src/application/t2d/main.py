@@ -25,7 +25,6 @@ from psycop_feature_generation.utils import FEATURE_SETS_PATH
 
 def main(
     proj_name: str,
-    feature_sets_path: Path,
 ):
     """Main function for loading, generating and evaluating a flattened
     dataset.
@@ -44,11 +43,11 @@ def main(
     init_wandb(
         wandb_project_name=project_info.project_name,
         predictor_specs=feature_specs.temporal_predictors,
-        save_dir=project_info.feature_set_path,  # Save-dir as argument because we want to log the path
+        feature_set_path=project_info.feature_set_path,  # Save-dir as argument because we want to log the path
     )
 
     flattened_df = create_flattened_dataset(
-        prediction_times=physical_visits_to_psychiatry(),
+        prediction_times=,
         spec_set=feature_specs,
         proj_path=proj_path,
         birthdays=birthdays(),
@@ -74,6 +73,5 @@ def main(
 
 if __name__ == "__main__":
     main(
-        feature_sets_path=FEATURE_SETS_PATH,
         proj_name="t2d",
     )

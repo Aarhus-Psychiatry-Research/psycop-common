@@ -9,14 +9,12 @@ import pandas as pd
 import pytest
 from pandas import DataFrame
 from pandas.testing import assert_series_equal
+from timeseriesflattener.feature_spec_objects import TemporalSpec
+from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 from psycop_feature_generation.loaders.synth.raw.load_synth_data import (
     load_synth_outcome,
     load_synth_prediction_times,
-)
-from psycop_feature_generation.timeseriesflattener import FlattenedDataset
-from psycop_feature_generation.timeseriesflattener.feature_spec_objects import (
-    TemporalSpec,
 )
 from psycop_feature_generation.utils import data_loaders
 
