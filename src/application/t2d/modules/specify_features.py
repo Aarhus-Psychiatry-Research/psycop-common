@@ -61,7 +61,7 @@ def get_metadata_specs(project_info: ProjectInfo) -> list[_AnySpec]:
         PredictorSpec(
             values_loader="hba1c",
             fallback=np.nan,
-            interval_days=9999,
+            lookbehind_days=9999,
             resolve_multiple_fn="count",
             allowed_nan_value_prop=0.0,
             prefix=project_info.prefix.eval,
@@ -135,7 +135,7 @@ def get_medication_specs(resolve_multiple, interval_days, allowed_nan_value_prop
             "selected_nassa",
             "benzodiazepine_related_sleeping_agents",
         ),
-        interval_days=interval_days,
+        lookbehind_days=interval_days,
         resolve_multiple_fn=resolve_multiple,
         fallback=[0],
         allowed_nan_value_prop=allowed_nan_value_prop,
@@ -148,7 +148,7 @@ def get_medication_specs(resolve_multiple, interval_days, allowed_nan_value_prop
             "antihypertensives",
             "diuretics",
         ),
-        interval_days=interval_days,
+        lookbehind_days=interval_days,
         resolve_multiple_fn=resolve_multiple,
         fallback=[0],
         allowed_nan_value_prop=allowed_nan_value_prop,
@@ -169,7 +169,7 @@ def get_diagnoses_specs(resolve_multiple, interval_days, allowed_nan_value_prop)
             "gerd",
         ),
         resolve_multiple_fn=resolve_multiple,
-        interval_days=interval_days,
+        lookbehind_days=interval_days,
         fallback=[0],
         allowed_nan_value_prop=allowed_nan_value_prop,
     ).create_combinations()
@@ -188,7 +188,7 @@ def get_diagnoses_specs(resolve_multiple, interval_days, allowed_nan_value_prop)
             "hyperkinetic_disorders",
         ),
         resolve_multiple_fn=resolve_multiple,
-        interval_days=interval_days,
+        lookbehind_days=interval_days,
         fallback=[0],
         allowed_nan_value_prop=allowed_nan_value_prop,
     ).create_combinations()
@@ -209,7 +209,7 @@ def get_lab_result_specs(resolve_multiple, interval_days, allowed_nan_value_prop
             "crp",
         ),
         resolve_multiple_fn=resolve_multiple,
-        interval_days=interval_days,
+        lookbehind_days=interval_days,
         fallback=[np.nan],
         allowed_nan_value_prop=allowed_nan_value_prop,
     ).create_combinations()
@@ -223,7 +223,7 @@ def get_lab_result_specs(resolve_multiple, interval_days, allowed_nan_value_prop
             "albumine_creatinine_ratio",
         ),
         resolve_multiple_fn=resolve_multiple,
-        interval_days=interval_days,
+        lookbehind_days=interval_days,
         fallback=[np.nan],
         allowed_nan_value_prop=allowed_nan_value_prop,
     ).create_combinations()
