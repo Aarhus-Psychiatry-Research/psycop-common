@@ -1,15 +1,15 @@
 """Flatten the dataset."""
 import pandas as pd
 import psutil
-from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
-from timeseriesflattener.feature_spec_objects import _AnySpec
-from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from psycop_feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
+from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
+from timeseriesflattener.feature_spec_objects import _AnySpec
+from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 
 @wandb_alert_on_exception
@@ -40,7 +40,7 @@ def create_flattened_dataset(
             psutil.cpu_count(logical=False),
         ),
         cache=DiskCache(
-            feature_cache_dir=project_info.feature_set_path / "feature_cache",
+            feature_cache_dir=project_info.project_path / "feature_cache",
         ),
         drop_pred_times_with_insufficient_look_distance=drop_pred_times_with_insufficient_look_distance,
         predictor_col_name_prefix=project_info.prefix.predictor,
@@ -53,5 +53,7 @@ def create_flattened_dataset(
         date_of_birth_df=birthdays(),
         date_of_birth_col_name="date_of_birth",
     )
+
+    flattened_dataset.add_spec(spec=feature_specs)
 
     return flattened_dataset.get_df()
