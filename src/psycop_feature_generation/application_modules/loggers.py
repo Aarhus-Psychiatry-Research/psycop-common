@@ -1,4 +1,4 @@
-"""Recommended logger to use"""
+"""Recommended logger to use."""
 import logging
 from datetime import datetime
 
@@ -12,7 +12,7 @@ def init_root_logger(
     stdout_log_level: int = logging.INFO,
     log_file_level: int = logging.DEBUG,
 ) -> None:
-    """Initializes the root logger with a file handler and a stream handler"""
+    """Initializes the root logger with a file handler and a stream handler."""
     # Get the root logger
     root_log = logging.getLogger()
 
