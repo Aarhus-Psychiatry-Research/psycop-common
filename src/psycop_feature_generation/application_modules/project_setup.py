@@ -108,7 +108,6 @@ def init_wandb(
     Slack notifications if failing, and track logs.
 
     Args:
-        feature_specs (Iterable[dict[str, Any]]): List of predictor specs.
         project_info (ProjectInfo): Project info.
     """
 
