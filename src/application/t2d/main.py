@@ -16,6 +16,7 @@ from psycop_feature_generation.application_modules.describe_flattened_dataset im
 from psycop_feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
+from psycop_feature_generation.application_modules.loggers import init_root_logger
 from psycop_feature_generation.application_modules.project_setup import (
     get_project_info,
     init_wandb,
@@ -30,12 +31,7 @@ from psycop_feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
 
-log = logging.getLogger(__name__)
-
-coloredlogs.install(
-    level=logging.INFO,
-    fmt="%(asctime)s [%(levelname)s] %(message)s",
-)
+log = logging.getLogger()
 
 
 @wandb_alert_on_exception
@@ -71,6 +67,11 @@ if __name__ == "__main__":
     project_info = get_project_info(
         project_name="t2d",
     )
+
+    init_root_logger(project_info=project_info)
+
+    log.info(f"Stdout level is {logging.getLevelName(log.level)}")
+    log.debug("Debugging is still captured in the log file")
 
     # Use wandb to keep track of your dataset generations
     # Makes it easier to find paths on wandb, as well as
