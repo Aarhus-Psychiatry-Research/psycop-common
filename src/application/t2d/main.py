@@ -6,7 +6,6 @@ maturity.
 
 import logging
 
-import coloredlogs
 import wandb
 
 from application.t2d.modules.specify_features import get_feature_specs
