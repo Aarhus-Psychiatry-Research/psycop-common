@@ -1,4 +1,5 @@
 """Flatten the dataset."""
+import logging
 from typing import Optional
 
 import pandas as pd
@@ -16,6 +17,8 @@ from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
 from timeseriesflattener.feature_spec_objects import _AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+
+log = logging.getLogger(__name__)
 
 
 def filter_prediction_times(
@@ -36,6 +39,8 @@ def filter_prediction_times(
     Returns:
         pd.DataFrame: Filtered prediction times dataframe.
     """
+    log.info("Filtering prediction times...")
+
     filterer = PredictionTimeFilterer(
         prediction_times_df=prediction_times_df,
         entity_id_col_name=project_info.col_names.id,
