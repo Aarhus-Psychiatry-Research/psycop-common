@@ -52,6 +52,7 @@ def str_to_df(
         convert_str_to_float (bool): Whether to convert strings to floats. Defaults to False.
         add_pred_time_uuid (bool): Whether to infer a pred_time_uuid column from entity_id and timestamp columns. Defaults to False.
         entity_id_colname (str): The name of the entity_id column. Defaults to "entity_id".
+        timestamp_col_name (str): The name of the timestamp column. Defaults to "timestamp".
 
     Returns:
         DataFrame: A dataframe.

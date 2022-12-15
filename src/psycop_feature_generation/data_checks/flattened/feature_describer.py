@@ -7,10 +7,10 @@ from typing import Union
 import numpy as np
 import pandas as pd
 from timeseriesflattener.feature_spec_objects import (
-    _AnySpec,
     PredictorSpec,
     StaticSpec,
     TemporalSpec,
+    _AnySpec,
 )
 from wasabi import Printer
 

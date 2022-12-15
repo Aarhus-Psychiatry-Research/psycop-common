@@ -25,7 +25,6 @@ class PredictionTimeFilterer:
                 Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
             quarantine_days (int, optional): Number of days to quarantine.
             entity_id_col_name (str): Name of the entity_id_col_name column.
-
         """
 
         self.prediction_times_df = prediction_times_df
