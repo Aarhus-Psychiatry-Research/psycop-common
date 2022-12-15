@@ -7,7 +7,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 from timeseriesflattener.feature_spec_objects import (
-    AnySpec,
+    _AnySpec,
     PredictorSpec,
     StaticSpec,
     TemporalSpec,
@@ -134,7 +134,7 @@ def generate_static_feature_description(series: pd.Series, predictor_spec: Stati
 
 def generate_feature_description_row(
     series: pd.Series,
-    predictor_spec: AnySpec,
+    predictor_spec: _AnySpec,
 ) -> dict:
     """Generate a row with feature description.
 

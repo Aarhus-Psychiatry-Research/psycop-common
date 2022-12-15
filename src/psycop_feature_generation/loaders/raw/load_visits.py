@@ -1,5 +1,6 @@
 """Loaders for visits to psychiatry."""
 
+import logging
 from typing import Optional
 
 import pandas as pd
@@ -7,6 +8,8 @@ from wasabi import msg
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
+
+log = logging.getLogger(__name__)
 
 
 @data_loaders.register("physical_visits")
@@ -88,15 +91,22 @@ def physical_visits(
 
     output_df["value"] = 1
 
-    msg.good("Loaded physical visits")
+    log.info("Loaded physical visits")
 
     return output_df.reset_index(drop=True)
 
 
 @data_loaders.register("physical_visits_to_psychiatry")
-def physical_visits_to_psychiatry(n_rows: Optional[int] = None) -> pd.DataFrame:
+def physical_visits_to_psychiatry(
+    n_rows: Optional[int] = None, timestamps_only: bool = True
+) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
-    return physical_visits(shak_code=6600, shak_sql_operator="=", n_rows=n_rows)
+    df = physical_visits(shak_code=6600, shak_sql_operator="=", n_rows=n_rows)
+
+    if timestamps_only:
+        df = df.drop("value", axis=1)
+
+    return df
 
 
 @data_loaders.register("physical_visits_to_somatic")

@@ -1,4 +1,6 @@
 """Loaders for medications."""
+# pylint: disable=missing-function-docstring
+import logging
 from typing import Optional, Union
 
 import pandas as pd
@@ -7,7 +9,7 @@ from wasabi import msg
 from psycop_feature_generation.loaders.raw.utils import load_from_codes
 from psycop_feature_generation.utils import data_loaders
 
-# pylint: disable=missing-function-docstring
+log = logging.getLogger(__name__)
 
 
 def load(
@@ -43,7 +45,7 @@ def load(
     """
 
     if load_prescribed:
-        msg.warn(
+        log.warning(
             "Beware, there are missing prescriptions until september 2016. "
             "Hereafter, data is complete. See the wiki (OBS: Medication) for more details.",
         )
