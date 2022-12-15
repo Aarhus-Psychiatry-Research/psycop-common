@@ -1,4 +1,6 @@
+"""Utility functions for column name inference."""
 import pandas as pd
+from omegaconf import DictConfig
 
 
 def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]:

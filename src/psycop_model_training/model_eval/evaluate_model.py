@@ -14,10 +14,10 @@ from psycop_model_training.model_eval.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.tables.performance_by_threshold import (
+from psycop_model_training.model_eval.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycop_model_training.tables.tables import (
+from psycop_model_training.model_eval.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
 )
