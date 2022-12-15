@@ -1,8 +1,11 @@
 """Class for filtering prediction times before they are used for feature
 generation."""
+import logging
 from typing import Optional
 
 import pandas as pd
+
+log = logging.getLogger(__name__)
 
 
 class PredictionTimeFilterer:
@@ -35,6 +38,8 @@ class PredictionTimeFilterer:
     def _filter_prediction_times_by_quarantine_period(self):
         # We need to check if ANY quarantine date hits each prediction time.
         # Create combinations
+        n_before = len(self.prediction_times_df)
+
         df = self.prediction_times_df.merge(
             self.quarantine_df,
             on=self.entity_id_col_name,
@@ -75,6 +80,11 @@ class PredictionTimeFilterer:
 
         # Rename the timestamp column
         df = df.rename(columns={"timestamp_pred": "timestamp"})
+
+        n_after = len(df)
+        log.info(
+            f"Filtered {n_before - n_after} prediction times by quarantine period."
+        )
 
         return df
 

@@ -18,7 +18,6 @@ from timeseriesflattener.feature_spec_objects import _AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 
-@print_df_dimensions_diff
 def filter_prediction_times(
     prediction_times_df: pd.DataFrame,
     project_info: ProjectInfo,
