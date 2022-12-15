@@ -18,6 +18,7 @@ class PredictionTimeFilterer:
         entity_id_col_name: str,
         quarantine_timestamps_df: Optional[pd.DataFrame] = None,
         quarantine_interval_days: Optional[int] = None,
+        timestamp_col_name: Optional[str] = "timestamp",
     ):
         """Initialize PredictionTimeFilterer.
 
@@ -28,12 +29,32 @@ class PredictionTimeFilterer:
                 Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
             quarantine_days (int, optional): Number of days to quarantine.
             entity_id_col_name (str): Name of the entity_id_col_name column.
+            timestamp_col_name (str, optional): Name of the timestamp column.
         """
 
         self.prediction_times_df = prediction_times_df
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
         self.entity_id_col_name = entity_id_col_name
+        self.timestamp_col_name = timestamp_col_name
+
+        self.added_pred_time_uuid_col: bool = False
+        self.pred_time_uuid_col_name = "pred_time_uuid"
+
+        uuid_cols = [c for c in self.prediction_times_df.columns if "uuid" in c]
+
+        if len(uuid_cols) == 0:
+            self.added_pred_time_uuid_col = True
+
+            self.prediction_times_df[
+                self.pred_time_uuid_col_name
+            ] = self.prediction_times_df["timestamp"].astype(
+                str
+            ) + self.prediction_times_df[
+                self.entity_id_col_name
+            ].astype(
+                str
+            )
 
     def _filter_prediction_times_by_quarantine_period(self):
         # We need to check if ANY quarantine date hits each prediction time.
@@ -99,5 +120,8 @@ class PredictionTimeFilterer:
                 )
 
             df = self._filter_prediction_times_by_quarantine_period()
+
+        if self.added_pred_time_uuid_col:
+            df = df.drop(columns=[self.pred_time_uuid_col_name])
 
         return df
