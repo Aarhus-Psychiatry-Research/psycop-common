@@ -213,14 +213,16 @@ class FeatureSpecifier:
         log.info("–––––––– Generating temporal predictor specs ––––––––")
 
         if self.min_set_for_debug:
-            return [PredictorSpec(
-                values_loader="hba1c",
-                lookbehind_days=30,
-                resolve_multiple_fn="max",
-                fallback=np.nan,
-                allowed_nan_value_prop=0,
-                prefix=self.project_info.prefix.predictor,
-            )]
+            return [
+                PredictorSpec(
+                    values_loader="hba1c",
+                    lookbehind_days=30,
+                    resolve_multiple_fn="max",
+                    fallback=np.nan,
+                    allowed_nan_value_prop=0,
+                    prefix=self.project_info.prefix.predictor,
+                )
+            ]
 
         resolve_multiple = ["max", "min", "mean", "latest", "count"]
         interval_days = [30, 90, 180, 365, 730]
