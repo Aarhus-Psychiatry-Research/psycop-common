@@ -1,10 +1,14 @@
-"""Class for filtering prediction times before they are used for feature generation."""
+"""Class for filtering prediction times before they are used for feature
+generation."""
 from typing import Optional
 
 import pandas as pd
 
 
 class PredictionTimeFilterer:
+    """Class for filtering prediction times before they are used for
+    feature."""
+
     def __init__(
         self,
         prediction_time_df: pd.DataFrame,
@@ -43,7 +47,9 @@ class PredictionTimeFilterer:
             "hit_by_quarantine"
         ].transform("max")
 
-        df = df.loc[df["hit_by_quarantine"] != True]
+        df = df.loc[
+            df["hit_by_quarantine"] != True  # pylint: disable=singleton-comparison
+        ]
 
         df = df.drop_duplicates(subset="pred_time_uuid")
 
@@ -53,7 +59,7 @@ class PredictionTimeFilterer:
                 "days_since_quarantine",
                 "hit_by_quarantine",
                 "timestamp_quarantine",
-            ]
+            ],
         )
 
         # Rename the timestamp column
@@ -62,12 +68,13 @@ class PredictionTimeFilterer:
         return df
 
     def filter(self):
+        """Run filters based on the provided parameters."""
         df = self.prediction_time_df
 
         if self.quarantine_df is not None or self.quarantine_days is not None:
             if self.quarantine_days is None or self.quarantine_days is None:
                 raise ValueError(
-                    "If either of quarantine_df and quarantine_days are provided, both must be provided."
+                    "If either of quarantine_df and quarantine_days are provided, both must be provided.",
                 )
 
             df = self._filter_prediction_times_by_quarantine_period()

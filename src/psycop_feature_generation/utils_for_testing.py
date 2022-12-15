@@ -49,6 +49,8 @@ def str_to_df(
         convert_timestamp_to_datetime (bool): Whether to convert the timestamp column to datetime. Defaults to True.
         convert_np_nan_to_nan (bool): Whether to convert np.nan to np.nan. Defaults to True.
         convert_str_to_float (bool): Whether to convert strings to floats. Defaults to False.
+        add_pred_time_uuid (bool): Whether to add a pred_time_uuid column. Defaults to False.
+        entity_id_colname (str): The name of the entity_id column. Defaults to "entity_id".
 
     Returns:
         DataFrame: A dataframe.

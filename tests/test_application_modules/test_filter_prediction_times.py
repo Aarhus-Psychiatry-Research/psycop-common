@@ -1,3 +1,4 @@
+"""Tests of the filter_prediction_times module."""
 import pandas as pd
 
 from psycop_feature_generation.application_modules.filter_prediction_times import (
@@ -22,7 +23,7 @@ def test_filter_by_quarantine_date():
 
     prediction_time_df = str_to_df(
         """entity_id,timestamp,
-        1,2020-12-01 00:00:01, # keep: before quarantine date 
+        1,2020-12-01 00:00:01, # keep: before quarantine date
         1,2022-12-01 00:00:01, # drop: after quarantine date
         1,2026-02-01 00:00:01, # keep: outside quarantine days
         2,2023-02-01 00:00:01, # keep: no quarantine date for this id
