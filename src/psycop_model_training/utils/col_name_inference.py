@@ -1,6 +1,7 @@
 """Utility functions for column name inference."""
 import re
-from typing import Union, Iterable
+from collections.abc import Iterable
+from typing import Union
 
 import pandas as pd
 from omegaconf import DictConfig
