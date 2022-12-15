@@ -9,7 +9,7 @@ be in a dir called 'tables' and figures in a dir called 'figs'
 
 import pandas as pd
 
-from psycopt2d.utils.utils import PROJECT_ROOT
+from psycop_model_training.utils.utils import PROJECT_ROOT
 
 # import pandoc
 # See comment in pyproject.toml on Pandoc, not currently in use. Should work now, see: https://github.com/boisgera/pandoc/pull/49#issuecomment-1265983279

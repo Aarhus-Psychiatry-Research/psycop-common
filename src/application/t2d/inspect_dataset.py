@@ -1,6 +1,6 @@
 """Example of how to inspect a dataset using the configs."""
-from psycopt2d.load import load_train_from_cfg, load_train_raw
-from psycopt2d.utils.config_schemas import load_cfg_as_pydantic
+from psycop_model_training.load import load_train_from_cfg, load_train_raw
+from psycop_model_training.config.schemas import load_cfg_as_pydantic
 
 
 def main():

@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 
-from psycopt2d.utils.utils import (
+from psycop_model_training.utils.utils import (
     drop_records_if_datediff_days_smaller_than,
     flatten_nested_dict,
 )

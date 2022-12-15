@@ -10,21 +10,21 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
-from psycopt2d.evaluation_dataclasses import EvalDataset
-from psycopt2d.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
-from psycopt2d.visualization import plot_prob_over_time
-from psycopt2d.visualization.base_charts import plot_basic_chart
-from psycopt2d.visualization.feature_importance import plot_feature_importances
-from psycopt2d.visualization.performance_by_age import plot_performance_by_age
-from psycopt2d.visualization.performance_by_n_hba1c import plot_performance_by_n_hba1c
-from psycopt2d.visualization.performance_over_time import (
+from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from psycop_model_training.visualization import plot_prob_over_time
+from psycop_model_training.visualization.base_charts import plot_basic_chart
+from psycop_model_training.visualization.feature_importance import plot_feature_importances
+from psycop_model_training.visualization.performance_by_age import plot_performance_by_age
+from psycop_model_training.visualization.performance_by_n_hba1c import plot_performance_by_n_hba1c
+from psycop_model_training.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
-from psycopt2d.visualization.roc_auc import plot_auc_roc
-from psycopt2d.visualization.sens_over_time import (
+from psycop_model_training.visualization.roc_auc import plot_auc_roc
+from psycop_model_training.visualization.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
     plot_sensitivity_by_time_to_outcome_heatmap,
 )

@@ -14,12 +14,12 @@ import wandb
 from random_word import RandomWords
 from wasabi import Printer
 
-from psycopt2d.evaluate_saved_model_predictions import (
+from psycop_model_training.evaluate_saved_model_predictions import (
     infer_look_distance,
     infer_outcome_col_name,
 )
-from psycopt2d.load import load_train_raw
-from psycopt2d.utils.config_schemas import FullConfigSchema, load_cfg_as_pydantic
+from psycop_model_training.load import load_train_raw
+from psycop_model_training.config.schemas import FullConfigSchema, load_cfg_as_pydantic
 
 
 def start_trainer(

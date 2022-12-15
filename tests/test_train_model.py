@@ -3,9 +3,9 @@
 
 import pytest
 
-from psycopt2d.models import MODELS
-from psycopt2d.train_model import main
-from psycopt2d.utils.config_schemas import FullConfigSchema, load_cfg_as_omegaconf
+from psycop_model_training.training.model_specs import MODELS
+from psycop_model_training.training.train_model import main
+from psycop_model_training.config.schemas import FullConfigSchema, load_cfg_as_omegaconf
 
 INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
 

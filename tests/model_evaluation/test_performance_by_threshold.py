@@ -8,12 +8,12 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 
 import pandas as pd
 
-from psycopt2d.evaluation_dataclasses import ArtifactContainer, EvalDataset
-from psycopt2d.tables.performance_by_threshold import (
+from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
+from psycop_model_training.tables.performance_by_threshold import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )
-from psycopt2d.utils.utils import positive_rate_to_pred_probs
+from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 
 
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
