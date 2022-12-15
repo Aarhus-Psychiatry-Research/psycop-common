@@ -5,7 +5,7 @@ the best performing ones.
 Usage:
 - Set the constants in the first section of the script (mainly under the # RUN CONSTANTS header).
 - Replace the HYDRA_ARGS string with the desired arguments for `train_model.py`
-- Run this script from project root with `python src/psycopt2d/train_and_log_models.py`
+- Run this script from project root with `python src/psycop_model_training/train_and_log_models.py`
 """
 
 import subprocess
@@ -42,12 +42,12 @@ if __name__ == "__main__":
             config_name=CONFIG_NAME,
         )
     trainer = subprocess.Popen(
-        ["python", "src/psycopt2d/train_model.py", *HYDRA_ARGS.split(" ")],
+        ["python", "src/psycop_model_training/train_model.py", *HYDRA_ARGS.split(" ")],
     )
     watcher = subprocess.Popen(
         [
             "python",
-            "src/psycopt2d/model_training_watcher.py",
+            "src/psycop_model_training/model_training_watcher.py",
             "--entity",
             WANDB_ENTITY,
             "--project_name",

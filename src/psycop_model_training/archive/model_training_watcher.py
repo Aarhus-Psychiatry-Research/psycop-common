@@ -30,7 +30,7 @@ def start_watcher(cfg: FullConfigSchema) -> subprocess.Popen:
     return subprocess.Popen(  # pylint: disable=consider-using-with
         [
             "python",
-            "src/psycopt2d/model_training_watcher.py",
+            "src/psycop_model_training/model_training_watcher.py",
             "--entity",
             cfg.project.wandb.entity,
             "--project_name",
@@ -79,7 +79,7 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
 
     Args:
         entity: The wandb entity to upload to (e.g. "psycop")
-        project_name: The wandb project name to upload to (e.g. "psycopt2d")
+        project_name: The wandb project name to upload to (e.g. "psycop_model_training")
         n_runs_before_eval: The number of runs to complete before evaluating the
             best runs.
         model_data_dir: Where to look for evaluation results.

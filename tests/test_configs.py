@@ -7,7 +7,7 @@ from hydra import compose, initialize
 from psycop_model_training.config.schemas import convert_omegaconf_to_pydantic_object
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
-CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "src" / "psycopt2d" / "config"
+CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "src" / "psycop_model_training" / "config"
 CONFIG_DIR_PATH_REL = "../src/psycop_model_training/config"
 
 

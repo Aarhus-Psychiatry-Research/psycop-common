@@ -3,7 +3,7 @@ wandb.
 
 Usage:
 - Replace the HYDRA_ARGS string with the desired arguments for `train_model.py`
-- Run this script from project root with `python src/psycopt2d/train_and_log_models.py
+- Run this script from project root with `python src/psycop_model_training/train_and_log_models.py
 """
 import random
 import subprocess
@@ -39,7 +39,7 @@ def start_trainer(
 
     subprocess_args: list[str] = [
         "python",
-        "src/psycopt2d/train_model.py",
+        "src/psycop_model_training/train_model.py",
         f"project.wandb.group='{wandb_group_override}'",
         f"project.wandb.mode={cfg.project.wandb.mode}",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",

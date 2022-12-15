@@ -38,7 +38,7 @@ from psycop_model_training.utils.utils import (
     get_selected_features_dict,
 )
 
-CONFIG_PATH = PROJECT_ROOT / "src" / "psycopt2d" / "config"
+CONFIG_PATH = PROJECT_ROOT / "src" / "psycop_model_training" / "config"
 
 # Handle wandb not playing nice with joblib
 os.environ["WANDB_START_METHOD"] = "thread"

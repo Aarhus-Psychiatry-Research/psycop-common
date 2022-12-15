@@ -80,7 +80,7 @@ class ProjectSchema(BaseModel):
     """Project configuration."""
 
     wandb: WandbSchema
-    name: str = "psycopt2d"
+    name: str = "psycop_model_training"
     seed: int
     watcher: WatcherSchema
     gpu: bool
