@@ -39,6 +39,8 @@ def str_to_df(
     convert_timestamp_to_datetime: bool = True,
     convert_np_nan_to_nan: bool = True,
     convert_str_to_float: bool = False,
+    add_pred_time_uuid: bool = False,
+    entity_id_colname: str = "entity_id",
 ) -> DataFrame:
     """Convert a string representation of a dataframe to a dataframe.
 
@@ -51,6 +53,8 @@ def str_to_df(
     Returns:
         DataFrame: A dataframe.
     """
+    # Drop anything after the last comma
+    string = string[: string.rfind(",") + 1]
 
     df = pd.read_table(StringIO(string), sep=",", index_col=False)
 
@@ -64,6 +68,11 @@ def str_to_df(
     if convert_str_to_float:
         # Convert all str to float
         df = df.apply(pd.to_numeric, axis=0, errors="coerce")
+
+    if add_pred_time_uuid:
+        df["pred_time_uuid"] = (
+            df[entity_id_colname].astype(str) + "_" + df["timestamp"].astype(str)
+        )
 
     # Drop "Unnamed" cols
     return df.loc[:, ~df.columns.str.contains("^Unnamed")]
