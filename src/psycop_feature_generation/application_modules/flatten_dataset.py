@@ -34,10 +34,10 @@ def filter_prediction_times(
         pd.DataFrame: Filtered prediction times dataframe.
     """
     filterer = PredictionTimeFilterer(
-        prediction_time_df=prediction_times_df,
-        id_col_name=project_info.col_names.id,
-        quarantine_df=quarantine_df,
-        quarantine_days=quarantine_days,
+        prediction_times_df=prediction_times_df,
+        entity_id_col_name=project_info.col_names.id,
+        quarantine_timestamps_df=quarantine_df,
+        quarantine_interval_days=quarantine_days,
     )
 
     return filterer.filter()

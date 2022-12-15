@@ -7,12 +7,17 @@ from psycop_feature_generation.application_modules.filter_prediction_times impor
 from psycop_feature_generation.utils_for_testing import str_to_df
 
 
-def test_filter_by_quarantine_date():
+def test_filter_by_quarantine_period():
     """Test filtering by quarantine date.
 
-    Should filter if the prediction times is within X days after the quarantine date.
+    Should filter if the prediction times lie within quarantine_interval_days after the prediction time.
 
-    Uses dataframes as input.
+    E.g. for type 2 diabetes, patients are quarantined for 730 days after they return to the Central Denmark Region.
+    If a patient has an event in that time, they were probably incident outside of the region.
+    Therefore, their following prediction times should be filtered out.
+
+    Note that this function only filters the prediction times within the quarantine period.
+    Filtering after the outcome is done inside TimeseriesFlattener when the OutcomeSpec has incident = True.
     """
     quarantine_df = str_to_df(
         """entity_id,timestamp,
@@ -41,10 +46,10 @@ def test_filter_by_quarantine_date():
     )
 
     filterer = PredictionTimeFilterer(
-        prediction_time_df=prediction_time_df,
-        quarantine_df=quarantine_df,
-        quarantine_days=730,
-        id_col_name="entity_id",
+        prediction_times_df=prediction_time_df,
+        quarantine_timestamps_df=quarantine_df,
+        quarantine_interval_days=730,
+        entity_id_col_name="entity_id",
     )
 
     result_df = filterer.filter()

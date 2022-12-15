@@ -41,6 +41,7 @@ def str_to_df(
     convert_str_to_float: bool = False,
     add_pred_time_uuid: bool = False,
     entity_id_colname: str = "entity_id",
+    timestamp_col_name: str = "timestamp",
 ) -> DataFrame:
     """Convert a string representation of a dataframe to a dataframe.
 
@@ -49,14 +50,14 @@ def str_to_df(
         convert_timestamp_to_datetime (bool): Whether to convert the timestamp column to datetime. Defaults to True.
         convert_np_nan_to_nan (bool): Whether to convert np.nan to np.nan. Defaults to True.
         convert_str_to_float (bool): Whether to convert strings to floats. Defaults to False.
-        add_pred_time_uuid (bool): Whether to add a pred_time_uuid column. Defaults to False.
+        add_pred_time_uuid (bool): Whether to infer a pred_time_uuid column from entity_id and timestamp columns. Defaults to False.
         entity_id_colname (str): The name of the entity_id column. Defaults to "entity_id".
 
     Returns:
         DataFrame: A dataframe.
     """
-    # Drop anything after the last comma
-    string = string[: string.rfind(",") + 1]
+    # Drop comments for each line if any exist inside the str
+    string = string[: string.rfind("#")]
 
     df = pd.read_table(StringIO(string), sep=",", index_col=False)
 
@@ -73,7 +74,7 @@ def str_to_df(
 
     if add_pred_time_uuid:
         df["pred_time_uuid"] = (
-            df[entity_id_colname].astype(str) + "_" + df["timestamp"].astype(str)
+            df[entity_id_colname].astype(str) + "_" + df[timestamp_col_name].astype(str)
         )
 
     # Drop "Unnamed" cols

@@ -11,22 +11,34 @@ class PredictionTimeFilterer:
 
     def __init__(
         self,
-        prediction_time_df: pd.DataFrame,
-        id_col_name: str,
-        quarantine_df: Optional[pd.DataFrame] = None,
-        quarantine_days: Optional[int] = None,
+        prediction_times_df: pd.DataFrame,
+        entity_id_col_name: str,
+        quarantine_timestamps_df: Optional[pd.DataFrame] = None,
+        quarantine_interval_days: Optional[int] = None,
     ):
-        self.prediction_time_df = prediction_time_df
-        self.quarantine_df = quarantine_df
-        self.quarantine_days = quarantine_days
-        self.id_col_name = id_col_name
+        """Initialize PredictionTimeFilterer.
+
+        Args:
+            prediction_times_df (pd.DataFrame): Prediction times dataframe.
+                Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
+            quarantine_df (pd.DataFrame, optional): A dataframe with "timestamp" column from which to start the quarantine.
+                Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
+            quarantine_days (int, optional): Number of days to quarantine.
+            entity_id_col_name (str): Name of the entity_id_col_name column.
+
+        """
+
+        self.prediction_times_df = prediction_times_df
+        self.quarantine_df = quarantine_timestamps_df
+        self.quarantine_days = quarantine_interval_days
+        self.entity_id_col_name = entity_id_col_name
 
     def _filter_prediction_times_by_quarantine_period(self):
         # We need to check if ANY quarantine date hits each prediction time.
         # Create combinations
-        df = self.prediction_time_df.merge(
+        df = self.prediction_times_df.merge(
             self.quarantine_df,
-            on=self.id_col_name,
+            on=self.entity_id_col_name,
             how="left",
             suffixes=("_pred", "_quarantine"),
         )
@@ -69,10 +81,10 @@ class PredictionTimeFilterer:
 
     def filter(self):
         """Run filters based on the provided parameters."""
-        df = self.prediction_time_df
+        df = self.prediction_times_df
 
         if self.quarantine_df is not None or self.quarantine_days is not None:
-            if self.quarantine_days is None or self.quarantine_days is None:
+            if all([v is None for v in (self.quarantine_days, self.quarantine_df)]):
                 raise ValueError(
                     "If either of quarantine_df and quarantine_days are provided, both must be provided.",
                 )
