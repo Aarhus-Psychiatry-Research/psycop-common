@@ -8,6 +8,7 @@ from sklearn.feature_selection import (
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from wasabi import Printer
 
 from psycop_model_training.config.schemas import FullConfigSchema
 from psycop_model_training.preprocessing.feature_selectors import DropDateTimeColumns

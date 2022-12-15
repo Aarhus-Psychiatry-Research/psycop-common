@@ -12,15 +12,14 @@ from typing import Optional
 
 import pandas as pd
 import wandb
-from psycopt2d.utils.config_schemas import (
+from random_word import RandomWords
+from wasabi import Printer
+
+from psycop_model_training.config.schemas import (
     BaseModel,
     FullConfigSchema,
     load_cfg_as_pydantic,
 )
-from random_word import RandomWords
-from wasabi import Printer
-
-from psycop_model_training.config.schemas import FullConfigSchema, load_cfg_as_pydantic
 from psycop_model_training.load import load_train_raw
 from psycop_model_training.model_eval.evaluate_model import (
     infer_look_distance,
@@ -46,7 +45,6 @@ def start_trainer(
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",
         f"hydra.sweeper.n_jobs={cfg.train.n_jobs_per_trainer}",
         f"model={model_name}",
-        f"model={cfg.model.name}",
         f"data.min_lookahead_days={lookahead_days}",
         "--config-name",
         f"{config_file_name}",
@@ -55,7 +53,7 @@ def start_trainer(
     if cfg.train.n_trials_per_lookahead > 1:
         subprocess_args.insert(2, "--multirun")
 
-    if model.name == "xgboost":
+    if model_name == "xgboost":
         subprocess_args.insert(3, "++model.args.tree_method='gpu_hist'")
 
     msg.info(f'{" ".join(subprocess_args)}')
@@ -67,6 +65,7 @@ def start_trainer(
 
 class TrainerSpec(BaseModel):
     """Specification for starting a trainer.
+
     Provides overrides for the config file.
     """
 
