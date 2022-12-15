@@ -48,12 +48,12 @@ class PredictionTimeFilterer:
 
             self.prediction_times_df[
                 self.pred_time_uuid_col_name
-            ] = self.prediction_times_df["timestamp"].astype(
+            ] = self.prediction_times_df[self.entity_id_col_name].astype(
                 str
             ) + self.prediction_times_df[
-                self.entity_id_col_name
-            ].astype(
-                str
+                "timestamp"
+            ].dt.strftime(
+                "-%Y-%m-%d-%H-%M-%S",
             )
 
     def _filter_prediction_times_by_quarantine_period(self):
@@ -79,23 +79,30 @@ class PredictionTimeFilterer:
             "hit_by_quarantine",
         ] = True
 
-        # If any of the combinations for a UUID is hit by a quarantine date, drop it.
-        df["hit_by_quarantine"] = df.groupby("pred_time_uuid")[
-            "hit_by_quarantine"
-        ].transform("max")
+        # Get only the rows that were hit by the quarantine date
+        df_hit_by_quarantine = df.loc[
+            df["hit_by_quarantine"] == True  # pylint: disable=singleton-comparison
+        ].drop_duplicates(subset=[self.pred_time_uuid_col_name])[
+            ["pred_time_uuid", "hit_by_quarantine"]
+        ]
+
+        # Use these rows to filter the prediction times
+        df = self.prediction_times_df.merge(
+            df_hit_by_quarantine,
+            on=self.pred_time_uuid_col_name,
+            how="left",
+            suffixes=("", "_hit_by_quarantine"),
+            validate="one_to_one",
+        )
 
         df = df.loc[
             df["hit_by_quarantine"] != True  # pylint: disable=singleton-comparison
         ]
 
-        df = df.drop_duplicates(subset="pred_time_uuid")
-
         # Drop the columns we added
         df = df.drop(
             columns=[
-                "days_since_quarantine",
                 "hit_by_quarantine",
-                "timestamp_quarantine",
             ],
         )
 
