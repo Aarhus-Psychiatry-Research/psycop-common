@@ -2,6 +2,28 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.0 (2022-12-15)
+### Feature
+* Add rows dropped logging ([`33ba525`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/33ba525c1cd3231dce080b64eb57d571a824ba3b))
+* Allow filtering based on quarantine dates ([`3deb052`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3deb052d7373ba8a4ebef265f8364101555bfd72))
+* Improve logging - debug to file, info to stdout ([`aff10a9`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/aff10a9b4f146509252f905bcc38ea79d6575992))
+* Move wandb init earlier so wandb_alerts can cover values_df loading ([`6c153b1`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/6c153b15815e063af85a8f1c6bf0696bb67519e0))
+* Generate full feature set ([`9ba907a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/9ba907aa3134a32127cd115f2efa3c53041b713a))
+* Wrap as much of main as possible in wandb exception ([`3b085af`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3b085afee6e92409e10aca323821bc481e076d9a))
+* Allow timestamps only return from visit loaders for use as pred_times ([`f9534e0`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f9534e00df5249c15f2c0eaca10bd6ed72681a6e))
+* Migrate some loaders to logging. ([`f81fd92`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f81fd921d17faeb28e926807909c9036ee418317))
+* More explicit logging ([`7969210`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/7969210c9c85f07fbda485e8076e27f90901d072))
+* Init changes ([`f257daa`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f257daa832a26b5508a67a7eadb9040075bc801a))
+
+### Fix
+* Use lookbehind instead of interval days ([`7e14ad5`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/7e14ad59583065d7be8c344cc6d7cab26066e83a))
+* Only one feature cache per project ([`cb0b8b0`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/cb0b8b0709fbca2ea1bcec5054ea8aac9ad39faf))
+* Unused input args ([`fa14461`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/fa144615ecf71a88d3c6e0be93b301b67977abe2))
+* Wandb util was missing text kwarg ([`64c1729`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/64c1729f2ec696fe913a2851880168513797fa5a))
+
+### Performance
+* Infer CPU cores from logical cores ([`309e9d2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/309e9d26d4d902fb0492ba99bdda38776aab24ab))
+
 ## v0.11.0 (2022-12-13)
 ### Feature
 * Add wandb alert on exception ([`3ff6e37`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3ff6e3797910bb159e23496da6d863097b646267))
