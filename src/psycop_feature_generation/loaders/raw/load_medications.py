@@ -4,7 +4,6 @@ import logging
 from typing import Optional, Union
 
 import pandas as pd
-from wasabi import msg
 
 from psycop_feature_generation.loaders.raw.utils import load_from_codes
 from psycop_feature_generation.utils import data_loaders
