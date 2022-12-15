@@ -8,6 +8,7 @@ import wandb
 from sklearn.metrics import recall_score
 from wandb.sdk.wandb_run import Run as wandb_run  # pylint: disable=no-name-in-module
 
+from psycop_model_training.config.schemas import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import (
     ArtifactContainer,
     EvalDataset,
@@ -20,11 +21,16 @@ from psycop_model_training.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
 )
-from psycop_model_training.config.schemas import FullConfigSchema
 from psycop_model_training.utils.utils import positive_rate_to_pred_probs
-from psycop_model_training.visualization.feature_importance import plot_feature_importances
-from psycop_model_training.visualization.performance_by_age import plot_performance_by_age
-from psycop_model_training.visualization.performance_by_n_hba1c import plot_performance_by_n_hba1c
+from psycop_model_training.visualization.feature_importance import (
+    plot_feature_importances,
+)
+from psycop_model_training.visualization.performance_by_age import (
+    plot_performance_by_age,
+)
+from psycop_model_training.visualization.performance_by_n_hba1c import (
+    plot_performance_by_n_hba1c,
+)
 from psycop_model_training.visualization.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,

@@ -1,6 +1,9 @@
 from psycop_model_training.config.schemas import FullConfigSchema
 from psycop_model_training.preprocessing.feature_selectors import DropDateTimeColumns
-from psycop_model_training.preprocessing.feature_transformers import DateTimeConverter, ConvertToBoolean
+from psycop_model_training.preprocessing.feature_transformers import (
+    ConvertToBoolean,
+    DateTimeConverter,
+)
 
 
 def create_preprocessing_pipeline(cfg: FullConfigSchema):

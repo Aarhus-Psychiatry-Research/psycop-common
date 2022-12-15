@@ -15,17 +15,19 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
-from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
-from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
-
-# from psycop_model_training.evaluation import evaluate_model
-from psycop_model_training.load import load_train_and_val_from_cfg
-from psycop_model_training.preprocessing.post_split.create_pipeline import create_preprocessing_pipeline
-from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.config.schemas import (
     FullConfigSchema,
     convert_omegaconf_to_pydantic_object,
 )
+
+# from psycop_model_training.evaluation import evaluate_model
+from psycop_model_training.load import load_train_and_val_from_cfg
+from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
+from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
+from psycop_model_training.preprocessing.post_split.create_pipeline import (
+    create_preprocessing_pipeline,
+)
+from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.utils import (
     PROJECT_ROOT,
