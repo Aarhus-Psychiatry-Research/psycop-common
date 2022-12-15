@@ -1,4 +1,6 @@
 """Flatten the dataset."""
+from typing import Optional
+
 import pandas as pd
 import psutil
 from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
@@ -9,17 +11,19 @@ from psycop_feature_generation.application_modules.filter_prediction_times impor
     PredictionTimeFilterer,
 )
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
+from psycop_feature_generation.application_modules.utils import print_df_dimensions_diff
 from psycop_feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 
 
+@print_df_dimensions_diff
 def filter_prediction_times(
     prediction_times_df: pd.DataFrame,
     project_info: ProjectInfo,
-    quarantine_df=None,
-    quarantine_days=None,
+    quarantine_df: Optional[pd.DataFrame] = None,
+    quarantine_days: Optional[int] = None,
 ) -> pd.DataFrame:
     """Filter prediction times.
 
@@ -49,8 +53,8 @@ def create_flattened_dataset(
     prediction_times_df: pd.DataFrame,
     drop_pred_times_with_insufficient_look_distance: bool,
     project_info: ProjectInfo,
-    quarantine_df=None,
-    quarantine_days=None,
+    quarantine_df: Optional[pd.DataFrame] = None,
+    quarantine_days: Optional[int] = None,
 ) -> pd.DataFrame:
     """Create flattened dataset.
 
