@@ -2,6 +2,8 @@
 import logging
 
 import numpy as np
+
+from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     OutcomeGroupSpec,
@@ -11,8 +13,6 @@ from timeseriesflattener.feature_spec_objects import (
     StaticSpec,
     _AnySpec,
 )
-
-from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 
 from .loaders.t2d_loaders import (  # noqa pylint: disable=unused-import
     timestamp_exclusion,
