@@ -1,5 +1,5 @@
 n_splits: 3 # (int, Null): Number of k-folds during CV. If Null, loads pre-defined dataset.
 n_trials_per_lookahead: 300
 n_jobs_per_trainer: 1
-n_active_trainers: 5
+n_active_trainers: 10
 random_delay_per_job_seconds: 0

@@ -8,7 +8,7 @@ it makes them:
 """
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
@@ -164,7 +164,7 @@ class PreprocessingConfigSchema(BaseModel):
     convert_datetimes_to_ordinal: bool
     # Whether to convert datetimes to ordinal.
 
-    imputation_method: Optional[str] = ...
+    imputation_method: Literal["most_frequent", "mean", "median", "null"]
     # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
     # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
 
