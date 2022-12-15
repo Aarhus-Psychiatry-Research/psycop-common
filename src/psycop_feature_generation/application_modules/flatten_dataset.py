@@ -1,15 +1,46 @@
 """Flatten the dataset."""
 import pandas as pd
 import psutil
+from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
+from timeseriesflattener.feature_spec_objects import _AnySpec
+from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
+from psycop_feature_generation.application_modules.filter_prediction_times import (
+    PredictionTimeFilterer,
+)
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from psycop_feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
-from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
-from timeseriesflattener.feature_spec_objects import _AnySpec
-from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+
+
+def filter_prediction_times(
+    prediction_times_df: pd.DataFrame,
+    project_info: ProjectInfo,
+    quarantine_df=None,
+    quarantine_days=None,
+) -> pd.DataFrame:
+    """Filter prediction times.
+
+    Args:
+        prediction_times_df (pd.DataFrame): Prediction times dataframe.
+            Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
+        project_info (ProjectInfo): Project info.
+        quarantine_df (pd.DataFrame, optional): Quarantine dataframe with "timestamp" and "project_info.col_names.id" columns.
+        quarantine_days (int, optional): Number of days to quarantine.
+
+    Returns:
+        pd.DataFrame: Filtered prediction times dataframe.
+    """
+    filterer = PredictionTimeFilterer(
+        prediction_time_df=prediction_times_df,
+        id_col_name=project_info.col_names.id,
+        quarantine_df=quarantine_df,
+        quarantine_days=quarantine_days,
+    )
+
+    return filterer.filter()
 
 
 @wandb_alert_on_exception
@@ -18,6 +49,8 @@ def create_flattened_dataset(
     prediction_times_df: pd.DataFrame,
     drop_pred_times_with_insufficient_look_distance: bool,
     project_info: ProjectInfo,
+    quarantine_df=None,
+    quarantine_days=None,
 ) -> pd.DataFrame:
     """Create flattened dataset.
 
@@ -28,13 +61,21 @@ def create_flattened_dataset(
             Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
         drop_pred_times_with_insufficient_look_distance (bool): Whether to drop prediction times with insufficient look distance.
             See timeseriesflattener tutorial for more info.
+        quarantine_df (pd.DataFrame, optional): Quarantine dataframe with "timestamp" and "project_info.col_names.id" columns.
+        quarantine_days (int, optional): Number of days to quarantine.
 
     Returns:
         FlattenedDataset: Flattened dataset.
     """
+    filtered_prediction_times_df = filter_prediction_times(
+        prediction_times_df=prediction_times_df,
+        project_info=project_info,
+        quarantine_df=quarantine_df,
+        quarantine_days=quarantine_days,
+    )
 
     flattened_dataset = TimeseriesFlattener(
-        prediction_times_df=prediction_times_df,
+        prediction_times_df=filtered_prediction_times_df,
         n_workers=min(
             len(feature_specs),
             psutil.cpu_count(logical=True),
