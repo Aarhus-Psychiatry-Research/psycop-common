@@ -8,7 +8,7 @@ import logging
 
 import wandb
 
-from application.t2d.modules.specify_features import get_feature_specs
+from application.t2d.modules.specify_features import FeatureSpecifier, get_feature_specs
 from psycop_feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -40,7 +40,9 @@ log = logging.getLogger()
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""
-    feature_specs = get_feature_specs(project_info=project_info)
+    feature_specs = FeatureSpecifier(
+        project_info=project_info, min_set_for_debug=True
+    ).get_feature_specs()
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
