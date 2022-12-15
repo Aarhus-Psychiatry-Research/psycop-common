@@ -6,10 +6,7 @@ Possible extensions (JIT when needed):
 - Evaluate all models in 'evaluation_results' folder
 - CLI for evaluating a model
 """
-import re
-from collections.abc import Iterable
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 from omegaconf import DictConfig
@@ -23,36 +20,6 @@ from psycop_model_training.utils.utils import (
     read_pickle,
 )
 from psycop_model_training.visualization import plot_auc_by_time_from_first_visit
-
-
-def infer_look_distance(
-    col_name: Union[Iterable[str], str],
-    regex_pattern: str = r"within_(\d+)_days",
-    allow_multiple: bool = True,
-) -> list[str]:
-    """Infer look distances from col names."""
-    # E.g. "outc_within_1_days" = 1
-    # E.g. "outc_within_2_days" = 2
-    # E.g. "pred_within_3_days" = 3
-    # E.g. "pred_within_3_days" = 3
-
-    look_distances: list[str] = []
-
-    if isinstance(col_name, Iterable) and not isinstance(col_name, str):
-        for c_name in col_name:
-            look_distances += infer_look_distance(
-                col_name=c_name,
-                regex_pattern=regex_pattern,
-            )
-    else:
-        look_distances = re.findall(pattern=regex_pattern, string=col_name)
-
-    if len(look_distances) > 1 and not allow_multiple:
-        raise ValueError(
-            f"Multiple col names provided and allow_multiple is {allow_multiple}.",
-        )
-
-    return look_distances
 
 
 def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig]:

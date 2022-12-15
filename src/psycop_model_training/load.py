@@ -13,8 +13,8 @@ from pydantic import BaseModel
 from wasabi import Printer
 
 from psycop_model_training.config.schemas import FullConfigSchema
-from psycop_model_training.evaluate_saved_model_predictions import infer_look_distance
-from psycop_model_training.utils.dataframe_modifier_timestamp_decorator import (
+from psycop_model_training.utils.col_name_inference import infer_look_distance
+from psycop_model_training.utils.decorators import (
     print_df_dimensions_diff,
 )
 from psycop_model_training.utils.utils import (

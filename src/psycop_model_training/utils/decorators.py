@@ -1,4 +1,7 @@
-"""Misc. utility functions."""
+"""Misc.
+
+utility functions.
+"""
 import functools
 import pathlib
 from functools import wraps

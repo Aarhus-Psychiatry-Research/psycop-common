@@ -15,11 +15,11 @@ from random_word import RandomWords
 from wasabi import Printer
 
 from psycop_model_training.config.schemas import FullConfigSchema, load_cfg_as_pydantic
-from psycop_model_training.evaluate_saved_model_predictions import (
+from psycop_model_training.load import load_train_raw
+from psycop_model_training.model_eval.evaluate_model import (
     infer_look_distance,
     infer_outcome_col_name,
 )
-from psycop_model_training.load import load_train_raw
 
 
 def start_trainer(
