@@ -4,7 +4,6 @@ import logging
 from typing import Optional
 
 import pandas as pd
-from wasabi import msg
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
@@ -98,7 +97,8 @@ def physical_visits(
 
 @data_loaders.register("physical_visits_to_psychiatry")
 def physical_visits_to_psychiatry(
-    n_rows: Optional[int] = None, timestamps_only: bool = True
+    n_rows: Optional[int] = None,
+    timestamps_only: bool = True,
 ) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
     df = physical_visits(shak_code=6600, shak_sql_operator="=", n_rows=n_rows)

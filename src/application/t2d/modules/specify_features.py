@@ -2,8 +2,6 @@
 import logging
 
 import numpy as np
-
-from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     OutcomeGroupSpec,
@@ -13,6 +11,8 @@ from timeseriesflattener.feature_spec_objects import (
     StaticSpec,
     _AnySpec,
 )
+
+from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 
 from .loaders.t2d_loaders import (  # noqa pylint: disable=unused-import
     timestamp_exclusion,
@@ -31,7 +31,7 @@ class SpecSet(BaseModel):
 
 
 def get_static_predictor_specs(project_info: ProjectInfo):
-    """Get static predictor specs"""
+    """Get static predictor specs."""
     return [
         StaticSpec(
             values_loader="sex_female",
@@ -42,7 +42,7 @@ def get_static_predictor_specs(project_info: ProjectInfo):
 
 
 def get_metadata_specs(project_info: ProjectInfo) -> list[_AnySpec]:
-    """Get metadata specs"""
+    """Get metadata specs."""
     log.info("–––––––– Generating metadata specs ––––––––")
 
     return [
@@ -70,7 +70,7 @@ def get_metadata_specs(project_info: ProjectInfo) -> list[_AnySpec]:
 
 
 def get_outcome_specs(project_info: ProjectInfo):
-    """Get outcome specs"""
+    """Get outcome specs."""
     log.info("–––––––– Generating outcome specs ––––––––")
 
     return OutcomeGroupSpec(
@@ -84,39 +84,8 @@ def get_outcome_specs(project_info: ProjectInfo):
     ).create_combinations()
 
 
-def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpec]:
-    """Generate predictor spec list."""
-    log.info("–––––––– Generating temporal predictor specs ––––––––")
-
-    resolve_multiple = ["max", "min", "mean", "latest", "count"]
-    interval_days = [30, 90, 180, 365, 730]
-    allowed_nan_value_prop = [0]
-
-    lab_results = get_lab_result_specs(
-        resolve_multiple, interval_days, allowed_nan_value_prop
-    )
-
-    diagnoses = get_diagnoses_specs(
-        resolve_multiple, interval_days, allowed_nan_value_prop
-    )
-
-    medications = get_medication_specs(
-        resolve_multiple, interval_days, allowed_nan_value_prop
-    )
-
-    demographics = PredictorGroupSpec(
-        values_loader=["weight_in_kg", "height_in_cm", "bmi"],
-        lookbehind_days=interval_days,
-        resolve_multiple_fn=["latest"],
-        fallback=[np.nan],
-        allowed_nan_value_prop=allowed_nan_value_prop,
-        prefix=project_info.prefix.predictor,
-    ).create_combinations()
-
-    return lab_results + medications + diagnoses + demographics
-
-
 def get_medication_specs(resolve_multiple, interval_days, allowed_nan_value_prop):
+    """Get medication specs."""
     log.info("–––––––– Generating medication specs ––––––––")
 
     psychiatric_medications = PredictorGroupSpec(
@@ -158,6 +127,7 @@ def get_medication_specs(resolve_multiple, interval_days, allowed_nan_value_prop
 
 
 def get_diagnoses_specs(resolve_multiple, interval_days, allowed_nan_value_prop):
+    """Get diagnoses specs."""
     log.info("–––––––– Generating diagnoses specs ––––––––")
 
     lifestyle_diagnoses = PredictorGroupSpec(
@@ -197,6 +167,7 @@ def get_diagnoses_specs(resolve_multiple, interval_days, allowed_nan_value_prop)
 
 
 def get_lab_result_specs(resolve_multiple, interval_days, allowed_nan_value_prop):
+    """Get lab result specs."""
     log.info("–––––––– Generating lab result specs ––––––––")
 
     general_lab_results = PredictorGroupSpec(
@@ -229,6 +200,44 @@ def get_lab_result_specs(resolve_multiple, interval_days, allowed_nan_value_prop
     ).create_combinations()
 
     return general_lab_results + diabetes_lab_results
+
+
+def get_temporal_predictor_specs(project_info: ProjectInfo) -> list[PredictorSpec]:
+    """Generate predictor spec list."""
+    log.info("–––––––– Generating temporal predictor specs ––––––––")
+
+    resolve_multiple = ["max", "min", "mean", "latest", "count"]
+    interval_days = [30, 90, 180, 365, 730]
+    allowed_nan_value_prop = [0]
+
+    lab_results = get_lab_result_specs(
+        resolve_multiple,
+        interval_days,
+        allowed_nan_value_prop,
+    )
+
+    diagnoses = get_diagnoses_specs(
+        resolve_multiple,
+        interval_days,
+        allowed_nan_value_prop,
+    )
+
+    medications = get_medication_specs(
+        resolve_multiple,
+        interval_days,
+        allowed_nan_value_prop,
+    )
+
+    demographics = PredictorGroupSpec(
+        values_loader=["weight_in_kg", "height_in_cm", "bmi"],
+        lookbehind_days=interval_days,
+        resolve_multiple_fn=["latest"],
+        fallback=[np.nan],
+        allowed_nan_value_prop=allowed_nan_value_prop,
+        prefix=project_info.prefix.predictor,
+    ).create_combinations()
+
+    return lab_results + medications + diagnoses + demographics
 
 
 def get_feature_specs(project_info: ProjectInfo) -> list[_AnySpec]:
