@@ -21,7 +21,7 @@ from psycop_model_training.config.schemas import (
 )
 
 # from psycop_model_training.evaluation import evaluate_model
-from psycop_model_training.load import load_train_and_val_from_cfg
+from psycop_model_training.data_loader.utils import load_train_and_val_from_cfg
 from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
 from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
 from psycop_model_training.preprocessing.post_split.create_pipeline import (

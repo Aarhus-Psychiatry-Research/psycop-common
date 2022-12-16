@@ -20,7 +20,7 @@ from psycop_model_training.config.schemas import (
     FullConfigSchema,
     load_cfg_as_pydantic,
 )
-from psycop_model_training.load import load_train_raw
+from psycop_model_training.data_loader.utils import load_train_raw
 from psycop_model_training.model_eval.evaluate_model import (
     infer_look_distance,
     infer_outcome_col_name,

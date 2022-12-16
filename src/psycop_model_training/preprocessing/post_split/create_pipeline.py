@@ -11,8 +11,8 @@ from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
 from psycop_model_training.config.schemas import FullConfigSchema
-from psycop_model_training.preprocessing.feature_selectors import DropDateTimeColumns
-from psycop_model_training.preprocessing.feature_transformers import (
+from psycop_model_training.preprocessing.post_split.feature_selectors import DropDateTimeColumns
+from psycop_model_training.preprocessing.post_split.feature_transformers import (
     ConvertToBoolean,
     DateTimeConverter,
 )

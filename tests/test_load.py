@@ -1,7 +1,7 @@
 """Testing of loader functions."""
 
 from psycop_model_training.config.schemas import FullConfigSchema
-from psycop_model_training.load import load_train_from_cfg
+from psycop_model_training.data_loader.utils import load_train_from_cfg
 
 
 def test_load_lookbehind_exceeds_lookbehind_threshold(

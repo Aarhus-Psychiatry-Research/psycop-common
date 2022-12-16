@@ -1,0 +1,198 @@
+import re
+from typing import Union
+
+import pandas as pd
+
+from psycop_model_training.data_loader.data_loader import msg
+from psycop_model_training.utils.col_name_inference import infer_look_distance
+from psycop_model_training.utils.decorators import print_df_dimensions_diff
+from psycop_model_training.utils.utils import infer_predictor_col_name, get_percent_lost, infer_outcome_col_name
+
+
+class PresSplitColFilterer():
+
+    @print_df_dimensions_diff
+    def _drop_cols_not_in_lookbehind_combination(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Drop predictor columns that are not in the specified combination of
+        lookbehind windows.
+
+        Args:
+            dataset (pd.DataFrame): Dataset.
+
+        Returns:
+            pd.DataFrame: Dataset with dropped columns.
+        """
+
+        if not self.cfg.data.lookbehind_combination:
+            raise ValueError("No lookbehind_combination provided.")
+
+        # Extract all unique lookbhehinds in the dataset predictors
+        lookbehinds_in_dataset = {
+            int(infer_look_distance(col)[0])
+            for col in infer_predictor_col_name(df=dataset)
+            if len(infer_look_distance(col)) > 0
+        }
+
+        # Convert list to set
+        lookbehinds_in_spec = set(self.cfg.data.lookbehind_combination)
+
+        # Check that all loobehinds in lookbehind_combination are used in the predictors
+        if not lookbehinds_in_spec.issubset(
+            lookbehinds_in_dataset,
+        ):
+            msg.warn(
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {lookbehinds_in_spec - lookbehinds_in_dataset}",
+            )
+
+            lookbehinds_to_keep = lookbehinds_in_spec.intersection(
+                lookbehinds_in_dataset,
+            )
+
+            if not lookbehinds_to_keep:
+                raise ValueError("No predictors left after dropping lookbehinds.")
+
+            msg.warn(f"Training on {lookbehinds_to_keep}.")
+        else:
+            lookbehinds_to_keep = lookbehinds_in_spec
+
+        # Create a list of all predictor columns who have a lookbehind window not in lookbehind_combination list
+        cols_to_drop = [
+            c
+            for c in infer_predictor_col_name(df=dataset)
+            if all(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
+        ]
+
+        cols_to_drop = [c for c in cols_to_drop if "within" in c]
+        # ? Add some specification of within_x_days indicating how to parse columns to find lookbehinds. Or, alternatively, use the column spec.
+
+        dataset = dataset.drop(columns=cols_to_drop)
+        return dataset
+
+    def _drop_cols_if_exceeds_look_direction_threshold(
+        self,
+        dataset: pd.DataFrame,
+        look_direction_threshold: Union[int, float],
+        direction: str,
+    ) -> pd.DataFrame:
+        """Drop columns if they look behind or ahead longer than a specified
+        threshold.
+
+            For example, if direction is "ahead", and n_days is 30, then the column
+        should be dropped if it's trying to look 60 days ahead. This is useful
+        to avoid some rows having more information than others.
+
+            Args:
+                dataset (pd.DataFrame): Dataset to process.
+                look_direction_threshold (Union[int, float]): Number of days to look in the direction.
+                direction (str): Direction to look. Allowed are ["ahead", "behind"].
+
+        Returns:
+            pd.DataFrame: Dataset without the dropped columns.
+        """
+
+        cols_to_drop = []
+
+        n_cols_before_modification = dataset.shape[1]
+
+        if direction == "behind":
+            cols_to_process = infer_predictor_col_name(df=dataset)
+
+            for col in cols_to_process:
+                # Extract lookbehind days from column name use regex
+                # E.g. "column_name_within_90_days" == 90
+                # E.g. "column_name_within_90_days_fallback_NaN" == 90
+                lookbehind_days_strs = re.findall(r"within_(\d+)_days", col)
+
+                if len(lookbehind_days_strs) > 0:
+                    lookbehind_days = int(lookbehind_days_strs[0])
+                else:
+                    msg.warn(f"Could not extract lookbehind days from {col}")
+                    continue
+
+                if lookbehind_days > look_direction_threshold:
+                    cols_to_drop.append(col)
+
+        n_cols_after_modification = dataset.shape[1]
+        percent_dropped = get_percent_lost(
+            n_before=n_cols_before_modification,
+            n_after=n_cols_after_modification,
+        )
+
+        if n_cols_before_modification - n_cols_after_modification != 0:
+            msg.info(
+                f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days.",
+            )
+
+        return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
+
+    @print_df_dimensions_diff
+    def _drop_cols_and_rows_if_look_direction_not_met(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Drop columns if they are outside the specification. Specifically:
+
+        - min_lookahead_days is insufficient for the column's lookahead
+        - The dataset doesn't stretch far enough for the prediction time's lookahead
+        - The dataset doesn't stretch far enough for the prediction time's lookbehind
+
+        Args:
+            dataset (pd.DataFrame): Dataset to process.
+        """
+        for direction in ("ahead", "behind"):
+
+            if direction in ("ahead", "behind"):
+                if direction == "ahead":
+                    n_days = self.cfg.data.min_lookahead_days
+                elif direction == "behind":
+                    n_days = max(self.cfg.data.lookbehind_combination)
+                else:
+                    continue
+
+            dataset = self._drop_rows_if_datasets_ends_within_days(
+                n_days=n_days,
+                dataset=dataset,
+                direction=direction,
+            )
+
+            dataset = self._drop_cols_if_exceeds_look_direction_threshold(
+                dataset=dataset,
+                look_direction_threshold=n_days,
+                direction=direction,
+            )
+
+        return dataset
+
+    @print_df_dimensions_diff
+    def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Keep only one outcome column with the same lookahead days as set in
+        the config."""
+        outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
+
+        col_to_drop = [
+            c for c in outcome_cols if str(self.cfg.data.min_lookahead_days) not in c
+        ]
+
+        # If no columns to drop, return the dataset
+        if not col_to_drop:
+            return dataset
+
+        df = dataset.drop(col_to_drop, axis=1)
+
+        if not len(infer_outcome_col_name(df)) == 1:
+            raise ValueError(
+                "Returning more than one outcome column, will cause problems during eval.",
+            )
+
+        return df
+
+    @print_df_dimensions_diff
+    def n_outcome_col_names(self, df: pd.DataFrame) -> int:
+        """How many outcome columns there are in a dataframe."""
+        return len(infer_outcome_col_name(df=df, allow_multiple=True))
