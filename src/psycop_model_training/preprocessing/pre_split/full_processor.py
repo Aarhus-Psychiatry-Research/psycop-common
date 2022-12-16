@@ -20,9 +20,9 @@ class FullProcessor:
         self.col_filterer = PresSplitColFilter(cfg=cfg)
         self.col_transformer = PresSplitColTransformer(cfg=cfg)
 
-    def process_from_cfg(self, dataset: pd.DataFrame):
+    def process(self, dataset: pd.DataFrame):
         """Process a dataframe using the configuration."""
+        dataset = self.col_transformer.transform(dataset=dataset)
         dataset = self.row_filterer.filter(dataset=dataset)
         dataset = self.col_filterer.filter(dataset=dataset)
-        dataset = self.col_transformer.transform_from_cfg(dataset=dataset)
         return dataset

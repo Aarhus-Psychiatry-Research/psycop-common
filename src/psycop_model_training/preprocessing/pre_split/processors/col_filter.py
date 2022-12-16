@@ -33,7 +33,7 @@ class PresSplitColFilter:
             pd.DataFrame: Dataset with dropped columns.
         """
 
-        if not self.cfg.data.lookbehind_combination:
+        if not self.cfg.preprocessing.pre_split.lookbehind_combination:
             raise ValueError("No lookbehind_combination provided.")
 
         # Extract all unique lookbhehinds in the dataset predictors
@@ -44,7 +44,9 @@ class PresSplitColFilter:
         }
 
         # Convert list to set
-        lookbehinds_in_spec = set(self.cfg.data.lookbehind_combination)
+        lookbehinds_in_spec = set(
+            self.cfg.preprocessing.pre_split.lookbehind_combination
+        )
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
         if not lookbehinds_in_spec.issubset(
@@ -146,7 +148,9 @@ class PresSplitColFilter:
         outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
 
         col_to_drop = [
-            c for c in outcome_cols if str(self.cfg.data.min_lookahead_days) not in c
+            c
+            for c in outcome_cols
+            if str(self.cfg.preprocessing.pre_split.min_lookahead_days) not in c
         ]
 
         # If no columns to drop, return the dataset

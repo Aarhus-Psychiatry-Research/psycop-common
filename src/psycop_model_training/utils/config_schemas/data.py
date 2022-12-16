@@ -1,8 +1,7 @@
-from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
-from psycop_model_training.utils.config_schemas import BaseModel
+from psycop_model_training.utils.basemodel import BaseModel
 
 
 class CustomColNames(BaseModel):

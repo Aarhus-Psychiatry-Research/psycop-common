@@ -1,16 +1,36 @@
 import os
 from pathlib import Path
+from typing import Literal
 
 import pandas as pd
 
 from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
+from psycop_model_training.preprocessing.pre_split.full_processor import FullProcessor
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 def get_latest_dataset_dir(path: Path) -> Path:
     """Get the latest dataset directory by time of creation."""
     return max(path.glob("*"), key=os.path.getctime)
+
+
+def load_and_filter_split_from_cfg(
+    cfg: FullConfigSchema, split: Literal["train", "test", "val"]
+) -> pd.DataFrame:
+    """Load train dataset from config.
+
+    Args:
+        cfg (FullConfig): Config
+        split (Literal["train", "test", "val"]): Split to load
+
+    Returns:
+        pd.DataFrame: Train dataset
+    """
+    dataset = DataLoader(cfg=cfg).load_dataset_from_dir(split_names=split)
+    filtered_data = FullProcessor(cfg=cfg).process(dataset=dataset)
+
+    return filtered_data
 
 
 def load_and_filter_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
@@ -22,17 +42,15 @@ def load_and_filter_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Train dataset
     """
-    return DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+    return load_and_filter_split_from_cfg(cfg=cfg, split="train")
 
 
 def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema):
     """Load train and validation data from file."""
 
-    loader = DataLoader(cfg=cfg)
-
     return SplitDataset(
-        train=loader.load_dataset_from_dir(split_names="train"),
-        val=loader.load_dataset_from_dir(split_names="val"),
+        train=load_and_filter_split_from_cfg(cfg=cfg, split="train"),
+        val=load_and_filter_split_from_cfg(cfg=cfg, split="val"),
     )
 
 

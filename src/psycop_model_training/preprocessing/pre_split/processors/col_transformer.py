@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from wasabi import Printer
 
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import infer_predictor_col_name
 
@@ -68,7 +69,7 @@ class PresSplitColTransformer:
 
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
-        if self.cfg.preprocessing.convert_booleans_to_int:
+        if self.cfg.preprocessing.pre_split.convert_booleans_to_int:
             dataset = self._convert_boolean_dtypes_to_int(dataset=dataset)
 
         msg.info("Finished processing dataset")

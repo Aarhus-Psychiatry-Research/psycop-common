@@ -1,5 +1,9 @@
-from typing import Optional, Any, Union
+from typing import Optional, Union
 
+from hydra import compose, initialize
+from omegaconf import DictConfig, OmegaConf
+
+from psycop_model_training.utils.basemodel import BaseModel
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
@@ -24,7 +28,7 @@ def load_test_cfg_as_omegaconf(
     overrides: Optional[list[str]] = None,
 ) -> DictConfig:
     """Load config as omegaconf object."""
-    with initialize(version_base=None, config_path="../../../tests/config/"):
+    with initialize(version_base=None, config_path="../../../../tests/config/"):
         if overrides:
             cfg = compose(
                 config_name=config_file_name,
@@ -58,49 +62,6 @@ def load_test_cfg_as_pydantic(
     )
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
-
-
-class BaseModel(PydanticBaseModel):
-    """."""
-
-    class Config:
-        """An pydantic basemodel, which doesn't allow attributes that are not
-        defined in the class."""
-
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
-
-    def __transform_attributes_with_str_to_object(
-        self,
-        output_object: Any,
-        input_string: str = "str",
-    ):
-        for key, value in self.__dict__.items():
-            if isinstance(value, str):
-                if value.lower() == input_string.lower():
-                    self.__dict__[key] = output_object
-
-    def __init__(
-        self,
-        allow_mutation: bool = False,
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
-        self.Config.allow_mutation = allow_mutation
-
-        self.__transform_attributes_with_str_to_object(
-            input_string="null",
-            output_object=None,
-        )
-        self.__transform_attributes_with_str_to_object(
-            input_string="false",
-            output_object=False,
-        )
-        self.__transform_attributes_with_str_to_object(
-            input_string="true",
-            output_object=True,
-        )
 
 
 class WatcherSchema(BaseModel):

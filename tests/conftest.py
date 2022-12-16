@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.config_schemas import (
+from psycop_model_training.utils.config_schemas.conf_utils import (
     FullConfigSchema,
     load_test_cfg_as_pydantic,
 )

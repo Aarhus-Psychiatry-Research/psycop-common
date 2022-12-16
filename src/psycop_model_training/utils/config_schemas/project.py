@@ -1,14 +1,4 @@
-from psycop_model_training.utils.config_schemas import BaseModel, WandbSchema, WatcherSchema
-
-
-class ProjectSchema(BaseModel):
-    """Project configuration."""
-
-    wandb: WandbSchema
-    name: str = "psycop_model_training"
-    seed: int
-    watcher: WatcherSchema
-    gpu: bool
+from psycop_model_training.utils.basemodel import BaseModel
 
 
 class WandbSchema(BaseModel):
@@ -17,3 +7,12 @@ class WandbSchema(BaseModel):
     group: str
     mode: str
     entity: str
+
+
+class ProjectSchema(BaseModel):
+    """Project configuration."""
+
+    wandb: WandbSchema
+    name: str = "psycop_model_training"
+    seed: int
+    gpu: bool

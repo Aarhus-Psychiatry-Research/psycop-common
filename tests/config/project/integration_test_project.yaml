@@ -6,10 +6,4 @@ wandb:
   group: integration_testing
   entity: psycop # Which entity to run WanDB in.
 
-watcher:
-  archive_all: true
-  keep_alive_after_training_minutes: 5
-  n_runs_before_eval: 1
-  verbose: true
-
 gpu: false

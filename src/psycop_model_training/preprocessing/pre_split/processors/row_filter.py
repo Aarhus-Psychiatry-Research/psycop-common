@@ -79,7 +79,7 @@ class PreSplitRowFilter:
 
         outcome_before_date = (
             dataset[self.cfg.data.col_name.exclusion_timestamp]
-            < self.cfg.data.drop_patient_if_exclusion_before_date
+            < self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date
         )
 
         patients_to_drop = set(
@@ -96,11 +96,11 @@ class PreSplitRowFilter:
 
         if n_rows_before_modification - n_rows_after_modification != 0:
             msg.info(
-                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because they met exclusion criteria before {self.cfg.data.drop_patient_if_exclusion_before_date}.",
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because they met exclusion criteria before {self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date}.",
             )
         else:
             msg.info(
-                f"No rows met exclusion criteria before {self.cfg.data.drop_patient_if_exclusion_before_date}. Didn't drop any.",
+                f"No rows met exclusion criteria before {self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date}. Didn't drop any.",
             )
 
         return dataset
@@ -109,7 +109,10 @@ class PreSplitRowFilter:
     def _keep_only_if_older_than_min_age(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Keep only rows that are older than the minimum age specified in the
         config."""
-        return dataset[dataset[self.cfg.data.col_name.age] >= self.cfg.data.min_age]
+        return dataset[
+            dataset[self.cfg.data.col_name.age]
+            >= self.cfg.preprocessing.pre_split.min_age
+        ]
 
     @print_df_dimensions_diff
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
@@ -138,7 +141,7 @@ class PreSplitRowFilter:
         if self.cfg.preprocessing.pre_split.min_prediction_time_date:
             dataset = dataset[
                 dataset[self.cfg.data.col_name.pred_timestamp]
-                > self.cfg.data.min_prediction_time_date
+                > self.cfg.preprocessing.pre_split.min_prediction_time_date
             ]
 
         if self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date:
