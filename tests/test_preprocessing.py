@@ -13,10 +13,10 @@ def test_drop_datetime_predictor_columns(
     specified lookbehind combination list."""
     cfg = muteable_test_config
 
-    cfg.preprocessing.drop_datetime_predictor_columns = True
-    cfg.preprocessing.imputation_method = None
-    cfg.preprocessing.feature_selection.name = None
-    cfg.preprocessing.scaling = None
+    cfg.preprocessing.pre_split.drop_datetime_predictor_columns = True
+    cfg.preprocessing.post_split.imputation_method = None
+    cfg.preprocessing.post_split.feature_selection.name = None
+    cfg.preprocessing.post_split.scaling = None
     cfg.data.pred_prefix = "timestamp"
 
     pipe = create_preprocessing_pipeline(cfg=cfg)

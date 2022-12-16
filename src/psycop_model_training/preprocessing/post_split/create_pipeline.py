@@ -24,7 +24,7 @@ def get_feature_selection_steps(cfg):
     """Add feature selection steps to the preprocessing pipeline."""
     new_steps = []
 
-    if cfg.preprocessing.feature_selection.name:
+    if cfg.preprocessing.post_split.feature_selection.name:
         if cfg.preprocessing.feature_selection.name == "f_classif":
             new_steps.append(
                 (
@@ -75,7 +75,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
 
     steps = []
     # Conversion
-    if cfg.preprocessing.drop_datetime_predictor_columns:
+    if cfg.preprocessing.pre_split.drop_datetime_predictor_columns:
         steps.append(
             (
                 "DropDateTimeColumns",
@@ -83,31 +83,34 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             ),
         )
 
-    if cfg.preprocessing.convert_datetimes_to_ordinal:
+    if cfg.preprocessing.pre_split.convert_datetimes_to_ordinal:
         dtconverter = DateTimeConverter()
         steps.append(("DateTimeConverter", dtconverter))
 
-    if cfg.preprocessing.convert_to_boolean:
+    if cfg.preprocessing.pre_split.convert_to_boolean:
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
     # Imputation
-    if cfg.model.require_imputation and not cfg.preprocessing.imputation_method:
+    if (
+        cfg.model.require_imputation
+        and not cfg.preprocessing.post_split.imputation_method
+    ):
         msg.warn(
             f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file. Overriding to 'mean'.",
         )
 
-        cfg.preprocessing.imputation_method = "mean"
+        cfg.preprocessing.post_split.imputation_method = "mean"
         # Not a great solution, but preferable to the script breaking and stopping a hyperparameter search.
 
         raise ValueError(
             f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file.",
         )
 
-    if cfg.preprocessing.imputation_method:
+    if cfg.preprocessing.post_split.imputation_method:
         steps.append(
             (
                 "Imputation",
-                SimpleImputer(strategy=cfg.preprocessing.imputation_method),
+                SimpleImputer(strategy=cfg.preprocessing.post_split.imputation_method),
             ),
         )
 
@@ -120,8 +123,8 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     # Important to do this after feature selection, since
     # half of the values in z-score normalisation will be negative,
     # which is not allowed for chi2
-    if cfg.preprocessing.scaling:
-        if cfg.preprocessing.scaling in {
+    if cfg.preprocessing.post_split.scaling:
+        if cfg.preprocessing.post_split.scaling in {
             "z-score-normalization",
             "z-score-normalisation",
         }:
@@ -130,7 +133,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             )
         else:
             raise ValueError(
-                f"{cfg.preprocessing.scaling} is not implemented. See above",
+                f"{cfg.preprocessing.post_split.scaling} is not implemented. See above",
             )
 
     return Pipeline(steps)
