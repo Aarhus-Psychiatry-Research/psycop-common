@@ -2,6 +2,17 @@ default_stages: [push, manual]
 default_install_hook_types: [pre-push, pre-commit] # Using the "manual" stage for github actions
 
 repos:
+  # Unused-imports aren't testable by the github action without installing the whole project, so don't test that here.
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run integration tests before push
+        entry: .venv/bin/pytest -m pre_push_test
+        language: script
+        stages: [push]
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/PyCQA/autoflake
     rev: v1.7.6
     hooks:
@@ -73,14 +84,3 @@ repos:
             "-sn", # Don't display the score
             "--disable=R,import-error", # Refactors are not important enough to block a commit.
           ]
-
-  # Unused-imports aren't testable by the github action without installing the whole project, so don't test that here.
-  - repo: local
-    hooks:
-      - id: pytest
-        name: Run integration tests before push
-        entry: .venv/bin/pytest -m pre_push_test
-        language: script
-        stages: [push]
-        pass_filenames: false
-        always_run: true
