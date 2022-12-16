@@ -7,7 +7,7 @@ from application.train_model import main
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.utils.config_schemas import (
     FullConfigSchema,
-    load_cfg_as_omegaconf,
+    load_test_cfg_as_omegaconf,
 )
 
 INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
@@ -17,7 +17,7 @@ INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
 def test_main(model_name):
     """Test main using a variety of model."""
 
-    cfg: FullConfigSchema = load_cfg_as_omegaconf(
+    cfg: FullConfigSchema = load_test_cfg_as_omegaconf(
         config_file_name=INTEGRATION_TEST_FILE_NAME,
         overrides=[f"model={model_name}"],
     )

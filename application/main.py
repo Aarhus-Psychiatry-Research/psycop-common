@@ -23,7 +23,7 @@ from psycop_model_training.model_eval.evaluate_model import (
 from psycop_model_training.utils.config_schemas import (
     BaseModel,
     FullConfigSchema,
-    load_cfg_as_pydantic,
+    load_test_cfg_as_pydantic,
 )
 
 
@@ -202,7 +202,7 @@ def main():
     else:
         config_file_name = "default_config.yaml"
 
-    cfg = load_cfg_as_pydantic(config_file_name=config_file_name)
+    cfg = load_test_cfg_as_pydantic(config_file_name=config_file_name)
 
     random_word = RandomWords()
     wandb_group = f"{random_word.get_random_word()}-{random_word.get_random_word()}"

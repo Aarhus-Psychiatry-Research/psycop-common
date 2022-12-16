@@ -9,8 +9,8 @@ from psycop_model_training.utils.config_schemas import (
 )
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
-CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "src" / "psycop_model_training" / "config"
-CONFIG_DIR_PATH_REL = "../application/config"
+CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "tests" / "config"
+CONFIG_DIR_PATH_REL = "../tests/config"
 
 
 def get_config_file_names() -> list[str]:

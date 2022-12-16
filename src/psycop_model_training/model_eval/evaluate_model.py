@@ -170,7 +170,7 @@ def create_custom_plot_artifacts(
     eval_dataset: EvalDataset,
     save_dir: Path,
 ) -> list[ArtifactContainer]:
-    """A collection of plots that are always generated."""
+    """A collection of plots that are only generated for your specific use case."""
     return [
         ArtifactContainer(
             label="performance_by_n_hba1c",

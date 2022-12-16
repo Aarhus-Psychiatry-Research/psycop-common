@@ -13,7 +13,7 @@ def get_latest_dataset_dir(path: Path) -> Path:
     return max(path.glob("*"), key=os.path.getctime)
 
 
-def load_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
+def load_and_filter_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     """Load train dataset from config.
 
     Args:
@@ -22,10 +22,10 @@ def load_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Train dataset
     """
-    return DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+    data = DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
 
 
-def load_train_and_val_from_cfg(cfg: FullConfigSchema):
+def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema):
     """Load train and validation data from file."""
 
     loader = DataLoader(cfg=cfg)

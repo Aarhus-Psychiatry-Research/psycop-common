@@ -9,7 +9,9 @@ from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
-from psycop_model_training.data_loader.utils import load_train_and_val_from_cfg
+from psycop_model_training.data_loader.utils import (
+    load_and_filter_train_and_val_from_cfg,
+)
 from psycop_model_training.model_eval.dataclasses import PipeMetadata
 from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
 from psycop_model_training.preprocessing.post_split.create_pipeline import (
@@ -97,7 +99,7 @@ def main(cfg: DictConfig):
         msg.info(f"Delaying job by {delay} seconds to avoid resource competition")
         time.sleep(delay)
 
-    dataset = load_train_and_val_from_cfg(cfg)
+    dataset = load_and_filter_train_and_val_from_cfg(cfg)
 
     msg.info("Creating pipeline")
     pipe = create_pipeline(cfg)

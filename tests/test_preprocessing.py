@@ -1,5 +1,5 @@
 """Test custom preprocessing steps."""
-from psycop_model_training.data_loader.utils import load_train_from_cfg
+from psycop_model_training.data_loader.utils import load_and_filter_train_from_cfg
 from psycop_model_training.preprocessing.post_split.create_pipeline import (
     create_preprocessing_pipeline,
 )
@@ -20,7 +20,7 @@ def test_drop_datetime_predictor_columns(
     cfg.data.pred_prefix = "timestamp"
 
     pipe = create_preprocessing_pipeline(cfg=cfg)
-    train_df = load_train_from_cfg(cfg=cfg)
+    train_df = load_and_filter_train_from_cfg(cfg=cfg)
     train_df = pipe.transform(X=train_df)
 
     assert len([x for x in train_df.columns if "timestamp" in x]) == 0

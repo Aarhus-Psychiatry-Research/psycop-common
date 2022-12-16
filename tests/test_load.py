@@ -1,6 +1,6 @@
 """Testing of loader functions."""
 
-from psycop_model_training.data_loader.utils import load_train_from_cfg
+from psycop_model_training.data_loader.utils import load_and_filter_train_from_cfg
 from psycop_model_training.utils.config_schemas import FullConfigSchema
 
 
@@ -11,11 +11,11 @@ def test_load_lookbehind_exceeds_lookbehind_threshold(
     lookbehind threshold."""
     cfg = muteable_test_config
 
-    n_cols_before_filtering = load_train_from_cfg(cfg=cfg).shape[1]
+    n_cols_before_filtering = load_and_filter_train_from_cfg(cfg=cfg).shape[1]
 
     cfg.data.lookbehind_combination = [30, 60]
 
-    n_cols_after_filtering = load_train_from_cfg(cfg=cfg).shape[1]
+    n_cols_after_filtering = load_and_filter_train_from_cfg(cfg=cfg).shape[1]
 
     assert n_cols_before_filtering - n_cols_after_filtering == 2
 
@@ -27,10 +27,10 @@ def test_load_lookbehind_not_in_lookbehind_combination(
     specified lookbehind combination list."""
     cfg = muteable_test_config
 
-    n_cols_before_filtering = load_train_from_cfg(cfg=cfg).shape[1]
+    n_cols_before_filtering = load_and_filter_train_from_cfg(cfg=cfg).shape[1]
 
     cfg.data.lookbehind_combination = [60]
 
-    n_cols_after_filtering = load_train_from_cfg(cfg=cfg).shape[1]
+    n_cols_after_filtering = load_and_filter_train_from_cfg(cfg=cfg).shape[1]
 
     assert n_cols_before_filtering - n_cols_after_filtering == 3

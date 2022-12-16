@@ -4,13 +4,14 @@ from typing import Union
 import pandas as pd
 
 from psycop_model_training.data_loader.data_loader import msg
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import get_percent_lost
 
 
 class PreSplitRowFilterer:
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, cfg: FullConfigSchema):
+        self.cfg = cfg
 
     def _drop_rows_if_datasets_ends_within_days(
         self,
@@ -118,3 +119,7 @@ class PreSplitRowFilterer:
         )
 
         return dataset[~rows_to_drop]
+
+    def filter_from_cfg(self, df: pd.DataFrame):
+        if self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date:
+            df = self._drop_patient_if_excluded(df)
