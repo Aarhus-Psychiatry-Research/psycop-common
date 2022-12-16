@@ -6,9 +6,9 @@ import time
 from pathlib import Path
 from typing import Literal
 
-import wandb
-
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
+
+import wandb
 from timeseriesflattener.feature_spec_objects import (  # pylint: disable=no-name-in-module
     BaseModel,
 )
@@ -130,4 +130,7 @@ def init_wandb(
             parents=True,
         )
 
-    wandb.init(project=project_info.project_name, config=feature_settings)
+    wandb.init(
+        project=f"{project_info.project_name}-feature-generation",
+        config=feature_settings,
+    )
