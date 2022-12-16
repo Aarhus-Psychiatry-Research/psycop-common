@@ -248,7 +248,7 @@ def load_cfg_as_omegaconf(
     overrides: Optional[list[str]] = None,
 ) -> DictConfig:
     """Load config as omegaconf object."""
-    with initialize(version_base=None, config_path="../../../application/config/"):
+    with initialize(version_base=None, config_path="../../../tests/test_configs/"):
         if overrides:
             cfg = compose(
                 config_name=config_file_name,

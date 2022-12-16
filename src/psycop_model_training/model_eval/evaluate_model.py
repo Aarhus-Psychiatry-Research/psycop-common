@@ -13,22 +13,26 @@ from psycop_model_training.model_eval.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.model_eval.plots import (
-    log_image_to_wandb,
-    plot_auc_by_time_from_first_visit,
-    plot_auc_roc,
-    plot_metric_by_calendar_time,
-    plot_metric_by_cyclic_time,
-    plot_metric_by_time_until_diagnosis,
-    plot_performance_by_age,
-    plot_sensitivity_by_time_to_outcome_heatmap,
-)
 from psycop_model_training.model_eval.plots.feature_importance import (
     plot_feature_importances,
+)
+from psycop_model_training.model_eval.plots.performance_by_age import (
+    plot_performance_by_age,
 )
 from psycop_model_training.model_eval.plots.performance_by_n_hba1c import (
     plot_performance_by_n_hba1c,
 )
+from psycop_model_training.model_eval.plots.performance_over_time import (
+    plot_auc_by_time_from_first_visit,
+    plot_metric_by_calendar_time,
+    plot_metric_by_cyclic_time,
+    plot_metric_by_time_until_diagnosis,
+)
+from psycop_model_training.model_eval.plots.roc_auc import plot_auc_roc
+from psycop_model_training.model_eval.plots.sens_over_time import (
+    plot_sensitivity_by_time_to_outcome_heatmap,
+)
+from psycop_model_training.model_eval.plots.utils import log_image_to_wandb
 from psycop_model_training.model_eval.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
