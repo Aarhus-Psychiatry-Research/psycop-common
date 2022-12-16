@@ -1,5 +1,5 @@
 # import wandb
-# from psycopt2d.utils.utils import calculate_performance_metrics
+# from psycop_model_training.utils.utils import calculate_performance_metrics
 
 
 # def test_log_performance_metrics(synth_data):
