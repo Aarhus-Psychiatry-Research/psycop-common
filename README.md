@@ -27,7 +27,7 @@ PSYCOP projects which use `psycop-feature-generation`.
 | -----------------------|----------| ---------------------------------------------------------------------------------- |
 | **[Type 2 Diabetes]** |          | Prediction of type 2 diabetes among patients with visits to psychiatric hospital departments |
 
-[Type 2 diabetes]: https://github.com/Aarhus-Psychiatry-Research/psycop-t2d
+[Type 2 diabetes]: https://github.com/Aarhus-Psychiatry-Research/t2d-feature-generation
 
 ## 📖 Documentation
 
