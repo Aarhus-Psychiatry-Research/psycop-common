@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.0 (2022-12-16)
+### Feature
+* Improve logging in flatten_dataset ([`63f252f`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/63f252f3fe825a6f9bd6989e5ae515ae848eb8d7))
+* Enable minimum specificaitons ([`669e3ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/669e3ed34631ad9c5c481b42f2263ee12f8a070d))
+* Enable minimum specificaitons ([`523cfd1`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/523cfd114c422bd2edf4f4cdd35b1b808a2f5b92))
+* Log rows dropped by PredictionTimeFilterer ([`7e02d8e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/7e02d8e6065989c944045d4cdba571d425beb1db))
+* Add moves loader ([`0521dd0`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/0521dd00ddc2ff614311102858eea0bf9ea86696))
+* First stab at loader ([`f9048b8`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f9048b8741b63c3781d18be46f9b42c8550bd5e0))
+
+### Fix
+* Add pred_time_uuid if not specified when filtering ([`acca5b9`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/acca5b9b557200517fa148ec97f9613f2d765a11))
+
+### Performance
+* Avoid groupby in filter_prediction_times ([`a66e361`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/a66e361fdcf3ce75a9d25a3d5b732c72deb2abb0))
+
 ## v0.12.0 (2022-12-15)
 ### Feature
 * Add rows dropped logging ([`33ba525`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/33ba525c1cd3231dce080b64eb57d571a824ba3b))
