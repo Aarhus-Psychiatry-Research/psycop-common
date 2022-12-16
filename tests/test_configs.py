@@ -4,7 +4,9 @@ from pathlib import Path
 import pytest
 from hydra import compose, initialize
 
-from psycop_model_training.utils.config_schemas import convert_omegaconf_to_pydantic_object
+from psycop_model_training.utils.config_schemas import (
+    convert_omegaconf_to_pydantic_object,
+)
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
 CONFIG_DIR_PATH_ABS = PROJECT_ROOT / "src" / "psycop_model_training" / "config"

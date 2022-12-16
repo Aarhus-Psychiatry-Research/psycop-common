@@ -1,7 +1,7 @@
 import pandas as pd
 
-from psycop_model_training.utils.config_schemas import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 
 
 def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.DataFrame):

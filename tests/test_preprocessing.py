@@ -1,9 +1,9 @@
 """Test custom preprocessing steps."""
-from psycop_model_training.utils.config_schemas import FullConfigSchema
 from psycop_model_training.data_loader.utils import load_train_from_cfg
 from psycop_model_training.preprocessing.post_split.create_pipeline import (
     create_preprocessing_pipeline,
 )
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 
 
 def test_drop_datetime_predictor_columns(

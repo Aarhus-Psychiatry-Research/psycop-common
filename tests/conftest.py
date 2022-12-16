@@ -5,8 +5,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from psycop_model_training.utils.config_schemas import FullConfigSchema, load_cfg_as_pydantic
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.utils.config_schemas import (
+    FullConfigSchema,
+    load_cfg_as_pydantic,
+)
 
 CONFIG_DIR_PATH_REL = "../application/config"
 

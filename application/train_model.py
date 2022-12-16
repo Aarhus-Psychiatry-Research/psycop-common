@@ -4,10 +4,6 @@ from typing import Any
 import numpy as np
 import wandb
 
-from psycop_model_training.utils.config_schemas import (
-    FullConfigSchema,
-    convert_omegaconf_to_pydantic_object,
-)
 from psycop_model_training.data_loader.utils import load_train_and_val_from_cfg
 from psycop_model_training.model_eval.dataclasses import PipeMetadata
 from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
@@ -20,6 +16,10 @@ from psycop_model_training.training.train_and_eval import (
     train_and_get_model_eval_df,
 )
 from psycop_model_training.utils.col_name_inference import get_col_names
+from psycop_model_training.utils.config_schemas import (
+    FullConfigSchema,
+    convert_omegaconf_to_pydantic_object,
+)
 from psycop_model_training.utils.utils import (
     PROJECT_ROOT,
     create_wandb_folders,

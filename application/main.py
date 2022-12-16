@@ -15,15 +15,15 @@ import wandb
 from random_word import RandomWords
 from wasabi import Printer
 
-from psycop_model_training.utils.config_schemas import (
-    BaseModel,
-    FullConfigSchema,
-    load_cfg_as_pydantic,
-)
 from psycop_model_training.data_loader.utils import load_train_raw
 from psycop_model_training.model_eval.evaluate_model import (
     infer_look_distance,
     infer_outcome_col_name,
+)
+from psycop_model_training.utils.config_schemas import (
+    BaseModel,
+    FullConfigSchema,
+    load_cfg_as_pydantic,
 )
 
 

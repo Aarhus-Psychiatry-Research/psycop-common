@@ -4,8 +4,11 @@
 import pytest
 
 from application.train_model import main
-from psycop_model_training.utils.config_schemas import FullConfigSchema, load_cfg_as_omegaconf
 from psycop_model_training.training.model_specs import MODELS
+from psycop_model_training.utils.config_schemas import (
+    FullConfigSchema,
+    load_cfg_as_omegaconf,
+)
 
 INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
 
