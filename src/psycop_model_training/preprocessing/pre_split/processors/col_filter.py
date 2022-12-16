@@ -45,7 +45,7 @@ class PresSplitColFilter:
 
         # Convert list to set
         lookbehinds_in_spec = set(
-            self.cfg.preprocessing.pre_split.lookbehind_combination
+            self.cfg.preprocessing.pre_split.lookbehind_combination,
         )
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors

@@ -14,7 +14,7 @@ def main():
     df = load_train_raw(cfg=cfg)  # noqa pylint: disable=unused-variable
 
     df_filtered = load_and_filter_train_from_cfg(
-        cfg=cfg
+        cfg=cfg,
     )  # noqa pylint: disable=unused-variable
 
 

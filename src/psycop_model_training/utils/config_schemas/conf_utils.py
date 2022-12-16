@@ -58,7 +58,8 @@ def load_test_cfg_as_pydantic(
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
     cfg = load_test_cfg_as_omegaconf(
-        config_file_name=config_file_name, overrides=overrides
+        config_file_name=config_file_name,
+        overrides=overrides,
     )
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)

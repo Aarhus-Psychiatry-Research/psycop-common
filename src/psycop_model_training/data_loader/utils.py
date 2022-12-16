@@ -16,7 +16,8 @@ def get_latest_dataset_dir(path: Path) -> Path:
 
 
 def load_and_filter_split_from_cfg(
-    cfg: FullConfigSchema, split: Literal["train", "test", "val"]
+    cfg: FullConfigSchema,
+    split: Literal["train", "test", "val"],
 ) -> pd.DataFrame:
     """Load train dataset from config.
 
