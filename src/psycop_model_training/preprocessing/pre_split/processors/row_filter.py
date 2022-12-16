@@ -9,7 +9,7 @@ from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import get_percent_lost
 
 
-class PreSplitRowFilterer:
+class PreSplitRowFilter:
     def __init__(self, cfg: FullConfigSchema):
         self.cfg = cfg
 
@@ -122,23 +122,24 @@ class PreSplitRowFilterer:
 
         return dataset[~rows_to_drop]
 
-    def filter_from_cfg(self, dataset: pd.DataFrame):
+    def filter(self, dataset: pd.DataFrame):
         for direction in ("ahead", "behind"):
-            if direction in ("ahead", "behind"):
-                if direction == "ahead":
-                    n_days = self.cfg.preprocessing.pre_split.min_lookahead_days
-                elif direction == "behind":
-                    n_days = max(
-                        self.cfg.preprocessing.pre_split.lookbehind_combination
-                    )
-                else:
-                    continue
+            if direction == "ahead":
+                n_days = self.cfg.preprocessing.pre_split.min_lookahead_days
+            elif direction == "behind":
+                n_days = max(self.cfg.preprocessing.pre_split.lookbehind_combination)
 
             dataset = self._drop_rows_if_datasets_ends_within_days(
                 n_days=n_days,
                 dataset=dataset,
                 direction=direction,
             )
+
+        if self.cfg.preprocessing.pre_split.min_prediction_time_date:
+            dataset = dataset[
+                dataset[self.cfg.data.col_name.pred_timestamp]
+                > self.cfg.data.min_prediction_time_date
+            ]
 
         if self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date:
             dataset = self._drop_patient_if_excluded_by_date(dataset)
@@ -147,3 +148,5 @@ class PreSplitRowFilterer:
             dataset = self._keep_only_if_older_than_min_age(dataset)
 
         dataset = self._drop_rows_after_event_time(dataset=dataset)
+
+        return dataset

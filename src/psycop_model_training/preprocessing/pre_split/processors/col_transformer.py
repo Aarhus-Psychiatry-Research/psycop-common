@@ -1,11 +1,17 @@
 import numpy as np
 import pandas as pd
+from wasabi import Printer
 
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import infer_predictor_col_name
 
+msg = Printer(timestamp=True)
+
 
 class PresSplitColTransformer:
+    def __init__(self, cfg: FullConfigSchema) -> None:
+        self.cfg = cfg
+
     @staticmethod
     @print_df_dimensions_diff
     def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
@@ -49,5 +55,22 @@ class PresSplitColTransformer:
         # Convert to NaN
         df_to_replace[df_to_replace < 0] = np.nan
         dataset[numerical_columns_with_negative_values] = df_to_replace
+
+        return dataset
+
+    def transform(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        # Super hacky transformation of negative weights (?!) for chi-square.
+        # In the future, we want to:
+        # 1. Fix this in the feature generation for t2d
+        # 2a. See if there's a way of using feature selection that permits negative values, or
+        # 2b. Always use z-score normalisation?
+        dataset = self._negative_values_to_nan(dataset=dataset)
+
+        dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
+
+        if self.cfg.preprocessing.convert_booleans_to_int:
+            dataset = self._convert_boolean_dtypes_to_int(dataset=dataset)
+
+        msg.info("Finished processing dataset")
 
         return dataset

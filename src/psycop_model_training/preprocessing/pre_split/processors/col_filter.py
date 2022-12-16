@@ -5,6 +5,7 @@ import pandas as pd
 
 from psycop_model_training.data_loader.data_loader import msg
 from psycop_model_training.utils.col_name_inference import infer_look_distance
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import (
     get_percent_lost,
@@ -13,7 +14,10 @@ from psycop_model_training.utils.utils import (
 )
 
 
-class PresSplitColFilterer:
+class PresSplitColFilter:
+    def __init__(self, cfg: FullConfigSchema) -> None:
+        self.cfg = cfg
+
     @print_df_dimensions_diff
     def _drop_cols_not_in_lookbehind_combination(
         self,
@@ -74,6 +78,7 @@ class PresSplitColFilterer:
         dataset = dataset.drop(columns=cols_to_drop)
         return dataset
 
+    @print_df_dimensions_diff
     def _drop_cols_if_exceeds_look_direction_threshold(
         self,
         dataset: pd.DataFrame,
@@ -132,44 +137,6 @@ class PresSplitColFilterer:
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
     @print_df_dimensions_diff
-    def _drop_cols_and_rows_if_look_direction_not_met(
-        self,
-        dataset: pd.DataFrame,
-    ) -> pd.DataFrame:
-        """Drop columns if they are outside the specification. Specifically:
-
-        - min_lookahead_days is insufficient for the column's lookahead
-        - The dataset doesn't stretch far enough for the prediction time's lookahead
-        - The dataset doesn't stretch far enough for the prediction time's lookbehind
-
-        Args:
-            dataset (pd.DataFrame): Dataset to process.
-        """
-        for direction in ("ahead", "behind"):
-
-            if direction in ("ahead", "behind"):
-                if direction == "ahead":
-                    n_days = self.cfg.data.min_lookahead_days
-                elif direction == "behind":
-                    n_days = max(self.cfg.data.lookbehind_combination)
-                else:
-                    continue
-
-            dataset = self._drop_rows_if_datasets_ends_within_days(
-                n_days=n_days,
-                dataset=dataset,
-                direction=direction,
-            )
-
-            dataset = self._drop_cols_if_exceeds_look_direction_threshold(
-                dataset=dataset,
-                look_direction_threshold=n_days,
-                direction=direction,
-            )
-
-        return dataset
-
-    @print_df_dimensions_diff
     def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
         self,
         dataset: pd.DataFrame,
@@ -199,3 +166,26 @@ class PresSplitColFilterer:
     def n_outcome_col_names(self, df: pd.DataFrame) -> int:
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
+
+    def filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Filter a dataframe based on the config."""
+        for direction in ("ahead", "behind"):
+            if direction == "ahead":
+                n_days = self.cfg.preprocessing.pre_split.min_lookahead_days
+            elif direction == "behind":
+                n_days = max(self.cfg.preprocessing.pre_split.lookbehind_combination)
+
+            dataset = self._drop_cols_if_exceeds_look_direction_threshold(
+                dataset=dataset,
+                look_direction_threshold=n_days,
+                direction=direction,
+            )
+
+        if self.cfg.preprocessing.pre_split.lookbehind_combination:
+            dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
+
+        dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
+            dataset=dataset,
+        )
+
+        return dataset

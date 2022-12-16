@@ -22,7 +22,7 @@ def load_and_filter_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Train dataset
     """
-    data = DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+    return DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
 
 
 def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema):

@@ -63,68 +63,6 @@ class DataLoader:
         elif "csv" in self.file_suffix:
             return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
 
-    def _process_dataset(self, dataset: pd.DataFrame) -> pd.DataFrame:
-        """Process dataset, namely:
-
-        - Drop patients with outcome before drop_patient_if_outcome_before_date
-        - Process timestamp columns
-        - Drop visits where min_lookahead, min_lookbehind or min_prediction_time_date are not met
-        - Drop features with lookbehinds not in lookbehind_combination
-
-        Returns:
-            pd.DataFrame: Processed dataset
-        """
-        msg = Printer(timestamp=True)
-        msg.info("Processing dataset")
-
-        # Super hacky rename, needs to be removed before merging. Figure out how to add eval columns when creating the dataset.
-        dataset = dataset.rename(
-            {
-                "pred_hba1c_within_9999_days_count_fallback_nan": self.cfg.data.col_name.custom.n_hba1c,
-            },
-            axis=1,
-        )
-
-        # Super hacky transformation of negative weights (?!) for chi-square.
-        # In the future, we want to:
-        # 1. Fix this in the feature generation for t2d
-        # 2a. See if there's a way of using feature selection that permits negative values, or
-        # 2b. Always use z-score normalisation?
-        dataset = self._negative_values_to_nan(dataset=dataset)
-
-        dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
-
-        if self.cfg.preprocessing.convert_booleans_to_int:
-            dataset = self._convert_boolean_dtypes_to_int(dataset=dataset)
-
-        if self.cfg.data.min_age:
-            dataset = self._keep_only_if_older_than_min_age(dataset=dataset)
-
-        dataset = self._drop_rows_after_event_time(dataset=dataset)
-
-        if self.cfg.data.drop_patient_if_exclusion_before_date:
-            dataset = self._drop_patient_if_excluded(dataset=dataset)
-
-        # Drop if later than min prediction time date
-        if self.cfg.data.min_prediction_time_date:
-            dataset = dataset[
-                dataset[self.cfg.data.col_name.pred_timestamp]
-                > self.cfg.data.min_prediction_time_date
-            ]
-
-        dataset = self._drop_cols_and_rows_if_look_direction_not_met(dataset=dataset)
-
-        if self.cfg.data.lookbehind_combination:
-            dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
-
-        dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
-            dataset=dataset,
-        )
-
-        msg.info("Finished processing dataset")
-
-        return dataset
-
     def load_dataset_from_dir(
         self,
         split_names: Union[Iterable[str], str],

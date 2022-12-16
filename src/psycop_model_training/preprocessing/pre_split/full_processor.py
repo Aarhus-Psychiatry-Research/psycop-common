@@ -1,15 +1,14 @@
 import pandas as pd
 
-from psycop_model_training.preprocessing.pre_split.col_filterer import (
-    PresSplitColFilterer,
+from psycop_model_training.preprocessing.pre_split.processors.col_filter import (
+    PresSplitColFilter,
 )
-from psycop_model_training.preprocessing.pre_split.col_transformer import (
+from psycop_model_training.preprocessing.pre_split.processors.col_transformer import (
     PresSplitColTransformer,
 )
-from psycop_model_training.preprocessing.pre_split.row_filterer import (
-    PreSplitRowFilterer,
+from psycop_model_training.preprocessing.pre_split.processors.row_filter import (
+    PreSplitRowFilter,
 )
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 class FullProcessor:
@@ -17,13 +16,13 @@ class FullProcessor:
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.row_filterer = PreSplitRowFilterer(cfg=cfg)
-        self.col_filterer = PresSplitColFilterer(cfg=cfg)
+        self.row_filterer = PreSplitRowFilter(cfg=cfg)
+        self.col_filterer = PresSplitColFilter(cfg=cfg)
         self.col_transformer = PresSplitColTransformer(cfg=cfg)
 
-    def process_from_cfg(self, cfg: FullConfigSchema, df: pd.DataFrame):
+    def process_from_cfg(self, dataset: pd.DataFrame):
         """Process a dataframe using the configuration."""
-        df = self.row_filterer.filter_from_cfg(df=df)
-        df = self.col_filterer.filter_from_cfg(df=df)
-        df = self.col_transformer.transform_from_cfg(df=df)
-        return df
+        dataset = self.row_filterer.filter(dataset=dataset)
+        dataset = self.col_filterer.filter(dataset=dataset)
+        dataset = self.col_transformer.transform_from_cfg(dataset=dataset)
+        return dataset
