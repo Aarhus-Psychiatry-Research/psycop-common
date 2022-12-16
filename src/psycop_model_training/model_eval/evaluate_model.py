@@ -22,26 +22,26 @@ from psycop_model_training.model_eval.tables.tables import (
     generate_selected_features_table,
 )
 from psycop_model_training.utils.utils import positive_rate_to_pred_probs
-from psycop_model_training.visualization.feature_importance import (
+from psycop_model_training.model_eval.plots.feature_importance import (
     plot_feature_importances,
 )
-from psycop_model_training.visualization.performance_by_age import (
+from psycop_model_training.model_eval.plots import (
     plot_performance_by_age,
 )
-from psycop_model_training.visualization.performance_by_n_hba1c import (
+from psycop_model_training.model_eval.plots.performance_by_n_hba1c import (
     plot_performance_by_n_hba1c,
 )
-from psycop_model_training.visualization.performance_over_time import (
+from psycop_model_training.model_eval.plots import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
-from psycop_model_training.visualization.roc_auc import plot_auc_roc
-from psycop_model_training.visualization.sens_over_time import (
+from psycop_model_training.model_eval.plots import plot_auc_roc
+from psycop_model_training.model_eval.plots import (
     plot_sensitivity_by_time_to_outcome_heatmap,
 )
-from psycop_model_training.visualization.utils import log_image_to_wandb
+from psycop_model_training.model_eval.plots import log_image_to_wandb
 
 
 def upload_artifacts_to_wandb(

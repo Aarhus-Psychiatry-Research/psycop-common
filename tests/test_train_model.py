@@ -5,7 +5,7 @@ import pytest
 
 from psycop_model_training.config.schemas import FullConfigSchema, load_cfg_as_omegaconf
 from psycop_model_training.training.model_specs import MODELS
-from psycop_model_training.training.train_model import main
+from application.t2d.train_model import main
 
 INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
 

@@ -7,7 +7,7 @@ from typing import Optional, Union
 import numpy as np
 import pandas as pd
 
-from psycop_model_training.visualization.base_charts import plot_basic_chart
+from psycop_model_training.model_eval.plots.base_charts import plot_basic_chart
 
 
 def plot_feature_importances(

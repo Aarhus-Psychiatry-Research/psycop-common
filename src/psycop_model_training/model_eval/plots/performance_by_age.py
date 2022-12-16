@@ -7,8 +7,8 @@ from typing import Optional, Union
 from sklearn.metrics import roc_auc_score
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.visualization.base_charts import plot_basic_chart
-from psycop_model_training.visualization.utils import create_performance_by_input
+from psycop_model_training.model_eval.plots.base_charts import plot_basic_chart
+from psycop_model_training.model_eval.plots.utils import create_performance_by_input
 
 
 def plot_performance_by_age(

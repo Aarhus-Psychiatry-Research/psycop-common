@@ -15,7 +15,7 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 
-from psycop_model_training.model_performance.utils import (
+from psycop_model_training.model_eval.model_performance.utils import (
     add_metadata_cols,
     aggregate_predictions,
     idx_to_class,
