@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.26.1 (2022-12-16)
+### Fix
+* Missing imports ([`6ac4032`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6ac4032a6bf35dc19961669efc6a1b8e0c78f4e2))
+
 ## v0.26.0 (2022-11-30)
 ### Feature
 * Type hints ([`544569c`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/544569c2b9a89087aedc44a2a3298e55dd792de9))

@@ -4,7 +4,7 @@ from psycopmlutils.synth_data_generator.synth_prediction_times_generator import 
     generate_synth_data,
 )
 
-from psycopt2d.utils.utils import PROJECT_ROOT
+from psycop_model_training.utils.utils import PROJECT_ROOT
 
 
 def test_synth_data_generator():
