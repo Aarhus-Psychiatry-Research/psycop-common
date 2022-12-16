@@ -6,7 +6,7 @@ from typing import Optional, Union
 import pandas as pd
 from wasabi import Printer
 
-from psycop_model_training.utils.config_schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 msg = Printer(timestamp=True)
 

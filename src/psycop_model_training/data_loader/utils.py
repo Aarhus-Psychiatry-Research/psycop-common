@@ -5,7 +5,7 @@ import pandas as pd
 
 from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
-from psycop_model_training.utils.config_schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 def get_latest_dataset_dir(path: Path) -> Path:

@@ -9,7 +9,7 @@ from psycop_model_training.preprocessing.pre_split.col_transformer import (
 from psycop_model_training.preprocessing.pre_split.row_filterer import (
     PreSplitRowFilterer,
 )
-from psycop_model_training.utils.config_schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 class FullProcessor:

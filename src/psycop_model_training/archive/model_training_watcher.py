@@ -15,7 +15,7 @@ from wasabi import msg
 
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
 from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
-from psycop_model_training.utils.config_schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import (
     MODEL_PREDICTIONS_PATH,
     PROJECT_ROOT,

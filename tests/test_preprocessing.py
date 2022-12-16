@@ -3,7 +3,7 @@ from psycop_model_training.data_loader.utils import load_and_filter_train_from_c
 from psycop_model_training.preprocessing.post_split.create_pipeline import (
     create_preprocessing_pipeline,
 )
-from psycop_model_training.utils.config_schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 def test_drop_datetime_predictor_columns(

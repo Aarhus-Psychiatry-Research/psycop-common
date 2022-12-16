@@ -4,7 +4,7 @@ from typing import Union
 import pandas as pd
 
 from psycop_model_training.data_loader.data_loader import msg
-from psycop_model_training.utils.config_schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import get_percent_lost
 
@@ -13,6 +13,7 @@ class PreSplitRowFilterer:
     def __init__(self, cfg: FullConfigSchema):
         self.cfg = cfg
 
+    @print_df_dimensions_diff
     def _drop_rows_if_datasets_ends_within_days(
         self,
         n_days: Union[int, float],
@@ -67,7 +68,7 @@ class PreSplitRowFilterer:
         return dataset
 
     @print_df_dimensions_diff
-    def _drop_patient_if_excluded(
+    def _drop_patient_if_excluded_by_date(
         self,
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
@@ -104,6 +105,7 @@ class PreSplitRowFilterer:
 
         return dataset
 
+    @print_df_dimensions_diff
     def _keep_only_if_older_than_min_age(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Keep only rows that are older than the minimum age specified in the
         config."""
@@ -120,6 +122,28 @@ class PreSplitRowFilterer:
 
         return dataset[~rows_to_drop]
 
-    def filter_from_cfg(self, df: pd.DataFrame):
+    def filter_from_cfg(self, dataset: pd.DataFrame):
+        for direction in ("ahead", "behind"):
+            if direction in ("ahead", "behind"):
+                if direction == "ahead":
+                    n_days = self.cfg.preprocessing.pre_split.min_lookahead_days
+                elif direction == "behind":
+                    n_days = max(
+                        self.cfg.preprocessing.pre_split.lookbehind_combination
+                    )
+                else:
+                    continue
+
+            dataset = self._drop_rows_if_datasets_ends_within_days(
+                n_days=n_days,
+                dataset=dataset,
+                direction=direction,
+            )
+
         if self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date:
-            df = self._drop_patient_if_excluded(df)
+            dataset = self._drop_patient_if_excluded_by_date(dataset)
+
+        if self.cfg.preprocessing.pre_split.min_age:
+            dataset = self._keep_only_if_older_than_min_age(dataset)
+
+        dataset = self._drop_rows_after_event_time(dataset=dataset)
