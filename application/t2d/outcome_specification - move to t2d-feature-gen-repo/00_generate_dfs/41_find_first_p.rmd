@@ -1,0 +1,52 @@
+```{r}
+source(here("psycop-r-utilities", "import_from_sql.r"))
+p_load(tidyverse)
+```
+
+# Remove patients with incidence before first psych-contact
+## LPR3, both in and outpatient
+```{r}
+pt_types = c("Ambulant", "Indlagt")
+
+df_lpr3_preproc <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_LPR3kontakter_psyk_somatik_inkl_2021")) %>% 
+  filter(pt_type %in% pt_types) %>% 
+  filter(substr(shakkode_lpr3kontaktophold, 1, 4) == "6600") %>% # Only psychiatry in RM
+  select(dw_ek_borger, datotid_lpr3kontaktstart) %>% 
+  rename(datotid_start = datotid_lpr3kontaktstart) %>% 
+  collect %>% 
+  format_sql_import()
+```
+
+## LPR2
+### LPR2 inpatient
+```{r}
+df_lpr2_inp_preproc <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021")) %>% 
+  filter(substr(shakkode_kontaktansvarlig, 1, 4) == "6600") %>% # Only psychiatry in RM
+  rename(datotid_start = datotid_indlaeggelse) %>% 
+  select(dw_ek_borger, datotid_start) %>% 
+  collect %>% 
+  format_sql_import()
+```
+
+### LPR2 outpatient
+```{r}
+df_lpr2_outp_preproc <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_besoeg_psyk_somatik_LPR2_inkl_2021")) %>% 
+  filter(substr(shakafskode, 1, 4) == "6600") %>% # Only psychiatry in RM
+  select(dw_ek_borger, datotid_start) %>% 
+  collect %>% 
+  format_sql_import()
+```
+
+# Combine all
+```{r}
+df_first_psych_visit <- df_lpr2_inp_preproc %>% 
+  bind_rows(df_lpr2_outp_preproc) %>% 
+  bind_rows(df_lpr3_preproc) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start == min(datotid_start)) %>% 
+  rename(datotid_first_psych_visit = datotid_start) %>% 
+  select(dw_ek_borger, datotid_first_psych_visit)
+```

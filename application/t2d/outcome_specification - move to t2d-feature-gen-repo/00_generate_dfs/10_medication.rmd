@@ -1,0 +1,58 @@
+Find first occurrence of hospital prescription or hospital redemption of diabetic medication.
+
+```{r}
+library("pacman")
+
+p_load(tidyverse, here, future)
+source(here("psycop-r-utilities", "import_from_sql.r"))
+source(here("functions.r"))
+
+```
+
+```{r}
+con <- DBI::dbConnect(
+        odbc::odbc(),
+        Driver = "SQL Server",
+        Server = "BI-DPA-PROD",
+        database = "USR_PS_Forsk",
+        Trusted_Connection = "TRUE"
+)
+```
+
+# Get first date of prescribed antidiabetic medication for each patient
+## From only that administered
+```{r}
+df_first_administered_t2d_medication <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_Medicin_administreret_inkl_2021")) %>% 
+  select(dw_ek_borger, datotid_ordination_start, atc) %>% 
+  filter(substr(atc, 1, 3) == "A10") %>% # A10 is all antidiabetic medication
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
+  collect %>% 
+  format_sql_import() %>% 
+  distinct(dw_ek_borger, datotid_ordination_start)
+```
+
+## From only that prescribed
+```{r}
+df_first_prescribed_t2d_medication <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_Medicin_ordineret_inkl_2021")) %>% 
+  filter(substr(atc, 1, 3) == "A10") %>% 
+  select(dw_ek_borger, datotid_ordinationstart, atc) %>% 
+  rename(datotid_ordination_start = datotid_ordinationstart) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
+  collect %>%   
+  format_sql_import() %>% 
+  distinct(dw_ek_borger, datotid_ordination_start)
+```
+
+## Combined
+```{r}
+df_first_date_of_t2d_medication_prescription <- df_first_administered_t2d_medication %>% 
+  bind_rows(df_first_prescribed_t2d_medication) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_ordination_start == min(datotid_ordination_start)) %>% 
+  filter(row_number() == 1) %>% 
+  rename(datotid_first_t2d_medication=datotid_ordination_start)
+```

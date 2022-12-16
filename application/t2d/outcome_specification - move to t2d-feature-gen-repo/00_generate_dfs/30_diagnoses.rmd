@@ -1,0 +1,67 @@
+Find the first date where a patient gets a t2d-diagnosis in the hospital system.
+
+```{r}
+library("pacman")
+```
+
+```{r}
+con <- DBI::dbConnect(
+        odbc::odbc(),
+        Driver = "SQL Server",
+        Server = "BI-DPA-PROD",
+        database = "USR_PS_Forsk",
+        Trusted_Connection = "TRUE"
+)
+```
+
+# A-diagnoses
+## LPR3
+```{r}
+df_lpr3_diagnoses_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_LPR3kontakter_psyk_somatik_inkl_2021")) %>% 
+  rename(datotid_start = datotid_lpr3kontaktstart) %>% 
+  select(dw_ek_borger, datotid_start, diagnosegruppestreng) %>% 
+  collect %>% 
+  format_sql_import()
+```
+
+## LPR2
+### Inpatient visits
+```{r}
+df_lpr2_diagnoses_inpatient_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021")) %>% 
+  rename(datotid_start = datotid_indlaeggelse) %>% 
+  select(dw_ek_borger, datotid_start, diagnosegruppestreng) %>% 
+  collect %>% 
+  format_sql_import()
+```
+
+### Outpatient visits
+```{r}
+df_lpr2_diagnoses_outpatient_roughly_selected <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_besoeg_psyk_somatik_LPR2_inkl_2021")) %>% 
+  select(dw_ek_borger, datotid_start, diagnosegruppestreng) %>%
+  collect %>% 
+  format_sql_import()
+```
+
+## Combined
+```{r}
+df_all_visits_combined <- df_lpr3_diagnoses_roughly_selected %>% 
+  bind_rows(df_lpr2_diagnoses_inpatient_roughly_selected) %>% 
+  bind_rows(df_lpr2_diagnoses_outpatient_roughly_selected)
+```
+
+### T2D
+```{r}
+df_first_t2d_diagnoses_combined <- df_all_visits_combined %>% 
+  keep_only_first_t2d_by_diag(date_col_string="datotid_start") %>% 
+  rename(datotid_first_t2d_diagnosis = datotid_start)
+```
+
+### T1D
+```{r}
+df_first_t1d_diagnoses_combined <- df_all_visits_combined %>% 
+  keep_only_first_t1d_by_diag(date_col_string="datotid_start") %>% 
+  select(dw_ek_borger, datotid_start)
+```

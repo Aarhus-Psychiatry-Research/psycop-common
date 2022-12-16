@@ -1,0 +1,53 @@
+Combine medication, hba1c and diagnoses to find first date where the patient has t2d.
+
+```{r}
+source(here("functions.r"))
+p_load(odbc, dbplyr, DBI)
+```
+
+## Find "any" diabetes incidence (maximise sensitivity). For use in wash-in (i.e. exclusion).
+```{r}
+df_first_diabetes_any <- df_first_t2d_blood_sample %>% 
+  rename(datotid_first_t2d_bs = datotid_start) %>% # Add BS
+  left_join(df_first_date_of_t2d_medication_prescription) %>% 
+  left_join(df_first_t2d_diagnoses_combined) %>% 
+  mutate(datotid_first_diabetes_any = pmin(datotid_first_t2d_medication, datotid_first_t2d_diagnosis, datotid_first_t2d_bs)) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_first_diabetes_any == min(datotid_first_diabetes_any)) %>% # Make sure to only have one record per patient
+  select(dw_ek_borger, datotid_first_diabetes_any) %>% 
+  distinct(dw_ek_borger, datotid_first_diabetes_any) %>% 
+  left_join(df_first_t1d_diagnoses_combined, by = "dw_ek_borger") %>% 
+  rename(datotid_first_t1d_diagnosis = datotid_start) %>% 
+  mutate(datotid_first_diabetes_any = if_else(is.na(datotid_first_t1d_diagnosis), datotid_first_diabetes_any, min(datotid_first_t1d_diagnosis, datotid_first_diabetes_any))) %>% 
+  select(dw_ek_borger, datotid_first_diabetes_any) # Keep only if no t1d diagnosis before t2d: 601
+
+copy_to(con, df_first_diabetes_any, name = in_schema("fct", "psycop_t2d_first_diabetes_any"), overwrite = TRUE, temporary = FALSE)
+
+dim(df_first_diabetes_any)
+```
+
+## Find "true" incidences (maximise specificity.). For use when training and evaluating model. Try to exclude anyone that is incident due to other causes. See issue #12 regarding reasoning.
+```{r}
+df_first_t2d_bs_only <- df_first_t2d_blood_sample %>% 
+  rename(datotid_first_t2d_bs = datotid_start) %>% # Add BS
+  left_join(df_first_date_of_t2d_medication_prescription) %>% 
+  filter(datotid_first_t2d_bs < datotid_first_t2d_medication) %>% 
+  left_join(df_first_t2d_diagnoses_combined) %>% 
+  filter(datotid_first_t2d_bs < datotid_first_t2d_diagnosis) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_first_t2d_bs == min(datotid_first_t2d_bs)) %>% # Make sure to only have one record per patient
+  select(dw_ek_borger, datotid_first_t2d_bs) %>% 
+  distinct(dw_ek_borger, datotid_first_t2d_bs) %>% 
+  left_join(df_first_psych_visit) %>% # 3010
+  filter(datotid_first_psych_visit < datotid_first_t2d_bs) %>% # Keep only if diabetes is diagnosed after first psych visit: 810
+  left_join(rename(df_first_t1d_diagnoses_combined, datotid_first_t1d_diagnosis = datotid_start), by = "dw_ek_borger") %>% 
+  mutate(!(datotid_first_t1d_diagnosis < datotid_first_t2d_bs)) %>% 
+  filter(is.na(datotid_first_t1d_diagnosis) | !(datotid_first_t1d_diagnosis < datotid_first_t2d_bs)) %>% # Keep only if no t1d diagnosis before t2d: 601
+  select(dw_ek_borger, datotid_first_t2d_bs) %>% 
+  rename(timestamp = datotid_first_t2d_bs)
+
+copy_to(con, df_first_t2d_bs_only, name = in_schema("fct", "psycop_t2d_first_diabetes_t2d"), overwrite = TRUE, temporary = FALSE)
+
+dim(df_first_t2d_bs_only)
+```
+

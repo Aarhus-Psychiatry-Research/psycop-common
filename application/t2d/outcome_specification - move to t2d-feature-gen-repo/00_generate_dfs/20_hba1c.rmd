@@ -1,0 +1,33 @@
+Find the first date where a patient gets a diabetic hba1c-blood-sample.
+
+```{r}
+library("pacman")
+
+p_load(tidyverse, here, future)
+
+```
+
+```{r}
+con <- DBI::dbConnect(
+        odbc::odbc(),
+        Driver = "SQL Server",
+        Server = "BI-DPA-PROD",
+        database = "USR_PS_Forsk",
+        Trusted_Connection = "TRUE"
+)
+```
+
+# Get first date of hba1c above threshold
+## From only that administered
+```{r}
+df_first_t2d_blood_sample <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_LABKA_NPU27300_HbA1c_inkl_2021")) %>% 
+  select(dw_ek_borger, datotid_proevemodtagelse, numerisksvar, analysenavn) %>% 
+  filter(numerisksvar >= 48) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_proevemodtagelse == min(datotid_proevemodtagelse)) %>% 
+  rename(datotid_start = datotid_proevemodtagelse) %>% 
+  collect %>% 
+  distinct(dw_ek_borger, datotid_start) %>% 
+  format_sql_import()
+```
