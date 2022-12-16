@@ -11,29 +11,25 @@ import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
-from psycop_model_training.model_eval.plots import plot_prob_over_time
-from psycop_model_training.model_eval.plots import plot_basic_chart
+from psycop_model_training.model_eval.plots import (
+    create_sensitivity_by_time_to_outcome_df,
+    plot_auc_by_time_from_first_visit,
+    plot_auc_roc,
+    plot_basic_chart,
+    plot_metric_by_calendar_time,
+    plot_metric_by_cyclic_time,
+    plot_metric_by_time_until_diagnosis,
+    plot_performance_by_age,
+    plot_prob_over_time,
+    plot_sensitivity_by_time_to_outcome_heatmap,
+)
 from psycop_model_training.model_eval.plots.feature_importance import (
     plot_feature_importances,
-)
-from psycop_model_training.model_eval.plots import (
-    plot_performance_by_age,
 )
 from psycop_model_training.model_eval.plots.performance_by_n_hba1c import (
     plot_performance_by_n_hba1c,
 )
-from psycop_model_training.model_eval.plots import (
-    plot_auc_by_time_from_first_visit,
-    plot_metric_by_calendar_time,
-    plot_metric_by_cyclic_time,
-    plot_metric_by_time_until_diagnosis,
-)
-from psycop_model_training.model_eval.plots import plot_auc_roc
-from psycop_model_training.model_eval.plots import (
-    create_sensitivity_by_time_to_outcome_df,
-    plot_sensitivity_by_time_to_outcome_heatmap,
-)
+from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 
 
 @pytest.fixture(scope="function")

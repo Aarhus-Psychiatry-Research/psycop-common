@@ -5,8 +5,7 @@ from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import infer_predictor_col_name
 
 
-class PresSplitColTransformer():
-
+class PresSplitColTransformer:
     @staticmethod
     @print_df_dimensions_diff
     def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:

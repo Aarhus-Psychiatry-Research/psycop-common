@@ -10,17 +10,13 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
-from psycop_model_training.config.schemas import (
-    FullConfigSchema,
-)
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 
 # from psycop_model_training.evaluation import evaluate_model
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.training.utils import create_eval_dataset
-from psycop_model_training.utils.utils import (
-    PROJECT_ROOT,
-)
+from psycop_model_training.utils.utils import PROJECT_ROOT
 
 CONFIG_PATH = PROJECT_ROOT / "src" / "psycop_model_training" / "config"
 

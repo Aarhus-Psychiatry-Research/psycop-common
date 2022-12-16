@@ -1,6 +1,6 @@
 import pandas as pd
 
-from psycop_model_training.config.schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 

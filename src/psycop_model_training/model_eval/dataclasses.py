@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from psycop_model_training.config.schemas import BaseModel, FullConfigSchema
+from psycop_model_training.utils.config_schemas import BaseModel, FullConfigSchema
 
 
 class CustomColumns(BaseModel):

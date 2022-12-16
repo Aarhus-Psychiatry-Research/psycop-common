@@ -8,7 +8,7 @@ from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import get_percent_lost
 
 
-class PreSplitRowFilterer():
+class PreSplitRowFilterer:
     def __init__(self):
         raise NotImplementedError
 

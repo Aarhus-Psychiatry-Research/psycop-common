@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from psycop_model_training.config.schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
 

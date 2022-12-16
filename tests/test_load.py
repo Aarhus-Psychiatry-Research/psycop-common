@@ -1,6 +1,6 @@
 """Testing of loader functions."""
 
-from psycop_model_training.config.schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 from psycop_model_training.data_loader.utils import load_train_from_cfg
 
 

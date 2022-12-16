@@ -13,9 +13,9 @@ import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.utils import bin_continuous_data, round_floats_to_edge
 from psycop_model_training.model_eval.plots.base_charts import plot_basic_chart
 from psycop_model_training.model_eval.plots.utils import calc_performance
+from psycop_model_training.utils.utils import bin_continuous_data, round_floats_to_edge
 
 
 def create_performance_by_calendar_time_df(

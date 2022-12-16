@@ -2,17 +2,32 @@ import time
 from typing import Any
 
 import numpy as np
-
 import wandb
-from psycop_model_training.config.schemas import FullConfigSchema, convert_omegaconf_to_pydantic_object
+
+from psycop_model_training.utils.config_schemas import (
+    FullConfigSchema,
+    convert_omegaconf_to_pydantic_object,
+)
 from psycop_model_training.data_loader.utils import load_train_and_val_from_cfg
 from psycop_model_training.model_eval.dataclasses import PipeMetadata
 from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
-from psycop_model_training.preprocessing.post_split.create_pipeline import create_preprocessing_pipeline
-from psycop_model_training.training.train_and_eval import create_model, CONFIG_PATH, train_and_get_model_eval_df
+from psycop_model_training.preprocessing.post_split.create_pipeline import (
+    create_preprocessing_pipeline,
+)
+from psycop_model_training.training.train_and_eval import (
+    CONFIG_PATH,
+    create_model,
+    train_and_get_model_eval_df,
+)
 from psycop_model_training.utils.col_name_inference import get_col_names
-from psycop_model_training.utils.utils import flatten_nested_dict, create_wandb_folders, get_feature_importance_dict, \
-    get_selected_features_dict, eval_ds_cfg_pipe_to_disk, PROJECT_ROOT
+from psycop_model_training.utils.utils import (
+    PROJECT_ROOT,
+    create_wandb_folders,
+    eval_ds_cfg_pipe_to_disk,
+    flatten_nested_dict,
+    get_feature_importance_dict,
+    get_selected_features_dict,
+)
 
 
 def create_pipeline(cfg):
@@ -142,6 +157,7 @@ def main(cfg: DictConfig):
     )
     run.finish()
     return roc_auc
+
 
 if __name__ == "__main__":
     main()  # pylint: disable=no-value-for-parameter

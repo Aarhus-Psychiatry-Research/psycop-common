@@ -11,6 +11,7 @@ from pathlib import Path
 import pandas as pd
 from omegaconf import DictConfig
 
+from psycop_model_training.model_eval.plots import plot_auc_by_time_from_first_visit
 from psycop_model_training.utils.utils import (
     PROJECT_ROOT,
     infer_outcome_col_name,
@@ -19,7 +20,6 @@ from psycop_model_training.utils.utils import (
     load_evaluation_data,
     read_pickle,
 )
-from psycop_model_training.model_eval.plots import plot_auc_by_time_from_first_visit
 
 
 def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig]:

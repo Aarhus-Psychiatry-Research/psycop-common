@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from psycop_model_training.config.schemas import FullConfigSchema, load_cfg_as_pydantic
+from psycop_model_training.utils.config_schemas import FullConfigSchema, load_cfg_as_pydantic
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
-CONFIG_DIR_PATH_REL = "../src/psycop_model_training/config"
+CONFIG_DIR_PATH_REL = "../application/config"
 
 
 def add_age_gender(df):

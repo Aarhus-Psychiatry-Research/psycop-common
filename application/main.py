@@ -15,7 +15,7 @@ import wandb
 from random_word import RandomWords
 from wasabi import Printer
 
-from psycop_model_training.config.schemas import (
+from psycop_model_training.utils.config_schemas import (
     BaseModel,
     FullConfigSchema,
     load_cfg_as_pydantic,

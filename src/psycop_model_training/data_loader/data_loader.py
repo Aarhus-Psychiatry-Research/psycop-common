@@ -6,10 +6,9 @@ from typing import Optional, Union
 import pandas as pd
 from wasabi import Printer
 
-from psycop_model_training.config.schemas import FullConfigSchema
+from psycop_model_training.utils.config_schemas import FullConfigSchema
 
 msg = Printer(timestamp=True)
-
 
 
 class DataLoader:
@@ -27,48 +26,6 @@ class DataLoader:
 
         # Column specifications
         self.pred_col_name_prefix = cfg.data.pred_prefix
-
-    def load_dataset_from_dir(
-        self,
-        split_names: Union[Iterable[str], str],
-        nrows: Optional[int] = None,
-    ) -> pd.DataFrame:
-        """Load dataset for t2d. Can load multiple splits at once, e.g.
-        concatenate train and val for crossvalidation.
-
-        Args:
-            split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]
-            nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
-
-        Returns:
-            pd.DataFrame: The filtered dataset
-        """
-        msg.info(f"Loading {split_names}")
-
-        # Concat splits if multiple are given
-        if isinstance(split_names, (list, tuple)):
-            if isinstance(split_names, Iterable):
-                split_names = tuple(split_names)
-
-            if nrows is not None:
-                nrows = int(
-                    nrows / len(split_names),
-                )
-
-            return pd.concat(
-                [
-                    self._load_dataset_file(split_name=split, nrows=nrows)
-                    for split in split_names
-                ],
-                ignore_index=True,
-            )
-        elif isinstance(split_names, str):
-            dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
-
-        dataset = self._process_dataset(dataset=dataset)
-
-        msg.good(f"{split_names}: Returning!")
-        return dataset
 
     def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
         self,
@@ -166,4 +123,46 @@ class DataLoader:
 
         msg.info("Finished processing dataset")
 
+        return dataset
+
+    def load_dataset_from_dir(
+        self,
+        split_names: Union[Iterable[str], str],
+        nrows: Optional[int] = None,
+    ) -> pd.DataFrame:
+        """Load dataset for t2d. Can load multiple splits at once, e.g.
+        concatenate train and val for crossvalidation.
+
+        Args:
+            split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]
+            nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
+
+        Returns:
+            pd.DataFrame: The filtered dataset
+        """
+        msg.info(f"Loading {split_names}")
+
+        # Concat splits if multiple are given
+        if isinstance(split_names, (list, tuple)):
+            if isinstance(split_names, Iterable):
+                split_names = tuple(split_names)
+
+            if nrows is not None:
+                nrows = int(
+                    nrows / len(split_names),
+                )
+
+            return pd.concat(
+                [
+                    self._load_dataset_file(split_name=split, nrows=nrows)
+                    for split in split_names
+                ],
+                ignore_index=True,
+            )
+        elif isinstance(split_names, str):
+            dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
+
+        dataset = self._process_dataset(dataset=dataset)
+
+        msg.good(f"{split_names}: Returning!")
         return dataset
