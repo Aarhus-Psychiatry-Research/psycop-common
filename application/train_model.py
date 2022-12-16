@@ -23,10 +23,10 @@ from psycop_model_training.training.train_and_eval import (
     train_and_get_model_eval_df,
 )
 from psycop_model_training.utils.col_name_inference import get_col_names
-from psycop_model_training.utils.config_schemas import (
-    FullConfigSchema,
+from psycop_model_training.utils.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
 )
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import (
     PROJECT_ROOT,
     create_wandb_folders,
@@ -158,8 +158,8 @@ def main(cfg: DictConfig):
     run.log(
         {
             "roc_auc_unweighted": roc_auc,
-            "lookbehind": max(cfg.data.lookbehind_combination),
-            "lookahead": cfg.data.min_lookahead_days,
+            "lookbehind": max(cfg.preprocessing.pre_split.lookbehind_combination),
+            "lookahead": cfg.preprocessing.pre_split.min_lookahead_days,
         },
     )
     run.finish()

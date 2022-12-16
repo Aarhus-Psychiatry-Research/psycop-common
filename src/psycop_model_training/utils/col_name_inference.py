@@ -22,7 +22,8 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     potential_outcome_col_names = [
         c
         for c in train.columns
-        if cfg.data.outc_prefix in c and str(cfg.data.min_lookahead_days) in c
+        if cfg.data.outc_prefix in c
+        and str(cfg.preprocessing.pre_split.min_lookahead_days) in c
     ]
 
     if len(potential_outcome_col_names) != 1:

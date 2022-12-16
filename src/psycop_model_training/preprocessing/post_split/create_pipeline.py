@@ -25,37 +25,39 @@ def get_feature_selection_steps(cfg):
     new_steps = []
 
     if cfg.preprocessing.post_split.feature_selection.name:
-        if cfg.preprocessing.feature_selection.name == "f_classif":
+        if cfg.preprocessing.post_split.feature_selection.name == "f_classif":
             new_steps.append(
                 (
                     "feature_selection",
                     SelectPercentile(
                         f_classif,
-                        percentile=cfg.preprocessing.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[
                             "percentile"
                         ],
                     ),
                 ),
             )
-        elif cfg.preprocessing.feature_selection.name == "chi2":
+        elif cfg.preprocessing.post_split.feature_selection.name == "chi2":
             new_steps.append(
                 (
                     "feature_selection",
                     SelectPercentile(
                         chi2,
-                        percentile=cfg.preprocessing.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[
                             "percentile"
                         ],
                     ),
                 ),
             )
-        elif cfg.preprocessing.feature_selection.name == "mutual_info_classif":
+        elif (
+            cfg.preprocessing.post_split.feature_selection.name == "mutual_info_classif"
+        ):
             new_steps.append(
                 (
                     "feature_selection",
                     SelectPercentile(
                         mutual_info_classif,
-                        percentile=cfg.preprocessing.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[
                             "percentile"
                         ],
                     ),
@@ -63,7 +65,7 @@ def get_feature_selection_steps(cfg):
             )
         else:
             raise ValueError(
-                f"Unknown feature selection method {cfg.preprocessing.feature_selection.name}",
+                f"Unknown feature selection method {cfg.preprocessing.post_split.feature_selection.name}",
             )
 
     return new_steps
