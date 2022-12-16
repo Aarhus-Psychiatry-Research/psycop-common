@@ -4,7 +4,6 @@ from typing import Optional
 
 import pandas as pd
 import psutil
-
 from psycop_feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -14,6 +13,7 @@ from psycop_feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop_feature_generation.loaders.raw.load_demographic import birthdays
+
 from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
 from timeseriesflattener.feature_spec_objects import _AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
@@ -70,7 +70,7 @@ def create_flattened_dataset(
         drop_pred_times_with_insufficient_look_distance (bool): Whether to drop prediction times with insufficient look distance.
             See timeseriesflattener tutorial for more info.
         quarantine_df (pd.DataFrame, optional): Quarantine dataframe with "timestamp" and "project_info.col_names.id" columns.
-        quarantine_days (int, optional): Number of days to quarantine.
+        quarantine_days (int, optional): Number of days to quarantine. Any prediction time within quarantine_days after the timestamps in quarantine_df will be dropped.
 
     Returns:
         FlattenedDataset: Flattened dataset.
