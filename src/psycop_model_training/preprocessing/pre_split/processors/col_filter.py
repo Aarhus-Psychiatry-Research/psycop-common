@@ -166,6 +166,20 @@ class PresSplitColFilter:
 
         return df
 
+    @staticmethod
+    def _drop_datetime_columns(
+        pred_prefix: str,
+        dataset: pd.DataFrame,
+        drop_dtypes: tuple = ("datetime64[ns]", "<M8[ns]"),
+    ) -> pd.DataFrame:
+        """Drop all datetime columns from the dataset."""
+        columns_to_drop = [
+            c for c in dataset.columns if dataset[c].dtype in drop_dtypes
+        ]
+        columns_to_drop = [c for c in columns_to_drop if c.startswith(pred_prefix)]
+
+        return dataset[[c for c in dataset.columns if c not in columns_to_drop]]
+
     @print_df_dimensions_diff
     def n_outcome_col_names(self, df: pd.DataFrame) -> int:
         """How many outcome columns there are in a dataframe."""
@@ -191,5 +205,10 @@ class PresSplitColFilter:
         dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
             dataset=dataset,
         )
+
+        if self.cfg.preprocessing.pre_split.drop_datetime_predictor_columns:
+            dataset = self._drop_datetime_columns(
+                pred_prefix=self.cfg.data.pred_prefix, dataset=dataset
+            )
 
         return dataset
