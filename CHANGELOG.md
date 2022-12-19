@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.0 (2022-12-19)
+### Feature
+* Move logs next to their dataset ([`e0ed033`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e0ed033a71f93f3a9b642db79b03c2017a067b33))
+
+### Documentation
+* Improve quarantine docs ([`1b23f19`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/1b23f19055743d8d0f54b413bf9c5a84a31322de))
+
 ## v0.14.0 (2022-12-16)
 ### Feature
 * Name wandb project_name-feature-generation ([`b601d80`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/b601d80b1a3e2936ddff31316dd85d6d08c79584))
