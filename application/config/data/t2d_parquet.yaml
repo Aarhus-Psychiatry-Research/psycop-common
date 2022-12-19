@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\feature_sets\t2d\feature_sets\psycop_t2d_adminmanber_1090_features_2022_11_18_14_10
+  dir: E:\shared_resources\t2d\feature_sets\psycop_t2d_adminmanber_features_2022_12_14_13_17
   suffix: parquet
   min_age: 18
 
