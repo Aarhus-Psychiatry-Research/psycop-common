@@ -17,7 +17,7 @@ from psycop_model_training.training.utils import create_eval_dataset
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
-CONFIG_PATH = PROJECT_ROOT / "src" / "psycop_model_training" / "config"
+CONFIG_PATH = PROJECT_ROOT / "application" / "config"
 
 # Handle wandb not playing nice with joblib
 os.environ["WANDB_START_METHOD"] = "thread"

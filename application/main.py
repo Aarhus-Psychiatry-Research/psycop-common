@@ -23,7 +23,6 @@ from psycop_model_training.utils.col_name_inference import (
 from psycop_model_training.utils.config_schemas.conf_utils import (
     BaseModel,
     load_app_cfg_as_pydantic,
-    load_test_cfg_as_pydantic,
 )
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
@@ -40,13 +39,13 @@ def start_trainer(
 
     subprocess_args: list[str] = [
         "python",
-        "src/psycop_model_training/train_model.py",
+        "application/train_model.py",
         f"project.wandb.group='{wandb_group_override}'",
         f"project.wandb.mode={cfg.project.wandb.mode}",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",
         f"hydra.sweeper.n_jobs={cfg.train.n_jobs_per_trainer}",
         f"model={model_name}",
-        f"data.min_lookahead_days={lookahead_days}",
+        f"preprocessing.pre_split.min_lookahead_days={lookahead_days}",
         "--config-name",
         f"{config_file_name}",
     ]
