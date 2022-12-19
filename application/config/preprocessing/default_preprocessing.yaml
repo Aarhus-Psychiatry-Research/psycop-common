@@ -25,6 +25,6 @@ hydra:
       ++preprocessing.post_split.imputation_method: choice("most_frequent", "mean", "median", "null")
       ++preprocessing.post_split.scaling: choice("z-score-normalization", "null")
       ++preprocessing.post_split.feature_selection.name: choice("chi2", "null")
-      ++preprocessing.post_splitfeature_selection.params.percentile: int(tag(log, interval(1, 90)))
+      ++preprocessing.post_split.feature_selection.params.percentile: int(tag(log, interval(1, 90)))
       ++preprocessing.pre_split.lookbehind_combination: choice([30, 90, 180, 365, 730], [30, 180, 730], [730], [365], [90], [30])
       
