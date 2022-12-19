@@ -1,4 +1,10 @@
-import datetime
+"""Pre-split value transformer. These transformations are applied before the
+split.
+
+To avoid test/train leakage, the transformations must not use any
+information about the values in the dataset.
+"""
+from datetime import datetime
 from typing import Optional
 
 import pandas as pd
@@ -12,6 +18,8 @@ msg = Printer(timestamp=True)
 
 
 class PreSplitValueTransformer:
+    """Pre-split value transformer."""
+
     def __init__(self, cfg: FullConfigSchema) -> None:
         self.cfg = cfg
 
@@ -60,6 +68,7 @@ class PreSplitValueTransformer:
         return dataset
 
     def transform(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Transform the dataset."""
         if self.cfg.preprocessing.pre_split.convert_booleans_to_int:
             dataset = self._convert_boolean_dtypes_to_int(dataset=dataset)
 

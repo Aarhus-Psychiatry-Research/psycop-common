@@ -1,3 +1,4 @@
+"""Module for filtering columns before split."""
 import re
 from typing import Union
 
@@ -15,6 +16,8 @@ from psycop_model_training.utils.utils import (
 
 
 class PresSplitColFilter:
+    """Class for filtering columns before split."""
+
     def __init__(self, cfg: FullConfigSchema) -> None:
         self.cfg = cfg
 
@@ -208,7 +211,8 @@ class PresSplitColFilter:
 
         if self.cfg.preprocessing.pre_split.drop_datetime_predictor_columns:
             dataset = self._drop_datetime_columns(
-                pred_prefix=self.cfg.data.pred_prefix, dataset=dataset
+                pred_prefix=self.cfg.data.pred_prefix,
+                dataset=dataset,
             )
 
         return dataset
