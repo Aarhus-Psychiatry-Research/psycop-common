@@ -61,7 +61,7 @@ def main(cfg: DictConfig):
     create_wandb_folders()
 
     run = wandb.init(
-        project=cfg.project.name,
+        project=f"{cfg.project.name}-baseline-model-training",
         reinit=True,
         config=dict_config_to_log,
         mode=cfg.project.wandb.mode,
