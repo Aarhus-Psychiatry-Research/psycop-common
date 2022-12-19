@@ -17,7 +17,8 @@ from psycop_model_training.utils.config_schemas.full_config import FullConfigSch
 
 
 class FullProcessor:
-    """Uses all PresSplit preprocessors. Acts as an adapter in case we want to change the interfaces of its components.
+    """Uses all PresSplit preprocessors. Acts as an adapter in case we want to
+    change the interfaces of its components.
 
     I.e. if we want to make PresSplitValueTransformer a class that takes a set of arguments instead of a FullConfig, we can do that without changing FullProcessor's interface.
 
