@@ -12,6 +12,7 @@ from typing import Optional
 
 import pandas as pd
 import wandb
+from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
 from random_word import RandomWords
 from wasabi import Printer
 
@@ -24,6 +25,7 @@ from psycop_model_training.utils.config_schemas.conf_utils import (
     BaseModel,
     load_app_cfg_as_pydantic,
 )
+from psycop_model_training.utils.config_schemas.data import ColumnNamesSchema
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
@@ -147,7 +149,7 @@ def train_models_for_each_cell_in_grid(
                 model_name=trainer_spec.model_name,
             ),
         )
-        
+
         # Sleep a bit to avoid segfaults
         time.sleep(10)
 
@@ -194,6 +196,26 @@ def get_possible_lookaheads(
     return list(set(possible_lookahead_days) - set(lookaheads_without_rows))
 
 
+def check_columns_exist_in_dataset(cfg: ColumnNamesSchema, df: pd.DataFrame):
+    # Iterate over attributes in the config
+    missing_columns = []
+    for attr in dir(cfg):
+        # Skip private attributes
+        if attr.startswith("_"):
+            continue
+
+        # Check that the attribute is a string
+        if not isinstance(getattr(cfg, attr), str):
+            continue
+
+        # Check that the column exists in the dataset
+        if not getattr(cfg, attr) in df:
+            missing_columns.append(getattr(cfg, attr))
+
+    if missing_columns:
+        raise ValueError(f"Columns in config but not in dataset: {missing_columns}")
+
+@wandb_alert_on_exception
 def main():
     """Main."""
     msg = Printer(timestamp=True)
@@ -216,6 +238,8 @@ def main():
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
     train = load_train_raw(cfg=cfg)
+    
+    check_columns_exist_in_dataset(cfg=cfg.data.col_name, df=train)
 
     possible_lookaheads = get_possible_lookaheads(
         msg=msg,
