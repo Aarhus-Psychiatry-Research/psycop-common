@@ -14,12 +14,11 @@ from omegaconf import DictConfig
 from psycop_model_training.model_eval.plots import plot_auc_by_time_from_first_visit
 from psycop_model_training.utils.utils import (
     PROJECT_ROOT,
-    infer_outcome_col_name,
-    infer_predictor_col_name,
-    infer_y_hat_prob_col_name,
     load_evaluation_data,
     read_pickle,
 )
+from psycop_model_training.utils.col_name_inference import infer_outcome_col_name, infer_predictor_col_name, \
+    infer_y_hat_prob_col_name
 
 
 def load_model_predictions_and_cfg(path: Path) -> tuple[pd.DataFrame, DictConfig]:
