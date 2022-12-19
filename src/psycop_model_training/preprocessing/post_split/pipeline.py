@@ -1,3 +1,4 @@
+"""Create post split pipeline.""" ""
 from sklearn.pipeline import Pipeline
 
 from psycop_model_training.preprocessing.post_split.create_pipeline import (

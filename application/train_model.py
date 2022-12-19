@@ -1,3 +1,4 @@
+"""Train a single model and evaluate it."""
 import time
 from typing import Any
 
@@ -13,6 +14,9 @@ from psycop_model_training.data_loader.utils import (
 )
 from psycop_model_training.model_eval.dataclasses import PipeMetadata
 from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
+from psycop_model_training.preprocessing.post_split.pipeline import (
+    create_post_split_pipeline,
+)
 from psycop_model_training.training.train_and_eval import (
     CONFIG_PATH,
     train_and_get_model_eval_df,
@@ -30,7 +34,6 @@ from psycop_model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
 )
-from psycop_model_training.preprocessing.post_split.pipeline import create_post_split_pipeline
 
 
 @hydra.main(

@@ -1,3 +1,4 @@
+"""Full processor for pre-split preprocessing."""
 import pandas as pd
 
 from psycop_model_training.preprocessing.pre_split.processors.col_filter import (

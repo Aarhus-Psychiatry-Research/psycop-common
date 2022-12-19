@@ -1,3 +1,8 @@
+"""Pipeline for pre_split misc.
+
+Legacy from when we used pipelines, will be refactored into the row and
+col filters and transformers.
+"""
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
@@ -11,13 +16,8 @@ from psycop_model_training.preprocessing.post_split.feature_transformers import 
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
-def apply_pre_split_pipeline(cfg: FullConfigSchema, data: pd.DataFrame):
-    pipe = create_pre_split_pipeline(cfg=cfg)
-
-    return pipe.fit_transform(X=data)
-
-
 def create_pre_split_pipeline(cfg: FullConfigSchema):
+    """Create pipeline."""
     steps = []
     # Conversion
     if cfg.preprocessing.pre_split.drop_datetime_predictor_columns:
@@ -36,3 +36,10 @@ def create_pre_split_pipeline(cfg: FullConfigSchema):
         steps.append(("ConvertToBoolean", ConvertToBoolean()))
 
     return Pipeline(steps)
+
+
+def apply_pre_split_pipeline(cfg: FullConfigSchema, data: pd.DataFrame):
+    """Apply pipeline to data."""
+    pipe = create_pre_split_pipeline(cfg=cfg)
+
+    return pipe.fit_transform(X=data)
