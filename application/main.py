@@ -147,6 +147,9 @@ def train_models_for_each_cell_in_grid(
                 model_name=trainer_spec.model_name,
             ),
         )
+        
+        # Sleep a bit to avoid segfaults
+        time.sleep(10)
 
 
 def get_possible_lookaheads(
@@ -195,12 +198,7 @@ def main():
     """Main."""
     msg = Printer(timestamp=True)
 
-    debug = False
-
-    if debug:
-        config_file_name = "integration_config.yaml"
-    else:
-        config_file_name = "default_config.yaml"
+    config_file_name = "default_config.yaml"
 
     cfg = load_app_cfg_as_pydantic(config_file_name=config_file_name)
 
