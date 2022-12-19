@@ -14,7 +14,7 @@ class DropDateTimeColumns(BaseEstimator, TransformerMixin):
         Args:
             drop_dtypes (set, optional): Drop columns with these data types.
         """
-        self.drop_dypes = drop_dtypes
+        self.drop_dtypes = drop_dtypes
         self.pred_prefix = pred_prefix
 
     def fit(self, _, y=None):  # pylint: disable=unused-argument
@@ -23,7 +23,7 @@ class DropDateTimeColumns(BaseEstimator, TransformerMixin):
 
     def transform(self, X, y=None):  # pylint: disable=unused-argument
         """Transform the data."""
-        columns_to_drop = [c for c in X.columns if X[c].dtype in self.drop_dypes]
+        columns_to_drop = [c for c in X.columns if X[c].dtype in self.drop_dtypes]
         columns_to_drop = [c for c in columns_to_drop if c.startswith(self.pred_prefix)]
 
         return X[[c for c in X.columns if c not in columns_to_drop]]

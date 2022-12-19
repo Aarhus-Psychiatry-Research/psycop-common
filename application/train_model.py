@@ -6,7 +6,6 @@ import numpy as np
 import wandb
 from omegaconf import DictConfig, OmegaConf
 from sklearn.metrics import roc_auc_score
-from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
 from psycop_model_training.data_loader.utils import (
@@ -14,12 +13,8 @@ from psycop_model_training.data_loader.utils import (
 )
 from psycop_model_training.model_eval.dataclasses import PipeMetadata
 from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
-from psycop_model_training.preprocessing.post_split.create_pipeline import (
-    create_preprocessing_pipeline,
-)
 from psycop_model_training.training.train_and_eval import (
     CONFIG_PATH,
-    create_model,
     train_and_get_model_eval_df,
 )
 from psycop_model_training.utils.col_name_inference import get_col_names
@@ -35,25 +30,7 @@ from psycop_model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
 )
-
-
-def create_pipeline(cfg):
-    """Create pipeline.
-
-    Args:
-        cfg (DictConfig): Config object
-
-    Returns:
-        Pipeline
-    """
-    steps = []
-    preprocessing_pipe = create_preprocessing_pipeline(cfg)
-    if len(preprocessing_pipe.steps) != 0:
-        steps.append(("preprocessing", preprocessing_pipe))
-
-    mdl = create_model(cfg)
-    steps.append(("model", mdl))
-    return Pipeline(steps)
+from psycop_model_training.preprocessing.post_split.pipeline import create_post_split_pipeline
 
 
 @hydra.main(
@@ -102,7 +79,7 @@ def main(cfg: DictConfig):
     dataset = load_and_filter_train_and_val_from_cfg(cfg)
 
     msg.info("Creating pipeline")
-    pipe = create_pipeline(cfg)
+    pipe = create_post_split_pipeline(cfg)
 
     outcome_col_name, train_col_names = get_col_names(cfg, dataset.train)
 

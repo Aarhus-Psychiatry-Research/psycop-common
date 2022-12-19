@@ -6,6 +6,9 @@ from psycop_model_training.preprocessing.pre_split.processors.col_filter import 
 from psycop_model_training.preprocessing.pre_split.processors.col_transformer import (
     PresSplitColTransformer,
 )
+from psycop_model_training.preprocessing.pre_split.processors.pre_split_pipeline import (
+    apply_pre_split_pipeline,
+)
 from psycop_model_training.preprocessing.pre_split.processors.row_filter import (
     PreSplitRowFilter,
 )
@@ -25,4 +28,5 @@ class FullProcessor:
         dataset = self.col_transformer.transform(dataset=dataset)
         dataset = self.row_filterer.filter(dataset=dataset)
         dataset = self.col_filterer.filter(dataset=dataset)
+        dataset = apply_pre_split_pipeline(cfg=self.cfg, data=dataset)
         return dataset

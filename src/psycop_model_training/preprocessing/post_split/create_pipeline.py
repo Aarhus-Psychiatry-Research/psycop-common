@@ -10,13 +10,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
-from psycop_model_training.preprocessing.post_split.feature_selectors import (
-    DropDateTimeColumns,
-)
-from psycop_model_training.preprocessing.post_split.feature_transformers import (
-    ConvertToBoolean,
-    DateTimeConverter,
-)
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
@@ -76,22 +69,6 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     msg = Printer(timestamp=True)
 
     steps = []
-    # Conversion
-    if cfg.preprocessing.pre_split.drop_datetime_predictor_columns:
-        steps.append(
-            (
-                "DropDateTimeColumns",
-                DropDateTimeColumns(pred_prefix=cfg.data.pred_prefix),
-            ),
-        )
-
-    if cfg.preprocessing.pre_split.convert_datetimes_to_ordinal:
-        dtconverter = DateTimeConverter()
-        steps.append(("DateTimeConverter", dtconverter))
-
-    if cfg.preprocessing.pre_split.convert_to_boolean:
-        steps.append(("ConvertToBoolean", ConvertToBoolean()))
-
     # Imputation
     if (
         cfg.model.require_imputation
