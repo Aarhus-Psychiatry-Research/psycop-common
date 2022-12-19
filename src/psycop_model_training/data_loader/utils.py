@@ -7,6 +7,9 @@ import pandas as pd
 from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
 from psycop_model_training.preprocessing.pre_split.full_processor import FullProcessor
+from psycop_model_training.preprocessing.pre_split.processors.value_cleaner import (
+    PreSplitValueCleaner,
+)
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
@@ -55,7 +58,9 @@ def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema):
     )
 
 
-def load_train_raw(cfg: FullConfigSchema):
+def load_train_raw(
+    cfg: FullConfigSchema, convert_timestamp_types_and_nans: bool = True
+) -> pd.DataFrame:
     """Load the data."""
     path = Path(cfg.data.dir)
     file_names = list(path.glob(pattern=r"*train*"))
@@ -68,7 +73,9 @@ def load_train_raw(cfg: FullConfigSchema):
         elif file_suffix == ".csv":
             df = pd.read_csv(file_name)
 
-        df = DataLoader.convert_timestamp_dtype_and_nat(dataset=df)
+        # Helpful during tests to convert columns with matching names to datetime
+        if convert_timestamp_types_and_nans:
+            df = PreSplitValueCleaner._convert_timestamp_dtype_and_nat(dataset=df)
 
         return df
 

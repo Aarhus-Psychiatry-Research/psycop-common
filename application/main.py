@@ -22,6 +22,7 @@ from psycop_model_training.utils.col_name_inference import (
 )
 from psycop_model_training.utils.config_schemas.conf_utils import (
     BaseModel,
+    load_app_cfg_as_pydantic,
     load_test_cfg_as_pydantic,
 )
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
@@ -202,7 +203,7 @@ def main():
     else:
         config_file_name = "default_config.yaml"
 
-    cfg = load_test_cfg_as_pydantic(config_file_name=config_file_name)
+    cfg = load_app_cfg_as_pydantic(config_file_name=config_file_name)
 
     random_word = RandomWords()
     wandb_group = f"{random_word.get_random_word()}-{random_word.get_random_word()}"

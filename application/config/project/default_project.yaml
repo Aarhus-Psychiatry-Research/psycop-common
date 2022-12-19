@@ -5,11 +5,5 @@ wandb:
   entity: psycop # Which entity to run WanDB in.
   mode: run # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
   group: psycop-t2d # Which group to run WanDB in.
-
-watcher:
-  archive_all: false
-  keep_alive_after_training_minutes: 5
-  n_runs_before_eval: 1
-  verbose: true
-
+  
 gpu: true
