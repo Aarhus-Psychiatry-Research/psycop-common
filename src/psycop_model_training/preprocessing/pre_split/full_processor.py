@@ -13,12 +13,18 @@ from psycop_model_training.preprocessing.pre_split.processors.value_cleaner impo
 from psycop_model_training.preprocessing.pre_split.processors.value_transformer import (
     PreSplitValueTransformer,
 )
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 class FullProcessor:
-    """Uses all PresSplit preprocessors."""
+    """Uses all PresSplit preprocessors. Acts as an adapter in case we want to change the interfaces of its components.
 
-    def __init__(self, cfg):
+    I.e. if we want to make PresSplitValueTransformer a class that takes a set of arguments instead of a FullConfig, we can do that without changing FullProcessor's interface.
+
+    This means we can refactor without breaking the package for our users.
+    """
+
+    def __init__(self, cfg: FullConfigSchema):
         self.cfg = cfg
         self.row_filterer = PreSplitRowFilter(cfg=cfg)
         self.col_filterer = PresSplitColFilter(cfg=cfg)
