@@ -17,10 +17,7 @@ from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
 from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
-from psycop_model_training.training.train_and_eval import (
-    CONFIG_PATH,
-    train_and_get_model_eval_df,
-)
+from psycop_model_training.training.train_and_eval import train_and_get_model_eval_df
 from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
@@ -36,12 +33,7 @@ from psycop_model_training.utils.utils import (
 )
 
 
-@hydra.main(
-    config_path=str(CONFIG_PATH),
-    config_name="default_config",
-    version_base="1.2",
-)
-def main(cfg: DictConfig):
+def train_model(cfg: DictConfig):
     """Main function for training a single model."""
     # Save dictconfig for easier logging
     if isinstance(cfg, DictConfig):
@@ -144,7 +136,3 @@ def main(cfg: DictConfig):
     )
     run.finish()
     return roc_auc
-
-
-if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
