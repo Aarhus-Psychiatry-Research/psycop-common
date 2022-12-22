@@ -21,7 +21,7 @@ def log_image_to_wandb(chart_path: Path, chart_name: str, run: wandb_run):
         chart_name (str): Name of the chart
         run (wandb.run): Wandb run object
     """
-    run.log({f"image_{chart_name}": wandb.Image(str(chart_path))})
+    wandb.log({f"image_{chart_name}": wandb.Image(str(chart_path))})
 
 
 def calc_performance(df: pd.DataFrame, metric: Callable) -> float:

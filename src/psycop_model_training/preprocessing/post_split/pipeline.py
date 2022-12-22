@@ -4,8 +4,11 @@ from sklearn.pipeline import Pipeline
 from psycop_model_training.preprocessing.post_split.create_pipeline import (
     create_preprocessing_pipeline,
 )
-from psycop_model_training.training.train_and_eval import create_model
+from psycop_model_training.training.train_and_predict import create_model
 
+import logging
+
+log = logging.getLogger(__name__)
 
 def create_post_split_pipeline(cfg):
     """Create pipeline.
@@ -16,6 +19,8 @@ def create_post_split_pipeline(cfg):
     Returns:
         Pipeline
     """
+    log.info("Creating post split pipeline"")
+    
     steps = []
     preprocessing_pipe = create_preprocessing_pipeline(cfg)
     if len(preprocessing_pipe.steps) != 0:

@@ -4,24 +4,18 @@ utilities.
 """
 import sys
 import tempfile
-import time
 from collections.abc import Iterable, MutableMapping
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 import dill as pkl
 import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
-from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
-from wasabi import msg
 
 from psycop_model_training.model_eval.dataclasses import (
-    EvalDataset,
-    FullConfigSchema,
     ModelEvalData,
-    PipeMetadata,
 )
 from psycop_model_training.model_eval.model_performance import ModelPerformance
 
@@ -42,6 +36,7 @@ def format_dict_for_printing(d: dict) -> str:
 
     Args:
         d (dict): dictionary to format.
+
     Returns:
         str: Formatted dictionary.
 
@@ -257,17 +252,6 @@ def positive_rate_to_pred_probs(
     return pd.Series(pred_probs).quantile(thresholds).tolist()
 
 
-def dump_to_pickle(obj: Any, path: Union[str, Path]) -> None:
-    """Pickles an object to a file.
-
-    Args:
-        obj (Any): Object to pickle.
-        path (str): Path to pickle file.
-    """
-    with open(path, "wb") as f:
-        pkl.dump(obj, f)
-
-
 def read_pickle(path: Union[str, Path]) -> Any:
     """Reads a pickled object from a file.
 
@@ -335,72 +319,6 @@ def get_selected_features_dict(
     return dict(
         zip(train_col_names, is_selected),
     )
-
-
-def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
-    """Write EvalDataset to disk.
-
-    Handles csv and parquet files based on suffix.
-    """
-    # Add base columns and custom columns
-    df_template = {
-        col_name: series
-        for col_name, series in eval_dataset.__dict__.items()
-        if series is not None
-    } | {
-        col_name: series
-        for col_name, series in eval_dataset.custom.__dict__.items()
-        if series is not None
-    }
-
-    # Remove items that aren't series, e.g. the top level CustomColumns object
-    template_filtered = {
-        k: v for k, v in df_template.items() if isinstance(v, pd.Series)
-    }
-
-    df = pd.DataFrame(template_filtered)
-
-    write_df_to_file(df=df, file_path=file_path)
-
-
-def eval_ds_cfg_pipe_to_disk(
-    eval_dataset: EvalDataset,
-    cfg: FullConfigSchema,
-    pipe_metadata: PipeMetadata,
-    run: Optional[Run] = None,
-) -> None:
-    """Saves prediction dataframe, hydra config and feature names to disk.
-
-    Args:
-        eval_dataset (EvalDataset): Evaluation dataset.
-        cfg (FullConfig): Full config.
-        pipe_metadata (PipeMetadata): Pipe metadata.
-        run (Run): Wandb run. Used for getting name of the run.
-    """
-    model_args = format_dict_for_printing(cfg.model)
-
-    timestamp = time.strftime("%Y_%m_%d_%H_%M")
-
-    if run and run.id:
-        run_descriptor = f"{timestamp}_{run.name}"
-    else:
-        run_descriptor = f"{timestamp}_{model_args}"[:100]
-
-    if cfg.eval.save_model_predictions_on_overtaci:
-        # Save to overtaci
-        dir_path = MODEL_PREDICTIONS_PATH / cfg.project.name / run_descriptor
-    else:
-        # Local path handling
-        dir_path = PROJECT_ROOT / "evaluation_results" / run_descriptor
-
-    dir_path.mkdir(parents=True, exist_ok=True)
-
-    # Write the files
-    eval_dataset_to_disk(eval_dataset, dir_path / "evaluation_dataset.parquet")
-    dump_to_pickle(cfg, dir_path / "cfg.pkl")
-    dump_to_pickle(pipe_metadata, dir_path / "pipe_metadata.pkl")
-
-    msg.good(f"Saved evaluation results to {dir_path}")
 
 
 def create_wandb_folders():

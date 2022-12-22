@@ -5,8 +5,8 @@ file, rather than an installed module.
 """
 import hydra
 
-from psycop_model_training.application_modules.train_model import train_model
-from psycop_model_training.training.train_and_eval import CONFIG_PATH
+from psycop_model_training.application_modules.train_model.main import train_model
+from psycop_model_training.training.train_and_predict import CONFIG_PATH
 
 
 @hydra.main(

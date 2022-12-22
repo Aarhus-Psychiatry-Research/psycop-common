@@ -11,7 +11,7 @@ from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_except
 from psycop_model_training.application_modules.get_search_space import (
     SearchSpaceInferrer,
 )
-from psycop_model_training.application_modules.setup import setup
+from psycop_model_training.application_modules.process_manager_setup import setup
 from psycop_model_training.application_modules.trainer_spawner import spawn_trainers
 from psycop_model_training.data_loader.data_loader import DataLoader
 

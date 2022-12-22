@@ -21,16 +21,18 @@ CONFIG_PATH = PROJECT_ROOT / "application" / "config"
 
 # Handle wandb not playing nice with joblib
 os.environ["WANDB_START_METHOD"] = "thread"
+log = Printer(timestamp=True)
 
 
 def create_model(cfg: FullConfigSchema):
     """Instantiate and return a model object based on settings in the config
-    file."""
+    file.
+    """
     model_dict = MODELS.get(cfg.model.name)
 
     model_args = model_dict["static_hyperparameters"]
 
-    training_arguments = getattr(cfg.model, "args")
+    training_arguments = cfg.model.args
     model_args.update(training_arguments)
 
     return model_dict["model"](**model_args)
@@ -86,7 +88,7 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     return train_df
 
 
-def train_and_eval_on_crossvalidation(
+def crossval_train_and_predict(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
@@ -128,7 +130,7 @@ def train_and_eval_on_crossvalidation(
     return create_eval_dataset(cfg=cfg, outcome_col_name=outcome_col_name, df=df)
 
 
-def train_and_eval_on_val_split(
+def train_val_predict(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
@@ -170,7 +172,7 @@ def train_and_eval_on_val_split(
     return create_eval_dataset(cfg=cfg, outcome_col_name=outcome_col_name, df=df)
 
 
-def train_and_get_model_eval_df(
+def train_and_predict(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
@@ -195,11 +197,12 @@ def train_and_get_model_eval_df(
     """
     # Set feature names if model is EBM to get interpretable feature importance
     # output
+    log.good("Training model")
     if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names
 
     if n_splits is None:  # train on pre-defined splits
-        eval_dataset = train_and_eval_on_val_split(
+        eval_dataset = train_val_predict(
             cfg=cfg,
             train=train,
             val=val,
@@ -208,7 +211,7 @@ def train_and_get_model_eval_df(
             train_col_names=train_col_names,
         )
     else:
-        eval_dataset = train_and_eval_on_crossvalidation(
+        eval_dataset = crossval_train_and_predict(
             cfg=cfg,
             train=train,
             val=val,
