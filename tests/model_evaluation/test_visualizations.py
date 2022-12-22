@@ -10,9 +10,6 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
-from application.artifacts.plots.performance_by_n_hba1c import (
-    plot_performance_by_n_hba1c,
-)
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
@@ -94,16 +91,6 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
         y_title="Sensitivity",
         plot_type="bar",
     )
-
-
-def test_plot_performance_by_n_hba1c(synth_eval_dataset: EvalDataset):
-    synth_eval_dataset.custom.Config.allow_mutation = True
-    synth_eval_dataset.custom.n_hba1c = np.random.randint(
-        0,
-        8,
-        len(synth_eval_dataset.ids),
-    )
-    plot_performance_by_n_hba1c(eval_dataset=synth_eval_dataset)
 
 
 def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):

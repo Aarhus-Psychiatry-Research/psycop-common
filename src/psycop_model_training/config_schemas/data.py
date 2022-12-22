@@ -4,13 +4,6 @@ from typing import Optional, Union
 from psycop_model_training.config_schemas.basemodel import BaseModel
 
 
-class CustomColNames(BaseModel):
-    """All custom column names, i.e. columns that won't generalise across
-    projects."""
-
-    n_hba1c: str
-
-
 class ColumnNamesSchema(BaseModel):
     """Column names in the data."""
 
@@ -20,9 +13,6 @@ class ColumnNamesSchema(BaseModel):
     age: str  # Name of the age column
     exclusion_timestamp: str  # Name of the exclusion timestamps column.
     # Drops all visits whose pred_timestamp <= exclusion_timestamp.
-
-    custom: Optional[CustomColNames] = None
-    # Column names that are custom to the given prediction problem.
 
 
 class DataSchema(BaseModel):
@@ -38,4 +28,5 @@ class DataSchema(BaseModel):
     col_name: ColumnNamesSchema
 
     pred_prefix: str  # prefix of predictor columns
+    outc_prefix: str  # prefix of outcome columns
     outc_prefix: str  # prefix of outcome columns
