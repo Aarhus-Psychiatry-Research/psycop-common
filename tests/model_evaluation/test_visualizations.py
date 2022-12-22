@@ -191,14 +191,3 @@ def test_plot_feature_importances():
 
 def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
     plot_auc_roc(eval_dataset=synth_eval_dataset)
-
-    plot_feature_importances(
-        feature_importance_dict=feature_importance_dict,
-        top_n_feature_importances=n_features,
-        save_path="tmp",
-    )
-
-
-def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
-    plot_auc_roc(eval_dataset=synth_eval_dataset)
-    plot_auc_roc(eval_dataset=synth_eval_dataset)

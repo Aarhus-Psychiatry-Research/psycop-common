@@ -1,6 +1,4 @@
 """Train a single model and evaluate it."""
-from distutils.command.upload import upload
-
 import wandb
 from omegaconf import DictConfig
 
