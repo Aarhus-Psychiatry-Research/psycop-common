@@ -23,6 +23,8 @@ class TrainerSpec(BaseModel):
 
 
 class SearchSpaceInferrer:
+    """Infer the search space for the model training pipeline."""
+
     def __init__(
         self,
         cfg: FullConfigSchema,
@@ -32,32 +34,6 @@ class SearchSpaceInferrer:
         self.cfg = cfg
         self.train_df = train_df
         self.model_names = model_names
-
-    def _get_possible_lookaheads(self) -> list[int]:
-        """Some look_ahead and look_behind distances will result in 0 valid
-        prediction times. Only return combinations which will allow some
-        prediction times.
-
-        E.g. if we only have 4 years of data:
-        - min_lookahead = 2 years
-        - min_lookbehind = 3 years
-
-        Will mean that no rows satisfy the criteria.
-        """
-        outcome_col_names = infer_outcome_col_name(
-            df=self.train_df,
-            allow_multiple=True,
-        )
-
-        potential_lookaheads: list[int] = [
-            int(dist) for dist in infer_look_distance(col_name=outcome_col_names)
-        ]
-
-        impossible_lookaheads = self.get_impossible_lookaheads(
-            potential_lookaheads=potential_lookaheads,
-        )
-
-        return list(set(potential_lookaheads) - set(impossible_lookaheads))
 
     def _get_impossible_lookaheads(
         self,
@@ -91,6 +67,32 @@ class SearchSpaceInferrer:
 
         return lookaheads_without_rows
 
+    def _get_possible_lookaheads(self) -> list[int]:
+        """Some look_ahead and look_behind distances will result in 0 valid
+        prediction times. Only return combinations which will allow some
+        prediction times.
+
+        E.g. if we only have 4 years of data:
+        - min_lookahead = 2 years
+        - min_lookbehind = 3 years
+
+        Will mean that no rows satisfy the criteria.
+        """
+        outcome_col_names = infer_outcome_col_name(
+            df=self.train_df,
+            allow_multiple=True,
+        )
+
+        potential_lookaheads: list[int] = [
+            int(dist) for dist in infer_look_distance(col_name=outcome_col_names)
+        ]
+
+        impossible_lookaheads = self._get_impossible_lookaheads(
+            potential_lookaheads=potential_lookaheads,
+        )
+
+        return list(set(potential_lookaheads) - set(impossible_lookaheads))
+
     def _combine_lookaheads_and_model_names_to_trainer_specs(
         self,
         possible_lookahead_days: list[int],
@@ -119,12 +121,6 @@ class SearchSpaceInferrer:
 
     def get_trainer_specs(self) -> list[TrainerSpec]:
         """Get all possible combinations of lookaheads and models."""
-        possible_lookahead_days = self._get_possible_lookaheads(
-            cfg=self.cfg,
-            train_df=self.train_df,
-        )
-
         return self._combine_lookaheads_and_model_names_to_trainer_specs(
-            cfg=self.cfg,
-            possible_lookahead_days=possible_lookahead_days,
+            possible_lookahead_days=self._get_possible_lookaheads(),
         )

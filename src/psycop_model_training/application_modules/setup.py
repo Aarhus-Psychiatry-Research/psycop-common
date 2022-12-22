@@ -30,6 +30,7 @@ def setup_wandb(cfg: FullConfigSchema) -> str:
 
 
 def setup(config_file_name: str) -> None:
+    """Setup the requirements to run the model training pipeline."""
     cfg = load_app_cfg_as_pydantic(config_file_name=config_file_name)
     wandb_group = setup_wandb(cfg=cfg)
 

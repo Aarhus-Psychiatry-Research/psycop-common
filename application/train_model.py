@@ -15,6 +15,7 @@ from psycop_model_training.training.train_and_eval import CONFIG_PATH
     version_base="1.2",
 )
 def main():
+    """Main."""
     train_model()
 
 
