@@ -10,7 +10,6 @@ from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_except
 
 from psycop_model_training.application_modules.get_search_space import (
     SearchSpaceInferrer,
-    get_possible_lookaheads,
 )
 from psycop_model_training.application_modules.setup import setup
 from psycop_model_training.application_modules.trainer_spawner import spawn_trainers

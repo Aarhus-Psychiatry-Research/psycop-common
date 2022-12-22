@@ -14,10 +14,16 @@ def setup(config_file_name: str) -> None:
     return cfg, wandb_group
 
 
-def setup_wandb(cfg: FullConfigSchema) -> str:
-    """Start a wandb group for this set of models."""
+def create_random_wandb_group_name():
+    """Create a random wandb group name."""
     random_word = RandomWords()
     wandb_group = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
+    return wandb_group
+
+
+def setup_wandb(cfg: FullConfigSchema) -> str:
+    """Start a wandb group for this set of models."""
+    wandb_group = create_random_wandb_group_name()
 
     wandb.init(
         project=f"{cfg.project.name}-baseline-model-training",
