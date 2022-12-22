@@ -77,7 +77,7 @@ class ModelEvaluator:
         self.eval_dir_path = eval_dir_path
         self.pipeline_metadata = self._get_pipeline_metadata()
 
-        self.disk_saver = ArtifactsToDiskSaver(run=wandb.run, dir_path=eval_dir_path)
+        self.disk_saver = ArtifactsToDiskSaver(dir_path=eval_dir_path)
         self.base_artifact_generator = BaseArtifactGenerator(
             cfg=cfg,
             eval_ds=eval_ds,
@@ -129,7 +129,7 @@ class ModelEvaluator:
 
         if self.upload_to_wandb:
             for artifact in artifacts:
-                artifact.upload_to_wandb()
+                self.upload_artifact_to_wandb(artifact)
 
         roc_auc = roc_auc_score(
             self.eval_ds.y,

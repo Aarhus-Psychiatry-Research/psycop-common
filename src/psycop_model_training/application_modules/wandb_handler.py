@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+import wandb
 from omegaconf import DictConfig, OmegaConf
 
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
@@ -10,9 +11,8 @@ from psycop_model_training.utils.utils import create_wandb_folders, flatten_nest
 class WandbHandler:
     """Class for handling wandb setup and logging."""
 
-    def __init__(self, cfg: FullConfigSchema, wandb_group: str):
+    def __init__(self, cfg: FullConfigSchema):
         self.cfg = cfg
-        self.wandb_group = wandb_group
 
         # Required on Windows because the wandb process is sometimes unable to initialise
         create_wandb_folders()
@@ -32,11 +32,11 @@ class WandbHandler:
 
     def setup_wandb(self):
         """Setup wandb for the current run."""
-        WandbSchema.init(
+        wandb.init(
             project=f"{self.cfg.project.name}-baseline-model-training",
             reinit=True,
             mode=self.cfg.project.wandb.mode,
-            group=self.wandb_group,
+            group=self.cfg.project.wandb.group,
             config=self._get_cfg_as_dict(),
             entity=self.cfg.project.wandb.entity,
         )
