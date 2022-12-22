@@ -197,13 +197,11 @@ def get_possible_lookaheads(
 
 
 def check_columns_exist_in_dataset(cfg: ColumnNamesSchema, df: pd.DataFrame):
+    """Check that all columns in the config exist in the dataset."""
     # Iterate over attributes in the config
     missing_columns = []
-    for attr in dir(cfg):
-        # Skip private attributes
-        if attr.startswith("_"):
-            continue
 
+    for attr in dir(cfg):
         # Check that the attribute is a string
         if not isinstance(getattr(cfg, attr), str):
             continue
@@ -213,7 +211,10 @@ def check_columns_exist_in_dataset(cfg: ColumnNamesSchema, df: pd.DataFrame):
             missing_columns.append(getattr(cfg, attr))
 
     if missing_columns:
-        raise ValueError(f"Columns in config but not in dataset: {missing_columns}")
+        raise ValueError(
+            f"Columns in config but not in dataset: {missing_columns}. Columns in dataset: {df.columns}"
+        )
+
 
 @wandb_alert_on_exception
 def main():
@@ -238,7 +239,7 @@ def main():
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
     train = load_train_raw(cfg=cfg)
-    
+
     check_columns_exist_in_dataset(cfg=cfg.data.col_name, df=train)
 
     possible_lookaheads = get_possible_lookaheads(
