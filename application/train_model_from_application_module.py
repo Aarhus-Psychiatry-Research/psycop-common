@@ -6,6 +6,7 @@ file, rather than an installed module.
 import hydra
 from omegaconf import DictConfig
 
+from application.artifacts.custom_artifacts import create_custom_plot_artifacts
 from psycop_model_training.application_modules.train_model.main import train_model
 from psycop_model_training.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
@@ -24,4 +25,4 @@ def main(cfg: DictConfig):
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)
 
-    train_model(cfg=cfg)
+    train_model(cfg=cfg, custom_artifact_fn=create_custom_plot_artifacts)
