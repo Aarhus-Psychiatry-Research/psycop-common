@@ -1,3 +1,7 @@
+"""Utilities for handling config objects, e.g. load, change format.
+
+Very useful when testing.
+"""
 from typing import Optional, Union
 
 from hydra import compose, initialize
