@@ -12,6 +12,16 @@ from psycop_model_training.utils.col_name_inference import (
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
+class TrainerSpec(BaseModel):
+    """Specification for starting a trainer.
+
+    Provides overrides for the config file.
+    """
+
+    lookahead_days: int
+    model_name: str
+
+
 class SearchSpaceInferrer:
     def __init__(
         self, cfg: FullConfigSchema, train_df: pd.DataFrame, model_names: list[str]
@@ -80,7 +90,7 @@ class SearchSpaceInferrer:
     def _combine_lookaheads_and_model_names_to_trainer_specs(
         self,
         possible_lookahead_days: list[int],
-    ):
+    ) -> List[TrainerSpec]:
         """Generate trainer specs for all combinations of lookaheads and model
         names.
         """
@@ -104,7 +114,7 @@ class SearchSpaceInferrer:
 
         return trainer_combinations_queue
 
-    def get_trainer_specs(self):
+    def get_trainer_specs(self) -> List[TrainerSpec]:
         """Get all possible combinations of lookaheads and models."""
         possible_lookahead_days = self._get_possible_lookaheads(
             cfg=self.cfg,
@@ -115,13 +125,3 @@ class SearchSpaceInferrer:
             cfg=self.cfg,
             possible_lookahead_days=possible_lookahead_days,
         )
-
-
-class TrainerSpec(BaseModel):
-    """Specification for starting a trainer.
-
-    Provides overrides for the config file.
-    """
-
-    lookahead_days: int
-    model_name: str
