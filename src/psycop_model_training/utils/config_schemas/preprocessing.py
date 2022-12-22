@@ -1,3 +1,4 @@
+"""Preprocessing config schemas."""
 from datetime import datetime
 from typing import Literal, Optional, Union
 
@@ -15,6 +16,8 @@ class FeatureSelectionSchema(BaseModel):
 
 
 class PreSplitPreprocessingConfigSchema(BaseModel):
+    """Pre split preprocessing config."""
+
     drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]]
     # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
 
@@ -45,6 +48,8 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
 
 
 class PostSplitPreprocessingConfigSchema(BaseModel):
+    """Post split preprocessing config."""
+
     imputation_method: Optional[Literal["most_frequent", "mean", "median", "null"]]
     # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
     # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html

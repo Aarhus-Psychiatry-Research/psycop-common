@@ -1,4 +1,5 @@
 """Loader for the t2d dataset."""
+import logging
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Callable, Optional, Union
@@ -9,7 +10,6 @@ from wasabi import Printer
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 msg = Printer(timestamp=True)
-import logging
 
 from psycop_model_training.data_loader.col_name_checker import (
     check_columns_exist_in_dataset,

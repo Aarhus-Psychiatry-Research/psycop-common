@@ -1,5 +1,4 @@
 """Check that all columns in the config exist in the dataset."""
-from typing import List
 
 import Levenshtein
 import pandas as pd

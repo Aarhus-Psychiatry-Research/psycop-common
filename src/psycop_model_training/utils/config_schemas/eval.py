@@ -1,3 +1,4 @@
+"""Eval config schema."""
 from psycop_model_training.utils.basemodel import BaseModel
 
 

@@ -1,3 +1,4 @@
+"""Project configuration schemas."""
 from psycop_model_training.utils.basemodel import BaseModel
 
 
