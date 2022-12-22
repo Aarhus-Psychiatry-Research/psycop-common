@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional, Union
 
-from psycop_model_training.utils.basemodel import BaseModel
+from psycop_model_training.config_schemas.basemodel import BaseModel
 
 
 class CustomColNames(BaseModel):

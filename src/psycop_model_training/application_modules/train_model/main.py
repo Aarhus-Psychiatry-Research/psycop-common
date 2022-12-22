@@ -20,11 +20,8 @@ from psycop_model_training.utils.config_schemas.full_config import FullConfigSch
 from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
 
 
-def train_model(cfg: DictConfig):
+def train_model(cfg: FullConfigSchema):
     """Main function for training a single model."""
-    if not isinstance(cfg, FullConfigSchema):
-        cfg = convert_omegaconf_to_pydantic_object(cfg)
-
     WandbHandler(cfg=cfg).setup_wandb()
 
     dataset = load_and_filter_train_and_val_from_cfg(cfg)

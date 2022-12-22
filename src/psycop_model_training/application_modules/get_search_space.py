@@ -1,10 +1,9 @@
 import random
-from typing import List, Optional, Union
 
 import pandas as pd
 from wasabi import Printer
 
-from psycop_model_training.utils.basemodel import BaseModel
+from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.utils.col_name_inference import (
     infer_look_distance,
     infer_outcome_col_name,
