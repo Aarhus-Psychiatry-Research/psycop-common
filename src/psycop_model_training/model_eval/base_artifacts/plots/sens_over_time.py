@@ -176,13 +176,10 @@ def _annotate_heatmap(
     else:
         threshold = image.norm(data.max()) / 2.0  # type: ignore
 
-    test_kwargs = (
-        dict(
-            horizontalalignment="center",
-            verticalalignment="center",
-        )
-        | textkw
-    )
+    test_kwargs = {
+        "horizontalalignment": "center",
+        "verticalalignment": "center",
+    } | textkw
 
     # Loop over the data and create a `Text` for each "pixel".
     # Change the text's color depending on the data.
@@ -337,6 +334,14 @@ def plot_sensitivity_by_time_to_outcome_heatmap(  # pylint: disable=too-many-loc
             for i in range(len(pred_proba_thresholds))
         ],
         axis=0,
+    )
+
+    # Group by days_to_outcome_binned and threshold_percentile, keep only the
+    # first value from each group, and reset the index
+    df = (
+        df.groupby(["days_to_outcome_binned", "threshold_percentile"])
+        .first()
+        .reset_index()
     )
 
     # Prepare data for plotting

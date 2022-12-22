@@ -14,7 +14,7 @@ from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
-from psycop_model_training.model_eval.evaluate_model import run_full_evaluation
+from psycop_model_training.model_eval.evaluate_model import evaluate_performance
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import (
     MODEL_PREDICTIONS_PATH,
@@ -166,7 +166,7 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
         run: Run = wandb.init(project=self.project_name, entity=self.entity, id=run_id)  # type: ignore
 
         # run evaluation
-        run_full_evaluation(
+        evaluate_performance(
             cfg=eval_data.cfg,
             eval_dataset=eval_data.eval_dataset,
             pipe_metadata=eval_data.pipe_metadata,

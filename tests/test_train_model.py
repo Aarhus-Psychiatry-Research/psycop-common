@@ -3,7 +3,7 @@
 
 import pytest
 
-from psycop_model_training.application_modules.train_model import train_model
+from psycop_model_training.application_modules.train_model.main import train_model
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.utils.config_schemas.conf_utils import (
     load_test_cfg_as_omegaconf,

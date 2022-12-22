@@ -10,29 +10,33 @@ import pandas as pd
 import pytest
 from sklearn.metrics import f1_score, roc_auc_score
 
-from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.model_eval.plots.base_charts import plot_basic_chart
-from psycop_model_training.model_eval.plots.feature_importance import (
-    plot_feature_importances,
-)
-from psycop_model_training.model_eval.plots.performance_by_age import (
-    plot_performance_by_age,
-)
-from psycop_model_training.model_eval.plots.performance_by_n_hba1c import (
+from application.artifacts.plots.performance_by_n_hba1c import (
     plot_performance_by_n_hba1c,
 )
-from psycop_model_training.model_eval.plots.performance_over_time import (
+from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
+    plot_basic_chart,
+)
+from psycop_model_training.model_eval.base_artifacts.plots.feature_importance import (
+    plot_feature_importances,
+)
+from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age import (
+    plot_performance_by_age,
+)
+from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
-from psycop_model_training.model_eval.plots.prob_over_time import plot_prob_over_time
-from psycop_model_training.model_eval.plots.roc_auc import plot_auc_roc
-from psycop_model_training.model_eval.plots.sens_over_time import (
+from psycop_model_training.model_eval.base_artifacts.plots.prob_over_time import (
+    plot_prob_over_time,
+)
+from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
+from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
     plot_sensitivity_by_time_to_outcome_heatmap,
 )
+from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 
 
@@ -161,7 +165,7 @@ def test_plot_sens_by_time_to_outcome(synth_eval_dataset: EvalDataset, tmp_path)
         positive_rate_thresholds=positive_rate_thresholds,
     )
 
-    plot_sensitivity_by_time_to_outcome_heatmap(  # noqa
+    plot_sensitivity_by_time_to_outcome_heatmap(
         eval_dataset=synth_eval_dataset,
         pred_proba_thresholds=pred_proba_thresholds,
         bins=[0, 30, 182, 365, 730, 1825],
