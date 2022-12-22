@@ -202,7 +202,11 @@ def check_columns_exist_in_dataset(cfg: ColumnNamesSchema, df: pd.DataFrame):
     missing_columns = []
 
     for attr in dir(cfg):
-        # Check that the attribute is a string
+        # Skip private attributes
+        if attr.startswith("_"):
+            continue
+
+        # Skip col names that are not string
         if not isinstance(getattr(cfg, attr), str):
             continue
 
