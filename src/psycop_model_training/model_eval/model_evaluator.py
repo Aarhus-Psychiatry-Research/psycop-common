@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path
+from pathlib import Path, PosixPath, WindowsPath
 from typing import List
 
 import pandas as pd
@@ -7,19 +7,11 @@ import wandb
 from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 
-from application.artifacts.custom_artifacts import create_custom_plot_artifacts
 from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
 from psycop_model_training.model_eval.artifacts.base_plot_artifacts import (
-    create_base_plot_artifacts,
-)
-from psycop_model_training.model_eval.artifacts.plots.feature_importance import (
-    plot_feature_importances,
+    BaseArtifactGenerator,
 )
 from psycop_model_training.model_eval.artifacts.plots.utils import log_image_to_wandb
-from psycop_model_training.model_eval.artifacts.tables.tables import (
-    generate_feature_importances_table,
-    generate_selected_features_table,
-)
 from psycop_model_training.model_eval.dataclasses import (
     ArtifactContainer,
     EvalDataset,
@@ -61,8 +53,15 @@ class ModelEvaluator:
         )
 
         self.eval_dir_path = eval_dir_path
-        self.disk_saver = ArtifactsToDiskSaver(run=wandb.run, dir_path=eval_dir_path)
         self.pipeline_metadata = self._get_pipeline_metadata()
+
+        self.disk_saver = ArtifactsToDiskSaver(run=wandb.run, dir_path=eval_dir_path)
+        self.base_artifact_generator = BaseArtifactGenerator(
+            cfg=cfg,
+            eval_ds=eval_ds,
+            save_dir=self.eval_dir_path,
+            pipe_metadata=self.pipeline_metadata,
+        )
         self.custom_artifacts = custom_artifacts
 
     def _get_pipeline_metadata(self):
@@ -81,54 +80,15 @@ class ModelEvaluator:
         return pipe_metadata
 
     def _get_artifacts(self) -> List[ArtifactContainer]:
-        artifact_containers = create_base_plot_artifacts(
-            cfg=self.cfg,
-            eval_dataset=self.eval_dataset,
-            save_dir=self.eval_dir_path,
-        )
+        artifact_containers = self.base_artifact_generator.generate()
 
         if self.custom_artifacts:
             artifact_containers += self.custom_artifacts
 
-        if self.pipe_metadata and self.pipe_metadata.feature_importances:
-            artifact_containers += self._get_feature_importance_artifacts()
-
-        if self.pipe_metadata and self.pipe_metadata.selected_features:
-            artifact_containers += self._get_feature_selection_artifacts()
-
         return artifact_containers
 
-    def _get_feature_selection_artifacts(self):
-        return [
-            ArtifactContainer(
-                label="selected_features",
-                artifact=generate_selected_features_table(
-                    selected_features_dict=self.pipe_metadata.selected_features,
-                    output_format="df",
-                ),
-            ),
-        ]
-
-    def _get_feature_importance_artifacts(self):
-        return [
-            ArtifactContainer(
-                label="feature_importances",
-                artifact=plot_feature_importances(
-                    feature_importance_dict=self.pipe_metadata.feature_importances,
-                    save_path=self.eval_dir_path / "feature_importances.png",
-                ),
-            ),
-            ArtifactContainer(
-                label="feature_importances",
-                artifact=generate_feature_importances_table(
-                    feature_importance_dict=self.pipe_metadata.feature_importances,
-                    output_format="df",
-                ),
-            ),
-        ]
-
     def upload_artifact_to_wandb(
-            artifact_container: ArtifactContainer,
+        artifact_container: ArtifactContainer,
     ) -> None:
         """Upload artifacts to wandb."""
         allowed_artifact_types = [Path, WindowsPath, PosixPath, pd.DataFrame]
@@ -179,4 +139,5 @@ class ModelEvaluator:
 
         logging.info(f"ROC AUC: {roc_auc}")
 
+        return roc_auc
         return roc_auc
