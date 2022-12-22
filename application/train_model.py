@@ -1,6 +1,7 @@
 """Script using the train_model module to train a model.
 
-Required to allow the trainer_spawner to point towards a python script file, rather than an installed module.
+Required to allow the trainer_spawner to point towards a python script
+file, rather than an installed module.
 """
 import hydra
 

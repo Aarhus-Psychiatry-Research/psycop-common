@@ -7,13 +7,6 @@ from psycop_model_training.utils.config_schemas.conf_utils import (
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
-def setup(config_file_name: str) -> None:
-    cfg = load_app_cfg_as_pydantic(config_file_name=config_file_name)
-    wandb_group = setup_wandb(cfg=cfg)
-
-    return cfg, wandb_group
-
-
 def create_random_wandb_group_name():
     """Create a random wandb group name."""
     random_word = RandomWords()
@@ -34,3 +27,10 @@ def setup_wandb(cfg: FullConfigSchema) -> str:
     )
 
     return wandb_group
+
+
+def setup(config_file_name: str) -> None:
+    cfg = load_app_cfg_as_pydantic(config_file_name=config_file_name)
+    wandb_group = setup_wandb(cfg=cfg)
+
+    return cfg, wandb_group

@@ -24,7 +24,10 @@ class TrainerSpec(BaseModel):
 
 class SearchSpaceInferrer:
     def __init__(
-        self, cfg: FullConfigSchema, train_df: pd.DataFrame, model_names: list[str]
+        self,
+        cfg: FullConfigSchema,
+        train_df: pd.DataFrame,
+        model_names: list[str],
     ):
         self.cfg = cfg
         self.train_df = train_df
@@ -32,8 +35,8 @@ class SearchSpaceInferrer:
 
     def _get_possible_lookaheads(self) -> list[int]:
         """Some look_ahead and look_behind distances will result in 0 valid
-        prediction times. Only return combinations which will allow some prediction
-        times.
+        prediction times. Only return combinations which will allow some
+        prediction times.
 
         E.g. if we only have 4 years of data:
         - min_lookahead = 2 years
@@ -42,7 +45,8 @@ class SearchSpaceInferrer:
         Will mean that no rows satisfy the criteria.
         """
         outcome_col_names = infer_outcome_col_name(
-            df=self.train_df, allow_multiple=True
+            df=self.train_df,
+            allow_multiple=True,
         )
 
         potential_lookaheads: list[int] = [
@@ -57,7 +61,7 @@ class SearchSpaceInferrer:
 
     def _get_impossible_lookaheads(
         self,
-        potential_lookaheads: List[int],
+        potential_lookaheads: list[int],
     ):
         """Some look_ahead and look_behind distances will result in 0 valid
         prediction times.
@@ -90,10 +94,9 @@ class SearchSpaceInferrer:
     def _combine_lookaheads_and_model_names_to_trainer_specs(
         self,
         possible_lookahead_days: list[int],
-    ) -> List[TrainerSpec]:
+    ) -> list[TrainerSpec]:
         """Generate trainer specs for all combinations of lookaheads and model
-        names.
-        """
+        names."""
         msg = Printer(timestamp=True)
 
         random.shuffle(possible_lookahead_days)
@@ -114,7 +117,7 @@ class SearchSpaceInferrer:
 
         return trainer_combinations_queue
 
-    def get_trainer_specs(self) -> List[TrainerSpec]:
+    def get_trainer_specs(self) -> list[TrainerSpec]:
         """Get all possible combinations of lookaheads and models."""
         possible_lookahead_days = self._get_possible_lookaheads(
             cfg=self.cfg,
