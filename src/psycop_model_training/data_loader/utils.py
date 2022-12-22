@@ -76,7 +76,7 @@ def load_train_raw(
 
         # Helpful during tests to convert columns with matching names to datetime
         if convert_timestamp_types_and_nans:
-            df = PreSplitValueCleaner._convert_timestamp_dtype_and_nat(dataset=df)
+            df = PreSplitValueCleaner.convert_timestamp_dtype_and_nat(dataset=df)
 
         return df
 

@@ -1,5 +1,6 @@
 """Class for formatting values before split, e.g. assigning datetime, removing
-negative values etc."""
+negative values etc.
+"""
 import numpy as np
 import pandas as pd
 
@@ -10,16 +11,18 @@ from psycop_model_training.utils.decorators import print_df_dimensions_diff
 
 class PreSplitValueCleaner:
     """Class for cleaning values before split, e.g. assigning datetime,
-    removing negative values etc."""
+    removing negative values etc.
+    """
 
     def __init__(self, cfg: FullConfigSchema) -> None:
         self.cfg = cfg
 
     @staticmethod
     @print_df_dimensions_diff
-    def _convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
+    def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
-        convert 0's to NaT."""
+        convert 0's to NaT.
+        """
         timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
 
         for colname in timestamp_colnames:
@@ -61,6 +64,6 @@ class PreSplitValueCleaner:
         # 2b. Always use z-score normalisation?
         dataset = self._negative_values_to_nan(dataset=dataset)
 
-        dataset = self._convert_timestamp_dtype_and_nat(dataset=dataset)
+        dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
         return dataset

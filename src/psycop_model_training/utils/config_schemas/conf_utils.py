@@ -16,6 +16,7 @@ def convert_omegaconf_to_pydantic_object(
     Args:
         conf (DictConfig): Omegaconf DictConfig
         allow_mutation (bool, optional): Whether to make the pydantic object mutable. Defaults to False.
+
     Returns:
         FullConfig: Pydantic object
     """
@@ -53,10 +54,11 @@ def load_test_cfg_as_omegaconf(
 
 
 def load_app_cfg_as_pydantic(
-    config_file_name,
+    config_file_name: str,
     allow_mutation: bool = False,
     overrides: Optional[list[str]] = None,
 ):
+    """Load application cfg as pydantic object."""
     cfg = load_test_cfg_as_omegaconf(
         config_file_name=config_file_name,
         overrides=overrides,
