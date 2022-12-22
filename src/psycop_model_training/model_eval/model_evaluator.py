@@ -8,10 +8,12 @@ from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 
 from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
-from psycop_model_training.model_eval.artifacts.base_plot_artifacts import (
+from psycop_model_training.model_eval.base_artifacts.base_artifact_generator import (
     BaseArtifactGenerator,
 )
-from psycop_model_training.model_eval.artifacts.plots.utils import log_image_to_wandb
+from psycop_model_training.model_eval.base_artifacts.plots.utils import (
+    log_image_to_wandb,
+)
 from psycop_model_training.model_eval.dataclasses import (
     ArtifactContainer,
     EvalDataset,
@@ -55,10 +57,12 @@ class ModelEvaluator:
         """Class for evaluating a model.
 
         Args:
+            eval_dir_path (Path): Path to directory where artifacts will be saved.
             cfg (FullConfigSchema): Full config object.
+            raw_train_set (pd.DataFrame): Training set before feature selection.
             pipe (Pipeline): Pipeline object.
             eval_ds (EvalDataset): EvalDataset object.
-            raw_train_set (pd.DataFrame): Training set before feature selection.
+            custom_artifacts (list[ArtifactContainer], optional): List of custom artifacts to save. Defaults to None.
         """
         self.cfg = cfg
         self.pipe = pipe
@@ -139,5 +143,7 @@ class ModelEvaluator:
         )
 
         logging.info(f"ROC AUC: {roc_auc}")
+
+        return roc_auc
 
         return roc_auc

@@ -2,26 +2,26 @@ from pathlib import Path
 
 from sklearn.metrics import recall_score
 
-from psycop_model_training.model_eval.artifacts.plots.feature_importance import (
+from psycop_model_training.model_eval.base_artifacts.plots.feature_importance import (
     plot_feature_importances,
 )
-from psycop_model_training.model_eval.artifacts.plots.performance_by_age import (
+from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age import (
     plot_performance_by_age,
 )
-from psycop_model_training.model_eval.artifacts.plots.performance_over_time import (
+from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
-from psycop_model_training.model_eval.artifacts.plots.roc_auc import plot_auc_roc
-from psycop_model_training.model_eval.artifacts.plots.sens_over_time import (
+from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
+from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
     plot_sensitivity_by_time_to_outcome_heatmap,
 )
-from psycop_model_training.model_eval.artifacts.tables.performance_by_threshold import (
+from psycop_model_training.model_eval.base_artifacts.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycop_model_training.model_eval.artifacts.tables.tables import (
+from psycop_model_training.model_eval.base_artifacts.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
 )
@@ -30,14 +30,14 @@ from psycop_model_training.model_eval.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.model_eval.model_evaluator import ModelEvaluator
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 
 
 class BaseArtifactGenerator:
     """Generates the base artifacts, i.e. those that generalise across all
-    projects, from an EvalDataset."""
+    projects, from an EvalDataset.
+    """
 
     def __init__(
         self,
