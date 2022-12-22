@@ -14,7 +14,7 @@ from psycop_model_training.utils.config_schemas.conf_utils import (
 CONFIG_DIR_PATH_REL = "../application/config"
 
 
-def add_age_gender(df):
+def add_age_gender(df: pd.DataFrame):
     """Add age and gender columns to dataframe.
 
     Args:
@@ -54,7 +54,7 @@ def synth_eval_dataset() -> EvalDataset:
 def immuteable_test_config() -> FullConfigSchema:
     """Get an immutable config for testing."""
     return load_test_cfg_as_pydantic(
-        config_file_name="integration_config.yaml",
+        config_file_name="default_config.yaml",
         allow_mutation=False,
     )
 
@@ -63,6 +63,6 @@ def immuteable_test_config() -> FullConfigSchema:
 def muteable_test_config() -> FullConfigSchema:
     """Get a mutable config for testing."""
     return load_test_cfg_as_pydantic(
-        config_file_name="integration_config.yaml",
+        config_file_name="default_config.yaml",
         allow_mutation=True,
     )

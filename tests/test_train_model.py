@@ -10,11 +10,11 @@ from psycop_model_training.utils.config_schemas.conf_utils import (
 )
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
-INTEGRATION_TEST_FILE_NAME = "integration_config.yaml"
+INTEGRATION_TEST_FILE_NAME = "default_config.yaml"
 
 
 @pytest.mark.parametrize("model_name", MODELS.keys())
-def test_main(model_name):
+def test_main(model_name: str):
     """Test main using a variety of model."""
 
     cfg: FullConfigSchema = load_test_cfg_as_omegaconf(

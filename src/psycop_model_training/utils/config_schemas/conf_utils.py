@@ -29,8 +29,8 @@ def convert_omegaconf_to_pydantic_object(
 
 
 def load_test_cfg_as_omegaconf(
-    config_file_name: str,
-    config_dir_path_rel: str,
+    config_file_name: str = "default_config",
+    config_dir_path_rel: str = "../../../../tests/config/",
     overrides: Optional[list[str]] = None,
 ) -> DictConfig:
     """Load config as omegaconf object."""
