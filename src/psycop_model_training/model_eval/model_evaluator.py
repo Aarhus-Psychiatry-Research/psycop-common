@@ -15,6 +15,7 @@ from psycop_model_training.model_eval.artifacts.base_plot_artifacts import (
 from psycop_model_training.model_eval.artifacts.plots.feature_importance import (
     plot_feature_importances,
 )
+from psycop_model_training.model_eval.artifacts.plots.utils import log_image_to_wandb
 from psycop_model_training.model_eval.artifacts.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
@@ -24,7 +25,6 @@ from psycop_model_training.model_eval.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.model_eval.evaluate_model import evaluate_performance
 from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import (
@@ -127,6 +127,26 @@ class ModelEvaluator:
             ),
         ]
 
+    def upload_artifact_to_wandb(
+            artifact_container: ArtifactContainer,
+    ) -> None:
+        """Upload artifacts to wandb."""
+        allowed_artifact_types = [Path, WindowsPath, PosixPath, pd.DataFrame]
+
+        if type(artifact_container.artifact) not in allowed_artifact_types:
+            raise TypeError(
+                f"Type of artifact is {type(artifact_container.artifact)}, must be one of {allowed_artifact_types}",
+            )
+
+        if isinstance(artifact_container.artifact, Path):
+            log_image_to_wandb(
+                chart_path=artifact_container.artifact,
+                chart_name=artifact_container.label,
+            )
+        elif isinstance(artifact_container.artifact, pd.DataFrame):
+            wandb_table = wandb.Table(dataframe=artifact_container.artifact)
+            wandb.log({artifact_container.label: wandb_table})
+
     def evaluate(self) -> float:
         """Evaluate the model and save artifacts."""
         self.disk_saver.save(
@@ -136,13 +156,11 @@ class ModelEvaluator:
             pipe_metadata=self.pipeline_metadata,
         )
 
-        evaluate_performance(
-            cfg=self.cfg,
-            eval_dataset=self.eval_ds,
-            save_dir_path=self.eval_dir_path,
-            pipe_metadata=self.pipeline_metadata,
-            upload_to_wandb=True,
-        )
+        artifacts = self._get_artifacts()
+
+        if self.upload_to_wandb:
+            for artifact in artifacts:
+                artifact.upload_to_wandb()
 
         roc_auc = roc_auc_score(
             self.eval_ds.y,
