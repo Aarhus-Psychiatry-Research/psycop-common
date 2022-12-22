@@ -14,9 +14,7 @@ import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from psycop_model_training.model_eval.dataclasses import (
-    ModelEvalData,
-)
+from psycop_model_training.model_eval.dataclasses import ModelEvalData
 from psycop_model_training.model_eval.model_performance import ModelPerformance
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")

@@ -6,9 +6,13 @@ from typing import Optional, Union
 
 from sklearn.metrics import roc_auc_score
 
+from psycop_model_training.model_eval.artifacts.plots.base_charts import (
+    plot_basic_chart,
+)
+from psycop_model_training.model_eval.artifacts.plots.utils import (
+    create_performance_by_input,
+)
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.model_eval.artifacts.plots.base_charts import plot_basic_chart
-from psycop_model_training.model_eval.artifacts.plots.utils import create_performance_by_input
 
 
 def plot_performance_by_n_hba1c(

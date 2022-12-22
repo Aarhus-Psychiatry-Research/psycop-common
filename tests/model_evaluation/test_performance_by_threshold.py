@@ -8,11 +8,11 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 
 import pandas as pd
 
-from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
 from psycop_model_training.model_eval.artifacts.tables import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )
+from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
 from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 
 

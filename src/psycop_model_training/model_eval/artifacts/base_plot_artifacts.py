@@ -1,27 +1,51 @@
 from pathlib import Path
 
-from psycop_model_training.model_eval.artifacts.plots.feature_importance import plot_feature_importances
-from psycop_model_training.model_eval.artifacts.plots.performance_by_age import plot_performance_by_age
-from psycop_model_training.model_eval.artifacts.plots.performance_over_time import plot_auc_by_time_from_first_visit, \
-    plot_metric_by_calendar_time, plot_metric_by_cyclic_time, plot_metric_by_time_until_diagnosis
+from sklearn.metrics import recall_score
+
+from psycop_model_training.model_eval.artifacts.plots.feature_importance import (
+    plot_feature_importances,
+)
+from psycop_model_training.model_eval.artifacts.plots.performance_by_age import (
+    plot_performance_by_age,
+)
+from psycop_model_training.model_eval.artifacts.plots.performance_over_time import (
+    plot_auc_by_time_from_first_visit,
+    plot_metric_by_calendar_time,
+    plot_metric_by_cyclic_time,
+    plot_metric_by_time_until_diagnosis,
+)
 from psycop_model_training.model_eval.artifacts.plots.roc_auc import plot_auc_roc
-from psycop_model_training.model_eval.artifacts.plots.sens_over_time import plot_sensitivity_by_time_to_outcome_heatmap
-from psycop_model_training.model_eval.artifacts.tables.performance_by_threshold import \
-    generate_performance_by_positive_rate_table
-from psycop_model_training.model_eval.artifacts.tables.tables import generate_selected_features_table, \
-    generate_feature_importances_table
-from psycop_model_training.model_eval.dataclasses import EvalDataset, ArtifactContainer, PipeMetadata
+from psycop_model_training.model_eval.artifacts.plots.sens_over_time import (
+    plot_sensitivity_by_time_to_outcome_heatmap,
+)
+from psycop_model_training.model_eval.artifacts.tables.performance_by_threshold import (
+    generate_performance_by_positive_rate_table,
+)
+from psycop_model_training.model_eval.artifacts.tables.tables import (
+    generate_feature_importances_table,
+    generate_selected_features_table,
+)
+from psycop_model_training.model_eval.dataclasses import (
+    ArtifactContainer,
+    EvalDataset,
+    PipeMetadata,
+)
 from psycop_model_training.model_eval.model_evaluator import ModelEvaluator
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import positive_rate_to_pred_probs
-from sklearn.metrics import recall_score
 
-class BaseArtifactGenerator():
-    """
-    Generates the base artifacts, i.e. those that generalise across all projects, from an EvalDataset.
-    """
 
-    def __init__(self, cfg: FullConfigSchema, eval_ds: EvalDataset, pipe_metadata: PipeMetadata, save_dir: Path):
+class BaseArtifactGenerator:
+    """Generates the base artifacts, i.e. those that generalise across all
+    projects, from an EvalDataset."""
+
+    def __init__(
+        self,
+        cfg: FullConfigSchema,
+        eval_ds: EvalDataset,
+        pipe_metadata: PipeMetadata,
+        save_dir: Path,
+    ):
         self.cfg = cfg
         self.eval_ds = eval_ds
         self.save_dir = save_dir
@@ -155,12 +179,18 @@ class BaseArtifactGenerator():
 
     def generate(self) -> list[ArtifactContainer]:
         """Generates artifacts from an EvalDataset."""
-        artifact_containers = self.create_base_plot_artifacts(self.cfg, self.eval_ds, self.save_dir)
+        artifact_containers = self.create_base_plot_artifacts(
+            self.cfg, self.eval_ds, self.save_dir
+        )
 
         if self.pipe_metadata and self.pipe_metadata.feature_importances:
-            artifact_containers += self.base_artifact_generator.get_feature_importance_artifacts()
+            artifact_containers += (
+                self.base_artifact_generator.get_feature_importance_artifacts()
+            )
 
         if self.pipe_metadata and self.pipe_metadata.selected_features:
-            artifact_containers += self.base_artifact_generator.get_feature_selection_artifacts()
+            artifact_containers += (
+                self.base_artifact_generator.get_feature_selection_artifacts()
+            )
 
         return artifact_containers

@@ -15,13 +15,14 @@ class WandbHandler:
         # Required on Windows because the wandb process is sometimes unable to initialise
         create_wandb_folders()
 
-    def _get_cfg_as_dict(self) -> Dict[str, Any]:
+    def _get_cfg_as_dict(self) -> dict[str, Any]:
         if isinstance(self.cfg, DictConfig):
             # Create flattened dict for logging to wandb
             # Wandb doesn't allow configs to be nested, so we
             # flatten it.
             return flatten_nested_dict(
-                OmegaConf.to_container(self.cfg), sep="."
+                OmegaConf.to_container(self.cfg),
+                sep=".",
             )  # type: ignore
         else:
             # For testing, we can take a FullConfig object instead. Simplifies boilerplate.

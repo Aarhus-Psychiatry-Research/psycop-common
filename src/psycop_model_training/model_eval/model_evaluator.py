@@ -28,6 +28,21 @@ log = logging.getLogger(__name__)
 
 
 class ModelEvaluator:
+    def _get_pipeline_metadata(self):
+        pipe_metadata = PipeMetadata()
+
+        if hasattr(self.pipe["model"], "feature_importances_"):
+            pipe_metadata.feature_importances = get_feature_importance_dict(
+                pipe=self.pipe,
+            )
+        if hasattr(self.pipe["preprocessing"].named_steps, "feature_selection"):
+            pipe_metadata.selected_features = get_selected_features_dict(
+                pipe=self.pipe,
+                train_col_names=self.train_col_names,
+            )
+
+        return pipe_metadata
+
     def __init__(
         self,
         eval_dir_path: Path,
@@ -35,7 +50,7 @@ class ModelEvaluator:
         raw_train_set: pd.DataFrame,
         pipe: Pipeline,
         eval_ds: EvalDataset,
-        custom_artifacts: List[ArtifactContainer] = None,
+        custom_artifacts: list[ArtifactContainer] = None,
     ):
         """Class for evaluating a model.
 
@@ -49,7 +64,8 @@ class ModelEvaluator:
         self.pipe = pipe
         self.eval_ds = eval_ds
         self.outcome_col_name, self.train_col_names = get_col_names(
-            cfg, dataset=raw_train_set
+            cfg,
+            dataset=raw_train_set,
         )
 
         self.eval_dir_path = eval_dir_path
@@ -64,22 +80,7 @@ class ModelEvaluator:
         )
         self.custom_artifacts = custom_artifacts
 
-    def _get_pipeline_metadata(self):
-        pipe_metadata = PipeMetadata()
-
-        if hasattr(self.pipe["model"], "feature_importances_"):
-            pipe_metadata.feature_importances = get_feature_importance_dict(
-                pipe=self.pipe
-            )
-        if hasattr(self.pipe["preprocessing"].named_steps, "feature_selection"):
-            pipe_metadata.selected_features = get_selected_features_dict(
-                pipe=self.pipe,
-                train_col_names=self.train_col_names,
-            )
-
-        return pipe_metadata
-
-    def _get_artifacts(self) -> List[ArtifactContainer]:
+    def _get_artifacts(self) -> list[ArtifactContainer]:
         artifact_containers = self.base_artifact_generator.generate()
 
         if self.custom_artifacts:
@@ -131,7 +132,7 @@ class ModelEvaluator:
             {
                 "roc_auc_unweighted": roc_auc,
                 "lookbehind": max(
-                    self.cfg.preprocessing.pre_split.lookbehind_combination
+                    self.cfg.preprocessing.pre_split.lookbehind_combination,
                 ),
                 "lookahead": self.cfg.preprocessing.pre_split.min_lookahead_days,
             },
