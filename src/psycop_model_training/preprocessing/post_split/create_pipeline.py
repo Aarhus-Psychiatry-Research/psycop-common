@@ -10,50 +10,47 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
-from psycop_model_training.config.schemas import FullConfigSchema
-from psycop_model_training.preprocessing.feature_selectors import DropDateTimeColumns
-from psycop_model_training.preprocessing.feature_transformers import (
-    ConvertToBoolean,
-    DateTimeConverter,
-)
+from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 def get_feature_selection_steps(cfg):
     """Add feature selection steps to the preprocessing pipeline."""
     new_steps = []
 
-    if cfg.preprocessing.feature_selection.name:
-        if cfg.preprocessing.feature_selection.name == "f_classif":
+    if cfg.preprocessing.post_split.feature_selection.name:
+        if cfg.preprocessing.post_split.feature_selection.name == "f_classif":
             new_steps.append(
                 (
                     "feature_selection",
                     SelectPercentile(
                         f_classif,
-                        percentile=cfg.preprocessing.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[
                             "percentile"
                         ],
                     ),
                 ),
             )
-        elif cfg.preprocessing.feature_selection.name == "chi2":
+        elif cfg.preprocessing.post_split.feature_selection.name == "chi2":
             new_steps.append(
                 (
                     "feature_selection",
                     SelectPercentile(
                         chi2,
-                        percentile=cfg.preprocessing.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[
                             "percentile"
                         ],
                     ),
                 ),
             )
-        elif cfg.preprocessing.feature_selection.name == "mutual_info_classif":
+        elif (
+            cfg.preprocessing.post_split.feature_selection.name == "mutual_info_classif"
+        ):
             new_steps.append(
                 (
                     "feature_selection",
                     SelectPercentile(
                         mutual_info_classif,
-                        percentile=cfg.preprocessing.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[
                             "percentile"
                         ],
                     ),
@@ -61,7 +58,7 @@ def get_feature_selection_steps(cfg):
             )
         else:
             raise ValueError(
-                f"Unknown feature selection method {cfg.preprocessing.feature_selection.name}",
+                f"Unknown feature selection method {cfg.preprocessing.post_split.feature_selection.name}",
             )
 
     return new_steps
@@ -72,40 +69,27 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     msg = Printer(timestamp=True)
 
     steps = []
-    # Conversion
-    if cfg.preprocessing.drop_datetime_predictor_columns:
-        steps.append(
-            (
-                "DropDateTimeColumns",
-                DropDateTimeColumns(pred_prefix=cfg.data.pred_prefix),
-            ),
-        )
-
-    if cfg.preprocessing.convert_datetimes_to_ordinal:
-        dtconverter = DateTimeConverter()
-        steps.append(("DateTimeConverter", dtconverter))
-
-    if cfg.preprocessing.convert_to_boolean:
-        steps.append(("ConvertToBoolean", ConvertToBoolean()))
-
     # Imputation
-    if cfg.model.require_imputation and not cfg.preprocessing.imputation_method:
+    if (
+        cfg.model.require_imputation
+        and not cfg.preprocessing.post_split.imputation_method
+    ):
         msg.warn(
             f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file. Overriding to 'mean'.",
         )
 
-        cfg.preprocessing.imputation_method = "mean"
+        cfg.preprocessing.post_split.imputation_method = "mean"
         # Not a great solution, but preferable to the script breaking and stopping a hyperparameter search.
 
         raise ValueError(
             f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file.",
         )
 
-    if cfg.preprocessing.imputation_method:
+    if cfg.preprocessing.post_split.imputation_method:
         steps.append(
             (
                 "Imputation",
-                SimpleImputer(strategy=cfg.preprocessing.imputation_method),
+                SimpleImputer(strategy=cfg.preprocessing.post_split.imputation_method),
             ),
         )
 
@@ -118,8 +102,8 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
     # Important to do this after feature selection, since
     # half of the values in z-score normalisation will be negative,
     # which is not allowed for chi2
-    if cfg.preprocessing.scaling:
-        if cfg.preprocessing.scaling in {
+    if cfg.preprocessing.post_split.scaling:
+        if cfg.preprocessing.post_split.scaling in {
             "z-score-normalization",
             "z-score-normalisation",
         }:
@@ -128,7 +112,7 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             )
         else:
             raise ValueError(
-                f"{cfg.preprocessing.scaling} is not implemented. See above",
+                f"{cfg.preprocessing.post_split.scaling} is not implemented. See above",
             )
 
     return Pipeline(steps)

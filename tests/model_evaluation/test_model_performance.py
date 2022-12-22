@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from psycop_model_training.model_performance import ModelPerformance
+from psycop_model_training.model_eval.model_performance import ModelPerformance
 
 # pylint: disable=missing-function-docstring
 

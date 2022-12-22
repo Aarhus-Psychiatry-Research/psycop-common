@@ -37,7 +37,7 @@ ARCHIVE_ALL_WANDB_RUNS = "false"  # whether to archive all runs in the wandb fol
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
 
-    with initialize(version_base=None, config_path="../config/"):
+    with initialize(version_base=None, config_path="../../../application/config/"):
         cfg = compose(
             config_name=CONFIG_NAME,
         )

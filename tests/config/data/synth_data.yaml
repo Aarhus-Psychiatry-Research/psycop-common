@@ -1,0 +1,16 @@
+# @package _global_
+data:
+  dir: tests/test_data/synth_splits
+  suffix: csv
+  n_training_samples: null
+  pred_prefix: pred_
+  outc_prefix: outc_
+
+  col_name:
+    pred_timestamp: timestamp
+    outcome_timestamp: timestamp_outcome
+    id: citizen_ids
+    age: pred_age
+    exclusion_timestamp: timestamp_exclusion
+    custom:
+      n_hba1c: hba1c_within_9999_days_count_nan

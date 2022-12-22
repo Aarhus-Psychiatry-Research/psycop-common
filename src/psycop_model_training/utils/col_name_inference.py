@@ -22,7 +22,8 @@ def get_col_names(cfg: DictConfig, train: pd.DataFrame) -> tuple[str, list[str]]
     potential_outcome_col_names = [
         c
         for c in train.columns
-        if cfg.data.outc_prefix in c and str(cfg.data.min_lookahead_days) in c
+        if cfg.data.outc_prefix in c
+        and str(cfg.preprocessing.pre_split.min_lookahead_days) in c
     ]
 
     if len(potential_outcome_col_names) != 1:
@@ -67,3 +68,52 @@ def infer_look_distance(
         )
 
     return look_distances
+
+
+def infer_col_names(
+    df: pd.DataFrame,
+    prefix: str,
+    allow_multiple: bool = True,
+) -> list[str]:
+    """Infer col names based on prefix."""
+    col_name = [c for c in df.columns if c.startswith(prefix)]
+
+    if len(col_name) == 1:
+        return col_name
+    elif len(col_name) > 1:
+        if allow_multiple:
+            return col_name
+        raise ValueError(
+            f"Multiple columns found and allow_multiple is {allow_multiple}.",
+        )
+    elif not col_name:
+        raise ValueError("No outcome col name inferred")
+    else:
+        raise ValueError("No outcomes inferred")
+
+
+def infer_outcome_col_name(
+    df: pd.DataFrame,
+    prefix: str = "outc_",
+    allow_multiple: bool = True,
+) -> list[str]:
+    """Infer the outcome column name from the dataframe."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def infer_predictor_col_name(
+    df: pd.DataFrame,
+    prefix: str = "pred_",
+    allow_multiple: bool = True,
+) -> list[str]:
+    """Get the predictors that are used in the model."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)
+
+
+def infer_y_hat_prob_col_name(
+    df: pd.DataFrame,
+    prefix="y_hat_prob",
+    allow_multiple: bool = False,
+) -> list[str]:
+    """Infer the y_hat_prob column name from the dataframe."""
+    return infer_col_names(df=df, prefix=prefix, allow_multiple=allow_multiple)

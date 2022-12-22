@@ -5,13 +5,16 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from psycop_model_training.config.schemas import FullConfigSchema, load_cfg_as_pydantic
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.utils.config_schemas.conf_utils import (
+    FullConfigSchema,
+    load_test_cfg_as_pydantic,
+)
 
-CONFIG_DIR_PATH_REL = "../src/psycop_model_training/config"
+CONFIG_DIR_PATH_REL = "../application/config"
 
 
-def add_age_gender(df):
+def add_age_gender(df: pd.DataFrame):
     """Add age and gender columns to dataframe.
 
     Args:
@@ -50,8 +53,8 @@ def synth_eval_dataset() -> EvalDataset:
 @pytest.fixture(scope="function")
 def immuteable_test_config() -> FullConfigSchema:
     """Get an immutable config for testing."""
-    return load_cfg_as_pydantic(
-        config_file_name="integration_config.yaml",
+    return load_test_cfg_as_pydantic(
+        config_file_name="default_config.yaml",
         allow_mutation=False,
     )
 
@@ -59,7 +62,7 @@ def immuteable_test_config() -> FullConfigSchema:
 @pytest.fixture(scope="function")
 def muteable_test_config() -> FullConfigSchema:
     """Get a mutable config for testing."""
-    return load_cfg_as_pydantic(
-        config_file_name="integration_config.yaml",
+    return load_test_cfg_as_pydantic(
+        config_file_name="default_config.yaml",
         allow_mutation=True,
     )
