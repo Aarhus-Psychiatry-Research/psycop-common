@@ -1,6 +1,5 @@
 """Class for formatting values before split, e.g. assigning datetime, removing
-negative values etc.
-"""
+negative values etc."""
 import numpy as np
 import pandas as pd
 
@@ -11,8 +10,7 @@ from psycop_model_training.utils.decorators import print_df_dimensions_diff
 
 class PreSplitValueCleaner:
     """Class for cleaning values before split, e.g. assigning datetime,
-    removing negative values etc.
-    """
+    removing negative values etc."""
 
     def __init__(self, cfg: FullConfigSchema) -> None:
         self.cfg = cfg
@@ -21,8 +19,7 @@ class PreSplitValueCleaner:
     @print_df_dimensions_diff
     def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
-        convert 0's to NaT.
-        """
+        convert 0's to NaT."""
         timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
 
         for colname in timestamp_colnames:

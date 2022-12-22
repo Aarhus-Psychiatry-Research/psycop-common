@@ -69,7 +69,7 @@ def load_app_cfg_as_pydantic(
 
 
 def load_test_cfg_as_pydantic(
-    config_file_name,
+    config_file_name: str,
     allow_mutation: bool = False,
     overrides: Optional[list[str]] = None,
 ) -> FullConfigSchema:
