@@ -1,14 +1,11 @@
 """Train a single model and evaluate it."""
 import wandb
-from omegaconf import DictConfig, OmegaConf
-from wasabi import Printer
+from omegaconf import DictConfig
 
 from application.artifacts.custom_artifacts import create_custom_plot_artifacts
 from psycop_model_training.data_loader.utils import (
     load_and_filter_train_and_val_from_cfg,
 )
-from psycop_model_training.model_eval.dataclasses import PipeMetadata
-from psycop_model_training.model_eval.evaluate_model import evaluate_performance
 from psycop_model_training.model_eval.model_evaluator import ModelEvaluator
 from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
@@ -19,7 +16,7 @@ from psycop_model_training.utils.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
 )
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
+from psycop_model_training.utils.utils import SHARED_RESOURCES_PATH
 
 
 def train_model(cfg: DictConfig):
