@@ -1,13 +1,11 @@
-import time
-from pathlib import Path
 from typing import Any, Union, Optional
+import dill as pkl
 
 import pandas as pd
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.utils.utils import write_df_to_file, format_dict_for_printing, MODEL_PREDICTIONS_PATH, \
-    PROJECT_ROOT
+from psycop_model_training.utils.utils import write_df_to_file
 
 import logging
 from wandb import Run
@@ -17,7 +15,6 @@ log = logging.getLogger(__name__)
 
 class ArtifactsToDiskSaver:
     def __init__(self, run: Run, dir_path: Path):
-        self.cfg = cfg
         self.run = run
         self.dir_path = dir_path
 
