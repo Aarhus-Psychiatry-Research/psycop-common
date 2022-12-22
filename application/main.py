@@ -16,6 +16,7 @@ from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_except
 from random_word import RandomWords
 from wasabi import Printer
 
+from psycop_model_training.data_loader.data_loader import DataLoader
 from psycop_model_training.data_loader.utils import load_train_raw
 from psycop_model_training.utils.col_name_inference import (
     infer_look_distance,
@@ -25,7 +26,6 @@ from psycop_model_training.utils.config_schemas.conf_utils import (
     BaseModel,
     load_app_cfg_as_pydantic,
 )
-from psycop_model_training.utils.config_schemas.data import ColumnNamesSchema
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
@@ -196,30 +196,6 @@ def get_possible_lookaheads(
     return list(set(possible_lookahead_days) - set(lookaheads_without_rows))
 
 
-def check_columns_exist_in_dataset(cfg: ColumnNamesSchema, df: pd.DataFrame):
-    """Check that all columns in the config exist in the dataset."""
-    # Iterate over attributes in the config
-    missing_columns = []
-
-    for attr in dir(cfg):
-        # Skip private attributes
-        if attr.startswith("_"):
-            continue
-
-        # Skip col names that are not string
-        if not isinstance(getattr(cfg, attr), str):
-            continue
-
-        # Check that the column exists in the dataset
-        if not getattr(cfg, attr) in df:
-            missing_columns.append(getattr(cfg, attr))
-
-    if missing_columns:
-        raise ValueError(
-            f"Columns in config but not in dataset: {missing_columns}. Columns in dataset: {df.columns}"
-        )
-
-
 @wandb_alert_on_exception
 def main():
     """Main."""
@@ -242,9 +218,7 @@ def main():
 
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
-    train = load_train_raw(cfg=cfg)
-
-    check_columns_exist_in_dataset(cfg=cfg.data.col_name, df=train)
+    train = DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
 
     possible_lookaheads = get_possible_lookaheads(
         msg=msg,

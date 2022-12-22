@@ -1,7 +1,7 @@
 """Loader for the t2d dataset."""
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import pandas as pd
 from wasabi import Printer
@@ -9,6 +9,13 @@ from wasabi import Printer
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 msg = Printer(timestamp=True)
+import logging
+
+from psycop_model_training.data_loader.col_name_checker import (
+    check_columns_exist_in_dataset,
+)
+
+log = logging.getLogger(__name__)
 
 
 class DataLoader:
@@ -17,15 +24,24 @@ class DataLoader:
     def __init__(
         self,
         cfg: FullConfigSchema,
+        column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,
     ):
         self.cfg: FullConfigSchema = cfg
 
         # File handling
         self.dir_path = Path(cfg.data.dir)
         self.file_suffix = cfg.data.suffix
+        self.column_name_checker = column_name_checker
 
         # Column specifications
         self.pred_col_name_prefix = cfg.data.pred_prefix
+
+    def _check_column_names(self, df: pd.DataFrame):
+        """Check that all columns in the config exist in the dataset."""
+        if self.column_name_checker:
+            self.column_name_checker(col_name_schema=self.cfg.data.col_name, df=df)
+        else:
+            log.debug("No column name checker specified. Skipping column name check.")
 
     def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
         self,
@@ -59,9 +75,15 @@ class DataLoader:
                 raise ValueError(
                     "nrows is not supported for parquet files. Please use csv files.",
                 )
-            return pd.read_parquet(path)
+
+            df = pd.read_parquet(path)
         elif "csv" in self.file_suffix:
-            return pd.read_csv(filepath_or_buffer=path, nrows=nrows)
+            df = pd.read_csv(filepath_or_buffer=path, nrows=nrows)
+
+        if self.column_name_checker:
+            self._check_column_names(df=df)
+
+        return df
 
     def load_dataset_from_dir(
         self,
@@ -78,8 +100,6 @@ class DataLoader:
         Returns:
             pd.DataFrame: The filtered dataset
         """
-        msg.info(f"Loading {split_names}")
-
         # Concat splits if multiple are given
         if isinstance(split_names, (list, tuple)):
             if isinstance(split_names, Iterable):
@@ -99,6 +119,4 @@ class DataLoader:
             )
         elif isinstance(split_names, str):
             dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
-
-        msg.good(f"{split_names}: Returning!")
         return dataset
