@@ -23,20 +23,6 @@ def convert_omegaconf_to_pydantic_object(
     return FullConfigSchema(**conf, allow_mutation=allow_mutation)
 
 
-def load_app_cfg_as_pydantic(
-    config_file_name,
-    allow_mutation: bool = False,
-    overrides: Optional[list[str]] = None,
-):
-    cfg = load_test_cfg_as_omegaconf(
-        config_file_name=config_file_name,
-        overrides=overrides,
-        config_dir_path_rel="../../../../application/config/",
-    )
-
-    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
-
-
 def load_test_cfg_as_omegaconf(
     config_file_name: str,
     config_dir_path_rel: str,
@@ -64,6 +50,20 @@ def load_test_cfg_as_omegaconf(
             cfg.model.args["tree_method"] = "auto"
 
         return cfg
+
+
+def load_app_cfg_as_pydantic(
+    config_file_name,
+    allow_mutation: bool = False,
+    overrides: Optional[list[str]] = None,
+):
+    cfg = load_test_cfg_as_omegaconf(
+        config_file_name=config_file_name,
+        overrides=overrides,
+        config_dir_path_rel="../../../../application/config/",
+    )
+
+    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
 
 
 def load_test_cfg_as_pydantic(

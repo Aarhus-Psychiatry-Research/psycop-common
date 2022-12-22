@@ -7,8 +7,42 @@ import pandas as pd
 from psycop_model_training.utils.config_schemas.data import ColumnNamesSchema
 
 
+def get_most_likely_str_from_edit_distance(
+    candidate_strs: list[str],
+    input_str: str,
+    n_str_to_return: int,
+    edit_distance_threshold: int = 15,
+) -> list[str]:
+    """Get most likely string from edit distance.
+
+    Args:
+        candidate_strs (list[str]): List of candidate strings.
+        input_str (str): The incorrect string.
+        n_str_to_return (int): Number of strings to return.
+        edit_distance_threshold (int, optional): Maximum edit distance to consider. Defaults to 5.
+
+    Returns:
+        str: String from candidate_strs that is most similar to input_str by edit distance.
+    """
+    # Compute the Levenshtein distance between the input string and each candidate string.
+    distances = [
+        Levenshtein.distance(input_str, candidate) for candidate in candidate_strs
+    ]
+
+    # Sort the candidate strings by their Levenshtein distance from the input string.
+    sorted_candidates = [
+        x
+        for distance, x in sorted(zip(distances, candidate_strs))
+        if distance <= edit_distance_threshold
+    ]
+
+    # Return the first `n_str_to_return` elements of the sorted list of candidate strings.
+    return sorted_candidates[:n_str_to_return]
+
+
 def check_columns_exist_in_dataset(
-    col_name_schema: ColumnNamesSchema, df: pd.DataFrame
+    col_name_schema: ColumnNamesSchema,
+    df: pd.DataFrame,
 ):
     """Check that all columns in the config exist in the dataset."""
     # Iterate over attributes in the config
@@ -39,36 +73,3 @@ def check_columns_exist_in_dataset(
 
     if error_strs:
         raise ValueError("\n".join(error_strs))
-
-
-def get_most_likely_str_from_edit_distance(
-    candidate_strs: list[str],
-    input_str: str,
-    n_str_to_return: int,
-    edit_distance_threshold: int = 15,
-) -> List[str]:
-    """Get most likely string from edit distance.
-
-    Args:
-        candidate_strs (list[str]): List of candidate strings.
-        input_str (str): The incorrect string.
-        n_str_to_return (int): Number of strings to return.
-        edit_distance_threshold (int, optional): Maximum edit distance to consider. Defaults to 5.
-
-    Returns:
-        str: String from candidate_strs that is most similar to input_str by edit distance.
-    """
-    # Compute the Levenshtein distance between the input string and each candidate string.
-    distances = [
-        Levenshtein.distance(input_str, candidate) for candidate in candidate_strs
-    ]
-
-    # Sort the candidate strings by their Levenshtein distance from the input string.
-    sorted_candidates = [
-        x
-        for distance, x in sorted(zip(distances, candidate_strs))
-        if distance <= edit_distance_threshold
-    ]
-
-    # Return the first `n_str_to_return` elements of the sorted list of candidate strings.
-    return sorted_candidates[:n_str_to_return]

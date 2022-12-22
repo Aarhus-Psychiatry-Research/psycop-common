@@ -59,7 +59,8 @@ def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema):
 
 
 def load_train_raw(
-    cfg: FullConfigSchema, convert_timestamp_types_and_nans: bool = True
+    cfg: FullConfigSchema,
+    convert_timestamp_types_and_nans: bool = True,
 ) -> pd.DataFrame:
     """Load the data."""
     path = Path(cfg.data.dir)

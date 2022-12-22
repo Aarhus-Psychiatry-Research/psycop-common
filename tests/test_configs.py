@@ -1,5 +1,4 @@
 """Testing of config schemas."""
-from pathlib import Path
 
 import pytest
 from hydra import compose, initialize

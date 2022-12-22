@@ -1,4 +1,5 @@
 import pandas as pd
+from psycopmlutils.sql.loader import sql_load
 
 
 def load_timestamp_for_any_diabetes():
