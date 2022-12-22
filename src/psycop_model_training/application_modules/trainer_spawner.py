@@ -1,13 +1,10 @@
+"""Higher-level module that handles spawning trainer processes using trian_model.py"""
 import subprocess
 import time
-from typing import Optional
 
 from wasabi import Printer
 
-from psycop_model_training.application_modules.get_search_space import (
-    TrainerSpec,
-    combine_lookaheads_and_model_names_to_trainer_specs,
-)
+from psycop_model_training.application_modules.get_search_space import TrainerSpec
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
