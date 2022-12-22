@@ -12,7 +12,7 @@ def get_col_names(cfg: DictConfig, dataset: pd.DataFrame) -> tuple[str, list[str
 
     Args:
         cfg (DictConfig): Config object
-        train: Training dataset
+        dataset: Dataset to get column names from
 
     Returns:
         outcome_col_name: Name of the outcome column

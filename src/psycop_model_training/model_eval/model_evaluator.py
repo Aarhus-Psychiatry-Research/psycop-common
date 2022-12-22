@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path, PosixPath, WindowsPath
-from typing import List
 
 import pandas as pd
 import wandb
@@ -30,6 +29,8 @@ log = logging.getLogger(__name__)
 
 
 class ModelEvaluator:
+    """Class for evaluating a model."""
+
     def _get_pipeline_metadata(self):
         pipe_metadata = PipeMetadata()
 
@@ -53,6 +54,7 @@ class ModelEvaluator:
         pipe: Pipeline,
         eval_ds: EvalDataset,
         custom_artifacts: list[ArtifactContainer] = None,
+        upload_to_wandb: bool = True,
     ):
         """Class for evaluating a model.
 
@@ -83,9 +85,10 @@ class ModelEvaluator:
             pipe_metadata=self.pipeline_metadata,
         )
         self.custom_artifacts = custom_artifacts
+        self.upload_to_wandb = upload_to_wandb
 
     def _get_artifacts(self) -> list[ArtifactContainer]:
-        artifact_containers = self.base_artifact_generator.generate()
+        artifact_containers = self.base_artifact_generator.get_all_artifacts()
 
         if self.custom_artifacts:
             artifact_containers += self.custom_artifacts
@@ -93,6 +96,7 @@ class ModelEvaluator:
         return artifact_containers
 
     def upload_artifact_to_wandb(
+        self,
         artifact_container: ArtifactContainer,
     ) -> None:
         """Upload artifacts to wandb."""
@@ -142,8 +146,8 @@ class ModelEvaluator:
             },
         )
 
-        logging.info(f"ROC AUC: {roc_auc}")
-
-        return roc_auc
+        logging.info(  # pylint: disable=logging-not-lazy,logging-fstring-interpolation
+            f"ROC AUC: {roc_auc}",
+        )
 
         return roc_auc

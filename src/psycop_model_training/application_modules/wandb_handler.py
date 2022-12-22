@@ -8,6 +8,8 @@ from psycop_model_training.utils.utils import create_wandb_folders, flatten_nest
 
 
 class WandbHandler:
+    """Class for handling wandb setup and logging."""
+
     def __init__(self, cfg: FullConfigSchema, wandb_group: str):
         self.cfg = cfg
         self.wandb_group = wandb_group

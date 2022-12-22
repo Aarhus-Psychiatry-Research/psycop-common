@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 
 import dill as pkl
 import pandas as pd
-from wandb import Run
+from sklearn.pipeline import Pipeline
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
@@ -13,13 +13,26 @@ from psycop_model_training.utils.utils import write_df_to_file
 log = logging.getLogger(__name__)
 
 
+def dump_to_pickle(obj: Any, path: Union[str, Path]) -> None:
+    """Pickles an object to a file.
+
+    Args:
+        obj (Any): Object to pickle.
+        path (str): Path to pickle file.
+    """
+    with open(path, "wb") as f:
+        pkl.dump(obj, f)
+
+
 class ArtifactsToDiskSaver:
-    def __init__(self, run: Run, dir_path: Path):
-        self.run = run
+    """Class for saving artifacts to disk."""
+
+    def __init__(self, dir_path: Path):
         self.dir_path = dir_path
 
         dir_path.mkdir(parents=True, exist_ok=True)
 
+    @staticmethod
     def eval_dataset_to_disk(eval_dataset: EvalDataset, file_path: Path) -> None:
         """Write EvalDataset to disk.
 
@@ -56,7 +69,8 @@ class ArtifactsToDiskSaver:
         disk."""
         if eval_dataset is not None:
             self.eval_dataset_to_disk(
-                eval_dataset, self.dir_path / "evaluation_dataset.parquet"
+                eval_dataset,
+                self.dir_path / "evaluation_dataset.parquet",
             )
 
         if cfg is not None:
@@ -68,15 +82,6 @@ class ArtifactsToDiskSaver:
         if pipe is not None:
             dump_to_pickle(pipe, self.dir_path / "pipe.pkl")
 
-        log.info(f"Saved evaluation dataset, cfg and pipe metadata to {self.dir_path}")
-
-
-def dump_to_pickle(obj: Any, path: Union[str, Path]) -> None:
-    """Pickles an object to a file.
-
-    Args:
-        obj (Any): Object to pickle.
-        path (str): Path to pickle file.
-    """
-    with open(path, "wb") as f:
-        pkl.dump(obj, f)
+        log.info(  # pylint: disable=logging-fstring-interpolation
+            f"Saved evaluation dataset, cfg and pipe metadata to {self.dir_path}",
+        )
