@@ -2,6 +2,29 @@
 
 <!--next-version-placeholder-->
 
+## v0.27.0 (2022-12-22)
+### Feature
+* Add suggested cols if missing using Levenshtein edit distance ([`ae6a6c2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ae6a6c2ee04fe8596555648cf8aee537ea4bd3c5))
+* Unify wandb group naming ([`7ae1bb0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7ae1bb0658fe1039ca497f88acb1b29c4bba185a))
+* Check that specified col names exist in dataset ([`7208e13`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7208e1372c0d975420611fd6f98b27c6879d12f9))
+* Add wandb alert on exception ([`ef3df84`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ef3df84b974c1f2a27cfbd486aa681d1f4c94286))
+* Update project name ([`aaaf52f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/aaaf52f16d0d07701a106439f57e229105718619))
+* Add model-training suffix to trainer ([`f2ac4dc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f2ac4dc9cf760c3687065adfa2cc44bf9f7779a4))
+
+### Fix
+* Imputation method is not required ([`f47d8b1`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f47d8b10cd6a200e42577769058156d6b17f55af))
+* Only check col names in col schema ([`ee61991`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ee61991bbe4a884c2780ad96e1df8b0458d09b1a))
+* Sleep between workers to avoid segfaults ([`fcd7cd2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/fcd7cd22069e2c68d6dff3b1a60d808fb1b7455c))
+* Rename preprocessing keys ([`eee7768`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/eee7768ca74fce9b933c00ee778dba938c1680b5))
+* Incorrect paths ([`ef4e925`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ef4e9254f6cbbf8d510eaf61605b86a9cec7bbb5))
+* Broken imports ([`cb361e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/cb361e5fcb9f20ae37eedabdaefaec22787fad21))
+* Post_split config addressing ([`f76dd5a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f76dd5a73dd70f9a85bb097111ab05acb7264774))
+* Broken imports ([`9a1531c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/9a1531ce67a69b0e6537e63cb834f554e45f0346))
+* Broken imports in train_model ([`7852599`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7852599f125575a8191b77a06d7f6be51e2501bc))
+
+### Documentation
+* Improve docs ([`ad0b842`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ad0b8423e07e8a5adba8402f3385024d52040a6a))
+
 ## v0.26.1 (2022-12-16)
 ### Fix
 * Missing imports ([`6ac4032`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/6ac4032a6bf35dc19961669efc6a1b8e0c78f4e2))

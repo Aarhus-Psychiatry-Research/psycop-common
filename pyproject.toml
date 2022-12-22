@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "psycop_model_training"
-version = "0.26.1"
+version = "0.27.0"
 description = "Training scripts for the psycop-t2d project"
 authors = ["Your Name <you@example.com>"]
 
