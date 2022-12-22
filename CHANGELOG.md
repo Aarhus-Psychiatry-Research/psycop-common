@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.27.1 (2022-12-22)
+### Fix
+* No reaosn to call main twice ([`93e961c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/93e961cee4835cb4148a4ed871d35b1e01c53c96))
+
+### Documentation
+* Specify trainerspec output type ([`9f6f29f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/9f6f29f43ca493e8e86f005c05b0eab007d9f0cf))
+
 ## v0.27.0 (2022-12-22)
 ### Feature
 * Add suggested cols if missing using Levenshtein edit distance ([`ae6a6c2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ae6a6c2ee04fe8596555648cf8aee537ea4bd3c5))
