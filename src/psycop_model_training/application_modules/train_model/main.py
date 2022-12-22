@@ -1,4 +1,5 @@
 """Train a single model and evaluate it."""
+import wandb
 from omegaconf import DictConfig, OmegaConf
 from wasabi import Printer
 
@@ -18,18 +19,13 @@ from psycop_model_training.utils.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
 )
 from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.utils.utils import (
-    PROJECT_ROOT, SHARED_RESOURCES_PATH,
-)
-import wandb
+from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
 
 
 def train_model(cfg: DictConfig):
     """Main function for training a single model."""
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)
-
-    msg = Printer(timestamp=True)
 
     dataset = load_and_filter_train_and_val_from_cfg(cfg)
     pipe = create_post_split_pipeline(cfg)
@@ -45,16 +41,20 @@ def train_model(cfg: DictConfig):
         n_splits=cfg.train.n_splits,
     )
 
-    custom_artifacts = create_custom_plot_artifacts(
-                eval_dataset=self.eval_dataset,
-                save_dir=self.eval_dir_path,
-            )
+    eval_dir_path = SHARED_RESOURCES_PATH / cfg.project.name / wandb.run.id
 
-    roc_auc = ModelEvaluator(eval_dir_path=SHARED_RESOURCES_PATH / cfg.project.name / wandb.run.id,
-                             cfg=cfg, pipe=pipe, eval_ds=eval_dataset, raw_train_set=dataset.train, custom_artifacts=custom_artifacts).evaluate()
+    custom_artifacts = create_custom_plot_artifacts(
+        eval_dataset=eval_dataset,
+        save_dir=eval_dir_path,
+    )
+
+    roc_auc = ModelEvaluator(
+        eval_dir_path=eval_dir_path,
+        cfg=cfg,
+        pipe=pipe,
+        eval_ds=eval_dataset,
+        raw_train_set=dataset.train,
+        custom_artifacts=custom_artifacts,
+    ).evaluate()
 
     return roc_auc
-
-
-def get_pipe_metadata(pipe, train_col_names):
-
