@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.27.2 (2022-12-22)
+### Fix
+* Avoid overflow when drawing heatmap ([`0b6876b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0b6876b9add2f06041956534d9ddb90730ad7111))
+* Disable wandb upload in tests ([`4dfba79`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/4dfba7920ace6b936bc1d07504e3d2b1385076ba))
+* Update configs to remove unused keys ([`d6a1950`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d6a1950461d28854f32ef2d35a7bb9712f4013c3))
+* Missing imports ([`e3928eb`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e3928eb904cf84f6f5243d04dfe2e8056b190d72))
+* Only one return statements ([`194da42`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/194da4267e68c150860b9bf4562c5e2931f95629))
+* Clean up imports ([`abc7170`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/abc71702e86f3655ecce38468f594078198e4771))
+
 ## v0.27.1 (2022-12-22)
 ### Fix
 * No reaosn to call main twice ([`93e961c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/93e961cee4835cb4148a4ed871d35b1e01c53c96))
