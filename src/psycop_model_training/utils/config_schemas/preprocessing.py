@@ -45,7 +45,7 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
 
 
 class PostSplitPreprocessingConfigSchema(BaseModel):
-    imputation_method: Literal["most_frequent", "mean", "median", "null"]
+    imputation_method: Optional[Literal["most_frequent", "mean", "median", "null"]]
     # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
     # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
 
