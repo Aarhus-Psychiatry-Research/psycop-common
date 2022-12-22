@@ -26,10 +26,10 @@ def main():
 
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
-    train = DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+    train_df = DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
 
     trainer_specs = SearchSpaceInferrer(
-        cfg=cfg, train=train, model_names=["xgboost", "logistic_regression"]
+        cfg=cfg, train_df=train_df, model_names=["xgboost", "logistic_regression"]
     ).get_trainer_specs()
 
     spawn_trainers(
