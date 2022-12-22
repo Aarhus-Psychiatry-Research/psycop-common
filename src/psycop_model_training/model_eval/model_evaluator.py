@@ -140,4 +140,3 @@ class ModelEvaluator:
         logging.info(f"ROC AUC: {roc_auc}")
 
         return roc_auc
-        return roc_auc
