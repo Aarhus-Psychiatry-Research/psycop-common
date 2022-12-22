@@ -90,8 +90,8 @@ class DataLoader:
         split_names: Union[Iterable[str], str],
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
-        """Load dataset. Can load multiple splits at once, e.g.
-        concatenate train and val for crossvalidation.
+        """Load dataset. Can load multiple splits at once, e.g. concatenate
+        train and val for crossvalidation.
 
         Args:
             split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]
