@@ -10,11 +10,12 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
+
 # from psycop_model_training.evaluation import evaluate_model
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.training.utils import create_eval_dataset
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
 CONFIG_PATH = PROJECT_ROOT / "application" / "config"
@@ -26,7 +27,8 @@ log = Printer(timestamp=True)
 
 def create_model(cfg: FullConfigSchema):
     """Instantiate and return a model object based on settings in the config
-    file."""
+    file.
+    """
     model_dict = MODELS.get(cfg.model.name)
 
     model_args = model_dict["static_hyperparameters"]

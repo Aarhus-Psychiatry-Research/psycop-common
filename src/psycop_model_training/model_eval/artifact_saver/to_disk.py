@@ -6,8 +6,8 @@ import dill as pkl
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import write_df_to_file
 
 log = logging.getLogger(__name__)
@@ -66,7 +66,8 @@ class ArtifactsToDiskSaver:
         pipe: Optional[Pipeline],
     ) -> None:
         """Saves prediction dataframe, hydra config and feature names to
-        disk."""
+        disk.
+        """
         if eval_dataset is not None:
             self.eval_dataset_to_disk(
                 eval_dataset,

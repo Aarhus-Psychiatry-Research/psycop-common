@@ -4,13 +4,13 @@ from typing import Literal
 
 import pandas as pd
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
 from psycop_model_training.preprocessing.pre_split.full_processor import FullProcessor
 from psycop_model_training.preprocessing.pre_split.processors.value_cleaner import (
     PreSplitValueCleaner,
 )
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 def get_latest_dataset_dir(path: Path) -> Path:

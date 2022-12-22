@@ -13,9 +13,9 @@ from wandb.apis.public import Api  # pylint: disable=no-name-in-module
 from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
 from wasabi import msg
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
 from psycop_model_training.model_eval.evaluate_model import evaluate_performance
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import (
     MODEL_PREDICTIONS_PATH,
     PROJECT_ROOT,
@@ -253,7 +253,8 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
 
     def _get_run_information_for_all_in_queue(self):
         """Get the performance and information of all runs in the evaluation
-        queue."""
+        queue.
+        """
         return [
             self._get_run_information(run_id)
             for run_id in self.run_id_eval_candidates_queue

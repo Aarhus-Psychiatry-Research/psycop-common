@@ -10,8 +10,8 @@ from typing import Optional
 import pandas as pd
 from wasabi import Printer
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.col_name_inference import infer_predictor_col_name
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 
 msg = Printer(timestamp=True)

@@ -1,12 +1,13 @@
 import pandas as pd
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.DataFrame):
     """Create an evaluation dataset object from a dataframe and
-    FullConfigSchema."""
+    FullConfigSchema.
+    """
 
     eval_dataset = EvalDataset(
         ids=df[cfg.data.col_name.id],

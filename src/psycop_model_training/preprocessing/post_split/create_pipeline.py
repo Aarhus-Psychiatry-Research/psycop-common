@@ -10,7 +10,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 
 def get_feature_selection_steps(cfg):

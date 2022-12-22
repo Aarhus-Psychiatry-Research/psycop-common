@@ -4,11 +4,11 @@ import pandas as pd
 from wasabi import Printer
 
 from psycop_model_training.config_schemas.basemodel import BaseModel
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.col_name_inference import (
     infer_look_distance,
     infer_outcome_col_name,
 )
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 class TrainerSpec(BaseModel):
@@ -97,7 +97,8 @@ class SearchSpaceInferrer:
         possible_lookahead_days: list[int],
     ) -> list[TrainerSpec]:
         """Generate trainer specs for all combinations of lookaheads and model
-        names."""
+        names.
+        """
         msg = Printer(timestamp=True)
 
         random.shuffle(possible_lookahead_days)

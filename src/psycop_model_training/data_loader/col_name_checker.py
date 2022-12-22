@@ -3,7 +3,7 @@
 import Levenshtein
 import pandas as pd
 
-from psycop_model_training.utils.config_schemas.data import ColumnNamesSchema
+from psycop_model_training.config_schemas.data import ColumnNamesSchema
 
 
 def get_most_likely_str_from_edit_distance(
@@ -59,7 +59,7 @@ def check_columns_exist_in_dataset(
             continue
 
         # Check that the column exists in the dataset
-        if not col_name in df:
+        if col_name not in df:
             most_likely_alternatives = get_most_likely_str_from_edit_distance(
                 candidate_strs=df.columns,
                 input_str=col_name,
