@@ -233,7 +233,7 @@ def main():
     wandb_group = f"{random_word.get_random_word()}-{random_word.get_random_word()}"
 
     wandb.init(
-        project=cfg.project.name,
+        project=f"{cfg.project.name}-baseline-model-training",
         mode=cfg.project.wandb.mode,
         group=wandb_group,
         entity=cfg.project.wandb.entity,
