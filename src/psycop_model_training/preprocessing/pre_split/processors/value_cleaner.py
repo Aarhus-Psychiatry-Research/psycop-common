@@ -1,5 +1,6 @@
 """Class for formatting values before split, e.g. assigning datetime, removing
-negative values etc."""
+negative values etc.
+"""
 import numpy as np
 import pandas as pd
 
@@ -10,7 +11,8 @@ from psycop_model_training.utils.decorators import print_df_dimensions_diff
 
 class PreSplitValueCleaner:
     """Class for cleaning values before split, e.g. assigning datetime,
-    removing negative values etc."""
+    removing negative values etc.
+    """
 
     def __init__(self, cfg: FullConfigSchema) -> None:
         self.cfg = cfg
@@ -19,7 +21,8 @@ class PreSplitValueCleaner:
     @print_df_dimensions_diff
     def convert_timestamp_dtype_and_nat(dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert columns with `timestamp`in their name to datetime, and
-        convert 0's to NaT."""
+        convert 0's to NaT.
+        """
         timestamp_colnames = [col for col in dataset.columns if "timestamp" in col]
 
         for colname in timestamp_colnames:
@@ -56,9 +59,8 @@ class PreSplitValueCleaner:
         """Apply the cleaning functions to the dataset."""
         # Super hacky transformation of negative weights (?!) for chi-square.
         # In the future, we want to:
-        # 1. Fix this in the feature generation for t2d
-        # 2a. See if there's a way of using feature selection that permits negative values, or
-        # 2b. Always use z-score normalisation?
+        # 1a. See if there's a way of using feature selection that permits negative values, or
+        # 1b. Always use z-score normalisation?
         dataset = self._negative_values_to_nan(dataset=dataset)
 
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)

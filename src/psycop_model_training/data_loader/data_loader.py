@@ -1,4 +1,4 @@
-"""Loader for the t2d dataset."""
+"""Dataset loader."""
 import logging
 from collections.abc import Iterable
 from pathlib import Path
@@ -90,7 +90,7 @@ class DataLoader:
         split_names: Union[Iterable[str], str],
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
-        """Load dataset for t2d. Can load multiple splits at once, e.g.
+        """Load dataset. Can load multiple splits at once, e.g.
         concatenate train and val for crossvalidation.
 
         Args:

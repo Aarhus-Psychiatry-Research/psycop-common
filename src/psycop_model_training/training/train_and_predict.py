@@ -1,4 +1,4 @@
-"""Training script for training a single model for predicting t2d."""
+"""Training script for training a single model."""
 import os
 from collections.abc import Iterable
 from typing import Optional
@@ -26,7 +26,8 @@ log = Printer(timestamp=True)
 
 def create_model(cfg: FullConfigSchema):
     """Instantiate and return a model object based on settings in the config
-    file."""
+    file.
+    """
     model_dict = MODELS.get(cfg.model.name)
 
     model_args = model_dict["static_hyperparameters"]

@@ -138,19 +138,3 @@ def plot_prob_over_time(
         plt.savefig(save_path)
         plt.close()
     return save_path
-
-
-if __name__ == "__main__":
-    from psycop_model_training.utils.utils import PROJECT_ROOT
-
-    path = PROJECT_ROOT / "tests" / "test_data" / "synth_eval_data.csv"
-    df = pd.read_csv(path)
-
-    plot_prob_over_time(
-        patient_id=df["dw_ek_borger"],
-        timestamp=df["timestamp"],
-        pred_prob=df["pred_prob"],
-        outcome_timestamp=df["timestamp_t2d_diag"],
-        label=df["label"],
-        look_behind_distance=500,
-    )
