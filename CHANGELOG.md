@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.28.0 (2022-12-23)
+### Feature
+* Add support for custom columns in create eval dataset ([`294eeac`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/294eeac972d6a9ee1d1adfa749bddf5537486733))
+* Check for custom col names when loading ([`c031850`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c0318507f04acc16ec5f8618124742641e7ddcaf))
+* Add custom columns to configs ([`14dc05e`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/14dc05e8b8b7cda6de9381dacb7cde776b487530))
+* Migrate n_hba1c to custom_artifact ([`51b2095`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/51b20951820974ada3a245166bd1b859a65d57fa))
+
+### Fix
+* Convert bins to primitive before adding to plot ([`13748d6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/13748d643f61aa19aeb395e4858368033e6de23f))
+* Add guards for unspecified custom_columns ([`333dc5a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/333dc5ae3799ccb2c6a997763b227e607a14b618))
+
 ## v0.27.2 (2022-12-22)
 ### Fix
 * Avoid overflow when drawing heatmap ([`0b6876b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0b6876b9add2f06041956534d9ddb90730ad7111))
