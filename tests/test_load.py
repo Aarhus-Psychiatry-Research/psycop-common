@@ -1,6 +1,13 @@
 """Testing of loader functions."""
 
+import pandas as pd
+import pytest
+
+from psycop_model_training.config_schemas.data import ColumnNamesSchema
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.data_loader.col_name_checker import (
+    check_columns_exist_in_dataset,
+)
 from psycop_model_training.data_loader.utils import load_and_filter_train_from_cfg
 
 
@@ -36,3 +43,28 @@ def test_load_lookbehind_not_in_lookbehind_combination(
     n_cols_after_filtering = load_and_filter_train_from_cfg(cfg=cfg).shape[1]
 
     assert n_cols_before_filtering - n_cols_after_filtering == 3
+
+
+def test_check_columns_exist_in_dataset():
+    test_schema = ColumnNamesSchema(
+        pred_timestamp="pred_timestamp",
+        outcome_timestamp="outcome_timestamp",
+        id="id",
+        age="age",
+        exclusion_timestamp="exclusion_timestamp",
+        custom=["custom1", "custom2"],
+    )
+
+    df = pd.DataFrame(
+        {
+            "pred_timestamp": [1, 2, 3],
+            "outcome_timestmamp": [4, 5, 6],
+            "id": [7, 8, 9],
+            "age": [10, 11, 12],
+            "exclusion_timestamp": [13, 14, 15],
+            "custom1": [16, 17, 18],
+        }
+    )
+
+    with pytest.raises(ValueError):
+        check_columns_exist_in_dataset(col_name_schema=test_schema, df=df)
