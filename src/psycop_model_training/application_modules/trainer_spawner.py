@@ -21,7 +21,7 @@ def start_trainer(
 
     subprocess_args: list[str] = [
         "python",
-        "application/train_model.py",
+        "application/train_model_from_application_module.py",
         f"project.wandb.group='{wandb_group_override}'",
         f"project.wandb.mode={cfg.project.wandb.mode}",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",
