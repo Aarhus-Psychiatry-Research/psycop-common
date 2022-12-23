@@ -22,7 +22,7 @@ def plot_performance_by_n_hba1c(
     metric_fn: Callable = roc_auc_score,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
     save_path: Optional[Path] = None,
-    n_hba1c_col_name: Optional[str] = "n_hba1c",
+    n_hba1c_col_name: Optional[str] = "eval_hba1c_within_9999_days_count_fallback_nan",
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by number of HbA1c
     measurements.
