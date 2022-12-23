@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from psycop_model_training.config_schemas.basemodel import BaseModel
 
@@ -13,6 +13,7 @@ class ColumnNamesSchema(BaseModel):
     age: str  # Name of the age column
     exclusion_timestamp: str  # Name of the exclusion timestamps column.
     # Drops all visits whose pred_timestamp <= exclusion_timestamp.
+    custom: Optional[List[str]] = None
 
 
 class DataSchema(BaseModel):
