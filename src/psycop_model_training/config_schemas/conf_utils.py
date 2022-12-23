@@ -60,13 +60,14 @@ def load_test_cfg_as_omegaconf(
 def load_app_cfg_as_pydantic(
     config_file_name: str,
     allow_mutation: bool = False,
+    config_dir_path_rel: str = "../../../application/config/",
     overrides: Optional[list[str]] = None,
 ):
     """Load application cfg as pydantic object."""
     cfg = load_test_cfg_as_omegaconf(
         config_file_name=config_file_name,
         overrides=overrides,
-        config_dir_path_rel="../../../../application/config/",
+        config_dir_path_rel=config_dir_path_rel,
     )
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
