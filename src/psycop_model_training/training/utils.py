@@ -6,7 +6,9 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
 def create_eval_dataset(
-    col_names: ColumnNamesSchema, outcome_col_name: str, df: pd.DataFrame
+    col_names: ColumnNamesSchema,
+    outcome_col_name: str,
+    df: pd.DataFrame,
 ):
     """Create an evaluation dataset object from a dataframe and
     FullConfigSchema."""

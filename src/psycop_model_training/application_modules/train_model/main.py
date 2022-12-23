@@ -38,6 +38,7 @@ def get_eval_dir(cfg: FullConfigSchema):
 
 @wandb_alert_on_exception
 def post_wandb_setup_train_model(cfg, custom_artifact_fn):
+    """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
 
     dataset = load_and_filter_train_and_val_from_cfg(cfg)
@@ -83,10 +84,12 @@ def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = 
     # Try except block ensures process doesn't die in the case of an exception,
     # but rather logs to wandb and starts another run with a new combination of
     # hyperparameters
+
     try:
         # Necessary to ensure wandb is initialized before adding wandb_alert_on_exception decorator
         roc_auc = post_wandb_setup_train_model(cfg, custom_artifact_fn)
 
         return roc_auc
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
+        print(e)
         return 0.5

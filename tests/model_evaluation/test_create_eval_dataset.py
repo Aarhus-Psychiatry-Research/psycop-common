@@ -5,6 +5,7 @@ from psycop_model_training.training.utils import create_eval_dataset
 
 
 def test_create_eval_dataset():
+    """Test that the eval dataset is created correctly."""
     col_names = ColumnNamesSchema(
         pred_timestamp="pred_timestamp",
         outcome_timestamp="outcome_timestamp",
@@ -26,7 +27,7 @@ def test_create_eval_dataset():
             "exclusion_timestamp": [1, 2, 3, 4, 5],
             "custom1": [1, 2, 3, 4, 5],
             "custom2": [1, 2, 3, 4, 5],
-        }
+        },
     )
 
     eval_dataset = create_eval_dataset(col_names=col_names, outcome_col_name="y", df=df)
