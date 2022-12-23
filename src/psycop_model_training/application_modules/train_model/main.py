@@ -20,10 +20,17 @@ from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PAT
 def get_eval_dir(cfg: FullConfigSchema):
     """Get the directory to save evaluation results to."""
     if wandb.run is not None and cfg.project.wandb.mode != "offline":
-        eval_dir_path = SHARED_RESOURCES_PATH / cfg.project.name / wandb.run.name
+        eval_dir_path = (
+            SHARED_RESOURCES_PATH
+            / cfg.project.name
+            / "model_eval"
+            / wandb.run.group
+            / wandb.run.name
+        )
     else:
         eval_dir_path = PROJECT_ROOT / "tests" / "test_eval_results"
-        eval_dir_path.mkdir(parents=True, exist_ok=True)
+
+    eval_dir_path.mkdir(parents=True, exist_ok=True)
 
     return eval_dir_path
 
