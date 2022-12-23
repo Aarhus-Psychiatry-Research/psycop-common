@@ -97,8 +97,7 @@ class SearchSpaceInferrer:
         possible_lookahead_days: list[int],
     ) -> list[TrainerSpec]:
         """Generate trainer specs for all combinations of lookaheads and model
-        names.
-        """
+        names."""
         msg = Printer(timestamp=True)
 
         random.shuffle(possible_lookahead_days)

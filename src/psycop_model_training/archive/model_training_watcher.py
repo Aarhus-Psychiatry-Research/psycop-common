@@ -253,8 +253,7 @@ class ModelTrainingWatcher:  # pylint: disable=too-many-instance-attributes
 
     def _get_run_information_for_all_in_queue(self):
         """Get the performance and information of all runs in the evaluation
-        queue.
-        """
+        queue."""
         return [
             self._get_run_information(run_id)
             for run_id in self.run_id_eval_candidates_queue

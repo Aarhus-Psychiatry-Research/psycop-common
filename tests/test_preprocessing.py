@@ -7,8 +7,7 @@ def test_drop_datetime_predictor_columns(
     muteable_test_config: FullConfigSchema,
 ):
     """Test that columns are dropped if their lookbehind is not in the
-    specified lookbehind combination list.
-    """
+    specified lookbehind combination list."""
     cfg = muteable_test_config
 
     cfg.preprocessing.pre_split.drop_datetime_predictor_columns = True

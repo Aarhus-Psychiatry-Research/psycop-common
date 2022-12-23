@@ -6,8 +6,7 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.DataFrame):
     """Create an evaluation dataset object from a dataframe and
-    FullConfigSchema.
-    """
+    FullConfigSchema."""
     # Check if custom attribute exists
     if hasattr(cfg.data.col_name, "custom"):
         custom_col_names = cfg.data.col_name.custom

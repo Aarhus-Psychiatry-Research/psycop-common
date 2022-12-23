@@ -36,8 +36,7 @@ from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 
 class BaseArtifactGenerator:
     """Generates the base artifacts, i.e. those that generalise across all
-    projects, from an EvalDataset.
-    """
+    projects, from an EvalDataset."""
 
     def __init__(
         self,

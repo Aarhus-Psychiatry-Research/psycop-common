@@ -73,8 +73,7 @@ class ArtifactsToDiskSaver:
         pipe: Optional[Pipeline],
     ) -> None:
         """Saves prediction dataframe, hydra config and feature names to
-        disk.
-        """
+        disk."""
         if eval_dataset is not None:
             self.eval_dataset_to_disk(
                 eval_dataset,

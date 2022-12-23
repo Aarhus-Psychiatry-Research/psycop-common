@@ -13,7 +13,7 @@ class ColumnNamesSchema(BaseModel):
     age: str  # Name of the age column
     exclusion_timestamp: str  # Name of the exclusion timestamps column.
     # Drops all visits whose pred_timestamp <= exclusion_timestamp.
-    custom_columns: Optional[List[str]] = None
+    custom_columns: Optional[list[str]] = None
 
 
 class DataSchema(BaseModel):

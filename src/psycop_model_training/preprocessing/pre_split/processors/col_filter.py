@@ -147,8 +147,7 @@ class PresSplitColFilter:
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
         """Keep only one outcome column with the same lookahead days as set in
-        the config.
-        """
+        the config."""
         outcome_cols = infer_outcome_col_name(df=dataset, allow_multiple=True)
 
         col_to_drop = [

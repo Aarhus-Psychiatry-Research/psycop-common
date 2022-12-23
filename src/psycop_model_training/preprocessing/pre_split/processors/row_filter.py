@@ -76,8 +76,7 @@ class PreSplitRowFilter:
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
         """Drop patients that have an exclusion event within the washin
-        period.
-        """
+        period."""
 
         n_rows_before_modification = dataset.shape[0]
 
@@ -112,8 +111,7 @@ class PreSplitRowFilter:
     @print_df_dimensions_diff
     def _keep_only_if_older_than_min_age(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Keep only rows that are older than the minimum age specified in the
-        config.
-        """
+        config."""
         return dataset[
             dataset[self.cfg.data.col_name.age]
             >= self.cfg.preprocessing.pre_split.min_age

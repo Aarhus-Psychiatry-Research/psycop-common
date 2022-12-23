@@ -23,7 +23,7 @@ class EvalDataset(BaseModel):
     y_hat_int: pd.Series
     age: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None
-    custom_columns: Optional[Dict[str, pd.Series]] = None
+    custom_columns: Optional[dict[str, pd.Series]] = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
