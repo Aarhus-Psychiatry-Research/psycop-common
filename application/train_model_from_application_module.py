@@ -25,7 +25,7 @@ def main(cfg: DictConfig):
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)
 
-    train_model(cfg=cfg, custom_artifact_fn=create_custom_plot_artifacts)
+    return train_model(cfg=cfg, custom_artifact_fn=create_custom_plot_artifacts)
 
 
 if __name__ == "__main__":

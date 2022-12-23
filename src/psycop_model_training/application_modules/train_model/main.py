@@ -84,12 +84,6 @@ def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = 
     # Try except block ensures process doesn't die in the case of an exception,
     # but rather logs to wandb and starts another run with a new combination of
     # hyperparameters
+    roc_auc = post_wandb_setup_train_model(cfg, custom_artifact_fn)
 
-    try:
-        # Necessary to ensure wandb is initialized before adding wandb_alert_on_exception decorator
-        roc_auc = post_wandb_setup_train_model(cfg, custom_artifact_fn)
-
-        return roc_auc
-    except Exception as e:  # pylint: disable=broad-except
-        print(e)
-        return 0.5
+    return roc_auc
