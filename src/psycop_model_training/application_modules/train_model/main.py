@@ -18,9 +18,10 @@ from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
 
 
-def train_model(cfg: FullConfigSchema, custom_artifact_fn: Callable):
+def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = None):
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
+    eval_dir_path = get_eval_dir(cfg)
 
     dataset = load_and_filter_train_and_val_from_cfg(cfg)
     pipe = create_post_split_pipeline(cfg)
@@ -36,16 +37,11 @@ def train_model(cfg: FullConfigSchema, custom_artifact_fn: Callable):
         n_splits=cfg.train.n_splits,
     )
 
-    if wandb.run.id and cfg.project.wandb.mode != "offline":
-        eval_dir_path = SHARED_RESOURCES_PATH / cfg.project.name / wandb.run.id
-    else:
-        eval_dir_path = PROJECT_ROOT / "tests" / "test_eval_results"
-        eval_dir_path.mkdir(parents=True, exist_ok=True)
-
-    custom_artifacts = custom_artifact_fn(
-        eval_dataset=eval_dataset,
-        save_dir=eval_dir_path,
-    )
+    if custom_artifact_fn:
+        custom_artifacts = custom_artifact_fn(
+            eval_dataset=eval_dataset,
+            save_dir=eval_dir_path,
+        )
 
     roc_auc = ModelEvaluator(
         eval_dir_path=eval_dir_path,
@@ -58,3 +54,14 @@ def train_model(cfg: FullConfigSchema, custom_artifact_fn: Callable):
     ).evaluate()
 
     return roc_auc
+
+
+def get_eval_dir(cfg: FullConfigSchema):
+    """Get the directory to save evaluation results to."""
+    if wandb.run.id and cfg.project.wandb.mode != "offline":
+        eval_dir_path = SHARED_RESOURCES_PATH / cfg.project.name / wandb.run.name
+    else:
+        eval_dir_path = PROJECT_ROOT / "tests" / "test_eval_results"
+        eval_dir_path.mkdir(parents=True, exist_ok=True)
+
+    return eval_dir_path

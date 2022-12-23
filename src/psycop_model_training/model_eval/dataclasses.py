@@ -1,6 +1,6 @@
 """Dataclasses for evaluation."""
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 
@@ -23,7 +23,7 @@ class EvalDataset(BaseModel):
     y_hat_int: pd.Series
     age: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None
-    custom: Optional[Any] = None
+    custom_columns: Optional[Dict[str, pd.Series]] = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

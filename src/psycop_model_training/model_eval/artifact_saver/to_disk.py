@@ -45,7 +45,7 @@ class ArtifactsToDiskSaver:
             if series is not None
         } | {
             col_name: series
-            for col_name, series in eval_dataset.custom.__dict__.items()
+            for col_name, series in eval_dataset.custom_columns.items()
             if series is not None
         }
 
