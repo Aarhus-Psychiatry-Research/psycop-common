@@ -127,7 +127,7 @@ def crossval_train_and_predict(
 
     df.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
 
-    return create_eval_dataset(cfg=cfg, outcome_col_name=outcome_col_name, df=df)
+    return create_eval_dataset(col_names=cfg, outcome_col_name=outcome_col_name, df=df)
 
 
 def train_val_predict(
@@ -169,7 +169,7 @@ def train_val_predict(
     df = val
     df["y_hat_prob"] = y_val_hat_prob
 
-    return create_eval_dataset(cfg=cfg, outcome_col_name=outcome_col_name, df=df)
+    return create_eval_dataset(col_names=cfg, outcome_col_name=outcome_col_name, df=df)
 
 
 def train_and_predict(

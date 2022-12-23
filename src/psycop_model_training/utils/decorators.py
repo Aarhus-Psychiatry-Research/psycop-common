@@ -55,7 +55,7 @@ def cache_pandas_result(cache_dir: pathlib.Path, hard_reset: bool = False):
     return build_caching_function
 
 
-def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=True):
+def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=False):
     """Print the difference in rows between the input and output dataframes."""
 
     @functools.wraps(func)

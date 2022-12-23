@@ -44,7 +44,7 @@ def plot_performance_by_n_hba1c(
 
     df = create_performance_by_input(
         eval_dataset=eval_dataset,
-        input=eval_dataset[n_hba1c_col_name],
+        input=eval_dataset.custom_columns[n_hba1c_col_name],
         input_name="n_hba1c",
         metric_fn=metric_fn,
         bins=bins,
