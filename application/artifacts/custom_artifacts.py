@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from application.artifacts.plots.performance_by_n_hba1c import (
-    plot_performance_by_n_hba1c,
-)
+from artifacts.plots.performance_by_n_hba1c import plot_performance_by_n_hba1c
+
 from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
 
 

@@ -4,9 +4,9 @@ Required to allow the trainer_spawner to point towards a python script
 file, rather than an installed module.
 """
 import hydra
+from artifacts.custom_artifacts import create_custom_plot_artifacts
 from omegaconf import DictConfig
 
-from application.artifacts.custom_artifacts import create_custom_plot_artifacts
 from psycop_model_training.application_modules.train_model.main import train_model
 from psycop_model_training.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
