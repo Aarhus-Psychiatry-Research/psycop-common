@@ -80,7 +80,13 @@ def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = 
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
 
-    # Necessary to ensure wandb is initialized before adding wandb_alert_on_exception decorator
-    roc_auc = post_wandb_setup_train_model(cfg, custom_artifact_fn)
+    # Try except block ensures process doesn't die in the case of an exception,
+    # but rather logs to wandb and starts another run with a new combination of
+    # hyperparameters
+    try:
+        # Necessary to ensure wandb is initialized before adding wandb_alert_on_exception decorator
+        roc_auc = post_wandb_setup_train_model(cfg, custom_artifact_fn)
 
-    return roc_auc
+        return roc_auc
+    except Exception as e:
+        return 0.5
