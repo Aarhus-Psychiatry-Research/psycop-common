@@ -131,7 +131,7 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
     Returns:
         A numpy ndarray with the borders.
     """
-    _, edges = pd.cut(series, bins=bins, retbins=True)
+    _, edges = pd.cut(series, bins=bins, retbins=True, duplicates="drop")
     labels = [  # pylint: disable=unsubscriptable-object
         f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]"  # pylint: disable=unsubscriptable-object
         for i in range(len(bins) - 1)
