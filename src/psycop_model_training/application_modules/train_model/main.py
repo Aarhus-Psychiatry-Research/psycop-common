@@ -8,7 +8,6 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.utils import (
     load_and_filter_train_and_val_from_cfg,
 )
-from psycop_model_training.model_eval.dataclasses import ArtifactContainer
 from psycop_model_training.model_eval.model_evaluator import ModelEvaluator
 from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
