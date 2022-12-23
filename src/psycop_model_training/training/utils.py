@@ -8,7 +8,11 @@ def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.Dat
     """Create an evaluation dataset object from a dataframe and
     FullConfigSchema.
     """
-    custom_col_names = cfg.data.col_name.custom if cfg.data.col_name.custom else None
+    # Check if custom attribute exists
+    if hasattr(cfg.data.col_name, "custom"):
+        custom_col_names = cfg.data.col_name.custom
+    else:
+        custom_col_names = None
 
     if custom_col_names:
         custom_columns = {col_name: df[col_name] for col_name in custom_col_names}

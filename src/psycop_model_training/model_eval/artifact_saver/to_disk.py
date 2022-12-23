@@ -43,11 +43,18 @@ class ArtifactsToDiskSaver:
             col_name: series
             for col_name, series in eval_dataset.__dict__.items()
             if series is not None
-        } | {
-            col_name: series
-            for col_name, series in eval_dataset.custom_columns.items()
-            if series is not None
         }
+
+        # Check if custom_columns attribute exists
+        if (
+            hasattr(eval_dataset, "custom_columns")
+            and eval_dataset.custom_columns is not None
+        ):
+            df_template |= {
+                col_name: series
+                for col_name, series in eval_dataset.custom_columns.items()
+                if series is not None
+            }
 
         # Remove items that aren't series, e.g. the top level CustomColumns object
         template_filtered = {

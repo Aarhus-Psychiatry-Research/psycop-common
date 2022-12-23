@@ -37,11 +37,14 @@ def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = 
         n_splits=cfg.train.n_splits,
     )
 
-    if custom_artifact_fn:
-        custom_artifacts = custom_artifact_fn(
+    custom_artifacts = (
+        custom_artifact_fn(
             eval_dataset=eval_dataset,
             save_dir=eval_dir_path,
         )
+        if custom_artifact_fn
+        else None
+    )
 
     roc_auc = ModelEvaluator(
         eval_dir_path=eval_dir_path,
