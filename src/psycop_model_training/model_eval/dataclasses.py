@@ -1,17 +1,11 @@
 """Dataclasses for evaluation."""
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 
-from psycop_model_training.utils.basemodel import BaseModel
-from psycop_model_training.utils.config_schemas.conf_utils import FullConfigSchema
-
-
-class CustomColumns(BaseModel):
-    """Custom columns to use in evaluation."""
-
-    n_hba1c: Optional[pd.Series]
+from psycop_model_training.config_schemas.basemodel import BaseModel
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 
 class EvalDataset(BaseModel):
@@ -29,7 +23,7 @@ class EvalDataset(BaseModel):
     y_hat_int: pd.Series
     age: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None
-    custom: Optional[CustomColumns] = CustomColumns(n_hba1c=None)
+    custom_columns: Optional[dict[str, pd.Series]] = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

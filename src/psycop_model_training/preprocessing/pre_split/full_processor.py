@@ -1,6 +1,7 @@
 """Full processor for pre-split preprocessing."""
 import pandas as pd
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.preprocessing.pre_split.processors.col_filter import (
     PresSplitColFilter,
 )
@@ -13,7 +14,6 @@ from psycop_model_training.preprocessing.pre_split.processors.value_cleaner impo
 from psycop_model_training.preprocessing.pre_split.processors.value_transformer import (
     PreSplitValueTransformer,
 )
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 class FullProcessor:

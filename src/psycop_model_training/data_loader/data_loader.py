@@ -1,4 +1,4 @@
-"""Loader for the t2d dataset."""
+"""Dataset loader."""
 import logging
 from collections.abc import Iterable
 from pathlib import Path
@@ -7,7 +7,7 @@ from typing import Callable, Optional, Union
 import pandas as pd
 from wasabi import Printer
 
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 msg = Printer(timestamp=True)
 
@@ -90,8 +90,8 @@ class DataLoader:
         split_names: Union[Iterable[str], str],
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
-        """Load dataset for t2d. Can load multiple splits at once, e.g.
-        concatenate train and val for crossvalidation.
+        """Load dataset. Can load multiple splits at once, e.g. concatenate
+        train and val for crossvalidation.
 
         Args:
             split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]

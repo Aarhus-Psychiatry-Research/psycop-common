@@ -274,6 +274,8 @@ def create_performance_by_time_from_event_df(
 
     # bin data
     bin_fn = bin_continuous_data if prettify_bins else round_floats_to_edge
+
+    # Convert df["days_from_event"] to int if possible
     df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
 
     # Calc performance and prettify output

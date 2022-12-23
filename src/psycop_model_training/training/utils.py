@@ -1,12 +1,20 @@
 import pandas as pd
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 
 
 def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.DataFrame):
     """Create an evaluation dataset object from a dataframe and
     FullConfigSchema."""
+    # Check if custom attribute exists
+    if hasattr(cfg.data.col_name, "custom"):
+        custom_col_names = cfg.data.col_name.custom
+    else:
+        custom_col_names = None
+
+    if custom_col_names:
+        custom_columns = {col_name: df[col_name] for col_name in custom_col_names}
 
     eval_dataset = EvalDataset(
         ids=df[cfg.data.col_name.id],
@@ -17,10 +25,7 @@ def create_eval_dataset(cfg: FullConfigSchema, outcome_col_name: str, df: pd.Dat
         outcome_timestamps=df[cfg.data.col_name.outcome_timestamp],
         age=df[cfg.data.col_name.age],
         exclusion_timestamps=df[cfg.data.col_name.exclusion_timestamp],
+        custom_columns=custom_columns if custom_col_names else None,
     )
-
-    if cfg.data.col_name.custom:
-        if cfg.data.col_name.custom.n_hba1c:
-            eval_dataset.custom.n_hba1c = df[cfg.data.col_name.custom.n_hba1c]
 
     return eval_dataset

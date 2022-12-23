@@ -1,31 +1,38 @@
 """Train a single model and evaluate it."""
-import wandb
-from omegaconf import DictConfig
+from typing import Callable, Optional
 
-from application.artifacts.custom_artifacts import create_custom_plot_artifacts
+import wandb
+
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.utils import (
     load_and_filter_train_and_val_from_cfg,
 )
+from psycop_model_training.model_eval.dataclasses import ArtifactContainer
 from psycop_model_training.model_eval.model_evaluator import ModelEvaluator
 from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
 from psycop_model_training.training.train_and_predict import train_and_predict
 from psycop_model_training.utils.col_name_inference import get_col_names
-from psycop_model_training.utils.config_schemas.conf_utils import (
-    convert_omegaconf_to_pydantic_object,
-)
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
 
 
-def train_model(cfg: DictConfig):
-    """Main function for training a single model."""
-    if not isinstance(cfg, FullConfigSchema):
-        cfg = convert_omegaconf_to_pydantic_object(cfg)
+def get_eval_dir(cfg: FullConfigSchema):
+    """Get the directory to save evaluation results to."""
+    if wandb.run.id and cfg.project.wandb.mode != "offline":
+        eval_dir_path = SHARED_RESOURCES_PATH / cfg.project.name / wandb.run.name
+    else:
+        eval_dir_path = PROJECT_ROOT / "tests" / "test_eval_results"
+        eval_dir_path.mkdir(parents=True, exist_ok=True)
 
+    return eval_dir_path
+
+
+def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = None):
+    """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
+    eval_dir_path = get_eval_dir(cfg)
 
     dataset = load_and_filter_train_and_val_from_cfg(cfg)
     pipe = create_post_split_pipeline(cfg)
@@ -41,15 +48,13 @@ def train_model(cfg: DictConfig):
         n_splits=cfg.train.n_splits,
     )
 
-    if wandb.run.id and cfg.project.wandb.mode != "offline":
-        eval_dir_path = SHARED_RESOURCES_PATH / cfg.project.name / wandb.run.id
-    else:
-        eval_dir_path = PROJECT_ROOT / "tests" / "test_eval_results"
-        eval_dir_path.mkdir(parents=True, exist_ok=True)
-
-    custom_artifacts = create_custom_plot_artifacts(
-        eval_dataset=eval_dataset,
-        save_dir=eval_dir_path,
+    custom_artifacts = (
+        custom_artifact_fn(
+            eval_dataset=eval_dataset,
+            save_dir=eval_dir_path,
+        )
+        if custom_artifact_fn
+        else None
     )
 
     roc_auc = ModelEvaluator(

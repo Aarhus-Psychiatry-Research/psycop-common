@@ -1,4 +1,4 @@
-name: psycop-t2d-integration-testing
+name: psycop-model-training-integration-testing
 seed: 42
 
 wandb:

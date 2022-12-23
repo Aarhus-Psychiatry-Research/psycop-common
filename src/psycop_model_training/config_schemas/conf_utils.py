@@ -7,8 +7,8 @@ from typing import Optional, Union
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 
-from psycop_model_training.utils.basemodel import BaseModel
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.basemodel import BaseModel
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 
 def convert_omegaconf_to_pydantic_object(
@@ -30,7 +30,7 @@ def convert_omegaconf_to_pydantic_object(
 
 def load_test_cfg_as_omegaconf(
     config_file_name: str = "default_config",
-    config_dir_path_rel: str = "../../../../tests/config/",
+    config_dir_path_rel: str = "../../../tests/config/",
     overrides: Optional[list[str]] = None,
 ) -> DictConfig:
     """Load config as omegaconf object."""
@@ -81,7 +81,6 @@ def load_test_cfg_as_pydantic(
     cfg = load_test_cfg_as_omegaconf(
         config_file_name=config_file_name,
         overrides=overrides,
-        config_dir_path_rel="../../../../tests/config/",
     )
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)

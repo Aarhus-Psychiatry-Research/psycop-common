@@ -1,4 +1,4 @@
-"""Training script for training a single model for predicting t2d."""
+"""Training script for training a single model."""
 import os
 from collections.abc import Iterable
 from typing import Optional
@@ -10,11 +10,12 @@ from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
+
 # from psycop_model_training.evaluation import evaluate_model
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.training.utils import create_eval_dataset
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
 CONFIG_PATH = PROJECT_ROOT / "application" / "config"

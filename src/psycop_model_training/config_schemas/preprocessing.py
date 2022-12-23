@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Literal, Optional, Union
 
-from psycop_model_training.utils.basemodel import BaseModel
+from psycop_model_training.config_schemas.basemodel import BaseModel
 
 
 class FeatureSelectionSchema(BaseModel):

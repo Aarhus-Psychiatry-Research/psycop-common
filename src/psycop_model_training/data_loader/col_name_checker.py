@@ -3,7 +3,7 @@
 import Levenshtein
 import pandas as pd
 
-from psycop_model_training.utils.config_schemas.data import ColumnNamesSchema
+from psycop_model_training.config_schemas.data import ColumnNamesSchema
 
 
 def get_most_likely_str_from_edit_distance(
@@ -46,27 +46,38 @@ def check_columns_exist_in_dataset(
     """Check that all columns in the config exist in the dataset."""
     # Iterate over attributes in the config
     error_strs = []
+    col_names = []
 
+    # Get the column names to check
     for attr in dir(col_name_schema):
         # Skip private attributes
         if attr.startswith("_"):
             continue
 
-        col_name = getattr(col_name_schema, attr)
+        attr_val = getattr(col_name_schema, attr)
 
-        # Skip col names that are not string
-        if not isinstance(col_name, str):
+        if isinstance(attr_val, str):
+            col_names.append(attr_val)
             continue
 
+        # Skip col names that are not string
+        if not isinstance(attr_val, str):
+            if isinstance(attr_val, list):
+                for item in attr_val:
+                    if isinstance(item, str):
+                        col_names.append(item)
+
+    # Check that the col_names exist in the dataset
+    for item in col_names:
         # Check that the column exists in the dataset
-        if not col_name in df:
+        if item not in df:
             most_likely_alternatives = get_most_likely_str_from_edit_distance(
                 candidate_strs=df.columns,
-                input_str=col_name,
+                input_str=item,
                 n_str_to_return=3,
             )
 
-            error_str = f"Column '{col_name}' in config but not in dataset.\n"
+            error_str = f"Column '{item}' in config but not in dataset.\n"
             error_str += f"    Did you mean {most_likely_alternatives}? \n"
             error_strs.append(error_str)
 

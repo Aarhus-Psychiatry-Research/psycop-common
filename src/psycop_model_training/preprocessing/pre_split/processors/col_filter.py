@@ -4,13 +4,13 @@ from typing import Union
 
 import pandas as pd
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_loader import msg
 from psycop_model_training.utils.col_name_inference import (
     infer_look_distance,
     infer_outcome_col_name,
     infer_predictor_col_name,
 )
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import get_percent_lost
 

@@ -6,6 +6,7 @@ import wandb
 from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
 from psycop_model_training.model_eval.base_artifacts.base_artifact_generator import (
     BaseArtifactGenerator,
@@ -19,7 +20,6 @@ from psycop_model_training.model_eval.dataclasses import (
     PipeMetadata,
 )
 from psycop_model_training.utils.col_name_inference import get_col_names
-from psycop_model_training.utils.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
