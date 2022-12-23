@@ -78,12 +78,13 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema):
             f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file. Overriding to 'mean'.",
         )
 
-        cfg.preprocessing.post_split.imputation_method = "mean"
-        # Not a great solution, but preferable to the script breaking and stopping a hyperparameter search.
-
-        raise ValueError(
-            f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file.",
+        steps.append(
+            (
+                "Imputation",
+                SimpleImputer(strategy="mean"),
+            ),
         )
+        # Not a great solution, but preferable to the script breaking and stopping a hyperparameter search.
 
     if cfg.preprocessing.post_split.imputation_method:
         steps.append(
