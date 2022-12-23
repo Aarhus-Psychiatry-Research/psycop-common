@@ -2,6 +2,7 @@
 from typing import Callable, Optional
 
 import wandb
+from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
 
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -35,9 +36,8 @@ def get_eval_dir(cfg: FullConfigSchema):
     return eval_dir_path
 
 
-def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = None):
-    """Main function for training a single model."""
-    WandbHandler(cfg=cfg).setup_wandb()
+@wandb_alert_on_exception
+def post_wandb_setup_train_model(cfg, custom_artifact_fn):
     eval_dir_path = get_eval_dir(cfg)
 
     dataset = load_and_filter_train_and_val_from_cfg(cfg)
@@ -72,5 +72,15 @@ def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = 
         custom_artifacts=custom_artifacts,
         upload_to_wandb=cfg.project.wandb.mode != "offline",
     ).evaluate()
+
+    return roc_auc
+
+
+def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = None):
+    """Main function for training a single model."""
+    WandbHandler(cfg=cfg).setup_wandb()
+
+    # Necessary to ensure wandb is initialized before adding wandb_alert_on_exception decorator
+    roc_auc = post_wandb_setup_train_model(cfg, custom_artifact_fn)
 
     return roc_auc
