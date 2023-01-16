@@ -26,6 +26,7 @@ def filter_prediction_times(
     project_info: ProjectInfo,
     quarantine_df: Optional[pd.DataFrame] = None,
     quarantine_days: Optional[int] = None,
+    timestamp_col_name: Optional[str] = "timestamp",
 ) -> pd.DataFrame:
     """Filter prediction times.
 
@@ -35,6 +36,7 @@ def filter_prediction_times(
         project_info (ProjectInfo): Project info.
         quarantine_df (pd.DataFrame, optional): Quarantine dataframe with "timestamp" and "project_info.col_names.id" columns.
         quarantine_days (int, optional): Number of days to quarantine.
+        timestamp_col_name (str, optional): Name of the timestamp column.
 
     Returns:
         pd.DataFrame: Filtered prediction times dataframe.
@@ -46,6 +48,7 @@ def filter_prediction_times(
         entity_id_col_name=project_info.col_names.id,
         quarantine_timestamps_df=quarantine_df,
         quarantine_interval_days=quarantine_days,
+        timestamp_col_name=timestamp_col_name,
     )
 
     return filterer.filter()
@@ -59,6 +62,7 @@ def create_flattened_dataset(
     project_info: ProjectInfo,
     quarantine_df: Optional[pd.DataFrame] = None,
     quarantine_days: Optional[int] = None,
+    timestamp_col_name: Optional[str] = "timestamp",
 ) -> pd.DataFrame:
     """Create flattened dataset.
 
@@ -71,6 +75,7 @@ def create_flattened_dataset(
             See timeseriesflattener tutorial for more info.
         quarantine_df (pd.DataFrame, optional): Quarantine dataframe with "timestamp" and "project_info.col_names.id" columns.
         quarantine_days (int, optional): Number of days to quarantine. Any prediction time within quarantine_days after the timestamps in quarantine_df will be dropped.
+        timestamp_col_name (str, optional): Name of the timestamp column.
 
     Returns:
         FlattenedDataset: Flattened dataset.
@@ -80,6 +85,7 @@ def create_flattened_dataset(
         project_info=project_info,
         quarantine_df=quarantine_df,
         quarantine_days=quarantine_days,
+        timestamp_col_name=timestamp_col_name,
     )
 
     flattened_dataset = TimeseriesFlattener(

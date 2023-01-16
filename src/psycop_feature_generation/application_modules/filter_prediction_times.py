@@ -37,6 +37,7 @@ class PredictionTimeFilterer:
         self.quarantine_days = quarantine_interval_days
         self.entity_id_col_name = entity_id_col_name
         self.timestamp_col_name = timestamp_col_name
+        self.quarantine_df.columns = [self.entity_id_col_name, 'timestamp_quarantine']
 
         self.added_pred_time_uuid_col: bool = False
         self.pred_time_uuid_col_name = "pred_time_uuid"
@@ -51,7 +52,7 @@ class PredictionTimeFilterer:
             ] = self.prediction_times_df[self.entity_id_col_name].astype(
                 str
             ) + self.prediction_times_df[
-                "timestamp"
+                timestamp_col_name
             ].dt.strftime(
                 "-%Y-%m-%d-%H-%M-%S",
             )
@@ -61,15 +62,14 @@ class PredictionTimeFilterer:
         # Create combinations
         n_before = len(self.prediction_times_df)
 
-        df = self.prediction_times_df.merge(
+        df = self.prediction_times_df[[self.entity_id_col_name, self.timestamp_col_name, self.pred_time_uuid_col_name]].drop_duplicates().merge(
             self.quarantine_df,
             on=self.entity_id_col_name,
             how="left",
-            suffixes=("_pred", "_quarantine"),
         )
 
         df["days_since_quarantine"] = (
-            df["timestamp_pred"] - df["timestamp_quarantine"]
+            df[self.timestamp_col_name] - df["timestamp_quarantine"]
         ).dt.days
 
         # Check if the prediction time is hit by the quarantine date.
@@ -92,7 +92,7 @@ class PredictionTimeFilterer:
             on=self.pred_time_uuid_col_name,
             how="left",
             suffixes=("", "_hit_by_quarantine"),
-            validate="one_to_one",
+            validate="many_to_one",
         )
 
         df = df.loc[
@@ -105,9 +105,6 @@ class PredictionTimeFilterer:
                 "hit_by_quarantine",
             ],
         )
-
-        # Rename the timestamp column
-        df = df.rename(columns={"timestamp_pred": "timestamp"})
 
         n_after = len(df)
         log.info(

@@ -29,6 +29,7 @@ class ColNames(BaseModel):
 
     timestamp = "timestamp"
     id = "dw_ek_borger"
+    admission = "timestamp_admission"
 
 
 class ProjectInfo(BaseModel):
