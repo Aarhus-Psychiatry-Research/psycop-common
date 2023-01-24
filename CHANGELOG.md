@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.29.0 (2023-01-24)
+### Feature
+* Wrap training loop in try/except ([`ec8630a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ec8630a8150c374f2bdcf152b39c2ddfbea056cc))
+* Wandb alert on exception to main script ([`f53a2f9`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f53a2f9e4ba7e19e024f967860d4e5108fb636ae))
+
+### Fix
+* Handle floats when binning continuous data ([`23fc939`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/23fc939c3c926976ffdfc64d358edc3cb123f218))
+* Use mean imputer if imputation is required and none specified ([`f427a39`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f427a396c7a75f706216e431d58afc727c76af5d))
+* Hydra main should return metric to optimise ([`26600f6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/26600f65f3559df218c932780540a856198252ea))
+* Incorrect specificatin of logistic-regression ([`3137e7a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3137e7ae7be7c73559ec381d6af0fe5df28027f5))
+* Drop edges if duplicate ([`aa32bfe`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/aa32bfe7685f1e93f1507031b8077c17d8ba235c))
+* Create model eval dir if does not already exist ([`574b778`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/574b778376d692d850d41fa89467c5b0c4ffa2de))
+* Guard against no wandb when getting eval dir ([`028feb3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/028feb3d64466041f9c0de2af6dc23847bdc9b88))
+* Relative import of custom_plot_artifacts ([`e966005`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e966005ac241826408b7a98c4254ae62cf5f1799))
+* New trainer path ([`61c17e9`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/61c17e921d270972d838795ddedffe873bda51ca))
+* Specify_config_dir relatively ([`15af2bd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/15af2bdca35bd6d28e9594d6c70fc56933da5cf4))
+* Init wandb before adding wandb decorator ([`3e07440`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3e0744099eb9222d9503eb0413f5579c36cd18bb))
+
 ## v0.28.0 (2022-12-23)
 ### Feature
 * Add support for custom columns in create eval dataset ([`294eeac`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/294eeac972d6a9ee1d1adfa749bddf5537486733))
