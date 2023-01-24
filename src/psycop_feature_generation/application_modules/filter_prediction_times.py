@@ -62,7 +62,7 @@ class PredictionTimeFilterer:
         # Create combinations
         n_before = len(self.prediction_times_df)
 
-        df = self.prediction_times_df[[self.entity_id_col_name, self.timestamp_col_name, self.pred_time_uuid_col_name]].drop_duplicates().merge(
+        df = self.prediction_times_df.merge(
             self.quarantine_df,
             on=self.entity_id_col_name,
             how="left",
@@ -92,7 +92,7 @@ class PredictionTimeFilterer:
             on=self.pred_time_uuid_col_name,
             how="left",
             suffixes=("", "_hit_by_quarantine"),
-            validate="many_to_one",
+            validate="one_to_one",
         )
 
         df = df.loc[
