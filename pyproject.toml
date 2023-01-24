@@ -1,50 +1,51 @@
-[tool.poetry]
+[project]
 name = "psycop_model_training"
 version = "0.28.0"
 description = "PSYCOP model training utilities"
-authors = ["Your Name <you@example.com>"]
+authors = [{name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"},
+    {name = "Lasse Hansen", email = "lasseh0310@gmail.com"},
+    {name = "Kenneth Enevoldsen"}]
 
-[tool.poetry.dependencies]
-python = ">=3.9, <3.11"
-pandas = ">=1.4.3,<1.6.0"
-scikit-learn = ">=1.1.1,<1.2.0"
-xgboost = ">=1.6.1,<1.8.0"
-hydra-core = ">=1.1.13,<1.4.0"
-plotly = ">=5.8.2,<5.12.0"
-matplotlib = ">=3.5.2,<3.7.0"
-wandb = ">=0.12.21,<0.14.0"
-psycopmlutils = ">=0.3.0,<0.3.1"
-tabulate = ">=0.8.10,<0.10.0"
-optuna = ">=2.10.1,<2.11.0"
-hydra-optuna-sweeper = ">=1.2.0,<1.3.0"
-hydra-joblib-launcher = ">=1.2.0, <1.3.0"
-selenium = ">=4.2.0,<4.8.0"
+requires-python = ">=3.8.0"
 
-# pandoc = "^2.2" not compatible with PEP517, which is required for poetry install. Disabled for now: https://github.com/boisgera/pandoc/pull/49
-# interpret = ">=0.2.7,<0.3.0" Disabled becuase of errors with github actions. 
-# See https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/pull/194 for thoughts on root cause
-seaborn = ">=0.12.0,<0.12.2"
-pyarrow = ">=9.0.0,<10.1.0"
-Random-Word = ">=1.0.11, <=1.0.12"
-torch = ">=1.12.1,<1.13.2"
-diskcache = "^5.4.0"
-python-Levenshtein = ">=0.10.2,<0.20.9"
+dependencies = [
+    "pandas>=1.4.3,<1.5.0",
+    "scikit-learn>=1.1.1,<1.2.0",
+    "xgboost>=1.6.1,<1.8.0",
+    "hydra-core>=1.1.13,<1.4.0",
+    "plotly>=5.8.2,<5.12.0",
+    "matplotlib>=3.5.2,<3.6.0",
+    "wandb>=0.12.21,<0.13.0",
+    "tabulate>=0.8.10,<0.10.0",
+    "optuna>=2.10.1,<2.11.0",
+    "hydra-optuna-sweeper>=1.2.0,<1.3.0",
+    "hydra-joblib-launcher>=1.2.0, <1.3.0",
+    "selenium>=4.2.0,<4.8.0",
+    "seaborn>=0.12.0,<0.12.2",
+    "pyarrow>=9.0.0,<10.1.0",
+    "Random-Word>=1.0.11, <=1.0.12",
+    "torch>=1.12.1,<1.13.1",
+    "diskcache>=5.4.0",
+    "psycopmlutils>=0.3.0,<0.4.0",
+    "Levenshtein>=0.20.0, <0.21.0",
+]
 
-
-[tool.poetry.dev-dependencies]
-pre-commit = ">=2.19.0,<2.19.1"
-pytest = ">=7.1.2,<7.2.1"
-pytest-cov = ">=3.0.0,<4.0.1"
-black = ">=22.3.0,<22.13.0"
-flake8 = ">=4.0.1,<6.1.0"
-pytest-xdist = "^3.0.2"
-mypy = "^0.991"
-setuptools = ">=65.3.0,<65.7.0"
-pylint = "^2.15.5"
+[project.optional-dependencies]
+dev = [
+    "pre-commit>=2.19.0,<2.19.1",
+    "pytest>=7.1.2,<7.2.1",
+    "pytest-cov>=3.0.0,<4.0.1",
+    "pytest-xdist>=3.0.2",
+    "black>=22.3.0,<22.13.0",
+    "flake8>=4.0.1,<6.1.0",
+    "mypy>=0.991",
+    "setuptools>=65.3.0,<65.7.0",
+    "pylint>=2.15.5",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "pip"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
 
 [tool.coverage.run]
 omit = [
@@ -98,7 +99,7 @@ version_variable = [
 ]
 upload_to_pypi = false
 upload_to_release = true
-build_command = "pip install poetry && poetry build"
+build_command = "python -m pip install build; python -m build"
 
 [tool.pytest-xdist]
 n = 4
