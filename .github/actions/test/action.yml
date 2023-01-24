@@ -34,4 +34,5 @@ runs:
       shell: bash
       run: |
         set -o pipefail
+        ls -la
         pytest --cov=src --cov-report term-missing --color=yes -n 2
