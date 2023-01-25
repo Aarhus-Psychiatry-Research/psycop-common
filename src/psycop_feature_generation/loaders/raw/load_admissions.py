@@ -31,15 +31,15 @@ def admissions(
     d = {
         "LPR3": {
             "view": "[FOR_LPR3kontakter_psyk_somatik_inkl_2021_feb2022]",
-            "datetime_col": "datotid_lpr3kontaktstart",
-            "value_col": "datotid_lpr3kontaktslut",
+            "datetime_col": "datotid_lpr3kontaktslut",
+            "value_col": "datotid_lpr3kontaktstart",
             "location_col": "shakkode_lpr3kontaktansvarlig",
             "where": "AND pt_type = 'Indlæggelse'",
         },
         "LPR2_admissions": {
             "view": "[FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            "datetime_col": "datotid_indlaeggelse",
-            "value_col": "datotid_udskrivning",
+            "datetime_col": "datotid_udskrivning",
+            "value_col": "datotid_indlaeggelse",
             "location_col": "shakKode_kontaktansvarlig",
             "where": "",
         },
@@ -53,7 +53,7 @@ def admissions(
         sql = f"SELECT {cols} FROM [fct].{meta['view']} WHERE {meta['datetime_col']} IS NOT NULL AND {meta['value_col']} IS NOT NULL {meta['where']}"
 
         if shak_code is not None:
-            sql += f" AND left({meta['location_col']}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
+           sql += f" AND left({meta['location_col']}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
 
         df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
         df.rename(
@@ -74,7 +74,7 @@ def admissions(
 
     # Change value column to length of admission in days
     output_df["value"] = (
-        output_df["value"] - output_df["timestamp"]
+        output_df["timestamp"] - output_df["value"]
     ).dt.total_seconds() / 86400
 
     msg.good("Loaded admissions data")
