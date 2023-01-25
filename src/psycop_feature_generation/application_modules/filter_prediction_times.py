@@ -35,9 +35,9 @@ class PredictionTimeFilterer:
         self.prediction_times_df = prediction_times_df
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
+        self.quarantine_df = self.quarantine_df.rename(columns={"timestamp": "timestamp_quarantine"})
         self.entity_id_col_name = entity_id_col_name
         self.timestamp_col_name = timestamp_col_name
-        self.quarantine_df.columns = [self.entity_id_col_name, "timestamp_quarantine"]
 
         self.added_pred_time_uuid_col: bool = False
         self.pred_time_uuid_col_name = "pred_time_uuid"
