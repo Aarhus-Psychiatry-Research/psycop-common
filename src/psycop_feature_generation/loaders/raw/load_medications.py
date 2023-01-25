@@ -148,7 +148,7 @@ def antipsychotics(n_rows: Optional[int] = None) -> pd.DataFrame:
     """
     return load(
         atc_code="N05A",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=True,
         n_rows=n_rows,
@@ -169,7 +169,7 @@ def first_gen_antipsychotics(n_rows: Optional[int] = None) -> pd.DataFrame:
             "N05AD05",
             "N05AF03",
         ],
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -195,7 +195,7 @@ def second_gen_antipsychotics(n_rows: Optional[int] = None) -> pd.DataFrame:
             "N05AE04",
             "N05AE03",
         ],
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -216,7 +216,7 @@ def top_10_weight_gaining_antipsychotics(n_rows: Optional[int] = None) -> pd.Dat
             "N05AX13",
             "N05AX08",
         ],
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -227,7 +227,7 @@ def top_10_weight_gaining_antipsychotics(n_rows: Optional[int] = None) -> pd.Dat
 def olanzapine(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code="N05AH03",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -238,7 +238,7 @@ def olanzapine(n_rows: Optional[int] = None) -> pd.DataFrame:
 def clozapine(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code="N05AH02",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -318,7 +318,7 @@ def antidepressives(n_rows: Optional[int] = None) -> pd.DataFrame:
 def ssri(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code="N06AB",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=True,
         n_rows=n_rows,
@@ -330,7 +330,7 @@ def ssri(n_rows: Optional[int] = None) -> pd.DataFrame:
 def snri(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code=["N06AX21", "N06AX16"],
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -342,7 +342,7 @@ def snri(n_rows: Optional[int] = None) -> pd.DataFrame:
 def tca(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code="N06AA",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=True,
         n_rows=n_rows,
@@ -353,7 +353,7 @@ def tca(n_rows: Optional[int] = None) -> pd.DataFrame:
 def selected_nassa(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code=["N06AX11", "N06AX03"],
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=True,
         n_rows=n_rows,
@@ -364,7 +364,7 @@ def selected_nassa(n_rows: Optional[int] = None) -> pd.DataFrame:
 def lithium(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code="N05AN01",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -375,7 +375,7 @@ def lithium(n_rows: Optional[int] = None) -> pd.DataFrame:
 def valproate(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code="N03AG01",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -386,7 +386,7 @@ def valproate(n_rows: Optional[int] = None) -> pd.DataFrame:
 def lamotrigine(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code="N03AX09",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
@@ -431,7 +431,7 @@ def anti_epileptics(n_rows: Optional[int] = None) -> pd.DataFrame:
 def alcohol_abstinence(n_rows: Optional[int] = None) -> pd.DataFrame:
     return load(
         atc_code=["A11DA01", "A11EA", "N05BA02", "N03AA02"],
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=False,
         n_rows=n_rows,
