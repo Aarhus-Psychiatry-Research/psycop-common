@@ -8,41 +8,8 @@ psycop-model-training
 
 Prediction of type 2 diabetes among patients with visits to psychiatric hospital departments.
 
-## Installing pre-commit hooks
-`pre-commit install`
-
---------
-## Testing configs
-To run XGBoost with defaults but a synth dataset:
-
-```
-python src/psycop_model_training/train_model.py --config-name test_config.yaml +model=xgboost
-```
-
-To test new integrations with WandB:
-```python
-python src/psycop_model_training/train_model.py model=xgboost project.wandb.mode="run" --config-name integration_config.yaml
-```
-
-
-
-## Train models:
-To run XGBoost with defaults:
-
-```
-python src/psycop_model_training/train_model.py +model=xgboost
-```
-
-if you want to change a hyperparameter simply run:
-
-```
-python src/psycop_model_training/train_model.py  +model=xgboost ++model.args.n_estimators=20
-```
-
-to run a sweep with xgboost you will have to add the `--multirun` flag and specify the sweep config.
-```
-python src/psycop_model_training/train_model.py --multirun +model=xgboost
-```
+# Using the package
+This is a set of modules used for some of the projects' model training. You need project-specific code to use these modules. To get started with that, see [template-model-training](https://github.com/Aarhus-Psychiatry-Research/template-model-training).
 
 ## Developing new evaluation plots
 In general, model evaluations are added to `evaluate_model` in `psycop_model_training > evaluation.py`. However, when developing, it's much faster when you don't have to train a model for each iteration.
