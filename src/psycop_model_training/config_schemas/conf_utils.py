@@ -6,7 +6,6 @@ from typing import Optional, Union
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
-
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
@@ -28,7 +27,7 @@ def convert_omegaconf_to_pydantic_object(
     return FullConfigSchema(**conf, allow_mutation=allow_mutation)
 
 
-def load_test_cfg_as_omegaconf(
+def load_cfg_as_omegaconf(
     config_file_name: str = "default_config",
     config_dir_path_rel: str = "../../../tests/config/",
     overrides: Optional[list[str]] = None,
@@ -60,11 +59,11 @@ def load_test_cfg_as_omegaconf(
 def load_app_cfg_as_pydantic(
     config_file_name: str,
     allow_mutation: bool = False,
-    config_dir_path_rel: str = "../../../application/config/",
+    config_dir_path_rel: str = "../../../../../application/config/",
     overrides: Optional[list[str]] = None,
 ):
     """Load application cfg as pydantic object."""
-    cfg = load_test_cfg_as_omegaconf(
+    cfg = load_cfg_as_omegaconf(
         config_file_name=config_file_name,
         overrides=overrides,
         config_dir_path_rel=config_dir_path_rel,
@@ -79,7 +78,7 @@ def load_test_cfg_as_pydantic(
     overrides: Optional[list[str]] = None,
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
-    cfg = load_test_cfg_as_omegaconf(
+    cfg = load_cfg_as_omegaconf(
         config_file_name=config_file_name,
         overrides=overrides,
     )

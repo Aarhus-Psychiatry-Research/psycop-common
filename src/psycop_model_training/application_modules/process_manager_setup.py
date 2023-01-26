@@ -1,8 +1,7 @@
 import wandb
-from random_word import RandomWords
-
 from psycop_model_training.config_schemas.conf_utils import load_app_cfg_as_pydantic
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from random_word import RandomWords
 
 
 def create_random_wandb_group_name():
@@ -27,9 +26,12 @@ def setup_wandb(cfg: FullConfigSchema) -> str:
     return wandb_group
 
 
-def setup(config_file_name: str) -> None:
+def setup(config_file_name: str, application_config_dir_relative_path: str) -> None:
     """Setup the requirements to run the model training pipeline."""
-    cfg = load_app_cfg_as_pydantic(config_file_name=config_file_name)
+    cfg = load_app_cfg_as_pydantic(
+        config_file_name=config_file_name,
+        config_dir_path_rel=application_config_dir_relative_path,
+    )
     wandb_group = setup_wandb(cfg=cfg)
 
     return cfg, wandb_group

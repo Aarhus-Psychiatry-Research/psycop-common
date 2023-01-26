@@ -2,10 +2,9 @@
 
 
 import pytest
-
 from psycop_model_training.application_modules.train_model.main import train_model
 from psycop_model_training.config_schemas.conf_utils import (
-    load_test_cfg_as_omegaconf,
+    load_cfg_as_omegaconf,
     load_test_cfg_as_pydantic,
 )
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
