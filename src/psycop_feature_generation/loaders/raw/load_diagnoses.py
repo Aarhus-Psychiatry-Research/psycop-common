@@ -9,7 +9,6 @@ files (e.g. psychiatric, cardiovascular, metabolic etc.) over time.
 from typing import Optional, Union
 
 import pandas as pd
-
 from psycop_feature_generation.loaders.raw.utils import load_from_codes
 from psycop_feature_generation.utils import data_loaders
 
@@ -40,7 +39,7 @@ def concat_from_physical_visits(
         },
         "lpr2_inpatient": {
             "view": "FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022",
-            "source_timestamp_col_name": "datotid_udskrivelse",
+            "source_timestamp_col_name": "datotid_udskrivning",
         },
         "lpr2_acute_outpatient": {
             "view": "FOR_akutambulantekontakter_psyk_somatik_LPR2_inkl_2021_feb2022",
@@ -95,15 +94,15 @@ def from_physical_visits(
 
     diagnoses_source_table_info = {
         "lpr3": {
-            "view": "FOR_LPR3kontakter_psyk_somatik_inkl_2021",
+            "view": "FOR_LPR3kontakter_psyk_somatik_inkl_2021_feb2022",
             "source_timestamp_col_name": "datotid_lpr3kontaktslut",
         },
         "lpr2_inpatient": {
-            "view": "FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021",
-            "source_timestamp_col_name": "datotid_udskrivelse",
+            "view": "FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022",
+            "source_timestamp_col_name": "datotid_udskrivning",
         },
         "lpr2_outpatient": {
-            "view": "FOR_besoeg_psyk_somatik_LPR2_inkl_2021",
+            "view": "FOR_besoeg_psyk_somatik_LPR2_inkl_2021_feb2022",
             "source_timestamp_col_name": "datotid_slut",
             "get_latest_in_group_id": "dw_sk_kontakt",
         },
