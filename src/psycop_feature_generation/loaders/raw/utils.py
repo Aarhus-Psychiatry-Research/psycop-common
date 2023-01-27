@@ -3,7 +3,6 @@
 from typing import Optional, Union
 
 import pandas as pd
-
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 
 
@@ -127,10 +126,21 @@ def load_from_codes(
         )
     else:
         raise ValueError("codes_to_match must be either a list or a string.")
-        
+
+    entity_key = "dw_ek_borger"
+
+    cols_to_get = [
+        entity_key,
+        source_timestamp_col_name,
+        code_col_name,
+        get_latest_in_group_id,
+    ]
+    cols_with_set_values = [c for c in cols_to_get if c is not None]
+    cols_to_get_sql_str = ", ".join(cols_with_set_values)
+
     sql = (
-        f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name}"
-        + f"FROM [fct].{fct}"
+        f"SELECT {cols_to_get_sql_str} "
+        + f"FROM [fct].{fct} "
         + f"WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
 
@@ -148,13 +158,17 @@ def load_from_codes(
 
     df[output_col_name] = 1
 
-    df.drop([f"{code_col_name}"], axis="columns", inplace=True)
-    
+    cols_to_keep = [entity_key, source_timestamp_col_name, "value"]
+
     if get_latest_in_group_id is not None:
         # Get the latest visit in each group by source_timestamp_col_name
-        df = df.sort_values(by=source_timestamp_col_name, ascending=False).groupby(get_latest_in_group_id).head(1)
+        df = (
+            df.sort_values(by=source_timestamp_col_name, ascending=False)
+            .groupby(get_latest_in_group_id)
+            .head(1)
+        )
 
-    return df.rename(
+    return df[cols_to_keep].rename(
         columns={
             source_timestamp_col_name: "timestamp",
         },
