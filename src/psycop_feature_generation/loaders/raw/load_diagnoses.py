@@ -101,6 +101,10 @@ def from_physical_visits(
             "view": "FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022",
             "source_timestamp_col_name": "datotid_udskrivning",
         },
+        "lpr2_acute_outpatient": {
+            "view": "FOR_akutambulantekontakter_psyk_somatik_LPR2_inkl_2021_feb2022",
+            "source_timestamp_col_name": "datotid_slut",
+        },
         "lpr2_outpatient": {
             "view": "FOR_besoeg_psyk_somatik_LPR2_inkl_2021_feb2022",
             "source_timestamp_col_name": "datotid_slut",
