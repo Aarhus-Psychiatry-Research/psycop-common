@@ -48,14 +48,14 @@ def multiply_inequalities_in_df(
                 df[col_to_multiply].str.startswith(in_eq).fillna(False)
             )
 
-        df.loc[starts_with_ineq_idxs, col_to_multiply] = (
-            df.loc[starts_with_ineq_idxs, col_to_multiply]
-            .str.replace(",", ".")
-            .str.extract(r"(\d+\.\d+|\d+)", expand=False)
-            .astype(float)
-            .mul(ineq2mult[in_eq])
-            .round(round_to_decimals)
-        )
+            df.loc[starts_with_ineq_idxs, col_to_multiply] = (
+                df.loc[starts_with_ineq_idxs, col_to_multiply]
+                .str.replace(",", ".")
+                .str.extract(r"(\d+\.\d+|\d+)", expand=False)
+                .astype(float)
+                .mul(ineq2mult[in_eq])
+                .round(round_to_decimals)
+            )
 
     # Convert col_to_multiply dtype to float
     df[col_to_multiply] = df[col_to_multiply].astype(float)
