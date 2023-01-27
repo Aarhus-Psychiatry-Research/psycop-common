@@ -49,6 +49,7 @@ def concat_from_physical_visits(
         "lpr2_outpatient": {
             "view": "FOR_besoeg_psyk_somatik_LPR2_inkl_2021_feb2022",
             "source_timestamp_col_name": "datotid_start",
+            "get_latest_in_group_id": "dw_sk_kontakt",
         },
     }
 
@@ -104,6 +105,7 @@ def from_physical_visits(
         "lpr2_outpatient": {
             "view": "FOR_besoeg_psyk_somatik_LPR2_inkl_2021",
             "source_timestamp_col_name": "datotid_start",
+            "get_latest_in_group_id": "dw_sk_kontakt",
         },
     }
 
