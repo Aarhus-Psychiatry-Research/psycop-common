@@ -106,6 +106,9 @@ class PredictionTimeFilterer:
             ],
         )
 
+         # Rename the timestamp column
+        df = df.rename(columns={"timestamp_pred": "timestamp"})
+
         n_after = len(df)
         log.info(
             f"Filtered {n_before - n_after} prediction times by quarantine period."

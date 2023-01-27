@@ -35,7 +35,6 @@ def filter_prediction_times(
         project_info (ProjectInfo): Project info.
         quarantine_df (pd.DataFrame, optional): Quarantine dataframe with "timestamp" and "project_info.col_names.id" columns.
         quarantine_days (int, optional): Number of days to quarantine.
-        timestamp_col_name (str, optional): Name of the timestamp column.
 
     Returns:
         pd.DataFrame: Filtered prediction times dataframe.
