@@ -106,7 +106,7 @@ class PredictionTimeFilterer:
             ],
         )
 
-         # Rename the timestamp column
+        # Rename the timestamp column
         df = df.rename(columns={"timestamp_pred": "timestamp"})
 
         n_after = len(df)
