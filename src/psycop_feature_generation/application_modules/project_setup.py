@@ -6,12 +6,12 @@ import time
 from pathlib import Path
 from typing import Literal
 
-from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
-
 import wandb
 from timeseriesflattener.feature_spec_objects import (  # pylint: disable=no-name-in-module
     BaseModel,
 )
+
+from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
 
 log = logging.getLogger(__name__)
 

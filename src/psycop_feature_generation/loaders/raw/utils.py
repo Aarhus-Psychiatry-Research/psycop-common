@@ -3,6 +3,7 @@
 from typing import Optional, Union
 
 import pandas as pd
+
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 
 

@@ -35,7 +35,9 @@ class PredictionTimeFilterer:
         self.prediction_times_df = prediction_times_df
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
-        self.quarantine_df = self.quarantine_df.rename(columns={"timestamp": "timestamp_quarantine"})
+        self.quarantine_df = self.quarantine_df.rename(
+            columns={"timestamp": "timestamp_quarantine"},
+        )
         self.entity_id_col_name = entity_id_col_name
         self.timestamp_col_name = timestamp_col_name
 
@@ -50,7 +52,7 @@ class PredictionTimeFilterer:
             self.prediction_times_df[
                 self.pred_time_uuid_col_name
             ] = self.prediction_times_df[self.entity_id_col_name].astype(
-                str
+                str,
             ) + self.prediction_times_df[
                 timestamp_col_name
             ].dt.strftime(
@@ -106,10 +108,9 @@ class PredictionTimeFilterer:
             ],
         )
 
-
         n_after = len(df)
         log.info(
-            f"Filtered {n_before - n_after} prediction times by quarantine period."
+            f"Filtered {n_before - n_after} prediction times by quarantine period.",
         )
 
         return df
