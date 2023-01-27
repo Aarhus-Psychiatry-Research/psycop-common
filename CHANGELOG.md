@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.0 (2023-01-27)
+### Feature
+* Remove try/except to avoid debugger getting stuck on it ([`3884ab8`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3884ab89cc15626385689530ce9ea15c56508aff))
+
+### Fix
+* Move all str operations into the if statement ([`91f9174`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/91f91748cca722e1d07113ffbadbaed0d0a8a925))
+
 ## v0.15.0 (2022-12-19)
 ### Feature
 * Move logs next to their dataset ([`e0ed033`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e0ed033a71f93f3a9b642db79b03c2017a067b33))
