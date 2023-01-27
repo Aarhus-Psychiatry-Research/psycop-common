@@ -19,6 +19,8 @@ def load(
     wildcard_code: Optional[bool] = True,
     n_rows: Optional[int] = None,
     exclude_atc_codes: Optional[list[str]] = None,
+    administration_route: Optional[str] = None,
+    administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load medications. Aggregates prescribed/administered if both true. If
     wildcard_atc_code, match from atc_code*. Aggregates all that match. Beware
@@ -38,6 +40,8 @@ def load(
             atc_code.
         n_rows (int, optional): Number of rows to return. Defaults to None, in which case all rows are returned.
         exclude_atc_codes (list[str], optional): Drop rows if atc_code is a direct match to any of these. Defaults to None.
+        administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
+        administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
 
     Returns:
         pd.DataFrame: Cols: dw_ek_borger, timestamp, {atc_code_prefix}_value = 1
@@ -65,6 +69,8 @@ def load(
             n_rows=n_rows,
             exclude_codes=exclude_atc_codes,
             load_diagnoses=False,
+            administration_route=administration_route,
+            administration_method=administration_method,
         )
 
         df = pd.concat([df, df_medication_prescribed])
@@ -80,6 +86,8 @@ def load(
             n_rows=n_rows,
             exclude_codes=exclude_atc_codes,
             load_diagnoses=False,
+            administration_route=administration_route,
+            administration_method=administration_method,
         )
         df = pd.concat([df, df_medication_administered])
 
@@ -148,7 +156,7 @@ def antipsychotics(n_rows: Optional[int] = None) -> pd.DataFrame:
     """
     return load(
         atc_code="N05A",
-        load_prescribed=True,
+        load_prescribed=False,
         load_administered=True,
         wildcard_code=True,
         n_rows=n_rows,
@@ -290,6 +298,87 @@ def pregabaline(n_rows: Optional[int] = None) -> pd.DataFrame:
         n_rows=n_rows,
     )
 
+@data_loaders.register("opioid_dependency")
+def opioid_dependency(n_rows: Optional[int] = None) -> pd.DataFrame:
+    """All opioid dependency medications.
+    """
+    return load(
+        atc_code="N07BC",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
+
+@data_loaders.register("buprenorphin")
+def buprenorphin(n_rows: Optional[int] = None) -> pd.DataFrame:
+    return load(
+        atc_code="N07BC01",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
+
+@data_loaders.register("methadon")
+def methadon(n_rows: Optional[int] = None) -> pd.DataFrame:
+    return load(
+        atc_code="N07BC02",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
+
+@data_loaders.register("levacetylmethadol")
+def levacetylmethadol(n_rows: Optional[int] = None) -> pd.DataFrame:
+    return load(
+        atc_code="N07BC02",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
+
+@data_loaders.register("lofexidin")
+def lofexidin(n_rows: Optional[int] = None) -> pd.DataFrame:
+    return load(
+        atc_code="N07BC02",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
+
+@data_loaders.register("levomethadon")
+def levomethadon(n_rows: Optional[int] = None) -> pd.DataFrame:
+    return load(
+        atc_code="N07BC02",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
+
+@data_loaders.register("diamorphin")
+def diamorphin(n_rows: Optional[int] = None) -> pd.DataFrame:
+    return load(
+        atc_code="N07BC02",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
+
+@data_loaders.register("buprenorphin")
+def buprenorphin(n_rows: Optional[int] = None) -> pd.DataFrame:
+    return load(
+        atc_code="N07BC51",
+        load_prescribed=False,
+        load_administered=True,
+        wildcard_code=True,
+        n_rows=n_rows,
+    )
 
 @data_loaders.register("hypnotics and sedatives")
 def hypnotics(n_rows: Optional[int] = None) -> pd.DataFrame:

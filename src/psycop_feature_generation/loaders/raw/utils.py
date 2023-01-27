@@ -78,6 +78,8 @@ def load_from_codes(
     match_with_wildcard: bool = True,
     n_rows: Optional[int] = None,
     exclude_codes: Optional[list[str]] = None,
+    administration_route: Optional[str] = None,
+    administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
@@ -102,6 +104,8 @@ def load_from_codes(
             Defaults to true.
         n_rows: Number of rows to return. Defaults to None.
         exclude_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None.
+        administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
+        administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -130,6 +134,12 @@ def load_from_codes(
         f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name}"
         + f" FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
+
+    if administration_method:
+        sql += f" AND type_kodetekst = '{administration_method}'"
+
+    if administration_route:
+        sql += f" AND admvej_kodetekst = '{administration_route}'"
 
     df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
 
