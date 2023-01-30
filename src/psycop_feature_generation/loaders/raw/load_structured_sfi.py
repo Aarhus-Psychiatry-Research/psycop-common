@@ -28,11 +28,11 @@ def sfi_loader(
     Returns:
         pd.DataFrame
     """
-    view = "[FOR_SFI_uden_fritekst_resultater_psyk_somatik_inkl_2021]"
+    view = "[FOR_SFI_uden_fritekst_resultater_psyk_somatik_inkl_2021_feb2022]"
     sql = f"SELECT dw_ek_borger, datotid_resultat_udfoert, {value_col} FROM [fct].{view} WHERE datotid_resultat_udfoert IS NOT NULL"
 
     if aktivitetstypenavn:
-        sql += f" AND aktivitetstypenavn = '{aktivitetstypenavn}'"  # correct?
+        sql += f" AND aktivitetstypenavn = '{aktivitetstypenavn}'"
     if elementledetekst:
         sql += f" AND elementledetekst = '{elementledetekst}'"
 
