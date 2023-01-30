@@ -78,7 +78,6 @@ def load_from_codes(
     match_with_wildcard: bool = True,
     n_rows: Optional[int] = None,
     exclude_codes: Optional[list[str]] = None,
-    get_latest_in_group_id: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
@@ -103,7 +102,6 @@ def load_from_codes(
             Defaults to true.
         n_rows: Number of rows to return. Defaults to None.
         exclude_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None.
-        get_latest_in_group_id (str, optional): If not None, will group by the str and return the latest in the group. Very useful for e.g. LPR2 outpatient treatment courses, where the diagnosis attached to a visit can be recoded into the past when the course ends. For more on this, see Bernstorff et al. 2022. To avoid data leakage from the future, we only keep the last visit in the group. Defaults to None.
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -128,19 +126,8 @@ def load_from_codes(
     else:
         raise ValueError("codes_to_match must be either a list or a string.")
 
-    entity_key = "dw_ek_borger"
-
-    cols_to_get = [
-        entity_key,
-        source_timestamp_col_name,
-        code_col_name,
-        get_latest_in_group_id,
-    ]
-    cols_with_set_values = [c for c in cols_to_get if c is not None]
-    cols_to_get_sql_str = ", ".join(cols_with_set_values)
-
     sql = (
-        f"SELECT {cols_to_get_sql_str} "
+        f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name} "
         + f"FROM [fct].{fct} "
         + f"WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
@@ -159,17 +146,9 @@ def load_from_codes(
 
     df[output_col_name] = 1
 
-    cols_to_keep = [entity_key, source_timestamp_col_name, "value"]
+    df.drop([f"{code_col_name}"], axis="columns", inplace=True)
 
-    if get_latest_in_group_id is not None:
-        # Get the latest visit in each group by source_timestamp_col_name
-        df = (
-            df.sort_values(by=source_timestamp_col_name, ascending=False)
-            .groupby(get_latest_in_group_id)
-            .head(1)
-        )
-
-    return df[cols_to_keep].rename(
+    return df.rename(
         columns={
             source_timestamp_col_name: "timestamp",
         },
