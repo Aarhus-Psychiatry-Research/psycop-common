@@ -128,8 +128,7 @@ def load_from_codes(
 
     sql = (
         f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name} "
-        + f"FROM [fct].{fct} "
-        + f"WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
+        + f"FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
 
     df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
