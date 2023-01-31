@@ -1,7 +1,7 @@
+"""Utility functions for model training."""
 import pandas as pd
 
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
@@ -11,7 +11,7 @@ def create_eval_dataset(
     df: pd.DataFrame,
 ):
     """Create an evaluation dataset object from a dataframe and
-    FullConfigSchema."""
+    ColumnNamesSchema."""
     # Check if custom attribute exists:
     custom_col_names = col_names.custom_columns
 
@@ -26,7 +26,9 @@ def create_eval_dataset(
         pred_timestamps=df[col_names.pred_timestamp],
         outcome_timestamps=df[col_names.outcome_timestamp],
         age=df[col_names.age],
-        exclusion_timestamps=df[col_names.exclusion_timestamp] if col_names.exclusion_timestamp else None,
+        exclusion_timestamps=df[col_names.exclusion_timestamp]
+        if col_names.exclusion_timestamp
+        else None,
         custom_columns=custom_columns if custom_col_names else None,
     )
 
