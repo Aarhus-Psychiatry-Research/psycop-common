@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.1 (2023-01-31)
+### Fix
+* Use acute outpatient visits as well ([`659af23`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/659af23622848290e83967e8fe528bc4f999ceff))
+* Typo, and use newest data ([`bbbc8f5`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/bbbc8f53c69106e0a1c188d163786cb181ef4483))
+* Use end dates for all contacts ([`d8940c1`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/d8940c1717a0f97dee8ff593bf7b9cee6d99b402))
+* Use end times for all diagnosis loading ([`4d9e600`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/4d9e600e70744b7ebe46458bc2c1c08b6102f86a))
+
 ## v0.16.0 (2023-01-27)
 ### Feature
 * Remove try/except to avoid debugger getting stuck on it ([`3884ab8`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3884ab89cc15626385689530ce9ea15c56508aff))
