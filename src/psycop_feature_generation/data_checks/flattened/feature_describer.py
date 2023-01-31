@@ -6,17 +6,17 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from wasabi import Printer
-
-from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
-from psycop_feature_generation.loaders.flattened.local_feature_loaders import (
-    load_split_predictors,
-)
 from timeseriesflattener.feature_spec_objects import (
     PredictorSpec,
     StaticSpec,
     TemporalSpec,
     _AnySpec,
+)
+from wasabi import Printer
+
+from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
+from psycop_feature_generation.loaders.flattened.local_feature_loaders import (
+    load_split_predictors,
 )
 
 UNICODE_HIST = {

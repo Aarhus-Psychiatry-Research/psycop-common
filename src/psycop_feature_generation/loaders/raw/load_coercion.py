@@ -49,10 +49,12 @@ def coercion_duration(
     df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
 
     # add end time as start time for acute sedation
-    df.loc[df.typetekst_sei == 'Beroligende medicin', 'datotid_slut_sei'] = df['datotid_start_sei']
-    
+    df.loc[df.typetekst_sei == "Beroligende medicin", "datotid_slut_sei"] = df[
+        "datotid_start_sei"
+    ]
+
     # drop nas for coercion end times
-    df = df.dropna(subset='datotid_slut_sei')
+    df = df.dropna(subset="datotid_slut_sei")
 
     # Drop duplicate rows
     df = df.drop_duplicates(keep="first")
@@ -65,7 +67,7 @@ def coercion_duration(
     # Change NaNs to 0
     df["value"].fillna(0, inplace=True)
 
-    return df[['dw_ek_borger', 'timestamp', 'value']].reset_index(drop=True)
+    return df[["dw_ek_borger", "timestamp", "value"]].reset_index(drop=True)
 
 
 def _concatenate_coercion(

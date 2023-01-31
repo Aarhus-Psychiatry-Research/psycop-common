@@ -53,7 +53,7 @@ def admissions(
         sql = f"SELECT {cols} FROM [fct].{meta['view']} WHERE {meta['datetime_col']} IS NOT NULL AND {meta['value_col']} IS NOT NULL {meta['where']}"
 
         if shak_code is not None:
-           sql += f" AND left({meta['location_col']}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
+            sql += f" AND left({meta['location_col']}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
 
         df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
         df.rename(

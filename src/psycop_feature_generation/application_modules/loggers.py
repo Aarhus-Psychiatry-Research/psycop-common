@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 
 import coloredlogs
+
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 
 
