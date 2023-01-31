@@ -28,12 +28,12 @@ def sfi_loader(
     Returns:
         pd.DataFrame
     """
-    view = "[FOR_SFI_uden_fritekst_resultater_psyk_somatik_inkl_2021]"
+    view = "[FOR_SFI_uden_fritekst_resultater_psyk_somatik_inkl_2021_feb2022]"
     sql = f"SELECT dw_ek_borger, datotid_resultat_udfoert, {value_col} FROM [fct].{view} WHERE datotid_resultat_udfoert IS NOT NULL"
 
-    if elementledetekst:
-        sql += f" AND aktivitetstypenavn = '{aktivitetstypenavn}'"
     if aktivitetstypenavn:
+        sql += f" AND aktivitetstypenavn = '{aktivitetstypenavn}'"
+    if elementledetekst:
         sql += f" AND elementledetekst = '{elementledetekst}'"
 
     df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
@@ -65,7 +65,31 @@ def broeset_violence_checklist(n_rows: Optional[int] = None) -> pd.DataFrame:
         aktivitetstypenavn="Brøset Violence Checkliste (BVC)",
         elementledetekst="Sum",
         n_rows=n_rows,
+        value_col="numelementvaerdi",
     )
+
+
+@data_loaders.register("broeset_violence_checklist_physical_threats")
+def broeset_violence_checklist_physical_threats(
+    n_rows: Optional[int] = None,
+) -> pd.DataFrame:
+    df = sfi_loader(
+        aktivitetstypenavn="Brøset Violence Checkliste (BVC)",
+        elementledetekst="Fysiske trusler",
+        n_rows=n_rows,
+        value_col="elementkode",
+    )
+
+    df["value"] = df["value"].replace(
+        to_replace=[
+            "010BroesetNulPoint",
+            "020BroesetEtPoint",
+        ],
+        value=[0, 1],
+        regex=False,
+    )
+
+    return df
 
 
 @data_loaders.register("selvmordsrisiko")
@@ -96,6 +120,7 @@ def hamilton_d17(n_rows: Optional[int] = None) -> pd.DataFrame:
         aktivitetstypenavn="Vurdering af depressionssværhedsgrad med HAM-D17",
         elementledetekst="Samlet score HAM-D17",
         n_rows=n_rows,
+        value_col="numelementvaerdi",
     )
 
 
