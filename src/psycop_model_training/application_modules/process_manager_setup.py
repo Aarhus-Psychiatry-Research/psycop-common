@@ -1,7 +1,8 @@
 import wandb
+from random_word import RandomWords
+
 from psycop_model_training.config_schemas.conf_utils import load_app_cfg_as_pydantic
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from random_word import RandomWords
 
 
 def create_random_wandb_group_name():
