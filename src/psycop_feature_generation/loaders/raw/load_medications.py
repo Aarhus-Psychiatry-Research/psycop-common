@@ -357,13 +357,13 @@ def pregabaline(
     )
 
 
-@data_loaders.register("opioid_dependency")
-def opioid_dependency(
+@data_loaders.register("opioid_dependence")
+def opioid_dependence(
     n_rows: Optional[int] = None,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
-    """All opioid dependency medications."""
+    """All opioid dependence medications."""
     return load(
         atc_code="N07BC",
         load_prescribed=False,
@@ -381,7 +381,7 @@ def buprenorphine(
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
-    """Opioid dependency medications with the active ingredient buprenorphine."""
+    """Opioid dependence medications with the active ingredient buprenorphine."""
     return load(
         atc_code="N07BC01",
         load_prescribed=False,
@@ -399,7 +399,7 @@ def methadone(
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
-    """Opioid dependency medications with the active ingredient methadone."""
+    """Opioid dependence medications with the active ingredient methadone."""
     return load(
         atc_code="N07BC02",
         load_prescribed=False,
@@ -417,7 +417,7 @@ def naxolone(
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
-    """Opioid dependency medications with the active ingredients naxolone and buprenorphine."""
+    """Opioid dependence medications with the active ingredients naxolone and buprenorphine."""
     return load(
         atc_code="N07BC51",
         load_prescribed=False,
