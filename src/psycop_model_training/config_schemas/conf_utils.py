@@ -6,6 +6,7 @@ from typing import Optional, Union
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
+
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
