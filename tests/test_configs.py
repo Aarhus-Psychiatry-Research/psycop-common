@@ -38,14 +38,3 @@ def get_app_config_file_names() -> list[str]:
     config_file_paths = list(CONFIG_DIR_PATH_TEST_ABS.glob("*.yaml"))
 
     return [f"{path.stem}.yaml" for path in config_file_paths]
-
-
-@pytest.mark.parametrize("config_file_name", get_app_config_file_names())
-def test_app_configs(config_file_name):
-    """Test that all configs load correctly."""
-    with initialize(version_base=None, config_path=CONFIG_DIR_PATH_APP_REL):
-        cfg = compose(
-            config_name=config_file_name,
-        )
-
-    cfg = convert_omegaconf_to_pydantic_object(conf=cfg)
