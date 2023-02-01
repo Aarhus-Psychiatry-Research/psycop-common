@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.30.0 (2023-02-01)
+### Feature
+* Allow manual specification of relative path for config dir ([`d7c8de3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d7c8de3f498cd03174b4db665e999517245a7826))
+
+### Fix
+* Add Optional as possible type for `exclusion_timestamp` ([`c650905`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c65090539bafa436f61600a19e5312758fe63510))
+
 ## v0.29.0 (2023-01-24)
 ### Feature
 * Wrap training loop in try/except ([`ec8630a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ec8630a8150c374f2bdcf152b39c2ddfbea056cc))
