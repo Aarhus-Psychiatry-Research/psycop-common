@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.30.1 (2023-02-02)
+### Fix
+* Add _ as prefix to when looking for outcome columns to drop ([`2c0ce05`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2c0ce05f6da518bfd0f5992f3fcdcb54a538d72f))
+* Make exclusion timestamp optional in EvalDataset ([`65e1d0f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/65e1d0ffdc70c74b0d4040c04426b77788a8cb00))
+* `min_lookahead_days` no longer matching multiple values ([`1ed5833`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1ed583375c3b859d7cd6b5c5693c3376e87e2174))
+
 ## v0.30.0 (2023-02-01)
 ### Feature
 * Allow manual specification of relative path for config dir ([`d7c8de3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d7c8de3f498cd03174b4db665e999517245a7826))
