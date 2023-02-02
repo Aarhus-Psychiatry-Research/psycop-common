@@ -153,7 +153,7 @@ class PresSplitColFilter:
         col_to_drop = [
             c
             for c in outcome_cols
-            if str(self.cfg.preprocessing.pre_split.min_lookahead_days) not in c
+            if f"_{str(self.cfg.preprocessing.pre_split.min_lookahead_days)}_" not in c
         ]
 
         # If no columns to drop, return the dataset
