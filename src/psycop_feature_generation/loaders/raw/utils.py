@@ -1,10 +1,14 @@
 """Example of."""
 
+import logging
+
 from typing import Optional, Union
 
 import pandas as pd
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
+
+log = logging.getLogger(__name__)
 
 
 def str_to_sql_match_logic(
@@ -136,9 +140,106 @@ def load_from_codes(
     )
 
     if administration_method:
+        allowed_administration_methods = (
+            "Fast",
+            "PN",
+            "Engangs",
+            "Alternerende",
+            "Kontinuerlig",
+            "Skema2",
+            "Skema",
+            "Tidspunkter",
+        )
+        if administration_method not in allowed_administration_methods:
+            log.warning(
+                f"Value for administration method does not exist, returning 0 rows. "
+                "Allowed values are {}.".format(allowed_administration_methods)
+            )
         sql += f" AND type_kodetekst = '{administration_method}'"
 
     if administration_route:
+        allowed_administration_routes = (
+            "OR",
+            "IV",
+            "IH",
+            "IM",
+            "SC",
+            "KU",
+            "IA",
+            "IR",
+            "PR",
+            "IN",
+            "OK",
+            "TD",
+            "PO",
+            "SL",
+            "BS",
+            "DE",
+            "ED",
+            "CO",
+            "VA",
+            "LO",
+            "PE",
+            "AU",
+            "RE",
+            "IE",
+            "IU",
+            "UR",
+            "GA",
+            "OG",
+            "OS",
+            "IC",
+            "OM",
+            "ET",
+            "HE",
+            "IB",
+            "BR",
+            "KO",
+            "VI",
+            "EC",
+            "IL",
+            "IP",
+            "IT",
+            "MP",
+            "CA",
+            "IO",
+            "IS",
+            "CE",
+            "ID",
+            "ES",
+            "SM",
+            "TR",
+            "PA",
+            "PT",
+            "TO",
+            "PD",
+            "ON",
+            "BU",
+            "GI",
+            "OF",
+            "AM",
+            "CB",
+            "EL",
+            "PV",
+            "LY",
+            "XA",
+            "IF",
+            "AL",
+            "DI",
+            "PN",
+            "PC",
+            "BD",
+            "IG",
+            "HS",
+            "TU",
+            "PJ",
+            "LF",
+        )
+        if administration_route not in allowed_administration_routes:
+            log.warning(
+                f"Value for administration route does not exist, returning 0 rows. "
+                "Allowed values are {}.".format(allowed_administration_routes)
+            )
         sql += f" AND admvej_kodetekst = '{administration_route}'"
 
     df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
