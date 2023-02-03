@@ -1,7 +1,7 @@
 """Loaders for visits to psychiatry."""
 
 import logging
-from typing import Optional
+from typing import Optional, Literal
 
 import pandas as pd
 
@@ -18,6 +18,10 @@ def physical_visits(
     where_clause: Optional[str] = None,
     where_separator: Optional[str] = "AND",
     n_rows: Optional[int] = None,
+    visit_length: Optional[bool] = False,
+    visit_type: Optional[
+        Literal["admissions", "ambulatory_visits", "emergency_visits"]
+    ] = None,
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
@@ -28,6 +32,8 @@ def physical_visits(
         where_clause (Optional[str], optional): Extra where-clauses to add to the SQL call. E.g. dw_ek_borger = 1. Defaults to None. # noqa: DAR102
         where_separator (Optional[str], optional): Separator between where-clauses. Defaults to "AND".
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
+        visit_length...
+        visit_type...
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -37,34 +43,50 @@ def physical_visits(
     d = {
         "LPR3": {
             "view": "[FOR_LPR3kontakter_psyk_somatik_inkl_2021_feb2022]",
-            "datetime_col": "datotid_lpr3kontaktstart",
+            "datetime_col": "datotid_lpr3kontaktslut",
+            "value_col": "datotid_lpr3kontaktstart",
             "location_col": "shakkode_lpr3kontaktansvarlig",
-            "where": "AND pt_type in ('Ambulant', 'Akut ambulant', 'Indlæggelse')",
+            "where": "AND [Kontakttype] = 'Fysisk fremmøde'",
         },
-        "LPR2_outpatient": {
+        "ambulatory_visits": {
             "view": "[FOR_besoeg_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            "datetime_col": "datotid_start",
+            "datetime_col": "datotid_slut",
+            "value_col": "datotid_start",
             "location_col": "shakafskode",
-            "where": "AND psykambbesoeg = 1",
+            "where": "AND ambbesoeg = 1",
         },
-        "LPR2_acute_outpatient": {
+        "emergency_visits": {
             "view": "[FOR_akutambulantekontakter_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            "datetime_col": "datotid_start",
+            "datetime_col": "datotid_slut",
+            "value_col": "datotid_start",
             "location_col": "afsnit_stam",
             "where": "",
         },
-        "LPR2_admissions": {
+        "admissions": {
             "view": "[FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            "datetime_col": "datotid_indlaeggelse",
+            "datetime_col": "datotid_udskrivning",
+            "value_col": "datotid_indlaeggelse",
             "location_col": "shakKode_kontaktansvarlig",
             "where": "",
         },
     }
 
+    if visit_type:
+        LPR3_types = {
+            "admissions": "'Indlæggelse'",
+            "ambulatory_visits": "'Ambulant'",
+            "emergency_visits": "'Akut ambulant'",
+        }
+        d = {key: d[key] for key in ["LPR3", visit_type]}
+        d["LPR3"]["where"] += f" AND pt_type = {LPR3_types[visit_type]}"
+
     dfs = []
 
     for meta in d.values():
         cols = f"{meta['datetime_col']}, dw_ek_borger"
+
+        if visit_length:
+            cols += f", {meta['value_col']}"
 
         sql = f"SELECT {cols} FROM [fct].{meta['view']} WHERE {meta['datetime_col']} IS NOT NULL {meta['where']}"
 
@@ -88,11 +110,20 @@ def physical_visits(
         keep="first",
     )
 
-    output_df["value"] = 1
+    if visit_length:
+        output_df.rename(columns={"value_col": "value"})
+    else:
+        output_df["value"] = 1
 
     log.info("Loaded physical visits")
 
     return output_df.reset_index(drop=True)
+
+
+@data_loaders.register("physical_visits")
+def physical_visits(n_rows: Optional[int] = None) -> pd.DataFrame:
+    """Load physical visits to all units."""
+    return physical_visits(n_rows=n_rows)
 
 
 @data_loaders.register("physical_visits_to_psychiatry")
@@ -113,3 +144,14 @@ def physical_visits_to_psychiatry(
 def physical_visits_to_somatic(n_rows: Optional[int] = None) -> pd.DataFrame:
     """Load physical visits to somatic."""
     return physical_visits(shak_code=6600, shak_sql_operator="!=", n_rows=n_rows)
+
+
+@data_loaders.register("admissions")
+def admissions(
+    n_rows: Optional[int] = None,
+    visit_length: Optional[bool] = False,
+) -> pd.DataFrame:
+    """Load physical visits to somatic."""
+    return physical_visits(
+        visit_type="admissions", visit_length=visit_length, n_rows=n_rows
+    )
