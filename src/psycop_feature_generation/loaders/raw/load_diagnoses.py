@@ -7,10 +7,13 @@ files (e.g. psychiatric, cardiovascular, metabolic etc.) over time.
 # pylint: disable=missing-function-docstring
 
 from typing import Optional, Union
+import logging
 
 import pandas as pd
 from psycop_feature_generation.loaders.raw.utils import load_from_codes
 from psycop_feature_generation.utils import data_loaders
+
+log = logging.getLogger(__name__)
 
 
 def from_contacts(
@@ -32,6 +35,14 @@ def from_contacts(
     Returns:
         pd.DataFrame
     """
+
+    log.warning(
+        "The DNPR3 data model replaced the DNPR2 model on 3 February 2019. "
+        "Due to changes in DNPR3, granurality of diagnoses differ across the two models. "
+        "If your prediction timestamps, lookbehind or lookahead span across this date, "
+        "you should not use count as a resolve_multiple_fn. "
+        "See the wiki (LPR2 compared to LPR3) for more information.",
+    )
 
     df = load_from_codes(
         codes_to_match=icd_code,
