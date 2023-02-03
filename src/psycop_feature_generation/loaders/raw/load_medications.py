@@ -157,7 +157,7 @@ def concat_medications(
 @data_loaders.register("antipsychotics")
 def antipsychotics(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = False,
+    load_prescribed: Optional[bool] = True,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
