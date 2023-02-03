@@ -47,9 +47,7 @@ def load(
         pd.DataFrame: Cols: dw_ek_borger, timestamp, {atc_code_prefix}_value = 1
     """
 
-    if load_prescribed == True and (
-        administration_method is not None or administration_route is not None
-    ):
+    if load_prescribed and any([administration_method, administration_route]):
         raise TypeError(
             "load() got an unexpected combination of arguments. When load_prescribed=True, administration_method and administration_route must be NoneType objects."
         )
