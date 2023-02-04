@@ -71,6 +71,12 @@ def physical_visits(
         },
     }
 
+    allowed_visit_types = ("admissions", "ambulatory_visits", "emergency_visits")
+    if visit_type not in allowed_visit_types:
+        raise ValueError(
+            f"Invalid visit type. Allowed types of visits are {allowed_visit_types}."
+        )
+
     if visit_type:
         LPR3_types = {
             "admissions": "'Indlæggelse'",
@@ -86,11 +92,12 @@ def physical_visits(
         cols = f"{meta['datetime_col']}, dw_ek_borger"
 
         if visit_length:
-            cols += f", {meta['value_col']}"
+            cols += f", {meta['value_col']} AS value_col"
 
         sql = f"SELECT {cols} FROM [fct].{meta['view']} WHERE {meta['datetime_col']} IS NOT NULL {meta['where']}"
 
         if shak_code is not None:
+            sql += f" AND {meta['location_col']} != 'Ukendt'"
             sql += f" AND left({meta['location_col']}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
 
         if where_clause is not None:
@@ -110,8 +117,12 @@ def physical_visits(
         keep="first",
     )
 
+    # Change value column to length of admission in days
     if visit_length:
-        output_df.rename(columns={"value_col": "value"})
+        output_df["value"] = (
+            output_df["timestamp"] - pd.to_datetime(output_df["value_col"])
+        ).dt.total_seconds() / 86400
+        output_df = output_df.drop(columns="value_col")
     else:
         output_df["value"] = 1
 
@@ -150,8 +161,48 @@ def physical_visits_to_somatic(n_rows: Optional[int] = None) -> pd.DataFrame:
 def admissions(
     n_rows: Optional[int] = None,
     visit_length: Optional[bool] = False,
+    shak_code: Optional[int] = None,
+    shak_sql_operator: Optional[str] = None,
 ) -> pd.DataFrame:
-    """Load physical visits to somatic."""
+    """Load admissions."""
     return physical_visits(
-        visit_type="admissions", visit_length=visit_length, n_rows=n_rows
+        visit_type="admissions",
+        visit_length=visit_length,
+        n_rows=n_rows,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+    )
+
+
+@data_loaders.register("ambulatory_visits")
+def ambulatory_visits(
+    n_rows: Optional[int] = None,
+    visit_length: Optional[bool] = False,
+    shak_code: Optional[int] = None,
+    shak_sql_operator: Optional[str] = None,
+) -> pd.DataFrame:
+    """Load ambulatory visits."""
+    return physical_visits(
+        visit_type="ambulatory_visits",
+        visit_length=visit_length,
+        n_rows=n_rows,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+    )
+
+
+@data_loaders.register("emergency_visits")
+def emergency_visits(
+    n_rows: Optional[int] = None,
+    visit_length: Optional[bool] = False,
+    shak_code: Optional[int] = None,
+    shak_sql_operator: Optional[str] = None,
+) -> pd.DataFrame:
+    """Load emergency visits."""
+    return physical_visits(
+        visit_type="emergency_visits",
+        visit_length=visit_length,
+        n_rows=n_rows,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
     )
