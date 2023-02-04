@@ -41,22 +41,21 @@ def multiply_inequalities_in_df(
     in_eqs = sorted(ineq2mult.keys(), key=len, reverse=True)
 
     for in_eq in in_eqs:
-        try:
+        col_can_contain_ineq = df[col_to_multiply].dtype == "object"
+
+        if col_can_contain_ineq:
             starts_with_ineq_idxs = (
                 df[col_to_multiply].str.startswith(in_eq).fillna(False)
             )
-        except AttributeError:
-            # If the column is no longer a string (i.e. all values have been coerced), continue
-            continue
 
-        df.loc[starts_with_ineq_idxs, col_to_multiply] = (
-            df.loc[starts_with_ineq_idxs, col_to_multiply]
-            .str.replace(",", ".")
-            .str.extract(r"(\d+\.\d+|\d+)", expand=False)
-            .astype(float)
-            .mul(ineq2mult[in_eq])
-            .round(round_to_decimals)
-        )
+            df.loc[starts_with_ineq_idxs, col_to_multiply] = (
+                df.loc[starts_with_ineq_idxs, col_to_multiply]
+                .str.replace(",", ".")
+                .str.extract(r"(\d+\.\d+|\d+)", expand=False)
+                .astype(float)
+                .mul(ineq2mult[in_eq])
+                .round(round_to_decimals)
+            )
 
     # Convert col_to_multiply dtype to float
     df[col_to_multiply] = df[col_to_multiply].astype(float)

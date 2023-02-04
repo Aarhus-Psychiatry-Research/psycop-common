@@ -25,7 +25,7 @@ class PredictionTimeFilterer:
         Args:
             prediction_times_df (pd.DataFrame): Prediction times dataframe.
                 Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
-            quarantine_df (pd.DataFrame, optional): A dataframe with "timestamp" column from which to start the quarantine.
+            quarantine_df (pd.DataFrame, optional): A dataframe with timestamp column from which to start the quarantine.
                 Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
             quarantine_days (int, optional): Number of days to quarantine.
             entity_id_col_name (str): Name of the entity_id_col_name column.
@@ -35,6 +35,9 @@ class PredictionTimeFilterer:
         self.prediction_times_df = prediction_times_df
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
+        self.quarantine_df = self.quarantine_df.rename(
+            columns={"timestamp": "timestamp_quarantine"},
+        )
         self.entity_id_col_name = entity_id_col_name
         self.timestamp_col_name = timestamp_col_name
 
@@ -49,9 +52,9 @@ class PredictionTimeFilterer:
             self.prediction_times_df[
                 self.pred_time_uuid_col_name
             ] = self.prediction_times_df[self.entity_id_col_name].astype(
-                str
+                str,
             ) + self.prediction_times_df[
-                "timestamp"
+                timestamp_col_name
             ].dt.strftime(
                 "-%Y-%m-%d-%H-%M-%S",
             )
@@ -65,11 +68,10 @@ class PredictionTimeFilterer:
             self.quarantine_df,
             on=self.entity_id_col_name,
             how="left",
-            suffixes=("_pred", "_quarantine"),
         )
 
         df["days_since_quarantine"] = (
-            df["timestamp_pred"] - df["timestamp_quarantine"]
+            df[self.timestamp_col_name] - df["timestamp_quarantine"]
         ).dt.days
 
         # Check if the prediction time is hit by the quarantine date.
@@ -106,12 +108,9 @@ class PredictionTimeFilterer:
             ],
         )
 
-        # Rename the timestamp column
-        df = df.rename(columns={"timestamp_pred": "timestamp"})
-
         n_after = len(df)
         log.info(
-            f"Filtered {n_before - n_after} prediction times by quarantine period."
+            f"Filtered {n_before - n_after} prediction times by quarantine period.",
         )
 
         return df

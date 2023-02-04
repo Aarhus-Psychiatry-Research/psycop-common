@@ -1,3 +1,4 @@
+"""Loader for moves between regions."""
 from typing import Optional
 
 import pandas as pd
@@ -20,7 +21,7 @@ def load_moves(n_rows: Optional[int] = None) -> pd.DataFrame:
 def load_move_into_rm_for_exclusion(n_rows: Optional[int] = None) -> pd.DataFrame:
     """Get a dataframe with timestamps for each move into or out from the
     Central Denmark Region."""
-    df = load_moves()
+    df = load_moves(n_rows=n_rows)
 
     df = df.drop(columns=["fraflytnings_datotid"])
     df = df.rename(columns={"tilflytnings_datotid": "timestamp"})

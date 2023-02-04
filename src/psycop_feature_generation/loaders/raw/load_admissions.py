@@ -31,15 +31,15 @@ def admissions(
     d = {
         "LPR3": {
             "view": "[FOR_LPR3kontakter_psyk_somatik_inkl_2021_feb2022]",
-            "datetime_col": "datotid_lpr3kontaktstart",
-            "value_col": "datotid_lpr3kontaktslut",
+            "datetime_col": "datotid_lpr3kontaktslut",
+            "value_col": "datotid_lpr3kontaktstart",
             "location_col": "shakkode_lpr3kontaktansvarlig",
             "where": "AND pt_type = 'Indlæggelse'",
         },
         "LPR2_admissions": {
             "view": "[FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            "datetime_col": "datotid_indlaeggelse",
-            "value_col": "datotid_udskrivning",
+            "datetime_col": "datotid_udskrivning",
+            "value_col": "datotid_indlaeggelse",
             "location_col": "shakKode_kontaktansvarlig",
             "where": "",
         },
@@ -74,7 +74,7 @@ def admissions(
 
     # Change value column to length of admission in days
     output_df["value"] = (
-        output_df["value"] - output_df["timestamp"]
+        output_df["timestamp"] - output_df["value"]
     ).dt.total_seconds() / 86400
 
     msg.good("Loaded admissions data")

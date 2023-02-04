@@ -16,7 +16,7 @@ def str_to_sql_match_logic(
     code_sql_col_name: str,
     load_diagnoses: bool,
     match_with_wildcard: bool,
-):
+) -> str:
     """Generate SQL match logic from a single string.
 
     Args:
@@ -135,8 +135,8 @@ def load_from_codes(
         raise ValueError("codes_to_match must be either a list or a string.")
 
     sql = (
-        f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name}"
-        + f" FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
+        f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name} "
+        + f"FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
 
     if administration_method:
