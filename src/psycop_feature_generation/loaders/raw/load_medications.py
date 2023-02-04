@@ -155,7 +155,7 @@ def concat_medications(
 @data_loaders.register("antipsychotics")
 def antipsychotics(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -181,7 +181,7 @@ def antipsychotics(
 @data_loaders.register("first_gen_antipsychotics")
 def first_gen_antipsychotics(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -209,7 +209,7 @@ def first_gen_antipsychotics(
 @data_loaders.register("second_gen_antipsychotics")
 def second_gen_antipsychotics(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -242,7 +242,7 @@ def second_gen_antipsychotics(
 @data_loaders.register("top_10_weight_gaining_antipsychotics")
 def top_10_weight_gaining_antipsychotics(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -271,7 +271,7 @@ def top_10_weight_gaining_antipsychotics(
 @data_loaders.register("olanzapine")
 def olanzapine(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -290,7 +290,7 @@ def olanzapine(
 @data_loaders.register("clozapine")
 def clozapine(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -504,7 +504,7 @@ def antidepressives(
 @data_loaders.register("ssri")
 def ssri(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -524,7 +524,7 @@ def ssri(
 @data_loaders.register("snri")
 def snri(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -544,7 +544,7 @@ def snri(
 @data_loaders.register("tca")
 def tca(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -563,7 +563,7 @@ def tca(
 @data_loaders.register("selected_nassa")
 def selected_nassa(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -582,7 +582,7 @@ def selected_nassa(
 @data_loaders.register("lithium")
 def lithium(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -601,7 +601,7 @@ def lithium(
 @data_loaders.register("valproate")
 def valproate(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -620,7 +620,7 @@ def valproate(
 @data_loaders.register("lamotrigine")
 def lamotrigine(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
@@ -697,7 +697,7 @@ def anti_epileptics(
 @data_loaders.register("alcohol_abstinence")
 def alcohol_abstinence(
     n_rows: Optional[int] = None,
-    load_prescribed: Optional[bool] = True,
+    load_prescribed: Optional[bool] = False,
     load_administered: Optional[bool] = True,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
