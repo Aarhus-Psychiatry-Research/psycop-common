@@ -34,8 +34,8 @@ class RawValueSourceSchema(BaseModel):
 def physical_visits(
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = "=",
-    additional_where_clause: Optional[str] = None,
-    additional_where_separator: Optional[str] = "AND",
+    where_clause: Optional[str] = None,
+    where_separator: Optional[str] = "AND",
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
     visit_type: Optional[
@@ -48,8 +48,8 @@ def physical_visits(
         shak_code (Optional[int], optional): SHAK code indicating where to keep/not keep visits from (e.g. 6600). Combines with
             shak_sql_operator, e.g. "!= 6600". Defaults to None, in which case all admissions are kept.
         shak_sql_operator (Optional[str], optional): Operator to use with shak_code. Defaults to "=".
-        additional_where_clause (Optional[str], optional): Extra where-clauses to add to the SQL call. E.g. dw_ek_borger = 1. Defaults to None. # noqa: DAR102
-        additional_where_separator (Optional[str], optional): Separator between where-clauses. Defaults to "AND".
+        where_clause (Optional[str], optional): Extra where-clauses to add to the SQL call. E.g. dw_ek_borger = 1. Defaults to None. # noqa: DAR102
+        where_separator (Optional[str], optional): Separator between where-clauses. Defaults to "AND".
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_type (Optional[Literal["admissions", "ambulatory_visits", "emergency_visits"]], optional): Whether to subset visits by visit type. Defaults to None.
@@ -120,8 +120,8 @@ def physical_visits(
             sql += f" AND {schema.location_col} != 'Ukendt'"
             sql += f" AND left({schema.location_col}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
 
-        if additional_where_clause is not None:
-            sql += f" {additional_where_separator} {additional_where_clause}"
+        if where_clause is not None:
+            sql += f" {where_separator} {where_clause}"
 
         df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
         df.rename(columns={schema.datetime_col: "timestamp"}, inplace=True)
