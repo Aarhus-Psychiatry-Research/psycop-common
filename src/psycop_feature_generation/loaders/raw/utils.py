@@ -84,6 +84,9 @@ def load_from_codes(
     exclude_codes: Optional[list[str]] = None,
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
+    shak_location_col: Optional[str] = None,
+    shak_code: Optional[int] = None,
+    shak_sql_operator: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
@@ -110,6 +113,9 @@ def load_from_codes(
         exclude_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None.
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
+        shak_location_col (str, optional): Name of column containing shak code. Defaults to None. Combine with shak_code and shak_sql_operator.
+            shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
+            shak_sql_operator, (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -138,6 +144,9 @@ def load_from_codes(
         f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name} "
         + f"FROM [fct].{fct} WHERE {source_timestamp_col_name} IS NOT NULL AND ({match_col_sql_str})"
     )
+
+    if shak_code is not None:
+        sql += f" AND left({shak_location_col}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
 
     if administration_method:
         allowed_administration_methods = (
