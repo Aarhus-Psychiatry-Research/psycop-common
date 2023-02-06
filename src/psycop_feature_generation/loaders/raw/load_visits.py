@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 
 class RawValueSourceSchema(BaseModel):
-    """A class schema classifications.
+    """A class for structuring raw values from source schemas.
 
     Fields:
         view (str): The name of the view for the schema.
@@ -34,10 +34,10 @@ class RawValueSourceSchema(BaseModel):
 def physical_visits(
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = "=",
-    where_clause: Optional[str] = None,
-    where_separator: Optional[str] = "AND",
+    additional_where_clause: Optional[str] = None,
+    additional_where_separator: Optional[str] = "AND",
     n_rows: Optional[int] = None,
-    visit_length_days: Optional[bool] = False,
+    return_value_as_visit_length_days: Optional[bool] = False,
     visit_type: Optional[
         Literal["admissions", "ambulatory_visits", "emergency_visits"]
     ] = None,
@@ -48,10 +48,10 @@ def physical_visits(
         shak_code (Optional[int], optional): SHAK code indicating where to keep/not keep visits from (e.g. 6600). Combines with
             shak_sql_operator, e.g. "!= 6600". Defaults to None, in which case all admissions are kept.
         shak_sql_operator (Optional[str], optional): Operator to use with shak_code. Defaults to "=".
-        where_clause (Optional[str], optional): Extra where-clauses to add to the SQL call. E.g. dw_ek_borger = 1. Defaults to None. # noqa: DAR102
-        where_separator (Optional[str], optional): Separator between where-clauses. Defaults to "AND".
+        additional_where_clause (Optional[str], optional): Extra where-clauses to add to the SQL call. E.g. dw_ek_borger = 1. Defaults to None. # noqa: DAR102
+        additional_where_separator (Optional[str], optional): Separator between where-clauses. Defaults to "AND".
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
-        visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
+        return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_type (Optional[Literal["admissions", "ambulatory_visits", "emergency_visits"]], optional): Whether to subset visits by visit type. Defaults to None.
 
     Returns:
@@ -66,28 +66,28 @@ def physical_visits(
             datetime_col="datotid_lpr3kontaktslut",
             value_col="datotid_lpr3kontaktstart",
             location_col="shakkode_lpr3kontaktansvarlig",
-            where="AND [Kontakttype] = 'Fysisk fremmøde'",
+            where_clause="AND [Kontakttype] = 'Fysisk fremmøde'",
         ),
         "ambulatory_visits": RawValueSourceSchema(
             view="[FOR_besoeg_psyk_somatik_LPR2_inkl_2021_feb2022]",
             datetime_col="datotid_slut",
             value_col="datotid_start",
             location_col="shakafskode",
-            where="AND ambbesoeg = 1",
+            where_clause="AND ambbesoeg = 1",
         ),
         "emergency_visits": RawValueSourceSchema(
             view="[FOR_akutambulantekontakter_psyk_somatik_LPR2_inkl_2021_feb2022]",
             datetime_col="datotid_slut",
             value_col="datotid_start",
             location_col="afsnit_stam",
-            where="",
+            where_clause="",
         ),
         "admissions": RawValueSourceSchema(
             view="[FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022]",
             datetime_col="datotid_udskrivning",
             value_col="datotid_indlaeggelse",
             location_col="shakKode_kontaktansvarlig",
-            where="",
+            where_clause="",
         ),
     }
 
@@ -104,27 +104,27 @@ def physical_visits(
             "emergency_visits": "'Akut ambulant'",
         }
         d = {key: d[key] for key in ["LPR3", visit_type]}
-        d["LPR3"].where += f" AND pt_type = {LPR3_types[visit_type]}"
+        d["LPR3"].where_clause += f" AND pt_type = {LPR3_types[visit_type]}"
 
     dfs = []
 
-    for meta in d.values():
-        cols = f"{meta.datetime_col}, dw_ek_borger"
+    for schema in d.values():
+        cols = f"{schema.datetime_col}, dw_ek_borger"
 
-        if visit_length_days:
-            cols += f", {meta.value_col} AS value_col"
+        if return_value_as_visit_length_days:
+            cols += f", {schema.value_col} AS value_col"
 
-        sql = f"SELECT {cols} FROM [fct].{meta.view} WHERE {meta.datetime_col} IS NOT NULL {meta.where}"
+        sql = f"SELECT {cols} FROM [fct].{schema.view} WHERE {schema.datetime_col} IS NOT NULL {schema.where_clause}"
 
         if shak_code is not None:
-            sql += f" AND {meta.location_col} != 'Ukendt'"
-            sql += f" AND left({meta.location_col}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
+            sql += f" AND {schema.location_col} != 'Ukendt'"
+            sql += f" AND left({schema.location_col}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
 
-        if where_clause is not None:
-            sql += f" {where_separator} {where_clause}"
+        if additional_where_clause is not None:
+            sql += f" {additional_where_separator} {additional_where_clause}"
 
         df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
-        df.rename(columns={meta.datetime_col: "timestamp"}, inplace=True)
+        df.rename(columns={schema.datetime_col: "timestamp"}, inplace=True)
 
         dfs.append(df)
 
@@ -138,7 +138,7 @@ def physical_visits(
     )
 
     # Change value column to length of admission in days
-    if visit_length_days:
+    if return_value_as_visit_length_days:
         output_df["value"] = (
             output_df["timestamp"] - pd.to_datetime(output_df["value_col"])
         ).dt.total_seconds() / 86400
@@ -180,14 +180,14 @@ def physical_visits_to_somatic(n_rows: Optional[int] = None) -> pd.DataFrame:
 @data_loaders.register("admissions")
 def admissions(
     n_rows: Optional[int] = None,
-    visit_length_days: Optional[bool] = False,
+    return_value_as_visit_length_days: Optional[bool] = False,
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load admissions."""
     return physical_visits(
         visit_type="admissions",
-        visit_length_days=visit_length_days,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
         n_rows=n_rows,
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
@@ -197,14 +197,14 @@ def admissions(
 @data_loaders.register("ambulatory_visits")
 def ambulatory_visits(
     n_rows: Optional[int] = None,
-    visit_length_days: Optional[bool] = False,
+    return_value_as_visit_length_days: Optional[bool] = False,
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load ambulatory visits."""
     return physical_visits(
         visit_type="ambulatory_visits",
-        visit_length_days=visit_length_days,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
         n_rows=n_rows,
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
@@ -214,14 +214,14 @@ def ambulatory_visits(
 @data_loaders.register("emergency_visits")
 def emergency_visits(
     n_rows: Optional[int] = None,
-    visit_length_days: Optional[bool] = False,
+    return_value_as_visit_length_days: Optional[bool] = False,
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load emergency visits."""
     return physical_visits(
         visit_type="emergency_visits",
-        visit_length_days=visit_length_days,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
         n_rows=n_rows,
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
