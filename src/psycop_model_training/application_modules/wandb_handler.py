@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict
 
 import wandb
@@ -18,8 +19,10 @@ class WandbHandler:
         # Required on Windows because the wandb process is sometimes unable to initialise
         create_wandb_folders()
 
-    def _unpack_pydantic_objects_in_dict(self, d: Dict[str, Any]) -> Dict[str, Any]:
-        """Takes a dict where some values are pydantic basemodels and recursively transforms them into a dict, ending up with only nested dicts and non-basemodel values."""
+    def _unpack_pydantic_objects_in_dict(self, d: dict[str, Any]) -> dict[str, Any]:
+        """Takes a dict where some values are pydantic basemodels and
+        recursively transforms them into a dict, ending up with only nested
+        dicts and non-basemodel values."""
         for k, v in d.items():
             if isinstance(v, BaseModel):
                 d[k] = v.__dict__
@@ -30,15 +33,13 @@ class WandbHandler:
         return d
 
     def _get_cfg_as_dict(self) -> dict[str, Any]:
+        """Get config as an unnested dict, with nesting represented as 'key.val1.val2' in the key-name.
+        Wandb does not allow for nested dicts in its configs."""
         if isinstance(self.cfg, DictConfig):
-            # Create flattened dict for logging to wandb
-            # Wandb doesn't allow configs to be nested, so we
-            # flatten it.
             cfg_as_dict = OmegaConf.to_container(self.cfg)
-
         else:
-            # For testing, we can take a FullConfig object instead. Simplifies boilerplate.
-            cfg_as_dict = self._unpack_pydantic_objects_in_dict(d=self.cfg.__dict__)
+            cfg_copy = copy.deepcopy(self.cfg.__dict__)
+            cfg_as_dict = self._unpack_pydantic_objects_in_dict(d=cfg_copy)
 
         flattened_dict = flatten_nested_dict(
             d=cfg_as_dict,
