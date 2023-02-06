@@ -33,8 +33,11 @@ class WandbHandler:
         return d
 
     def _get_cfg_as_dict(self) -> dict[str, Any]:
-        """Get config as an unnested dict, with nesting represented as 'key.val1.val2' in the key-name.
-        Wandb does not allow for nested dicts in its configs."""
+        """Get config as an unnested dict, with nesting represented as
+        'key.val1.val2' in the key-name.
+
+        Wandb does not allow for nested dicts in its configs.
+        """
         if isinstance(self.cfg, DictConfig):
             cfg_as_dict = OmegaConf.to_container(self.cfg)
         else:
