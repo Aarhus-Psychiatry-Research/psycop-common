@@ -40,7 +40,8 @@ def get_eval_dir(cfg: FullConfigSchema):
 
 @wandb_alert_on_exception_return_terrible_auc
 def post_wandb_setup_train_model(
-    cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = None
+    cfg: FullConfigSchema,
+    custom_artifact_fn: Optional[Callable] = None,
 ):
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
