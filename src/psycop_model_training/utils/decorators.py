@@ -112,7 +112,8 @@ def wandb_alert_on_exception_return_terrible_auc(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:  # pylint: disable=broad-except, unused-variable
-            wandb.alert(title="Run crashed", text=traceback.format_exc())
+            if wandb.run is not None:
+                wandb.alert(title="Run crashed", text=traceback.format_exc())
             return 0.5
 
     return wrapper
