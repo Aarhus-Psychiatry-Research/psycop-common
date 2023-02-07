@@ -126,6 +126,8 @@ def generate_synth_data(
             for col in na_ignore_cols:
                 df_[col] = df[col]
 
+        df = df_
+
     # Sigmoid it to get probabilities with mean = 0.5
     df[outcome_column_name] = 1 / (1 + np.exp(y_))
 
@@ -153,6 +155,7 @@ if __name__ == "__main__":
         n_samples=10_000,
         logistic_outcome_model="1*pred_hba1c+1*pred_hdl",
         prob_outcome=0.08,
+        na_prob=0.1,
     )
 
     df.describe()
