@@ -83,15 +83,15 @@ def test_synth_data_generator():
         elif split == "val":
             n_samples = 300
 
-        OUTCOME_COL_NAME = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
+        outcome_col_name = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
 
         synth_df = generate_synth_data(
             predictors=column_specifications,
-            outcome_column_name=OUTCOME_COL_NAME,
+            outcome_column_name=outcome_col_name,
             n_samples=n_samples,
             logistic_outcome_model="1*pred_hba1c_within_100_days_max_fallback_nan+1*pred_hdl_within_100_days_max_fallback_nan",
             prob_outcome=0.08,
-            na_ignore_cols=OUTCOME_COL_NAME,
+            na_ignore_cols=outcome_col_name,
         )
 
         if override_dataset_on_test_run:

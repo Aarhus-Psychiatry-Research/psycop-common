@@ -60,10 +60,11 @@ def test_feature_selection(muteable_test_config: FullConfigSchema):
 
 
 def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSchema):
-    """
-    Test that train_model raises an exception when getting NaN as input and using select_percentile for feature selection, since that is undefined.
+    """Test that train_model raises an exception when getting NaN as input and
+    using select_percentile for feature selection, since that is undefined.
 
-    Then check that adding the decorator suppresses the exception and returns 0.5 for Optuna search.
+    Then check that adding the decorator suppresses the exception and
+    returns 0.5 for Optuna search.
     """
     cfg = muteable_test_config
     cfg.preprocessing.post_split.imputation_method = None
