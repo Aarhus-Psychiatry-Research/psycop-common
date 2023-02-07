@@ -100,3 +100,15 @@ def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=
         return result
 
     return wrapper
+
+def wandb_alert_on_exception_return_terrible_auc(func):
+    """Alerts wandb on exception."""
+
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            wandb.alert(title="Run crashed", text=traceback.format_exc())
+            return 0.5
+
+    return wrapper

@@ -12,11 +12,11 @@ from psycop_model_training.preprocessing.post_split.pipeline import (
 )
 from psycop_model_training.training.train_and_predict import train_and_predict
 from psycop_model_training.utils.col_name_inference import get_col_names
-from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
-from psycopmlutils.wandb.wandb_try_except_decorator import (
-    wandb_alert_on_exception,
+from psycop_model_training.utils.decorators import (
     wandb_alert_on_exception_return_terrible_auc,
 )
+from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
+from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
 
 import wandb
 
