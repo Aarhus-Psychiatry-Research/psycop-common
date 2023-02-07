@@ -1,6 +1,8 @@
 """Train a single model and evaluate it."""
 from typing import Callable, Optional
 
+import wandb
+
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.utils import (
@@ -16,8 +18,6 @@ from psycop_model_training.utils.decorators import (
     wandb_alert_on_exception_return_terrible_auc,
 )
 from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
-
-import wandb
 
 
 def get_eval_dir(cfg: FullConfigSchema):
@@ -39,7 +39,9 @@ def get_eval_dir(cfg: FullConfigSchema):
 
 
 @wandb_alert_on_exception_return_terrible_auc
-def post_wandb_setup_train_model(cfg, custom_artifact_fn):
+def post_wandb_setup_train_model(
+    cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = None
+):
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
 
