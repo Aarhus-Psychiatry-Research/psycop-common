@@ -1,13 +1,13 @@
 """Loaders for visits to psychiatry."""
 
 import logging
-from typing import Optional, Literal
+from typing import Literal, Optional
 
 import pandas as pd
+from timeseriesflattener.feature_spec_objects import BaseModel
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
-from timeseriesflattener.feature_spec_objects import BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +30,6 @@ class RawValueSourceSchema(BaseModel):
     where: str
 
 
-@data_loaders.register("physical_visits")
 def physical_visits(
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = "=",
@@ -94,11 +93,11 @@ def physical_visits(
     allowed_visit_types = ("admissions", "ambulatory_visits", "emergency_visits")
     if visit_type not in allowed_visit_types:
         raise ValueError(
-            f"Invalid visit type. Allowed types of visits are {allowed_visit_types}."
+            f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
         )
 
     if visit_type:
-        LPR3_types = {
+        LPR3_types = {  # pylint: disable=invalid-name
             "admissions": "'Indlæggelse'",
             "ambulatory_visits": "'Ambulant'",
             "emergency_visits": "'Akut ambulant'",
@@ -152,7 +151,7 @@ def physical_visits(
 
 
 @data_loaders.register("physical_visits")
-def physical_visits(n_rows: Optional[int] = None) -> pd.DataFrame:
+def physical_visits_loader(n_rows: Optional[int] = None) -> pd.DataFrame:
     """Load physical visits to all units."""
     return physical_visits(n_rows=n_rows)
 

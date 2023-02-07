@@ -6,10 +6,11 @@ files (e.g. psychiatric, cardiovascular, metabolic etc.) over time.
 
 # pylint: disable=missing-function-docstring
 
-from typing import Optional, Union
 import logging
+from typing import Optional, Union
 
 import pandas as pd
+
 from psycop_feature_generation.loaders.raw.utils import load_from_codes
 from psycop_feature_generation.utils import data_loaders
 
@@ -35,8 +36,8 @@ def from_contacts(
         n_rows: Number of rows to return. Defaults to None.
         wildcard_icd_code (bool, optional): Whether to match on icd_code*. Defaults to False.
         shak_location_col (str, optional): Name of column containing shak code. Defaults to None. For diagnosis loaders, this column is "shakkode_ansvarlig". Combine with shak_code and shak_sql_operator.
-            shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
-            shak_sql_operator, (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
+        shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
+        shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
 
     Returns:
         pd.DataFrame

@@ -1,7 +1,6 @@
 """Example of."""
 
 import logging
-
 from typing import Optional, Union
 
 import pandas as pd
@@ -114,8 +113,8 @@ def load_from_codes(
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
         shak_location_col (str, optional): Name of column containing shak code. Defaults to None. Combine with shak_code and shak_sql_operator.
-            shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
-            shak_sql_operator, (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
+        shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
+        shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
 
     Returns:
         pd.DataFrame: A pandas dataframe with dw_ek_borger, timestamp and
@@ -161,8 +160,8 @@ def load_from_codes(
         )
         if administration_method not in allowed_administration_methods:
             log.warning(
-                f"Value for administration method does not exist, returning 0 rows. "
-                "Allowed values are {}.".format(allowed_administration_methods)
+                "Value for administration method does not exist, returning 0 rows. "
+                + f"Allowed values are {allowed_administration_methods}.",
             )
         sql += f" AND type_kodetekst = '{administration_method}'"
 
@@ -246,8 +245,8 @@ def load_from_codes(
         )
         if administration_route not in allowed_administration_routes:
             log.warning(
-                f"Value for administration route does not exist, returning 0 rows. "
-                "Allowed values are {}.".format(allowed_administration_routes)
+                "Value for administration route does not exist, returning 0 rows. "
+                + f"Allowed values are {allowed_administration_routes}.",
             )
         sql += f" AND admvej_kodetekst = '{administration_route}'"
 

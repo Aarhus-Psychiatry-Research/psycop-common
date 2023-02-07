@@ -49,7 +49,7 @@ def load(
 
     if load_prescribed and any([administration_method, administration_route]):
         raise TypeError(
-            "load() got an unexpected combination of arguments. When load_prescribed=True, administration_method and administration_route must be NoneType objects."
+            "load() got an unexpected combination of arguments. When load_prescribed=True, administration_method and administration_route must be NoneType objects.",
         )
 
     if load_prescribed:
@@ -410,7 +410,8 @@ def buprenorphine(
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
-    """Opioid dependence medications with the active ingredient buprenorphine."""
+    """Opioid dependence medications with the active ingredient
+    buprenorphine."""
     return load(
         atc_code="N07BC01",
         load_prescribed=load_prescribed,
@@ -450,7 +451,8 @@ def naxolone(
     administration_route: Optional[str] = None,
     administration_method: Optional[str] = None,
 ) -> pd.DataFrame:
-    """Opioid dependence medications with the active ingredients naxolone and buprenorphine."""
+    """Opioid dependence medications with the active ingredients naxolone and
+    buprenorphine."""
     return load(
         atc_code="N07BC51",
         load_prescribed=load_prescribed,
