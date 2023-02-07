@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.30.2 (2023-02-07)
+### Fix
+* Dont modify the config when flattening to dict ([`03f50e3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/03f50e34864bea9cd41bc4b3642bc861cf97053b))
+* Correctly unpack nested pydantic basemodels ([`1d9437f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1d9437facb6c1a737f431add2724d7b8ed9bd361))
+
 ## v0.30.1 (2023-02-02)
 ### Fix
 * Add _ as prefix to when looking for outcome columns to drop ([`2c0ce05`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2c0ce05f6da518bfd0f5992f3fcdcb54a538d72f))
