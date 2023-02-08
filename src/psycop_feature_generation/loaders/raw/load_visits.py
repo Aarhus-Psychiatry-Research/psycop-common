@@ -27,7 +27,7 @@ class RawValueSourceSchema(BaseModel):
     datetime_col: str
     value_col: Optional[str] = None
     location_col: Optional[str] = None
-    where: str
+    where_clause: str
 
 
 def physical_visits(
@@ -37,8 +37,8 @@ def physical_visits(
     where_separator: Optional[str] = "AND",
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
-    visit_type: Optional[
-        Literal["admissions", "ambulatory_visits", "emergency_visits"]
+    visit_types: Optional[
+        list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]
     ] = None,
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
@@ -51,7 +51,7 @@ def physical_visits(
         where_separator (Optional[str], optional): Separator between where-clauses. Defaults to "AND".
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
-        visit_type (Optional[Literal["admissions", "ambulatory_visits", "emergency_visits"]], optional): Whether to subset visits by visit type. Defaults to None.
+        visit_types (Optional[list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]], optional): Whether to subset visits by visit types. Defaults to None.
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -91,19 +91,20 @@ def physical_visits(
     }
 
     allowed_visit_types = ("admissions", "ambulatory_visits", "emergency_visits")
-    if visit_type not in allowed_visit_types:
+    if visit_types not in allowed_visit_types:
         raise ValueError(
             f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
         )
 
-    if visit_type:
+    if visit_types:
         LPR3_types = {  # pylint: disable=invalid-name
             "admissions": "'Indlæggelse'",
             "ambulatory_visits": "'Ambulant'",
             "emergency_visits": "'Akut ambulant'",
         }
-        d = {key: d[key] for key in ["LPR3", visit_type]}
-        d["LPR3"].where_clause += f" AND pt_type = {LPR3_types[visit_type]}"
+        d = {key: d[key] for key in visit_types + ["LPR3"]}
+        LPR3_types = {key: LPR3_types[key] for key in visit_types}
+        d["LPR3"].where_clause += f" AND pt_type IN ({','.join(LPR3_types.values())})"
 
     dfs = []
 
@@ -185,7 +186,7 @@ def admissions(
 ) -> pd.DataFrame:
     """Load admissions."""
     return physical_visits(
-        visit_type="admissions",
+        visit_types=["admissions"],
         return_value_as_visit_length_days=return_value_as_visit_length_days,
         n_rows=n_rows,
         shak_code=shak_code,
@@ -202,7 +203,7 @@ def ambulatory_visits(
 ) -> pd.DataFrame:
     """Load ambulatory visits."""
     return physical_visits(
-        visit_type="ambulatory_visits",
+        visit_types=["ambulatory_visits"],
         return_value_as_visit_length_days=return_value_as_visit_length_days,
         n_rows=n_rows,
         shak_code=shak_code,
@@ -219,7 +220,24 @@ def emergency_visits(
 ) -> pd.DataFrame:
     """Load emergency visits."""
     return physical_visits(
-        visit_type="emergency_visits",
+        visit_types=["emergency_visits"],
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
+        n_rows=n_rows,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+    )
+
+
+@data_loaders.register("ambulatory_and_emergency_visits")
+def ambulatory_and_emergency_visits(
+    n_rows: Optional[int] = None,
+    return_value_as_visit_length_days: Optional[bool] = False,
+    shak_code: Optional[int] = None,
+    shak_sql_operator: Optional[str] = None,
+) -> pd.DataFrame:
+    """Load emergency visits."""
+    return physical_visits(
+        visit_types=["ambulatory_visits", "emergency_visits"],
         return_value_as_visit_length_days=return_value_as_visit_length_days,
         n_rows=n_rows,
         shak_code=shak_code,
