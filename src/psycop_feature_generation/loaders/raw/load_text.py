@@ -163,13 +163,13 @@ def load_aktuel_psykisk(
 
 @data_loaders.register("load_note_types")
 def load_arbitrary_notes(
-    note_names: Union[str, list[str]],
+    note_types: Union[str, list[str]],
     n_rows: Optional[int] = None,
 ) -> pd.DataFrame:
     """Returns one or multiple note types from all years.
 
     Args:
-        note_names (Union[str, list[str]]): Which note types to load. See
+        note_types (Union[str, list[str]]): Which note types to load. See
             `get_all_valid_note_types()` for a list of valid note types.
         n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
 
@@ -177,6 +177,6 @@ def load_arbitrary_notes(
         pd.DataFrame: (Featurized) notes
     """
     return load_notes(
-        note_names,
+        note_types,
         n_rows=n_rows,
     )
