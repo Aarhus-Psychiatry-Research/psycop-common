@@ -97,7 +97,7 @@ def physical_visits(
         )
 
     if visit_types:
-        LPR3_types = {  # pylint: disable=invalid-name
+        english_to_lpr3_visit_type = {  # pylint: disable=invalid-name
             "admissions": "'Indlæggelse'",
             "ambulatory_visits": "'Ambulant'",
             "emergency_visits": "'Akut ambulant'",
