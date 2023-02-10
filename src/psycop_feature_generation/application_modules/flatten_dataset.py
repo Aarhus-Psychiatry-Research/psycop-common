@@ -74,15 +74,17 @@ def create_flattened_dataset(
     Returns:
         FlattenedDataset: Flattened dataset.
     """
-    filtered_prediction_times_df = filter_prediction_times(
-        prediction_times_df=prediction_times_df,
-        project_info=project_info,
-        quarantine_df=quarantine_df,
-        quarantine_days=quarantine_days,
-    )
+
+    if quarantine_df or quarantine_days:
+        prediction_times_df = filter_prediction_times(
+            prediction_times_df=prediction_times_df,
+            project_info=project_info,
+            quarantine_df=quarantine_df,
+            quarantine_days=quarantine_days,
+        )
 
     flattened_dataset = TimeseriesFlattener(
-        prediction_times_df=filtered_prediction_times_df,
+        prediction_times_df=prediction_times_df,
         n_workers=min(
             len(feature_specs),
             psutil.cpu_count(logical=True),
