@@ -3,14 +3,15 @@ from pathlib import Path
 from typing import Optional, Union
 
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_auc_score, roc_curve
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import roc_auc_score, roc_curve
 
 
 def plot_auc_roc(
     eval_dataset: EvalDataset,
-    fig_size: Optional[tuple] = (10, 10),
+    title: str = "ROC-curve",
+    fig_size: Optional[tuple] = (5, 5),
+    dpi: int = 160,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC ROC curve.
@@ -26,12 +27,16 @@ def plot_auc_roc(
     fpr, tpr, _ = roc_curve(eval_dataset.y, eval_dataset.y_hat_probs)
     auc = roc_auc_score(eval_dataset.y, eval_dataset.y_hat_probs)
 
-    plt.figure(figsize=fig_size)
-    plt.plot(fpr, tpr, label="AUC score = " + str(auc))
-    plt.title("AUC ROC Curve")
+    LEGEND_LABEL = "AUC = "
+    
+    
+    plt.figure(figsize=fig_size, dpi=dpi)
+    plt.plot(fpr, tpr, label=LEGEND_LABEL + str(round(auc, 3)))
     plt.legend(loc=4)
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
+    
+    plt.title(title)
+    plt.xlabel("1 - Specificity")
+    plt.ylabel("Sensitivity")
 
     if save_path is not None:
         plt.savefig(save_path)
