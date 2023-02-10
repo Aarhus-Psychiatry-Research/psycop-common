@@ -90,21 +90,25 @@ def physical_visits(
         ),
     }
 
-    allowed_visit_types = ("admissions", "ambulatory_visits", "emergency_visits")
-    if visit_types not in allowed_visit_types:
-        raise ValueError(
-            f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
-        )
-
     if visit_types:
+        allowed_visit_types = ["admissions", "ambulatory_visits", "emergency_visits"]
+        if any(types not in allowed_visit_types for types in visit_types):
+            raise ValueError(
+                f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
+            )
+
         english_to_lpr3_visit_type = {  # pylint: disable=invalid-name
             "admissions": "'Indlæggelse'",
             "ambulatory_visits": "'Ambulant'",
             "emergency_visits": "'Akut ambulant'",
         }
         d = {key: d[key] for key in visit_types + ["LPR3"]}
-        LPR3_types = [LPR3_types[visit] for visit in visit_types]
-        d["LPR3"].where_clause += f" AND pt_type IN ({','.join(LPR3_types)})"
+        english_to_lpr3_visit_type = [
+            english_to_lpr3_visit_type[visit] for visit in visit_types
+        ]
+        d[
+            "LPR3"
+        ].where_clause += f" AND pt_type IN ({','.join(english_to_lpr3_visit_type)})"
 
     dfs = []
 
@@ -152,18 +156,30 @@ def physical_visits(
 
 
 @data_loaders.register("physical_visits")
-def physical_visits_loader(n_rows: Optional[int] = None) -> pd.DataFrame:
+def physical_visits_loader(
+    n_rows: Optional[int] = None,
+    return_value_as_visit_length_days: Optional[bool] = False,
+) -> pd.DataFrame:
     """Load physical visits to all units."""
-    return physical_visits(n_rows=n_rows)
+    return physical_visits(
+        n_rows=n_rows,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
+    )
 
 
 @data_loaders.register("physical_visits_to_psychiatry")
 def physical_visits_to_psychiatry(
     n_rows: Optional[int] = None,
     timestamps_only: bool = True,
+    return_value_as_visit_length_days: Optional[bool] = False,
 ) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
-    df = physical_visits(shak_code=6600, shak_sql_operator="=", n_rows=n_rows)
+    df = physical_visits(
+        shak_code=6600,
+        shak_sql_operator="=",
+        n_rows=n_rows,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
+    )
 
     if timestamps_only:
         df = df.drop("value", axis=1)
@@ -172,9 +188,17 @@ def physical_visits_to_psychiatry(
 
 
 @data_loaders.register("physical_visits_to_somatic")
-def physical_visits_to_somatic(n_rows: Optional[int] = None) -> pd.DataFrame:
+def physical_visits_to_somatic(
+    n_rows: Optional[int] = None,
+    return_value_as_visit_length_days: Optional[bool] = False,
+) -> pd.DataFrame:
     """Load physical visits to somatic."""
-    return physical_visits(shak_code=6600, shak_sql_operator="!=", n_rows=n_rows)
+    return physical_visits(
+        shak_code=6600,
+        shak_sql_operator="!=",
+        n_rows=n_rows,
+        return_value_as_visit_length_days=return_value_as_visit_length_days,
+    )
 
 
 @data_loaders.register("admissions")
