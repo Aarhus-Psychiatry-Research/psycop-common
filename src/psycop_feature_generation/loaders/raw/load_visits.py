@@ -103,8 +103,8 @@ def physical_visits(
             "emergency_visits": "'Akut ambulant'",
         }
         d = {key: d[key] for key in visit_types + ["LPR3"]}
-        LPR3_types = {key: LPR3_types[key] for key in visit_types}
-        d["LPR3"].where_clause += f" AND pt_type IN ({','.join(LPR3_types.values())})"
+        LPR3_types = [LPR3_types[visit] for visit in visit_types]
+        d["LPR3"].where_clause += f" AND pt_type IN ({','.join(LPR3_types)})"
 
     dfs = []
 
