@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.32.1 (2023-02-13)
+### Fix
+* Compute correct diff when using df diff decorator ([`1879b93`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1879b938729735f7a2df701959da4284f796c77d))
+
 ## v0.32.0 (2023-02-13)
 ### Feature
 * Allow to drop visits after exclusion timestamp ([`77b7fc8`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/77b7fc8a23c3ac012e2b7539491daf90e9c0a2fd))

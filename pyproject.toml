@@ -1,6 +1,6 @@
 [project]
 name = "psycop_model_training"
-version = "0.32.0"
+version = "0.32.1"
 description = "PSYCOP model training utilities"
 authors = [{name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"},
     {name = "Lasse Hansen", email = "lasseh0310@gmail.com"},
