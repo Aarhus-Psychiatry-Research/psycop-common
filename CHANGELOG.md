@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.34.0 (2023-02-13)
+### Feature
+* Even prettier formatting ([`1cadde3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1cadde3af00dd10b4c84bda777955d58942d7743))
+
+### Fix
+* Prettier output for df_dimensions_diff ([`4ba728a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/4ba728a82bbe4e07f9f907048c9772df03a6a742))
+
 ## v0.33.0 (2023-02-13)
 ### Feature
 * Minor cleanups to ([`198bc44`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/198bc4400641fd5cbc40b6c600dbabe8add1a411))
