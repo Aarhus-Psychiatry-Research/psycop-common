@@ -4,12 +4,14 @@ utility functions.
 """
 import functools
 import pathlib
+import time
 import traceback
 from functools import wraps
 
 import pandas as pd
-import wandb
 from wasabi import Printer
+
+import wandb
 
 
 def cache_pandas_result(cache_dir: pathlib.Path, hard_reset: bool = False):
@@ -57,15 +59,16 @@ def cache_pandas_result(cache_dir: pathlib.Path, hard_reset: bool = False):
     return build_caching_function
 
 
-def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=False):
+def print_df_dimensions_diff(func):
     """Print the difference in rows between the input and output dataframes."""
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         msg = Printer(timestamp=True)
 
-        if print_when_starting:
-            msg.info(f"{func.__name__}: Starting")
+        start_time = time.time()
+
+        base_msg = f"{func.__name__}"
 
         arg_dfs = [arg for arg in args if isinstance(arg, pd.DataFrame)]
         kwargs_dfs = [arg for arg in kwargs.values() if isinstance(arg, pd.DataFrame)]
@@ -83,22 +86,21 @@ def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=
 
             result = func(*args, **kwargs)
 
-            diff = result.shape[dim_int] - n_in_dim_before_func
+            diff = n_in_dim_before_func - result.shape[dim_int]
 
+            diff_msg = ""
             if diff != 0:
-                msg.info(
-                    f"{func.__name__}: {n_in_dim_before_func} {dim} before function",
-                )
-
                 percent_diff = round(
-                    (diff) / n_in_dim_before_func,
+                    (diff) / n_in_dim_before_func * 100,
                     2,
                 )
 
-                msg.info(f"{func.__name__}: Dropped {diff} ({percent_diff}%) {dim}")
-            else:
-                if print_when_no_diff:
-                    msg.info(f"{func.__name__}: No {dim} dropped")
+                diff_msg += f"Dropped {diff} ({percent_diff}%) {dim}, started with {n_in_dim_before_func} {dim}. | "
+
+        end_time = time.time()
+        duration_str = f"{round(end_time - start_time, 0)} seconds"
+
+        msg.info(f"{base_msg} | {duration_str} | {diff_msg}")
 
         return result
 
