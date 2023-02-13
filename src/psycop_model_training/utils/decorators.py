@@ -98,9 +98,9 @@ def print_df_dimensions_diff(func):
                 diff_msg += f"Dropped {diff} ({percent_diff}%) {dim}, started with {n_in_dim_before_func} {dim}. | "
 
         end_time = time.time()
-        duration_str = f"{round(end_time - start_time, 0)} seconds"
+        duration_str = f"{int(end_time - start_time)} s"
 
-        msg.info(f"{base_msg} | {duration_str} | {diff_msg}")
+        msg.info(f"{duration_str} | {base_msg} | {diff_msg}")
 
         return result
 
