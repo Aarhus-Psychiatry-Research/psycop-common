@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.33.0 (2023-02-13)
+### Feature
+* Minor cleanups to ([`198bc44`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/198bc4400641fd5cbc40b6c600dbabe8add1a411))
+
 ## v0.32.1 (2023-02-13)
 ### Fix
 * Compute correct diff when using df diff decorator ([`1879b93`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1879b938729735f7a2df701959da4284f796c77d))
