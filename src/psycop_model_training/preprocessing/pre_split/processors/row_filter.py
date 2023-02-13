@@ -119,9 +119,11 @@ class PreSplitRowFilter:
 
     @print_df_dimensions_diff
     def _drop_visit_after_exclusion_timestamp(
-        self, dataset: pd.DataFrame
+        self,
+        dataset: pd.DataFrame,
     ) -> pd.DataFrame:
-        """Drop all rows where exclusion timestamp is before the prediction time."""
+        """Drop all rows where exclusion timestamp is before the prediction
+        time."""
 
         rows_to_drop = (
             dataset[self.cfg.data.col_name.pred_timestamp]
@@ -133,7 +135,6 @@ class PreSplitRowFilter:
     @print_df_dimensions_diff
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop all rows where prediction timestamp is after the outcome."""
-
         rows_to_drop = (
             dataset[self.cfg.data.col_name.pred_timestamp]
             > dataset[self.cfg.data.col_name.outcome_timestamp]

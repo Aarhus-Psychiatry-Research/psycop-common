@@ -20,7 +20,6 @@ INTEGRATION_TEST_FILE_NAME = "default_config.yaml"
 @pytest.mark.parametrize("model_name", MODELS.keys())
 def test_train_model(model_name: str):
     """Test main using a variety of model."""
-
     cfg: FullConfigSchema = load_test_cfg_as_pydantic(
         config_file_name=INTEGRATION_TEST_FILE_NAME,
         overrides=[f"model={model_name}"],

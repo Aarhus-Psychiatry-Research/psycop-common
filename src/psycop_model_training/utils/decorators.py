@@ -87,7 +87,7 @@ def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=
 
             if diff != 0:
                 msg.info(
-                    f"{func.__name__}: {n_in_dim_before_func} {dim} before function"
+                    f"{func.__name__}: {n_in_dim_before_func} {dim} before function",
                 )
 
                 percent_diff = round(
