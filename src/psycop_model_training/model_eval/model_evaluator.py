@@ -42,7 +42,11 @@ class ModelEvaluator:
             pipe_metadata.feature_importances = get_feature_importance_dict(
                 pipe=self.pipe,
             )
-        if hasattr(self.pipe["preprocessing"].named_steps, "feature_selection"):
+
+        if "preprocessing" in self.pipe and hasattr(
+            self.pipe["preprocessing"].named_steps,
+            "feature_selection",
+        ):
             pipe_metadata.selected_features = get_selected_features_dict(
                 pipe=self.pipe,
                 train_col_names=self.train_col_names,
