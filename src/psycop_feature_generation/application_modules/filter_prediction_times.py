@@ -31,13 +31,21 @@ class PredictionTimeFilterer:
             entity_id_col_name (str): Name of the entity_id_col_name column.
             timestamp_col_name (str, optional): Name of the timestamp column.
         """
-
         self.prediction_times_df = prediction_times_df
+
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
-        self.quarantine_df = self.quarantine_df.rename(
-            columns={"timestamp": "timestamp_quarantine"},
-        )
+
+        if all(v is None for v in (self.quarantine_days, self.quarantine_df)):
+            raise ValueError(
+                "If either of quarantine_df and quarantine_days are provided, both must be provided.",
+            )
+
+        if self.quarantine_df is not None and self.quarantine_days is not None:
+            self.quarantine_df = self.quarantine_df.rename(
+                columns={"timestamp": "timestamp_quarantine"},
+            )
+
         self.entity_id_col_name = entity_id_col_name
         self.timestamp_col_name = timestamp_col_name
 
@@ -120,11 +128,6 @@ class PredictionTimeFilterer:
         df = self.prediction_times_df
 
         if self.quarantine_df is not None or self.quarantine_days is not None:
-            if all([v is None for v in (self.quarantine_days, self.quarantine_df)]):
-                raise ValueError(
-                    "If either of quarantine_df and quarantine_days are provided, both must be provided.",
-                )
-
             df = self._filter_prediction_times_by_quarantine_period()
 
         if self.added_pred_time_uuid_col:

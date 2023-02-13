@@ -74,6 +74,7 @@ def create_flattened_dataset(
     Returns:
         FlattenedDataset: Flattened dataset.
     """
+
     filtered_prediction_times_df = filter_prediction_times(
         prediction_times_df=prediction_times_df,
         project_info=project_info,
