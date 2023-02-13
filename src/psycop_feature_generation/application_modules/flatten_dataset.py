@@ -53,7 +53,7 @@ def filter_prediction_times(
 @wandb_alert_on_exception
 def create_flattened_dataset(
     feature_specs: list[_AnySpec],
-    filtered_prediction_times_df: pd.DataFrame,
+    prediction_times_df: pd.DataFrame,
     drop_pred_times_with_insufficient_look_distance: bool,
     project_info: ProjectInfo,
     quarantine_df: Optional[pd.DataFrame] = None,
@@ -76,7 +76,7 @@ def create_flattened_dataset(
     """
 
     filtered_prediction_times_df = filter_prediction_times(
-        prediction_times_df=filtered_prediction_times_df,
+        prediction_times_df=prediction_times_df,
         project_info=project_info,
         quarantine_df=quarantine_df,
         quarantine_days=quarantine_days,
