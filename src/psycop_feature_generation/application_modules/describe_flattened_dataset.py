@@ -1,12 +1,7 @@
 """Describe flattened dataset.""" ""
-from collections.abc import Iterable
 import logging
+from collections.abc import Iterable
 from typing import Union
-
-from timeseriesflattener.feature_spec_objects import (
-    StaticSpec,
-    TemporalSpec,
-)
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from psycop_feature_generation.application_modules.wandb_utils import (
@@ -18,6 +13,8 @@ from psycop_feature_generation.data_checks.flattened.data_integrity import (
 from psycop_feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
+
+from timeseriesflattener.feature_spec_objects import StaticSpec, TemporalSpec
 
 log = logging.getLogger(__name__)
 
@@ -49,7 +46,7 @@ def save_flattened_dataset_description_to_disk(
     )
 
     save_feature_descriptive_stats_from_dir(
-        fearture_set_dir=project_info.feature_set_path, 
+        feature_set_dir=project_info.feature_set_path, 
         feature_specs=feature_specs,
         file_suffix=".parquet",
     )
