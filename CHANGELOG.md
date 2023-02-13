@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.32.0 (2023-02-13)
+### Feature
+* Allow to drop visits after exclusion timestamp ([`77b7fc8`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/77b7fc8a23c3ac012e2b7539491daf90e9c0a2fd))
+* For filters, only print dimensions if anything changed ([`0e5587b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0e5587b66aa40671385f0bd58bdd7bc5838a05f9))
+
 ## v0.31.0 (2023-02-08)
 ### Feature
 * Add self-healing ([`1c15d46`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1c15d46fa39a621fa36b5cb086bfebeb1b3083ef))
