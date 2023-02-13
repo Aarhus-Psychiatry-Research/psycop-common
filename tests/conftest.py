@@ -20,7 +20,6 @@ def add_age_gender(df: pd.DataFrame):
     Args:
         df (pd.DataFrame): The dataframe to add age
     """
-
     ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
     ids["age"] = np.random.randint(17, 95, len(ids))
     ids["gender"] = np.where(ids["dw_ek_borger"] > 30_000, "F", "M")

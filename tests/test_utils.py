@@ -42,7 +42,6 @@ def str_to_df(string, convert_timestamp_to_datetime: bool = True) -> pd.DataFram
     Returns:
         pd.DataFrame: The dataframe
     """
-
     from io import StringIO
 
     df = pd.read_table(StringIO(string), sep=",", index_col=False)

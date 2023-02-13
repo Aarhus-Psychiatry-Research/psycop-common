@@ -118,9 +118,23 @@ class PreSplitRowFilter:
         ]
 
     @print_df_dimensions_diff
+    def _drop_visit_after_exclusion_timestamp(
+        self,
+        dataset: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Drop all rows where exclusion timestamp is before the prediction
+        time."""
+
+        rows_to_drop = (
+            dataset[self.cfg.data.col_name.pred_timestamp]
+            > dataset[self.cfg.data.col_name.exclusion_timestamp]
+        )
+
+        return dataset[~rows_to_drop]
+
+    @print_df_dimensions_diff
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop all rows where prediction timestamp is after the outcome."""
-
         rows_to_drop = (
             dataset[self.cfg.data.col_name.pred_timestamp]
             > dataset[self.cfg.data.col_name.outcome_timestamp]
@@ -150,6 +164,9 @@ class PreSplitRowFilter:
 
         if self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date:
             dataset = self._drop_patient_if_excluded_by_date(dataset)
+
+        if self.cfg.preprocessing.pre_split.drop_visits_after_exclusion_timestamp:
+            dataset = self._drop_visit_after_exclusion_timestamp(dataset)
 
         if self.cfg.preprocessing.pre_split.min_age:
             dataset = self._keep_only_if_older_than_min_age(dataset)

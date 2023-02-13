@@ -20,9 +20,12 @@ class FullProcessor:
     """Uses all PresSplit preprocessors. Acts as an adapter in case we want to
     change the interfaces of its components.
 
-    I.e. if we want to make PresSplitValueTransformer a class that takes a set of arguments instead of a FullConfig, we can do that without changing FullProcessor's interface.
+    I.e. if we want to make PresSplitValueTransformer a class that takes
+    a set of arguments instead of a FullConfig, we can do that without
+    changing FullProcessor's interface.
 
-    This means we can refactor without breaking the package for our users.
+    This means we can refactor without breaking the package for our
+    users.
     """
 
     def __init__(self, cfg: FullConfigSchema):

@@ -18,7 +18,6 @@ def get_col_names(cfg: DictConfig, dataset: pd.DataFrame) -> tuple[str, list[str
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
     """
-
     potential_outcome_col_names = [
         c
         for c in dataset.columns

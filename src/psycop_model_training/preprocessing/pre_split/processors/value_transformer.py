@@ -34,7 +34,6 @@ class PreSplitValueTransformer:
 
     def _convert_datetimes_to_ordinal(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Convert datetime columns to integers."""
-
         datetime_dtypes = {"datetime64[ns]", "<M8[ns]"}
 
         dt_columns = [

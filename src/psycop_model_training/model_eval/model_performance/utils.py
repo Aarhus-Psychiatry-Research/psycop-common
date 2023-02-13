@@ -16,7 +16,6 @@ def scores_to_probs(scores: Series) -> Series:
     Returns:
         Series: Probability of class 1
     """
-
     if scores.dtype == "float":
         return scores
 

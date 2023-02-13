@@ -21,6 +21,9 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]]
     # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
 
+    drop_visits_after_exclusion_timestamp: Optional[bool]
+    # Whether to drop visits for a given patietn after their exclusion timestamp. If False, no visits are dropped.
+
     convert_to_boolean: bool
     # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivty test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
 

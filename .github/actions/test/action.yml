@@ -5,12 +5,6 @@ inputs:
     description: "Which Python version to run on"
     required: true
     default: 3.9
-  poetry-version:
-    description: "Which version of Poetry to install"
-    default: 1.1.15
-  cache-version:
-    description: "Cache version for invalidation"
-    default: 0.0.0
 
 runs:
   using: "composite"
