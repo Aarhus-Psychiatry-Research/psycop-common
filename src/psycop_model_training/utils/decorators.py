@@ -4,9 +4,11 @@ utility functions.
 """
 import functools
 import pathlib
+import traceback
 from functools import wraps
 
 import pandas as pd
+import wandb
 from wasabi import Printer
 
 
@@ -98,5 +100,20 @@ def print_df_dimensions_diff(func, print_when_starting=True, print_when_no_diff=
                     msg.info(f"{func.__name__}: No {dim} dropped")
 
         return result
+
+    return wrapper
+
+
+def wandb_alert_on_exception_return_terrible_auc(func):
+    """Alerts wandb on exception."""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:  # pylint: disable=broad-except, unused-variable
+            if wandb.run is not None:
+                wandb.alert(title="Run crashed", text=traceback.format_exc())
+            return 0.5
 
     return wrapper

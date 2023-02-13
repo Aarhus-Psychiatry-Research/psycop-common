@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.31.0 (2023-02-08)
+### Feature
+* Add self-healing ([`1c15d46`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1c15d46fa39a621fa36b5cb086bfebeb1b3083ef))
+
+### Fix
+* Handle uninitialised wandb ([`1de530c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1de530c2897230aaff90e2ef74bb3ac85110b372))
+* Move self-healing to the error location ([`ca295c3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ca295c31d89c18420d5de849ebc074f4eb8f38ad))
+* No NA in outcome col in test data ([`d95b79c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d95b79cbb2df2db87ff30d31053ae96567ee385a))
+* Synth_data_generator did not add nas ([`ec5e3b5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ec5e3b50473ca488f4ca1fb0b12e8c285ec4de92))
+* Incorrect import ([`30696c2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/30696c2fd978e166e75a1a532e819d9a7a78825f))
+
 ## v0.30.2 (2023-02-07)
 ### Fix
 * Dont modify the config when flattening to dict ([`03f50e3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/03f50e34864bea9cd41bc4b3642bc861cf97053b))

@@ -1,6 +1,10 @@
 import logging
 from pathlib import Path, PosixPath, WindowsPath
 
+import matplotlib
+
+# Set matplotlib backend to Agg to avoid errors when running on a server in parallel
+matplotlib.use("Agg")
 import pandas as pd
 import wandb
 from sklearn.metrics import roc_auc_score
