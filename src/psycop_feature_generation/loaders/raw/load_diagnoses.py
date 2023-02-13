@@ -58,9 +58,19 @@ def from_contacts(
         "When used for creating predictors, diagnoses should be identified according to the contact end date, "
         "since diagnoses given at the end of a contact overwrite any previous diagnoses given during the contact. "
         "When used for creating outcomes, diagnoses should be identified according to the contact start date, "
-        "in order to avoid inflated model performance. Since the diagnosis could be given long before the end "
+        "in order to avoid inflated model performance: Since the diagnosis could be given long before the end "
         "of the contact, treatment or clinical notes may reflect the outcome before the prediction is made."
     )
+
+    allowed_timestamp_purposes = (
+        "predictor",
+        "outcome",
+    )
+    if timestamp_purpose not in allowed_timestamp_purposes:
+        raise ValueError(
+            f"Invalid value for timestamp_purpose. "
+            f"Allowed values are {allowed_timestamp_purposes}."
+        )
 
     if timestamp_purpose == "predictor":
         source_timestamp_col_name = "datotid_slut"
@@ -104,7 +114,6 @@ def essential_hypertension(
         shak_location_col=shak_location_col,
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
-        timestamp_purpose=timestamp_purpose,
         timestamp_purpose=timestamp_purpose,
     )
 
