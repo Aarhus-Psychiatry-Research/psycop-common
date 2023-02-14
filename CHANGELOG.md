@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.0 (2023-02-14)
+### Feature
+* Add arg for choosing timestamp and add warning ([`159a176`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/159a1764aed4c6f3a13d2f6f92d2dad83a957338))
+
 ## v0.17.2 (2023-02-13)
 ### Fix
 * Make naming scheme consistent ([`c125b48`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c125b4889f7e3f2e39d13e47fedd4c9ed0bf4e48))
