@@ -47,19 +47,11 @@ def from_contacts(
     """
 
     log.warning(
-        "The DNPR3 data model replaced the DNPR2 model on 3 February 2019. "
-        "Due to changes in DNPR3, granularity of diagnoses differ across the two models. "
-        "If your prediction timestamps, lookbehind or lookahead span across this date, "
-        "you should not use count as a resolve_multiple_fn. "
-        "See the wiki (LPR2 compared to LPR3) for more information.",
+        "The DNPR3 data model replaced the DNPR2 model on 3 February 2019. Due to changes in DNPR3 granularity of diagnoses differ across the two models. If your prediction timestamps, lookbehind or lookahead span across this date, you should not use count as a resolve_multiple_fn. See the wiki (LPR2 compared to LPR3) for more information."
     )
 
     log.warning(
-        "When used for creating predictors, diagnoses should be identified according to the contact end date, "
-        "since diagnoses given at the end of a contact overwrite any previous diagnoses given during the contact. "
-        "When used for creating outcomes, diagnoses should be identified according to the contact start date, "
-        "in order to avoid inflated model performance: Since the diagnosis could be given long before the end "
-        "of the contact, treatment or clinical notes may reflect the outcome before the prediction is made."
+        "Diagnoses should be identified by either contact start or end time, depending on whether the diagnoses are intended as predictors or outcomes. See the wiki (OBS: Diagnosis as outcome) for more information."
     )
 
     allowed_timestamp_purposes = (
