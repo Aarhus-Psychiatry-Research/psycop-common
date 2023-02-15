@@ -12,7 +12,7 @@ Prediction of type 2 diabetes among patients with visits to psychiatric hospital
 This is a set of modules used for some of the projects' model training. You need project-specific code to use these modules. To get started with that, see [template-model-training](https://github.com/Aarhus-Psychiatry-Research/template-model-training).
 
 ## Developing new evaluations
-In general, model evaluations are added as their own file in `src > psycop_model_training > model_eval > base_artifacts > plots/tables`. To make sure they run every time, also add them to `base_artifact_generator.py`.
+In general, model evaluations are added as their own file in ```src > psycop_model_training > model_eval > base_artifacts > plots/tables```. To make sure they run every time, also add them to `base_artifact_generator.py`.
 
 However, when developing, it's much faster to develop on a synthetic dataset.
 
