@@ -210,8 +210,7 @@ def save_feature_descriptive_stats_from_dir(
     if out_dir is None:
         out_dir = feature_set_dir / "feature_set_descriptive_stats"
 
-    if not out_dir.exists():
-        out_dir.mkdir()
+    out_dir.mkdir(exists_ok=True, parents=True)
 
     for split in splits:
         msg.info(f"{split}: Creating descriptive stats for feature set")
