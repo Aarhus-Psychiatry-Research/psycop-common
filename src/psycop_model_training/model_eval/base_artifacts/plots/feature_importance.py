@@ -51,6 +51,6 @@ def plot_feature_importances(
         y_title="Feature name",
         sort_x=np.flip(np.arange(len(df["feature_importances"]))),
         plot_type="hbar",
-        fig_size=(16, 10),
+        fig_size=(8, 5),
         save_path=save_path,
     )

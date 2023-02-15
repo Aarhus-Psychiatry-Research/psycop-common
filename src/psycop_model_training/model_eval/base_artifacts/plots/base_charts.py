@@ -16,7 +16,8 @@ def plot_basic_chart(
     sort_x: Optional[Iterable[int]] = None,
     sort_y: Optional[Iterable[int]] = None,
     y_limits: Optional[tuple[float, float]] = None,
-    fig_size: Optional[tuple] = (10, 10),
+    fig_size: Optional[tuple] = (5, 5),
+    dpi: Optional[int] = 300,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot a simple chart using matplotlib. Options for sorting the x and y
@@ -33,6 +34,7 @@ def plot_basic_chart(
         sort_y (Optional[Iterable[int]], optional): order of values on the y-axis. Defaults to None.
         y_limits (Optional[tuple[float, float]], optional): y-axis limits. Defaults to None.
         fig_size (Optional[tuple], optional): figure size. Defaults to None.
+        dpi (Optional[int], optional): dpi of figure. Defaults to 300.
         save_path (Optional[Path], optional): path to save figure. Defaults to None.
 
     Returns:
@@ -51,7 +53,8 @@ def plot_basic_chart(
     if sort_y is not None:
         df = df.sort_values(by=["sort_y"])
 
-    plt.figure(figsize=fig_size)
+    plt.figure(figsize=fig_size, dpi=dpi)
+
     if "bar" in plot_type:
         plt.bar(df["x"], df["y"])
     if "hbar" in plot_type:
@@ -66,11 +69,13 @@ def plot_basic_chart(
     plt.ylabel(y_title)
     plt.xticks(fontsize=7)
     plt.xticks(rotation=45)
+
     if y_limits is not None:
         plt.ylim(y_limits)
 
     if save_path is not None:
         plt.savefig(save_path)
+
     plt.close()
 
     return save_path

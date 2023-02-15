@@ -90,6 +90,7 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
         x_title="Days to outcome",
         y_title="Sensitivity",
         plot_type="bar",
+        save_path=PROJECT_ROOT / "12345.png",
     )
 
 
