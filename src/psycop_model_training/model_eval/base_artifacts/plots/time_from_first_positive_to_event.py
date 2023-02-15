@@ -2,6 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Union
 
+import pandas as pd
 import seaborn as sns
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
@@ -13,15 +14,17 @@ def plot_time_from_first_positive_to_event(
 ) -> Union[None, Path]:
     """Plot histogram of time from first positive prediction to event."""
 
-    df = eval_dataset.to_df()
+    df = pd.DataFrame(
+        {
+            "y_hat_int": eval_dataset.y_hat_int,
+            "y": eval_dataset.y,
+            "time_from_first_positive_to_event": eval_dataset.outcome_timestamps
+            - eval_dataset.pred_timestamps,
+        }
+    )
 
     # Get only rows where prediction is positive and outcome is positive
     df = df[(df["y_hat_int"] == 1) & (df["y"] == 1)]
-
-    # Get time from first positive prediction to event
-    df["time_from_first_positive_to_event"] = (
-        df["outcome_timestamps"] - df["pred_timestamps"]
-    )
 
     # Convert to int days
     df["time_from_first_positive_to_event"] = (
