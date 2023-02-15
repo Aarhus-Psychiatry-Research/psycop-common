@@ -1,9 +1,8 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import seaborn as sns
-from sklearn.metrics import roc_auc_score
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 

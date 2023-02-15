@@ -19,6 +19,9 @@ from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_a
 from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
     plot_sensitivity_by_time_to_outcome_heatmap,
 )
+from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
+    plot_time_from_first_positive_to_event,
+)
 from psycop_model_training.model_eval.base_artifacts.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
@@ -139,6 +142,13 @@ class BaseArtifactGenerator:
                 artifact=plot_performance_by_age(
                     eval_dataset=self.eval_ds,
                     save_path=self.save_dir / "performance_by_age.png",
+                ),
+            ),
+            ArtifactContainer(
+                label="time_from_first_positive_to_event",
+                artifact=plot_time_from_first_positive_to_event(
+                    eval_dataset=self.eval_ds,
+                    save_path=self.save_dir / "time_from_first_positive_to_event.png",
                 ),
             ),
         ]
