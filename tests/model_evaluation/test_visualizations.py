@@ -187,4 +187,5 @@ def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
 def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset):
     plot_time_from_first_positive_to_event(
         eval_dataset=synth_eval_dataset,
+        save_path=PROJECT_ROOT / "test_plot_time_from_first_positive_to_event.png",
     )

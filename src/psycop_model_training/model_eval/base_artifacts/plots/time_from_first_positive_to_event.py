@@ -1,38 +1,43 @@
+from datetime import timedelta
 from pathlib import Path
-from typing import Callable, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
+import seaborn as sns
 from sklearn.metrics import roc_auc_score
 
-from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
-    plot_basic_chart,
-)
-from psycop_model_training.model_eval.base_artifacts.plots.utils import (
-    create_performance_by_input,
-)
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
 def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
-    bins: Sequence[Union[int, float]] = (18, 25, 35, 50, 70),
-    prettify_bins: Optional[bool] = True,
-    metric_fn: Callable = roc_auc_score,
-    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot histogram of time from first positive prediction to event."""
 
     df = eval_dataset.to_df()
 
-    sort_order = sorted(df["age_binned"].unique())
+    # Get only rows where prediction is positive and outcome is positive
+    df = df[(df["y_hat_int"] == 1) & (df["y"] == 1)]
 
-    return plot_basic_chart(
-        x_values=df["age_binned"],
-        y_values=df["metric"],
-        x_title="Age",
-        y_title="AUC",
-        sort_x=sort_order,
-        y_limits=y_limits,
-        plot_type=["bar"],
-        save_path=save_path,
+    # Get time from first positive prediction to event
+    df["time_from_first_positive_to_event"] = (
+        df["outcome_timestamps"] - df["pred_timestamps"]
     )
+
+    # Convert to int days
+    df["time_from_first_positive_to_event"] = (
+        df["time_from_first_positive_to_event"] / timedelta(days=1)
+    ).astype(int)
+
+    # Plot a histogram of time from first positive prediction to event
+    ax = sns.histplot(data=df, x="time_from_first_positive_to_event", stat="proportion")
+    ax.set(
+        xlabel="Days from first positive to event",
+    )
+
+    if save_path is not None:
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        ax.figure.savefig(save_path, bbox_inches="tight")
+        return save_path
+    else:
+        return None
