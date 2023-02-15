@@ -33,6 +33,9 @@ from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import
     create_sensitivity_by_time_to_outcome_df,
     plot_sensitivity_by_time_to_outcome_heatmap,
 )
+from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
+    plot_time_from_first_positive_to_event,
+)
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
 
@@ -179,3 +182,9 @@ def test_plot_feature_importances():
 
 def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
     plot_auc_roc(eval_dataset=synth_eval_dataset)
+
+
+def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset):
+    plot_time_from_first_positive_to_event(
+        eval_dataset=synth_eval_dataset,
+    )
