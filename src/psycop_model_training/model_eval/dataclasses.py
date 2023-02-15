@@ -30,7 +30,8 @@ class EvalDataset(BaseModel):
         self.Config.allow_mutation = True
 
     def to_df(self) -> pd.DataFrame:
-        """Create a dataframe where each column is an attribute of this class."""
+        """Create a dataframe where each column is an attribute of this
+        class."""
         columns = {}
 
         for attr in self.__dict__:

@@ -29,14 +29,18 @@ def plot_time_from_first_positive_to_event(
     ).astype(int)
 
     # Plot a histogram of time from first positive prediction to event
-    ax = sns.histplot(data=df, x="time_from_first_positive_to_event", stat="proportion")
-    ax.set(
+    axes = sns.histplot(
+        data=df,
+        x="time_from_first_positive_to_event",
+        stat="proportion",
+    )
+    axes.set(
         xlabel="Days from first positive to event",
     )
 
     if save_path is not None:
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        ax.figure.savefig(save_path, bbox_inches="tight")
+        axes.figure.savefig(save_path, bbox_inches="tight")
         return save_path
     else:
         return None
