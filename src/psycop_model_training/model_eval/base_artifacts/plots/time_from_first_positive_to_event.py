@@ -20,7 +20,7 @@ def plot_time_from_first_positive_to_event(
             "y": eval_dataset.y,
             "time_from_first_positive_to_event": eval_dataset.outcome_timestamps
             - eval_dataset.pred_timestamps,
-        }
+        },
     )
 
     # Get only rows where prediction is positive and outcome is positive
