@@ -26,7 +26,7 @@ def save_flattened_dataset_description_to_disk(
     splits: Iterable[str] = ("train", "val", "test"),
     compare_splits: bool = True,
 ):
-    """Describe output. Runs and saves train data integrity checks, split pair integrity checks, outcome integrity checks and a html table containing descriptive statistics for each feature.
+    """Describe and check flattened dataset. Runs and saves train data integrity checks, split pair integrity checks, outcome integrity checks and a html table containing descriptive statistics for each feature.
 
 
     Args:
