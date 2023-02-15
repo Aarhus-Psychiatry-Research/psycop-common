@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.35.0 (2023-02-15)
+### Feature
+* Basic styling ([`9c26121`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/9c26121f3705eb79d2b1b8d1ea3348cced1662d3))
+
 ## v0.34.0 (2023-02-13)
 ### Feature
 * Even prettier formatting ([`1cadde3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1cadde3af00dd10b4c84bda777955d58942d7743))
