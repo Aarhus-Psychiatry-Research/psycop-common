@@ -195,6 +195,7 @@ def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset)
         save_path=PROJECT_ROOT / "test_plot_time_from_first_positive_to_event.png",
     )
 
+
 def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
     plot_precision_recall(
         eval_dataset=synth_eval_dataset,
