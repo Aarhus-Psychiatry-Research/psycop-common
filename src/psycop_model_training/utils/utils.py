@@ -4,7 +4,7 @@ utilities.
 """
 import sys
 import tempfile
-from collections.abc import Iterable, MutableMapping
+from collections.abc import Iterable, MutableMapping, Sequence
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Union
@@ -171,12 +171,19 @@ def calculate_performance_metrics(
     return performance_metrics
 
 
-def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
+def bin_continuous_data(
+    series: pd.Series,
+    bins: Sequence[int],
+    min_n_in_bin: int = 5,
+    use_min_as_label: bool = False,
+) -> pd.Series:
     """For prettier formatting of continuous binned data such as age.
 
     Args:
         series (pd.Series): Series with continuous data such as age
         bins (list[int]): Desired bins. Last value creates a bin from the last value to infinity.
+        min_n_in_bin (int, optional): Minimum number of observations in a bin. If fewer than this, the bin is dropped. Defaults to 5.
+        use_min_as_label (bool, optional): If True, the minimum value in the bin is used as the label. If False, the maximum value is used. Defaults to False.
 
     Returns:
         pd.Series: Binned data
@@ -197,7 +204,7 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
     """
     labels = []
 
-    if isinstance(bins, tuple):
+    if not isinstance(bins, list):
         bins = list(bins)
 
     # Apend maximum value from series ot bins set upper cut-off if larger than maximum bins value
@@ -209,7 +216,7 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
         # If not the final bin
         if i < len(bins) - 2:
             # If the difference between the current bin and the next bin is 1, the bin label is a single value and not an interval
-            if (bins[i + 1] - bin_v) == 1:
+            if (bins[i + 1] - bin_v) == 1 or use_min_as_label:
                 labels.append(f"{bin_v}")
             # Else generate bin labels as intervals
             elif i == 0:
@@ -220,6 +227,9 @@ def bin_continuous_data(series: pd.Series, bins: list[int]) -> pd.Series:
             labels.append(f"{bin_v+1}+")
         else:
             continue
+
+    # Drop any category in the series where the bin has fewer than 5 observations
+    series = series[series.groupby(series).transform("count") >= min_n_in_bin]
 
     return pd.cut(series, bins=bins, labels=labels, duplicates="drop")
 

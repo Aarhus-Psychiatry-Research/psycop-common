@@ -29,6 +29,20 @@ class EvalDataset(BaseModel):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
 
+    def to_df(self) -> pd.DataFrame:
+        """Create a dataframe where each column is an attribute of this
+        class."""
+        columns = {}
+
+        for attr in self.__dict__:
+            if not attr.startswith("_"):
+                columns[attr] = getattr(self, attr)
+            if attr == "custom_columns" and self.custom_columns is not None:
+                for k, v in self.custom_columns.items():
+                    columns[k] = v
+
+        return pd.DataFrame(columns)
+
 
 class ArtifactContainer(BaseModel):
     """A container for artifacts."""
