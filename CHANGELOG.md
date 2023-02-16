@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.36.0 (2023-02-16)
+### Feature
+* Add precision_recall curve ([`8e92d94`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8e92d94b75799232165b31d6e14787926dce934f))
+
 ## v0.35.0 (2023-02-15)
 ### Feature
 * Basic styling ([`9c26121`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/9c26121f3705eb79d2b1b8d1ea3348cced1662d3))
