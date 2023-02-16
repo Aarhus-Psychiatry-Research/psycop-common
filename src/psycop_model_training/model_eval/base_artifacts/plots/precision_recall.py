@@ -28,11 +28,13 @@ def plot_precision_recall(
         Union[None, Path]: None if save_path is None, else path to saved figure.
     """
     precision, recall, _ = precision_recall_curve(
-        y_true=eval_dataset.y, probas_pred=eval_dataset.y_hat_probs
+        y_true=eval_dataset.y,
+        probas_pred=eval_dataset.y_hat_probs,
     )
 
     auprc = average_precision_score(
-        y_true=eval_dataset.y, y_score=eval_dataset.y_hat_probs
+        y_true=eval_dataset.y,
+        y_score=eval_dataset.y_hat_probs,
     )
 
     legend_label = "AUPRC = "
