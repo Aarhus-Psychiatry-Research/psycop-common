@@ -4,10 +4,10 @@ utilities.
 """
 import sys
 import tempfile
-from collections.abc import Iterable, MutableMapping
+from collections.abc import Iterable, MutableMapping, Sequence
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Sequence, Union
+from typing import Any, Union
 
 import dill as pkl
 import numpy as np

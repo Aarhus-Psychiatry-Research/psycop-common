@@ -1,6 +1,7 @@
+from collections.abc import Sequence
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import pandas as pd
 import seaborn as sns
