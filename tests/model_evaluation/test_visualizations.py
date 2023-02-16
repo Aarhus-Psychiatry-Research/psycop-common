@@ -186,5 +186,6 @@ def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
 
 def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
     plot_precision_recall(
-        eval_dataset=synth_eval_dataset, save_path="tmp/test_plot_precision_recall.png"
+        eval_dataset=synth_eval_dataset,
+        save_path="tmp/test_plot_precision_recall.png",
     )
