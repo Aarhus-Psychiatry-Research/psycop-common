@@ -25,6 +25,9 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
+from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
+    plot_precision_recall,
+)
 from psycop_model_training.model_eval.base_artifacts.plots.prob_over_time import (
     plot_prob_over_time,
 )
@@ -179,3 +182,9 @@ def test_plot_feature_importances():
 
 def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
     plot_auc_roc(eval_dataset=synth_eval_dataset)
+
+
+def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
+    plot_precision_recall(
+        eval_dataset=synth_eval_dataset, save_path="tmp/test_plot_precision_recall.png"
+    )

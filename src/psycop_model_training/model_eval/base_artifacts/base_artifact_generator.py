@@ -15,6 +15,9 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
+from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
+    plot_precision_recall,
+)
 from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
 from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
     plot_sensitivity_by_time_to_outcome_heatmap,
@@ -139,6 +142,13 @@ class BaseArtifactGenerator:
                 artifact=plot_performance_by_age(
                     eval_dataset=self.eval_ds,
                     save_path=self.save_dir / "performance_by_age.png",
+                ),
+            ),
+            ArtifactContainer(
+                label="precision_recall",
+                artifact=plot_precision_recall(
+                    eval_dataset=self.eval_ds,
+                    save_path=self.save_dir / "precision_recall.png",
                 ),
             ),
         ]
