@@ -25,6 +25,9 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
 )
+from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
+    plot_precision_recall,
+)
 from psycop_model_training.model_eval.base_artifacts.plots.prob_over_time import (
     plot_prob_over_time,
 )
@@ -190,4 +193,10 @@ def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset)
         bins=list(range(0, 60, 3)),
         min_n_in_bin=1,
         save_path=PROJECT_ROOT / "test_plot_time_from_first_positive_to_event.png",
+    )
+
+
+def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
+    plot_precision_recall(
+        eval_dataset=synth_eval_dataset, save_path="tmp/test_plot_precision_recall.png"
     )
