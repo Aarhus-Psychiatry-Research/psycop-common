@@ -148,6 +148,7 @@ class BaseArtifactGenerator:
                 label="time_from_first_positive_to_event",
                 artifact=plot_time_from_first_positive_to_event(
                     eval_dataset=self.eval_ds,
+                    bins=range(0, 730, 24),
                     save_path=self.save_dir / "time_from_first_positive_to_event.png",
                 ),
             ),
