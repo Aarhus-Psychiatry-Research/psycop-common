@@ -31,7 +31,7 @@ def plot_time_from_first_positive_to_event(
             "y": eval_dataset.y,
             "patient_id": eval_dataset.ids,
             "pred_timestamp": eval_dataset.pred_timestamps,
-            "time_from_first_positive_to_event": eval_dataset.outcome_timestamps
+            "time_from_pred_to_event": eval_dataset.outcome_timestamps
             - eval_dataset.pred_timestamps,
         },
     )
@@ -46,12 +46,12 @@ def plot_time_from_first_positive_to_event(
     df = df.groupby("patient_id").first().reset_index()
 
     # Convert to int months
-    df["time_from_first_positive_to_event"] = (
-        df["time_from_first_positive_to_event"] / timedelta(days=1)
+    df["time_from_pred_to_event"] = (
+        df["time_from_pred_to_event"] / timedelta(days=1)
     ).astype(int) / 30
 
     df["time_from_first_positive_to_event_binned"] = bin_continuous_data(
-        df["time_from_first_positive_to_event"],
+        df["time_from_pred_to_event"],
         bins=bins,
         min_n_in_bin=min_n_in_bin,
         use_min_as_label=True,
