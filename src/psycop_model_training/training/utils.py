@@ -15,11 +15,14 @@ def create_eval_dataset(
     # Check if custom attribute exists:
     custom_col_names = col_names.custom_columns
 
+    custom_columns = {}
+
     if custom_col_names is not None:
         custom_columns = {col_name: df[col_name] for col_name in custom_col_names}
     
     # Add all eval_ columns to custom_columns attribute
-    custom_columns = {col_name: df[col_name] for col_name in df.columns if col_name.startswith('eval_')}
+    eval_columns = {col_name: df[col_name] for col_name in df.columns if col_name.startswith('eval_')}
+    custom_columns.update(eval_columns) if len(eval_columns)>0 else None
 
     eval_dataset = EvalDataset(
         ids=df[col_names.id],
@@ -33,7 +36,7 @@ def create_eval_dataset(
         exclusion_timestamps=df[col_names.exclusion_timestamp]
         if col_names.exclusion_timestamp
         else None,
-        custom_columns=custom_columns if custom_col_names else None,
+        custom_columns=custom_columns if len(custom_columns)>0 else None,
     )
 
     return eval_dataset
