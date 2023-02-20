@@ -15,6 +15,8 @@ def plot_basic_chart(
     plot_type: Union[list[str], str],
     sort_x: Optional[Iterable[int]] = None,
     sort_y: Optional[Iterable[int]] = None,
+    flip_x_axis: bool = False,
+    flip_y_axis: bool = False,
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple] = (5, 5),
     dpi: Optional[int] = 300,
@@ -36,6 +38,8 @@ def plot_basic_chart(
         fig_size (Optional[tuple], optional): figure size. Defaults to None.
         dpi (Optional[int], optional): dpi of figure. Defaults to 300.
         save_path (Optional[Path], optional): path to save figure. Defaults to None.
+        flip_x_axis (bool, optional): Whether to flip the x axis. Defaults to False.
+        flip_y_axis (bool, optional): Whether to flip the y axis. Defaults to False.
 
     Returns:
         Union[None, Path]: None if save_path is None, else path to saved figure
@@ -72,6 +76,11 @@ def plot_basic_chart(
 
     if y_limits is not None:
         plt.ylim(y_limits)
+
+    if flip_x_axis:
+        plt.gca().invert_xaxis()
+    if flip_y_axis:
+        plt.gca().invert_yaxis()
 
     if save_path is not None:
         plt.savefig(save_path)

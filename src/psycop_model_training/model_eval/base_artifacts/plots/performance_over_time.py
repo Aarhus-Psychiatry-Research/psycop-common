@@ -10,10 +10,13 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import f1_score, recall_score, roc_auc_score
 
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
+)
+from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
+    create_sensitivity_by_time_to_outcome_df,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.utils import calc_performance
 from psycop_model_training.model_eval.dataclasses import EvalDataset
@@ -35,6 +38,7 @@ def create_performance_by_calendar_time_df(
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
         bin_period (str): How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
+        threshold_percentile (float, optional): Threshold percentile of highest predicted probabilities to mark as positive in binary classification. Defaults to None.
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
@@ -48,6 +52,56 @@ def create_performance_by_calendar_time_df(
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
     return output_df
+
+
+def plot_recall_by_calendar_time(
+    eval_dataset: EvalDataset,
+    pred_proba_threshold: float,
+    bins: Iterable[float],
+    y_title: str = "Sensitivity (Recall)",
+    bin_period: str = "Y",
+    y_limits: Optional[tuple[float, float]] = None,
+    save_path: Optional[str] = None,
+) -> Union[None, Path]:
+    """Plot performance by calendar time of prediciton.
+
+    Args:
+        eval_dataset (EvalDataset): EvalDataset object
+        pred_proba_threshold (float): Threshold for predicted probabilities to mark as positive in binary classification.
+        bins (Iterable[float], optional): Bins to use for time to outcome.
+        y_title (str): Title of y-axis. Defaults to "AUC".
+        bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
+        save_path (str, optional): Path to save figure. Defaults to None.
+        metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
+        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+
+    Returns:
+        Union[None, Path]: Path to saved figure or None if not saved.
+    """
+    df = create_sensitivity_by_time_to_outcome_df(
+        labels=eval_dataset.y,
+        y_hat_probs=eval_dataset.y_hat_probs,
+        pred_proba_threshold=pred_proba_threshold,
+        outcome_timestamps=eval_dataset.outcome_timestamps,
+        prediction_timestamps=eval_dataset.pred_timestamps,
+        bins=bins,
+    )
+
+    return plot_basic_chart(
+        x_values=df["days_to_outcome_binned"],
+        y_values=df["sens"],
+        x_title="Month"
+        if bin_period == "M"
+        else "Quarter"
+        if bin_period == "Q"
+        else "Year",
+        sort_x=df["days_to_outcome_binned"][::-1],  # Reverse the order of the bins
+        y_title=y_title,
+        y_limits=y_limits,
+        flip_x_axis=True,
+        plot_type=["line", "scatter"],
+        save_path=save_path,
+    )
 
 
 def plot_metric_by_calendar_time(
