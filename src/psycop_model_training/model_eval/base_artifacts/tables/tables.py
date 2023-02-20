@@ -1,7 +1,9 @@
 """Tables for evaluation of models."""
+import warnings
 from pathlib import Path
 from typing import Optional, Union
 
+import numpy as np
 import pandas as pd
 import wandb
 from sklearn.metrics import roc_auc_score
@@ -99,68 +101,96 @@ def generate_selected_features_table(
 
 def generate_table_1(
     eval_dataset: EvalDataset,
-    age: bool = True,
-    sex: bool = True,
-    visit_level_cats: Optional[list[str]] = None,
-    patient_level_cats: Optional[list[str]] = None,
     output_format: str = "wandb_table",
 ) -> Union[pd.DataFrame, wandb.Table]:
+    """Generate table 1."""
 
-    df = pd.DataFrame(columns=["category", "stat_1", "stat_1_unit" "stat_2", "stat_2_unit"])
+    eval_dataset = eval_dataset.to_df()
 
-    if age:
+    df = pd.DataFrame(columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"])
+
+    if 'age' in eval_dataset.columns:
         df = _add_age_stats(eval_dataset, df)
 
-    if sex:
+    if 'sex' in eval_dataset.columns:
         df = _add_sex_stats(eval_dataset, df)
-        
-    if visit_level_cats is not None:
-        for cat in visit_level_cats:
 
-            df = _add_visit_level_stats(eval_dataset, df, cat)
+    df = _add_visit_level_stats(eval_dataset, df)
 
     return output_table(output_format=output_format, df=df)
 
 def _add_age_stats(
-    eval_dataset: EvalDataset,
+    eval_dataset: pd.DataFrame,
     df : pd.DataFrame) -> pd.DataFrame:
     """Add age stats to table 1."""
-    age_median = eval_dataset.age.median()
-    age_span = f'{eval_dataset.age.min()} - {eval_dataset.age.max()}'
+    age_mean = np.round(eval_dataset["age"].mean(), 2)
 
-    df = df.append({'category': 'age', 'stat_1': age_median, 'stat_1_unit': 'years', 'stat_2': age_span, 'stat_2_unit': 'years'}, ignore_index=True)
-    return df
+    age_span = f'{eval_dataset["age"].min()} - {eval_dataset["age"].max()}'
+
+    df = df.append({'category': 'age (mean / interval)', 'stat_1': age_mean, 'stat_1_unit': 'years', 'stat_2': age_span, 'stat_2_unit': 'years'}, ignore_index=True)
+
+    age_bins = np.round(np.linspace(eval_dataset["age"].min(), eval_dataset["age"].max(), 5), 0)
+
+    age_counts = pd.cut(eval_dataset["age"], bins=age_bins).value_counts().sort_index()
+    age_percentages = age_counts/len(eval_dataset)*100
+    
+    temp = pd.DataFrame(columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"])
+    for i, n in enumerate(age_counts):
+
+        if n < 5:
+            warnings.warn("WARNING: One of the age categories has less than 5 individuals. This category will be excluded from the table.")
+            return df
+
+        temp = temp.append({'category': f'age {age_counts.index[i]}', 'stat_1': int(age_counts.iloc[i]), 'stat_1_unit': 'patients', 'stat_2': age_percentages.iloc[i], 'stat_2_unit': '%'}, ignore_index=True)
+
+    return df.append(temp)
 
 def _add_sex_stats(
-    eval_dataset: EvalDataset,
+    eval_dataset: pd.DataFrame,
     df: pd.DataFrame) -> pd.DataFrame:
     """Add sex stats to table 1."""
     
-    sex_counts = eval_dataset.sex.value_counts()
+    sex_counts = eval_dataset['sex'].value_counts()
+    sex_percentages = sex_counts/len(eval_dataset)*100
 
-    df = df.append({'category': 'male', 'stat_1': sex_counts[0], 'stat_1_unit': 'patients', 'stat_2': sex_counts[0]/len(eval_dataset)*100, 'stat_2_unit': '%'}, ignore_index=True)
-    df = df.append({'category': 'female', 'stat_1': sex_counts[1], 'stat_1_unit': 'patients', 'stat_2': sex_counts[1]/len(eval_dataset)*100, 'stat_2_unit': '%'}, ignore_index=True)
-    
-    return df
+    temp = pd.DataFrame(columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"])
+    for i, n in enumerate(sex_counts):
+        if n < 5:
+            warnings.warn("WARNING: One of the sex categories has less than 5 individuals. This category will be excluded from the table.")
+            return df
 
-def _add_visit_level_stats(eval_dataset: EvalDataset,
-    df: pd.DataFrame,
-    cat: str) -> pd.DataFrame:
-    """Add visit level stats to table 1."""
+        temp = temp.append({'category': sex_counts.index[i], 'stat_1': int(sex_counts[i]), 'stat_1_unit': 'patients', 'stat_2': sex_percentages[i], 'stat_2_unit': '%'}, ignore_index=True)
     
-    col = [eval_dataset[col] for col in eval_dataset.columns if cat in col]
-    
-    if len(col) > 1:
-        raise ValueError(f"Error when generating table 1. More than one column was found in the eval dataset containing {cat}.")
-    if len(col) == 0:
-        raise ValueError(f"Error when generating table 1. Trying to calculate statistic for {cat} but no matching colum was found in the eval dataset.")
+    return df.append(temp)
 
-    col = col[0]
-    
-    col_counts = col.value_counts()
-    if len(col_counts) > 2:
-        raise ValueError(f"Error when generating table 1. The column {col.name} found for the category {cat} is not dichotomous and therefore statistics could not be calculated.")
 
-    df = df.append({'category': cat, 'stat_1': col_counts[1], 'stat_1_unit': 'patients', 'stat_2': col_counts[1]/len(eval_dataset)*100, 'stat_2_unit': '%'}, ignore_index=True)
+def _add_visit_level_stats(eval_dataset: pd.DataFrame,
+    df: pd.DataFrame) -> pd.DataFrame:
+    """Add visit level stats to table 1. Finds all columns starting with 'eval_' and adds stats for these columns. 
+    Checks if the column is binary or continuous and adds stats accordingly. """
+
+    eval_cols = [col for col in eval_dataset.columns if col.startswith('eval_')]
+
+    for col in eval_cols:
+        if len(eval_dataset[col].unique()) == 2:
+
+            # Binary variable stats:
+            col_count = eval_dataset[col].value_counts()
+            col_percentage = col_count/len(eval_dataset)*100
+            
+            if col_count[0] < 5 or col_count[1] < 5:
+                    warnings.warn(f"WARNING: One of categories in {col} has less than 5 individuals. This category will be excluded from the table.")
+            else:  
+                df = df.append({'category': f'{col} ', 'stat_1': int(col_count[1]), 'stat_1_unit': 'patients', 'stat_2': col_percentage[1], 'stat_2_unit': '%'}, ignore_index=True)
+        
+        elif len(eval_dataset[col].unique()) > 2:
+            
+            # Continuous variable stats:
+            col_mean = np.round(eval_dataset[col].mean(), 2)
+            col_std = np.round(eval_dataset[col].std(), 2)
+            df = df.append({'category': f'{col} ', 'stat_1': col_mean, 'stat_1_unit': 'mean', 'stat_2': col_std, 'stat_2_unit': 'std'}, ignore_index=True)
+        
+        else: 
+            warnings.warn(f"WARNING: {col} has only one value. This column will be excluded from the table.")
     
     return df
