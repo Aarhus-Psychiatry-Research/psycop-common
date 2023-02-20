@@ -22,6 +22,7 @@ class EvalDataset(BaseModel):
     y_hat_probs: pd.Series
     y_hat_int: pd.Series
     age: Optional[pd.Series] = None
+    sex: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None
     custom_columns: Optional[dict[str, pd.Series]] = None
 
@@ -35,11 +36,12 @@ class EvalDataset(BaseModel):
         columns = {}
 
         for attr in self.__dict__:
-            if not attr.startswith("_"):
+            if not attr.startswith("_") and attr != "custom_columns":
                 columns[attr] = getattr(self, attr)
             if attr == "custom_columns" and self.custom_columns is not None:
                 for k, v in self.custom_columns.items():
                     columns[k] = v
+    
 
         return pd.DataFrame(columns)
 
