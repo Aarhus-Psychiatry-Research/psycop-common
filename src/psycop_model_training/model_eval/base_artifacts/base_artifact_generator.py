@@ -167,7 +167,6 @@ class BaseArtifactGenerator:
                 label="precision_recall",
                 artifact=plot_recall_by_calendar_time(
                     eval_dataset=self.eval_ds,
-                    bin_period="Q",
                     pred_proba_percentile=[0.95, 0.97, 0.99],
                     bins=self.cfg.eval.lookahead_bins,
                     legend=True,

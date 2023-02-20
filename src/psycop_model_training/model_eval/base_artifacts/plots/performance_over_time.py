@@ -58,7 +58,6 @@ def plot_recall_by_calendar_time(
     pred_proba_percentile: Union[float, Iterable[float]],
     bins: Iterable[float],
     y_title: str = "Sensitivity (Recall)",
-    bin_period: str = "Y",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[str] = None,
 ) -> Union[None, Path]:
@@ -69,7 +68,6 @@ def plot_recall_by_calendar_time(
         pred_proba_percentile (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
         bins (Iterable[float], optional): Bins to use for time to outcome.
         y_title (str): Title of y-axis. Defaults to "AUC".
-        bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
         save_path (str, optional): Path to save figure. Defaults to None.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
@@ -97,11 +95,7 @@ def plot_recall_by_calendar_time(
     return plot_basic_chart(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
-        x_title="Month"
-        if bin_period == "M"
-        else "Quarter"
-        if bin_period == "Q"
-        else "Year",
+        x_title="Days from event",
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
