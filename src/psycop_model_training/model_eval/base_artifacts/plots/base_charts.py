@@ -5,11 +5,12 @@ from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from numpy import isin
 
 
 def plot_basic_chart(
     x_values: Iterable,
-    y_values: Iterable,
+    y_values: Union[Iterable[int, float], Iterable[Iterable[int, float]]],
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],
@@ -17,6 +18,7 @@ def plot_basic_chart(
     sort_y: Optional[Iterable[int]] = None,
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
+    legend: bool = False,
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple] = (5, 5),
     dpi: Optional[int] = 300,
@@ -48,7 +50,7 @@ def plot_basic_chart(
         plot_type = [plot_type]
 
     df = pd.DataFrame(
-        {"x": x_values, "y": y_values, "sort_x": sort_x, "sort_y": sort_y},
+        {"x": x_values, "sort_x": sort_x, "sort_y": sort_y},
     )
 
     if sort_x is not None:
@@ -59,15 +61,19 @@ def plot_basic_chart(
 
     plt.figure(figsize=fig_size, dpi=dpi)
 
-    if "bar" in plot_type:
-        plt.bar(df["x"], df["y"])
-    if "hbar" in plot_type:
-        plt.barh(df["x"], df["y"])
-        plt.yticks(fontsize=7)
-    if "line" in plot_type:
-        plt.plot(df["x"], df["y"])
-    if "scatter" in plot_type:
-        plt.scatter(df["x"], df["y"])
+    if not isinstance(y_values[0], Iterable):
+        y_values = [y_values]  # Make y_values an iterable
+
+    for y_series in y_values:
+        if "bar" in plot_type:
+            plt.bar(df["x"], y_series)
+        if "hbar" in plot_type:
+            plt.barh(df["x"], y_series)
+            plt.yticks(fontsize=7)
+        if "line" in plot_type:
+            plt.plot(df["x"], y_series)
+        if "scatter" in plot_type:
+            plt.scatter(df["x"], y_series)
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)

@@ -56,10 +56,11 @@ def create_performance_by_calendar_time_df(
 
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
-    pred_proba_threshold: float,
+    pred_proba_percentile: Union[float, Iterable[float]],
     bins: Iterable[float],
     y_title: str = "Sensitivity (Recall)",
     bin_period: str = "Y",
+    legend: bool = True,
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[str] = None,
 ) -> Union[None, Path]:
@@ -67,7 +68,7 @@ def plot_recall_by_calendar_time(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
-        pred_proba_threshold (float): Threshold for predicted probabilities to mark as positive in binary classification.
+        pred_proba_percentile (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
         bins (Iterable[float], optional): Bins to use for time to outcome.
         y_title (str): Title of y-axis. Defaults to "AUC".
         bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
@@ -78,29 +79,38 @@ def plot_recall_by_calendar_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    df = create_sensitivity_by_time_to_outcome_df(
-        labels=eval_dataset.y,
-        y_hat_probs=eval_dataset.y_hat_probs,
-        pred_proba_threshold=pred_proba_threshold,
-        outcome_timestamps=eval_dataset.outcome_timestamps,
-        prediction_timestamps=eval_dataset.pred_timestamps,
-        bins=bins,
-    )
+    if not isinstance(pred_proba_percentile, Iterable):
+        pred_proba_percentile = [pred_proba_percentile]
+
+    # Get percentiles from a series of predicted probabilities
+    pred_proba_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
+
+    dfs = [
+        create_sensitivity_by_time_to_outcome_df(
+            labels=eval_dataset.y,
+            y_hat_probs=pred_proba_percentiles,
+            pred_proba_threshold=threshold,
+            outcome_timestamps=eval_dataset.outcome_timestamps,
+            prediction_timestamps=eval_dataset.pred_timestamps,
+            bins=bins,
+        )
+        for threshold in pred_proba_percentile
+    ]
 
     return plot_basic_chart(
-        x_values=df["days_to_outcome_binned"],
-        y_values=df["sens"],
+        x_values=dfs[0]["days_to_outcome_binned"],
+        y_values=[df["sens"] for df in dfs],
         x_title="Month"
         if bin_period == "M"
         else "Quarter"
         if bin_period == "Q"
         else "Year",
-        sort_x=df["days_to_outcome_binned"][::-1],  # Reverse the order of the bins
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
         plot_type=["line", "scatter"],
         save_path=save_path,
+        legend=True,
     )
 
 
