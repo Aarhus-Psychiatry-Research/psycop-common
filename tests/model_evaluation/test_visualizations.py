@@ -129,10 +129,8 @@ def test_plot_recall_by_calendar_time(
 ):
     plot_recall_by_calendar_time(
         eval_dataset=synth_eval_dataset,
-        bin_period="Q",
         pred_proba_percentile=[0.8, 0.9, 0.95],
         bins=list(range(0, 1460, 180)),
-        legend=True,
         y_limits=(0, 0.5),
         save_path=PROJECT_ROOT / "test_recall_by_calendar_time.png",
     )

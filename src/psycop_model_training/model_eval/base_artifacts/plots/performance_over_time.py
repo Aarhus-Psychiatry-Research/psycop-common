@@ -101,7 +101,6 @@ def plot_recall_by_calendar_time(
         flip_x_axis=True,
         plot_type=["line", "scatter"],
         save_path=save_path,
-        legend=True,
     )
 
 
