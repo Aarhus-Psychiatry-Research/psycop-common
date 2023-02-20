@@ -38,7 +38,6 @@ def create_performance_by_calendar_time_df(
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         metric_fn (Callable): Callable which returns the metric to calculate
         bin_period (str): How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
-        threshold_percentile (float, optional): Threshold percentile of highest predicted probabilities to mark as positive in binary classification. Defaults to None.
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
@@ -60,7 +59,6 @@ def plot_recall_by_calendar_time(
     bins: Iterable[float],
     y_title: str = "Sensitivity (Recall)",
     bin_period: str = "Y",
-    legend: bool = True,
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[str] = None,
 ) -> Union[None, Path]:
@@ -73,7 +71,6 @@ def plot_recall_by_calendar_time(
         y_title (str): Title of y-axis. Defaults to "AUC".
         bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
         save_path (str, optional): Path to save figure. Defaults to None.
-        metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
     Returns:

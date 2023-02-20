@@ -18,7 +18,6 @@ def plot_basic_chart(
     sort_y: Optional[Iterable[int]] = None,
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
-    legend: bool = False,
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple] = (5, 5),
     dpi: Optional[int] = 300,
