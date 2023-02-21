@@ -14,25 +14,36 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 CONFIG_DIR_PATH_REL = "../application/config"
 
 
-def add_age_gender(df: pd.DataFrame):
+def add_age_and_sex(df: pd.DataFrame) -> pd.DataFrame:
     """Add age and gender columns to dataframe.
+
+    Args:
+        df (pd.DataFrame): The dataframe to add age and sex cols to.
+    """
+    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
+    ids["age"] = np.random.randint(17, 95, len(ids))
+    ids["sex"] = np.where(ids["dw_ek_borger"] > 30_000, "F", "M")
+
+    return df.merge(ids)
+
+
+def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
+    """Add eval_ column to dataframe to test table 1 functionality.
 
     Args:
         df (pd.DataFrame): The dataframe to add age
     """
-    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
-    ids["age"] = np.random.randint(17, 95, len(ids))
-    ids["gender"] = np.where(ids["dw_ek_borger"] > 30_000, "F", "M")
+    df['eval_n_hbac1_count'] = np.random.randint(0, 20, len(df))
 
-    return df.merge(ids)
-
+    return df
 
 @pytest.fixture(scope="function")
 def synth_eval_dataset() -> EvalDataset:
     """Load synthetic data."""
     csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
-    df = add_age_gender(df)
+    df = add_age_and_sex(df)
+    df = add_eval_column(df)
 
     # Convert all timestamp cols to datetime
     for col in [col for col in df.columns if "timestamp" in col]:
@@ -46,6 +57,8 @@ def synth_eval_dataset() -> EvalDataset:
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         age=df["age"],
+        sex=df["sex"],
+        custom_columns={"eval_n_hbac1_count": df["eval_n_hbac1_count"]},
     )
 
 

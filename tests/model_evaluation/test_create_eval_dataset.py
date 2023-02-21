@@ -11,6 +11,7 @@ def test_create_eval_dataset():
         outcome_timestamp="outcome_timestamp",
         id="id",
         age="age",
+        sex="sex",
         exclusion_timestamp="exclusion_timestamp",
         custom_columns=["custom1", "custom2"],
     )
@@ -24,6 +25,7 @@ def test_create_eval_dataset():
             "pred_timestamp": [1, 2, 3, 4, 5],
             "outcome_timestamp": [1, 2, 3, 4, 5],
             "age": [1, 2, 3, 4, 5],
+            "sex": [1, 2, 3, 4, 5],
             "exclusion_timestamp": [1, 2, 3, 4, 5],
             "custom1": [1, 2, 3, 4, 5],
             "custom2": [1, 2, 3, 4, 5],
