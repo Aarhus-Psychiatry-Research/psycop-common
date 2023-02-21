@@ -36,7 +36,9 @@ class PredictionTimeFilterer:
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
 
-        if all(v is None for v in (self.quarantine_days, self.quarantine_df)):
+        if any(v is None for v in (self.quarantine_days, self.quarantine_df)) and not all(
+            v is None for v in (self.quarantine_days, self.quarantine_df)
+        ):
             raise ValueError(
                 "If either of quarantine_df and quarantine_days are provided, both must be provided.",
             )
