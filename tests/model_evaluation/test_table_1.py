@@ -3,10 +3,10 @@
 # pylint: disable=missing-function-docstring
 import pandas as pd
 
-from psycop_model_training.model_eval.base_artifacts.tables.tables import \
-    generate_table_1
-from psycop_model_training.model_eval.dataclasses import (ArtifactContainer,
-                                                          EvalDataset)
+from psycop_model_training.model_eval.base_artifacts.tables.tables import (
+    generate_table_1,
+)
+from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
 
 
 def test_generate_table_1(synth_eval_dataset: EvalDataset):
@@ -20,3 +20,5 @@ def test_generate_table_1(synth_eval_dataset: EvalDataset):
     )
 
     output_table = table_spec.artifact
+
+    assert isinstance(output_table, pd.DataFrame)
