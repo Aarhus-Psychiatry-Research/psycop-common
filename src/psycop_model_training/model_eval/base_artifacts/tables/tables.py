@@ -150,7 +150,7 @@ def _add_patient_level_stats(eval_dataset: pd.DataFrame,
     
 
 def _calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_data: pd.DataFrame) -> float:
-    """Calculate mean time to first positive outcome."""
+    """Calculate mean time to first positive outcome (currently very slow)."""
 
     # Calculate time to first positive outcome
     time_to_first_positive_outcome = [(patients_with_positive_outcome_data[patients_with_positive_outcome_data['ids'] == patient][patients_with_positive_outcome_data[patients_with_positive_outcome_data['ids'] == patient]['y'] == 1]['outcome_timestamps'].min() - patients_with_positive_outcome_data[patients_with_positive_outcome_data['ids'] == patient]['pred_timestamps'].min()) for patient in patients_with_positive_outcome_data['ids']]
@@ -163,7 +163,7 @@ def _calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_da
 
 def generate_table_1(
     eval_dataset: EvalDataset,
-    output_format: str = "wandb_table",
+    output_format: str = "df",
     save_path: Optional[Path] = None,
 ) -> Union[pd.DataFrame, wandb.Table]:
     """Generate table 1. Calculates relevant statistics from the evaluation dataset and returns a pandas dataframe or wandb table. 
@@ -171,7 +171,7 @@ def generate_table_1(
     
     Args:
         eval_dataset (EvalDataset): Evaluation dataset.
-        output_format (str, optional): Output format. Defaults to "wandb_table".
+        output_format (str, optional): Output format. Defaults to "df".
         save_path (Optional[Path], optional): Path to save the table as a csv file. Defaults to None.
         
     Returns:
@@ -193,11 +193,11 @@ def generate_table_1(
 
     if save_path is not None:
         
-        output_table(output_format=output_format, df=df)
+        output_table(output_format="df", df=df)
         
         df.to_csv(save_path, index=False)
 
-    return output_table(output_format=output_format, df="wandb_table")
+    return output_table(output_format=output_format, df=df)
 
 
 def generate_feature_importances_table(
