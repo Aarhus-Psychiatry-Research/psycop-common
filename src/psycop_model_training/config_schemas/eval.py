@@ -8,6 +8,9 @@ class EvalConfSchema(BaseModel):
     force: bool = False
     # Whether to force evaluation even if wandb is not "run". Used for testing.
 
+    table_1: bool = True
+    # Whether to generate table 1.
+
     top_n_feature_importances: int
     # How many feature_importances to plot. Plots the most important n features. A table with all features is also logged.
 
