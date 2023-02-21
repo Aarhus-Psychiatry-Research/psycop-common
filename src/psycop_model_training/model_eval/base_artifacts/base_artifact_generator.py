@@ -31,6 +31,7 @@ from psycop_model_training.model_eval.base_artifacts.tables.performance_by_thres
 from psycop_model_training.model_eval.base_artifacts.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
+    generate_table_1,
 )
 from psycop_model_training.model_eval.dataclasses import (
     ArtifactContainer,
@@ -164,13 +165,25 @@ class BaseArtifactGenerator:
             ),
         ]
 
+    def get_table_1_artifact(self):
+        """Returns table 1 artifactß."""
+        return [
+            ArtifactContainer(
+                label="table_1",
+                artifact=generate_table_1(
+                    eval_dataset=self.eval_ds,
+                    output_format="df",
+                ),
+            ),
+        ]
+
     def get_feature_selection_artifacts(self):
         """Returns a list of artifacts related to feature selection."""
         return [
             ArtifactContainer(
                 label="selected_features",
                 artifact=generate_selected_features_table(
-                    selected_features_dict=self.pipe_metadata.selected_features,
+                    eval_dataset=self.pipe_metadata.selected_features,
                     output_format="df",
                 ),
             ),
@@ -198,6 +211,9 @@ class BaseArtifactGenerator:
     def get_all_artifacts(self) -> list[ArtifactContainer]:
         """Generates artifacts from an EvalDataset."""
         artifact_containers = self.create_base_plot_artifacts()
+
+        if self.cfg.eval.table_1:
+            artifact_containers += self.get_table_1_artifact()
 
         if self.pipe_metadata and self.pipe_metadata.feature_importances:
             artifact_containers += self.get_feature_importance_artifacts()
