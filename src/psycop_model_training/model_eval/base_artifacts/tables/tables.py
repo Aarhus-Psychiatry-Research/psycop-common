@@ -164,8 +164,18 @@ def _calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_da
 def generate_table_1(
     eval_dataset: EvalDataset,
     output_format: str = "wandb_table",
+    save_path: Optional[Path] = None,
 ) -> Union[pd.DataFrame, wandb.Table]:
-    """Generate table 1."""
+    """Generate table 1. Calculates relevant statistics from the evaluation dataset and returns a pandas dataframe or wandb table. 
+    If save_path is provided, the table is saved as a csv file.
+    
+    Args:
+        eval_dataset (EvalDataset): Evaluation dataset.
+        output_format (str, optional): Output format. Defaults to "wandb_table".
+        save_path (Optional[Path], optional): Path to save the table as a csv file. Defaults to None.
+        
+    Returns:
+        Union[pd.DataFrame, wandb.Table]: Table 1."""
 
     eval_dataset = eval_dataset.to_df()
 
@@ -181,7 +191,13 @@ def generate_table_1(
 
     df = _add_patient_level_stats(eval_dataset, df)
 
-    return output_table(output_format=output_format, df=df)
+    if save_path is not None:
+        
+        output_table(output_format=output_format, df=df)
+        
+        df.to_csv(save_path, index=False)
+
+    return output_table(output_format=output_format, df="wandb_table")
 
 
 def generate_feature_importances_table(
