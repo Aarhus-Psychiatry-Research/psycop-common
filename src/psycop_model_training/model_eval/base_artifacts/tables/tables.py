@@ -95,10 +95,11 @@ def _add_sex_stats(
 def _add_visit_level_stats(eval_dataset: pd.DataFrame,
     df: pd.DataFrame) -> pd.DataFrame:
     """Add visit level stats to table 1. Finds all columns starting with 'eval_' and adds visit level stats for these columns. 
-    Checks if the column is binary or continuous and adds stats accordingly. """
+    Checks if the column is binary or continuous and adds stats accordingly."""
 
     eval_cols = [col for col in eval_dataset.columns if col.startswith('eval_')]
 
+    # Stats for eval_ cols
     for col in eval_cols:
         if len(eval_dataset[col].unique()) == 2:
 
@@ -120,40 +121,44 @@ def _add_visit_level_stats(eval_dataset: pd.DataFrame,
         
         else: 
             warnings.warn(f"WARNING: {col} has only one value. This column will be excluded from the table.")
+
+    # General stats
+    visits_followed_by_positive_outcome = eval_dataset['y'].sum()
+    visits_followed_by_positive_outcome_percentage = visits_followed_by_positive_outcome/len(eval_dataset)*100
+
+    df = df.append({'category': '(visit_level) visits followed by positive outcome', 'stat_1': visits_followed_by_positive_outcome, 'stat_1_unit': 'visits', 'stat_2': visits_followed_by_positive_outcome_percentage, 'stat_2_unit': '%'}, ignore_index=True)
     
     return df
 
 
 def _add_patient_level_stats(eval_dataset: pd.DataFrame,
     df: pd.DataFrame) -> pd.DataFrame:
-    """Add patient level stats to table 1. Finds all columns starting with 'eval_' and adds patient level stats for these columns. 
-    Checks if the column is binary or continuous and adds stats accordingly."""
-
-    eval_cols = [col for col in eval_dataset.columns if col.startswith('eval_')]
-
-    for col in eval_cols:
-        if len(eval_dataset[col].unique()) == 2:
-
-            # Binary variable stats:
-            col_count = eval_dataset[col].value_counts()
-            col_percentage = col_count/len(eval_dataset)*100
-            
-            if col_count[0] < 5 or col_count[1] < 5:
-                    warnings.warn(f"WARNING: One of categories in {col} has less than 5 individuals. This category will be excluded from the table.")
-            else:  
-                df = df.append({'category': f'(visit level) {col} ', 'stat_1': int(col_count[1]), 'stat_1_unit': 'patients', 'stat_2': col_percentage[1], 'stat_2_unit': '%'}, ignore_index=True)
-        
-        elif len(eval_dataset[col].unique()) > 2:
-            
-            # Continuous variable stats:
-            col_mean = np.round(eval_dataset[col].mean(), 2)
-            col_std = np.round(eval_dataset[col].std(), 2)
-            df = df.append({'category': f'(visit level) {col}', 'stat_1': col_mean, 'stat_1_unit': 'mean', 'stat_2': col_std, 'stat_2_unit': 'std'}, ignore_index=True)
-        
-        else: 
-            warnings.warn(f"WARNING: {col} has only one value. This column will be excluded from the table.")
+    """Add patient level stats to table 1."""
     
+    # General stats
+    patients_with_positive_outcome = eval_dataset[eval_dataset['y'] == 1]['ids'].unique()
+    patients_with_positive_outcome_percentage = patients_with_positive_outcome/len(eval_dataset['ids'].unique())*100
+
+    df = df.append({'category': '(patient_level) patients_with_positive_outcome', 'stat_1': patients_with_positive_outcome, 'stat_1_unit': 'visits', 'stat_2': patients_with_positive_outcome_percentage, 'stat_2_unit': '%'}, ignore_index=True)
+
+    patients_with_positive_outcome_data = eval_dataset[eval_dataset['ids'].isin(patients_with_positive_outcome)]
+    mean_time_to_first_positive_outcome, std_time_to_first_positive_outomce = _calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_data)
+
+    df = df.append({'category': f'(patient level) time_to_first_positive_outcome', 'stat_1': mean_time_to_first_positive_outcome, 'stat_1_unit': 'mean', 'stat_2': std_time_to_first_positive_outomce, 'stat_2_unit': 'std'}, ignore_index=True)
+
     return df
+    
+
+def _calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_data: pd.DataFrame) -> float:
+    """Calculate mean time to first positive outcome."""
+
+    # Calculate time to first positive outcome
+    time_to_first_positive_outcome = [(patients_with_positive_outcome_data[patients_with_positive_outcome_data['ids'] == patient][patients_with_positive_outcome_data[patients_with_positive_outcome_data['ids'] == patient]['y'] == 1]['outcome_timestamps'].min() - patients_with_positive_outcome_data[patients_with_positive_outcome_data['ids'] == patient]['pred_timestamps'].min()) for patient in patients_with_positive_outcome_data['ids']]
+
+    # Convert to days (float)
+    time_to_first_positive_outcome = pd.Series(time_to_first_positive_outcome).dt.total_seconds() / (24 * 60 * 60)
+    
+    return np.round(np.mean(time_to_first_positive_outcome), 2), np.round(np.std(time_to_first_positive_outcome), 2)
 
 
 def generate_table_1(
