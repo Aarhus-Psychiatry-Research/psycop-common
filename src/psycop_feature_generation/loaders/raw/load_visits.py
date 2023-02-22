@@ -155,8 +155,8 @@ def physical_visits(
     return output_df.reset_index(drop=True)
 
 
-@data_loaders.register("physical_visits")
-def physical_visits_loader(
+@data_loaders.register("visits")
+def visits_loader(
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
 ) -> pd.DataFrame:
@@ -167,8 +167,8 @@ def physical_visits_loader(
     )
 
 
-@data_loaders.register("physical_visits_psych")
-def physical_visits_psych(
+@data_loaders.register("visits_psych")
+def visits_psych(
     n_rows: Optional[int] = None,
     timestamps_only: bool = True,
     return_value_as_visit_length_days: Optional[bool] = False,
@@ -187,8 +187,8 @@ def physical_visits_psych(
     return df
 
 
-@data_loaders.register("physical_visits_somatic")
-def physical_visits_somatic(
+@data_loaders.register("visits_somatic")
+def visits_somatic(
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
 ) -> pd.DataFrame:
@@ -252,14 +252,14 @@ def emergency_visits(
     )
 
 
-@data_loaders.register("amb_emergency_visits")
-def amb_emergency_visits(
+@data_loaders.register("amb_emerg_visits")
+def amb_emerg_visits(
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = None,
 ) -> pd.DataFrame:
-    """Load emergency visits."""
+    """Load emergency and ambulatory visits."""
     return physical_visits(
         visit_types=["ambulatory_visits", "emergency_visits"],
         return_value_as_visit_length_days=return_value_as_visit_length_days,
