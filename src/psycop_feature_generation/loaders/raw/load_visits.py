@@ -167,8 +167,8 @@ def physical_visits_loader(
     )
 
 
-@data_loaders.register("physical_visits_psych")
-def physical_visits_psych(
+@data_loaders.register("physical_visits_to_psychiatry")
+def physical_visits_to_psychiatry(
     n_rows: Optional[int] = None,
     timestamps_only: bool = True,
     return_value_as_visit_length_days: Optional[bool] = False,
@@ -187,8 +187,8 @@ def physical_visits_psych(
     return df
 
 
-@data_loaders.register("physical_visits_somatic")
-def physical_visits_somatic(
+@data_loaders.register("physical_visits_to_somatic")
+def physical_visits_to_somatic(
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
 ) -> pd.DataFrame:
@@ -252,8 +252,8 @@ def emergency_visits(
     )
 
 
-@data_loaders.register("amb_emergency_visits")
-def amb_emergency_visits(
+@data_loaders.register("ambulatory_and_emergency_visits")
+def ambulatory_and_emergency_visits(
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
     shak_code: Optional[int] = None,
