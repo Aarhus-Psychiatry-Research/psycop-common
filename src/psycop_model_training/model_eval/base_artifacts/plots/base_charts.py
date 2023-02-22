@@ -14,6 +14,7 @@ def plot_basic_chart(
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],
+    labels: Optional[list[str]] = None,
     sort_x: Optional[Iterable[int]] = None,
     sort_y: Optional[Iterable[int]] = None,
     flip_x_axis: bool = False,
@@ -33,6 +34,7 @@ def plot_basic_chart(
         y_title (str): title of y axis
         plot_type (Optional[Union[List[str], str]], optional): type of plots.
             Options are combinations of ["bar", "hbar", "line", "scatter"] Defaults to "bar".
+        labels: (Optional[list[str]]): Optional labels to add to the plot(s).
         sort_x (Optional[Iterable[int]], optional): order of values on the x-axis. Defaults to None.
         sort_y (Optional[Iterable[int]], optional): order of values on the y-axis. Defaults to None.
         y_limits (Optional[tuple[float, float]], optional): y-axis limits. Defaults to None.
@@ -63,16 +65,26 @@ def plot_basic_chart(
     if not isinstance(y_values[0], Iterable):
         y_values = [y_values]  # Make y_values an iterable
 
+    if len(plot_type) > 1:
+        label_plot_type = plot_type[0]
+        plot_functions = {
+            "bar": plt.bar,
+            "hbar": plt.barh,
+            "line": plt.plot,
+            "scatter": plt.scatter,
+        }
+
+    label_plot = plot_functions.get(label_plot_type)
+
+    label_plots = []
     for y_series in y_values:
-        if "bar" in plot_type:
-            plt.bar(df["x"], y_series)
-        if "hbar" in plot_type:
-            plt.barh(df["x"], y_series)
-            plt.yticks(fontsize=7)
-        if "line" in plot_type:
-            plt.plot(df["x"], y_series)
-        if "scatter" in plot_type:
-            plt.scatter(df["x"], y_series)
+        for p_type in plot_type:
+            plot_function = plot_functions.get(p_type)
+            plot = plot_function(df["x"], y_series)
+            if plot_function == label_plot:
+                label_plots.append(plot)
+            if p_type == "hbar":
+                plt.yticks(fontsize=7)
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)
@@ -86,6 +98,14 @@ def plot_basic_chart(
         plt.gca().invert_xaxis()
     if flip_y_axis:
         plt.gca().invert_yaxis()
+    if labels is not None:
+        plt.figlegend(
+            [plot[0] for plot in label_plots],
+            [str(label) for label in labels],
+            loc="upper right",
+            bbox_to_anchor=(0.9, 0.88),
+            frameon=True,
+        )
 
     if save_path is not None:
         plt.savefig(save_path)

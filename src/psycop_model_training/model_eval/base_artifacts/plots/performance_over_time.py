@@ -96,6 +96,7 @@ def plot_recall_by_calendar_time(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
         x_title="Days from event",
+        labels=pred_proba_percentile,
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
