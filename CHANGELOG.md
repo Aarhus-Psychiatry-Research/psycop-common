@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.3 (2023-02-22)
+### Fix
+* Loader names too long for wandb ([`cc14da2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/cc14da233e7764f148b9966047628fea0bad4a1e))
+
 ## v0.18.2 (2023-02-21)
 ### Fix
 * ValueError correction ([`595479e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/595479ebce800810327674ae79e58a2eb78b877e))
