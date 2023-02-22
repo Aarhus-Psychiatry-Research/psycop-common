@@ -65,23 +65,23 @@ def plot_basic_chart(
     if not isinstance(y_values[0], Iterable):
         y_values = [y_values]  # Make y_values an iterable
 
-    if len(plot_type) > 1:
-        label_plot_type = plot_type[0]
-        plot_functions = {
-            "bar": plt.bar,
-            "hbar": plt.barh,
-            "line": plt.plot,
-            "scatter": plt.scatter,
-        }
+    plot_functions = {
+        "bar": plt.bar,
+        "hbar": plt.barh,
+        "line": plt.plot,
+        "scatter": plt.scatter,
+    }
 
-    label_plot = plot_functions.get(label_plot_type)
+    # choose the first plot type as the one to use for legend
+    label_plot_type = plot_type[0]
 
     label_plots = []
     for y_series in y_values:
         for p_type in plot_type:
             plot_function = plot_functions.get(p_type)
             plot = plot_function(df["x"], y_series)
-            if plot_function == label_plot:
+            if p_type == label_plot_type:
+                # need to one of the plot types for labelling
                 label_plots.append(plot)
             if p_type == "hbar":
                 plt.yticks(fontsize=7)
