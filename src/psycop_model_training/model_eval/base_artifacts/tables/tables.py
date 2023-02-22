@@ -67,19 +67,20 @@ def _add_age_stats(
     )
 
     age_bins = np.round(
-        np.linspace(eval_dataset["age"].min(), eval_dataset["age"].max(), 5), 0
+        np.linspace(eval_dataset["age"].min(), eval_dataset["age"].max(), 5),
+        0,
     )
 
     age_counts = pd.cut(eval_dataset["age"], bins=age_bins).value_counts().sort_index()
     age_percentages = age_counts / len(eval_dataset) * 100
 
     temp = pd.DataFrame(
-        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"]
+        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
     )
     for i, n in enumerate(age_counts):
         if n < 5:
             warnings.warn(
-                "WARNING: One of the age categories has less than 5 individuals. This category will be excluded from the table."
+                "WARNING: One of the age categories has less than 5 individuals. This category will be excluded from the table.",
             )
             return df
 
@@ -107,12 +108,12 @@ def _add_sex_stats(
     sex_percentages = sex_counts / len(eval_dataset) * 100
 
     temp = pd.DataFrame(
-        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"]
+        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
     )
     for i, n in enumerate(sex_counts):
         if n < 5:
             warnings.warn(
-                "WARNING: One of the sex categories has less than 5 individuals. This category will be excluded from the table."
+                "WARNING: One of the sex categories has less than 5 individuals. This category will be excluded from the table.",
             )
             return df
 
@@ -152,7 +153,7 @@ def _add_visit_level_stats(
 
             if col_count[0] < 5 or col_count[1] < 5:
                 warnings.warn(
-                    f"WARNING: One of categories in {col} has less than 5 individuals. This category will be excluded from the table."
+                    f"WARNING: One of categories in {col} has less than 5 individuals. This category will be excluded from the table.",
                 )
             else:
                 df = df.append(
@@ -183,7 +184,7 @@ def _add_visit_level_stats(
 
         else:
             warnings.warn(
-                f"WARNING: {col} has only one value. This column will be excluded from the table."
+                f"WARNING: {col} has only one value. This column will be excluded from the table.",
             )
 
     # General stats
@@ -233,11 +234,12 @@ def _calc_time_to_first_positive_outcome_stats(
 
     # Convert to days (float)
     time_to_first_positive_outcome = pd.Series(
-        time_to_first_positive_outcome
+        time_to_first_positive_outcome,
     ).dt.total_seconds() / (24 * 60 * 60)
 
     return np.round(np.mean(time_to_first_positive_outcome), 2), np.round(
-        np.std(time_to_first_positive_outcome), 2
+        np.std(time_to_first_positive_outcome),
+        2,
     )
 
 
@@ -309,7 +311,7 @@ def generate_table_1(
     eval_dataset = eval_dataset.to_df()
 
     df = pd.DataFrame(
-        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"]
+        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
     )
 
     if "age" in eval_dataset.columns:
