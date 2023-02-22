@@ -278,7 +278,7 @@ def _add_patient_level_stats(
 
     df = df.append(
         {
-            "category": f"(patient level) time_to_first_positive_outcome",
+            "category": "(patient level) time_to_first_positive_outcome",
             "stat_1": mean_time_to_first_positive_outcome,
             "stat_1_unit": "mean",
             "stat_2": std_time_to_first_positive_outomce,
