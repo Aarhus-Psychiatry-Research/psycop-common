@@ -166,7 +166,7 @@ class BaseArtifactGenerator:
         ]
 
     def get_table_1_artifact(self):
-        """Returns table 1 artifactß."""
+        """Returns table 1 artifact."""
         return [
             ArtifactContainer(
                 label="table_1",
