@@ -156,7 +156,7 @@ def physical_visits(
 
 
 @data_loaders.register("visits")
-def visits_loader(
+def visits(
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
 ) -> pd.DataFrame:
