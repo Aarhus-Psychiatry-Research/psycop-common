@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import f1_score, recall_score, roc_auc_score
 
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
@@ -24,6 +24,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_metric_by_calendar_time,
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
+    plot_recall_by_calendar_time,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
@@ -119,6 +120,19 @@ def test_plot_performance_by_calendar_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
         metric_fn=roc_auc_score,
+        save_path=PROJECT_ROOT / "test.png",
+    )
+
+
+def test_plot_recall_by_calendar_time(
+    synth_eval_dataset: EvalDataset,
+):
+    plot_recall_by_calendar_time(
+        eval_dataset=synth_eval_dataset,
+        pred_proba_percentile=[0.8, 0.9, 0.95],
+        bins=list(range(0, 1460, 180)),
+        y_limits=(0, 0.5),
+        save_path=PROJECT_ROOT / "test_recall_by_calendar_time.png",
     )
 
 
