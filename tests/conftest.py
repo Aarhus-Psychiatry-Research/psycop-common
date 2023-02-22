@@ -37,6 +37,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 @pytest.fixture(scope="function")
 def synth_eval_dataset() -> EvalDataset:
     """Load synthetic data."""
