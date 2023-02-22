@@ -41,7 +41,6 @@ class EvalDataset(BaseModel):
             if attr == "custom_columns" and self.custom_columns is not None:
                 for k, v in self.custom_columns.items():
                     columns[k] = v
-    
 
         return pd.DataFrame(columns)
 

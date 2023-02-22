@@ -1,6 +1,4 @@
 """Test that table is generated correctly."""
-
-# pylint: disable=missing-function-docstring
 import pandas as pd
 
 from psycop_model_training.model_eval.base_artifacts.tables.tables import (

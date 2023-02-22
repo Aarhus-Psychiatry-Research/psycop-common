@@ -33,7 +33,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
     Args:
         df (pd.DataFrame): The dataframe to add age
     """
-    df['eval_n_hbac1_count'] = np.random.randint(0, 20, len(df))
+    df["eval_n_hbac1_count"] = np.random.randint(0, 20, len(df))
 
     return df
 
