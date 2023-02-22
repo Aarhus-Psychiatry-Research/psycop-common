@@ -1,4 +1,4 @@
-"""Tables for description and evaluation of models and data."""
+"""Tables for description and evaluation of models and patient population."""
 import warnings
 from pathlib import Path
 from typing import Optional, Union
