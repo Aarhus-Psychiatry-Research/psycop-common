@@ -170,7 +170,7 @@ def physical_visits_loader(
 @data_loaders.register("physical_visits_to_psychiatry")
 def physical_visits_to_psychiatry(
     n_rows: Optional[int] = None,
-    timestamps_only: bool = True,
+    timestamps_only: bool = False,
     return_value_as_visit_length_days: Optional[bool] = False,
 ) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
