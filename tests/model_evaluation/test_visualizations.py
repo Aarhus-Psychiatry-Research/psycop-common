@@ -42,6 +42,9 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from src.psycop_model_training.model_eval.base_artifacts.plots.performance_by_sex import (
+    plot_auc_by_sex,
+)
 
 
 @pytest.fixture(scope="function")
@@ -161,6 +164,12 @@ def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
 
 def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
     plot_auc_by_time_from_first_visit(
+        eval_dataset=synth_eval_dataset,
+    )
+
+
+def test_plot_auc_by_sex(synth_eval_dataset: EvalDataset):
+    plot_auc_by_sex(
         eval_dataset=synth_eval_dataset,
     )
 
