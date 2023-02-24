@@ -40,7 +40,7 @@ def physical_visits(
     visit_types: Optional[
         list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]
     ] = None,
-    start_date_as_timestamp: bool = False,
+    timestamp_for_output: Literal["start", "end"] = "end",
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
@@ -53,8 +53,7 @@ def physical_visits(
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_types (Optional[list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]], optional): Whether to subset visits by visit types. Defaults to None.
-        use_start_date_as_timestamp (bool, optional): Whether to use the start date of the visit as the timestamp. Defaults to False, in which case the end date is used.
-        start_date_as_timestamp (bool, optional): Whether to use the start date of the visit as the timestamp. Defaults to False, in which case the end date is used.
+        timestamp_for_output (Literal["start", "end"], optional): Whether to use the start or end timestamp for the output. Defaults to "end".
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -157,15 +156,14 @@ def physical_visits(
         output_df["value"] = (
             output_df["timestamp_end"] - pd.to_datetime(output_df["timestamp_start"])
         ).dt.total_seconds() / 86400
-        output_df["timestamp"] = df["timestamp_end"]
-    elif start_date_as_timestamp:
-        output_df["timestamp"] = pd.to_datetime(output_df["timestamp_start"])
     else:
         output_df["value"] = 1
 
     log.info("Loaded physical visits")
 
-    return output_df[["dw_ek_borger", "timestamp", "value"]].reset_index(drop=True)
+    return output_df[["dw_ek_borger", timestamp_for_output, "value"]].reset_index(
+        drop=True
+    )
 
 
 @data_loaders.register("physical_visits")
@@ -185,7 +183,7 @@ def physical_visits_to_psychiatry(
     n_rows: Optional[int] = None,
     timestamps_only: bool = False,
     return_value_as_visit_length_days: Optional[bool] = True,
-    start_date_as_timestamp: Optional[bool] = False,
+    timestamp_for_output: str = "start",
 ) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
     df = physical_visits(
@@ -193,7 +191,7 @@ def physical_visits_to_psychiatry(
         shak_sql_operator="=",
         n_rows=n_rows,
         return_value_as_visit_length_days=return_value_as_visit_length_days,
-        start_date_as_timestamp=start_date_as_timestamp,
+        timestamp_for_output=timestamp_for_output,
     )
 
     if timestamps_only:
