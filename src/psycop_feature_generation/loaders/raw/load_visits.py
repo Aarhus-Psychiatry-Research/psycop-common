@@ -4,10 +4,10 @@ import logging
 from typing import Literal, Optional
 
 import pandas as pd
-from timeseriesflattener.feature_spec_objects import BaseModel
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
+from timeseriesflattener.feature_spec_objects import BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -182,7 +182,7 @@ def physical_visits_to_psychiatry(
     n_rows: Optional[int] = None,
     timestamps_only: bool = False,
     return_value_as_visit_length_days: Optional[bool] = True,
-    timestamp_for_output: str = "start",
+    timestamp_for_output: Literal["start", "end"] = "start",
 ) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
     df = physical_visits(
