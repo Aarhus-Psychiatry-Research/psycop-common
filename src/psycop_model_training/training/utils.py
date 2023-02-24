@@ -27,7 +27,7 @@ def create_eval_dataset(
         if col_name.startswith("eval_")
     }
     custom_columns = (
-        custom_columns.update(eval_columns) if len(eval_columns) > 0 else None
+        custom_columns.update(eval_columns) if len(eval_columns) > 0 else custom_columns
     )
 
     eval_dataset = EvalDataset(
