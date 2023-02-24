@@ -31,6 +31,7 @@ class RawValueSourceSchema(BaseModel):
 
 
 def physical_visits(
+    timestamp_for_output: Literal["start", "end"] = "end",
     shak_code: Optional[int] = None,
     shak_sql_operator: Optional[str] = "=",
     where_clause: Optional[str] = None,
@@ -40,11 +41,11 @@ def physical_visits(
     visit_types: Optional[
         list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]
     ] = None,
-    timestamp_for_output: Literal["start", "end"] = "end",
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
     Args:
+        timestamp_for_output (Literal["start", "end"], optional): Whether to use the start or end timestamp for the output. Defaults to "end".
         shak_code (Optional[int], optional): SHAK code indicating where to keep/not keep visits from (e.g. 6600). Combines with
             shak_sql_operator, e.g. "!= 6600". Defaults to None, in which case all admissions are kept.
         shak_sql_operator (Optional[str], optional): Operator to use with shak_code. Defaults to "=".
@@ -53,7 +54,6 @@ def physical_visits(
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_types (Optional[list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]], optional): Whether to subset visits by visit types. Defaults to None.
-        timestamp_for_output (Literal["start", "end"], optional): Whether to use the start or end timestamp for the output. Defaults to "end".
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -161,9 +161,11 @@ def physical_visits(
 
     log.info("Loaded physical visits")
 
-    return output_df[["dw_ek_borger", timestamp_for_output, "value"]].reset_index(
-        drop=True
+    output_df.rename(
+        columns={f"timestamp_{timestamp_for_output}": "timestamp"}, inplace=True
     )
+
+    return output_df[["dw_ek_borger", f"timestamp", "value"]].reset_index(drop=True)
 
 
 @data_loaders.register("physical_visits")
