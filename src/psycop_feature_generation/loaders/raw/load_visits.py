@@ -4,10 +4,10 @@ import logging
 from typing import Literal, Optional
 
 import pandas as pd
+from timeseriesflattener.feature_spec_objects import BaseModel
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
-from timeseriesflattener.feature_spec_objects import BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -38,9 +38,9 @@ def physical_visits(
     where_separator: Optional[str] = "AND",
     n_rows: Optional[int] = None,
     return_value_as_visit_length_days: Optional[bool] = False,
-    visit_types: Optional[
-        list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]
-    ] = None,
+    visit_types: list[
+        Literal["admissions", "ambulatory_visits", "emergency_visits"]
+    ] = ["admissions", "ambulatory_visits", "emergency_visits"],
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
@@ -53,7 +53,7 @@ def physical_visits(
         where_separator (Optional[str], optional): Separator between where-clauses. Defaults to "AND".
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
-        visit_types (Optional[list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]], optional): Whether to subset visits by visit types. Defaults to None.
+        visit_types (list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]]): Which visit types to load. Defaults to ["admissions", "ambulatory_visits", "emergency_visits"].
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -92,30 +92,27 @@ def physical_visits(
         ),
     }
 
-    if visit_types:
-        allowed_visit_types = ["admissions", "ambulatory_visits", "emergency_visits"]
-        if any(types not in allowed_visit_types for types in visit_types):
-            raise ValueError(
-                f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
-            )
+    allowed_visit_types = ["admissions", "ambulatory_visits", "emergency_visits"]
 
-        english_to_lpr3_visit_type = {  # pylint: disable=invalid-name
-            "admissions": "'Indlæggelse'",
-            "ambulatory_visits": "'Ambulant'",
-            "emergency_visits": "'Akut ambulant'",
-        }
-        chosen_schemas = {
-            visit_type: source_schemas[visit_type]
-            for visit_type in visit_types + ["LPR3"]
-        }
-        english_to_lpr3_visit_type = [
-            english_to_lpr3_visit_type[visit] for visit in visit_types
-        ]
-        chosen_schemas[
-            "LPR3"
-        ].where_clause += f" AND pt_type IN ({','.join(english_to_lpr3_visit_type)})"
-    else:
-        chosen_schemas = source_schemas
+    if any(types not in allowed_visit_types for types in visit_types):
+        raise ValueError(
+            f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
+        )
+
+    english_to_lpr3_visit_type = {  # pylint: disable=invalid-name
+        "admissions": "'Indlæggelse'",
+        "ambulatory_visits": "'Ambulant'",
+        "emergency_visits": "'Akut ambulant'",
+    }
+    chosen_schemas = {
+        visit_type: source_schemas[visit_type] for visit_type in visit_types + ["LPR3"]
+    }
+    english_to_lpr3_visit_type = [
+        english_to_lpr3_visit_type[visit] for visit in visit_types
+    ]
+    chosen_schemas[
+        "LPR3"
+    ].where_clause += f" AND pt_type IN ({','.join(english_to_lpr3_visit_type)})"
 
     dfs = []
 
