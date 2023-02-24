@@ -110,6 +110,7 @@ outputs
 
 # virtual env
 .venv/
+venv/
 
 # MacOS
 .DS_Store
