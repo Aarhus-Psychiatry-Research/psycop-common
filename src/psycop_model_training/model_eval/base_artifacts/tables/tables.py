@@ -9,7 +9,7 @@ import wandb
 from sklearn.metrics import roc_auc_score
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-
+from psycop_model_training.utils.utils import bin_continuous_data
 
 def _calc_auc_and_n(
     df: pd.DataFrame,
@@ -45,15 +45,24 @@ def output_table(
     else:
         raise ValueError("Output format does not match anything that is allowed")
 
+def _table_1_default_df():
+    """Create default table 1 dataframe.
+    Returns:
+        pd.DataFrame: Default table 1 dataframe. Includes columns for category, two statistics and there units."""
+    return pd.DataFrame(
+        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
+    )
 
-def _add_age_stats(
+def _generate_age_stats(
     eval_dataset: pd.DataFrame,
-    df: pd.DataFrame,
 ) -> pd.DataFrame:
     """Add age stats to table 1."""
+    
+    df = _table_1_default_df()
+    
     age_mean = np.round(eval_dataset["age"].mean(), 2)
 
-    age_span = f'{eval_dataset["age"].min()} - {eval_dataset["age"].max()}'
+    age_span = f'{eval_dataset["age"].quantile(0.05)} - {eval_dataset["age"].quantile(0.95)}'
 
     df = df.append(
         {
@@ -65,26 +74,12 @@ def _add_age_stats(
         },
         ignore_index=True,
     )
+    age_counts = bin_continuous_data(eval_dataset["age"], bins=[0, 18, 35, 60, 100]).value_counts()
 
-    age_bins = np.round(
-        np.linspace(eval_dataset["age"].min(), eval_dataset["age"].max(), 5),
-        0,
-    )
+    age_percentages = np.round(age_counts / len(eval_dataset) * 100, 2)
 
-    age_counts = pd.cut(eval_dataset["age"], bins=age_bins).value_counts().sort_index()
-    age_percentages = age_counts / len(eval_dataset) * 100
-
-    temp = pd.DataFrame(
-        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
-    )
-    for i, n in enumerate(age_counts):
-        if n < 5:
-            warnings.warn(
-                "WARNING: One of the age categories has less than 5 individuals. This category will be excluded from the table.",
-            )
-            return df
-
-        temp = temp.append(
+    for i, _ in enumerate(age_counts):
+        df = df.append(
             {
                 "category": f"(visit level) age {age_counts.index[i]}",
                 "stat_1": int(age_counts.iloc[i]),
@@ -95,21 +90,19 @@ def _add_age_stats(
             ignore_index=True,
         )
 
-    return df.append(temp)
+    return df
 
 
-def _add_sex_stats(
+def _generate_sex_stats(
     eval_dataset: pd.DataFrame,
-    df: pd.DataFrame,
 ) -> pd.DataFrame:
     """Add sex stats to table 1."""
+    
+    df = _table_1_default_df()
 
     sex_counts = eval_dataset["sex"].value_counts()
     sex_percentages = sex_counts / len(eval_dataset) * 100
 
-    temp = pd.DataFrame(
-        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
-    )
     for i, n in enumerate(sex_counts):
         if n < 5:
             warnings.warn(
@@ -117,7 +110,7 @@ def _add_sex_stats(
             )
             return df
 
-        temp = temp.append(
+        df = df.append(
             {
                 "category": f"(visit level) {sex_counts.index[i]}",
                 "stat_1": int(sex_counts[i]),
@@ -128,23 +121,21 @@ def _add_sex_stats(
             ignore_index=True,
         )
 
-    return df.append(temp)
+    return df
 
 
-def _add_visit_level_stats(
-    eval_dataset: pd.DataFrame,
-    df: pd.DataFrame,
-) -> pd.DataFrame:
-    """Add visit level stats to table 1.
+def _generate_eval_col_stats(eval_dataset: pd.DataFrame) -> pd.DataFrame:
+    """Generate stats for all eval_ columns to table 1.
 
     Finds all columns starting with 'eval_' and adds visit level stats
     for these columns. Checks if the column is binary or continuous and
     adds stats accordingly.
     """
 
+    df = _table_1_default_df()
+
     eval_cols = [col for col in eval_dataset.columns if col.startswith("eval_")]
 
-    # Stats for eval_ cols
     for col in eval_cols:
         if len(eval_dataset[col].unique()) == 2:
             # Binary variable stats:
@@ -186,12 +177,22 @@ def _add_visit_level_stats(
             warnings.warn(
                 f"WARNING: {col} has only one value. This column will be excluded from the table.",
             )
+            
+    return df
+
+
+def _generate_visit_level_stats(
+    eval_dataset: pd.DataFrame,
+) -> pd.DataFrame:
+    """Generate all visit level stats to table 1."""
+    # Stats for eval_ cols
+    df = _generate_eval_col_stats(eval_dataset)
 
     # General stats
-    visits_followed_by_positive_outcome = eval_dataset["y"].sum()
-    visits_followed_by_positive_outcome_percentage = (
+    visits_followed_by_positive_outcome = int(eval_dataset["y"].sum())
+    visits_followed_by_positive_outcome_percentage = np.round((
         visits_followed_by_positive_outcome / len(eval_dataset) * 100
-    )
+    ), 2)
 
     df = df.append(
         {
@@ -212,55 +213,39 @@ def _calc_time_to_first_positive_outcome_stats(
 ) -> float:
     """Calculate mean time to first positive outcome (currently very slow)."""
 
-    # Calculate time to first positive outcome
-    time_to_first_positive_outcome = [
-        (
-            patients_with_positive_outcome_data[
-                patients_with_positive_outcome_data["ids"] == patient
-            ][
-                patients_with_positive_outcome_data[
-                    patients_with_positive_outcome_data["ids"] == patient
-                ]["y"]
-                == 1
-            ][
-                "outcome_timestamps"
-            ].min()
-            - patients_with_positive_outcome_data[
-                patients_with_positive_outcome_data["ids"] == patient
-            ]["pred_timestamps"].min()
-        )
-        for patient in patients_with_positive_outcome_data["ids"]
-    ]
+    grouped_data = patients_with_positive_outcome_data.groupby("ids")
+
+    time_to_first_positive_outcome = grouped_data.apply(lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min())
 
     # Convert to days (float)
-    time_to_first_positive_outcome = pd.Series(
-        time_to_first_positive_outcome,
-    ).dt.total_seconds() / (24 * 60 * 60)
+    time_to_first_positive_outcome = time_to_first_positive_outcome.dt.total_seconds() / (24 * 60 * 60)
 
-    return np.round(np.mean(time_to_first_positive_outcome), 2), np.round(
-        np.std(time_to_first_positive_outcome),
+    return np.round(time_to_first_positive_outcome.mean(), 2), np.round(
+        time_to_first_positive_outcome.std(),
         2,
     )
 
 
-def _add_patient_level_stats(
+def _generate_patient_level_stats(
     eval_dataset: pd.DataFrame,
-    df: pd.DataFrame,
 ) -> pd.DataFrame:
     """Add patient level stats to table 1."""
+    
+    df = _table_1_default_df()
 
     # General stats
     patients_with_positive_outcome = eval_dataset[eval_dataset["y"] == 1][
         "ids"
     ].unique()
-    patients_with_positive_outcome_percentage = (
-        patients_with_positive_outcome / len(eval_dataset["ids"].unique()) * 100
-    )
+    n_patients_with_positive_outcome = len(patients_with_positive_outcome)
+    patients_with_positive_outcome_percentage = np.round((
+        n_patients_with_positive_outcome / len(eval_dataset["ids"].unique()) * 100
+    ), 2)
 
     df = df.append(
         {
             "category": "(patient_level) patients_with_positive_outcome",
-            "stat_1": patients_with_positive_outcome,
+            "stat_1": n_patients_with_positive_outcome,
             "stat_1_unit": "visits",
             "stat_2": patients_with_positive_outcome_percentage,
             "stat_2_unit": "%",
@@ -271,9 +256,10 @@ def _add_patient_level_stats(
     patients_with_positive_outcome_data = eval_dataset[
         eval_dataset["ids"].isin(patients_with_positive_outcome)
     ]
+
     (
-        mean_time_to_first_positive_outcome,
-        std_time_to_first_positive_outomce,
+        mean_time_to_first_positive_outcome, 
+        std_time_to_first_positive_outomce
     ) = _calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_data)
 
     df = df.append(
@@ -310,26 +296,25 @@ def generate_table_1(
 
     eval_dataset = eval_dataset.to_df()
 
-    df = pd.DataFrame(
-        columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
-    )
-
     if "age" in eval_dataset.columns:
-        df = _add_age_stats(eval_dataset, df)
+        age_stats = _generate_age_stats(eval_dataset)
 
     if "sex" in eval_dataset.columns:
-        df = _add_sex_stats(eval_dataset, df)
+        sex_stats = _generate_sex_stats(eval_dataset)
 
-    df = _add_visit_level_stats(eval_dataset, df)
+    visit_level_stats = _generate_visit_level_stats(eval_dataset)
 
-    df = _add_patient_level_stats(eval_dataset, df)
+    patient_level_stats = _generate_patient_level_stats(eval_dataset)
+
+    table_1_df_list = [age_stats, sex_stats, visit_level_stats, patient_level_stats]
+    table_1 = pd.concat(table_1_df_list, ignore_index=True)
 
     if save_path is not None:
-        output_table(output_format="df", df=df)
+        output_table(output_format="df", df=table_1)
 
-        df.to_csv(save_path, index=False)
+        table_1.to_csv(save_path, index=False)
 
-    return output_table(output_format=output_format, df=df)
+    return output_table(output_format=output_format, df=table_1)
 
 
 def generate_feature_importances_table(
