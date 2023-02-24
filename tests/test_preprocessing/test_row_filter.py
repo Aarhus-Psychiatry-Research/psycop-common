@@ -25,7 +25,8 @@ def test_drop_datetime_predictor_columns(
 def test_drop_rows_with_insufficient_lookahead(
     muteable_test_config: FullConfigSchema,
 ):
-    """Test that rows are dropped if they can't look sufficiently far into the correct direction."""
+    """Test that rows are dropped if they can't look sufficiently far into the
+    correct direction."""
     cfg = muteable_test_config
     cfg.debug = DebugConfSchema(assert_outcome_col_matching_lookahead_exists=False)
 
@@ -48,7 +49,8 @@ def test_drop_rows_with_insufficient_lookahead(
 def test_drop_rows_with_insufficient_lookbehind(
     muteable_test_config: FullConfigSchema,
 ):
-    """Test that rows are dropped if they can't look sufficiently far into the correct direction."""
+    """Test that rows are dropped if they can't look sufficiently far into the
+    correct direction."""
     cfg = muteable_test_config
 
     # Without lookbehind
@@ -64,5 +66,5 @@ def test_drop_rows_with_insufficient_lookbehind(
 
     # Get difference between max_timestamp and max_timestamp_with_lookahead in days
     assert (min_timestamp_with_lookahead - min_timestamp_sans_lookahead).days >= max(
-        cfg.preprocessing.pre_split.lookbehind_combination
+        cfg.preprocessing.pre_split.lookbehind_combination,
     ) - min_lookbehind
