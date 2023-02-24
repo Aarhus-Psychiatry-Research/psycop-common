@@ -4,10 +4,10 @@ import logging
 from typing import Literal, Optional
 
 import pandas as pd
-from timeseriesflattener.feature_spec_objects import BaseModel
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
+from timeseriesflattener.feature_spec_objects import BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -24,9 +24,9 @@ class RawValueSourceSchema(BaseModel):
     """
 
     view: str
-    datetime_col: str
-    value_col: Optional[str] = None
-    location_col: Optional[str] = None
+    end_datetime_col_name: str
+    start_datetime_col_name: Optional[str] = None
+    location_col_name: Optional[str] = None
     where_clause: str
 
 
@@ -40,6 +40,7 @@ def physical_visits(
     visit_types: Optional[
         list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]
     ] = None,
+    start_date_as_timestamp: bool = False,
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
@@ -52,6 +53,8 @@ def physical_visits(
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_types (Optional[list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]], optional): Whether to subset visits by visit types. Defaults to None.
+        use_start_date_as_timestamp (bool, optional): Whether to use the start date of the visit as the timestamp. Defaults to False, in which case the end date is used.
+        start_date_as_timestamp (bool, optional): Whether to use the start date of the visit as the timestamp. Defaults to False, in which case the end date is used.
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -59,33 +62,33 @@ def physical_visits(
 
     # SHAK = 6600 ≈ in psychiatry
 
-    d = {
+    source_schemas = {
         "LPR3": RawValueSourceSchema(
             view="[FOR_LPR3kontakter_psyk_somatik_inkl_2021_feb2022]",
-            datetime_col="datotid_lpr3kontaktslut",
-            value_col="datotid_lpr3kontaktstart",
-            location_col="shakkode_lpr3kontaktansvarlig",
+            start_datetime_col_name="datotid_lpr3kontaktstart",
+            end_datetime_col_name="datotid_lpr3kontaktslut",
+            location_col_name="shakkode_lpr3kontaktansvarlig",
             where_clause="AND [Kontakttype] = 'Fysisk fremmøde'",
         ),
         "ambulatory_visits": RawValueSourceSchema(
             view="[FOR_besoeg_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            datetime_col="datotid_slut",
-            value_col="datotid_start",
-            location_col="shakafskode",
+            start_datetime_col_name="datotid_start",
+            end_datetime_col_name="datotid_slut",
+            location_col_name="shakafskode",
             where_clause="AND ambbesoeg = 1",
         ),
         "emergency_visits": RawValueSourceSchema(
             view="[FOR_akutambulantekontakter_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            datetime_col="datotid_slut",
-            value_col="datotid_start",
-            location_col="afsnit_stam",
+            start_datetime_col_name="datotid_start",
+            end_datetime_col_name="datotid_slut",
+            location_col_name="afsnit_stam",
             where_clause="",
         ),
         "admissions": RawValueSourceSchema(
             view="[FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022]",
-            datetime_col="datotid_udskrivning",
-            value_col="datotid_indlaeggelse",
-            location_col="shakKode_kontaktansvarlig",
+            start_datetime_col_name="datotid_indlaeggelse",
+            end_datetime_col_name="datotid_udskrivning",
+            location_col_name="shakKode_kontaktansvarlig",
             where_clause="",
         ),
     }
@@ -102,33 +105,38 @@ def physical_visits(
             "ambulatory_visits": "'Ambulant'",
             "emergency_visits": "'Akut ambulant'",
         }
-        d = {key: d[key] for key in visit_types + ["LPR3"]}
+        chosen_schemas = {
+            visit_type: source_schemas[visit_type]
+            for visit_type in visit_types + ["LPR3"]
+        }
         english_to_lpr3_visit_type = [
             english_to_lpr3_visit_type[visit] for visit in visit_types
         ]
-        d[
+        chosen_schemas[
             "LPR3"
         ].where_clause += f" AND pt_type IN ({','.join(english_to_lpr3_visit_type)})"
+    else:
+        chosen_schemas = source_schemas
 
     dfs = []
 
-    for schema in d.values():
-        cols = f"{schema.datetime_col}, dw_ek_borger"
+    for schema in chosen_schemas.values():
+        cols = f"{schema.end_datetime_col_name}, dw_ek_borger"
 
         if return_value_as_visit_length_days:
-            cols += f", {schema.value_col} AS value_col"
+            cols += f", {schema.start_datetime_col_name} AS end_datetime"
 
-        sql = f"SELECT {cols} FROM [fct].{schema.view} WHERE {schema.datetime_col} IS NOT NULL {schema.where_clause}"
+        sql = f"SELECT {cols} FROM [fct].{schema.view} WHERE {schema.end_datetime_col_name} IS NOT NULL {schema.where_clause}"
 
         if shak_code is not None:
-            sql += f" AND {schema.location_col} != 'Ukendt'"
-            sql += f" AND left({schema.location_col}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
+            sql += f" AND {schema.location_col_name} != 'Ukendt'"
+            sql += f" AND left({schema.location_col_name}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
 
         if where_clause is not None:
             sql += f" {where_separator} {where_clause}"
 
         df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
-        df.rename(columns={schema.datetime_col: "timestamp"}, inplace=True)
+        df.rename(columns={schema.end_datetime_col_name: "timestamp"}, inplace=True)
 
         dfs.append(df)
 
@@ -144,9 +152,11 @@ def physical_visits(
     # Change value column to length of admission in days
     if return_value_as_visit_length_days:
         output_df["value"] = (
-            output_df["timestamp"] - pd.to_datetime(output_df["value_col"])
+            output_df["timestamp"] - pd.to_datetime(output_df["end_datetime"])
         ).dt.total_seconds() / 86400
-        output_df = output_df.drop(columns="value_col")
+        output_df = output_df.drop(columns="end_datetime")
+    elif start_date_as_timestamp:
+        output_df["timestamp"] = pd.to_datetime(output_df["end_datetime"])
     else:
         output_df["value"] = 1
 
@@ -171,7 +181,8 @@ def physical_visits_loader(
 def physical_visits_to_psychiatry(
     n_rows: Optional[int] = None,
     timestamps_only: bool = False,
-    return_value_as_visit_length_days: Optional[bool] = False,
+    return_value_as_visit_length_days: Optional[bool] = True,
+    start_date_as_timestamp: Optional[bool] = False,
 ) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
     df = physical_visits(
@@ -179,10 +190,11 @@ def physical_visits_to_psychiatry(
         shak_sql_operator="=",
         n_rows=n_rows,
         return_value_as_visit_length_days=return_value_as_visit_length_days,
+        start_date_as_timestamp=start_date_as_timestamp,
     )
 
     if timestamps_only:
-        df = df.drop("value", axis=1)
+        df.drop(columns=["value"], inplace=True)
 
     return df
 
