@@ -11,6 +11,7 @@ from sklearn.metrics import roc_auc_score
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data
 
+
 def _calc_auc_and_n(
     df: pd.DataFrame,
     pred_probs_col_name: str,
@@ -45,24 +46,30 @@ def output_table(
     else:
         raise ValueError("Output format does not match anything that is allowed")
 
+
 def _table_1_default_df():
     """Create default table 1 dataframe.
+
     Returns:
-        pd.DataFrame: Default table 1 dataframe. Includes columns for category, two statistics and there units."""
+        pd.DataFrame: Default table 1 dataframe. Includes columns for category, two statistics and there units.
+    """
     return pd.DataFrame(
         columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
     )
+
 
 def _generate_age_stats(
     eval_dataset: pd.DataFrame,
 ) -> pd.DataFrame:
     """Add age stats to table 1."""
-    
+
     df = _table_1_default_df()
-    
+
     age_mean = np.round(eval_dataset["age"].mean(), 2)
 
-    age_span = f'{eval_dataset["age"].quantile(0.05)} - {eval_dataset["age"].quantile(0.95)}'
+    age_span = (
+        f'{eval_dataset["age"].quantile(0.05)} - {eval_dataset["age"].quantile(0.95)}'
+    )
 
     df = df.append(
         {
@@ -74,7 +81,9 @@ def _generate_age_stats(
         },
         ignore_index=True,
     )
-    age_counts = bin_continuous_data(eval_dataset["age"], bins=[0, 18, 35, 60, 100]).value_counts()
+    age_counts = bin_continuous_data(
+        eval_dataset["age"], bins=[0, 18, 35, 60, 100]
+    ).value_counts()
 
     age_percentages = np.round(age_counts / len(eval_dataset) * 100, 2)
 
@@ -97,7 +106,7 @@ def _generate_sex_stats(
     eval_dataset: pd.DataFrame,
 ) -> pd.DataFrame:
     """Add sex stats to table 1."""
-    
+
     df = _table_1_default_df()
 
     sex_counts = eval_dataset["sex"].value_counts()
@@ -177,7 +186,7 @@ def _generate_eval_col_stats(eval_dataset: pd.DataFrame) -> pd.DataFrame:
             warnings.warn(
                 f"WARNING: {col} has only one value. This column will be excluded from the table.",
             )
-            
+
     return df
 
 
@@ -190,9 +199,10 @@ def _generate_visit_level_stats(
 
     # General stats
     visits_followed_by_positive_outcome = int(eval_dataset["y"].sum())
-    visits_followed_by_positive_outcome_percentage = np.round((
-        visits_followed_by_positive_outcome / len(eval_dataset) * 100
-    ), 2)
+    visits_followed_by_positive_outcome_percentage = np.round(
+        (visits_followed_by_positive_outcome / len(eval_dataset) * 100),
+        2,
+    )
 
     df = df.append(
         {
@@ -215,10 +225,14 @@ def _calc_time_to_first_positive_outcome_stats(
 
     grouped_data = patients_with_positive_outcome_data.groupby("ids")
 
-    time_to_first_positive_outcome = grouped_data.apply(lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min())
+    time_to_first_positive_outcome = grouped_data.apply(
+        lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min()
+    )
 
     # Convert to days (float)
-    time_to_first_positive_outcome = time_to_first_positive_outcome.dt.total_seconds() / (24 * 60 * 60)
+    time_to_first_positive_outcome = (
+        time_to_first_positive_outcome.dt.total_seconds() / (24 * 60 * 60)
+    )
 
     return np.round(time_to_first_positive_outcome.mean(), 2), np.round(
         time_to_first_positive_outcome.std(),
@@ -230,7 +244,7 @@ def _generate_patient_level_stats(
     eval_dataset: pd.DataFrame,
 ) -> pd.DataFrame:
     """Add patient level stats to table 1."""
-    
+
     df = _table_1_default_df()
 
     # General stats
@@ -238,9 +252,10 @@ def _generate_patient_level_stats(
         "ids"
     ].unique()
     n_patients_with_positive_outcome = len(patients_with_positive_outcome)
-    patients_with_positive_outcome_percentage = np.round((
-        n_patients_with_positive_outcome / len(eval_dataset["ids"].unique()) * 100
-    ), 2)
+    patients_with_positive_outcome_percentage = np.round(
+        (n_patients_with_positive_outcome / len(eval_dataset["ids"].unique()) * 100),
+        2,
+    )
 
     df = df.append(
         {
@@ -258,8 +273,8 @@ def _generate_patient_level_stats(
     ]
 
     (
-        mean_time_to_first_positive_outcome, 
-        std_time_to_first_positive_outomce
+        mean_time_to_first_positive_outcome,
+        std_time_to_first_positive_outomce,
     ) = _calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_data)
 
     df = df.append(
