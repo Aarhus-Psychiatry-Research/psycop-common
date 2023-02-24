@@ -121,12 +121,9 @@ def physical_visits(
     dfs = []
 
     for schema in chosen_schemas.values():
-        cols = f"{schema.end_datetime_col_name}, dw_ek_borger"
+        cols = f"{schema.start_datetime_col_name}, {schema.end_datetime_col_name}, dw_ek_borger"
 
-        if return_value_as_visit_length_days:
-            cols += f", {schema.start_datetime_col_name} AS end_datetime"
-
-        sql = f"SELECT {cols} FROM [fct].{schema.view} WHERE {schema.end_datetime_col_name} IS NOT NULL {schema.where_clause}"
+        sql = f"SELECT {cols} FROM [fct].{schema.view} WHERE {schema.start_datetime_col_name} IS NOT NULL {schema.where_clause}"
 
         if shak_code is not None:
             sql += f" AND {schema.location_col_name} != 'Ukendt'"
@@ -136,7 +133,13 @@ def physical_visits(
             sql += f" {where_separator} {where_clause}"
 
         df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
-        df.rename(columns={schema.end_datetime_col_name: "timestamp"}, inplace=True)
+        df.rename(
+            columns={
+                schema.end_datetime_col_name: "timestamp_end",
+                schema.start_datetime_col_name: "timestamp_start",
+            },
+            inplace=True,
+        )
 
         dfs.append(df)
 
@@ -145,24 +148,24 @@ def physical_visits(
 
     # 0,8% of visits are duplicates. Unsure if overlap between sources or errors in source data. Removing.
     output_df = output_df.drop_duplicates(
-        subset=["timestamp", "dw_ek_borger"],
+        subset=["timestamp_start", "timestamp_end", "dw_ek_borger"],
         keep="first",
     )
 
     # Change value column to length of admission in days
     if return_value_as_visit_length_days:
         output_df["value"] = (
-            output_df["timestamp"] - pd.to_datetime(output_df["end_datetime"])
+            output_df["timestamp_end"] - pd.to_datetime(output_df["timestamp_start"])
         ).dt.total_seconds() / 86400
-        output_df = output_df.drop(columns="end_datetime")
+        output_df["timestamp"] = df["timestamp_end"]
     elif start_date_as_timestamp:
-        output_df["timestamp"] = pd.to_datetime(output_df["end_datetime"])
+        output_df["timestamp"] = pd.to_datetime(output_df["timestamp_start"])
     else:
         output_df["value"] = 1
 
     log.info("Loaded physical visits")
 
-    return output_df.reset_index(drop=True)
+    return output_df[["dw_ek_borger", "timestamp", "value"]].reset_index(drop=True)
 
 
 @data_loaders.register("physical_visits")
