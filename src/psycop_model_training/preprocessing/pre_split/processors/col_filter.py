@@ -163,8 +163,8 @@ class PresSplitColFilter:
         df = dataset.drop(col_to_drop, axis=1)
 
         if (
-            self.cfg.debug is not None
-            and self.cfg.debug.assert_outcome_col_matching_lookahead_exists
+            self.cfg.debug is None
+            or self.cfg.debug.assert_outcome_col_matching_lookahead_exists
         ):
             if not len(infer_outcome_col_name(df)) == 1:
                 raise ValueError(
