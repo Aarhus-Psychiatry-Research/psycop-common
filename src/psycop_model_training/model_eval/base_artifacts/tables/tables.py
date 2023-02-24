@@ -82,7 +82,8 @@ def _generate_age_stats(
         ignore_index=True,
     )
     age_counts = bin_continuous_data(
-        eval_dataset["age"], bins=[0, 18, 35, 60, 100]
+        eval_dataset["age"],
+        bins=[0, 18, 35, 60, 100],
     ).value_counts()
 
     age_percentages = np.round(age_counts / len(eval_dataset) * 100, 2)
@@ -226,7 +227,7 @@ def _calc_time_to_first_positive_outcome_stats(
     grouped_data = patients_with_positive_outcome_data.groupby("ids")
 
     time_to_first_positive_outcome = grouped_data.apply(
-        lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min()
+        lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min(),
     )
 
     # Convert to days (float)
