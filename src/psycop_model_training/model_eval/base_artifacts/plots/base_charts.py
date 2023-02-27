@@ -107,6 +107,8 @@ def plot_basic_chart(
             frameon=True,
         )
 
+    plt.tight_layout()
+
     if save_path is not None:
         plt.savefig(save_path)
 
