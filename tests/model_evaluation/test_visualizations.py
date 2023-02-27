@@ -22,7 +22,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age im
 from psycop_model_training.model_eval.base_artifacts.plots.performance_by_sex import (
     plot_performance_by_sex,
 )
-
 from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
