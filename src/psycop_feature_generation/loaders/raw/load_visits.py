@@ -163,7 +163,9 @@ def physical_visits(
     )
 
     # Keep only one visit per timestamp
-    df = df.drop_duplicates(subset=["dw_ek_borger", "timestamp"], keep="first")
+    output_df = output_df.drop_duplicates(
+        subset=["dw_ek_borger", "timestamp"], keep="first"
+    )
 
     return output_df[["dw_ek_borger", f"timestamp", "value"]].reset_index(drop=True)
 
