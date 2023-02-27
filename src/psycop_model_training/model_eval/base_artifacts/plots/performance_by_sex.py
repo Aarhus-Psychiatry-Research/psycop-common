@@ -1,17 +1,53 @@
-from src.psycop_model_training.model_eval.dataclasses import EvalDataset
-import pandas as pd
+from collections.abc import Callable, Sequence
+from pathlib import Path
+from typing import Optional, Union
+
+from sklearn.metrics import roc_auc_score
+
+from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
+    plot_basic_chart,
+)
+from psycop_model_training.model_eval.base_artifacts.plots.utils import (
+    create_performance_by_input,
+)
+from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
-def plot_auc_by_sex(
+def plot_performance_by_sex(
     eval_dataset: EvalDataset,
-):
-    """Plot auc by sex"""
-    df = pd.DataFrame(
-        {
-            "is_female": eval_dataset.is_female,
-            "y": eval_dataset.y,
-            "y_hat": eval_dataset.y_hat_probs,
-        }
+    save_path: Optional[Path] = None,
+    metric_fn: Callable = roc_auc_score,
+    y_limits: Optional[tuple[float, float]] = (0.0, 1.0),
+) -> Union[None, Path]:
+    """Plot bar plot of performance (default AUC) by sex at time of prediction.
+
+    Args:
+        eval_dataset: EvalDataset object
+        save_path (Path, optional): Path to save figure. Defaults to None.
+        metric_fn (Callable): Callable which returns the metric to calculate
+        y_limits (tuple[float, float], optional): y-axis limits. Defaults to (0.0, 1.0).
+
+    Returns:
+        Union[None, Path]: Path to saved figure or None if not saved.
+    """
+
+    df = create_performance_by_input(
+        eval_dataset=eval_dataset,
+        input=eval_dataset.is_female,
+        input_name="sex",
+        metric_fn=metric_fn,
+        bins=None,
+        continuous_input_to_bins=False,
     )
 
-    pass
+    df.sex = df.sex.replace({1: "female", 0: "male"})
+
+    return plot_basic_chart(
+        x_values=df["sex"],
+        y_values=df["metric"],
+        x_title="Sex",
+        y_title="AUC",
+        y_limits=y_limits,
+        plot_type=["bar"],
+        save_path=save_path,
+    )

@@ -19,7 +19,7 @@ def plot_performance_by_age(
     eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
     bins: Sequence[Union[int, float]] = (18, 25, 35, 50, 70),
-    prettify_bins: Optional[bool] = True,
+    continuous_input_to_bins: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
@@ -28,8 +28,7 @@ def plot_performance_by_age(
     Args:
         eval_dataset: EvalDataset object
         bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
-        prettify_bins (bool, optional): Whether to prettify bin names. I.e. make
-            bins look like "18-25" instead of "[18-25])". Defaults to True.
+        continuous_input_to_bins (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
         save_path (Path, optional): Path to save figure. Defaults to None.
         y_limits (tuple[float, float], optional): y-axis limits. Defaults to (0.5, 1.0).
@@ -44,7 +43,7 @@ def plot_performance_by_age(
         input_name="age",
         metric_fn=metric_fn,
         bins=bins,
-        prettify_bins=prettify_bins,
+        continuous_input_to_bins=continuous_input_to_bins,
     )
 
     sort_order = sorted(df["age_binned"].unique())

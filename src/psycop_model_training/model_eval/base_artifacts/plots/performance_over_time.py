@@ -276,7 +276,7 @@ def create_performance_by_time_from_event_df(
     metric_fn: Callable,
     direction: str,
     bins: Iterable[float],
-    prettify_bins: Optional[bool] = True,
+    continuous_input_to_bins: Optional[bool] = True,
     drop_na_events: Optional[bool] = True,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
@@ -291,8 +291,7 @@ def create_performance_by_time_from_event_df(
         direction (str): Which direction to calculate time difference.
         Can either be 'prediction-event' or 'event-prediction'.
         bins (Iterable[float]): Bins to group by.
-        prettify_bins (bool, optional): Whether to prettify bin names. I.e. make
-            bins look like "1-7" instead of "[1-7]". Defaults to True.
+        continuous_input_to_bins (bool, optional): Whether to bin input. Defaults to True.
         drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
 
     Returns:
@@ -328,7 +327,7 @@ def create_performance_by_time_from_event_df(
         )
 
     # bin data
-    bin_fn = bin_continuous_data if prettify_bins else round_floats_to_edge
+    bin_fn = bin_continuous_data if continuous_input_to_bins else round_floats_to_edge
 
     # Convert df["days_from_event"] to int if possible
     df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
@@ -342,7 +341,7 @@ def create_performance_by_time_from_event_df(
 def plot_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: tuple = (0, 28, 182, 365, 730, 1825),
-    prettify_bins: Optional[bool] = True,
+    continuous_input_to_bins: Optional[bool] = True,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
@@ -351,8 +350,7 @@ def plot_auc_by_time_from_first_visit(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
-        prettify_bins (bool, optional): Prettify bin names. I.e. make
-        bins look like "1-7" instead of "[1-7)" Defaults to True.
+        continuous_input_to_bins (bool, optional): Whether to bin input. Defaults to True.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
         save_path (Path, optional): Path to save figure. Defaults to None.
 
@@ -372,7 +370,7 @@ def plot_auc_by_time_from_first_visit(
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="prediction-event",
         bins=bins,
-        prettify_bins=prettify_bins,
+        continuous_input_to_bins=continuous_input_to_bins,
         drop_na_events=False,
         metric_fn=roc_auc_score,
     )
@@ -400,7 +398,7 @@ def plot_metric_by_time_until_diagnosis(
         -28,
         -0,
     ),
-    prettify_bins: bool = True,
+    continuous_input_to_bins: bool = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
     y_limits: Optional[tuple[float, float]] = None,
@@ -414,7 +412,7 @@ def plot_metric_by_time_until_diagnosis(
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Negative values indicate days after
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
-        prettify_bins (bool, optional): Whether to prettify bin names. Defaults to True.
+        continuous_input_to_bins (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
@@ -430,7 +428,7 @@ def plot_metric_by_time_until_diagnosis(
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="event-prediction",
         bins=bins,
-        prettify_bins=prettify_bins,
+        continuous_input_to_bins=continuous_input_to_bins,
         drop_na_events=True,
         metric_fn=metric_fn,
     )

@@ -19,6 +19,10 @@ from psycop_model_training.model_eval.base_artifacts.plots.feature_importance im
 from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age import (
     plot_performance_by_age,
 )
+from psycop_model_training.model_eval.base_artifacts.plots.performance_by_sex import (
+    plot_performance_by_sex,
+)
+
 from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
     plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
@@ -42,9 +46,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
-from src.psycop_model_training.model_eval.base_artifacts.plots.performance_by_sex import (
-    plot_auc_by_sex,
-)
 
 
 @pytest.fixture(scope="function")
@@ -107,7 +108,14 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
 def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
     plot_performance_by_age(
         eval_dataset=synth_eval_dataset,
-        save_path=PROJECT_ROOT / "test.png",
+        save_path=PROJECT_ROOT / "test_performance_plot_by_age.png",
+    )
+
+
+def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
+    plot_performance_by_sex(
+        eval_dataset=synth_eval_dataset,
+        save_path=PROJECT_ROOT / "test_performance_plot_by_sex.png",
     )
 
 
@@ -164,12 +172,6 @@ def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
 
 def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
     plot_auc_by_time_from_first_visit(
-        eval_dataset=synth_eval_dataset,
-    )
-
-
-def test_plot_auc_by_sex(synth_eval_dataset: EvalDataset):
-    plot_auc_by_sex(
         eval_dataset=synth_eval_dataset,
     )
 
