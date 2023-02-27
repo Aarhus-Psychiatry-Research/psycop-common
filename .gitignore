@@ -126,6 +126,7 @@ package.json
 *.pkl
 .aucs/
 *.parquet
+*.csv
 
 evaluation_results
 *.pqt
