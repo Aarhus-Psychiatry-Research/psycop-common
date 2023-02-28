@@ -17,7 +17,7 @@ def plot_performance_by_sex(
     eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
     metric_fn: Callable = roc_auc_score,
-    y_limits: Optional[tuple[float, float]] = (0.0, 1.0),
+    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by sex at time of prediction.
 
@@ -37,7 +37,7 @@ def plot_performance_by_sex(
         input_name="sex",
         metric_fn=metric_fn,
         bins=None,
-        continuous_input_to_bins=False,
+        bin_continuous_input=False,
     )
 
     df.sex = df.sex.replace({1: "female", 0: "male"})

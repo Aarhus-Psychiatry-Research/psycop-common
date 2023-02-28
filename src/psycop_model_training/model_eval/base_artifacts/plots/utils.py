@@ -69,7 +69,7 @@ def create_performance_by_input(
     input: Sequence[Union[int, float]],
     input_name: str,
     bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
-    continuous_input_to_bins: Optional[bool] = True,
+    bin_continuous_input: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
     """Calculate performance by given input values, e.g. age or number of hbac1
@@ -81,7 +81,7 @@ def create_performance_by_input(
         input (Sequence[Union[int, float]]): Input values to calculate performance by
         input_name (str): Name of the input
         bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
-        continuous_input_to_bins (bool, optional): Whether to bin input. Defaults to True.
+        bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
 
     Returns:
@@ -96,7 +96,7 @@ def create_performance_by_input(
     )
 
     # bin data
-    if continuous_input_to_bins:
+    if bin_continuous_input:
         df[f"{input_name}_binned"] = bin_continuous_data(df[input_name], bins=bins)
 
         output_df = df.groupby(f"{input_name}_binned").apply(
