@@ -4,10 +4,10 @@ import logging
 from typing import Literal, Optional
 
 import pandas as pd
-from timeseriesflattener.feature_spec_objects import BaseModel
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
+from timeseriesflattener.feature_spec_objects import BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -142,9 +142,12 @@ def physical_visits(
     # Concat the list of dfs
     output_df = pd.concat(dfs)
 
-    # 0,8% of visits are duplicates. Unsure if overlap between sources or errors in source data. Removing.
+    # Round timestamps to whole seconds before dropping duplicates
+    for col in ["timestamp_start", "timestamp_end"]:
+        output_df[col] = output_df[col].dt.round("1s")
+
     output_df = output_df.drop_duplicates(
-        subset=["timestamp_start", "timestamp_end", "dw_ek_borger"],
+        subset=[f"timestamp_{timestamp_for_output}", "dw_ek_borger"],
         keep="first",
     )
 
@@ -160,11 +163,6 @@ def physical_visits(
 
     output_df.rename(
         columns={f"timestamp_{timestamp_for_output}": "timestamp"}, inplace=True
-    )
-
-    # Keep only one visit per timestamp
-    output_df = output_df.drop_duplicates(
-        subset=["dw_ek_borger", "timestamp"], keep="first"
     )
 
     return output_df[["dw_ek_borger", f"timestamp", "value"]].reset_index(drop=True)
