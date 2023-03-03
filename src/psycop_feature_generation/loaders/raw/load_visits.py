@@ -143,13 +143,16 @@ def physical_visits(
     output_df = pd.concat(dfs)
 
     # Round timestamps to whole seconds before dropping duplicates
-    for col in ["timestamp_start", "timestamp_end"]:
-        output_df[col] = output_df[col].dt.round("1s")
+    output_timestamp_col_name = f"timestamp_{timestamp_for_output}"
 
+    output_df[output_timestamp_col_name] = output_df[
+        output_timestamp_col_name
+    ].dt.round("1s")
     output_df = output_df.drop_duplicates(
-        subset=[f"timestamp_{timestamp_for_output}", "dw_ek_borger"],
+        subset=[output_timestamp_col_name, "dw_ek_borger"],
         keep="first",
     )
+    output_df = output_df.dropna(subset=[output_timestamp_col_name])
 
     # Change value column to length of admission in days
     if return_value_as_visit_length_days:
@@ -161,9 +164,7 @@ def physical_visits(
 
     log.info("Loaded physical visits")
 
-    output_df.rename(
-        columns={f"timestamp_{timestamp_for_output}": "timestamp"}, inplace=True
-    )
+    output_df.rename(columns={output_timestamp_col_name: "timestamp"}, inplace=True)
 
     return output_df[["dw_ek_borger", f"timestamp", "value"]].reset_index(drop=True)
 
