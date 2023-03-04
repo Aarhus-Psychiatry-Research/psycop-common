@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.38.0 (2023-03-04)
+### Feature
+* Add plot auc by sex ([`3dfcd69`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3dfcd694d788f44faad8d1d4eddc63346a325360))
+
+### Fix
+* Add space so all labels are within plots ([`c00b5d0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c00b5d09157cc76b7910b3cb6a9af56c30a76975))
+
 ## v0.37.0 (2023-02-22)
 ### Feature
 * Plot sensitivity by time to diagnosis by threshold ([#397](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/397)) ([`1195673`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/119567333854701a32976a0552cb06fe153c5189))
