@@ -19,5 +19,5 @@ def test_generate_table_1(synth_eval_dataset: EvalDataset):
 
     output_table = table_spec.artifact
 
-    assert output_table.isnull().values.any() == False
+    assert not output_table.isnull().values.any()
     assert output_table.shape == (11, 5)
