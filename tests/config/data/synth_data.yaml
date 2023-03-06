@@ -11,4 +11,5 @@ data:
     outcome_timestamp: timestamp_outcome
     id: citizen_ids
     age: pred_age
+    is_female: is_female
     exclusion_timestamp: timestamp_exclusion
