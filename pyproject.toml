@@ -91,10 +91,6 @@ pythonpath = [
   "."
 ]
 
-
-[tool.isort]
-known_third_party = ["wandb"]
-
 [tool.semantic_release]
 branch = "main"
 version_variable = [
@@ -107,4 +103,47 @@ build_command = "python -m pip install build; python -m build"
 [tool.pytest-xdist]
 n = 4
 
-[tool.pyright]
+[tool.ruff]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+select = ["A", "B", "C4", "COM", "E", "ERA", "F", "I", "ICN", "NPY001", "PIE", "PT", "PD002", "UP", "Q", "PTH", "RSE", "RET", "SIM", "W"]
+ignore = ["E501", "RET504"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+unfixable = ["ERA"]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "__init__.py",
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+target-version = "py39"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.isort]
+known-third-party = ["wandb"]
