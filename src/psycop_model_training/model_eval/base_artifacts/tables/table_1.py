@@ -277,7 +277,6 @@ class Table1:
         provided, the table is saved as a csv file.
 
         Args:
-            eval_dataset (EvalDataset): Evaluation dataset.
             output_format (str, optional): Output format. Defaults to "df".
             save_path (Optional[Path], optional): Path to save the table as a csv file. Defaults to None.
 
