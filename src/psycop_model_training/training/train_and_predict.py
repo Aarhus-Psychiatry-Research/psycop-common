@@ -5,11 +5,6 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import StratifiedGroupKFold
-from sklearn.pipeline import Pipeline
-from wasabi import Printer
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 # from psycop_model_training.evaluation import evaluate_model
@@ -17,6 +12,10 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.training.utils import create_eval_dataset
 from psycop_model_training.utils.utils import PROJECT_ROOT
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedGroupKFold
+from sklearn.pipeline import Pipeline
+from wasabi import Printer
 
 CONFIG_PATH = PROJECT_ROOT / "application" / "config"
 
@@ -125,7 +124,7 @@ def crossval_train_and_predict(
         n_splits=n_splits,
     )
 
-    df.rename(columns={"oof_y_hat": "y_hat_prob"}, inplace=True)
+    df = df.rename(columns={"oof_y_hat": "y_hat_prob"})
 
     return create_eval_dataset(
         col_names=cfg.data.col_name,

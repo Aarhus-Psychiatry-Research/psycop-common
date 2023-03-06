@@ -1,8 +1,6 @@
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from pathlib import Path
 from typing import Optional, Union
-
-from sklearn.metrics import roc_auc_score
 
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
@@ -11,6 +9,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.utils import (
     create_performance_by_input,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import roc_auc_score
 
 
 def plot_performance_by_sex(

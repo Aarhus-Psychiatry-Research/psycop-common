@@ -1,5 +1,4 @@
 import pandas as pd
-
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
 from psycop_model_training.training.utils import create_eval_dataset
 

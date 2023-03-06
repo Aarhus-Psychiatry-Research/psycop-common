@@ -12,10 +12,9 @@ from typing import Any, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
-
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
 from psycop_model_training.model_eval.model_performance import ModelPerformance
+from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
@@ -106,13 +105,13 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
         A pandas dataframe without the records where datadiff was smaller than threshold_days.
     """
     if inplace:
-        df.drop(
+        df = df.drop(
             df[
                 (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")
                 < threshold_days
             ].index,
-            inplace=True,
         )
+        return None
     else:
         return df[
             (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")

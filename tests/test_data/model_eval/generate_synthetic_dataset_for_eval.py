@@ -94,7 +94,7 @@ if __name__ == "__main__":
         for _ in range(N_ROWS)
     ]
     df["timestamp"] = df["timestamp"] + df["time_differences"]
-    df.drop("time_differences", axis=1, inplace=True)
+    df = df.drop("time_differences", axis=1)
 
     df["pred_prob"] = [(np.random.random() - 0.45) for _ in range(N_ROWS)]
     df["pred_prob"] = df["pred_prob"].clip(0, 1)
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         else x["timestamp_first_hba1c"],
         axis=1,
     )
-    df.drop("timestamp_hba1c_copy", axis=1, inplace=True)
+    df = df.drop("timestamp_hba1c_copy", axis=1)
 
     # True label
     df["label"] = df["timestamp_t2d_diag"].notnull().astype(int)

@@ -3,7 +3,6 @@ import re
 from typing import Union
 
 import pandas as pd
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_loader import msg
 from psycop_model_training.utils.col_name_inference import (

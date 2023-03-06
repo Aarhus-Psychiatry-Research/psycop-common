@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from sklearn.metrics import recall_score
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.base_artifacts.plots.feature_importance import (
     plot_feature_importances,
@@ -39,6 +37,7 @@ from psycop_model_training.model_eval.dataclasses import (
     PipeMetadata,
 )
 from psycop_model_training.utils.utils import positive_rate_to_pred_probs
+from sklearn.metrics import recall_score
 
 
 class BaseArtifactGenerator:

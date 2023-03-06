@@ -1,6 +1,5 @@
 """Utility functions for model training."""
 import pandas as pd
-
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 

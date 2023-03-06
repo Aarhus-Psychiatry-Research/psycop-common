@@ -4,11 +4,10 @@ from typing import Any, Optional, Union
 
 import dill as pkl
 import pandas as pd
-from sklearn.pipeline import Pipeline
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
 from psycop_model_training.utils.utils import write_df_to_file
+from sklearn.pipeline import Pipeline
 
 log = logging.getLogger(__name__)
 

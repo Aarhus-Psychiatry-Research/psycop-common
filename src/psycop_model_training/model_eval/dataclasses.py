@@ -1,9 +1,8 @@
 """Dataclasses for evaluation."""
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
-
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 

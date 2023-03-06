@@ -6,11 +6,9 @@ from typing import Optional, Union
 import numpy as np
 import pandas as pd
 import wandb
-from sklearn.metrics import roc_auc_score
-from wandb.sdk.wandb_run import Run as wandb_run
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data
+from sklearn.metrics import roc_auc_score
 
 
 def log_image_to_wandb(chart_path: Path, chart_name: str):

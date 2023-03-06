@@ -8,8 +8,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from sklearn.metrics import f1_score, recall_score, roc_auc_score
-
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
@@ -45,9 +43,10 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from sklearn.metrics import f1_score, roc_auc_score
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def df():
     repo_path = Path(__file__).parent
     path = repo_path / "test_data" / "synth_eval_data.csv"

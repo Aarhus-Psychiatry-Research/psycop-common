@@ -8,7 +8,6 @@ be in a dir called 'tables' and figures in a dir called 'figs'
 
 
 import pandas as pd
-
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
 # import pandoc

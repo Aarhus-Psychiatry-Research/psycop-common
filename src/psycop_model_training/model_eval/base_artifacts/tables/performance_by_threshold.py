@@ -5,9 +5,8 @@ from typing import Optional, Union
 import numpy as np
 import pandas as pd
 import wandb
-from sklearn.metrics import confusion_matrix
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import confusion_matrix
 
 
 def get_true_positives(

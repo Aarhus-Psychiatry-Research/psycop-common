@@ -5,13 +5,12 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-
 from psycop_model_training.model_eval.model_performance import ModelPerformance
 
 # pylint: disable=missing-function-docstring
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def multiclass_df():
     return pd.DataFrame(
         {
@@ -36,7 +35,7 @@ def multiclass_df():
     )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def binary_df():
     return pd.DataFrame(
         {
@@ -49,17 +48,17 @@ def binary_df():
     )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def binary_float_df():
     return pd.DataFrame({"scores": [0.6, 0.2, 0.8], "label": [1, 0, 0]})
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def multiclass_score_mapping():
     return {0: "ASD", 1: "DEPR", 2: "TD", 3: "SCHZ"}
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def binary_score_mapping():
     return {0: "TD", 1: "DEPR"}
 
