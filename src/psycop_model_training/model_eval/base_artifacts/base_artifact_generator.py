@@ -184,7 +184,9 @@ class BaseArtifactGenerator:
         return [
             ArtifactContainer(
                 label="table_1",
-                artifact=DescriptiveStatsTable(self.eval_ds).generate_descriptive_stats_table(),
+                artifact=DescriptiveStatsTable(
+                    self.eval_ds
+                ).generate_descriptive_stats_table(),
             ),
         ]
 

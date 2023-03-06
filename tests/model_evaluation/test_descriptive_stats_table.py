@@ -33,8 +33,7 @@ def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
                 "(visit_level) visits followed by positive outcome",
                 "(patient_level) patients_with_positive_outcome",
                 "(patient level) time_to_first_positive_outcome",
-            ]
+            ],
         )
         .any()
     )
-

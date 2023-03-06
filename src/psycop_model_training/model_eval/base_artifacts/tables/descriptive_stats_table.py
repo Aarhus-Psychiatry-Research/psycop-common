@@ -272,9 +272,9 @@ class DescriptiveStatsTable:
         output_format: str = "df",
         save_path: Optional[Path] = None,
     ) -> Union[pd.DataFrame, wandb.Table]:
-        """Generate descriptive stats table. Calculates relevant statistics from the evaluation
-        dataset and returns a pandas dataframe or wandb table. If save_path is
-        provided, the table is saved as a csv file.
+        """Generate descriptive stats table. Calculates relevant statistics
+        from the evaluation dataset and returns a pandas dataframe or wandb
+        table. If save_path is provided, the table is saved as a csv file.
 
         Args:
             output_format (str, optional): Output format. Defaults to "df".
