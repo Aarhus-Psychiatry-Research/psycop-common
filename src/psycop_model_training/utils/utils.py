@@ -12,10 +12,9 @@ from typing import Any, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
-
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
 from psycop_model_training.model_eval.model_performance import ModelPerformance
+from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
