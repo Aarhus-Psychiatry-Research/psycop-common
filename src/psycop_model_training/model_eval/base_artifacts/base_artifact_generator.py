@@ -26,10 +26,12 @@ from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import
 from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
 )
+from psycop_model_training.model_eval.base_artifacts.tables.descriptive_stats_table import (
+    DescriptiveStatsTable,
+)
 from psycop_model_training.model_eval.base_artifacts.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycop_model_training.model_eval.base_artifacts.tables.table_1 import Table1
 from psycop_model_training.model_eval.base_artifacts.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
@@ -182,7 +184,7 @@ class BaseArtifactGenerator:
         return [
             ArtifactContainer(
                 label="table_1",
-                artifact=Table1(self.eval_ds).generate_table_1(),
+                artifact=DescriptiveStatsTable(self.eval_ds).generate_descriptive_stats_table(),
             ),
         ]
 

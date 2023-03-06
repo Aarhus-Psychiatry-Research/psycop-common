@@ -1,4 +1,4 @@
-"""Code for generating a table 1."""
+"""Code for generating a descriptive stats table."""
 import warnings
 from pathlib import Path
 from typing import Optional, Union
@@ -11,8 +11,8 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data
 
 
-class Table1:
-    """Class for generating table 1."""
+class DescriptiveStatsTable:
+    """Class for generating a descriptive stats table."""
 
     def __init__(
         self,
@@ -20,7 +20,7 @@ class Table1:
     ) -> None:
         self.eval_dataset = eval_dataset.to_df()
 
-    def _table_1_default_df(self):
+    def _get_column_header_df(self):
         """Create default table 1 dataframe.
 
         Returns:
@@ -35,7 +35,7 @@ class Table1:
     ) -> pd.DataFrame:
         """Add age stats to table 1."""
 
-        df = self._table_1_default_df()
+        df = self._get_column_header_df()
 
         age_mean = round(self.eval_dataset["age"].mean(), 2)
 
@@ -77,7 +77,7 @@ class Table1:
     ) -> pd.DataFrame:
         """Add sex stats to table 1."""
 
-        df = self._table_1_default_df()
+        df = self._get_column_header_df()
 
         sex_counts = self.eval_dataset["is_female"].value_counts()
         sex_percentages = sex_counts / len(self.eval_dataset) * 100
@@ -110,7 +110,7 @@ class Table1:
         continuous and adds stats accordingly.
         """
 
-        df = self._table_1_default_df()
+        df = self._get_column_header_df()
 
         eval_cols = [
             col for col in self.eval_dataset.columns if col.startswith("eval_")
@@ -216,7 +216,7 @@ class Table1:
     ) -> pd.DataFrame:
         """Add patient level stats to table 1."""
 
-        df = self._table_1_default_df()
+        df = self._get_column_header_df()
 
         # General stats
         patients_with_positive_outcome = self.eval_dataset[self.eval_dataset["y"] == 1][
@@ -267,12 +267,12 @@ class Table1:
 
         return df
 
-    def generate_table_1(
+    def generate_descriptive_stats_table(
         self,
         output_format: str = "df",
         save_path: Optional[Path] = None,
     ) -> Union[pd.DataFrame, wandb.Table]:
-        """Generate table 1. Calculates relevant statistics from the evaluation
+        """Generate descriptive stats table. Calculates relevant statistics from the evaluation
         dataset and returns a pandas dataframe or wandb table. If save_path is
         provided, the table is saved as a csv file.
 
