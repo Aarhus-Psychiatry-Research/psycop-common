@@ -16,6 +16,7 @@ CONFIG_DIR_PATH_REL = "../application/config"
 
 def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
     """Add eval_ column to dataframe to test table 1 functionality.
+
     Args:
         df (pd.DataFrame): The dataframe to add age
     """

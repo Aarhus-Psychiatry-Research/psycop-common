@@ -229,7 +229,7 @@ class DescriptiveStatsTable:
                 "y": self.eval_dataset.y,
                 "outcome_timestamps": self.eval_dataset.outcome_timestamps,
                 "pred_timestamps": self.eval_dataset.pred_timestamps,
-            }
+            },
         )
 
         # General stats
