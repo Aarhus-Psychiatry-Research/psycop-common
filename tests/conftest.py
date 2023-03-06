@@ -14,25 +14,11 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 CONFIG_DIR_PATH_REL = "../application/config"
 
 
-def add_age_is_female(df: pd.DataFrame):
-    """Add age and gender columns to dataframe.
-
-    Args:
-        df (pd.DataFrame): The dataframe to add age
-    """
-    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
-    ids["age"] = np.random.randint(17, 95, len(ids))
-    ids["is_female"] = np.where(ids["dw_ek_borger"] > 30_000, 1, 0)
-
-    return df.merge(ids)
-
-
 @pytest.fixture(scope="function")
 def synth_eval_dataset() -> EvalDataset:
     """Load synthetic data."""
-    csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
+    csv_path = Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
-    df = add_age_is_female(df)
 
     # Convert all timestamp cols to datetime
     for col in [col for col in df.columns if "timestamp" in col]:
