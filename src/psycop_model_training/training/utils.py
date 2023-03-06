@@ -38,7 +38,7 @@ def create_eval_dataset(
         pred_timestamps=df[col_names.pred_timestamp],
         outcome_timestamps=df[col_names.outcome_timestamp],
         age=df[col_names.age],
-        sex=df[col_names.sex],
+        is_female=df[col_names.is_female],
         exclusion_timestamps=df[col_names.exclusion_timestamp]
         if col_names.exclusion_timestamp
         else None,

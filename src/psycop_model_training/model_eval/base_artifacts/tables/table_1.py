@@ -79,7 +79,7 @@ class Table1:
 
         df = self._table_1_default_df()
 
-        sex_counts = self.eval_dataset["sex"].value_counts()
+        sex_counts = self.eval_dataset["is_female"].value_counts()
         sex_percentages = sex_counts / len(self.eval_dataset) * 100
 
         for i, n in enumerate(sex_counts):
@@ -287,7 +287,7 @@ class Table1:
         if "age" in self.eval_dataset.columns:
             age_stats = self._generate_age_stats()
 
-        if "sex" in self.eval_dataset.columns:
+        if "is_female" in self.eval_dataset.columns:
             sex_stats = self._generate_sex_stats()
 
         visit_level_stats = self._generate_visit_level_stats()
