@@ -22,7 +22,7 @@ class EvalDataset(BaseModel):
     y_hat_probs: pd.Series
     y_hat_int: pd.Series
     age: Optional[pd.Series] = None
-    sex: Optional[pd.Series] = None
+    is_female: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None
     custom_columns: Optional[dict[str, pd.Series]] = None
 

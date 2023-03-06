@@ -14,6 +14,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_metric_by_calendar_time,
     plot_metric_by_cyclic_time,
     plot_metric_by_time_until_diagnosis,
+    plot_recall_by_calendar_time,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
@@ -161,6 +162,17 @@ class BaseArtifactGenerator:
                 artifact=plot_precision_recall(
                     eval_dataset=self.eval_ds,
                     save_path=self.save_dir / "precision_recall.png",
+                ),
+            ),
+            ArtifactContainer(
+                label="precision_recall",
+                artifact=plot_recall_by_calendar_time(
+                    eval_dataset=self.eval_ds,
+                    pred_proba_percentile=[0.95, 0.97, 0.99],
+                    bins=self.cfg.eval.lookahead_bins,
+                    legend=True,
+                    y_limits=(0, 0.5),
+                    save_path=self.save_dir / "recall_by_calendar_time.png",
                 ),
             ),
         ]

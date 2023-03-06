@@ -2,6 +2,25 @@
 
 <!--next-version-placeholder-->
 
+## v0.38.0 (2023-03-04)
+### Feature
+* Add plot auc by sex ([`3dfcd69`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3dfcd694d788f44faad8d1d4eddc63346a325360))
+
+### Fix
+* Add space so all labels are within plots ([`c00b5d0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c00b5d09157cc76b7910b3cb6a9af56c30a76975))
+
+## v0.37.0 (2023-02-22)
+### Feature
+* Plot sensitivity by time to diagnosis by threshold ([#397](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/397)) ([`1195673`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/119567333854701a32976a0552cb06fe153c5189))
+* Add labels to base chart ([`94edcdd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/94edcdda63d0d9b2f8e867a80d63a6f1f76e7ed5))
+* Add the plot to base artifact generator ([`830c9ba`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/830c9ba79c6474bf003c6a457074e53700d61666))
+* Add support for multiple y-series on the same base-plot ([`447daae`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/447daaeec1b0376abcd887d84c88e41b089d9fcc))
+* Working plot with only one threshold ([`6247eca`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6247eca924a215cfd99f0a18aca18a64b5d0c917))
+
+### Fix
+* Minor refactor ([`33198b7`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/33198b75d2bac7b90aef2309210e69b7a8148651))
+* Match x-title and configuration ([`d23357b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d23357b670bd75f44c2aa3b9d3eb8642ac0ba8ac))
+
 ## v0.36.0 (2023-02-16)
 ### Feature
 * Add precision_recall curve ([`8e92d94`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8e92d94b75799232165b31d6e14787926dce934f))

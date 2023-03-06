@@ -1,5 +1,3 @@
-"""Plotting function for performance by age at time of predictio."""
-
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional, Union
@@ -15,23 +13,19 @@ from psycop_model_training.model_eval.base_artifacts.plots.utils import (
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
-def plot_performance_by_age(
+def plot_performance_by_sex(
     eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
-    bins: Sequence[Union[int, float]] = (18, 25, 35, 50, 70),
-    bin_continuous_input: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
-    """Plot bar plot of performance (default AUC) by age at time of prediction.
+    """Plot bar plot of performance (default AUC) by sex at time of prediction.
 
     Args:
         eval_dataset: EvalDataset object
-        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
-        bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
-        metric_fn (Callable): Callable which returns the metric to calculate
         save_path (Path, optional): Path to save figure. Defaults to None.
-        y_limits (tuple[float, float], optional): y-axis limits. Defaults to (0.5, 1.0).
+        metric_fn (Callable): Callable which returns the metric to calculate
+        y_limits (tuple[float, float], optional): y-axis limits. Defaults to (0.0, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
@@ -39,21 +33,20 @@ def plot_performance_by_age(
 
     df = create_performance_by_input(
         eval_dataset=eval_dataset,
-        input=eval_dataset.age,
-        input_name="age",
+        input=eval_dataset.is_female,
+        input_name="sex",
         metric_fn=metric_fn,
-        bins=bins,
-        bin_continuous_input=bin_continuous_input,
+        bins=None,
+        bin_continuous_input=False,
     )
 
-    sort_order = sorted(df["age_binned"].unique())
+    df.sex = df.sex.replace({1: "female", 0: "male"})
 
     return plot_basic_chart(
-        x_values=df["age_binned"],
+        x_values=df["sex"],
         y_values=df["metric"],
-        x_title="Age",
+        x_title="Sex",
         y_title="AUC",
-        sort_x=sort_order,
         y_limits=y_limits,
         plot_type=["bar"],
         save_path=save_path,

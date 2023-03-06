@@ -14,7 +14,7 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 CONFIG_DIR_PATH_REL = "../application/config"
 
 
-def add_age_and_sex(df: pd.DataFrame) -> pd.DataFrame:
+def add_age_is_female(df: pd.DataFrame):
     """Add age and gender columns to dataframe.
 
     Args:
@@ -22,7 +22,7 @@ def add_age_and_sex(df: pd.DataFrame) -> pd.DataFrame:
     """
     ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
     ids["age"] = np.random.randint(17, 95, len(ids))
-    ids["sex"] = np.where(ids["dw_ek_borger"] > 30_000, "F", "M")
+    ids["is_female"] = np.where(ids["dw_ek_borger"] > 30_000, 1, 0)
 
     return df.merge(ids)
 
@@ -43,8 +43,8 @@ def synth_eval_dataset() -> EvalDataset:
     """Load synthetic data."""
     csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
-    df = add_age_and_sex(df)
     df = add_eval_column(df)
+    df = add_age_is_female(df)
 
     # Convert all timestamp cols to datetime
     for col in [col for col in df.columns if "timestamp" in col]:
@@ -58,7 +58,7 @@ def synth_eval_dataset() -> EvalDataset:
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         age=df["age"],
-        sex=df["sex"],
+        is_female=df["is_female"],
         custom_columns={"eval_n_hbac1_count": df["eval_n_hbac1_count"]},
     )
 
