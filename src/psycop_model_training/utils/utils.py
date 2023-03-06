@@ -207,7 +207,7 @@ def bin_continuous_data(
     if not isinstance(bins, list):
         bins = list(bins)
 
-    # Apend maximum value from series ot bins set upper cut-off if larger than maximum bins value
+    # Append maximum value from series to bins set upper cut-off if larger than maximum bins value
     if int(series.max()) > max(bins):
         bins.append(int(series.max()))
 

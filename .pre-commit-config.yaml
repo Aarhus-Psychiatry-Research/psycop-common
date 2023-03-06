@@ -7,6 +7,8 @@ repos:
       - id: codespell
         args: [
             "-w", # Write changes to files
+            "-L",
+            "fpr,FPR",
           ]
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit

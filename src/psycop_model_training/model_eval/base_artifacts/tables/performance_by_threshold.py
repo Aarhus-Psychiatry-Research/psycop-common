@@ -85,7 +85,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
 
     acc = round((true_pos + true_neg) / n_total, round_to)
 
-    # Must return lists as values, otherwise pd.Dataframe requires setting indeces
+    # Must return lists as values, otherwise pd.Dataframe requires setting indices
     metrics_matrix = pd.DataFrame(
         {
             "positive_rate": [positive_rate],

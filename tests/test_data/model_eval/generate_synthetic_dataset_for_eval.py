@@ -115,7 +115,7 @@ if __name__ == "__main__":
         lambda x: null_series_with_prob(x, prob=0.95),
     )
 
-    # Generate first HbA1c timestmaps
+    # Generate first HbA1c timestamps
     msg.info("Generating HbA1c timestamps")
     df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"

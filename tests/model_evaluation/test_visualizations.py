@@ -195,7 +195,7 @@ def test_plot_feature_importances():
     n_features = 10
     feature_name = "very long feature name right here yeah actually super long like the feature names"
     feature_names = [feature_name + str(i) for i in range(n_features)]
-    # generate 10 random nubmers between 0 and 1
+    # generate 10 random numbers between 0 and 1
     feature_importance = np.random.rand(n_features)
 
     feature_importance_dict = dict(zip(feature_names, feature_importance))
