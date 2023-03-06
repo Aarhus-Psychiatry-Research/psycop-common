@@ -38,6 +38,6 @@ class FullProcessor:
         """Process a dataframe using the configuration."""
         dataset = self.value_cleaner.clean(dataset=dataset)
         dataset = self.value_transformer.transform(dataset=dataset)
-        dataset = self.row_filterer.filter(dataset=dataset)
-        dataset = self.col_filterer.filter(dataset=dataset)
+        dataset = self.row_filterer.run_filter(dataset=dataset)
+        dataset = self.col_filterer.run_filter(dataset=dataset)
         return dataset

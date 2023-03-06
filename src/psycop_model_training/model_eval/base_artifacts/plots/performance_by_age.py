@@ -38,7 +38,7 @@ def plot_performance_by_age(
 
     df = create_performance_by_input(
         eval_dataset=eval_dataset,
-        input=eval_dataset.age,
+        input_values=eval_dataset.age,
         input_name="age",
         metric_fn=metric_fn,
         bins=bins,

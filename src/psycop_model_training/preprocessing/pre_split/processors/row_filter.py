@@ -141,7 +141,7 @@ class PreSplitRowFilter:
 
         return dataset[~rows_to_drop]
 
-    def filter(self, dataset: pd.DataFrame):
+    def run_filter(self, dataset: pd.DataFrame):
         """Run filters based on config."""
         for direction in ("ahead", "behind"):
             if direction == "ahead":

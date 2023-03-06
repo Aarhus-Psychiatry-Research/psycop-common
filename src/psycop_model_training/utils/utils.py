@@ -90,7 +90,6 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     t2_col_name: str,
     t1_col_name: str,
     threshold_days: Union[float, int],
-    inplace: bool = True,
 ) -> pd.DataFrame:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
@@ -104,19 +103,9 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     Returns:
         A pandas dataframe without the records where datadiff was smaller than threshold_days.
     """
-    if inplace:
-        df = df.drop(
-            df[
-                (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")
-                < threshold_days
-            ].index,
-        )
-        return None
-    else:
-        return df[
-            (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")
-            < threshold_days
-        ]
+    return df[
+        (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D") < threshold_days
+    ]
 
 
 def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
@@ -269,7 +258,7 @@ def read_pickle(path: Union[str, Path]) -> Any:
     Returns:
         Any: Pickled object.
     """
-    with open(path, "rb") as f:
+    with Path(path).open() as f:
         return pkl.load(f)
 
 

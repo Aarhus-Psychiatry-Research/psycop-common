@@ -32,7 +32,7 @@ def plot_performance_by_sex(
 
     df = create_performance_by_input(
         eval_dataset=eval_dataset,
-        input=eval_dataset.is_female,
+        input_values=eval_dataset.is_female,
         input_name="sex",
         metric_fn=metric_fn,
         bins=None,

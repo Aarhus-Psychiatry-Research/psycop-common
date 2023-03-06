@@ -187,7 +187,7 @@ class PresSplitColFilter:
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
-    def filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
+    def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Filter a dataframe based on the config."""
         for direction in ("ahead", "behind"):
             if direction == "ahead":

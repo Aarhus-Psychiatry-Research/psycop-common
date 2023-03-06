@@ -417,6 +417,7 @@ class ModelPerformance:
             return performance
         # convert to long format
         performance = pd.melt(performance)
+
         # split score and class into two columns
         if add_level_prefix:
             performance[["level", "score_type", "class"]] = performance[  # type: ignore
@@ -424,13 +425,13 @@ class ModelPerformance:
             ].str.split("-", 2, expand=True)
             # drop unused columns and re-arrange
             return performance[["level", "class", "score_type", "value"]]  # type: ignore
-        else:
-            performance[["score_type", "class"]] = performance["variable"].str.split(  # type: ignore
-                "-",
-                1,
-                expand=True,
-            )
-            return performance[["class", "score_type", "value"]]  # type: ignore
+
+        performance[["score_type", "class"]] = performance["variable"].str.split(  # type: ignore
+            "-",
+            1,
+            expand=True,
+        )
+        return performance[["class", "score_type", "value"]]  # type: ignore
 
 
 if __name__ == "__main__":

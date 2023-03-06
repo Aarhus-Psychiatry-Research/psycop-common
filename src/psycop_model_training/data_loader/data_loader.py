@@ -116,6 +116,8 @@ class DataLoader:
                 ],
                 ignore_index=True,
             )
-        elif isinstance(split_names, str):
+
+        if isinstance(split_names, str):
             dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
+
         return dataset

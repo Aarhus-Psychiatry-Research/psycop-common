@@ -1,10 +1,10 @@
 import logging
 from pathlib import Path, PosixPath, WindowsPath
 
-import matplotlib
+import matplotlib as mpl
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
-matplotlib.use("Agg")
+mpl.use("Agg")
 import pandas as pd
 import wandb
 from psycop_model_training.config_schemas.full_config import FullConfigSchema

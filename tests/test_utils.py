@@ -65,12 +65,11 @@ def test_drop_records_if_datediff_days_smaller_than():
         pd.DataFrame({"timestamp_2": pd.NaT, "timestamp_1": "2021-01-01"}, index=[1]),
     )
 
-    drop_records_if_datediff_days_smaller_than(
+    test_df = drop_records_if_datediff_days_smaller_than(
         df=test_df,
         t2_col_name="timestamp_2",
         t1_col_name="timestamp_1",
         threshold_days=1,
-        inplace=True,
     )
 
     differences = (

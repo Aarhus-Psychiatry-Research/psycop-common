@@ -19,7 +19,7 @@ def dump_to_pickle(obj: Any, path: Union[str, Path]) -> None:
         obj (Any): Object to pickle.
         path (str): Path to pickle file.
     """
-    with open(path, "wb") as f:
+    with Path(path).open() as f:
         pkl.dump(obj, f)
 
 

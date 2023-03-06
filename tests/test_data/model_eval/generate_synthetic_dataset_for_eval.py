@@ -44,8 +44,7 @@ def null_series_with_prob(
         # Replace all values in series with null_value
         series.loc[:] = null_value
         return series
-    else:
-        return series
+    return None
 
 
 def overwrite_prop_with_null(

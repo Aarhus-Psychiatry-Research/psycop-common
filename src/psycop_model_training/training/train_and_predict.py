@@ -6,8 +6,6 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
-
-# from psycop_model_training.evaluation import evaluate_model
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.training.utils import create_eval_dataset
