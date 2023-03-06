@@ -179,8 +179,8 @@ class BaseArtifactGenerator:
             ),
         ]
 
-    def get_table_1_artifact(self):
-        """Returns table 1 artifact."""
+    def get_descriptive_stats_table_artifact(self):
+        """Returns descriptive stats table artifact."""
         return [
             ArtifactContainer(
                 label="table_1",

@@ -1,4 +1,4 @@
-"""Test that descriptive stats table is generated correctly."""
+"""Test that the descriptive stats table is generated correctly."""
 import pandas as pd
 
 from psycop_model_training.model_eval.base_artifacts.tables.descriptive_stats_table import (
@@ -25,12 +25,16 @@ def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
     assert not output_table.isnull().values.any()
 
     # Assert that all generic statistics are present
-    assert output_table["category"].isin(
-        [
-            "(visit_level) age (mean / interval)",
-            "(visit_level) visits followed by positive outcome",
-            "(patient_level) patients_with_positive_outcome",
-            "(patient level) time_to_first_positive_outcome",
-        ]
-    ).any()
+    assert (
+        output_table["category"]
+        .isin(
+            [
+                "(visit_level) age (mean / interval)",
+                "(visit_level) visits followed by positive outcome",
+                "(patient_level) patients_with_positive_outcome",
+                "(patient level) time_to_first_positive_outcome",
+            ]
+        )
+        .any()
+    )
 

@@ -21,10 +21,10 @@ class DescriptiveStatsTable:
         self.eval_dataset = eval_dataset.to_df()
 
     def _get_column_header_df(self):
-        """Create default table 1 dataframe.
+        """Create empty dataframe with default columns headers.
 
         Returns:
-            pd.DataFrame: Default table 1 dataframe. Includes columns for category, two statistics and there units.
+            pd.DataFrame: Empty dataframe with default columns headers. Includes columns for category, two statistics and there units.
         """
         return pd.DataFrame(
             columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
