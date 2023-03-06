@@ -183,9 +183,9 @@ class BaseArtifactGenerator:
         """Returns descriptive stats table artifact."""
         return [
             ArtifactContainer(
-                label="table_1",
+                label="descriptive_stats_table",
                 artifact=DescriptiveStatsTable(
-                    self.eval_ds
+                    self.eval_ds,
                 ).generate_descriptive_stats_table(),
             ),
         ]
@@ -225,8 +225,8 @@ class BaseArtifactGenerator:
         """Generates artifacts from an EvalDataset."""
         artifact_containers = self.create_base_plot_artifacts()
 
-        if self.cfg.eval.table_1:
-            artifact_containers += self.get_table_1_artifact()
+        if self.cfg.eval.descriptive_stats_table:
+            artifact_containers += self.get_descriptive_stats_table_artifact()
 
         if self.pipe_metadata and self.pipe_metadata.feature_importances:
             artifact_containers += self.get_feature_importance_artifacts()
