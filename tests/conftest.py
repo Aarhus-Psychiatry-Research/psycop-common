@@ -33,6 +33,7 @@ def synth_eval_dataset() -> EvalDataset:
         outcome_timestamps=df["timestamp_t2d_diag"],
         age=df["age"],
         is_female=df["is_female"],
+        custom_columns={"eval_n_hbac1_count": df["eval_n_hbac1_count"]},
     )
 
 
