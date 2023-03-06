@@ -98,7 +98,6 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
         t2_col_name (str): Column name of a time column
         t1_col_name (str): Column name of a time column
         threshold_days (Union[float, int]): Drop if datediff is smaller than this.
-        inplace (bool, optional): Defaults to True.
 
     Returns:
         A pandas dataframe without the records where datadiff was smaller than threshold_days.
@@ -258,7 +257,7 @@ def read_pickle(path: Union[str, Path]) -> Any:
     Returns:
         Any: Pickled object.
     """
-    with Path(path).open() as f:
+    with Path(path).open(encoding="UTF-8") as f:
         return pkl.load(f)
 
 
