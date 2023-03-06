@@ -28,10 +28,10 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 from psycop_model_training.model_eval.base_artifacts.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
+from psycop_model_training.model_eval.base_artifacts.tables.table_1 import Table1
 from psycop_model_training.model_eval.base_artifacts.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
-    generate_table_1,
 )
 from psycop_model_training.model_eval.dataclasses import (
     ArtifactContainer,
@@ -170,10 +170,7 @@ class BaseArtifactGenerator:
         return [
             ArtifactContainer(
                 label="table_1",
-                artifact=generate_table_1(
-                    eval_dataset=self.eval_ds,
-                    output_format="df",
-                ),
+                artifact=Table1(self.eval_ds).generate_table_1(),
             ),
         ]
 
