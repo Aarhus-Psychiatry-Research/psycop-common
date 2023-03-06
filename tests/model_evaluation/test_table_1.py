@@ -7,7 +7,7 @@ from psycop_model_training.model_eval.dataclasses import ArtifactContainer, Eval
 
 def test_generate_table_1(synth_eval_dataset: EvalDataset):
     """Test that table is generated correctly."""
-    
+
     table1 = Table1(
         eval_dataset=synth_eval_dataset,
     )
@@ -16,9 +16,8 @@ def test_generate_table_1(synth_eval_dataset: EvalDataset):
         label="table_1",
         artifact=table1.generate_table_1(),
     )
-    
+
     output_table = table_spec.artifact
 
     assert output_table.isnull().values.any() == False
-    assert output_table.shape == (11,5)
-    
+    assert output_table.shape == (11, 5)

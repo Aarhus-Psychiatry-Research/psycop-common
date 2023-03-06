@@ -17,11 +17,10 @@ class Table1:
     def __init__(
         self,
         eval_dataset: EvalDataset,
-        ) -> None:
-
+    ) -> None:
         self.eval_dataset = eval_dataset.to_df()
 
-    def _table_1_default_df(self,):
+    def _table_1_default_df(self):
         """Create default table 1 dataframe.
 
         Returns:
@@ -30,7 +29,6 @@ class Table1:
         return pd.DataFrame(
             columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
         )
-
 
     def _generate_age_stats(
         self,
@@ -41,9 +39,7 @@ class Table1:
 
         age_mean = round(self.eval_dataset["age"].mean(), 2)
 
-        age_span = (
-            f'{self.eval_dataset["age"].quantile(0.05)} - {self.eval_dataset["age"].quantile(0.95)}'
-        )
+        age_span = f'{self.eval_dataset["age"].quantile(0.05)} - {self.eval_dataset["age"].quantile(0.95)}'
 
         df = df.append(
             {
@@ -76,7 +72,6 @@ class Table1:
 
         return df
 
-
     def _generate_sex_stats(
         self,
     ) -> pd.DataFrame:
@@ -107,18 +102,19 @@ class Table1:
 
         return df
 
-
-    def _generate_eval_col_stats(self,) -> pd.DataFrame:
+    def _generate_eval_col_stats(self) -> pd.DataFrame:
         """Generate stats for all eval_ columns to table 1.
 
-        Finds all columns starting with 'eval_' and adds visit level stats
-        for these columns. Checks if the column is binary or continuous and
-        adds stats accordingly.
+        Finds all columns starting with 'eval_' and adds visit level
+        stats for these columns. Checks if the column is binary or
+        continuous and adds stats accordingly.
         """
 
         df = self._table_1_default_df()
 
-        eval_cols = [col for col in self.eval_dataset.columns if col.startswith("eval_")]
+        eval_cols = [
+            col for col in self.eval_dataset.columns if col.startswith("eval_")
+        ]
 
         for col in eval_cols:
             if len(self.eval_dataset[col].unique()) == 2:
@@ -164,12 +160,11 @@ class Table1:
 
         return df
 
-
     def _generate_visit_level_stats(
         self,
     ) -> pd.DataFrame:
         """Generate all visit level stats to table 1."""
-        
+
         # Stats for eval_ cols
         df = self._generate_eval_col_stats()
 
@@ -193,11 +188,12 @@ class Table1:
 
         return df
 
-
-    def _calc_time_to_first_positive_outcome_stats(self,
+    def _calc_time_to_first_positive_outcome_stats(
+        self,
         patients_with_positive_outcome_data: pd.DataFrame,
     ) -> float:
-        """Calculate mean time to first positive outcome (currently very slow)."""
+        """Calculate mean time to first positive outcome (currently very
+        slow)."""
 
         grouped_data = patients_with_positive_outcome_data.groupby("ids")
 
@@ -208,13 +204,12 @@ class Table1:
         # Convert to days (float)
         time_to_first_positive_outcome = (
             time_to_first_positive_outcome.dt.total_seconds() / (24 * 60 * 60)
-        ) # Not using timedelta.days to keep higher temporal precision
+        )  # Not using timedelta.days to keep higher temporal precision
 
         return round(time_to_first_positive_outcome.mean(), 2), round(
             time_to_first_positive_outcome.std(),
             2,
         )
-
 
     def _generate_patient_level_stats(
         self,
@@ -224,10 +219,16 @@ class Table1:
         df = self._table_1_default_df()
 
         # General stats
-        patients_with_positive_outcome = self.eval_dataset[self.eval_dataset["y"] == 1]["ids"].unique()
+        patients_with_positive_outcome = self.eval_dataset[self.eval_dataset["y"] == 1][
+            "ids"
+        ].unique()
         n_patients_with_positive_outcome = len(patients_with_positive_outcome)
         patients_with_positive_outcome_percentage = round(
-            (n_patients_with_positive_outcome / len(self.eval_dataset["ids"].unique()) * 100),
+            (
+                n_patients_with_positive_outcome
+                / len(self.eval_dataset["ids"].unique())
+                * 100
+            ),
             2,
         )
 
@@ -249,7 +250,9 @@ class Table1:
         (
             mean_time_to_first_positive_outcome,
             std_time_to_first_positive_outomce,
-        ) = self._calc_time_to_first_positive_outcome_stats(patients_with_positive_outcome_data)
+        ) = self._calc_time_to_first_positive_outcome_stats(
+            patients_with_positive_outcome_data
+        )
 
         df = df.append(
             {
@@ -263,7 +266,6 @@ class Table1:
         )
 
         return df
-
 
     def generate_table_1(
         self,
