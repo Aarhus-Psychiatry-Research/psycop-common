@@ -1,4 +1,4 @@
-"""Tables for evaluation of models."""
+"""Tables for description and evaluation of models and patient population."""
 from typing import Union
 
 import pandas as pd
