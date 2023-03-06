@@ -26,7 +26,7 @@ def add_age_is_female(df: pd.DataFrame):
     return df.merge(ids)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
     """Add eval_ column to dataframe to test table 1 functionality.
 
@@ -38,7 +38,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def synth_eval_dataset() -> EvalDataset:
     """Load synthetic data."""
     csv_path = Path("tests") / "test_data" / "synth_eval_data.csv"
