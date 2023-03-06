@@ -35,11 +35,11 @@ dependencies = [
     "pandas>=1.4.0,<1.6.0",
     "catalogue>=2.0.0, <2.1.0",
     "numpy>=1.23.3,<1.24.2",
-    "transformers^4.22.2",
+    "transformers>=4.22.2, <5.0.0",
     "pyarrow>=9.0.0,<11.1.0",
     "psycopmlutils>=0.2.4,<0.4.0",
     "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
-    "frozendict^2.3.4",
+    "frozendict>=2.3.4",
     "timeseriesflattener>=0.21.0",
 ]
 
@@ -56,7 +56,7 @@ dev = [
     "flake8>=5.0.0,<6.0.1",
     "docformatter>=1.5.0, <1.5.2",
     "mypy>=0.971,<1.1",
-    "pylint^2.15.5",
+    "pylint>=2.15.5",
 ]
 
 tests = [
