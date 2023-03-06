@@ -2,6 +2,37 @@
 
 <!--next-version-placeholder-->
 
+## v0.39.0 (2023-03-06)
+### Feature
+* Add to config ([`e7dd37a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e7dd37a948c126d8a4be9a3186c167dc8751f24d))
+* Add artifact ([`79b2867`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/79b2867b2b409a53250994e9dbdad6dd1c07b546))
+* Table 1 updates ([`1a3f480`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1a3f4808e26e8230db9644aab6b9d859a7c421ad))
+* Table 1 workds for visit level stats ([`47fc4a3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/47fc4a31aa5c34e8854f43d7d37bad4d70069575))
+* Add eval_ col to synth eval data ([`8c4739b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8c4739b1b38312f0fe299ec7cdf5eecd3b54ba56))
+* Add initial table ([`d1efe02`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d1efe02129e63aa4309213800c7a1863d169b8aa))
+* Adding sex col to eval_dataset ([`22dfab2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/22dfab21c20b9878098df2e06a0e2820e6c0114f))
+* Adding sex col to eval_dataset ([`2e81773`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2e8177375c959675723ea6dbece701adab940510))
+* Add eval_ columns to custom_columns ([`b044244`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b044244ab802737b3eeb6353b9f4fb5dd9ac7004))
+
+### Fix
+* Config input ([`62493fe`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/62493fe47e8bd13e3cba73e799ec1ac0716ff366))
+* Minor issues and renamings ([`0220aaa`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0220aaa477c52db955fdd6ec918a33e7a7ae56fb))
+* Adjust finale test to 'is_female' ([`22fd6ce`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/22fd6ce3886f024a58cc00f1b7b3e849ece5de5f))
+* Adjust  to 'is_female' instead of 'sex' ([`e6cd96a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e6cd96aacf55f36ea039cee579ba5dc655679682))
+* Add *.csv to gitignore ([`b0d0dec`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b0d0dec8e4f94ea7cf3e8bcc329e87b36c769147))
+* Add sex col to synth data ([`6f164de`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6f164deb391d17b842c1ab2dd86948e59a220005))
+* Fixing table1 code ([`908beee`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/908beee3444b97ac7feef99b2b28734d5ab13186))
+* Change custom_columns update func ([`832dc8c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/832dc8c7e97822fbcc58f582cac590a99ee6814e))
+* Add sex to evaldata and fix issue ([`07cf55b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/07cf55bc0fa434a009ca6744ce08a6c9e9f7e75e))
+* Add eval_ cols to eval dataset ([`d2dcf94`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d2dcf9417166fc30650b7ac1f005ea507a1a5370))
+
+### Documentation
+* Changing docs ([`26b80a3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/26b80a37a20dee71cf80645bd4f338e3777864cf))
+* Spell check in docs ([`3ad20cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3ad20cf74df5696f841f2d07413fd2bedd80219e))
+* Docs ([`bec13e3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/bec13e31d9c16871cb2396eca8aef56f92d983b2))
+* Misc docs ([`2afbfbc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2afbfbc26dda1499aed4b5b2356fa365ed4be209))
+* Table 1 docs ([`0785231`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0785231d368f337dbfc045baa010dcd6089fb26b))
+
 ## v0.38.0 (2023-03-04)
 ### Feature
 * Add plot auc by sex ([`3dfcd69`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3dfcd694d788f44faad8d1d4eddc63346a325360))
