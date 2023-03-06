@@ -251,7 +251,7 @@ class Table1:
             mean_time_to_first_positive_outcome,
             std_time_to_first_positive_outomce,
         ) = self._calc_time_to_first_positive_outcome_stats(
-            patients_with_positive_outcome_data
+            patients_with_positive_outcome_data,
         )
 
         df = df.append(
