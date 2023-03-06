@@ -1,5 +1,6 @@
 """Generate synthetic data for evaluation of the model."""
 import datetime as dt
+from pathlib import Path
 from typing import Any, Optional
 
 import numpy as np
@@ -163,4 +164,4 @@ if __name__ == "__main__":
 
     df = add_age_is_female(df)
 
-    df.to_csv("synth_eval_data.csv")
+    df.to_csv(Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv")
