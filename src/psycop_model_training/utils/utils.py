@@ -232,9 +232,13 @@ def bin_continuous_data(
         {
             "series": series,
             "bin": pd.cut(
-                series, bins=bins, labels=labels, duplicates="drop", include_lowest=True
+                series,
+                bins=bins,
+                labels=labels,
+                duplicates="drop",
+                include_lowest=True,
             ),
-        }
+        },
     )
 
     # Drop any category in the series where the bin has fewer than 5 observations
