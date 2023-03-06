@@ -14,12 +14,6 @@ To get started using psycop-feature-generation simply install it using pip by ru
 pip install psycop-feature-generation
 ```
 
-or using poetry
-
-```
-poetry add psycop-feature-generation
-```
-
 ## 🎓 Project
 PSYCOP projects which use `psycop-feature-generation`.
 
