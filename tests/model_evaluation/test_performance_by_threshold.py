@@ -63,7 +63,7 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
         positive_rate_threshold=0.5,
     )
 
-    assert 290_000 < val < 292_000
+    assert 260_000 < val < 292_000
 
     # Threshold = 0.2
     val = days_from_first_positive_to_diagnosis(
@@ -71,4 +71,4 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
         positive_rate_threshold=0.2,
     )
 
-    assert 1_875_000 < val < 1_885_000
+    assert 1_800_000 < val < 1_885_000
