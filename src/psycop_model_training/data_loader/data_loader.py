@@ -5,9 +5,8 @@ from pathlib import Path
 from typing import Callable, Optional, Union
 
 import pandas as pd
-from wasabi import Printer
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from wasabi import Printer
 
 msg = Printer(timestamp=True)
 
@@ -117,6 +116,8 @@ class DataLoader:
                 ],
                 ignore_index=True,
             )
-        elif isinstance(split_names, str):
+
+        if isinstance(split_names, str):
             dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
+
         return dataset

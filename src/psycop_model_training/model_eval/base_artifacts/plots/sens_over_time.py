@@ -4,11 +4,10 @@ from functools import partial
 from pathlib import Path
 from typing import Optional, Union
 
-import matplotlib
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import round_floats_to_edge
 
@@ -148,23 +147,23 @@ def _generate_sensitivity_array(
 
 
 def _annotate_heatmap(
-    image: matplotlib.image.AxesImage,
+    image: mpl.image.AxesImage,
     data: Optional[np.ndarray] = None,
     textcolors: tuple = ("black", "white"),
     threshold: Optional[float] = None,
     **textkw,
 ):
-    """A function to annotate a heatmap. Adapted from matplotlib documentation.
+    """A function to annotate a heatmap. Adapted from mpl documentation.
 
     Args:
-        image (matplotlib.image.AxesImage): The AxesImage to be labeled.
+        image (mpl.image.AxesImage): The AxesImage to be labeled.
         data (np.ndarray): Data used to annotate. If None, the image's data is used. Defaults to None.
         textcolors (tuple, optional): A pair of colors. The first is used for values below a threshold, the second for those above. Defaults to ("black", "white").
         threshold (float, optional): Value in data units according to which the colors from textcolors are applied. If None (the default) uses the middle of the colormap as separation. Defaults to None.
         **kwargs (dict, optional): All other arguments are forwarded to each call to `text` used to create the text labels. Defaults to {}.
 
     Returns:
-        texts (list): A list of matplotlib.text.Text instances for each label.
+        texts (list): A list of mpl.text.Text instances for each label.
     """
 
     if not isinstance(data, (list, np.ndarray)):

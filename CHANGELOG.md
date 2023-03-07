@@ -122,7 +122,7 @@
 * Handle floats when binning continuous data ([`23fc939`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/23fc939c3c926976ffdfc64d358edc3cb123f218))
 * Use mean imputer if imputation is required and none specified ([`f427a39`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f427a396c7a75f706216e431d58afc727c76af5d))
 * Hydra main should return metric to optimise ([`26600f6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/26600f65f3559df218c932780540a856198252ea))
-* Incorrect specificatin of logistic-regression ([`3137e7a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3137e7ae7be7c73559ec381d6af0fe5df28027f5))
+* Incorrect specification of logistic-regression ([`3137e7a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3137e7ae7be7c73559ec381d6af0fe5df28027f5))
 * Drop edges if duplicate ([`aa32bfe`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/aa32bfe7685f1e93f1507031b8077c17d8ba235c))
 * Create model eval dir if does not already exist ([`574b778`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/574b778376d692d850d41fa89467c5b0c4ffa2de))
 * Guard against no wandb when getting eval dir ([`028feb3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/028feb3d64466041f9c0de2af6dc23847bdc9b88))
@@ -326,7 +326,7 @@
 
 ## v0.13.0 (2022-10-28)
 ### Feature
-* Automatically infer whther GPU is present ([`407521d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/407521dc26aa5ff9ec783c5e50cb30bf94f12a7d))
+* Automatically infer whether GPU is present ([`407521d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/407521dc26aa5ff9ec783c5e50cb30bf94f12a7d))
 
 ### Fix
 * Remove incorrect toml header ([`58c99f3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/58c99f31ae496dd23761b9c7a5be64e46b73b5df))
@@ -620,7 +620,7 @@
 * Remove unix-specific github actions runs ([`e000a90`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/e000a90eaef76770fa1201b4d894142db4904da7))
 * Minor fixes ([`3505e70`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3505e70d1bdc5209bbfa6bdd7890d1f012b340e3))
 * Remove mypy type ignores ([`ae66393`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ae66393c5b98b9b5f5c8191cde8fa015c4a81a2f))
-* Succesful training on overtaci ([`8e84c4b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/8e84c4b7acb6bd00f3225bdd99007d1a557ca4e7))
+* Successful training on overtaci ([`8e84c4b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/8e84c4b7acb6bd00f3225bdd99007d1a557ca4e7))
 * Minor changes ([`2222141`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/22221418decc9177f4eef7e04b6bd1f635c4430d))
 * Failing tests ([`1c5ace1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1c5ace15a1aba370a5051753c8a65964238cd973))
 * Clean darglint ([`41d5565`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/41d556562e84b204b7fcf4a5f57f09d7ca9eb77f))

@@ -3,7 +3,6 @@ from datetime import timedelta
 from typing import Union
 
 import pandas as pd
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_loader import msg
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
@@ -142,7 +141,7 @@ class PreSplitRowFilter:
 
         return dataset[~rows_to_drop]
 
-    def filter(self, dataset: pd.DataFrame):
+    def run_filter(self, dataset: pd.DataFrame):
         """Run filters based on config."""
         if self.cfg.preprocessing.pre_split.min_prediction_time_date:
             dataset = dataset[

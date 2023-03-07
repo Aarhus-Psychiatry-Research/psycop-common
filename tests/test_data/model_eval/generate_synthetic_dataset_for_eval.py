@@ -58,8 +58,7 @@ def null_series_with_prob(
         # Replace all values in series with null_value
         series.loc[:] = null_value
         return series
-    else:
-        return series
+    return None
 
 
 def overwrite_prop_with_null(
@@ -108,7 +107,7 @@ if __name__ == "__main__":
         for _ in range(N_ROWS)
     ]
     df["timestamp"] = df["timestamp"] + df["time_differences"]
-    df.drop("time_differences", axis=1, inplace=True)
+    df = df.drop("time_differences", axis=1)
 
     df["pred_prob"] = [(np.random.random() - 0.45) for _ in range(N_ROWS)]
     df["pred_prob"] = df["pred_prob"].clip(0, 1)
@@ -129,7 +128,7 @@ if __name__ == "__main__":
         lambda x: null_series_with_prob(x, prob=0.85),
     )
 
-    # Generate first HbA1c timestmaps
+    # Generate first HbA1c timestamps
     msg.info("Generating HbA1c timestamps")
     df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
@@ -152,7 +151,7 @@ if __name__ == "__main__":
         else x["timestamp_first_hba1c"],
         axis=1,
     )
-    df.drop("timestamp_hba1c_copy", axis=1, inplace=True)
+    df = df.drop("timestamp_hba1c_copy", axis=1)
 
     # True label
     df["label"] = df["timestamp_t2d_diag"].notnull().astype(int)

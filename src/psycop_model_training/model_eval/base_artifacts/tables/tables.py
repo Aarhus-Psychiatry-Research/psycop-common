@@ -33,12 +33,12 @@ def output_table(
     """Output table in specified format."""
     if output_format == "html":
         return df.reset_index(drop=True).to_html()
-    elif output_format == "df":
+    if output_format == "df":
         return df.reset_index(drop=True)
-    elif output_format == "wandb_table":
+    if output_format == "wandb_table":
         return wandb.Table(dataframe=df)
-    else:
-        raise ValueError("Output format does not match anything that is allowed")
+
+    raise ValueError("Output format does not match anything that is allowed")
 
 
 def generate_feature_importances_table(

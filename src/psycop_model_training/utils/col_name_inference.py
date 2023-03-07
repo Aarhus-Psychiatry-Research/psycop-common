@@ -79,16 +79,15 @@ def infer_col_names(
 
     if len(col_name) == 1:
         return col_name
-    elif len(col_name) > 1:
+    if len(col_name) > 1:
         if allow_multiple:
             return col_name
         raise ValueError(
             f"Multiple columns found and allow_multiple is {allow_multiple}.",
         )
-    elif not col_name:
+    if not col_name:
         raise ValueError("No outcome col name inferred")
-    else:
-        raise ValueError("No outcomes inferred")
+    raise ValueError("No outcomes inferred")
 
 
 def infer_outcome_col_name(

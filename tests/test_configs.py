@@ -2,7 +2,6 @@
 
 import pytest
 from hydra import compose, initialize
-
 from psycop_model_training.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
 )

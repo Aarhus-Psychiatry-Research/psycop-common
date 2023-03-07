@@ -3,7 +3,6 @@ import re
 from typing import Union
 
 import pandas as pd
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_loader import msg
 from psycop_model_training.utils.col_name_inference import (
@@ -165,11 +164,10 @@ class PresSplitColFilter:
         if (
             self.cfg.debug is None
             or self.cfg.debug.assert_outcome_col_matching_lookahead_exists
-        ):
-            if not len(infer_outcome_col_name(df)) == 1:
-                raise ValueError(
-                    "Returning more than one outcome column, will cause problems during eval.",
-                )
+        ) and not len(infer_outcome_col_name(df)) == 1:
+            raise ValueError(
+                "Returning more than one outcome column, will cause problems during eval.",
+            )
 
         return df
 
@@ -192,7 +190,7 @@ class PresSplitColFilter:
         """How many outcome columns there are in a dataframe."""
         return len(infer_outcome_col_name(df=df, allow_multiple=True))
 
-    def filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
+    def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Filter a dataframe based on the config."""
         for direction in ("ahead", "behind"):
             if direction == "ahead":

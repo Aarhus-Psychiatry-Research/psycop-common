@@ -3,13 +3,9 @@
 Mainly tests that they run without errors.
 """
 # pylint: disable=missing-function-docstring
-from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pytest
-from sklearn.metrics import f1_score, recall_score, roc_auc_score
-
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
@@ -45,6 +41,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from sklearn.metrics import f1_score, roc_auc_score
 
 
 def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path):
@@ -178,7 +175,7 @@ def test_plot_feature_importances():
     n_features = 10
     feature_name = "very long feature name right here yeah actually super long like the feature names"
     feature_names = [feature_name + str(i) for i in range(n_features)]
-    # generate 10 random nubmers between 0 and 1
+    # generate 10 random numbers between 0 and 1
     feature_importance = np.random.rand(n_features)
 
     feature_importance_dict = dict(zip(feature_names, feature_importance))

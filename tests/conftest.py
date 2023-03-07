@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-
 from psycop_model_training.config_schemas.conf_utils import (
     FullConfigSchema,
     load_test_cfg_as_pydantic,
@@ -25,7 +24,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def synth_eval_dataset() -> EvalDataset:
     """Load synthetic data."""
     csv_path = Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv"
@@ -50,7 +49,7 @@ def synth_eval_dataset() -> EvalDataset:
     )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def immuteable_test_config() -> FullConfigSchema:
     """Get an immutable config for testing."""
     return load_test_cfg_as_pydantic(
@@ -59,7 +58,7 @@ def immuteable_test_config() -> FullConfigSchema:
     )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def muteable_test_config() -> FullConfigSchema:
     """Get a mutable config for testing."""
     return load_test_cfg_as_pydantic(

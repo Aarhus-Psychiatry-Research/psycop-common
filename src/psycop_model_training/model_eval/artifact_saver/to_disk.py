@@ -4,11 +4,10 @@ from typing import Any, Optional, Union
 
 import dill as pkl
 import pandas as pd
-from sklearn.pipeline import Pipeline
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import EvalDataset, PipeMetadata
 from psycop_model_training.utils.utils import write_df_to_file
+from sklearn.pipeline import Pipeline
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ def dump_to_pickle(obj: Any, path: Union[str, Path]) -> None:
         obj (Any): Object to pickle.
         path (str): Path to pickle file.
     """
-    with open(path, "wb") as f:
+    with Path(path).open(encoding="UTF-8") as f:
         pkl.dump(obj, f)
 
 

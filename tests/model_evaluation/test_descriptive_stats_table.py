@@ -1,5 +1,4 @@
 """Test that the descriptive stats table is generated correctly."""
-import pandas as pd
 
 from psycop_model_training.model_eval.base_artifacts.tables.descriptive_stats_table import (
     DescriptiveStatsTable,

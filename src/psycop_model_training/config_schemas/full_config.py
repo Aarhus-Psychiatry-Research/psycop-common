@@ -19,5 +19,5 @@ class FullConfigSchema(BaseModel):
     preprocessing: PreprocessingConfigSchema
     model: ModelConfSchema
     train: TrainConfSchema
-    eval: EvalConfSchema
+    eval: EvalConfSchema  # noqa
     debug: Optional[DebugConfSchema]

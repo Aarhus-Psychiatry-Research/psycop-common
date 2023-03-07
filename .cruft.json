@@ -1,0 +1,23 @@
+{
+  "template": "https://github.com/MartinBernstorff/swift-python-cookiecutter",
+  "commit": "5fd9fe5f86988199887b881e59cebfa66676c392",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "psycop-model-training",
+      "package_name": "psycop_model_training",
+      "friendly_name": "Psycop Model Training",
+      "author": "Martin Bernstorff",
+      "email": "martinbernstorfff@gmail.com",
+      "github_user": "MartinBernstorff",
+      "version": "0.0.0",
+      "copyright_year": "2023",
+      "license": "MIT",
+      "_copy_without_render": [
+        "*.github"
+      ],
+      "_template": "https://github.com/MartinBernstorff/swift-python-cookiecutter"
+    }
+  },
+  "directory": null
+}

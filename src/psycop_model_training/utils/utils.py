@@ -12,10 +12,9 @@ from typing import Any, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
-
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
 from psycop_model_training.model_eval.model_performance import ModelPerformance
+from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
 FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
@@ -91,7 +90,6 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     t2_col_name: str,
     t1_col_name: str,
     threshold_days: Union[float, int],
-    inplace: bool = True,
 ) -> pd.DataFrame:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
@@ -100,24 +98,13 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
         t2_col_name (str): Column name of a time column
         t1_col_name (str): Column name of a time column
         threshold_days (Union[float, int]): Drop if datediff is smaller than this.
-        inplace (bool, optional): Defaults to True.
 
     Returns:
         A pandas dataframe without the records where datadiff was smaller than threshold_days.
     """
-    if inplace:
-        df.drop(
-            df[
-                (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")
-                < threshold_days
-            ].index,
-            inplace=True,
-        )
-    else:
-        return df[
-            (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D")
-            < threshold_days
-        ]
+    return df[
+        (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D") > threshold_days
+    ]
 
 
 def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
@@ -207,7 +194,7 @@ def bin_continuous_data(
     if not isinstance(bins, list):
         bins = list(bins)
 
-    # Apend maximum value from series ot bins set upper cut-off if larger than maximum bins value
+    # Append maximum value from series to bins set upper cut-off if larger than maximum bins value
     if int(series.max()) > max(bins):
         bins.append(int(series.max()))
 
@@ -270,7 +257,7 @@ def read_pickle(path: Union[str, Path]) -> Any:
     Returns:
         Any: Pickled object.
     """
-    with open(path, "rb") as f:
+    with Path(path).open(encoding="UTF-8") as f:
         return pkl.load(f)
 
 

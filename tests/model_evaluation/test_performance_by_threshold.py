@@ -7,7 +7,6 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 
 
 import pandas as pd
-
 from psycop_model_training.model_eval.base_artifacts.tables.performance_by_threshold import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
@@ -57,7 +56,7 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
 
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
-    # Threshold = 0.5
+    # Threshold is 0.5
     val = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
         positive_rate_threshold=0.5,
@@ -65,7 +64,7 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
 
     assert 260_000 < val < 292_000
 
-    # Threshold = 0.2
+    # Threshold is 0.2
     val = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
         positive_rate_threshold=0.2,
