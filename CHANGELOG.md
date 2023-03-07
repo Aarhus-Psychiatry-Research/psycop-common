@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.39.1 (2023-03-07)
+### Fix
+* Migrate DescriptiveStatsTable to use EvalDataset ([`6939bc4`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6939bc40f687d4b453834a3b7924e7b8b6c48303))
+
 ## v0.39.0 (2023-03-06)
 ### Feature
 * Add to config ([`e7dd37a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e7dd37a948c126d8a4be9a3186c167dc8751f24d))
