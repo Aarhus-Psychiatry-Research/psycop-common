@@ -257,7 +257,7 @@ def read_pickle(path: Union[str, Path]) -> Any:
     Returns:
         Any: Pickled object.
     """
-    with Path(path).open(encoding="UTF-8") as f:
+    with Path(path).open(mode="rb") as f:
         return pkl.load(f)
 
 
