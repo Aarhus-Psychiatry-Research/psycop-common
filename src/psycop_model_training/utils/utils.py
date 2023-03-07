@@ -241,6 +241,12 @@ def bin_continuous_data(
         },
     )
 
+    bins_with_insufficient_n = (
+        df.groupby("bin")["series"].transform("size") < min_n_in_bin
+    )
+
+    return df["bin"].mask(bins_with_insufficient_n)
+
     # Drop any category in the series where the bin has fewer than 5 observations
     return df.bin[df.groupby("bin")["series"].transform("size") >= min_n_in_bin]
 
