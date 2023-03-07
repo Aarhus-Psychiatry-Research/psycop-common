@@ -8,7 +8,7 @@ repos:
         args: [
             "-w", # Write changes to files
             "-L",
-            "fpr,FPR",
+            "fpr,FPR,fnr,tpr,tnr",
           ]
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit

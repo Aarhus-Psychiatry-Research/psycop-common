@@ -101,8 +101,8 @@ def plot_basic_chart(
         plt.figlegend(
             [plot[0] for plot in label_plots],
             [str(label) for label in labels],
-            loc="upper right",
-            bbox_to_anchor=(0.9, 0.88),
+            loc="upper left",
+            bbox_to_anchor=(0.14, 0.95),
             frameon=True,
         )
 
