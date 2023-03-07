@@ -54,7 +54,7 @@ jobs:
         run: |
           set -o pipefail
           source .venv/bin/activate
-          pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/ | tee pytest-coverage.txt
+          pytest -n 2 --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/ | tee pytest-coverage.txt
 
       # if it is run on ubuntu-latest, python 3.9, then create the badge
       - name: Pytest coverage comment
