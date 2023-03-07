@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.40.1 (2023-03-07)
+### Fix
+* Broke pickle writing and loading when refactoring ([#411](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/411)) ([`40ad3dd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/40ad3ddf140012dc8f0c15a917c6e0264bcd70d7))
+* Broke pickle writing and loading when refactoring ([`e4b03e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e4b03e5b69b0581ee9363e42b46b974647589f95))
+
 ## v0.40.0 (2023-03-07)
 ### Feature
 * Add +x to setup_for_dev ([`2f44395`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2f4439564381b2eecfd01a5e1165a357286e2c9f))
