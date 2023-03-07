@@ -5,7 +5,6 @@ from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from numpy import isin
 
 
 def plot_basic_chart(

@@ -2,13 +2,11 @@
 
 
 import pytest
-
 from psycop_model_training.application_modules.train_model.main import (
     post_wandb_setup_train_model,
     train_model,
 )
 from psycop_model_training.config_schemas.conf_utils import (
-    load_cfg_as_omegaconf,
     load_test_cfg_as_pydantic,
 )
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -28,7 +26,7 @@ def test_train_model(model_name: str):
     train_model(cfg)
 
 
-@pytest.mark.pre_push_test
+@pytest.mark.pre_push_test()
 def test_integration_test(muteable_test_config: FullConfigSchema):
     """Test main using the logistic model.
 

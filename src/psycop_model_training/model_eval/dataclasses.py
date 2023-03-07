@@ -1,9 +1,8 @@
 """Dataclasses for evaluation."""
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
-
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
@@ -29,20 +28,6 @@ class EvalDataset(BaseModel):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
-
-    def to_df(self) -> pd.DataFrame:
-        """Create a dataframe where each column is an attribute of this
-        class."""
-        columns = {}
-
-        for attr in self.__dict__:
-            if not attr.startswith("_"):
-                columns[attr] = getattr(self, attr)
-            if attr == "custom_columns" and self.custom_columns is not None:
-                for k, v in self.custom_columns.items():
-                    columns[k] = v
-
-        return pd.DataFrame(columns)
 
 
 class ArtifactContainer(BaseModel):

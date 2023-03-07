@@ -5,9 +5,8 @@ from typing import Optional, Union
 import numpy as np
 import pandas as pd
 import wandb
-from sklearn.metrics import confusion_matrix
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import confusion_matrix
 
 
 def get_true_positives(
@@ -85,7 +84,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
 
     acc = round((true_pos + true_neg) / n_total, round_to)
 
-    # Must return lists as values, otherwise pd.Dataframe requires setting indeces
+    # Must return lists as values, otherwise pd.Dataframe requires setting indices
     metrics_matrix = pd.DataFrame(
         {
             "positive_rate": [positive_rate],
@@ -252,9 +251,9 @@ def generate_performance_by_positive_rate_table(
 
     if output_format == "html":
         return df.reset_index(drop=True).to_html()
-    elif output_format == "df":
+    if output_format == "df":
         return df.reset_index(drop=True)
-    elif output_format == "wandb_table":
+    if output_format == "wandb_table":
         return wandb.Table(dataframe=df.reset_index(drop=True))
-    else:
-        raise ValueError("Output format does not match anything that is allowed")
+
+    raise ValueError("Output format does not match anything that is allowed")

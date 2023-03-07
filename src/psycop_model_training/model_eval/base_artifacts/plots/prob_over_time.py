@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
-import matplotlib
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -104,7 +104,7 @@ def plot_prob_over_time(
     )
 
     # Reformat y-axis values to percentage
-    plt.gca().yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=1))
+    plt.gca().yaxis.set_major_formatter(mpl.ticker.PercentFormatter(xmax=1))
 
     plt.xlabel(x_axis, size=14)
     plt.ylabel(y_axis, size=14)

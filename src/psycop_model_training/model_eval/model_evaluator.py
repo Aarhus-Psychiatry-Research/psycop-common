@@ -1,15 +1,12 @@
 import logging
 from pathlib import Path, PosixPath, WindowsPath
 
-import matplotlib
+import matplotlib as mpl
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
-matplotlib.use("Agg")
+mpl.use("Agg")
 import pandas as pd
 import wandb
-from sklearn.metrics import roc_auc_score
-from sklearn.pipeline import Pipeline
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
 from psycop_model_training.model_eval.base_artifacts.base_artifact_generator import (
@@ -28,6 +25,8 @@ from psycop_model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
 )
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
 
 log = logging.getLogger(__name__)
 
