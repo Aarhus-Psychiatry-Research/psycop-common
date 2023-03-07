@@ -83,7 +83,7 @@ def idx_to_class(idx: list[int], mapping: dict) -> list[str]:
     Returns:
         list[str]: Labels matching the indices
     """
-    return [mapping[id] for id in idx]
+    return [mapping[index] for index in idx]
 
 
 def select_metadata_cols(

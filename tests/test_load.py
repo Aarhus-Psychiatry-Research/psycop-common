@@ -2,7 +2,6 @@
 
 import pandas as pd
 import pytest
-
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.col_name_checker import (
@@ -52,6 +51,7 @@ def test_check_columns_exist_in_dataset():
         outcome_timestamp="outcome_timestamp",
         id="id",
         age="age",
+        is_female="is_female",
         exclusion_timestamp="exclusion_timestamp",
         custom_columns=["custom1", "custom2"],
     )
@@ -62,8 +62,9 @@ def test_check_columns_exist_in_dataset():
             "outcome_timestmamp": [4, 5, 6],
             "id": [7, 8, 9],
             "age": [10, 11, 12],
-            "exclusion_timestamp": [13, 14, 15],
-            "custom1": [16, 17, 18],
+            "is_female": [13, 14, 15],
+            "exclusion_timestamp": [16, 17, 18],
+            "custom1": [19, 20, 21],
         },
     )
 

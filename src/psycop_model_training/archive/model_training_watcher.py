@@ -8,11 +8,6 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 import wandb
-from pydantic import BaseModel
-from wandb.apis.public import Api  # pylint: disable=no-name-in-module
-from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
-from wasabi import msg
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
 from psycop_model_training.model_eval.evaluate_model import evaluate_performance
@@ -21,6 +16,10 @@ from psycop_model_training.utils.utils import (
     PROJECT_ROOT,
     load_evaluation_data,
 )
+from pydantic import BaseModel
+from wandb.apis.public import Api  # pylint: disable=no-name-in-module
+from wandb.sdk.wandb_run import Run  # pylint: disable=no-name-in-module
+from wasabi import msg
 
 WANDB_DIR = PROJECT_ROOT / "wandb"
 
@@ -329,7 +328,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--timeout",
         type=float_or_none,
-        help="""How long to run the watcher for. If None, keeps runnning until process
+        help="""How long to run the watcher for. If None, keeps running until process
         is killed (e.g. receives SIGTERM())""",
     )
     parser.add_argument(

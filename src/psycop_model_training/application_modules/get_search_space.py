@@ -1,14 +1,13 @@
 import random
 
 import pandas as pd
-from wasabi import Printer
-
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.col_name_inference import (
     infer_look_distance,
     infer_outcome_col_name,
 )
+from wasabi import Printer
 
 
 class TrainerSpec(BaseModel):

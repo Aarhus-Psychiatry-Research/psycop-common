@@ -3,10 +3,9 @@ trian_model.py."""
 import subprocess
 import time
 
-from wasabi import Printer
-
 from psycop_model_training.application_modules.get_search_space import TrainerSpec
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from wasabi import Printer
 
 
 def start_trainer(

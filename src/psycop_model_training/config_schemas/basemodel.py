@@ -21,9 +21,8 @@ class BaseModel(PydanticBaseModel):
         input_string: str = "str",
     ):
         for key, value in self.__dict__.items():
-            if isinstance(value, str):
-                if value.lower() == input_string.lower():
-                    self.__dict__[key] = output_object
+            if isinstance(value, str) and value.lower() == input_string.lower():
+                self.__dict__[key] = output_object
 
     def __init__(
         self,

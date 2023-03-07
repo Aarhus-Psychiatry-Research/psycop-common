@@ -2,7 +2,6 @@
 from typing import Callable, Optional
 
 import wandb
-
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.utils import (

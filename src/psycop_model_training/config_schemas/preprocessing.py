@@ -25,7 +25,7 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     # Whether to drop visits for a given patietn after their exclusion timestamp. If False, no visits are dropped.
 
     convert_to_boolean: bool
-    # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivty test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
+    # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivity test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
 
     convert_booleans_to_int: bool
     # Whether to convert columns containing booleans to int

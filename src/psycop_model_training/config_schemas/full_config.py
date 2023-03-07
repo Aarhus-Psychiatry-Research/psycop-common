@@ -1,6 +1,9 @@
 """Full configuration schema."""
+from typing import Optional
+
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.data import DataSchema
+from psycop_model_training.config_schemas.debug import DebugConfSchema
 from psycop_model_training.config_schemas.eval import EvalConfSchema
 from psycop_model_training.config_schemas.model import ModelConfSchema
 from psycop_model_training.config_schemas.preprocessing import PreprocessingConfigSchema
@@ -16,4 +19,5 @@ class FullConfigSchema(BaseModel):
     preprocessing: PreprocessingConfigSchema
     model: ModelConfSchema
     train: TrainConfSchema
-    eval: EvalConfSchema
+    eval: EvalConfSchema  # noqa
+    debug: Optional[DebugConfSchema]
