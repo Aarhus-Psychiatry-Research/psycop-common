@@ -3,10 +3,8 @@
 Mainly tests that they run without errors.
 """
 # pylint: disable=missing-function-docstring
-from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pytest
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,

@@ -164,11 +164,10 @@ class PresSplitColFilter:
         if (
             self.cfg.debug is None
             or self.cfg.debug.assert_outcome_col_matching_lookahead_exists
-        ):
-            if not len(infer_outcome_col_name(df)) == 1:
-                raise ValueError(
-                    "Returning more than one outcome column, will cause problems during eval.",
-                )
+        ) and not len(infer_outcome_col_name(df)) == 1:
+            raise ValueError(
+                "Returning more than one outcome column, will cause problems during eval.",
+            )
 
         return df
 
