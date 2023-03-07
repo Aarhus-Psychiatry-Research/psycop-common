@@ -15,7 +15,7 @@ def add_age_is_female(df: pd.DataFrame):
         df (pd.DataFrame): The dataframe to add age
     """
     ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
-    ids["age"] = np.random.randint(17, 95, len(ids))
+    ids["age"] = np.random.randint(18, 95, len(ids))
     ids["is_female"] = np.where(ids["dw_ek_borger"] > 30_000, 1, 0)
 
     return df.merge(ids)
