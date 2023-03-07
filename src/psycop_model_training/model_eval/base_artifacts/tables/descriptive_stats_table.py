@@ -17,7 +17,7 @@ class DescriptiveStatsTable:
         self,
         eval_dataset: EvalDataset,
     ) -> None:
-        self.eval_dataset = eval_dataset.to_df()
+        self.eval_dataset = eval_dataset
 
     def _get_column_header_df(self):
         """Create empty dataframe with default columns headers.
@@ -36,9 +36,9 @@ class DescriptiveStatsTable:
 
         df = self._get_column_header_df()
 
-        age_mean = round(self.eval_dataset["age"].mean(), 2)
+        age_mean = round(self.eval_dataset.age.mean(), 2)
 
-        age_span = f'{self.eval_dataset["age"].quantile(0.05)} - {self.eval_dataset["age"].quantile(0.95)}'
+        age_span = f"{self.eval_dataset.age.quantile(0.05)} - {self.eval_dataset.age.quantile(0.95)}"
 
         df = df.append(
             {
@@ -51,11 +51,11 @@ class DescriptiveStatsTable:
             ignore_index=True,
         )
         age_counts = bin_continuous_data(
-            self.eval_dataset["age"],
+            self.eval_dataset.age,
             bins=[0, 18, 35, 60, 100],
         ).value_counts()
 
-        age_percentages = round(age_counts / len(self.eval_dataset) * 100, 2)
+        age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 2)
 
         for i, _ in enumerate(age_counts):
             df = df.append(
@@ -78,8 +78,8 @@ class DescriptiveStatsTable:
 
         df = self._get_column_header_df()
 
-        sex_counts = self.eval_dataset["is_female"].value_counts()
-        sex_percentages = sex_counts / len(self.eval_dataset) * 100
+        sex_counts = self.eval_dataset.is_female.value_counts()
+        sex_percentages = sex_counts / len(self.eval_dataset.is_female) * 100
 
         for i, n in enumerate(sex_counts):
             if n < 5:
@@ -111,15 +111,20 @@ class DescriptiveStatsTable:
 
         df = self._get_column_header_df()
 
-        eval_cols = [
-            col for col in self.eval_dataset.columns if col.startswith("eval_")
+        eval_cols: list[dict[str, pd.Series]] = [
+            {name: values}
+            for name, values in self.eval_dataset.custom_columns.items()
+            if name.startswith("eval_")
         ]
 
         for col in eval_cols:
-            if len(self.eval_dataset[col].unique()) == 2:
+            col_name = next(iter(col))
+            col_values = col[col_name]
+
+            if len(col_values.unique()) == 2:
                 # Binary variable stats:
-                col_count = self.eval_dataset[col].value_counts()
-                col_percentage = col_count / len(self.eval_dataset) * 100
+                col_count = col_values.value_counts()
+                col_percentage = col_count / len(col_values) * 100
 
                 if col_count[0] < 5 or col_count[1] < 5:
                     warnings.warn(
@@ -128,7 +133,7 @@ class DescriptiveStatsTable:
                 else:
                     df = df.append(
                         {
-                            "category": f"(visit level) {col} ",
+                            "category": f"(visit level) {col_name} ",
                             "stat_1": int(col_count[1]),
                             "stat_1_unit": "patients",
                             "stat_2": col_percentage[1],
@@ -137,13 +142,13 @@ class DescriptiveStatsTable:
                         ignore_index=True,
                     )
 
-            elif len(self.eval_dataset[col].unique()) > 2:
+            elif len(col_values.unique()) > 2:
                 # Continuous variable stats:
-                col_mean = round(self.eval_dataset[col].mean(), 2)
-                col_std = round(self.eval_dataset[col].std(), 2)
+                col_mean = round(col_values.mean(), 2)
+                col_std = round(col_values.std(), 2)
                 df = df.append(
                     {
-                        "category": f"(visit level) {col}",
+                        "category": f"(visit level) {col_name}",
                         "stat_1": col_mean,
                         "stat_1_unit": "mean",
                         "stat_2": col_std,
@@ -154,7 +159,7 @@ class DescriptiveStatsTable:
 
             else:
                 warnings.warn(
-                    f"WARNING: {col} has only one value. This column will be excluded from the table.",
+                    f"WARNING: {col_name} has only one value. This column will be excluded from the table.",
                 )
 
         return df
@@ -168,9 +173,9 @@ class DescriptiveStatsTable:
         df = self._generate_eval_col_stats()
 
         # General stats
-        visits_followed_by_positive_outcome = self.eval_dataset["y"].sum()
+        visits_followed_by_positive_outcome = self.eval_dataset.y.sum()
         visits_followed_by_positive_outcome_percentage = round(
-            (visits_followed_by_positive_outcome / len(self.eval_dataset) * 100),
+            (visits_followed_by_positive_outcome / len(self.eval_dataset.ids) * 100),
             2,
         )
 
@@ -190,7 +195,7 @@ class DescriptiveStatsTable:
     def _calc_time_to_first_positive_outcome_stats(
         self,
         patients_with_positive_outcome_data: pd.DataFrame,
-    ) -> float:
+    ) -> tuple[float]:
         """Calculate mean time to first positive outcome (currently very
         slow)."""
 
@@ -217,17 +222,20 @@ class DescriptiveStatsTable:
 
         df = self._get_column_header_df()
 
+        eval_df = pd.DataFrame(
+            {
+                "ids": self.eval_dataset.ids,
+                "y": self.eval_dataset.y,
+                "outcome_timestamps": self.eval_dataset.outcome_timestamps,
+                "pred_timestamps": self.eval_dataset.pred_timestamps,
+            },
+        )
+
         # General stats
-        patients_with_positive_outcome = self.eval_dataset[self.eval_dataset["y"] == 1][
-            "ids"
-        ].unique()
+        patients_with_positive_outcome = eval_df[eval_df["y"] == 1]["ids"].unique()
         n_patients_with_positive_outcome = len(patients_with_positive_outcome)
         patients_with_positive_outcome_percentage = round(
-            (
-                n_patients_with_positive_outcome
-                / len(self.eval_dataset["ids"].unique())
-                * 100
-            ),
+            (n_patients_with_positive_outcome / len(eval_df["ids"].unique()) * 100),
             2,
         )
 
@@ -242,8 +250,8 @@ class DescriptiveStatsTable:
             ignore_index=True,
         )
 
-        patients_with_positive_outcome_data = self.eval_dataset[
-            self.eval_dataset["ids"].isin(patients_with_positive_outcome)
+        patients_with_positive_outcome_data = eval_df[
+            eval_df["ids"].isin(patients_with_positive_outcome)
         ]
 
         (
@@ -283,10 +291,10 @@ class DescriptiveStatsTable:
             Union[pd.DataFrame, wandb.Table]: Table 1.
         """
 
-        if "age" in self.eval_dataset.columns:
+        if self.eval_dataset.age is not None:
             age_stats = self._generate_age_stats()
 
-        if "is_female" in self.eval_dataset.columns:
+        if self.eval_dataset.is_female is not None:
             sex_stats = self._generate_sex_stats()
 
         visit_level_stats = self._generate_visit_level_stats()
