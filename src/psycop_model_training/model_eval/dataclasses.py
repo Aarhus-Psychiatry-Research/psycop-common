@@ -30,6 +30,7 @@ class EvalDataset(BaseModel):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
 
+
 class ArtifactContainer(BaseModel):
     """A container for artifacts."""
 
