@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.40.0 (2023-03-07)
+### Feature
+* Add +x to setup_for_dev ([`2f44395`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2f4439564381b2eecfd01a5e1165a357286e2c9f))
+* Add cruft.json ([`c980494`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c980494200a39db50f747713441054381a616c3c))
+* Add support for debug field in FullConfig ([`65a4bf4`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/65a4bf4be0b9cfd53f55592c98b5ef8df1409c3d))
+
+### Fix
+* Update synth dataset to only include ages of 18 or less ([`ac0f317`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ac0f317ad7bcd0e7430c30d99cde01e509a02305))
+* Add_eval_column should not be a fixture ([`b35a236`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b35a2366f53b9ab8f7a2aff5e925dc0cbb1ec4a2))
+* Drop_records_if_datediff_days_smaller_than had incorrect smaller-than/greater-than ([`61fc7aa`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/61fc7aa2a34e1a4ae879e75939f76e890ebba704))
+* Incorrect guard for inferring col name ([`c5b7309`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c5b730939612aef5de1760bf45d7b2773c45cadd))
+* Correctly infer min date when filtering by lookbehind ([`46bc34a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/46bc34aa4fb3a49b27b393d28f7544abb2ade15f))
+
 ## v0.39.1 (2023-03-07)
 ### Fix
 * Migrate DescriptiveStatsTable to use EvalDataset ([`6939bc4`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6939bc40f687d4b453834a3b7924e7b8b6c48303))
