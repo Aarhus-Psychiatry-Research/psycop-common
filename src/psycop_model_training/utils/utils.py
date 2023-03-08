@@ -228,11 +228,11 @@ def bin_continuous_data(
         },
     )
 
-    bins_with_insufficient_n = (
-        df.groupby("bin")["series"].transform("size") < min_n_in_bin
-    )
+    df["n_in_bin"] = df.groupby("bin").transform("size")
 
-    return df["bin"].mask(bins_with_insufficient_n)
+    df = df.mask(df["n_in_bin"] < min_n_in_bin)
+
+    return df["bin"], df["n_in_bin"]
 
 
 def positive_rate_to_pred_probs(

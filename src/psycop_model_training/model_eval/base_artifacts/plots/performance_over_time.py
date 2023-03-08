@@ -326,14 +326,31 @@ def create_performance_by_time_from_event_df(
         )
 
     # bin data
-    bin_fn = bin_continuous_data if bin_continuous_input else round_floats_to_edge
-
-    # Convert df["days_from_event"] to int if possible
-    df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
+    if bin_continuous_input:
+        # Convert df["days_from_event"] to int if possible
+        df["days_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
+            df["days_from_event"], bins=bins
+        )
+    else:
+        df["days_from_event_binned"] = round_floats_to_edge(
+            df["days_from_event"], bins=bins
+        )
 
     # Calc performance and prettify output
-    output_df = df.groupby("days_from_event_binned").apply(calc_performance, metric_fn)
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
+    output_df = df.groupby(["days_from_event_binned"]).apply(
+        calc_performance, metric_fn
+    )
+
+    output_df = (
+        output_df.reset_index()
+        .rename({0: "metric"}, axis=1)
+        .merge(
+            df[["days_from_event_binned", "n_in_bin"]],
+            on="days_from_event_binned",
+            how="left",
+        )
+    )
+
     return output_df
 
 
@@ -401,6 +418,7 @@ def plot_metric_by_time_until_diagnosis(
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
     y_limits: Optional[tuple[float, float]] = None,
+    bar_count_values: Optional[Iterable] = None,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plots performance of a specified performance metric in bins of time
@@ -415,6 +433,7 @@ def plot_metric_by_time_until_diagnosis(
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
+        bar_count_values (Optional[Iterable], optional): Values to use for overlaid histogram of n in bins. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
@@ -439,6 +458,8 @@ def plot_metric_by_time_until_diagnosis(
         x_title="Days to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
+        # bar_count_values=bar_count_values,
+        bar_count_values=df["n_in_bin"],
         y_limits=y_limits,
         plot_type=["scatter", "line"],
         save_path=save_path,

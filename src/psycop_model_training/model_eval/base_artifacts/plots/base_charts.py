@@ -18,6 +18,7 @@ def plot_basic_chart(
     sort_y: Optional[Iterable[int]] = None,
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
+    bar_count_values: Optional[Iterable] = None,
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple] = (5, 5),
     dpi: Optional[int] = 300,
@@ -36,6 +37,7 @@ def plot_basic_chart(
         labels: (Optional[list[str]]): Optional labels to add to the plot(s).
         sort_x (Optional[Iterable[int]], optional): order of values on the x-axis. Defaults to None.
         sort_y (Optional[Iterable[int]], optional): order of values on the y-axis. Defaults to None.
+        bar_count_values (Optional[Iterable], optional): Values to use for overlaid histogram of n in bins. Defaults to None.
         y_limits (Optional[tuple[float, float]], optional): y-axis limits. Defaults to None.
         fig_size (Optional[tuple], optional): figure size. Defaults to None.
         dpi (Optional[int], optional): dpi of figure. Defaults to 300.
@@ -105,6 +107,14 @@ def plot_basic_chart(
             bbox_to_anchor=(0.14, 0.95),
             frameon=True,
         )
+
+    if bar_count_values is not None:
+        # add additional y-axis for count
+        bar_overlay = plt.gca().twinx()
+        bar_overlay.bar(df["x"], bar_count_values, color="blue", alpha=0.25)
+
+        bar_overlay.set_ylabel("Number of observations")
+        bar_overlay.bar_label(bar_overlay.bar(df["x"], bar_count_values))
 
     plt.tight_layout()
 

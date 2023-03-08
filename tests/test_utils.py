@@ -107,7 +107,7 @@ def test_bin_contiuous_data():
 
     # One bin, less than 5
     one_to_four = pd.Series([1, 2, 3, 4])
-    one_bin_less_than_five = bin_continuous_data(series=one_to_four, bins=[0, 5])
+    one_bin_less_than_five, _ = bin_continuous_data(series=one_to_four, bins=[0, 5])
     assert one_bin_less_than_five.isna().sum() == 4
 
     # Two bins, less than 5

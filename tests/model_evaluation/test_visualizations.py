@@ -206,3 +206,14 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
         eval_dataset=synth_eval_dataset,
         save_path="tmp/test_plot_precision_recall.png",
     )
+
+
+def test_overlay_barplot(synth_eval_dataset: EvalDataset):
+    plot_metric_by_time_until_diagnosis(
+        eval_dataset=synth_eval_dataset,
+        metric_fn=f1_score,
+        y_title="F1",
+        save_path=PROJECT_ROOT / "test_overlay_barplot.png",
+    )
+
+    print("test")
