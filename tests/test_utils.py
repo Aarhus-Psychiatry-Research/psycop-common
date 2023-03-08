@@ -91,3 +91,5 @@ def test_flatten_nested_dict():
     output_dict = flatten_nested_dict(input_dict)
 
     assert expected_dict == output_dict
+
+def test_bin_contiuous_data():
