@@ -101,7 +101,7 @@ def plot_basic_chart(
     if flip_y_axis:
         plt.gca().invert_yaxis()
     if labels is not None:
-        plt.gca().figlegend(
+        plt.gca().legend(
             [plot[0] for plot in label_plots],
             [str(label) for label in labels],
             loc="upper left",
