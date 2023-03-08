@@ -81,7 +81,7 @@ def plot_basic_chart(
     for y_series in y_values:
         for p_type in plot_type:
             plot_function = plot_functions.get(p_type)
-            plot = plot_function(df["x"], y_series, color="green")
+            plot = plot_function(df["x"], y_series, color="orange")
             if p_type == label_plot_type:
                 # need to one of the plot types for labelling
                 label_plots.append(plot)
@@ -112,7 +112,7 @@ def plot_basic_chart(
     if bar_count_values is not None:
         # add additional y-axis for count
         bar_overlay = plt.gca().twinx()
-        bar_overlay.bar(df["x"], bar_count_values, color="green")
+        bar_overlay.bar(df["x"], bar_count_values, color="blue")
         bar_overlay.set_ylabel("Number of observations")
 
         # put bar plots behind other plots

@@ -329,16 +329,19 @@ def create_performance_by_time_from_event_df(
     if bin_continuous_input:
         # Convert df["days_from_event"] to int if possible
         df["days_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
-            df["days_from_event"], bins=bins
+            df["days_from_event"],
+            bins=bins,
         )
     else:
         df["days_from_event_binned"] = round_floats_to_edge(
-            df["days_from_event"], bins=bins
+            df["days_from_event"],
+            bins=bins,
         )
 
     # Calc performance and prettify output
     output_df = df.groupby(["days_from_event_binned"]).apply(
-        calc_performance, metric_fn
+        calc_performance,
+        metric_fn,
     )
 
     output_df = (
