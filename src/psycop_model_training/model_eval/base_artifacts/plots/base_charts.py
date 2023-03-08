@@ -113,12 +113,14 @@ def plot_basic_chart(
         # add additional y-axis for count
         bar_overlay = plt.gca().twinx()
         bar_overlay.bar(df["x"], bar_count_values, color="green")
-
         bar_overlay.set_ylabel("Number of observations")
+
+        # put bar plots behind other plots
         axs.set_zorder(bar_overlay.get_zorder() + 1)
-        # axs.patch.set_visible(False)
         axs.set_facecolor("none")
         bar_overlay.set_facecolor("none")
+
+        # add counts to bars
         bar_overlay.bar_label(bar_overlay.bar(df["x"], bar_count_values))
 
     plt.tight_layout()
