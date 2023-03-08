@@ -435,7 +435,6 @@ def plot_metric_by_time_until_diagnosis(
         metric_fn (Callable): Which performance metric  function to use.
         y_title (str): Title for y-axis (metric name)
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
-        bar_count_values (Optional[Iterable], optional): Values to use for overlaid histogram of n in bins. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.
 
     Returns:
