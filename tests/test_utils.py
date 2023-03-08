@@ -98,7 +98,7 @@ def test_bin_contiuous_data():
     one_to_five = pd.Series([1, 2, 3, 4, 5])
 
     # One bin, more than 5
-    one_bin_more_than_five = bin_continuous_data(
+    one_bin_more_than_five, _ = bin_continuous_data(
         series=one_to_five,
         bins=[0, 5],
     )
