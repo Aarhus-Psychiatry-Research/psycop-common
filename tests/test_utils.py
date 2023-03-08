@@ -3,8 +3,8 @@
 
 import numpy as np
 import pandas as pd
-
 from psycop_model_training.utils.utils import (
+    bin_continuous_data,
     drop_records_if_datediff_days_smaller_than,
     flatten_nested_dict,
 )
@@ -66,12 +66,11 @@ def test_drop_records_if_datediff_days_smaller_than():
         pd.DataFrame({"timestamp_2": pd.NaT, "timestamp_1": "2021-01-01"}, index=[1]),
     )
 
-    drop_records_if_datediff_days_smaller_than(
+    test_df = drop_records_if_datediff_days_smaller_than(
         df=test_df,
         t2_col_name="timestamp_2",
         t1_col_name="timestamp_1",
         threshold_days=1,
-        inplace=True,
     )
 
     differences = (
@@ -93,3 +92,30 @@ def test_flatten_nested_dict():
     output_dict = flatten_nested_dict(input_dict)
 
     assert expected_dict == output_dict
+
+
+def test_bin_contiuous_data():
+    one_to_five = pd.Series([1, 2, 3, 4, 5])
+
+    # One bin, more than 5
+    one_bin_more_than_five = bin_continuous_data(
+        series=one_to_five,
+        bins=[0, 5],
+    )
+    assert len(one_bin_more_than_five.unique()) == 1
+    assert one_bin_more_than_five.isna().sum() == 0
+
+    # One bin, less than 5
+    one_to_four = pd.Series([1, 2, 3, 4])
+    one_bin_less_than_five = bin_continuous_data(series=one_to_four, bins=[0, 5])
+    assert one_bin_less_than_five.isna().sum() == 4
+
+    # Two bins, less than 5
+    two_bins_less_than_five = bin_continuous_data(series=one_to_four, bins=[0, 2, 5])
+    assert two_bins_less_than_five.isna().sum() == 4
+
+    # Two bins, more than 5
+    one_to_ten = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    two_bins_more_than_five = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
+    assert len(two_bins_more_than_five.unique()) == 2
+    assert two_bins_more_than_five.isna().sum() == 0

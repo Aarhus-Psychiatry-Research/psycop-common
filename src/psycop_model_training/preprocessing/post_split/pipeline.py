@@ -1,12 +1,11 @@
 """Create post split pipeline.""" ""
 import logging
 
-from sklearn.pipeline import Pipeline
-
 from psycop_model_training.preprocessing.post_split.create_pipeline import (
     create_preprocessing_pipeline,
 )
 from psycop_model_training.training.train_and_predict import create_model
+from sklearn.pipeline import Pipeline
 
 log = logging.getLogger(__name__)
 

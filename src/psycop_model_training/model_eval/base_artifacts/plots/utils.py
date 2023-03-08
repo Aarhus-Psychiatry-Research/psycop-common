@@ -6,11 +6,9 @@ from typing import Optional, Union
 import numpy as np
 import pandas as pd
 import wandb
-from sklearn.metrics import roc_auc_score
-from wandb.sdk.wandb_run import Run as wandb_run
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data
+from sklearn.metrics import roc_auc_score
 
 
 def log_image_to_wandb(chart_path: Path, chart_name: str):
@@ -36,14 +34,14 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
     """
     if df.empty:
         return np.nan
-    elif metric is roc_auc_score and len(df["y"].unique()) == 1:
+    if metric is roc_auc_score and len(df["y"].unique()) == 1:
         # msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan") This was hit almost once per month, making it very hard to read.
         # Many of our models probably try to predict the majority class.
         # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
         # For now, suppressing this message.
         return np.nan
-    else:
-        return metric(df["y"], df["y_hat"])
+
+    return metric(df["y"], df["y_hat"])
 
 
 def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
@@ -60,13 +58,13 @@ def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
 
     if metric_fn in fn2input:
         return fn2input[metric_fn]
-    else:
-        raise ValueError(f"Don't know which input to use for {metric_fn}")
+
+    raise ValueError(f"Don't know which input to use for {metric_fn}")
 
 
 def create_performance_by_input(
     eval_dataset: EvalDataset,
-    input: Sequence[Union[int, float]],
+    input_values: Sequence[Union[int, float]],
     input_name: str,
     bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
     bin_continuous_input: Optional[bool] = True,
@@ -91,11 +89,11 @@ def create_performance_by_input(
         {
             "y": eval_dataset.y,
             "y_hat": metric_fn_to_input(metric_fn=metric_fn, eval_dataset=eval_dataset),
-            input_name: input,
+            input_name: input_values,
         },
     )
 
-    # bin data
+    # bin data and calculate metric per bin
     if bin_continuous_input:
         df[f"{input_name}_binned"] = bin_continuous_data(df[input_name], bins=bins)
 

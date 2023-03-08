@@ -5,6 +5,14 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
+from psycop_model_training.model_eval.model_performance.utils import (
+    add_metadata_cols,
+    aggregate_predictions,
+    idx_to_class,
+    labels_to_int,
+    scores_to_probs,
+    select_metadata_cols,
+)
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -13,15 +21,6 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     roc_auc_score,
-)
-
-from psycop_model_training.model_eval.model_performance.utils import (
-    add_metadata_cols,
-    aggregate_predictions,
-    idx_to_class,
-    labels_to_int,
-    scores_to_probs,
-    select_metadata_cols,
 )
 
 
@@ -418,6 +417,7 @@ class ModelPerformance:
             return performance
         # convert to long format
         performance = pd.melt(performance)
+
         # split score and class into two columns
         if add_level_prefix:
             performance[["level", "score_type", "class"]] = performance[  # type: ignore
@@ -425,13 +425,13 @@ class ModelPerformance:
             ].str.split("-", 2, expand=True)
             # drop unused columns and re-arrange
             return performance[["level", "class", "score_type", "value"]]  # type: ignore
-        else:
-            performance[["score_type", "class"]] = performance["variable"].str.split(  # type: ignore
-                "-",
-                1,
-                expand=True,
-            )
-            return performance[["class", "score_type", "value"]]  # type: ignore
+
+        performance[["score_type", "class"]] = performance["variable"].str.split(  # type: ignore
+            "-",
+            1,
+            expand=True,
+        )
+        return performance[["class", "score_type", "value"]]  # type: ignore
 
 
 if __name__ == "__main__":

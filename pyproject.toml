@@ -1,6 +1,6 @@
 [project]
 name = "psycop_model_training"
-version = "0.37.0"
+version = "0.41.1"
 description = "PSYCOP model training utilities"
 authors = [{name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"},
     {name = "Lasse Hansen", email = "lasseh0310@gmail.com"},
@@ -24,7 +24,6 @@ dependencies = [
     "seaborn>=0.12.0,<0.12.2",
     "pyarrow>=9.0.0,<10.1.0",
     "Random-Word>=1.0.11, <=1.0.12",
-    "torch>=1.12.1,<1.13.1",
     "diskcache>=5.4.0",
     "psycopmlutils>=0.3.0,<0.4.0",
     "Levenshtein>=0.20.0, <0.21.0",
@@ -33,15 +32,17 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit>=2.19.0,<3.1.1",
-    "pytest>=7.1.2,<7.2.2",
-    "pytest-cov>=3.0.0,<4.0.1",
-    "pytest-xdist>=3.0.2",
+    "pre-commit>=2.19.0,<3.1.2",
     "black>=22.3.0,<23.2.0",
-    "flake8>=4.0.1,<6.1.0",
     "mypy>=0.991",
-    "setuptools>=65.3.0,<67.5.0",
+    "setuptools>=65.3.0,<67.6.0",
     "pylint>=2.15.5",
+]
+
+tests = [
+    "pytest>=7.1.2,<7.2.3",
+    "pytest-cov>=3.0.0,<4.0.1",
+    "pytest-xdist>=3.0.0,<3.2.0",
 ]
 
 [build-system]
@@ -75,7 +76,7 @@ ignore_missing_imports = true
 [tool.pylint]
 load-plugins = "pylint.extensions.docparams,pylint.extensions.code_style,pylint.extensions.for_any_all,pylint.extensions.typing"
 good-names = "df,p,f,d,e,n,k,i,v,y_,X,y"
-disable = "too-many-lines,line-too-long,missing-raises-doc,no-self-argument,unused-wildcard-import,wildcard-import,no-else-return,too-many-arguments,redefined-outer-name,c-extension-no-member,wrong-import-order,import-outside-toplevel,unused-import,wrong-import-position,deprecated-typing-alias,missing-module-docstring"
+disable = "too-many-lines,line-too-long,missing-raises-doc,no-self-argument,unused-wildcard-import,wildcard-import,no-else-return,too-many-arguments,redefined-outer-name,c-extension-no-member,wrong-import-order,import-outside-toplevel,unused-import,wrong-import-position,deprecated-typing-alias,missing-module-docstring,ungrouped-imports"
 extension-pkg-allow-list = "wandb,pydantic"
 
 [tool.pylint.'MESSAGES CONTROL']
@@ -89,10 +90,6 @@ pythonpath = [
   "."
 ]
 
-
-[tool.isort]
-known_third_party = ["wandb"]
-
 [tool.semantic_release]
 branch = "main"
 version_variable = [
@@ -105,4 +102,47 @@ build_command = "python -m pip install build; python -m build"
 [tool.pytest-xdist]
 n = 4
 
-[tool.pyright]
+[tool.ruff]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+select = ["A", "B", "C4", "COM", "E", "ERA", "F", "I", "ICN", "NPY001", "PIE", "PT", "PD002", "UP", "Q", "PTH", "RSE", "RET", "SIM", "W"]
+ignore = ["E402", "E501", "RET504"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+unfixable = ["ERA"]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "__init__.py",
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+target-version = "py39"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.isort]
+known-third-party = ["wandb"]

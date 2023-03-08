@@ -2,7 +2,6 @@
 
 import Levenshtein
 import pandas as pd
-
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
 
 
@@ -61,11 +60,10 @@ def check_columns_exist_in_dataset(
             continue
 
         # Skip col names that are not string
-        if not isinstance(attr_val, str):
-            if isinstance(attr_val, list):
-                for item in attr_val:
-                    if isinstance(item, str):
-                        col_names.append(item)
+        if not isinstance(attr_val, str) and isinstance(attr_val, list):
+            for item in attr_val:
+                if isinstance(item, str):
+                    col_names.append(item)
 
     # Check that the col_names exist in the dataset
     for item in col_names:

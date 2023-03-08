@@ -3,9 +3,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 import matplotlib.pyplot as plt
-from sklearn.metrics import average_precision_score, precision_recall_curve
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import average_precision_score, precision_recall_curve
 
 
 def plot_precision_recall(

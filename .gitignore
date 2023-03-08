@@ -110,6 +110,7 @@ outputs
 
 # virtual env
 .venv/
+venv/
 
 # MacOS
 .DS_Store
@@ -125,6 +126,7 @@ package.json
 *.pkl
 .aucs/
 *.parquet
+*.csv
 
 evaluation_results
 *.pqt

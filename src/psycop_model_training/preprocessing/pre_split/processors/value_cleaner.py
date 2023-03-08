@@ -2,7 +2,6 @@
 negative values etc."""
 import numpy as np
 import pandas as pd
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.col_name_inference import infer_predictor_col_name
 from psycop_model_training.utils.decorators import print_df_dimensions_diff

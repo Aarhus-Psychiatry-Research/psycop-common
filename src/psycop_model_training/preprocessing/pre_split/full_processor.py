@@ -1,6 +1,5 @@
 """Full processor for pre-split preprocessing."""
 import pandas as pd
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.preprocessing.pre_split.processors.col_filter import (
     PresSplitColFilter,
@@ -39,6 +38,6 @@ class FullProcessor:
         """Process a dataframe using the configuration."""
         dataset = self.value_cleaner.clean(dataset=dataset)
         dataset = self.value_transformer.transform(dataset=dataset)
-        dataset = self.row_filterer.filter(dataset=dataset)
-        dataset = self.col_filterer.filter(dataset=dataset)
+        dataset = self.row_filterer.run_filter(dataset=dataset)
+        dataset = self.col_filterer.run_filter(dataset=dataset)
         return dataset

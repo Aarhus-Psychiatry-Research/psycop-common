@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from sklearn.metrics import recall_score
-
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.base_artifacts.plots.feature_importance import (
     plot_feature_importances,
@@ -26,6 +24,9 @@ from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import
 from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
 )
+from psycop_model_training.model_eval.base_artifacts.tables.descriptive_stats_table import (
+    DescriptiveStatsTable,
+)
 from psycop_model_training.model_eval.base_artifacts.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
@@ -39,6 +40,7 @@ from psycop_model_training.model_eval.dataclasses import (
     PipeMetadata,
 )
 from psycop_model_training.utils.utils import positive_rate_to_pred_probs
+from sklearn.metrics import recall_score
 
 
 class BaseArtifactGenerator:
@@ -176,13 +178,24 @@ class BaseArtifactGenerator:
             ),
         ]
 
+    def get_descriptive_stats_table_artifact(self):
+        """Returns descriptive stats table artifact."""
+        return [
+            ArtifactContainer(
+                label="descriptive_stats_table",
+                artifact=DescriptiveStatsTable(
+                    self.eval_ds,
+                ).generate_descriptive_stats_table(),
+            ),
+        ]
+
     def get_feature_selection_artifacts(self):
         """Returns a list of artifacts related to feature selection."""
         return [
             ArtifactContainer(
                 label="selected_features",
                 artifact=generate_selected_features_table(
-                    selected_features_dict=self.pipe_metadata.selected_features,
+                    eval_dataset=self.pipe_metadata.selected_features,
                     output_format="df",
                 ),
             ),
@@ -210,6 +223,9 @@ class BaseArtifactGenerator:
     def get_all_artifacts(self) -> list[ArtifactContainer]:
         """Generates artifacts from an EvalDataset."""
         artifact_containers = self.create_base_plot_artifacts()
+
+        if self.cfg.eval.descriptive_stats_table:
+            artifact_containers += self.get_descriptive_stats_table_artifact()
 
         if self.pipe_metadata and self.pipe_metadata.feature_importances:
             artifact_containers += self.get_feature_importance_artifacts()

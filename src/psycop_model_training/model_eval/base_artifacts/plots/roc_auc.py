@@ -3,9 +3,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_auc_score, roc_curve
-
 from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import roc_auc_score, roc_curve
 
 
 def plot_auc_roc(

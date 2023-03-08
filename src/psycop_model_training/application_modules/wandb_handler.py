@@ -1,12 +1,10 @@
 import copy
-from typing import Any, Dict
+from typing import Any
 
 import wandb
 from omegaconf import DictConfig, OmegaConf
-
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.config_schemas.project import WandbSchema
 from psycop_model_training.utils.utils import create_wandb_folders, flatten_nested_dict
 
 

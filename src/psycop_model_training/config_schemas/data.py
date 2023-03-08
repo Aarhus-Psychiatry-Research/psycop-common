@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from psycop_model_training.config_schemas.basemodel import BaseModel
 
@@ -9,8 +9,9 @@ class ColumnNamesSchema(BaseModel):
 
     pred_timestamp: str  # Column name for prediction times
     outcome_timestamp: str  # Column name for outcome timestamps
-    id: str  # Citizen colnames
+    id: str  # Citizen colnames # noqa
     age: str  # Name of the age column
+    is_female: str  # Name of the sex column
     exclusion_timestamp: Optional[str]  # Name of the exclusion timestamps column.
     # Drops all visits whose pred_timestamp <= exclusion_timestamp.
     custom_columns: Optional[list[str]] = None
@@ -22,7 +23,7 @@ class DataSchema(BaseModel):
     n_training_samples: Optional[int]
     # Number of training samples to use, defaults to null in which cases it uses all samples.
 
-    dir: Union[Path, str]  # Location of the dataset
+    dir: Union[Path, str]  # Location of the dataset # noqa
     suffix: str  # File suffix to load.
 
     # Feature specs

@@ -1,10 +1,24 @@
 """Generate synthetic data for evaluation of the model."""
 import datetime as dt
+from pathlib import Path
 from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
 from wasabi import Printer
+
+
+def add_age_is_female(df: pd.DataFrame):
+    """Add age and gender columns to dataframe.
+
+    Args:
+        df (pd.DataFrame): The dataframe to add age
+    """
+    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
+    ids["age"] = np.random.randint(18, 95, len(ids))
+    ids["is_female"] = np.where(ids["dw_ek_borger"] > 30_000, 1, 0)
+
+    return df.merge(ids)
 
 
 def years_to_seconds(years):
@@ -44,8 +58,7 @@ def null_series_with_prob(
         # Replace all values in series with null_value
         series.loc[:] = null_value
         return series
-    else:
-        return series
+    return None
 
 
 def overwrite_prop_with_null(
@@ -73,7 +86,7 @@ def overwrite_prop_with_null(
 
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
-    base = pd.Timestamp.today()
+    base_timestamp = pd.Timestamp.today()
     N_ROWS = 100_000
 
     df = pd.DataFrame()
@@ -81,7 +94,7 @@ if __name__ == "__main__":
     df["dw_ek_borger"] = [np.random.randint(0, 100_000) for _ in range(N_ROWS)]
 
     # Generate timestamps
-    df["timestamp"] = [base] * N_ROWS
+    df["timestamp"] = [base_timestamp] * N_ROWS
 
     msg.info("Adding differences")
     df["time_differences"] = [
@@ -94,7 +107,7 @@ if __name__ == "__main__":
         for _ in range(N_ROWS)
     ]
     df["timestamp"] = df["timestamp"] + df["time_differences"]
-    df.drop("time_differences", axis=1, inplace=True)
+    df = df.drop("time_differences", axis=1)
 
     df["pred_prob"] = [(np.random.random() - 0.45) for _ in range(N_ROWS)]
     df["pred_prob"] = df["pred_prob"].clip(0, 1)
@@ -112,10 +125,10 @@ if __name__ == "__main__":
         seconds=np.random.randint(0, years_to_seconds(years=5)),
     )
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_t2d_diag"].apply(
-        lambda x: null_series_with_prob(x, prob=0.95),
+        lambda x: null_series_with_prob(x, prob=0.85),
     )
 
-    # Generate first HbA1c timestmaps
+    # Generate first HbA1c timestamps
     msg.info("Generating HbA1c timestamps")
     df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
@@ -138,7 +151,7 @@ if __name__ == "__main__":
         else x["timestamp_first_hba1c"],
         axis=1,
     )
-    df.drop("timestamp_hba1c_copy", axis=1, inplace=True)
+    df = df.drop("timestamp_hba1c_copy", axis=1)
 
     # True label
     df["label"] = df["timestamp_t2d_diag"].notnull().astype(int)
@@ -148,4 +161,6 @@ if __name__ == "__main__":
         if "timestamp" in col:
             df[col] = df[col].dt.round("min")
 
-    df.to_csv("df_synth_for_eval.csv")
+    df = add_age_is_female(df)
+
+    df.to_csv(Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv")

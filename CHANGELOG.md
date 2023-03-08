@@ -2,6 +2,78 @@
 
 <!--next-version-placeholder-->
 
+## v0.41.1 (2023-03-08)
+### Fix
+* Exclude observations if too few samples in bin ([#408](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/408)) ([`ff461fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ff461fc17dfd816706a59e146e25b2b3911870b5))
+* Undefined variable in test ([`9f8da1f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/9f8da1f4149cfe0f0bb7cd9a91085840b67ee62c))
+* Series instead of df ([`0bbc52a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0bbc52a53a40639270ad1110dc497f4aee381ced))
+* Exclude observations if too few samples in bin ([`dfc5888`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/dfc58885f53ae3a09caf19727078324dfa25f9a4))
+
+## v0.41.0 (2023-03-07)
+### Feature
+* Move legend to top left ([#413](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/413)) ([`2ac7a39`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2ac7a39cb0ea4ada84bb291751fd7d832ddc0047))
+* Move legend to top left ([`18685af`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/18685af950604bba8720cf8bd7caecfe0f4f2e14))
+
+## v0.40.1 (2023-03-07)
+### Fix
+* Broke pickle writing and loading when refactoring ([#411](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/411)) ([`40ad3dd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/40ad3ddf140012dc8f0c15a917c6e0264bcd70d7))
+* Broke pickle writing and loading when refactoring ([`e4b03e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e4b03e5b69b0581ee9363e42b46b974647589f95))
+
+## v0.40.0 (2023-03-07)
+### Feature
+* Add +x to setup_for_dev ([`2f44395`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2f4439564381b2eecfd01a5e1165a357286e2c9f))
+* Add cruft.json ([`c980494`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c980494200a39db50f747713441054381a616c3c))
+* Add support for debug field in FullConfig ([`65a4bf4`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/65a4bf4be0b9cfd53f55592c98b5ef8df1409c3d))
+
+### Fix
+* Update synth dataset to only include ages of 18 or less ([`ac0f317`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ac0f317ad7bcd0e7430c30d99cde01e509a02305))
+* Add_eval_column should not be a fixture ([`b35a236`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b35a2366f53b9ab8f7a2aff5e925dc0cbb1ec4a2))
+* Drop_records_if_datediff_days_smaller_than had incorrect smaller-than/greater-than ([`61fc7aa`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/61fc7aa2a34e1a4ae879e75939f76e890ebba704))
+* Incorrect guard for inferring col name ([`c5b7309`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c5b730939612aef5de1760bf45d7b2773c45cadd))
+* Correctly infer min date when filtering by lookbehind ([`46bc34a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/46bc34aa4fb3a49b27b393d28f7544abb2ade15f))
+
+## v0.39.1 (2023-03-07)
+### Fix
+* Migrate DescriptiveStatsTable to use EvalDataset ([`6939bc4`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6939bc40f687d4b453834a3b7924e7b8b6c48303))
+
+## v0.39.0 (2023-03-06)
+### Feature
+* Add to config ([`e7dd37a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e7dd37a948c126d8a4be9a3186c167dc8751f24d))
+* Add artifact ([`79b2867`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/79b2867b2b409a53250994e9dbdad6dd1c07b546))
+* Table 1 updates ([`1a3f480`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1a3f4808e26e8230db9644aab6b9d859a7c421ad))
+* Table 1 workds for visit level stats ([`47fc4a3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/47fc4a31aa5c34e8854f43d7d37bad4d70069575))
+* Add eval_ col to synth eval data ([`8c4739b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8c4739b1b38312f0fe299ec7cdf5eecd3b54ba56))
+* Add initial table ([`d1efe02`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d1efe02129e63aa4309213800c7a1863d169b8aa))
+* Adding sex col to eval_dataset ([`22dfab2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/22dfab21c20b9878098df2e06a0e2820e6c0114f))
+* Adding sex col to eval_dataset ([`2e81773`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2e8177375c959675723ea6dbece701adab940510))
+* Add eval_ columns to custom_columns ([`b044244`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b044244ab802737b3eeb6353b9f4fb5dd9ac7004))
+
+### Fix
+* Config input ([`62493fe`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/62493fe47e8bd13e3cba73e799ec1ac0716ff366))
+* Minor issues and renamings ([`0220aaa`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0220aaa477c52db955fdd6ec918a33e7a7ae56fb))
+* Adjust finale test to 'is_female' ([`22fd6ce`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/22fd6ce3886f024a58cc00f1b7b3e849ece5de5f))
+* Adjust  to 'is_female' instead of 'sex' ([`e6cd96a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e6cd96aacf55f36ea039cee579ba5dc655679682))
+* Add *.csv to gitignore ([`b0d0dec`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b0d0dec8e4f94ea7cf3e8bcc329e87b36c769147))
+* Add sex col to synth data ([`6f164de`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6f164deb391d17b842c1ab2dd86948e59a220005))
+* Fixing table1 code ([`908beee`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/908beee3444b97ac7feef99b2b28734d5ab13186))
+* Change custom_columns update func ([`832dc8c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/832dc8c7e97822fbcc58f582cac590a99ee6814e))
+* Add sex to evaldata and fix issue ([`07cf55b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/07cf55bc0fa434a009ca6744ce08a6c9e9f7e75e))
+* Add eval_ cols to eval dataset ([`d2dcf94`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d2dcf9417166fc30650b7ac1f005ea507a1a5370))
+
+### Documentation
+* Changing docs ([`26b80a3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/26b80a37a20dee71cf80645bd4f338e3777864cf))
+* Spell check in docs ([`3ad20cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3ad20cf74df5696f841f2d07413fd2bedd80219e))
+* Docs ([`bec13e3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/bec13e31d9c16871cb2396eca8aef56f92d983b2))
+* Misc docs ([`2afbfbc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2afbfbc26dda1499aed4b5b2356fa365ed4be209))
+* Table 1 docs ([`0785231`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0785231d368f337dbfc045baa010dcd6089fb26b))
+
+## v0.38.0 (2023-03-04)
+### Feature
+* Add plot auc by sex ([`3dfcd69`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3dfcd694d788f44faad8d1d4eddc63346a325360))
+
+### Fix
+* Add space so all labels are within plots ([`c00b5d0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c00b5d09157cc76b7910b3cb6a9af56c30a76975))
+
 ## v0.37.0 (2023-02-22)
 ### Feature
 * Plot sensitivity by time to diagnosis by threshold ([#397](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/397)) ([`1195673`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/119567333854701a32976a0552cb06fe153c5189))
@@ -80,7 +152,7 @@
 * Handle floats when binning continuous data ([`23fc939`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/23fc939c3c926976ffdfc64d358edc3cb123f218))
 * Use mean imputer if imputation is required and none specified ([`f427a39`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f427a396c7a75f706216e431d58afc727c76af5d))
 * Hydra main should return metric to optimise ([`26600f6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/26600f65f3559df218c932780540a856198252ea))
-* Incorrect specificatin of logistic-regression ([`3137e7a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3137e7ae7be7c73559ec381d6af0fe5df28027f5))
+* Incorrect specification of logistic-regression ([`3137e7a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3137e7ae7be7c73559ec381d6af0fe5df28027f5))
 * Drop edges if duplicate ([`aa32bfe`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/aa32bfe7685f1e93f1507031b8077c17d8ba235c))
 * Create model eval dir if does not already exist ([`574b778`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/574b778376d692d850d41fa89467c5b0c4ffa2de))
 * Guard against no wandb when getting eval dir ([`028feb3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/028feb3d64466041f9c0de2af6dc23847bdc9b88))
@@ -284,7 +356,7 @@
 
 ## v0.13.0 (2022-10-28)
 ### Feature
-* Automatically infer whther GPU is present ([`407521d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/407521dc26aa5ff9ec783c5e50cb30bf94f12a7d))
+* Automatically infer whether GPU is present ([`407521d`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/407521dc26aa5ff9ec783c5e50cb30bf94f12a7d))
 
 ### Fix
 * Remove incorrect toml header ([`58c99f3`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/58c99f31ae496dd23761b9c7a5be64e46b73b5df))
@@ -578,7 +650,7 @@
 * Remove unix-specific github actions runs ([`e000a90`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/e000a90eaef76770fa1201b4d894142db4904da7))
 * Minor fixes ([`3505e70`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/3505e70d1bdc5209bbfa6bdd7890d1f012b340e3))
 * Remove mypy type ignores ([`ae66393`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/ae66393c5b98b9b5f5c8191cde8fa015c4a81a2f))
-* Succesful training on overtaci ([`8e84c4b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/8e84c4b7acb6bd00f3225bdd99007d1a557ca4e7))
+* Successful training on overtaci ([`8e84c4b`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/8e84c4b7acb6bd00f3225bdd99007d1a557ca4e7))
 * Minor changes ([`2222141`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/22221418decc9177f4eef7e04b6bd1f635c4430d))
 * Failing tests ([`1c5ace1`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/1c5ace15a1aba370a5051753c8a65964238cd973))
 * Clean darglint ([`41d5565`](https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/commit/41d556562e84b204b7fcf4a5f57f09d7ca9eb77f))

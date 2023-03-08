@@ -1,0 +1,77 @@
+# This workflow will install Python dependencies, run pytests and run notebooks
+# then it will in python 3.9 (ubuntu-latest) create a badge with the coverage
+# and add it to the PR. This badge will be updated if the PR is updated.
+
+name: Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] #, macos-latest]
+        python-version: ["3.9"] # , "3.8"]
+
+    # This allows a subsequently queued workflow run to interrupt previous runs
+    concurrency:
+      group: "${{ github.workflow }} - ${{ matrix.python-version}} - ${{ matrix.os }} @ ${{ github.ref }}"
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache venv
+        uses: actions/cache@v3.2.6
+        id: cache_venv
+        with:
+          path: |
+            .venv
+          key: ${{ runner.os }}-${{ steps.setup_python.python-version }}-venv-${{ hashFiles('**/pyproject.toml') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        id: setup_python
+        if: steps.cache_venv.outputs.cache-hit != 'true'
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: "**/pyproject.toml"
+
+      - name: Install dependencies
+        shell: bash
+        if: steps.cache_venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -e ".[tests]"
+
+      - name: Run and write pytest
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}
+        shell: bash
+        run: |
+          set -o pipefail
+          source .venv/bin/activate
+          pytest -n 2 --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/ | tee pytest-coverage.txt
+
+      # if it is run on ubuntu-latest, python 3.9, then create the badge
+      - name: Pytest coverage comment
+        id: coverage-comment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          create-new-comment: false
+          report-only-changed-files: true
+          pytest-coverage-path: pytest-coverage.txt
+          junitxml-path: ./pytest.xml
+
+      - name: Check the output coverage
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}
+        shell: bash
+        run: |
+          echo "Coverage Report - ${{ steps.coverage-comment.outputs.coverage }}"
+          echo "Coverage Color - ${{ steps.coverage-comment.outputs.color }}"
