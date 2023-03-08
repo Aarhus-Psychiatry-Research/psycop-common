@@ -215,10 +215,24 @@ def bin_continuous_data(
         else:
             continue
 
-    # Drop any category in the series where the bin has fewer than 5 observations
-    series = series[series.groupby(series).transform("count") >= min_n_in_bin]
+    df = pd.DataFrame(
+        {
+            "series": series,
+            "bin": pd.cut(
+                series,
+                bins=bins,
+                labels=labels,
+                duplicates="drop",
+                include_lowest=True,
+            ),
+        },
+    )
 
-    return pd.cut(series, bins=bins, labels=labels, duplicates="drop")
+    bins_with_insufficient_n = (
+        df.groupby("bin")["series"].transform("size") < min_n_in_bin
+    )
+
+    return df["bin"].mask(bins_with_insufficient_n)
 
 
 def positive_rate_to_pred_probs(

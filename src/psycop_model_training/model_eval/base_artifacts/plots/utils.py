@@ -93,7 +93,7 @@ def create_performance_by_input(
         },
     )
 
-    # bin data
+    # bin data and calculate metric per bin
     if bin_continuous_input:
         df[f"{input_name}_binned"] = bin_continuous_data(df[input_name], bins=bins)
 
