@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.41.1 (2023-03-08)
+### Fix
+* Exclude observations if too few samples in bin ([#408](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/408)) ([`ff461fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ff461fc17dfd816706a59e146e25b2b3911870b5))
+* Undefined variable in test ([`9f8da1f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/9f8da1f4149cfe0f0bb7cd9a91085840b67ee62c))
+* Series instead of df ([`0bbc52a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0bbc52a53a40639270ad1110dc497f4aee381ced))
+* Exclude observations if too few samples in bin ([`dfc5888`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/dfc58885f53ae3a09caf19727078324dfa25f9a4))
+
 ## v0.41.0 (2023-03-07)
 ### Feature
 * Move legend to top left ([#413](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/413)) ([`2ac7a39`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2ac7a39cb0ea4ada84bb291751fd7d832ddc0047))
