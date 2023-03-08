@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.41.0 (2023-03-07)
+### Feature
+* Move legend to top left ([#413](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/413)) ([`2ac7a39`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2ac7a39cb0ea4ada84bb291751fd7d832ddc0047))
+* Move legend to top left ([`18685af`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/18685af950604bba8720cf8bd7caecfe0f4f2e14))
+
 ## v0.40.1 (2023-03-07)
 ### Fix
 * Broke pickle writing and loading when refactoring ([#411](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/411)) ([`40ad3dd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/40ad3ddf140012dc8f0c15a917c6e0264bcd70d7))
