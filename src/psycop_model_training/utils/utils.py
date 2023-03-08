@@ -163,7 +163,7 @@ def bin_continuous_data(
     bins: Sequence[int],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
-) -> pd.Series:
+) -> tuple[pd.Series, pd.Series]:
     """For prettier formatting of continuous binned data such as age.
 
     Args:
@@ -173,7 +173,8 @@ def bin_continuous_data(
         use_min_as_label (bool, optional): If True, the minimum value in the bin is used as the label. If False, the maximum value is used. Defaults to False.
 
     Returns:
-        pd.Series: Binned data
+        pd.Series: Binned categories for values in data
+        pd.Series: Number of samples in binned category
 
     Example:
     >>> ages = pd.Series([15, 18, 20, 30, 32, 40, 50, 60, 61])

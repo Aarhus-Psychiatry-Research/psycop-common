@@ -61,16 +61,17 @@ def plot_basic_chart(
     if sort_y is not None:
         df = df.sort_values(by=["sort_y"])
 
-    plt.figure(figsize=fig_size, dpi=dpi)
+    fig = plt.figure(figsize=fig_size, dpi=dpi)
+    axs = fig.subplots()
 
     if not isinstance(y_values[0], Iterable):
         y_values = [y_values]  # Make y_values an iterable
 
     plot_functions = {
-        "bar": plt.bar,
-        "hbar": plt.barh,
-        "line": plt.plot,
-        "scatter": plt.scatter,
+        "bar": axs.bar,
+        "hbar": axs.barh,
+        "line": axs.plot,
+        "scatter": axs.scatter,
     }
 
     # choose the first plot type as the one to use for legend
@@ -80,7 +81,7 @@ def plot_basic_chart(
     for y_series in y_values:
         for p_type in plot_type:
             plot_function = plot_functions.get(p_type)
-            plot = plot_function(df["x"], y_series)
+            plot = plot_function(df["x"], y_series, color="green")
             if p_type == label_plot_type:
                 # need to one of the plot types for labelling
                 label_plots.append(plot)
@@ -100,7 +101,7 @@ def plot_basic_chart(
     if flip_y_axis:
         plt.gca().invert_yaxis()
     if labels is not None:
-        plt.figlegend(
+        plt.gca().figlegend(
             [plot[0] for plot in label_plots],
             [str(label) for label in labels],
             loc="upper left",
@@ -111,9 +112,13 @@ def plot_basic_chart(
     if bar_count_values is not None:
         # add additional y-axis for count
         bar_overlay = plt.gca().twinx()
-        bar_overlay.bar(df["x"], bar_count_values, color="blue", alpha=0.25)
+        bar_overlay.bar(df["x"], bar_count_values, color="green")
 
         bar_overlay.set_ylabel("Number of observations")
+        axs.set_zorder(bar_overlay.get_zorder() + 1)
+        # axs.patch.set_visible(False)
+        axs.set_facecolor("none")
+        bar_overlay.set_facecolor("none")
         bar_overlay.bar_label(bar_overlay.bar(df["x"], bar_count_values))
 
     plt.tight_layout()

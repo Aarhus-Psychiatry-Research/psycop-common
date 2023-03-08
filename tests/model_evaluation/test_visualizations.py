@@ -215,5 +215,3 @@ def test_overlay_barplot(synth_eval_dataset: EvalDataset):
         y_title="F1",
         save_path=PROJECT_ROOT / "test_overlay_barplot.png",
     )
-
-    print("test")
