@@ -99,7 +99,8 @@ def test_bin_contiuous_data():
 
     # One bin, more than 5
     one_bin_more_than_five = bin_continuous_data(
-        series=series_all_unique_vals, bins=[0, 5]
+        series=one_to_five,
+        bins=[0, 5],
     )
     assert len(one_bin_more_than_five.unique()) == 1
     assert one_bin_more_than_five.isna().sum() == 0
