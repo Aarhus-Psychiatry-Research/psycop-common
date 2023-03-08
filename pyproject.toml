@@ -104,8 +104,37 @@ n = 4
 
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
-select = ["A", "B", "C4", "COM", "E", "ERA", "F", "I", "ICN", "NPY001", "PIE", "PT", "PD002", "UP", "Q", "PTH", "RSE", "RET", "SIM", "W"]
-ignore = ["E402", "E501", "RET504"]
+select = [
+    "A", 
+    "ARG", 
+    "B", 
+    "C4", 
+    "COM", 
+    "D417", 
+    "E", 
+    "ERA", 
+    "F", 
+    "I", 
+    "ICN", 
+    "NPY001", 
+    "PD002", 
+    "PIE", 
+    "PLE", 
+    "PLW", 
+    "PT", 
+    "UP", 
+    "Q", 
+    "PTH", 
+    "RSE", 
+    "RET", 
+    "SIM", 
+    "W"
+]
+ignore = [
+    "E402", 
+    "E501", 
+    "RET504"
+]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]
