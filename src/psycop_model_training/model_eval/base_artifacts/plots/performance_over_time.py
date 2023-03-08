@@ -421,7 +421,6 @@ def plot_metric_by_time_until_diagnosis(
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
     y_limits: Optional[tuple[float, float]] = None,
-    bar_count_values: Optional[Iterable] = None,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plots performance of a specified performance metric in bins of time
@@ -461,7 +460,6 @@ def plot_metric_by_time_until_diagnosis(
         x_title="Days to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
-        # bar_count_values=bar_count_values,
         bar_count_values=df["n_in_bin"],
         y_limits=y_limits,
         plot_type=["scatter", "line"],
