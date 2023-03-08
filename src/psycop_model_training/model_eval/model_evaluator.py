@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path, PosixPath, WindowsPath
+from typing import Optional
 
 import matplotlib as mpl
 
@@ -60,7 +61,7 @@ class ModelEvaluator:
         raw_train_set: pd.DataFrame,
         pipe: Pipeline,
         eval_ds: EvalDataset,
-        custom_artifacts: list[ArtifactContainer] = None,
+        custom_artifacts: Optional[list[ArtifactContainer]] = None,
         upload_to_wandb: bool = True,
     ):
         """Class for evaluating a model.
@@ -72,6 +73,7 @@ class ModelEvaluator:
             pipe (Pipeline): Pipeline object.
             eval_ds (EvalDataset): EvalDataset object.
             custom_artifacts (list[ArtifactContainer], optional): List of custom artifacts to save. Defaults to None.
+            upload_to_wandb (bool, optional): Whether to upload artifacts to wandb. Defaults to True.
         """
         self.cfg = cfg
         self.pipe = pipe
