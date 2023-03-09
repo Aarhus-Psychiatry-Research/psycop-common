@@ -10,6 +10,9 @@ import logging
 from typing import Optional, Union, Literal
 
 import pandas as pd
+from psycop_feature_generation.loaders.filters.t2d_filters import (
+    keep_rows_where_diag_matches_t2d_diag,
+)
 
 from psycop_feature_generation.loaders.raw.utils import load_from_codes
 from psycop_feature_generation.utils import data_loaders
@@ -225,6 +228,45 @@ def copd(
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
     )
+
+
+@data_loaders.register("type_2_diabetes")
+def type_2_diabetes(
+    n_rows: Optional[int] = None,
+    shak_location_col: Optional[str] = None,
+    shak_code: Optional[int] = None,
+    shak_sql_operator: Optional[str] = None,
+    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code=[
+            "E1",
+            "E16",
+            "O24",
+            "T383A",
+            "M142",
+            "G590",
+            "G632",
+            "H280",
+            "H334",
+            "H360",
+            "H450",
+            "N083",
+        ],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+    df_filtered = keep_rows_where_diag_matches_t2d_diag(
+        df=df,
+        col_name="diagnosegruppestreng",
+    )
+
+    return df_filtered
 
 
 # Psychiatric diagnoses
