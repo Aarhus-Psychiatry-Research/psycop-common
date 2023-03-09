@@ -337,7 +337,7 @@ def arterial_p_glc(
     values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
-        blood_sample_id="21533",
+        blood_sample_id="NPU21533",
         n_rows=n_rows,
         values_to_load=values_to_load,
     )
@@ -349,7 +349,7 @@ def urinary_p_glc(
     values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
-        blood_sample_id="04207",
+        blood_sample_id="NPU04207",
         n_rows=n_rows,
         values_to_load=values_to_load,
     )
