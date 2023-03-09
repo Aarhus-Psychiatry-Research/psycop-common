@@ -24,3 +24,20 @@ def keep_rows_where_diag_matches_t2d_diag(
     )
 
     return df
+
+
+def keep_rows_where_diag_matches_t1d_diag(
+    df: pd.DataFrame,
+    col_name: str,
+) -> pd.DataFrame:
+    """
+    Keep rows where the diagnosis matches the T1D diagnosis.
+    """
+    t2d_regex_pattern = r"(:DE10.*)|(:DO240.*)"
+    df = keep_rows_where_col_name_matches_pattern(
+        df=df,
+        col_name=col_name,
+        regex_pattern=t2d_regex_pattern,
+    )
+
+    return df

@@ -1,4 +1,4 @@
-from psycop_feature_generation.loaders.filters.t2d_filters import (
+from psycop_feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t2d_diag,
 )
 from psycop_ml_utils.utils_for_testing import str_to_df
