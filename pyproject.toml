@@ -32,11 +32,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "mypy",
     "pre-commit>=2.19.0,<3.1.2",
-    "black>=22.3.0,<23.2.0",
-    "mypy>=0.991",
     "setuptools>=65.3.0,<67.6.0",
-    "pylint>=2.15.5",
+    "ruff==0.0.254", # important that these match the pre-commit hooks
+    "black==22.8.0", # important that these match the pre-commit hooks
+ ]
 ]
 
 tests = [
@@ -104,8 +105,37 @@ n = 4
 
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
-select = ["A", "B", "C4", "COM", "E", "ERA", "F", "I", "ICN", "NPY001", "PIE", "PT", "PD002", "UP", "Q", "PTH", "RSE", "RET", "SIM", "W"]
-ignore = ["E402", "E501", "RET504"]
+select = [
+    "A", 
+    "ARG", 
+    "B", 
+    "C4", 
+    "COM", 
+    "D417", 
+    "E", 
+    "ERA", 
+    "F", 
+    "I", 
+    "ICN", 
+    "NPY001", 
+    "PD002", 
+    "PIE", 
+    "PLE", 
+    "PLW", 
+    "PT", 
+    "UP", 
+    "Q", 
+    "PTH", 
+    "RSE", 
+    "RET", 
+    "SIM", 
+    "W"
+]
+ignore = [
+    "E402", 
+    "E501", 
+    "RET504"
+]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]
