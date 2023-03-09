@@ -1,7 +1,7 @@
-# Check if Python 3.10 is installed
-if command -v python3.10 &> /dev/null; then
-    # Python 3.11 is installed, use it to run the script
-    python3.10 -m venv .venv
+# Check if Python 3.9 is installed
+if command -v python3.9 &> /dev/null; then
+    # Python 3.9 is installed, use it to run the script
+    python3.9 -m venv .venv
 else
     # Python 3.11 is not installed, use the default Python version
     python -m venv .venv
