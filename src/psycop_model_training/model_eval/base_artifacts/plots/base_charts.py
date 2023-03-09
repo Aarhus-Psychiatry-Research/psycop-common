@@ -61,7 +61,11 @@ def plot_basic_chart(
 
     plt.figure(figsize=fig_size, dpi=dpi)
 
-    y_sequences = [y_values] if not isinstance(y_values[0], Sequence) else y_values
+    y_sequences = (
+        [y_values]
+        if not isinstance(y_values[0], Union[Sequence, pd.Series])  # type: ignore
+        else y_values
+    )
 
     plot_functions = {
         "bar": plt.bar,
