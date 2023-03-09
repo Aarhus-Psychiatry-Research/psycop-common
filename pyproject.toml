@@ -72,11 +72,6 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
-[tool.mypy]
-ignore_missing_imports = true
-no_implicit_optional = true
-plugins = "pydantic.mypy"
-
 [tool.pylint]
 load-plugins = "pylint.extensions.docparams,pylint.extensions.code_style,pylint.extensions.for_any_all,pylint.extensions.typing"
 good-names = "df,p,f,d,e,n,k,i,v,y_,X,y"
