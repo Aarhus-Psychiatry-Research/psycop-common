@@ -27,6 +27,7 @@ def from_contacts(
     wildcard_icd_code: Optional[bool] = False,
     shak_location_col: Optional[str] = None,
     shak_code: Optional[int] = None,
+    keep_code_col: Optional[bool] = False,
     shak_sql_operator: Optional[str] = None,
     timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
 ) -> pd.DataFrame:
@@ -41,6 +42,7 @@ def from_contacts(
         wildcard_icd_code (bool, optional): Whether to match on icd_code*. Defaults to False.
         shak_location_col (str, optional): Name of column containing shak code. Defaults to None. For diagnosis loaders, this column is "shakkode_ansvarlig". Combine with shak_code and shak_sql_operator.
         shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
+        keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
         shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
         timestamp_purpose (Literal[str], optional): The intended use of the loader. If used as a predictor, the timestamp should be set to the contact end time, in order to avoid data leakage from future
             events. If used a an outcome, the timestamp should be set as the contact start time, in order to avoid inflation of model performance.
@@ -83,6 +85,7 @@ def from_contacts(
         load_diagnoses=True,
         shak_location_col=shak_location_col,
         shak_code=shak_code,
+        keep_code_col=keep_code_col,
         shak_sql_operator=shak_sql_operator,
     )
 
