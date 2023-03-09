@@ -9,7 +9,8 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 
 def get_col_names(
-    cfg: Union[DictConfig, FullConfigSchema], dataset: pd.DataFrame
+    cfg: Union[DictConfig, FullConfigSchema],
+    dataset: pd.DataFrame,
 ) -> tuple[str, list[str]]:
     """Get column names for outcome and features.
 
