@@ -4,7 +4,7 @@
 3. AUC by time until diagnosis
 """
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
 from typing import Optional, Union
 
@@ -24,7 +24,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 def create_performance_by_calendar_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[Union[int, float]],
+    y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -45,7 +45,7 @@ def create_performance_by_calendar_time_df(
 
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
-    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
+    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)  # type: ignore
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
@@ -58,7 +58,7 @@ def plot_recall_by_calendar_time(
     bins: Iterable[float],
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
-    save_path: Optional[str] = None,
+    save_path: Optional[Union[Path, str]] = None,
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
 
@@ -76,6 +76,11 @@ def plot_recall_by_calendar_time(
     if not isinstance(pred_proba_percentile, Iterable):
         pred_proba_percentile = [pred_proba_percentile]
 
+    pred_proba_percentile = list(pred_proba_percentile)
+    pred_proba_percentile_labels = [
+        str(percentile) for percentile in pred_proba_percentile
+    ]
+
     # Get percentiles from a series of predicted probabilities
     pred_proba_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
 
@@ -92,10 +97,10 @@ def plot_recall_by_calendar_time(
     ]
 
     return plot_basic_chart(
-        x_values=dfs[0]["days_to_outcome_binned"],
-        y_values=[df["sens"] for df in dfs],
+        x_values=dfs[0]["days_to_outcome_binned"],  # type: ignore
+        y_values=[df["sens"] for df in dfs],  # type: ignore
         x_title="Days from event",
-        labels=pred_proba_percentile,
+        labels=pred_proba_percentile_labels,
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
@@ -133,16 +138,17 @@ def plot_metric_by_calendar_time(
         bin_period=bin_period,
     )
     sort_order = np.arange(len(df))
+
     return plot_basic_chart(
-        x_values=df["time_bin"],
-        y_values=df["metric"],
+        x_values=df["time_bin"],  # type: ignore
+        y_values=df["metric"],  # type: ignore
         x_title="Month"
         if bin_period == "M"
         else "Quarter"
         if bin_period == "Q"
         else "Year",
         y_title=y_title,
-        sort_x=sort_order,
+        sort_x=sort_order,  # type: ignore
         y_limits=y_limits,
         plot_type=["line", "scatter"],
         save_path=save_path,
@@ -151,7 +157,7 @@ def plot_metric_by_calendar_time(
 
 def create_performance_by_cyclic_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[Union[int, float]],
+    y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -215,7 +221,7 @@ def create_performance_by_cyclic_time_df(
             "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year",
         )
 
-    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
+    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)  # type: ignore
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
@@ -253,8 +259,8 @@ def plot_metric_by_cyclic_time(
     )
 
     return plot_basic_chart(
-        x_values=df["time_bin"],
-        y_values=df["metric"],
+        x_values=df["time_bin"],  # type: ignore
+        y_values=df["metric"],  # type: ignore
         x_title="Hour of day"
         if bin_period == "H"
         else "Day of week"
@@ -269,12 +275,12 @@ def plot_metric_by_cyclic_time(
 
 def create_performance_by_time_from_event_df(
     labels: Iterable[int],
-    y_hat: Iterable[Union[int, float]],
+    y_hat: Iterable[float],
     event_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     direction: str,
-    bins: Iterable[float],
+    bins: Sequence[float],
     bin_continuous_input: Optional[bool] = True,
     drop_na_events: Optional[bool] = True,
 ) -> pd.DataFrame:
@@ -313,12 +319,18 @@ def create_performance_by_time_from_event_df(
     if direction == "event-prediction":
         df["days_from_event"] = (
             df["event_timestamp"] - df["prediction_timestamp"]
-        ) / np.timedelta64(1, "D")
+        ) / np.timedelta64(
+            1,
+            "D",
+        )  # type: ignore
 
     elif direction == "prediction-event":
         df["days_from_event"] = (
             df["prediction_timestamp"] - df["event_timestamp"]
-        ) / np.timedelta64(1, "D")
+        ) / np.timedelta64(
+            1,
+            "D",
+        )  # type: ignore
 
     else:
         raise ValueError(
@@ -332,7 +344,7 @@ def create_performance_by_time_from_event_df(
     df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
 
     # Calc performance and prettify output
-    output_df = df.groupby("days_from_event_binned").apply(calc_performance, metric_fn)
+    output_df = df.groupby("days_from_event_binned").apply(calc_performance, metric_fn)  # type: ignore
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
 
@@ -368,7 +380,7 @@ def plot_auc_by_time_from_first_visit(
         event_timestamps=first_visit_timestamps,
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="prediction-event",
-        bins=bins,
+        bins=list(bins),
         bin_continuous_input=bin_continuous_input,
         drop_na_events=False,
         metric_fn=roc_auc_score,
@@ -389,7 +401,7 @@ def plot_auc_by_time_from_first_visit(
 
 def plot_metric_by_time_until_diagnosis(
     eval_dataset: EvalDataset,
-    bins: Iterable[int] = (
+    bins: Sequence[int] = (
         -1825,
         -730,
         -365,

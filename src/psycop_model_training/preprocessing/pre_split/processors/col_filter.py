@@ -1,6 +1,5 @@
 """Module for filtering columns before split."""
 import re
-from typing import Union
 
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -86,7 +85,7 @@ class PresSplitColFilter:
     def _drop_cols_if_exceeds_look_direction_threshold(
         self,
         dataset: pd.DataFrame,
-        look_direction_threshold: Union[int, float],
+        look_direction_threshold: float,
         direction: str,
     ) -> pd.DataFrame:
         """Drop columns if they look behind or ahead longer than a specified
@@ -98,7 +97,7 @@ class PresSplitColFilter:
 
             Args:
                 dataset (pd.DataFrame): Dataset to process.
-                look_direction_threshold (Union[int, float]): Number of days to look in the direction.
+                look_direction_threshold (float): Number of days to look in the direction.
                 direction (str): Direction to look. Allowed are ["ahead", "behind"].
 
         Returns:

@@ -1,7 +1,7 @@
 """Generate synthetic data for evaluation of the model."""
 import datetime as dt
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -42,7 +42,7 @@ def null_series_with_prob(
     series: pd.Series,
     prob: float,
     null_value=np.NaN,
-) -> pd.Series:
+) -> Union[pd.Series, None]:
     """Overwrite all values in series with null_value with a given probability.
 
     Args:
@@ -56,7 +56,7 @@ def null_series_with_prob(
 
     if return_0_with_prob(prob) == 0:
         # Replace all values in series with null_value
-        series.loc[:] = null_value
+        series.loc[:] = null_value  # type: ignore
         return series
     return None
 
@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
     # Generate t2d timestamps
     msg.info("Generating T2D-timestamps")
-    df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[
+    df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[  # type: ignore
         "timestamp_first_pred_time"
     ].transform("min") + dt.timedelta(
         seconds=np.random.randint(0, years_to_seconds(years=5)),
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
     # Generate first HbA1c timestamps
     msg.info("Generating HbA1c timestamps")
-    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
+    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[  # type: ignore
         "timestamp_first_pred_time"
     ].transform("min") + dt.timedelta(
         seconds=np.random.randint(0, years_to_seconds(years=4)),

@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_basic_chart(
+def plot_basic_chart(  # noqa: C901
     x_values: Sequence,
-    y_values: Union[Sequence[Union[int, float]], Sequence[Sequence[Union[int, float]]]],
+    y_values: Union[pd.Series, Sequence[pd.Series]],
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],
@@ -19,9 +19,9 @@ def plot_basic_chart(
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
     y_limits: Optional[tuple[float, float]] = None,
-    fig_size: Optional[tuple] = (5, 5),
+    fig_size: Optional[tuple[float, float]] = (5, 5),
     dpi: Optional[int] = 300,
-    save_path: Optional[Path] = None,
+    save_path: Optional[Union[Path, str]] = None,
 ) -> Union[None, Path]:
     """Plot a simple chart using matplotlib. Options for sorting the x and y
     axis are available.
@@ -49,7 +49,7 @@ def plot_basic_chart(
     if isinstance(plot_type, str):
         plot_type = [plot_type]
 
-    df = pd.DataFrame(
+    df = pd.DataFrame(  # type: ignore
         {"x": x_values, "sort_x": sort_x, "sort_y": sort_y},
     )
 
@@ -61,10 +61,7 @@ def plot_basic_chart(
 
     plt.figure(figsize=fig_size, dpi=dpi)
 
-    if not isinstance(y_values[0], Sequence):
-        y_sequences = [y_values]
-    else:
-        y_sequences = y_values # type: ignore
+    y_sequences = [y_values] if not isinstance(y_values[0], pd.Series) else y_values
 
     plot_functions = {
         "bar": plt.bar,
@@ -111,6 +108,7 @@ def plot_basic_chart(
     plt.tight_layout()
 
     if save_path is not None:
+        save_path = Path(save_path)
         plt.savefig(save_path)
 
     plt.close()

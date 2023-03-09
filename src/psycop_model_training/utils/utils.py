@@ -13,7 +13,6 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
-from psycop_model_training.model_eval.model_performance import ModelPerformance
 from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -89,25 +88,25 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
-    threshold_days: Union[float, int],
-) -> pd.DataFrame:
+    threshold_days: float,
+) -> pd.Series:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
     Args:
         df (pd.DataFrame): Dataframe.
         t2_col_name (str): Column name of a time column
         t1_col_name (str): Column name of a time column
-        threshold_days (Union[float, int]): Drop if datediff is smaller than this.
+        threshold_days (float): Drop if datediff is smaller than this.
 
     Returns:
         A pandas dataframe without the records where datadiff was smaller than threshold_days.
     """
     return df[
-        (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D") > threshold_days
+        (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D") > threshold_days  # type: ignore
     ]
 
 
-def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
+def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
     """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
     0.9 will be rounded to 0, 1.8 will be rounded to 1, etc.
 
@@ -127,40 +126,9 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
     return pd.cut(series, bins=bins, labels=labels)
 
 
-def calculate_performance_metrics(
-    eval_df: pd.DataFrame,
-    outcome_col_name: str,
-    prediction_probabilities_col_name: str,
-    id_col_name: str = "dw_ek_borger",
-) -> pd.DataFrame:
-    """Log performance metrics to WandB.
-
-    Args:
-        eval_df (pd.DataFrame): DataFrame with predictions, labels, and id
-        outcome_col_name (str): Name of the column containing the outcome (label)
-        prediction_probabilities_col_name (str): Name of the column containing predicted
-            probabilities
-        id_col_name (str): Name of the id column
-
-    Returns:
-        A pandas dataframe with the performance metrics.
-    """
-    performance_metrics = ModelPerformance.performance_metrics_from_df(
-        prediction_df=eval_df,
-        prediction_col_name=prediction_probabilities_col_name,
-        label_col_name=outcome_col_name,
-        id_col_name=id_col_name,
-        metadata_col_names=None,
-        to_wide=True,
-    )
-
-    performance_metrics = performance_metrics.to_dict("records")[0]
-    return performance_metrics
-
-
 def bin_continuous_data(
     series: pd.Series,
-    bins: Sequence[int],
+    bins: Sequence[float],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
 ) -> pd.Series:
@@ -238,7 +206,7 @@ def bin_continuous_data(
 def positive_rate_to_pred_probs(
     pred_probs: pd.Series,
     positive_rate_thresholds: Iterable,
-) -> pd.Series:
+) -> list[Any]:
     """Get thresholds for a set of percentiles. E.g. if one
     positive_rate_threshold == 1, return the value where 1% of predicted
     probabilities lie above.
@@ -313,7 +281,7 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
 def get_selected_features_dict(
     pipe: Pipeline,
     train_col_names: list[str],
-) -> Union[None, dict[str, bool]]:
+) -> Union[None, dict[str, int]]:
     """Returns results from feature selection as a dict.
 
     Args:
@@ -377,6 +345,6 @@ def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
     )
 
 
-def get_percent_lost(n_before: Union[int, float], n_after: Union[int, float]) -> float:
+def get_percent_lost(n_before: float, n_after: float) -> float:
     """Get the percent lost."""
     return round((100 * (1 - n_after / n_before)), 2)

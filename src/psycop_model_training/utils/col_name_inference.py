@@ -5,9 +5,13 @@ from typing import Union
 
 import pandas as pd
 from omegaconf import DictConfig
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 
-def get_col_names(cfg: DictConfig, dataset: pd.DataFrame) -> tuple[str, list[str]]:
+def get_col_names(
+    cfg: Union[DictConfig, FullConfigSchema],
+    dataset: pd.DataFrame,
+) -> tuple[str, list[str]]:
     """Get column names for outcome and features.
 
     Args:

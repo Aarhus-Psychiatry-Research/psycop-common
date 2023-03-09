@@ -12,7 +12,7 @@ from psycop_model_training.utils.utils import bin_continuous_data
 def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
     min_n_in_bin: Optional[int] = None,
-    bins: Sequence[Union[int, float]] = tuple(range(0, 36, 1)),  # noqa
+    bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot histogram of time from first positive prediction to event.
@@ -20,7 +20,7 @@ def plot_time_from_first_positive_to_event(
     Args:
         eval_dataset: EvalDataset object
         min_n_in_bin (int): Minimum number of patients in each bin. If fewer, bin is dropped.
-        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (5, 25, 35, 50, 70).
+        bins (Sequence[float]): Bins to group by. Defaults to (5, 25, 35, 50, 70).
         save_path (Path, optional): Path to save figure. Defaults to None.
     """
 
@@ -46,7 +46,7 @@ def plot_time_from_first_positive_to_event(
 
     # Convert to int months
     df["time_from_pred_to_event"] = (
-        df["time_from_pred_to_event"] / timedelta(days=1)
+        df["time_from_pred_to_event"] / timedelta(days=1)  # type: ignore
     ).astype(int) / 30
 
     df["time_from_first_positive_to_event_binned"] = bin_continuous_data(

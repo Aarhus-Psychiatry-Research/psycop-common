@@ -1,6 +1,5 @@
 """Training script for training a single model."""
 import os
-from collections.abc import Iterable
 from typing import Optional
 
 import numpy as np
@@ -39,7 +38,7 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     cfg: FullConfigSchema,
     pipe: Pipeline,
     train_df: pd.DataFrame,
-    train_col_names: Iterable[str],
+    train_col_names: list[str],
     outcome_col_name: str,
     n_splits: int,
 ):
@@ -91,7 +90,7 @@ def crossval_train_and_predict(
     val: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
-    train_col_names: Iterable[str],
+    train_col_names: list[str],
     n_splits: int,
 ) -> EvalDataset:
     """Train model on cross validation folds and return evaluation dataset.
