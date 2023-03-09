@@ -1,21 +1,21 @@
 """Base charts."""
-from collections.abc import Iterable
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
 def plot_basic_chart(
-    x_values: Iterable,
-    y_values: Union[Iterable[int, float], Iterable[Iterable[int, float]]],
+    x_values: Sequence,
+    y_values: Union[Sequence[Union[int, float]], Sequence[Sequence[Union[int, float]]]],
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],
     labels: Optional[list[str]] = None,
-    sort_x: Optional[Iterable[int]] = None,
-    sort_y: Optional[Iterable[int]] = None,
+    sort_x: Optional[Sequence[int]] = None,
+    sort_y: Optional[Sequence[int]] = None,
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
     y_limits: Optional[tuple[float, float]] = None,
@@ -27,15 +27,15 @@ def plot_basic_chart(
     axis are available.
 
     Args:
-        x_values (Iterable): The x values of the bar chart.
-        y_values (Iterable): The y values of the bar chart.
+        x_values (Sequence): The x values of the bar chart.
+        y_values (Sequence): The y values of the bar chart.
         x_title (str): title of x axis
         y_title (str): title of y axis
         plot_type (Optional[Union[List[str], str]], optional): type of plots.
             Options are combinations of ["bar", "hbar", "line", "scatter"] Defaults to "bar".
         labels: (Optional[list[str]]): Optional labels to add to the plot(s).
-        sort_x (Optional[Iterable[int]], optional): order of values on the x-axis. Defaults to None.
-        sort_y (Optional[Iterable[int]], optional): order of values on the y-axis. Defaults to None.
+        sort_x (Optional[Sequence[int]], optional): order of values on the x-axis. Defaults to None.
+        sort_y (Optional[Sequence[int]], optional): order of values on the y-axis. Defaults to None.
         y_limits (Optional[tuple[float, float]], optional): y-axis limits. Defaults to None.
         fig_size (Optional[tuple], optional): figure size. Defaults to None.
         dpi (Optional[int], optional): dpi of figure. Defaults to 300.
@@ -61,8 +61,10 @@ def plot_basic_chart(
 
     plt.figure(figsize=fig_size, dpi=dpi)
 
-    if not isinstance(y_values[0], Iterable):
-        y_values = [y_values]  # Make y_values an iterable
+    if not isinstance(y_values[0], Sequence):
+        y_sequences = [y_values]
+    else:
+        y_sequences = y_values # type: ignore
 
     plot_functions = {
         "bar": plt.bar,
@@ -75,9 +77,9 @@ def plot_basic_chart(
     label_plot_type = plot_type[0]
 
     label_plots = []
-    for y_series in y_values:
+    for y_series in y_sequences:
         for p_type in plot_type:
-            plot_function = plot_functions.get(p_type)
+            plot_function: Callable = plot_functions.get(p_type)  # type: ignore
             plot = plot_function(df["x"], y_series)
             if p_type == label_plot_type:
                 # need to one of the plot types for labelling
