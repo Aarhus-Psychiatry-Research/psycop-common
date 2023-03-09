@@ -1,14 +1,6 @@
 default_stages: [push]
 
 repos:
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
-    hooks:
-      - id: codespell
-        args: [
-            "-w", # Write changes to files
-          ]
-
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     # Ruff version.
     rev: v0.0.253
@@ -26,15 +18,3 @@ repos:
     rev: 22.8.0
     hooks:
       - id: black
-
-  - repo: https://github.com/pycqa/pylint
-    rev: v2.15.2
-    hooks:
-      - id: pylint
-        types: [python]
-        args: [
-            "-rn", # Only display messages
-            "-sn", # Don't display the score
-            "--disable=R,import-error", # Refactors are not important enough to block a commit.
-          ]
-# Unused-imports aren't testable by the github action, so don't test that here.
