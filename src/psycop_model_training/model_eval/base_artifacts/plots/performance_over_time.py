@@ -4,9 +4,9 @@
 3. AUC by time until diagnosis
 """
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -320,14 +320,16 @@ def create_performance_by_time_from_event_df(
         df["days_from_event"] = (
             df["event_timestamp"] - df["prediction_timestamp"]
         ) / np.timedelta64(
-            1, "D"
+            1,
+            "D",
         )  # type: ignore
 
     elif direction == "prediction-event":
         df["days_from_event"] = (
             df["prediction_timestamp"] - df["event_timestamp"]
         ) / np.timedelta64(
-            1, "D"
+            1,
+            "D",
         )  # type: ignore
 
     else:
