@@ -25,9 +25,9 @@ def create_eval_dataset(
         for col_name in df.columns
         if col_name.startswith("eval_")
     }
-    custom_columns = (
-        custom_columns.update(eval_columns) if len(eval_columns) > 0 else custom_columns
-    )
+
+    if eval_columns is not None and len(eval_columns) > 0:
+        custom_columns.update(eval_columns)
 
     eval_dataset = EvalDataset(
         ids=df[col_names.id],
