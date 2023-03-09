@@ -19,7 +19,7 @@ def plot_basic_chart(
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
     y_limits: Optional[tuple[float, float]] = None,
-    fig_size: Optional[tuple] = (5, 5),
+    fig_size: Optional[tuple[float, float]] = (5, 5),
     dpi: Optional[int] = 300,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
@@ -49,7 +49,7 @@ def plot_basic_chart(
     if isinstance(plot_type, str):
         plot_type = [plot_type]
 
-    df = pd.DataFrame(
+    df = pd.DataFrame(  # type: ignore
         {"x": x_values, "sort_x": sort_x, "sort_y": sort_y},
     )
 

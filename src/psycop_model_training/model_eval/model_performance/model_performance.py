@@ -91,7 +91,7 @@ class ModelPerformance:
 
             concat_axis = 1 if to_wide else 0
 
-            performance_description = pd.concat(
+            performance_description = pd.concat(  # type: ignore
                 [performance_description, performance_by_id],
                 axis=concat_axis,
             )

@@ -26,8 +26,9 @@ def convert_cols_with_matching_colnames_to_datetime(
     df.loc[:, df.columns.str.contains(colname_substr)] = df.loc[
         :,
         df.columns.str.contains(colname_substr),
-    ].apply(pd.to_datetime)
-
+    ].apply(
+        pd.to_datetime  # type: ignore
+    )
     return df
 
 
