@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_basic_chart(
+def plot_basic_chart(  # noqa: C901
     x_values: Sequence,
-    y_values: Union[pd.Series[float], Sequence[pd.Series[float]]],
+    y_values: Union[pd.Series, Sequence[pd.Series]],
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],
