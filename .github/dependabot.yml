@@ -10,11 +10,11 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "01:00"
+      time: "13:00"
       timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 5
     commit-message:
-      prefix: "fix:"
+      prefix: "deps:"
       include: "scope"
     ignore:
       - dependency-name: "protobuf"

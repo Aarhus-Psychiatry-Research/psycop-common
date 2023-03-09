@@ -7,8 +7,15 @@ from typing import Optional, Union
 
 import pandas as pd
 from sqlalchemy import create_engine
+from joblib import Memory
+from pathlib import Path
+
+# Create a memory cache with the desired directory to store cached results
+cache_dir = Path("E:/shared_resources/sql_cache/")
+memory = Memory(location=cache_dir, verbose=1)
 
 
+@memory.cache
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
