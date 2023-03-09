@@ -24,7 +24,10 @@ def str_to_sql_match_logic(
         load_diagnoses (bool): Whether to load diagnoses or medications. Determines the logic. See calling function for more.
         match_with_wildcard (bool): Whether to match on icd_code* / atc_code* or only icd_code / atc_code.
     """
-    base_query = f"lower({code_sql_col_name}) LIKE '%{code_to_match.lower()}"
+    if load_diagnoses:
+        base_query = f"lower({code_sql_col_name}) LIKE '%{code_to_match.lower()}"
+    else:
+        base_query = f"lower({code_sql_col_name}) LIKE '{code_to_match.lower()}"
 
     if match_with_wildcard:
         return f"{base_query}%'"
@@ -52,7 +55,10 @@ def list_to_sql_logic(
     match_col_sql_strings = []
 
     for code_str in codes_to_match:
-        base_query = f"lower({code_sql_col_name}) LIKE '%{code_str.lower()}"
+        if load_diagnoses:
+            base_query = f"lower({code_sql_col_name}) LIKE '%{code_str.lower()}"
+        else:
+            base_query = f"lower({code_sql_col_name}) LIKE '{code_str.lower()}"
 
         if match_with_wildcard:
             match_col_sql_strings.append(
