@@ -351,8 +351,20 @@ def unscheduled_p_glc(
     )
 
 
-@data_loaders.register("diagnostic_p_glc")
-def diagnostic_p_glc(
+@data_loaders.register("ogtt")
+def ogtt(
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
+) -> pd.DataFrame:
+    return blood_sample(
+        blood_sample_id="NPU04177",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
+@data_loaders.register("fasting_p_glc")
+def fasting_p_glc(
     n_rows: Optional[int] = None,
     values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
