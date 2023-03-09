@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.41.3 (2023-03-09)
+### Fix
+* Remove argument that did not exist ([`ba8ea56`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ba8ea5625cfd94bc2e55675231cb1b294180961a))
+
 ## v0.41.2 (2023-03-09)
 ### Fix
 * Allow creation of eval dataset if custom columns are None ([`32c9d2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/32c9d2dd06a52ee1d5d681552ed38789cf5ba61c))
