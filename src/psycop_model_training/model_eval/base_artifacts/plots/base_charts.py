@@ -64,7 +64,7 @@ def plot_basic_chart(
     if not isinstance(y_values[0], Sequence):
         y_sequences = [y_values]
     else:
-        y_sequences = y_values # type: ignore
+        y_sequences = y_values  # type: ignore
 
     plot_functions = {
         "bar": plt.bar,
