@@ -21,7 +21,7 @@ def plot_basic_chart(
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple[float, float]] = (5, 5),
     dpi: Optional[int] = 300,
-    save_path: Optional[Path] = None,
+    save_path: Optional[Union[Path, str]] = None,
 ) -> Union[None, Path]:
     """Plot a simple chart using matplotlib. Options for sorting the x and y
     axis are available.
@@ -108,6 +108,7 @@ def plot_basic_chart(
     plt.tight_layout()
 
     if save_path is not None:
+        save_path = Path(save_path)
         plt.savefig(save_path)
 
     plt.close()

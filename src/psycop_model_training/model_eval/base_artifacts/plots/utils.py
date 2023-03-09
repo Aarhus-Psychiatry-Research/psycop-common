@@ -98,12 +98,12 @@ def create_performance_by_input(
         df[f"{input_name}_binned"] = bin_continuous_data(df[input_name], bins=bins)
 
         output_df = df.groupby(f"{input_name}_binned").apply(
-            calc_performance,
+            calc_performance,  # type: ignore
             metric_fn,
         )
 
     else:
-        output_df = df.groupby(input_name).apply(calc_performance, metric_fn)
+        output_df = df.groupby(input_name).apply(calc_performance, metric_fn)  # type: ignore
 
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
-    return output_df
+    final_df = output_df.reset_index().rename({0: "metric"}, axis=1)
+    return final_df

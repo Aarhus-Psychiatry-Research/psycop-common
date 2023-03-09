@@ -179,7 +179,7 @@ class DescriptiveStatsTable:
             2,
         )
 
-        df = df.append(
+        df = df.append(  # type: ignore
             {
                 "category": "(visit_level) visits followed by positive outcome",
                 "stat_1": visits_followed_by_positive_outcome,
@@ -202,7 +202,7 @@ class DescriptiveStatsTable:
         grouped_data = patients_with_positive_outcome_data.groupby("ids")
 
         time_to_first_positive_outcome = grouped_data.apply(
-            lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min(),
+            lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min(),  # type: ignore
         )
 
         # Convert to days (float)

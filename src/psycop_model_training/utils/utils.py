@@ -13,7 +13,6 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 from psycop_model_training.model_eval.dataclasses import ModelEvalData
-from psycop_model_training.model_eval.model_performance import ModelPerformance
 from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -90,7 +89,7 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     t2_col_name: str,
     t1_col_name: str,
     threshold_days: Union[float, int],
-) -> pd.DataFrame:
+) -> pd.Series:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
     Args:
@@ -103,11 +102,11 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
         A pandas dataframe without the records where datadiff was smaller than threshold_days.
     """
     return df[
-        (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D") > threshold_days
+        (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, "D") > threshold_days  # type: ignore
     ]
 
 
-def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
+def round_floats_to_edge(series: pd.Series, bins: list[Union[float, int]]) -> pd.Series:
     """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
     0.9 will be rounded to 0, 1.8 will be rounded to 1, etc.
 
@@ -127,41 +126,9 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> np.ndarray:
     return pd.cut(series, bins=bins, labels=labels)
 
 
-def calculate_performance_metrics(
-    eval_df: pd.DataFrame,
-    outcome_col_name: str,
-    prediction_probabilities_col_name: str,
-    id_col_name: str = "dw_ek_borger",
-) -> pd.DataFrame:
-    """Log performance metrics to WandB.
-
-    Args:
-        eval_df (pd.DataFrame): DataFrame with predictions, labels, and id
-        outcome_col_name (str): Name of the column containing the outcome (label)
-        prediction_probabilities_col_name (str): Name of the column containing predicted
-            probabilities
-        id_col_name (str): Name of the id column
-
-    Returns:
-        A pandas dataframe with the performance metrics.
-    """
-    performance_metrics = ModelPerformance.performance_metrics_from_df(
-        prediction_df=eval_df,
-        prediction_col_name=prediction_probabilities_col_name,
-        label_col_name=outcome_col_name,
-        id_col_name=id_col_name,
-        metadata_col_names=None,
-        to_wide=True,
-        id2label={0: "No", 1: "Yes"},
-    )
-
-    performance_metrics = performance_metrics.to_dict("records")[0]
-    return performance_metrics
-
-
 def bin_continuous_data(
     series: pd.Series,
-    bins: Sequence[int],
+    bins: Sequence[Union[int, float]],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
 ) -> pd.Series:
@@ -239,7 +206,7 @@ def bin_continuous_data(
 def positive_rate_to_pred_probs(
     pred_probs: pd.Series,
     positive_rate_thresholds: Iterable,
-) -> pd.Series:
+) -> list[Any]:
     """Get thresholds for a set of percentiles. E.g. if one
     positive_rate_threshold == 1, return the value where 1% of predicted
     probabilities lie above.

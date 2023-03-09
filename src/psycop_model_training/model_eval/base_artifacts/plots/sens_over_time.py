@@ -59,7 +59,9 @@ def create_sensitivity_by_time_to_outcome_df(
     # Calculate difference in days between columns
     df["days_to_outcome"] = (
         df["outcome_timestamp"] - df["prediction_timestamp"]
-    ) / np.timedelta64(1, "D")
+    ) / np.timedelta64(
+        1, "D"
+    )  # type: ignore
 
     df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
     df["false_negative"] = (df["y"] == 1) & (df["y_hat"] == 0)
