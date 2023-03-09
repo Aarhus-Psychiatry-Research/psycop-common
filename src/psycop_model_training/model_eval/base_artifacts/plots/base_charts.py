@@ -9,7 +9,7 @@ import pandas as pd
 
 def plot_basic_chart(
     x_values: Sequence,
-    y_values: Union[Sequence[float], Sequence[Sequence[float]]],
+    y_values: Union[pd.Series[float], Sequence[pd.Series[float]]],
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],
@@ -61,11 +61,7 @@ def plot_basic_chart(
 
     plt.figure(figsize=fig_size, dpi=dpi)
 
-    y_sequences = (
-        [y_values]
-        if not isinstance(y_values[0], Union[Sequence, pd.Series])  # type: ignore
-        else y_values
-    )
+    y_sequences = [y_values] if not isinstance(y_values[0], pd.Series) else y_values
 
     plot_functions = {
         "bar": plt.bar,
