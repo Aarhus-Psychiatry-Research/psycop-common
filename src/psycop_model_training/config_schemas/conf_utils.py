@@ -2,7 +2,7 @@
 
 Very useful when testing.
 """
-from typing import Optional, Union
+from typing import Optional
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf

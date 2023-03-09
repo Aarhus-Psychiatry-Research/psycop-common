@@ -1,6 +1,5 @@
 """Module for filtering columns before split."""
 import re
-from typing import Union
 
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema

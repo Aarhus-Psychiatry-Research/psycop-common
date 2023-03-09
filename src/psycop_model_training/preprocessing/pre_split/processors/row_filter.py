@@ -1,6 +1,5 @@
 """Row filter for pre-split data."""
 from datetime import timedelta
-from typing import Union
 
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
