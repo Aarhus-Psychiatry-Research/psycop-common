@@ -73,6 +73,7 @@ class ModelEvaluator:
             pipe (Pipeline): Pipeline object.
             eval_ds (EvalDataset): EvalDataset object.
             custom_artifacts (list[ArtifactContainer], optional): List of custom artifacts to save. Defaults to None.
+            upload_to_wandb (bool, optional): Whether to upload artifacts to wandb. Defaults to True.
         """
         self.cfg = cfg
         self.pipe = pipe
