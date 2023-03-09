@@ -1,6 +1,6 @@
 [project]
 name = "psycop_feature_generation"
-version = "0.19.2"
+version = "0.20.0"
 description = ""
 authors = [
     {name = "Martin Bernstorff", email = "martinbernstorfff@gmail.com"},
