@@ -331,6 +331,30 @@ def scheduled_glc(
     )
 
 
+@data_loaders.register("arterial_p_glc")
+def arterial_p_glc(
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
+) -> pd.DataFrame:
+    return blood_sample(
+        blood_sample_id="21533",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
+@data_loaders.register("urinary_glc")
+def urinary_p_glc(
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
+) -> pd.DataFrame:
+    return blood_sample(
+        blood_sample_id="04207",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
 @data_loaders.register("unscheduled_p_glc")
 def unscheduled_p_glc(
     n_rows: Optional[int] = None,
@@ -338,7 +362,6 @@ def unscheduled_p_glc(
 ) -> pd.DataFrame:
     npu_suffixes = [
         "02192",
-        "21533",
         "21531",
     ]
 
