@@ -64,9 +64,9 @@ def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
 
 def create_performance_by_input(
     eval_dataset: EvalDataset,
-    input_values: Sequence[Union[int, float]],
+    input_values: Sequence[float],
     input_name: str,
-    bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
+    bins: Sequence[float] = (0, 1, 2, 5, 10),
     bin_continuous_input: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
@@ -76,9 +76,9 @@ def create_performance_by_input(
     Args:
         labels (Sequence[int]): True labels
         y_hat (Sequence[int]): Predicted label or probability depending on metric
-        input (Sequence[Union[int, float]]): Input values to calculate performance by
+        input (Sequence[float]): Input values to calculate performance by
         input_name (str): Name of the input
-        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        bins (Sequence[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
 

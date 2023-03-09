@@ -90,6 +90,6 @@ class WatcherSchema(BaseModel):
     """Configuration for watchers."""
 
     archive_all: bool
-    keep_alive_after_training_minutes: Union[int, float]
+    keep_alive_after_training_minutes: float
     n_runs_before_eval: int
     verbose: bool

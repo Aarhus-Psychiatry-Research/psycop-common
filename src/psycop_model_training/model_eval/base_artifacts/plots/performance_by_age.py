@@ -17,7 +17,7 @@ from sklearn.metrics import roc_auc_score
 def plot_performance_by_age(
     eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
-    bins: Sequence[Union[int, float]] = (18, 25, 35, 50, 70),
+    bins: Sequence[float] = (18, 25, 35, 50, 70),
     bin_continuous_input: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
@@ -26,7 +26,7 @@ def plot_performance_by_age(
 
     Args:
         eval_dataset: EvalDataset object
-        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
+        bins (Sequence[float]): Bins to group by. Defaults to (18, 25, 35, 50, 70, 100).
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
         save_path (Path, optional): Path to save figure. Defaults to None.

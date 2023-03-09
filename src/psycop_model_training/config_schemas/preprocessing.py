@@ -37,7 +37,7 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     convert_datetimes_to_ordinal: bool
     # Whether to convert datetimes to ordinal.
 
-    min_age: Union[int, float]  # Minimum age to include in the dataset
+    min_age: float  # Minimum age to include in the dataset
 
     # Looking ahead
     min_lookahead_days: int

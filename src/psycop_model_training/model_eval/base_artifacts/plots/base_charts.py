@@ -9,7 +9,7 @@ import pandas as pd
 
 def plot_basic_chart(
     x_values: Sequence,
-    y_values: Union[Sequence[Union[int, float]], Sequence[Sequence[Union[int, float]]]],
+    y_values: Union[Sequence[float], Sequence[Sequence[float]]],
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],

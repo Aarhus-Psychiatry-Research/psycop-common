@@ -24,7 +24,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 def create_performance_by_calendar_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[Union[int, float]],
+    y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -157,7 +157,7 @@ def plot_metric_by_calendar_time(
 
 def create_performance_by_cyclic_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[Union[int, float]],
+    y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
     bin_period: str,
@@ -275,7 +275,7 @@ def plot_metric_by_cyclic_time(
 
 def create_performance_by_time_from_event_df(
     labels: Iterable[int],
-    y_hat: Iterable[Union[int, float]],
+    y_hat: Iterable[float],
     event_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,

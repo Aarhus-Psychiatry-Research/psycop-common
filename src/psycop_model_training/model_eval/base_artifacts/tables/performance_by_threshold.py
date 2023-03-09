@@ -184,7 +184,7 @@ def prop_with_at_least_one_true_positve(
 
 def generate_performance_by_positive_rate_table(
     eval_dataset: EvalDataset,
-    positive_rate_thresholds: Iterable[Union[int, float]],
+    positive_rate_thresholds: Iterable[float],
     pred_proba_thresholds: Iterable[float],
     output_format: Optional[str] = "df",
 ) -> Union[pd.DataFrame, str, wandb.Table]:

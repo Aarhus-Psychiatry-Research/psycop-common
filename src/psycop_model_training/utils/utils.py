@@ -88,7 +88,7 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
-    threshold_days: Union[float, int],
+    threshold_days: float,
 ) -> pd.Series:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
@@ -96,7 +96,7 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
         df (pd.DataFrame): Dataframe.
         t2_col_name (str): Column name of a time column
         t1_col_name (str): Column name of a time column
-        threshold_days (Union[float, int]): Drop if datediff is smaller than this.
+        threshold_days (float): Drop if datediff is smaller than this.
 
     Returns:
         A pandas dataframe without the records where datadiff was smaller than threshold_days.
@@ -106,7 +106,7 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     ]
 
 
-def round_floats_to_edge(series: pd.Series, bins: list[Union[float, int]]) -> pd.Series:
+def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
     """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
     0.9 will be rounded to 0, 1.8 will be rounded to 1, etc.
 
@@ -128,7 +128,7 @@ def round_floats_to_edge(series: pd.Series, bins: list[Union[float, int]]) -> pd
 
 def bin_continuous_data(
     series: pd.Series,
-    bins: Sequence[Union[int, float]],
+    bins: Sequence[float],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
 ) -> pd.Series:
@@ -345,6 +345,6 @@ def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
     )
 
 
-def get_percent_lost(n_before: Union[int, float], n_after: Union[int, float]) -> float:
+def get_percent_lost(n_before: float, n_after: float) -> float:
     """Get the percent lost."""
     return round((100 * (1 - n_after / n_before)), 2)
