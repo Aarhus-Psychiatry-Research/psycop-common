@@ -40,6 +40,7 @@ dependencies = [
     "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
     "frozendict>=2.3.4",
     "timeseriesflattener>=0.21.0",
+    "psycop-ml-utils @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils.git#egg=psycop-ml-utils",
 ]
 
 [project.optional-dependencies]
