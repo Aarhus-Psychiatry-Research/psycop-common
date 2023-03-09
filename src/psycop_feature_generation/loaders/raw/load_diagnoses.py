@@ -262,6 +262,7 @@ def type_2_diabetes(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
     )
 
     df_filtered = keep_rows_where_diag_matches_t2d_diag(
