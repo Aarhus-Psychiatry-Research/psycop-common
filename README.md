@@ -1,6 +1,6 @@
 <a href="https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation"><img src="https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils/blob/main/docs/_static/icon_with_title.png?raw=true" width="220" align="right"/></a>
 
-# PSYCOP utilites for feature generation
+# PSYCOP utilities for feature generation
 
 [![PyPI version](https://badge.fury.io/py/psycop-feature-generation.svg)](https://pypi.org/project/psycop-feature-generation/)
 ![python versions](https://img.shields.io/badge/Python-%3E=3.10-blue)
@@ -12,12 +12,6 @@ To get started using psycop-feature-generation simply install it using pip by ru
 
 ```
 pip install psycop-feature-generation
-```
-
-or using poetry
-
-```
-poetry add psycop-feature-generation
 ```
 
 ## 🎓 Project

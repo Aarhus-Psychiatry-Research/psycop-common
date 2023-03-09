@@ -1,0 +1,15 @@
+{
+    "_copy_without_render": [
+        "*.github"
+    ],
+    "_template": "https://github.com/MartinBernstorff/swift-python-cookiecutter",
+    "author": "Martin Bernstorff",
+    "copyright_year": "2023",
+    "email": "martinbernstorfff@gmail.com",
+    "friendly_name": "Psycop Feature Generation",
+    "github_user": "MartinBernstorff",
+    "license": "MIT",
+    "package_name": "psycop_feature_generation",
+    "project_name": "psycop-feature-generation",
+    "version": "0.0.0"
+}
