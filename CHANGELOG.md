@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.41.2 (2023-03-09)
+### Fix
+* Allow creation of eval dataset if custom columns are None ([`32c9d2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/32c9d2dd06a52ee1d5d681552ed38789cf5ba61c))
+
 ## v0.41.1 (2023-03-08)
 ### Fix
 * Exclude observations if too few samples in bin ([#408](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/408)) ([`ff461fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ff461fc17dfd816706a59e146e25b2b3911870b5))
