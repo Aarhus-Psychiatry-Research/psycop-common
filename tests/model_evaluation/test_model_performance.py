@@ -105,6 +105,7 @@ def test_binary_transform_from_dataframe_with_float(binary_float_df):
         prediction_col_name="scores",
         label_col_name="label",
         binary_threshold=0.5,
+        id2label={1: "TD", 0: "DEPR"},
     )
 
     assert res[res["score_type"] == "acc"]["value"].values[0] == pytest.approx(0.666667)
@@ -116,6 +117,7 @@ def test_binary_transform_from_dataframe_with_float_wide(binary_float_df):
         to_wide=True,
         prediction_col_name="scores",
         label_col_name="label",
+        id2label={1: "TD", 0: "DEPR"},
     )
     assert res["acc-overall"][0] == pytest.approx(0.666667)
     assert res.shape[0] == 1
