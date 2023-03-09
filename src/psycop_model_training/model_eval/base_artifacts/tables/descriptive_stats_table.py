@@ -195,7 +195,7 @@ class DescriptiveStatsTable:
     def _calc_time_to_first_positive_outcome_stats(
         self,
         patients_with_positive_outcome_data: pd.DataFrame,
-    ) -> tuple[float]:
+    ) -> tuple[float, float]:
         """Calculate mean time to first positive outcome (currently very
         slow)."""
 

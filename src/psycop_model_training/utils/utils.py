@@ -152,6 +152,7 @@ def calculate_performance_metrics(
         id_col_name=id_col_name,
         metadata_col_names=None,
         to_wide=True,
+        id2label={0: "No", 1: "Yes"},
     )
 
     performance_metrics = performance_metrics.to_dict("records")[0]
@@ -313,7 +314,7 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
 def get_selected_features_dict(
     pipe: Pipeline,
     train_col_names: list[str],
-) -> Union[None, dict[str, bool]]:
+) -> Union[None, dict[str, int]]:
     """Returns results from feature selection as a dict.
 
     Args:

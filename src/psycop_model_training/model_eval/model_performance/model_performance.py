@@ -32,11 +32,9 @@ class ModelPerformance:
         prediction_df: pd.DataFrame,
         prediction_col_name: str,
         label_col_name: str,
-        id_col_name: str = None,
+        id2label: dict[int, str],
+        id_col_name: Optional[str] = None,
         metadata_col_names: Optional[list[str]] = None,
-        id2label: Optional[  # pylint: disable=redefined-outer-name
-            dict[int, str]
-        ] = None,
         to_wide: bool = False,
         binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
@@ -49,11 +47,11 @@ class ModelPerformance:
             prediction_df (pd.DataFrame): Dataframe with 1 row per prediction.
             prediction_col_name (str): column containing probabilities for each class or a list of floats for binary classification.
             label_col_name (str): column containing ground truth label
+            id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             id_col_name (str): Column name for the id, used for grouping.
             metadata_col_names (Optional[list[str]], optional): Column(s) containing metadata to add to the performance dataframe.
                 Each column should only contain 1 unique value. E.g. name, modality.. If set to "all" will auto-detect
                 metadata columns and add them all.
-            id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.
             binary_threshold (float): Threshold for binary classification. Defaults to 0.5.
 
@@ -118,11 +116,9 @@ class ModelPerformance:
         jsonl_path: Union[str, Path],
         prediction_col_name: str,
         label_col_name: str,
+        id2label: dict[int, str],
         id_col_name: Optional[str] = None,
         metadata_col_names: Optional[list[str]] = None,
-        id2label: Optional[  # pylint: disable=redefined-outer-name
-            dict[int, str]
-        ] = None,
         to_wide: bool = False,
         binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
@@ -132,11 +128,11 @@ class ModelPerformance:
             jsonl_path (Union[str, Path]): Path to .jsonl file # noqa: DAR102
             prediction_col_name (str): column containing probabilities for each class or a list of floats for binary classification.
             label_col_name (str): column containing ground truth label
+            id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             id_col_name (str, optional): Column name for the id, used for grouping.
             metadata_col_names (Optional[list[str]], optional): Column(s) containing metadata to add to the performance dataframe.
                 Each column should only contain 1 unique value. E.g. name, modality.. If set to "all" will auto-detect
                 metadata columns and add them all.
-            id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.
             binary_threshold (float): Threshold for binary classification. Defaults to 0.5.
 
@@ -170,12 +166,10 @@ class ModelPerformance:
         folder: Union[str, Path],
         pattern: str,
         prediction_col_name: str,
+        id2label: dict[int, str],
         label_col_name: str,
         id_col_name: Optional[str] = None,
         metadata_col_names: Optional[list[str]] = None,
-        id2label: Optional[  # pylint: disable=redefined-outer-name
-            dict[int, str]
-        ] = None,
         to_wide=False,
         binary_threshold: Optional[float] = 0.5,
     ) -> pd.DataFrame:
@@ -188,10 +182,10 @@ class ModelPerformance:
             folder (Union[str, Path]): Path to folder. # noqa: DAR102
             pattern (str): Pattern to match on filename.
             prediction_col_name (str): column containing probabilities for each class or a list of floats for binary classification.
+            id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             label_col_name (str): column containing ground truth label
             id_col_name (str, optional): Column name for the id, used for grouping.
             metadata_col_names (Optional[list[str]], optional): Column(s) containing metadata to add to the performance dataframe.
-            id2label (dict[int, str]): dict mapping indices to labels. Not needed for binary models if labels are 0 and 1. Defaults to None.
             to_wide (bool): Whether to return performance as wide format.
             binary_threshold (float): Threshold for binary classification. Defaults to 0.5.
 
@@ -224,7 +218,7 @@ class ModelPerformance:
         label_col_name: str,
         id_col_name: str,
         to_wide: bool,
-        id2label: dict[int, str] = None,  # pylint: disable=redefined-outer-name
+        id2label: dict[int, str],  # pylint: disable=redefined-outer-name
         binary_threshold=0.5,
     ) -> pd.DataFrame:
         """Calculate performance metrics from a dataframe. Optionally adds
