@@ -5,7 +5,6 @@ To avoid test/train leakage, the transformations must not use any
 information about the values in the dataset.
 """
 from datetime import datetime
-from typing import Optional
 
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
