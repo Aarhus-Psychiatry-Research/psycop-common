@@ -61,10 +61,7 @@ def plot_basic_chart(
 
     plt.figure(figsize=fig_size, dpi=dpi)
 
-    if not isinstance(y_values[0], Sequence):
-        y_sequences = [y_values]
-    else:
-        y_sequences = y_values  # type: ignore
+    y_sequences = [y_values] if not isinstance(y_values[0], Sequence) else y_values
 
     plot_functions = {
         "bar": plt.bar,
