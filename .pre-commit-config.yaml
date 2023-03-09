@@ -7,7 +7,7 @@ repos:
     hooks:
       - id: ruff
         stages: [push]
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [--fix, --exit-non-zero-on-fix, --extend-select F401 F841]
 
   - repo: https://github.com/bwhmather/ssort
     rev: v0.11.6
