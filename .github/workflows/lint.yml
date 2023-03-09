@@ -38,6 +38,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[dev]
 
+      - name: Cache mypy cache
+        uses: actions/cache@v3.2.6
+        with:
+          path: ~/.mypy_cache
+          key: ${{ runner.os }}-mypy-${{ hashFiles('**/pyproject.toml') }}
+
       - name: Run mypy
         run: |
           source .venv/bin/activate
