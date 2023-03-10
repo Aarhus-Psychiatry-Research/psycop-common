@@ -11,7 +11,7 @@ from psycop_feature_generation.utils_for_testing import (
 
 
 def test_unpack_intervals_to_days():
-    df_str = """dw_ek_borger,datotid_start,datotid_slut,value
+    df_str = """dw_ek_borger,timestamp_start,timestamp_end,value
                 1,2021-01-01 12:00:00,2021-01-01 13:00:00,1.0
                 2,2021-02-02 00:00:00,2021-02-02 14:00:00,10.0
                 3,2021-03-03 15:00:00,2021-03-05 15:30:00,48.5
@@ -50,16 +50,12 @@ def test_unpack_intervals_to_days():
     # 6: interval > 1 day and both times are 00:00:00 (= one row per day, all times 00:00:00)
 
     df = str_to_df(df_str, convert_str_to_float=False)
-    df["datotid_start"] = pd.to_datetime(df["datotid_start"])
-    df["datotid_slut"] = pd.to_datetime(df["datotid_slut"])
-
     expected_df = str_to_df(expected_df_str, convert_str_to_float=False)
-    expected_df["timestamp"] = pd.to_datetime(expected_df["timestamp"])
 
     df = unpack_intervals_to_days(
         df,
-        starttime_col="datotid_start",
-        endtime_col="datotid_slut",
+        starttime_col="timestamp_start",
+        endtime_col="timestamp_end",
     )
 
     for col in df.columns:
