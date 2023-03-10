@@ -103,7 +103,7 @@ def create_sensitivity_by_time_to_outcome_df(
 def _generate_sensitivity_array(
     df: pd.DataFrame,
     n_decimals_y_axis: int,
-):
+) -> tuple[np.ndarray, list[str], list[float]]:
     """Generate sensitivity array for plotting heatmap.
 
     Args:
@@ -154,8 +154,8 @@ def _annotate_heatmap(
     data: Optional[np.ndarray] = None,
     textcolors: tuple = ("black", "white"),
     threshold: Optional[float] = None,
-    **textkw,
-):
+    **textkw: dict,
+) -> list:
     """A function to annotate a heatmap. Adapted from mpl documentation.
 
     Args:
@@ -163,7 +163,7 @@ def _annotate_heatmap(
         data (np.ndarray): Data used to annotate. If None, the image's data is used. Defaults to None.
         textcolors (tuple, optional): A pair of colors. The first is used for values below a threshold, the second for those above. Defaults to ("black", "white").
         threshold (float, optional): Value in data units according to which the colors from textcolors are applied. If None (the default) uses the middle of the colormap as separation. Defaults to None.
-        **kwargs (dict, optional): All other arguments are forwarded to each call to `text` used to create the text labels. Defaults to {}.
+        **textkw (dict, optional): All other arguments are forwarded to each call to `text` used to create the text labels. Defaults to {}.
 
     Returns:
         texts (list): A list of mpl.text.Text instances for each label.
