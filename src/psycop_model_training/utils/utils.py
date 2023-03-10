@@ -163,6 +163,10 @@ def bin_continuous_data(
     if not isinstance(bins, list):
         bins = list(bins)
 
+    # Handle if series is only NaNs
+    if series.isna().all():
+        return pd.Series(np.nan), pd.Series(np.nan)
+
     # Append maximum value from series to bins set upper cut-off if larger than maximum bins value
     if int(series.max()) > max(bins):
         bins.append(int(series.max()))

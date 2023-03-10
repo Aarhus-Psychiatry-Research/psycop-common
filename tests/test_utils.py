@@ -120,3 +120,9 @@ def test_bin_contiuous_data():
     two_bins_more_than_five, _ = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
     assert len(two_bins_more_than_five.unique()) == 2
     assert two_bins_more_than_five.isna().sum() == 0
+
+    # Series is only NaNs
+    nans = pd.Series([np.nan, np.nan, np.nan])
+    nan_bins, nan_values = bin_continuous_data(series=nans, bins=[0, 5, 11])
+    assert nan_bins.isna().all()
+    assert nan_values.isna().all()
