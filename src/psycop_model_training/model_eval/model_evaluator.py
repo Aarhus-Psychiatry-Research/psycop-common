@@ -134,12 +134,6 @@ class ModelEvaluator:
             pipe_metadata=self.pipeline_metadata,
         )
 
-        artifacts = self._get_artifacts()
-
-        if self.upload_to_wandb:
-            for artifact in artifacts:
-                self.upload_artifact_to_wandb(artifact)
-
         roc_auc = roc_auc_score(
             self.eval_ds.y,
             self.eval_ds.y_hat_probs,
@@ -158,5 +152,11 @@ class ModelEvaluator:
         logging.info(  # pylint: disable=logging-not-lazy,logging-fstring-interpolation
             f"ROC AUC: {roc_auc}",
         )
+
+        artifacts = self._get_artifacts()
+
+        if self.upload_to_wandb:
+            for artifact in artifacts:
+                self.upload_artifact_to_wandb(artifact)
 
         return roc_auc

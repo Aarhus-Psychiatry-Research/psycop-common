@@ -8,7 +8,7 @@ class EvalConfSchema(BaseModel):
     force: bool = False
     # Whether to force evaluation even if wandb is not "run". Used for testing.
 
-    descriptive_stats_table: bool = True
+    descriptive_stats_table: bool = False
     # Whether to generate table 1.
 
     top_n_feature_importances: int
