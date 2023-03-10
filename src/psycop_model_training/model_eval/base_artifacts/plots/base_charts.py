@@ -18,6 +18,7 @@ def plot_basic_chart(
     sort_y: Optional[Sequence[int]] = None,
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
+    bar_count_values: Optional[pd.Series] = None,
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple[float, float]] = (5, 5),
     dpi: Optional[int] = 300,
@@ -27,21 +28,23 @@ def plot_basic_chart(
     axis are available.
 
     Args:
-        x_values (Sequence): The x values of the bar chart.
-        y_values (Sequence): The y values of the bar chart.
-        x_title (str): title of x axis
-        y_title (str): title of y axis
-        plot_type (Optional[Union[List[str], str]], optional): type of plots.
+        x_values: The x values of the bar chart.
+        y_values: The y values of the bar chart.
+        x_title: title of x axis
+        y_title: title of y axis
+        plot_type: type of plots.
             Options are combinations of ["bar", "hbar", "line", "scatter"] Defaults to "bar".
-        labels: (Optional[list[str]]): Optional labels to add to the plot(s).
-        sort_x (Optional[Sequence[int]], optional): order of values on the x-axis. Defaults to None.
-        sort_y (Optional[Sequence[int]], optional): order of values on the y-axis. Defaults to None.
-        y_limits (Optional[tuple[float, float]], optional): y-axis limits. Defaults to None.
-        fig_size (Optional[tuple], optional): figure size. Defaults to None.
-        dpi (Optional[int], optional): dpi of figure. Defaults to 300.
-        save_path (Optional[Path], optional): path to save figure. Defaults to None.
-        flip_x_axis (bool, optional): Whether to flip the x axis. Defaults to False.
-        flip_y_axis (bool, optional): Whether to flip the y axis. Defaults to False.
+        labels: Optional labels to add to the plot(s).
+        sort_x: order of values on the x-axis. Defaults to None.
+        sort_y: order of values on the y-axis. Defaults to None.
+        save_path: path to save figure. Defaults to None.
+        flip_x_axis: Whether to flip the x axis. Defaults to False.
+        flip_y_axis: Whether to flip the y axis. Defaults to False.
+        bar_count_values: Values to use for overlaid histogram of n in bins. Defaults to None.
+        y_limits: y-axis limits. Defaults to None.
+        fig_size: figure size. Defaults to None.
+        dpi: dpi of figure. Defaults to 300.
+        save_path: Path to save figure. Defaults to None.
 
     Returns:
         Union[None, Path]: None if save_path is None, else path to saved figure
@@ -59,15 +62,16 @@ def plot_basic_chart(
     if sort_y is not None:
         df = df.sort_values(by=["sort_y"])
 
-    plt.figure(figsize=fig_size, dpi=dpi)
+    fig = plt.figure(figsize=fig_size, dpi=dpi)
+    axs = fig.subplots()
 
     y_sequences = [y_values] if not isinstance(y_values[0], pd.Series) else y_values
 
     plot_functions = {
-        "bar": plt.bar,
-        "hbar": plt.barh,
-        "line": plt.plot,
-        "scatter": plt.scatter,
+        "bar": axs.bar,
+        "hbar": axs.barh,
+        "line": axs.plot,
+        "scatter": axs.scatter,
     }
 
     # choose the first plot type as the one to use for legend
@@ -77,7 +81,7 @@ def plot_basic_chart(
     for y_series in y_sequences:
         for p_type in plot_type:
             plot_function: Callable = plot_functions.get(p_type)  # type: ignore
-            plot = plot_function(df["x"], y_series)
+            plot = plot_function(df["x"], y_series, color="orange")
             if p_type == label_plot_type:
                 # need to one of the plot types for labelling
                 label_plots.append(plot)
@@ -97,13 +101,27 @@ def plot_basic_chart(
     if flip_y_axis:
         plt.gca().invert_yaxis()
     if labels is not None:
-        plt.figlegend(
+        plt.gca().legend(
             [plot[0] for plot in label_plots],
             [str(label) for label in labels],
             loc="upper left",
             bbox_to_anchor=(0.14, 0.95),
             frameon=True,
         )
+
+    if bar_count_values is not None:
+        # add additional y-axis for count
+        bar_overlay = plt.gca().twinx()
+        bar_overlay.bar(df["x"], bar_count_values, color="blue")
+        bar_overlay.set_ylabel("Number of observations")
+
+        # put bar plots behind other plots
+        axs.set_zorder(bar_overlay.get_zorder() + 1)
+        axs.set_facecolor("none")
+        bar_overlay.set_facecolor("none")
+
+        # add counts to bars
+        bar_overlay.bar_label(bar_overlay.bar(df["x"], bar_count_values))
 
     plt.tight_layout()
 

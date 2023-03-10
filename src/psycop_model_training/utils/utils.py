@@ -131,7 +131,7 @@ def bin_continuous_data(
     bins: Sequence[float],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
-) -> pd.Series:
+) -> tuple[pd.Series, pd.Series]:
     """For prettier formatting of continuous binned data such as age.
 
     Args:
@@ -141,7 +141,8 @@ def bin_continuous_data(
         use_min_as_label (bool, optional): If True, the minimum value in the bin is used as the label. If False, the maximum value is used. Defaults to False.
 
     Returns:
-        pd.Series: Binned data
+        pd.Series: Binned categories for values in data
+        pd.Series: Number of samples in binned category
 
     Example:
     >>> ages = pd.Series([15, 18, 20, 30, 32, 40, 50, 60, 61])
@@ -161,6 +162,10 @@ def bin_continuous_data(
 
     if not isinstance(bins, list):
         bins = list(bins)
+
+    # Handle if series is only NaNs
+    if series.isna().all():
+        return pd.Series(np.nan), pd.Series(np.nan)
 
     # Append maximum value from series to bins set upper cut-off if larger than maximum bins value
     if int(series.max()) > max(bins):
@@ -196,11 +201,11 @@ def bin_continuous_data(
         },
     )
 
-    bins_with_insufficient_n = (
-        df.groupby("bin")["series"].transform("size") < min_n_in_bin
-    )
+    df["n_in_bin"] = df.groupby("bin").transform("size")
 
-    return df["bin"].mask(bins_with_insufficient_n)
+    df = df.mask(df["n_in_bin"] < min_n_in_bin)
+
+    return df["bin"], df["n_in_bin"]
 
 
 def positive_rate_to_pred_probs(

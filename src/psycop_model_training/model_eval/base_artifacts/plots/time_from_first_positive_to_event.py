@@ -49,7 +49,7 @@ def plot_time_from_first_positive_to_event(
         df["time_from_pred_to_event"] / timedelta(days=1)  # type: ignore
     ).astype(int) / 30
 
-    df["time_from_first_positive_to_event_binned"] = bin_continuous_data(
+    df["time_from_first_positive_to_event_binned"], _ = bin_continuous_data(
         df["time_from_pred_to_event"],
         bins=bins,
         min_n_in_bin=min_n_in_bin,

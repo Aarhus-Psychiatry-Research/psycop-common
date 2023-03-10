@@ -53,7 +53,7 @@ class DescriptiveStatsTable:
         age_counts = bin_continuous_data(
             self.eval_dataset.age,
             bins=[0, 18, 35, 60, 100],
-        ).value_counts()
+        )[0].value_counts()
 
         age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 2)
 
