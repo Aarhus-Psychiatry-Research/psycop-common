@@ -4,6 +4,8 @@ Mainly tests that they run without errors.
 """
 # pylint: disable=missing-function-docstring
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
@@ -204,5 +206,5 @@ def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset)
 def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
     plot_precision_recall(
         eval_dataset=synth_eval_dataset,
-        save_path="tmp/test_plot_precision_recall.png",
+        save_path=Path("tmp.png"),
     )
