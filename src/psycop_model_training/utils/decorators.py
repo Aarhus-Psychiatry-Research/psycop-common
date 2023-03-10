@@ -3,7 +3,6 @@
 utility functions.
 """
 import functools
-import pathlib
 import time
 import traceback
 from functools import wraps
