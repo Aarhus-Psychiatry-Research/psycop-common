@@ -283,6 +283,7 @@ def create_performance_by_time_from_event_df(
     bins: Sequence[float],
     bin_continuous_input: Optional[bool] = True,
     drop_na_events: Optional[bool] = True,
+    min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
     some event (e.g. time of diagnosis, time from first visit).
@@ -298,6 +299,7 @@ def create_performance_by_time_from_event_df(
         bins (Iterable[float]): Bins to group by.
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
+        min_n_in_bin (int, optional): Minimum number of rows in a bin to include in output. Defaults to 10.
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
@@ -343,6 +345,7 @@ def create_performance_by_time_from_event_df(
         df["days_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
             df["days_from_event"],
             bins=bins,
+            min_n_in_bin=min_n_in_bin,
         )
     else:
         df["days_from_event_binned"] = round_floats_to_edge(
@@ -460,6 +463,7 @@ def plot_metric_by_time_until_diagnosis(
         direction="event-prediction",
         bins=bins,
         bin_continuous_input=bin_continuous_input,
+        min_n_in_bin=0,
         drop_na_events=True,
         metric_fn=metric_fn,
     )
