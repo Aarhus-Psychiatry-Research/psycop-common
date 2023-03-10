@@ -74,6 +74,7 @@ def create_flattened_dataset(
     Returns:
         FlattenedDataset: Flattened dataset.
     """
+
     filtered_prediction_times_df = filter_prediction_times(
         prediction_times_df=prediction_times_df,
         project_info=project_info,
@@ -87,9 +88,7 @@ def create_flattened_dataset(
             len(feature_specs),
             psutil.cpu_count(logical=True),
         ),
-        cache=DiskCache(
-            feature_cache_dir=project_info.project_path / "feature_cache",
-        ),
+        cache=None,
         drop_pred_times_with_insufficient_look_distance=drop_pred_times_with_insufficient_look_distance,
         predictor_col_name_prefix=project_info.prefix.predictor,
         outcome_col_name_prefix=project_info.prefix.outcome,

@@ -2,6 +2,82 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.0 (2023-03-09)
+### Feature
+* Add more glc loaders ([`b765e77`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/b765e77ff32e6d4142ab63b6cc8e47a870946322))
+* Add type 1 diabetes loaders ([`b682984`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/b6829848180a8d2b91dfd046049c8e216fca3689))
+* Make sql loader verbose ([`602f4f3`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/602f4f388c4015330f5c789510e399fc4a2cd878))
+* Add caching to sql_load ([`a68c15d`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/a68c15d3a0a994987ccb120bbb2bd251c28c00fc))
+* Ibid ([`46da732`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/46da732d602e7421e0677f12bf835c0d96fb3c31))
+* Add support for keeping code col when loading diagnoses ([`51ca63e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/51ca63e72a420ecd49065e9cccb319bbfb2012ab))
+* Add t2d diagnosis loading ([`6b8231c`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/6b8231ca4c96b24f74013d85f815caab7ae2123f))
+* Add ogtt ([`f6c07a9`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f6c07a9bc15f7475fda9ad325d082b43458f25fb))
+* Update current blood sugar measurements ([`5e8051a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/5e8051a7db28ba8e2957b1d01a6f5cb91eba988b))
+
+### Fix
+* Lacking prefix on loading glc ([`d9bdbcb`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/d9bdbcb752732b92c77d61ede187a7b41aba6520))
+* Inappropriate matching ([`e2409ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e2409edb280c4307f24fcbae82e46eadcb5e3e96))
+* Poetry formatted dependencies ([`125500a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/125500a72ec832ed1773115f88ba251c99fcf553))
+
+## v0.19.2 (2023-03-06)
+### Fix
+* Disable cache ([`0242114`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/02421147d494eb693f41538778c76d040060930b))
+
+## v0.19.1 (2023-03-06)
+### Fix
+* Drop rows with NaT ([`5a1d908`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/5a1d9080a05a28748ef45df7c61e5aa9af5de77a))
+* Round timestamps to whole seconds befor droppig duplicates ([`e503bf3`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e503bf3b67f2797dfc31b669502fcb2a7468e35d))
+
+## v0.19.0 (2023-03-03)
+### Feature
+* Add option for which timestamp to get when loading physical visits ([`ef369b8`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/ef369b872b41230108877e41cbb490e6cfe1a5e4))
+
+### Fix
+* Drop duplicates in the output_df ([`636cc48`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/636cc488762eb31f97a4ba0e334a245629b7fbe7))
+* Don't load duplicate visits ([`5028b1d`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/5028b1da604cd8f66c7bb4e8ed69642d622c57b0))
+* Physical visits should only load physical visits ([`b7c50cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/b7c50cf972da0ea40d9c75eecee879a281ead7cf))
+* Did not rename to timestamp before returning ([`f43522c`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f43522c9a83d014fafae1d13b0e59ec037b940d3))
+
+## v0.18.4 (2023-02-22)
+### Fix
+* Loader names still too long ([`3321b88`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3321b88961779d4cee3774c566ca7793d023b7fc))
+
+## v0.18.3 (2023-02-22)
+### Fix
+* Loader names too long for wandb ([`cc14da2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/cc14da233e7764f148b9966047628fea0bad4a1e))
+
+## v0.18.2 (2023-02-21)
+### Fix
+* ValueError correction ([`595479e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/595479ebce800810327674ae79e58a2eb78b877e))
+
+## v0.18.1 (2023-02-15)
+### Fix
+* Adjust function for saving integrity checks ([`de2577e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/de2577e3add215c4ddf65a8c047c04ed9bb962a4))
+* Restructure overarching description func ([`54c24a2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/54c24a2429e03455138573d56a83af0238454778))
+
+### Documentation
+* Better function description ([`7eb9e54`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/7eb9e5433a21fc8a5cb78e63e6aa9501edaec785))
+
+## v0.18.0 (2023-02-14)
+### Feature
+* Add arg for choosing timestamp and add warning ([`159a176`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/159a1764aed4c6f3a13d2f6f92d2dad83a957338))
+
+## v0.17.2 (2023-02-13)
+### Fix
+* Make naming scheme consistent ([`c125b48`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c125b4889f7e3f2e39d13e47fedd4c9ed0bf4e48))
+* Attempted rename of unspecified df ([`c266bd8`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c266bd8611ac839264efcba4dc17362879871cda))
+* Revert logic ([`ad110ee`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/ad110ee72dd9994dd2fae1cedc8a4ff63dde1c93))
+* Quarantine_df and quarantine_days can be left as None ([`f130370`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f130370eaa33ecffd10487392206a6acaf96d09f))
+
+## v0.17.1 (2023-02-10)
+### Fix
+* Allowed types works again ([`dbe75ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/dbe75ca79c9c596be06fbd7649d7f110ac351bc9))
+* All arg names now congruent, visit_types takes a list of visit types instead of string ([`e63e9d4`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e63e9d43ff1b1f0793e4f3940ee8d45a22d76c90))
+
+## v0.17.0 (2023-02-09)
+### Feature
+* Add text loaders ([`9c7d959`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/9c7d95968c3181d7dcbfc3506961a77f2dd7768d))
+
 ## v0.16.1 (2023-01-31)
 ### Fix
 * Use acute outpatient visits as well ([`659af23`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/659af23622848290e83967e8fe528bc4f999ceff))

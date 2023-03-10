@@ -180,9 +180,9 @@ def check_train_data_integrity(
     )  # timeout=0 removes timeout
 
     suite_results = integ_suite.run(data_s)
-    suite_results.save_as_html(str(out_dir / "data_integrity.html"))
+    suite_results.save_as_html(str(out_dir / "train_integrity.html"))
 
-    failures["data_integrity"] = get_failed_check_names(suite_results)
+    failures["train_integrity"] = get_failed_check_names(suite_results)
 
     # Running checks that require a label for each outcome
     label_checks = label_integrity_checks()
@@ -390,13 +390,12 @@ def run_validation_requiring_split_comparison(
             msg.warn(f"Failed checks: {failed_checks}")
 
 
-def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statements
+def save_feature_set_integrity_checks_from_dir(  # noqa pylint: disable=too-many-statements
     feature_set_dir: Path,
     n_rows: Optional[int] = None,
     splits: Iterable[str] = ("train", "val", "test"),
     out_dir: Optional[Path] = None,
     dataset_format: str = "parquet",
-    describe_splits: bool = True,
     compare_splits: bool = True,
 ) -> None:
     """Runs Deepcheck data integrity and train/val/test checks for a given
@@ -412,7 +411,6 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
         splits (list[str]): list of splits to check (train, val, test)
         out_dir (Optional[Path]): Path to the directory where the reports should be saved
         dataset_format (str, optional): Format of the files to load. Must be either "csv" or "parquet". Defaults to "parquet".
-        describe_splits (bool, optional): Whether to describe each split. Defaults to True.
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
     if dataset_format not in ("parquet", "csv"):
@@ -421,9 +419,7 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
         )
 
     if out_dir is None:
-        out_dir = feature_set_dir / "deepchecks"
-    else:
-        out_dir = out_dir / "deepchecks"
+        out_dir = feature_set_dir / "data_integrity_checks"
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -454,21 +450,20 @@ def save_feature_set_integrity_from_dir(  # noqa pylint: disable=too-many-statem
     if not outcome_checks_dir.exists():
         outcome_checks_dir.mkdir()
 
-    if describe_splits:
-        # Check train data integrity
-        if "train" in splits:
-            failures = check_train_data_integrity(
-                feature_set_dir=feature_set_dir,
-                n_rows=n_rows,
-                out_dir=out_dir,
-                outcome_checks_dir=outcome_checks_dir,
-                train_outcomes_df=train_outcomes_df,
-                file_suffix=dataset_format,
-            )
+    # Run train data integrity tests
+    if "train" in splits:
+        failures = check_train_data_integrity(
+            feature_set_dir=feature_set_dir,
+            n_rows=n_rows,
+            out_dir=out_dir,
+            outcome_checks_dir=outcome_checks_dir,
+            train_outcomes_df=train_outcomes_df,
+            file_suffix=dataset_format,
+        )
 
-            # Add all keys in failures to failed_checks
-            for k, v in failures.items():
-                failed_checks[k] = v
+        # Add all keys in failures to failed_checks
+        for k, v in failures.items():
+            failed_checks[k] = v
 
     if compare_splits:
         # Running data validation checks on train/val and train/test splits that do not

@@ -1,13 +1,20 @@
 """Describe flattened dataset.""" ""
 import logging
+from collections.abc import Iterable
+from typing import Union
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from psycop_feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop_feature_generation.data_checks.flattened.data_integrity import (
-    save_feature_set_integrity_from_dir,
+    save_feature_set_integrity_checks_from_dir,
 )
+from psycop_feature_generation.data_checks.flattened.feature_describer import (
+    save_feature_descriptive_stats_from_dir,
+)
+
+from timeseriesflattener.feature_spec_objects import StaticSpec, TemporalSpec
 
 log = logging.getLogger(__name__)
 
@@ -15,48 +22,39 @@ log = logging.getLogger(__name__)
 @wandb_alert_on_exception
 def save_flattened_dataset_description_to_disk(
     project_info: ProjectInfo,
-    describe_splits: bool = True,
+    feature_specs: list[Union[TemporalSpec, StaticSpec]],
+    splits: Iterable[str] = ("train", "val", "test"),
     compare_splits: bool = True,
 ):
-    """Describe output.
+    """Describe and check flattened dataset. Runs and saves train data integrity checks, split pair integrity checks, outcome integrity checks and a html table containing descriptive statistics for each feature.
+
 
     Args:
         project_info (ProjectInfo): Project info
-        describe_splits (bool, optional): Whether to describe each split. Defaults to True.
+        splits (Iterable[str], optional): Splits to include in the integrity checks. Defaults to ("train", "val", "test").
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
-    feature_set_description_path = (
-        project_info.feature_set_path / "feature_set_description"
+    feature_set_descriptive_stats_path = (
+        project_info.feature_set_path / "feature_set_descriptive_stats"
     )
-    split_feature_distribution_comparison_path = (
-        project_info.feature_set_path / "split_feature_distribution_comparison_path"
+    data_integrity_checks_path = (
+        project_info.feature_set_path / "data_integrity_checks"
     )
 
     log.info(
-        f"Saving flattened dataset description to disk. Check {feature_set_description_path} and {split_feature_distribution_comparison_path} to validate that your dataset is not broken in some way.",
+        f"Saving flattened dataset descriptions to disk. Check {feature_set_descriptive_stats_path} and {data_integrity_checks_path} to view data set descriptions and validate that your dataset is not broken in some way.",
     )
 
-    for method in ("describe", "compare"):
-        # Describe the feature set
-        if method == "describe" and describe_splits:
-            splits = ["train"]
+    save_feature_descriptive_stats_from_dir(
+        feature_set_dir=project_info.feature_set_path, 
+        feature_specs=feature_specs,
+        file_suffix=".parquet",
+    )
 
-            compare_splits_in_method = False
-            out_dir = feature_set_description_path
-
-        # Compare train, val and test, to make sure they have the same categories
-        if method == "compare" and compare_splits:
-            splits = ["train", "val", "test"]
-
-            # Don't describe specs in comparison, to avoid leakage by describing features in val and test
-            compare_splits_in_method = True
-            out_dir = split_feature_distribution_comparison_path
-
-        save_feature_set_integrity_from_dir(
-            splits=splits,
-            out_dir=out_dir,
-            dataset_format=project_info.dataset_format,
-            describe_splits=describe_splits,
-            compare_splits=compare_splits_in_method,
-            feature_set_dir=project_info.feature_set_path,
-        )
+    save_feature_set_integrity_checks_from_dir(
+        feature_set_dir=project_info.feature_set_path,
+        splits=splits,
+        out_dir=data_integrity_checks_path,
+        dataset_format=project_info.dataset_format,
+        compare_splits=compare_splits,
+    )

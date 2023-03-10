@@ -266,7 +266,7 @@ def hba1c(
     values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:
     return blood_sample(
-        blood_sample_id="NPU27300",
+        blood_sample_id=["NPU27300", "AAB00093"],
         n_rows=n_rows,
         values_to_load=values_to_load,
     )
@@ -331,6 +331,30 @@ def scheduled_glc(
     )
 
 
+@data_loaders.register("arterial_p_glc")
+def arterial_p_glc(
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
+) -> pd.DataFrame:
+    return blood_sample(
+        blood_sample_id="NPU21533",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
+@data_loaders.register("urinary_glc")
+def urinary_p_glc(
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
+) -> pd.DataFrame:
+    return blood_sample(
+        blood_sample_id="NPU04207",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
 @data_loaders.register("unscheduled_p_glc")
 def unscheduled_p_glc(
     n_rows: Optional[int] = None,
@@ -338,17 +362,37 @@ def unscheduled_p_glc(
 ) -> pd.DataFrame:
     npu_suffixes = [
         "02192",
-        "21533",
         "21531",
     ]
 
-    dnk_suffixes = ["35842"]
-
     blood_sample_ids = [f"NPU{suffix}" for suffix in npu_suffixes]
-    blood_sample_ids += [f"DNK{suffix}" for suffix in dnk_suffixes]
 
     return blood_sample(
         blood_sample_id=blood_sample_ids,
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
+@data_loaders.register("ogtt")
+def ogtt(
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
+) -> pd.DataFrame:
+    return blood_sample(
+        blood_sample_id="NPU04177",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
+@data_loaders.register("fasting_p_glc")
+def fasting_p_glc(
+    n_rows: Optional[int] = None,
+    values_to_load: str = "numerical_and_coerce",
+) -> pd.DataFrame:
+    return blood_sample(
+        blood_sample_id="DNK35842",
         n_rows=n_rows,
         values_to_load=values_to_load,
     )

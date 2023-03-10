@@ -189,14 +189,14 @@ def generate_feature_description_df(
     return feature_description_df
 
 
-def save_feature_description_from_dir(
+def save_feature_descriptive_stats_from_dir(
     feature_set_dir: Path,
     feature_specs: list[Union[TemporalSpec, StaticSpec]],
     file_suffix: str,
     splits: Sequence[str] = ("train",),
     out_dir: Path = None,
 ):
-    """Write a csv with feature descriptions in the directory.
+    """Write a html table and csv with descriptive stats for features in the directory.
 
     Args:
         feature_set_dir (Path): Path to directory with data frames.
@@ -208,16 +208,12 @@ def save_feature_description_from_dir(
     msg = Printer(timestamp=True)
 
     if out_dir is None:
-        save_dir = feature_set_dir / "feature_descriptions"
+        out_dir = feature_set_dir / "feature_set_descriptive_stats"
 
-    else:
-        save_dir = out_dir / "feature_descriptions"
-
-    if not save_dir.exists():
-        save_dir.mkdir()
+    out_dir.mkdir(exist_ok=True, parents=True)
 
     for split in splits:
-        msg.info(f"{split}: Creating feature description")
+        msg.info(f"{split}: Creating descriptive stats for feature set")
 
         predictors = load_split_predictors(
             feature_set_dir=feature_set_dir,
@@ -226,22 +222,22 @@ def save_feature_description_from_dir(
             file_suffix=file_suffix,
         )
 
-        msg.info(f"{split}: Generating feature description dataframe")
+        msg.info(f"{split}: Generating descriptive stats dataframe")
 
-        feature_description_df = generate_feature_description_df(
+        feature_descriptive_stats = generate_feature_description_df(
             df=predictors,
             predictor_specs=feature_specs,
         )
 
-        msg.info(f"{split}: Writing feature description to disk")
+        msg.info(f"{split}: Writing descriptive stats dataframe to disk")
 
-        feature_description_df.to_csv(
-            save_dir / f"{split}_feature_description.csv",
+        feature_descriptive_stats.to_csv(
+            out_dir / f"{split}_feature_descriptive_stats.csv",
             index=False,
         )
         # Writing html table as well
         save_df_to_pretty_html_table(
-            path=save_dir / f"{split}_feature_description.html",
-            title="Feature description",
-            df=feature_description_df,
+            path=out_dir / f"{split}_feature_descriptive_stats.html",
+            title="Feature descriptive stats",
+            df=feature_descriptive_stats,
         )

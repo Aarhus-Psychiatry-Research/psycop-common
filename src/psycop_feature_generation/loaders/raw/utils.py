@@ -24,7 +24,10 @@ def str_to_sql_match_logic(
         load_diagnoses (bool): Whether to load diagnoses or medications. Determines the logic. See calling function for more.
         match_with_wildcard (bool): Whether to match on icd_code* / atc_code* or only icd_code / atc_code.
     """
-    base_query = f"lower({code_sql_col_name}) LIKE '%{code_to_match.lower()}"
+    if load_diagnoses:
+        base_query = f"lower({code_sql_col_name}) LIKE '%{code_to_match.lower()}"
+    else:
+        base_query = f"lower({code_sql_col_name}) LIKE '{code_to_match.lower()}"
 
     if match_with_wildcard:
         return f"{base_query}%'"
@@ -52,7 +55,10 @@ def list_to_sql_logic(
     match_col_sql_strings = []
 
     for code_str in codes_to_match:
-        base_query = f"lower({code_sql_col_name}) LIKE '%{code_str.lower()}"
+        if load_diagnoses:
+            base_query = f"lower({code_sql_col_name}) LIKE '%{code_str.lower()}"
+        else:
+            base_query = f"lower({code_sql_col_name}) LIKE '{code_str.lower()}"
 
         if match_with_wildcard:
             match_col_sql_strings.append(
@@ -85,6 +91,7 @@ def load_from_codes(
     administration_method: Optional[str] = None,
     shak_location_col: Optional[str] = None,
     shak_code: Optional[int] = None,
+    keep_code_col: bool = False,
     shak_sql_operator: Optional[str] = None,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
@@ -114,6 +121,7 @@ def load_from_codes(
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
         shak_location_col (str, optional): Name of column containing shak code. Defaults to None. Combine with shak_code and shak_sql_operator.
         shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
+        keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
         shak_sql_operator (str, optional): Operator indicating how to filter shak_code, e.g. "!= 6600" or "= 6600". Defaults to None.
 
     Returns:
@@ -264,7 +272,8 @@ def load_from_codes(
 
     df[output_col_name] = 1
 
-    df.drop([f"{code_col_name}"], axis="columns", inplace=True)
+    if not keep_code_col:
+        df = df.drop([f"{code_col_name}"], axis="columns")
 
     return df.rename(
         columns={
