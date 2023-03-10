@@ -1,14 +1,14 @@
 """Generate synthetic data for evaluation of the model."""
 import datetime as dt
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
 from wasabi import Printer
 
 
-def add_age_is_female(df: pd.DataFrame):
+def add_age_is_female(df: pd.DataFrame) -> pd.DataFrame:
     """Add age and gender columns to dataframe.
 
     Args:
@@ -21,7 +21,7 @@ def add_age_is_female(df: pd.DataFrame):
     return df.merge(ids)
 
 
-def years_to_seconds(years):
+def years_to_seconds(years: float) -> float:
     """Calculates number of seconds in a number of years.
 
     Args:
@@ -33,7 +33,7 @@ def years_to_seconds(years):
     return years * 365 * 24 * 60 * 60
 
 
-def return_0_with_prob(prob: float):
+def return_0_with_prob(prob: float) -> Literal[0, 1]:
     """Return 0 with a given probability."""
     return 0 if np.random.random() < prob else 1
 
@@ -41,7 +41,7 @@ def return_0_with_prob(prob: float):
 def null_series_with_prob(
     series: pd.Series,
     prob: float,
-    null_value=np.NaN,
+    null_value: Any = np.NaN,
 ) -> Union[pd.Series, None]:
     """Overwrite all values in series with null_value with a given probability.
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     msg.info("Adding differences")
     df["time_differences"] = [
         dt.timedelta(
-            seconds=np.random.randint(
+            seconds=np.random.randint(  # type: ignore
                 years_to_seconds(years=5),
                 years_to_seconds(years=10),
             ),
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[  # type: ignore
         "timestamp_first_pred_time"
     ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, years_to_seconds(years=5)),
+        seconds=np.random.randint(0, years_to_seconds(years=5)),  # type: ignore
     )
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_t2d_diag"].apply(
         lambda x: null_series_with_prob(x, prob=0.85),
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[  # type: ignore
         "timestamp_first_pred_time"
     ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, years_to_seconds(years=4)),
+        seconds=np.random.randint(0, years_to_seconds(years=4)),  # type: ignore
     )
     df["timestamp_hba1c_copy"] = df["timestamp_first_hba1c"]
 
