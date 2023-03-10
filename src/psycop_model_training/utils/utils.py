@@ -201,7 +201,11 @@ def bin_continuous_data(
         },
     )
 
-    df["n_in_bin"] = df.groupby("bin").transform("size")
+    # Drop all rows where bin is NaN
+    df = df.dropna()
+
+    # Group into bins and get counts
+    df = df.groupby("bin").count().reset_index()
 
     df = df.mask(df["n_in_bin"] < min_n_in_bin)
 
