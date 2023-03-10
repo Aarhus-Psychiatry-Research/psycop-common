@@ -141,7 +141,7 @@ class PreSplitRowFilter:
 
         return dataset[~rows_to_drop]
 
-    def run_filter(self, dataset: pd.DataFrame):
+    def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Run filters based on config."""
         if self.cfg.preprocessing.pre_split.min_prediction_time_date:
             dataset = dataset[

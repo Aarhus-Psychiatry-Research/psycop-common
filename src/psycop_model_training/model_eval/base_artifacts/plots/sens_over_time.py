@@ -206,15 +206,15 @@ def _annotate_heatmap(
 
 
 def _format_sens_by_time_heatmap(
-    colorbar_label,
-    x_title,
-    y_title,
-    data,
-    x_labels,
-    y_labels,
-    fig,
-    axes,
-    image,
+    colorbar_label: str,
+    x_title: str,
+    y_title: str,
+    data: np.ndarray,
+    x_labels: list[str],
+    y_labels: list[float],
+    fig: plt.Figure,
+    axes: plt.Axes,
+    image: mpl.image.AxesImage,
 ) -> tuple[plt.Figure, plt.Axes]:
     # Create colorbar
     cbar = axes.figure.colorbar(image, ax=axes)
@@ -266,10 +266,10 @@ def plot_sensitivity_by_time_to_outcome_heatmap(  # pylint: disable=too-many-loc
     eval_dataset: EvalDataset,
     pred_proba_thresholds: list[float],
     bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
-    color_map: Optional[str] = "PuBu",
-    colorbar_label: Optional[str] = "Sensitivity",
-    x_title: Optional[str] = "Days to outcome",
-    y_title: Optional[str] = "Positive rate",
+    color_map: str = "PuBu",
+    colorbar_label: str = "Sensitivity",
+    x_title: str = "Days to outcome",
+    y_title: str = "Positive rate",
     n_decimals_y_axis: int = 4,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
