@@ -143,32 +143,14 @@ def bin_continuous_data(
     Returns:
         pd.Series: Binned categories for values in data
         pd.Series: Number of samples in binned category
-
-    Example:
-    >>> ages = pd.Series([15, 18, 20, 30, 32, 40, 50, 60, 61])
-    >>> age_bins = [0, 18, 30, 50, 110]
-    >>> bin_Age(ages, age_bins)
-    0     0-18
-    1     0-18
-    2    19-30
-    3    19-30
-    4    31-50
-    5    31-50
-    6    31-50
-    7      51+
-    8      51+
     """
     labels = []
 
     if not isinstance(bins, list):
         bins = list(bins)
 
-    # Handle if series is only NaNs
-    if series.isna().all():
-        return pd.Series(np.nan), pd.Series(np.nan)
-
     # Append maximum value from series to bins set upper cut-off if larger than maximum bins value
-    if int(series.max()) > max(bins):
+    if not series.isna().all() and int(series.max()) > max(bins):
         bins.append(int(series.max()))
 
     # Create bin labels
@@ -207,7 +189,11 @@ def bin_continuous_data(
     # Group into bins and get counts
     df = df.groupby("bin").count().reset_index()
 
-    df = df.mask(df["n_in_bin"] < min_n_in_bin)
+    # Rename df series to n_in_bin
+    df = df.rename(columns={"series": "n_in_bin"})
+
+    # Mask n_in_bin if less than min_n_in_bin
+    df["n_in_bin"] = df["n_in_bin"].mask(df["n_in_bin"] < min_n_in_bin, np.nan)
 
     return df["bin"], df["n_in_bin"]
 
