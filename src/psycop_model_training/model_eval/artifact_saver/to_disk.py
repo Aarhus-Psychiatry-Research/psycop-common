@@ -60,7 +60,7 @@ class ArtifactsToDiskSaver:
             k: v for k, v in df_template.items() if isinstance(v, pd.Series)
         }
 
-        df = pd.DataFrame(template_filtered)  # type: ignore
+        df = pd.DataFrame(template_filtered)
 
         write_df_to_file(df=df, file_path=file_path)
 

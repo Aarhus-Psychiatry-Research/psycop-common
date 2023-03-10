@@ -103,7 +103,7 @@ def create_sensitivity_by_time_to_outcome_df(
 def _generate_sensitivity_array(
     df: pd.DataFrame,
     n_decimals_y_axis: int,
-):
+) -> tuple[np.ndarray, list[str], list[float]]:
     """Generate sensitivity array for plotting heatmap.
 
     Args:
@@ -154,8 +154,8 @@ def _annotate_heatmap(
     data: Optional[np.ndarray] = None,
     textcolors: tuple = ("black", "white"),
     threshold: Optional[float] = None,
-    **textkw,
-):
+    **textkw: dict,
+) -> list:
     """A function to annotate a heatmap. Adapted from mpl documentation.
 
     Args:
@@ -163,7 +163,7 @@ def _annotate_heatmap(
         data (np.ndarray): Data used to annotate. If None, the image's data is used. Defaults to None.
         textcolors (tuple, optional): A pair of colors. The first is used for values below a threshold, the second for those above. Defaults to ("black", "white").
         threshold (float, optional): Value in data units according to which the colors from textcolors are applied. If None (the default) uses the middle of the colormap as separation. Defaults to None.
-        **kwargs (dict, optional): All other arguments are forwarded to each call to `text` used to create the text labels. Defaults to {}.
+        **textkw (dict, optional): All other arguments are forwarded to each call to `text` used to create the text labels. Defaults to {}.
 
     Returns:
         texts (list): A list of mpl.text.Text instances for each label.
@@ -206,15 +206,15 @@ def _annotate_heatmap(
 
 
 def _format_sens_by_time_heatmap(
-    colorbar_label,
-    x_title,
-    y_title,
-    data,
-    x_labels,
-    y_labels,
-    fig,
-    axes,
-    image,
+    colorbar_label: str,
+    x_title: str,
+    y_title: str,
+    data: np.ndarray,
+    x_labels: list[str],
+    y_labels: list[float],
+    fig: plt.Figure,
+    axes: plt.Axes,
+    image: mpl.image.AxesImage,
 ) -> tuple[plt.Figure, plt.Axes]:
     # Create colorbar
     cbar = axes.figure.colorbar(image, ax=axes)
@@ -249,7 +249,7 @@ def _format_sens_by_time_heatmap(
     axes.tick_params(which="minor", bottom=False, left=False)
 
     # Add annotations
-    _annotate_heatmap(image)  # type: ignore
+    _annotate_heatmap(image)
 
     # Set axis labels and title
     axes.set(
@@ -266,10 +266,10 @@ def plot_sensitivity_by_time_to_outcome_heatmap(  # pylint: disable=too-many-loc
     eval_dataset: EvalDataset,
     pred_proba_thresholds: list[float],
     bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
-    color_map: Optional[str] = "PuBu",
-    colorbar_label: Optional[str] = "Sensitivity",
-    x_title: Optional[str] = "Days to outcome",
-    y_title: Optional[str] = "Positive rate",
+    color_map: str = "PuBu",
+    colorbar_label: str = "Sensitivity",
+    x_title: str = "Days to outcome",
+    y_title: str = "Positive rate",
     n_decimals_y_axis: int = 4,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:

@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 class ModelEvaluator:
     """Class for evaluating a model."""
 
-    def _get_pipeline_metadata(self):
+    def _get_pipeline_metadata(self) -> PipeMetadata:
         pipe_metadata = PipeMetadata()
 
         if hasattr(self.pipe["model"], "feature_importances_"):

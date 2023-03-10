@@ -1,4 +1,5 @@
 """Train a single model and evaluate it."""
+from pathlib import Path
 from typing import Callable, Optional
 
 import wandb
@@ -19,7 +20,7 @@ from psycop_model_training.utils.decorators import (
 from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PATH
 
 
-def get_eval_dir(cfg: FullConfigSchema):
+def get_eval_dir(cfg: FullConfigSchema) -> Path:
     """Get the directory to save evaluation results to."""
     if wandb.run is not None and cfg.project.wandb.mode != "offline":
         eval_dir_path = (
@@ -41,7 +42,7 @@ def get_eval_dir(cfg: FullConfigSchema):
 def post_wandb_setup_train_model(
     cfg: FullConfigSchema,
     custom_artifact_fn: Optional[Callable] = None,
-):
+) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
 
@@ -81,7 +82,10 @@ def post_wandb_setup_train_model(
     return roc_auc
 
 
-def train_model(cfg: FullConfigSchema, custom_artifact_fn: Optional[Callable] = None):
+def train_model(
+    cfg: FullConfigSchema,
+    custom_artifact_fn: Optional[Callable] = None,
+) -> float:
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
 

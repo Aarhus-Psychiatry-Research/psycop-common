@@ -114,7 +114,7 @@ def infer_predictor_col_name(
 
 def infer_y_hat_prob_col_name(
     df: pd.DataFrame,
-    prefix="y_hat_prob",
+    prefix: str = "y_hat_prob",
     allow_multiple: bool = False,
 ) -> list[str]:
     """Infer the y_hat_prob column name from the dataframe."""

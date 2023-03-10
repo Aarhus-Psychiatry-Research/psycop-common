@@ -177,7 +177,7 @@ class BaseArtifactGenerator:
             ),
         ]
 
-    def get_descriptive_stats_table_artifact(self):
+    def get_descriptive_stats_table_artifact(self) -> list[ArtifactContainer]:
         """Returns descriptive stats table artifact."""
         return [
             ArtifactContainer(
@@ -188,7 +188,7 @@ class BaseArtifactGenerator:
             ),
         ]
 
-    def get_feature_selection_artifacts(self):
+    def get_feature_selection_artifacts(self) -> list[ArtifactContainer]:
         """Returns a list of artifacts related to feature selection."""
         return [
             ArtifactContainer(
@@ -200,7 +200,7 @@ class BaseArtifactGenerator:
             ),
         ]
 
-    def get_feature_importance_artifacts(self):
+    def get_feature_importance_artifacts(self) -> list[ArtifactContainer]:
         """Returns a list of artifacts related to feature importance."""
         return [
             ArtifactContainer(

@@ -1,6 +1,6 @@
 """Dataclasses for evaluation."""
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import pandas as pd
 from psycop_model_training.config_schemas.basemodel import BaseModel
@@ -25,7 +25,7 @@ class EvalDataset(BaseModel):
     exclusion_timestamps: Optional[pd.Series] = None
     custom_columns: Optional[dict[str, pd.Series]] = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
 
@@ -50,7 +50,7 @@ class PipeMetadata(BaseModel):
     feature_importances: Optional[dict[str, float]] = None
     selected_features: Optional[dict[str, int]] = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
 

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_basic_chart(  # noqa: C901
+def plot_basic_chart(
     x_values: Sequence,
     y_values: Union[pd.Series, Sequence[pd.Series]],
     x_title: str,
@@ -49,7 +49,7 @@ def plot_basic_chart(  # noqa: C901
     if isinstance(plot_type, str):
         plot_type = [plot_type]
 
-    df = pd.DataFrame(  # type: ignore
+    df = pd.DataFrame(
         {"x": x_values, "sort_x": sort_x, "sort_y": sort_y},
     )
 

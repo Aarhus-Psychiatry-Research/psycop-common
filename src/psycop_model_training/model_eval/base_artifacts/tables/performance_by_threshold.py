@@ -12,7 +12,7 @@ from sklearn.metrics import confusion_matrix
 def get_true_positives(
     eval_dataset: EvalDataset,
     positive_rate_threshold: Optional[float] = 0.5,
-):
+) -> pd.DataFrame:
     """Get dataframe containing only true positives.
 
     Args:
@@ -57,7 +57,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
     Returns:
         pd.DataFrame
     """
-    preds = np.where(eval_dataset.y_hat_probs > positive_threshold, 1, 0)  # type: ignore
+    preds = np.where(eval_dataset.y_hat_probs > positive_threshold, 1, 0)
 
     conf_matrix = confusion_matrix(eval_dataset.y, preds)
 
@@ -110,7 +110,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
 def days_from_first_positive_to_diagnosis(
     eval_dataset: EvalDataset,
     positive_rate_threshold: Optional[float] = 0.5,
-    aggregation_method: Optional[str] = "sum",
+    aggregation_method: str = "sum",
 ) -> float:
     """Calculate number of days from the first positive prediction to the
     patient's outcome timestamp.
@@ -143,7 +143,7 @@ def days_from_first_positive_to_diagnosis(
     # Calculate warning days
     df["warning_days"] = round(
         (df["outcome_timestamps"] - df["timestamp_first_pos_pred"])
-        / np.timedelta64(1, "D"),
+        / np.timedelta64(1, "D"),  # type: ignore
         0,
     )
 

@@ -4,7 +4,7 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from random_word import RandomWords
 
 
-def create_random_wandb_group_name():
+def create_random_wandb_group_name() -> str:
     """Create a random wandb group name."""
     random_word = RandomWords()
     wandb_group = f"{random_word.get_random_word()}-{random_word.get_random_word()}"

@@ -1,6 +1,6 @@
 """Training script for training a single model."""
 import os
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -21,7 +21,7 @@ os.environ["WANDB_START_METHOD"] = "thread"
 log = Printer(timestamp=True)
 
 
-def create_model(cfg: FullConfigSchema):
+def create_model(cfg: FullConfigSchema) -> Any:
     """Instantiate and return a model object based on settings in the config
     file."""
     model_dict = MODELS.get(cfg.model.name)
@@ -41,7 +41,7 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     train_col_names: list[str],
     outcome_col_name: str,
     n_splits: int,
-):
+) -> pd.DataFrame:
     """Performs stratified and grouped cross validation using the pipeline."""
     msg = Printer(timestamp=True)
 

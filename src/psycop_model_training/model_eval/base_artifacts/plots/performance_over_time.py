@@ -45,7 +45,7 @@ def create_performance_by_calendar_time_df(
 
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
-    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)  # type: ignore
+    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
@@ -97,8 +97,8 @@ def plot_recall_by_calendar_time(
     ]
 
     return plot_basic_chart(
-        x_values=dfs[0]["days_to_outcome_binned"],  # type: ignore
-        y_values=[df["sens"] for df in dfs],  # type: ignore
+        x_values=dfs[0]["days_to_outcome_binned"],
+        y_values=[df["sens"] for df in dfs],
         x_title="Days from event",
         labels=pred_proba_percentile_labels,
         y_title=y_title,
@@ -140,15 +140,15 @@ def plot_metric_by_calendar_time(
     sort_order = np.arange(len(df))
 
     return plot_basic_chart(
-        x_values=df["time_bin"],  # type: ignore
-        y_values=df["metric"],  # type: ignore
+        x_values=df["time_bin"],
+        y_values=df["metric"],
         x_title="Month"
         if bin_period == "M"
         else "Quarter"
         if bin_period == "Q"
         else "Year",
         y_title=y_title,
-        sort_x=sort_order,  # type: ignore
+        sort_x=sort_order,
         y_limits=y_limits,
         plot_type=["line", "scatter"],
         save_path=save_path,
@@ -221,7 +221,7 @@ def create_performance_by_cyclic_time_df(
             "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year",
         )
 
-    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)  # type: ignore
+    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
@@ -259,8 +259,8 @@ def plot_metric_by_cyclic_time(
     )
 
     return plot_basic_chart(
-        x_values=df["time_bin"],  # type: ignore
-        y_values=df["metric"],  # type: ignore
+        x_values=df["time_bin"],
+        y_values=df["metric"],
         x_title="Hour of day"
         if bin_period == "H"
         else "Day of week"
@@ -344,7 +344,7 @@ def create_performance_by_time_from_event_df(
     df["days_from_event_binned"] = bin_fn(df["days_from_event"], bins=bins)
 
     # Calc performance and prettify output
-    output_df = df.groupby("days_from_event_binned").apply(calc_performance, metric_fn)  # type: ignore
+    output_df = df.groupby("days_from_event_binned").apply(calc_performance, metric_fn)
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return output_df
 
