@@ -18,7 +18,7 @@ jobs:
         with:
           path: |
             .venv
-          key: ${{ runner.os }}-${{ steps.setup_python.python-version }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
