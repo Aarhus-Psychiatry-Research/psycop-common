@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.43.0 (2023-03-10)
+### Feature
+* Return bins if series is NaN, but only NaN values ([`060ca14`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/060ca1403778b6d4a5f071faa5cf36d0ec8a6ecc))
+
+### Fix
+* Handle nas in bins ([#418](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/418)) ([`ee4ab7f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ee4ab7f0f28dc9a27dcc1afa0f6c755783486929))
+* Handle nas in bins ([`462f3c9`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/462f3c9d1ed7ca3835acb6b284a8c960f5b17afa))
+
 ## v0.42.0 (2023-03-10)
 ### Feature
 * Add count bins to plot ([`510e8ab`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/510e8ab21c4a8c71240c224a0b677ecd4552c19f))
