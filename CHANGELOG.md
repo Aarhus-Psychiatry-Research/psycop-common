@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.42.0 (2023-03-10)
+### Feature
+* Add count bins to plot ([`510e8ab`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/510e8ab21c4a8c71240c224a0b677ecd4552c19f))
+
+### Fix
+* Test utils ([`2f2f1a6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2f2f1a6aeb8fa0ad5212d8df425123cb3b3bda6d))
+* Plot tests ([`d0f3db8`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d0f3db871f51aeec6441c5d550be0d89d2309e74))
+* Line plot on top of bars ([`431c8d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/431c8d535d8f16db84b57e528baa7bd116d1d19a))
+
 ## v0.41.4 (2023-03-09)
 ### Fix
 * Types ([`db91421`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/db91421885bec2a11d476acc83a25582585b67fc))
