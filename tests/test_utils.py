@@ -103,29 +103,29 @@ def test_bin_contiuous_data():
         series=one_to_five,
         bins=[0, 5],
     )
-    assert bins[0] == "1+"
-    assert samples_in_bins[0] == 5
+    # Check that all values equal 1+
+    assert bins.unique() == "1+"
+    assert samples_in_bins.unique() == 5
 
     # One bin, less than 5
     one_to_four = pd.Series([1, 2, 3, 4])
     bins, samples_in_bins = bin_continuous_data(series=one_to_four, bins=[0, 5])
-    assert bins[0] == "1+"
+    assert bins.unique() == "1+"
     assert samples_in_bins.isna().all()
 
     # Two bins, less than 5
     bins, samples_in_bins = bin_continuous_data(series=one_to_four, bins=[0, 2, 5])
-    assert len(bins) == 2
+    assert (bins.unique() == ["0-2", "3+"]).all()
     assert samples_in_bins.isna().all()
 
     # Two bins, more than 5
-    one_to_ten = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    one_to_ten = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10])
     bins, n_in_bins = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
-    assert len(bins.unique()) == 2
+    assert (bins.unique() == ["0-5", "6+"]).all()
     assert bins.isna().sum() == 0
-    assert n_in_bins.isna().any() == False  # noqa
 
     # Series is only NaNs
     nans = pd.Series([np.nan, np.nan, np.nan])
     nan_bins, nan_values = bin_continuous_data(series=nans, bins=[0, 5, 11])
-    assert len(nan_bins) == 2
+    assert nan_bins.isna().all()
     assert nan_values.isna().all()

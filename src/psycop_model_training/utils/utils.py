@@ -2,6 +2,7 @@
 
 utilities.
 """
+import math
 import sys
 import tempfile
 from collections.abc import Iterable, MutableMapping, Sequence
@@ -141,6 +142,8 @@ def bin_continuous_data(
         use_min_as_label (bool, optional): If True, the minimum value in the bin is used as the label. If False, the maximum value is used. Defaults to False.
 
     Returns:
+        Two ungrouped series, e.g. a row for each observation in the original dataset, each containing:
+
         pd.Series: Binned categories for values in data
         pd.Series: Number of samples in binned category
     """
@@ -150,8 +153,10 @@ def bin_continuous_data(
         bins = list(bins)
 
     # Append maximum value from series to bins set upper cut-off if larger than maximum bins value
-    if not series.isna().all() and int(series.max()) > max(bins):
-        bins.append(int(series.max()))
+    if not series.isna().all() and series.max() > max(bins):
+        # Round max value up
+        max_value_rounded = math.ceil(series.max())
+        bins.append(max_value_rounded)
 
     # Create bin labels
     for i, bin_v in enumerate(bins):
@@ -186,14 +191,15 @@ def bin_continuous_data(
     # Drop all rows where bin is NaN
     df = df.dropna()
 
-    # Group into bins and get counts
-    df = df.groupby("bin").count().reset_index()
-
-    # Rename df series to n_in_bin
-    df = df.rename(columns={"series": "n_in_bin"})
+    # Add a column with counts for the bin each row belongs to
+    df["n_in_bin"] = df.groupby("bin")["bin"].transform("count").reset_index(drop=True)
 
     # Mask n_in_bin if less than min_n_in_bin
-    df["n_in_bin"] = df["n_in_bin"].mask(df["n_in_bin"] < min_n_in_bin, np.nan)
+    df["n_in_bin"] = (
+        df["n_in_bin"]
+        .mask(df["n_in_bin"] < min_n_in_bin, np.nan)
+        .reset_index(drop=True)
+    )
 
     return df["bin"], df["n_in_bin"]
 
