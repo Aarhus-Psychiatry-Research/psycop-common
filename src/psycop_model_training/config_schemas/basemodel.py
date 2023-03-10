@@ -27,7 +27,7 @@ class BaseModel(PydanticBaseModel):
     def __init__(
         self,
         allow_mutation: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(**kwargs)
         self.Config.allow_mutation = allow_mutation
