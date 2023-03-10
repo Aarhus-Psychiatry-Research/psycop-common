@@ -80,7 +80,7 @@ def plot_basic_chart(
     label_plots = []
     for y_series in y_sequences:
         for p_type in plot_type:
-            plot_function = plot_functions.get(p_type)
+            plot_function: Callable = plot_functions.get(p_type)  # type: ignore
             plot = plot_function(df["x"], y_series, color="orange")
             if p_type == label_plot_type:
                 # need to one of the plot types for labelling
