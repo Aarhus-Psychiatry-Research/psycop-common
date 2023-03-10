@@ -57,7 +57,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
     Returns:
         pd.DataFrame
     """
-    preds = np.where(eval_dataset.y_hat_probs > positive_threshold, 1, 0)  # type: ignore
+    preds = np.where(eval_dataset.y_hat_probs > positive_threshold, 1, 0)
 
     conf_matrix = confusion_matrix(eval_dataset.y, preds)
 

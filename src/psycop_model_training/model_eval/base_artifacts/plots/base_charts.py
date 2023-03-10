@@ -49,7 +49,7 @@ def plot_basic_chart(
     if isinstance(plot_type, str):
         plot_type = [plot_type]
 
-    df = pd.DataFrame(  # type: ignore
+    df = pd.DataFrame(
         {"x": x_values, "sort_x": sort_x, "sort_y": sort_y},
     )
 

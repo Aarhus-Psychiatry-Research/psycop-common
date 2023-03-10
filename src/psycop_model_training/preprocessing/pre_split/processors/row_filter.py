@@ -34,7 +34,7 @@ class PreSplitRowFilter:
             pd.DataFrame: Dataset with dropped rows.
         """
         if not isinstance(n_days, timedelta):
-            n_days_timedelt: timedelta = timedelta(days=n_days)  # type: ignore
+            n_days_timedelt: timedelta = timedelta(days=n_days)
 
         if direction not in ("ahead", "behind"):
             raise ValueError(f"Direction {direction} not supported.")
