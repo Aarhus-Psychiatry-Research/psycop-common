@@ -63,7 +63,7 @@ class RunInformation(BaseModel):
     # the models that set new high scores.
     lookahead_lookbehind_combined: Optional[str] = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         if (
             self.lookahead_lookbehind_combined is None
