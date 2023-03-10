@@ -47,9 +47,6 @@ def plot_precision_recall(
     plt.ylabel("Recall (sensitivity)")
 
     if save_path is not None:
-        if not isinstance(save_path, Path):
-            save_path = Path(save_path)
-
         save_path.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(save_path)
 

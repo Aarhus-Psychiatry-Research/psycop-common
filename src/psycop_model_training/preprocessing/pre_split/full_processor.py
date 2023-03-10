@@ -34,7 +34,7 @@ class FullProcessor:
         self.value_transformer = PreSplitValueTransformer(cfg=cfg)
         self.value_cleaner = PreSplitValueCleaner(cfg=cfg)
 
-    def process(self, dataset: pd.DataFrame):
+    def process(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process a dataframe using the configuration."""
         dataset = self.value_cleaner.clean(dataset=dataset)
         dataset = self.value_transformer.transform(dataset=dataset)

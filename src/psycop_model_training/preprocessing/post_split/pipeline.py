@@ -1,6 +1,7 @@
 """Create post split pipeline.""" ""
 import logging
 
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.preprocessing.post_split.create_pipeline import (
     create_preprocessing_pipeline,
 )
@@ -10,7 +11,7 @@ from sklearn.pipeline import Pipeline
 log = logging.getLogger(__name__)
 
 
-def create_post_split_pipeline(cfg):
+def create_post_split_pipeline(cfg: FullConfigSchema) -> Pipeline:
     """Create pipeline.
 
     Args:

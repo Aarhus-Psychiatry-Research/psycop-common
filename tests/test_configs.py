@@ -22,7 +22,7 @@ def get_test_config_file_names() -> list[str]:
 
 
 @pytest.mark.parametrize("config_file_name", get_test_config_file_names())
-def test_test_configs(config_file_name):
+def test_test_configs(config_file_name: str):
     """Test that all configs load correctly."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH_TEST_REL):
         cfg = compose(

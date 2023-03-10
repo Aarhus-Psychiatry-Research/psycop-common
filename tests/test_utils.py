@@ -26,12 +26,13 @@ def convert_cols_with_matching_colnames_to_datetime(
     df.loc[:, df.columns.str.contains(colname_substr)] = df.loc[
         :,
         df.columns.str.contains(colname_substr),
-    ].apply(pd.to_datetime)
-
+    ].apply(
+        pd.to_datetime,
+    )
     return df
 
 
-def str_to_df(string, convert_timestamp_to_datetime: bool = True) -> pd.DataFrame:
+def str_to_df(string: str, convert_timestamp_to_datetime: bool = True) -> pd.DataFrame:
     """Convert a string to a dataframe.
 
     Args:

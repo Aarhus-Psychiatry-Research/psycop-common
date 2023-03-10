@@ -2,7 +2,7 @@
 
 Very useful when testing.
 """
-from typing import Optional, Union
+from typing import Optional
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
@@ -61,7 +61,7 @@ def load_app_cfg_as_pydantic(
     allow_mutation: bool = False,
     config_dir_path_rel: str = "../../../../../application/config/",
     overrides: Optional[list[str]] = None,
-):
+) -> FullConfigSchema:
     """Load application cfg as pydantic object."""
     cfg = load_cfg_as_omegaconf(
         config_file_name=config_file_name,
@@ -90,6 +90,6 @@ class WatcherSchema(BaseModel):
     """Configuration for watchers."""
 
     archive_all: bool
-    keep_alive_after_training_minutes: Union[int, float]
+    keep_alive_after_training_minutes: float
     n_runs_before_eval: int
     verbose: bool

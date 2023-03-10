@@ -8,7 +8,7 @@ def create_eval_dataset(
     col_names: ColumnNamesSchema,
     outcome_col_name: str,
     df: pd.DataFrame,
-):
+) -> EvalDataset:
     """Create an evaluation dataset object from a dataframe and
     ColumnNamesSchema."""
     # Check if custom attribute exists:
@@ -25,9 +25,9 @@ def create_eval_dataset(
         for col_name in df.columns
         if col_name.startswith("eval_")
     }
-    custom_columns = (
-        custom_columns.update(eval_columns) if len(eval_columns) > 0 else custom_columns
-    )
+
+    if len(eval_columns) > 0:
+        custom_columns.update(eval_columns)
 
     eval_dataset = EvalDataset(
         ids=df[col_names.id],

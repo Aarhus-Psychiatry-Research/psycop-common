@@ -2,6 +2,28 @@
 
 <!--next-version-placeholder-->
 
+## v0.41.4 (2023-03-09)
+### Fix
+* Types ([`db91421`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/db91421885bec2a11d476acc83a25582585b67fc))
+* Do not use union for isinstance check ([`c59bf52`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c59bf52144fd8370f6b41d8343c7c531114839bc))
+* Correct types ([`439273f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/439273faf43a6226c247fd020f56a94d26e15ef7))
+* Specify python version for linting ([`15ebbe2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/15ebbe278caff2bafbc2859d3f2d9bc7dd6b5014))
+* Install mypy in workflow ([`e3482c9`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e3482c9a6e5831d82e8eb79e95afaa7603e7941c))
+* Add missing arguments ([`781ad1b`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/781ad1bf0537cef331e40a11da70f13689b9a988))
+* Incorrect mypy specification ([`0b3ec55`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0b3ec551c80cf9891aaf38d58168e994ad73da72))
+* Update types ([`84293b6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/84293b61d3c2cfeea672ec842583bf2e6cc7a6d0))
+
+### Documentation
+* Add upload_to_wandb ([`695b744`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/695b74485b1eac32a83681d7f950223107222adf))
+
+## v0.41.3 (2023-03-09)
+### Fix
+* Remove argument that did not exist ([`ba8ea56`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ba8ea5625cfd94bc2e55675231cb1b294180961a))
+
+## v0.41.2 (2023-03-09)
+### Fix
+* Allow creation of eval dataset if custom columns are None ([`32c9d2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/32c9d2dd06a52ee1d5d681552ed38789cf5ba61c))
+
 ## v0.41.1 (2023-03-08)
 ### Fix
 * Exclude observations if too few samples in bin ([#408](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/408)) ([`ff461fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ff461fc17dfd816706a59e146e25b2b3911870b5))

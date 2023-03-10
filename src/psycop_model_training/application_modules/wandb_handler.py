@@ -45,7 +45,7 @@ class WandbHandler:
         flattened_dict = flatten_nested_dict(
             d=cfg_as_dict,
             sep=".",
-        )  # type: ignore
+        )
 
         return flattened_dict
 

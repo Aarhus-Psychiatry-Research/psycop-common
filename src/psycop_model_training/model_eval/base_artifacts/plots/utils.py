@@ -1,7 +1,7 @@
 # pylint: skip-file
 from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -64,9 +64,9 @@ def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
 
 def create_performance_by_input(
     eval_dataset: EvalDataset,
-    input_values: Sequence[Union[int, float]],
+    input_values: Sequence[float],
     input_name: str,
-    bins: Sequence[Union[int, float]] = (0, 1, 2, 5, 10),
+    bins: Sequence[float] = (0, 1, 2, 5, 10),
     bin_continuous_input: Optional[bool] = True,
     metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
@@ -74,11 +74,10 @@ def create_performance_by_input(
     measurements.bio.
 
     Args:
-        labels (Sequence[int]): True labels
-        y_hat (Sequence[int]): Predicted label or probability depending on metric
-        input (Sequence[Union[int, float]]): Input values to calculate performance by
+        eval_dataset: EvalDataset object
+        input_values (Sequence[float]): Input values to calculate performance by
         input_name (str): Name of the input
-        bins (Sequence[Union[int, float]]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
+        bins (Sequence[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Callable which returns the metric to calculate
 
@@ -98,12 +97,12 @@ def create_performance_by_input(
         df[f"{input_name}_binned"], _ = bin_continuous_data(df[input_name], bins=bins)
 
         output_df = df.groupby(f"{input_name}_binned").apply(
-            calc_performance,
+            calc_performance,  # type: ignore
             metric_fn,
         )
 
     else:
-        output_df = df.groupby(input_name).apply(calc_performance, metric_fn)
+        output_df = df.groupby(input_name).apply(calc_performance, metric_fn)  # type: ignore
 
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
-    return output_df
+    final_df = output_df.reset_index().rename({0: "metric"}, axis=1)
+    return final_df

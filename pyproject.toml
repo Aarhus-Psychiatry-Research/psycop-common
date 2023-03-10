@@ -1,6 +1,6 @@
 [project]
 name = "psycop_model_training"
-version = "0.41.1"
+version = "0.41.4"
 description = "PSYCOP model training utilities"
 authors = [{name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"},
     {name = "Lasse Hansen", email = "lasseh0310@gmail.com"},
@@ -32,11 +32,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "mypy",
     "pre-commit>=2.19.0,<3.1.2",
-    "black>=22.3.0,<23.2.0",
-    "mypy>=0.991",
     "setuptools>=65.3.0,<67.6.0",
-    "pylint>=2.15.5",
+    "ruff==0.0.254", # important that these match the pre-commit hooks
+    "black==22.8.0", # important that these match the pre-commit hooks
+    "pandas-stubs",
+    "pydantic",
 ]
 
 tests = [
@@ -70,18 +72,6 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
-[tool.mypy]
-ignore_missing_imports = true
-
-[tool.pylint]
-load-plugins = "pylint.extensions.docparams,pylint.extensions.code_style,pylint.extensions.for_any_all,pylint.extensions.typing"
-good-names = "df,p,f,d,e,n,k,i,v,y_,X,y"
-disable = "too-many-lines,line-too-long,missing-raises-doc,no-self-argument,unused-wildcard-import,wildcard-import,no-else-return,too-many-arguments,redefined-outer-name,c-extension-no-member,wrong-import-order,import-outside-toplevel,unused-import,wrong-import-position,deprecated-typing-alias,missing-module-docstring,ungrouped-imports"
-extension-pkg-allow-list = "wandb,pydantic"
-
-[tool.pylint.'MESSAGES CONTROL']
-extension-pkg-whitelist = "pydantic"
-
 [tool.pytest.ini_options]
 markers = [
     "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds.",
@@ -107,6 +97,7 @@ n = 4
 select = [
     "A", 
     "ARG", 
+    "ANN",
     "B", 
     "C4", 
     "COM", 
@@ -127,12 +118,17 @@ select = [
     "PTH", 
     "RSE", 
     "RET", 
+    "RUF",
     "SIM", 
     "W"
 ]
 ignore = [
+    "ANN101",
+    "ANN401",
     "E402", 
     "E501", 
+    "F401",
+    "F841",
     "RET504"
 ]
 
@@ -175,3 +171,14 @@ max-complexity = 10
 
 [tool.ruff.isort]
 known-third-party = ["wandb"]
+
+[tool.ruff.flake8-annotations]
+mypy-init-return = true
+suppress-none-returning = true
+
+[tool.mypy]
+ignore_missing_imports = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_unreachable = true
+plugins = "pydantic.mypy"

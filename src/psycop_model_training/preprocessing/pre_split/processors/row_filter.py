@@ -18,7 +18,7 @@ class PreSplitRowFilter:
     @print_df_dimensions_diff
     def _drop_rows_if_datasets_ends_within_days(
         self,
-        n_days: Union[int, float],
+        n_days: Union[float, timedelta],
         dataset: pd.DataFrame,
         direction: str,
     ) -> pd.DataFrame:
@@ -26,7 +26,7 @@ class PreSplitRowFilter:
         dataset.
 
         Args:
-            n_days (Union[float, int]): Number of days.
+            n_days (float): Number of days.
             dataset (pd.DataFrame): Dataset.
             direction (str): Direction to look. Allowed are ["before", "after"].
 
@@ -34,7 +34,7 @@ class PreSplitRowFilter:
             pd.DataFrame: Dataset with dropped rows.
         """
         if not isinstance(n_days, timedelta):
-            n_days_timedelt: timedelta = timedelta(days=n_days)  # type: ignore
+            n_days_timedelt: timedelta = timedelta(days=n_days)
 
         if direction not in ("ahead", "behind"):
             raise ValueError(f"Direction {direction} not supported.")
@@ -141,7 +141,7 @@ class PreSplitRowFilter:
 
         return dataset[~rows_to_drop]
 
-    def run_filter(self, dataset: pd.DataFrame):
+    def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Run filters based on config."""
         if self.cfg.preprocessing.pre_split.min_prediction_time_date:
             dataset = dataset[

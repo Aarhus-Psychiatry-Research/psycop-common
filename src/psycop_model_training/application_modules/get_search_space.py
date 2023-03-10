@@ -36,7 +36,7 @@ class SearchSpaceInferrer:
     def _get_impossible_lookaheads(
         self,
         potential_lookaheads: list[int],
-    ):
+    ) -> list[int]:
         """Some look_ahead and look_behind distances will result in 0 valid
         prediction times.
 

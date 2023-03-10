@@ -70,7 +70,7 @@ def check_columns_exist_in_dataset(
         # Check that the column exists in the dataset
         if item not in df:
             most_likely_alternatives = get_most_likely_str_from_edit_distance(
-                candidate_strs=df.columns,
+                candidate_strs=list(df.columns),
                 input_str=item,
                 n_str_to_return=3,
             )

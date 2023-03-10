@@ -4,6 +4,8 @@ Mainly tests that they run without errors.
 """
 # pylint: disable=missing-function-docstring
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
@@ -44,7 +46,7 @@ from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pre
 from sklearn.metrics import f1_score, roc_auc_score
 
 
-def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path):
+def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
     plot_prob_over_time(
         patient_id=synth_eval_dataset.ids,
         timestamp=synth_eval_dataset.pred_timestamps,
@@ -155,7 +157,7 @@ def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
     )
 
 
-def test_plot_sens_by_time_to_outcome(synth_eval_dataset: EvalDataset, tmp_path):
+def test_plot_sens_by_time_to_outcome(synth_eval_dataset: EvalDataset, tmp_path: str):
     positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
@@ -204,7 +206,7 @@ def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset)
 def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
     plot_precision_recall(
         eval_dataset=synth_eval_dataset,
-        save_path="tmp/test_plot_precision_recall.png",
+        save_path=Path("tmp.png"),
     )
 
 

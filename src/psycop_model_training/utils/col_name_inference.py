@@ -5,9 +5,13 @@ from typing import Union
 
 import pandas as pd
 from omegaconf import DictConfig
+from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 
-def get_col_names(cfg: DictConfig, dataset: pd.DataFrame) -> tuple[str, list[str]]:
+def get_col_names(
+    cfg: Union[DictConfig, FullConfigSchema],
+    dataset: pd.DataFrame,
+) -> tuple[str, list[str]]:
     """Get column names for outcome and features.
 
     Args:
@@ -110,7 +114,7 @@ def infer_predictor_col_name(
 
 def infer_y_hat_prob_col_name(
     df: pd.DataFrame,
-    prefix="y_hat_prob",
+    prefix: str = "y_hat_prob",
     allow_multiple: bool = False,
 ) -> list[str]:
     """Infer the y_hat_prob column name from the dataframe."""

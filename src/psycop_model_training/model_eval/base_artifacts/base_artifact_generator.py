@@ -171,14 +171,13 @@ class BaseArtifactGenerator:
                     eval_dataset=self.eval_ds,
                     pred_proba_percentile=[0.95, 0.97, 0.99],
                     bins=self.cfg.eval.lookahead_bins,
-                    legend=True,
                     y_limits=(0, 0.5),
                     save_path=self.save_dir / "recall_by_calendar_time.png",
                 ),
             ),
         ]
 
-    def get_descriptive_stats_table_artifact(self):
+    def get_descriptive_stats_table_artifact(self) -> list[ArtifactContainer]:
         """Returns descriptive stats table artifact."""
         return [
             ArtifactContainer(
@@ -189,7 +188,7 @@ class BaseArtifactGenerator:
             ),
         ]
 
-    def get_feature_selection_artifacts(self):
+    def get_feature_selection_artifacts(self) -> list[ArtifactContainer]:
         """Returns a list of artifacts related to feature selection."""
         return [
             ArtifactContainer(
@@ -201,7 +200,7 @@ class BaseArtifactGenerator:
             ),
         ]
 
-    def get_feature_importance_artifacts(self):
+    def get_feature_importance_artifacts(self) -> list[ArtifactContainer]:
         """Returns a list of artifacts related to feature importance."""
         return [
             ArtifactContainer(

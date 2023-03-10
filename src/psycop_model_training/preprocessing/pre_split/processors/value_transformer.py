@@ -5,7 +5,6 @@ To avoid test/train leakage, the transformations must not use any
 information about the values in the dataset.
 """
 from datetime import datetime
-from typing import Optional
 
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -48,8 +47,8 @@ class PreSplitValueTransformer:
     def _convert_predictors_to_boolean(
         self,
         dataset: pd.DataFrame,
-        columns_to_skip: Optional[tuple[str, str]] = ("age_in_years", "sex_female"),
-        ignore_dtypes: Optional[tuple] = ("datetime64[ns]", "<M8[ns]"),
+        columns_to_skip: tuple[str, str] = ("age_in_years", "sex_female"),
+        ignore_dtypes: tuple = ("datetime64[ns]", "<M8[ns]"),
     ) -> pd.DataFrame:
         """Convert predictors to boolean."""
         columns = infer_predictor_col_name(df=dataset, prefix=self.cfg.data.pred_prefix)

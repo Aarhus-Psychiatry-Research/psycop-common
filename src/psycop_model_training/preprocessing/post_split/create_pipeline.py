@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
 
 
-def get_feature_selection_steps(cfg):
+def get_feature_selection_steps(cfg: FullConfigSchema) -> list:
     """Add feature selection steps to the preprocessing pipeline."""
     new_steps = []
 
@@ -63,7 +63,7 @@ def get_feature_selection_steps(cfg):
     return new_steps
 
 
-def create_preprocessing_pipeline(cfg: FullConfigSchema):
+def create_preprocessing_pipeline(cfg: FullConfigSchema) -> Pipeline:
     """Create preprocessing pipeline based on config."""
     msg = Printer(timestamp=True)
 
