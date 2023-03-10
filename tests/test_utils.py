@@ -99,30 +99,33 @@ def test_bin_contiuous_data():
     one_to_five = pd.Series([1, 2, 3, 4, 5])
 
     # One bin, more than 5
-    one_bin_more_than_five, _ = bin_continuous_data(
+    bins, samples_in_bins = bin_continuous_data(
         series=one_to_five,
         bins=[0, 5],
     )
-    assert len(one_bin_more_than_five.unique()) == 1
-    assert one_bin_more_than_five.isna().sum() == 0
+    assert bins[0] == "1+"
+    assert samples_in_bins[0] == 5
 
     # One bin, less than 5
     one_to_four = pd.Series([1, 2, 3, 4])
-    one_bin_less_than_five, _ = bin_continuous_data(series=one_to_four, bins=[0, 5])
-    assert one_bin_less_than_five.isna().sum() == 4
+    bins, samples_in_bins = bin_continuous_data(series=one_to_four, bins=[0, 5])
+    assert bins[0] == "1+"
+    assert samples_in_bins.isna().all()
 
     # Two bins, less than 5
-    two_bins_less_than_five, _ = bin_continuous_data(series=one_to_four, bins=[0, 2, 5])
-    assert two_bins_less_than_five.isna().sum() == 4
+    bins, samples_in_bins = bin_continuous_data(series=one_to_four, bins=[0, 2, 5])
+    assert len(bins) == 2
+    assert samples_in_bins.isna().all()
 
     # Two bins, more than 5
     one_to_ten = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    two_bins_more_than_five, _ = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
-    assert len(two_bins_more_than_five.unique()) == 2
-    assert two_bins_more_than_five.isna().sum() == 0
+    bins, n_in_bins = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
+    assert len(bins.unique()) == 2
+    assert bins.isna().sum() == 0
+    assert n_in_bins.isna().any() == False  # noqa
 
     # Series is only NaNs
     nans = pd.Series([np.nan, np.nan, np.nan])
     nan_bins, nan_values = bin_continuous_data(series=nans, bins=[0, 5, 11])
-    assert nan_bins.isna().all()
+    assert len(nan_bins) == 2
     assert nan_values.isna().all()
