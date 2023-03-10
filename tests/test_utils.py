@@ -32,7 +32,7 @@ def convert_cols_with_matching_colnames_to_datetime(
     return df
 
 
-def str_to_df(string, convert_timestamp_to_datetime: bool = True) -> pd.DataFrame:
+def str_to_df(string: str, convert_timestamp_to_datetime: bool = True) -> pd.DataFrame:
     """Convert a string to a dataframe.
 
     Args:

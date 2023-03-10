@@ -74,9 +74,8 @@ def create_performance_by_input(
     measurements.bio.
 
     Args:
-        labels (Sequence[int]): True labels
-        y_hat (Sequence[int]): Predicted label or probability depending on metric
-        input (Sequence[float]): Input values to calculate performance by
+        eval_dataset: EvalDataset object
+        input_values (Sequence[float]): Input values to calculate performance by
         input_name (str): Name of the input
         bins (Sequence[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.

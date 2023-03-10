@@ -61,7 +61,7 @@ def load_app_cfg_as_pydantic(
     allow_mutation: bool = False,
     config_dir_path_rel: str = "../../../../../application/config/",
     overrides: Optional[list[str]] = None,
-):
+) -> FullConfigSchema:
     """Load application cfg as pydantic object."""
     cfg = load_cfg_as_omegaconf(
         config_file_name=config_file_name,

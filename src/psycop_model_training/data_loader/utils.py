@@ -48,7 +48,7 @@ def load_and_filter_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     return load_and_filter_split_from_cfg(cfg=cfg, split="train")
 
 
-def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema):
+def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema) -> SplitDataset:
     """Load train and validation data from file."""
     return SplitDataset(
         train=load_and_filter_split_from_cfg(cfg=cfg, split="train"),

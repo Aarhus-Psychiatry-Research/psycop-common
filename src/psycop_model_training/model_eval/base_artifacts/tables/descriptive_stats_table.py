@@ -19,7 +19,7 @@ class DescriptiveStatsTable:
     ) -> None:
         self.eval_dataset = eval_dataset
 
-    def _get_column_header_df(self):
+    def _get_column_header_df(self) -> pd.DataFrame:
         """Create empty dataframe with default columns headers.
 
         Returns:
@@ -40,7 +40,7 @@ class DescriptiveStatsTable:
 
         age_span = f"{self.eval_dataset.age.quantile(0.05)} - {self.eval_dataset.age.quantile(0.95)}"
 
-        df = df.append(
+        df = df.append(  # type: ignore
             {
                 "category": "(visit_level) age (mean / interval)",
                 "stat_1": age_mean,
@@ -58,7 +58,7 @@ class DescriptiveStatsTable:
         age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 2)
 
         for i, _ in enumerate(age_counts):
-            df = df.append(
+            df = df.append(  # type: ignore
                 {
                     "category": f"(visit level) age {age_counts.index[i]}",
                     "stat_1": int(age_counts.iloc[i]),
@@ -88,7 +88,7 @@ class DescriptiveStatsTable:
                 )
                 return df
 
-            df = df.append(
+            df = df.append(  # type: ignore
                 {
                     "category": f"(visit level) {sex_counts.index[i]}",
                     "stat_1": int(sex_counts[i]),
@@ -131,7 +131,7 @@ class DescriptiveStatsTable:
                         f"WARNING: One of categories in {col} has less than 5 individuals. This category will be excluded from the table.",
                     )
                 else:
-                    df = df.append(
+                    df = df.append(  # type: ignore
                         {
                             "category": f"(visit level) {col_name} ",
                             "stat_1": int(col_count[1]),
@@ -146,7 +146,7 @@ class DescriptiveStatsTable:
                 # Continuous variable stats:
                 col_mean = round(col_values.mean(), 2)
                 col_std = round(col_values.std(), 2)
-                df = df.append(
+                df = df.append(  # type: ignore
                     {
                         "category": f"(visit level) {col_name}",
                         "stat_1": col_mean,
@@ -239,7 +239,7 @@ class DescriptiveStatsTable:
             2,
         )
 
-        df = df.append(
+        df = df.append(  # type: ignore
             {
                 "category": "(patient_level) patients_with_positive_outcome",
                 "stat_1": n_patients_with_positive_outcome,
@@ -261,7 +261,7 @@ class DescriptiveStatsTable:
             patients_with_positive_outcome_data,
         )
 
-        df = df.append(
+        df = df.append(  # type: ignore
             {
                 "category": "(patient level) time_to_first_positive_outcome",
                 "stat_1": mean_time_to_first_positive_outcome,
