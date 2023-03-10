@@ -1,5 +1,6 @@
 """Row filter for pre-split data."""
 from datetime import timedelta
+from typing import Union
 
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -17,7 +18,7 @@ class PreSplitRowFilter:
     @print_df_dimensions_diff
     def _drop_rows_if_datasets_ends_within_days(
         self,
-        n_days: float,
+        n_days: Union[float, timedelta],
         dataset: pd.DataFrame,
         direction: str,
     ) -> pd.DataFrame:
