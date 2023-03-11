@@ -1,0 +1,50 @@
+name: mypy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache venv
+        uses: actions/cache@v3.2.6
+        id: cache_venv
+        with:
+          path: |
+            .venv
+          key: ${{ runner.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        id: setup_python
+        if: steps.cache_venv.outputs.cache-hit != 'true'
+        with:
+          python-version: "3.9"
+          cache: "pip"
+          cache-dependency-path: "**/pyproject.toml"
+
+      - name: Install dependencies
+        shell: bash
+        if: steps.cache_venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
+      - name: Cache mypy cache
+        uses: actions/cache@v3.2.6
+        with:
+          path: .mypy_cache
+          key: ${{ runner.os }}-mypy-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+
+      - name: Run mypy
+        run: |
+          source .venv/bin/activate
+          mypy .
