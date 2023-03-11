@@ -48,7 +48,7 @@ jobs:
             🧠 If you're feeling extra helpful, run `cruft update` and merge in the updates
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.cruft_check.outputs.cruft_failed  == 0 && steps.add_comment.outputs.comment-updated == true}}
+        if: ${{ steps.cruft_check.outputs.cruft_failed == 0 && steps.add_comment.outputs.comment-updated == true}}
         with:
           message: |
             🌟 Cruft has been updated, thanks a lot! 🌟
