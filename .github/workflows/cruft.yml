@@ -45,7 +45,7 @@ jobs:
           body-includes: ✨ There is a newer version of continuous integration files or other tooling available ✨
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.cruft_check.outputs.cruft_failed  == 1}}
+        if: ${{ steps.cruft_check.outputs.cruft_failed == 1}}
         id: add_comment
         with:
           message: |
