@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.1 (2023-03-11)
+### Fix
+* Cruft github action ([`c8f6278`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c8f627877da2ac5e0b468b65e7bd9f9bfaacb483))
+* Bug in cruft action ([`ec8267a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/ec8267acc5888a3f402fb6f032a7d301cddb12b9))
+* Remove psycop-ml-utils, no longer exists ([`d8fbb65`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/d8fbb657d1bbe439a5863edfdbe7caa9a0fd2010))
+
 ## v0.20.0 (2023-03-09)
 ### Feature
 * Add more glc loaders ([`b765e77`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/b765e77ff32e6d4142ab63b6cc8e47a870946322))
