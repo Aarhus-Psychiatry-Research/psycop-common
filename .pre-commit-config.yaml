@@ -3,11 +3,19 @@ default_stages: [push]
 repos:
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     # Ruff version.
-    rev: v0.0.253
+    rev: v0.0.254
     hooks:
       - id: ruff
         stages: [push]
-        args: [--fix, --exit-non-zero-on-fix]
+        args:
+          [
+            "--extend-select",
+            "F401",
+            "--extend-select",
+            "F841",
+            "--fix",
+            "--exit-non-zero-on-fix",
+          ]
 
   - repo: https://github.com/bwhmather/ssort
     rev: v0.11.6
