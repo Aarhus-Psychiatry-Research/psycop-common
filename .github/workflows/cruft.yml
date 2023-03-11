@@ -41,12 +41,10 @@ jobs:
         id: add_comment
         with:
           message: |
-            ✨ Cruft check failed. ✨
-
-            This means that there's a newer version of contious integration files or other tooling in the template this project was generated from.
+            ✨ There is a newer version of contious integration files or other tooling available ✨
 
             Feel free to either:
-            🤖 Keep up the good work and ignore this message 
+            🥳 Keep up the good work or
             🧠 If you're feeling extra helpful, run `cruft update` and merge in the updates
 
       - uses: mshick/add-pr-comment@v2
