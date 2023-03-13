@@ -45,7 +45,10 @@ def load_and_filter_split_from_cfg(
     return filtered_data
 
 
-def load_and_filter_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
+def load_and_filter_train_from_cfg(
+    cfg: FullConfigSchema,
+    cache_dir: Optional[Path] = None,
+) -> pd.DataFrame:
     """Load train dataset from config.
 
     Args:
@@ -54,7 +57,7 @@ def load_and_filter_train_from_cfg(cfg: FullConfigSchema) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Train dataset
     """
-    return load_and_filter_split_from_cfg(cfg=cfg, split="train")
+    return load_and_filter_split_from_cfg(cfg=cfg, split="train", cache_dir=cache_dir)
 
 
 def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema) -> SplitDataset:
