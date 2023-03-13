@@ -50,13 +50,15 @@ jobs:
           message: |
             ✨ Looks like some pre-commit hooks failed ✨
 
-            To fix this locally, in your terminal:
-              1. Install pre-commit hooks: `pre-commit install --install-hooks -t pre-push`
-              2. Run pre-commit: `pre-commit run --hook-stage push --all-files`
-              3. Fix the errors
+            If you want to fix this, we recommend doing it locally by:
+              1. Installing pre-commit hooks: `pre-commit install --install-hooks -t pre-push`
+              2. Diagnosing the errors by running `pre-commit run --hook-stage push --all-files` 
+
+            After installing pre-commit hooks, they will run automatically in the future when you run `git push`.
 
       - uses: mshick/add-pr-comment@v2
         if: ${{ steps.pre_commit.outputs.pre_commit_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
         with:
+          message_id: ${{ steps.find_comment.outputs.comment-id }}
           message: |
             🌟 Pre-commit succeeds! 🌟

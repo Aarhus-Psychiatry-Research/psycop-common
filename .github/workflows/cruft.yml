@@ -58,5 +58,6 @@ jobs:
       - uses: mshick/add-pr-comment@v2
         if: ${{ steps.cruft_check.outputs.cruft_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
         with:
+          message_id: ${{ steps.find_comment.outputs.comment-id }}
           message: |
             🌟 Cruft has been updated, thanks a lot! 🌟
