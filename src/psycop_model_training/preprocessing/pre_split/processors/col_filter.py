@@ -1,5 +1,6 @@
 """Module for filtering columns before split."""
 import re
+from typing import Sequence
 
 import pandas as pd
 from psycop_model_training.config_schemas.data import DataSchema
@@ -200,13 +201,17 @@ class PresSplitColFilter:
             if direction == "ahead":
                 n_days = self.pre_split_cfg.min_lookahead_days
             elif direction == "behind":
-                n_days = max(self.pre_split_cfg.lookbehind_combination)
+                if isinstance(self.pre_split_cfg.lookbehind_combination, Sequence):
+                    n_days = max(self.pre_split_cfg.lookbehind_combination)
+                else:
+                    n_days = self.pre_split_cfg.max_lookbehind_days
 
-            dataset = self._drop_cols_if_exceeds_look_direction_threshold(
-                dataset=dataset,
-                look_direction_threshold=n_days,
-                direction=direction,
-            )
+            if n_days is not None:
+                dataset = self._drop_cols_if_exceeds_look_direction_threshold(
+                    dataset=dataset,
+                    look_direction_threshold=n_days,
+                    direction=direction,
+                )
 
         if self.pre_split_cfg.lookbehind_combination:
             dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)

@@ -173,9 +173,17 @@ class PreSplitRowFilter:
                 )
 
         if self.pre_split_cfg.drop_patient_if_exclusion_before_date:
+            if self.data_cfg.col_name.exclusion_timestamp is None:
+                raise ValueError(
+                    "Can't drop patients if exclusion timestamp is not specified in config.",
+                )
             dataset = self._drop_patient_if_excluded_by_date(dataset)
 
         if self.pre_split_cfg.drop_visits_after_exclusion_timestamp:
+            if self.data_cfg.col_name.exclusion_timestamp is None:
+                raise ValueError(
+                    "Can't drop visits if exclusion timestamp is not specified in config.",
+                )
             dataset = self._drop_visit_after_exclusion_timestamp(dataset)
 
         if self.pre_split_cfg.min_age:

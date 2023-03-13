@@ -1,6 +1,6 @@
 """Preprocessing config schemas."""
 from datetime import datetime
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 from psycop_model_training.config_schemas.basemodel import BaseModel
 
