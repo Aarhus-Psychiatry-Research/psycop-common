@@ -204,7 +204,7 @@ class PresSplitColFilter:
                 if isinstance(self.pre_split_cfg.lookbehind_combination, Sequence):
                     n_days = max(self.pre_split_cfg.lookbehind_combination)
                 else:
-                    n_days = self.pre_split_cfg.max_lookbehind_days
+                    n_days = self.pre_split_cfg.lookbehind_combination
 
             if n_days is not None:
                 dataset = self._drop_cols_if_exceeds_look_direction_threshold(

@@ -17,7 +17,8 @@ if __name__ == "__main__":
     data_cfg = DataSchema(
         dir=dataset_path,
         col_name=ColumnNamesSchema(
-            outcome_timestamp="timestamp_first_diabetes_lab_result"
+            outcome_timestamp="timestamp_first_diabetes_lab_result",
+            exclusion_timestamp="first_diabetes_indicator",
         ),
     )
     dataset = DataLoader(data_cfg=data_cfg).load_dataset_from_dir(split_names=["train"])
