@@ -10,8 +10,8 @@ class ColumnNamesSchema(BaseModel):
     pred_timestamp: str = "pred_timestamp"  # Column name for prediction times
     outcome_timestamp: str = "outc_timestamp"  # Column name for outcome timestamps
     id: str = "dw_ek_borger"  # Citizen colnames # noqa
-    age: str = "pred_age"  # Name of the age column
-    is_female: str = "sex_is_female"  # Name of the sex column
+    age: str = "pred_age_in_years"  # Name of the age column
+    is_female: str = "pred_sex_female"  # Name of the sex column
     exclusion_timestamp: Optional[str]  # Name of the exclusion timestamps column.
     # Drops all visits whose pred_timestamp <= exclusion_timestamp.
     custom_columns: Optional[list[str]] = None
