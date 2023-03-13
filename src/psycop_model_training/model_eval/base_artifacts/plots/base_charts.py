@@ -75,14 +75,17 @@ def plot_basic_chart(
     }
 
     # choose the first plot type as the one to use for legend
-    label_plot_type = plot_type[0]
+    legend_plot = plot_type[0]
 
     label_plots = []
     for y_series in y_sequences:
         for p_type in plot_type:
             plot_function: Callable = plot_functions.get(p_type)  # type: ignore
-            plot = plot_function(df["x"], y_series, color="orange")
-            if p_type == label_plot_type:
+
+            color = "orange" if p_type == "bar" else None
+            plot = plot_function(df["x"], y_series, color=color)
+
+            if p_type == legend_plot:
                 # need to one of the plot types for labelling
                 label_plots.append(plot)
             if p_type == "hbar":

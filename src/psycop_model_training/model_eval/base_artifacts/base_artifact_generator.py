@@ -166,7 +166,7 @@ class BaseArtifactGenerator:
                 ),
             ),
             ArtifactContainer(
-                label="precision_recall",
+                label="recall_by_calendar_time",
                 artifact=plot_recall_by_calendar_time(
                     eval_dataset=self.eval_ds,
                     pred_proba_percentile=[0.95, 0.97, 0.99],

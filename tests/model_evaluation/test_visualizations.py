@@ -42,7 +42,11 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
     plot_time_from_first_positive_to_event,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.utils import PROJECT_ROOT, positive_rate_to_pred_probs
+from psycop_model_training.utils.utils import (
+    PROJECT_ROOT,
+    TEST_PLOT_PATH,
+    positive_rate_to_pred_probs,
+)
 from sklearn.metrics import f1_score, roc_auc_score
 
 
@@ -124,7 +128,7 @@ def test_plot_recall_by_calendar_time(
         pred_proba_percentile=[0.8, 0.9, 0.95],
         bins=list(range(0, 1460, 180)),
         y_limits=(0, 0.5),
-        save_path=PROJECT_ROOT / "test_recall_by_calendar_time.png",
+        save_path=TEST_PLOT_PATH / "test_recall_by_calendar_time.png",
     )
 
 
@@ -206,7 +210,7 @@ def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset)
 def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
     plot_precision_recall(
         eval_dataset=synth_eval_dataset,
-        save_path=Path("tmp.png"),
+        save_path=Path(PROJECT_ROOT / "tests" / "test_plots" / "precision_recall.png"),
     )
 
 
