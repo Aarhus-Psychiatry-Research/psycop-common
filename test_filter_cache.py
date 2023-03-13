@@ -1,11 +1,10 @@
 from pathlib import Path
 
-from psycop_model_training.config_schemas.data import ColumnNamesSchema, DataSchema
+from psycop_model_training.config_schemas.data import DataSchema
 from psycop_model_training.config_schemas.preprocessing import (
     PreSplitPreprocessingConfigSchema,
 )
 from psycop_model_training.data_loader.data_loader import DataLoader
-from psycop_model_training.data_loader.utils import load_and_filter_train_from_cfg
 from psycop_model_training.preprocessing.pre_split.full_processor import (
     process_full_dataset,
 )
