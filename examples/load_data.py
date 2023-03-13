@@ -29,5 +29,3 @@ if __name__ == "__main__":
         data_cfg=data_cfg,
         cache_dir=Path("E:/shared_resources/t2d/feature_sets/cache"),
     )
-
-    pass
