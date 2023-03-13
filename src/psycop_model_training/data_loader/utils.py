@@ -1,13 +1,12 @@
 import os
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
 from psycop_model_training.preprocessing.pre_split.full_processor import (
-    FullProcessor,
     process_full_dataset,
 )
 from psycop_model_training.preprocessing.pre_split.processors.value_cleaner import (
@@ -23,12 +22,14 @@ def get_latest_dataset_dir(path: Path) -> Path:
 def load_and_filter_split_from_cfg(
     cfg: FullConfigSchema,
     split: Literal["train", "test", "val"],
+    cache_dir: Optional[Path] = None,
 ) -> pd.DataFrame:
     """Load train dataset from config.
 
     Args:
         cfg (FullConfig): Config
         split (Literal["train", "test", "val"]): Split to load
+        cache_dir (Optional[Path], optional): Directory. Defaults to None, in which case no caching is used.
 
     Returns:
         pd.DataFrame: Train dataset
@@ -38,6 +39,7 @@ def load_and_filter_split_from_cfg(
         dataset=dataset,
         pre_split_cfg=cfg.preprocessing.pre_split,
         data_cfg=cfg.data,
+        cache_dir=cache_dir,
     )
 
     return filtered_data
