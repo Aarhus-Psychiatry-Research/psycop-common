@@ -26,7 +26,7 @@ def coercion_duration(
         coercion_type (str): Type of coercion, e.g. 'tvangsindlæggelse', 'bæltefiksering'. Defaults to None. # noqa: DAR102
         reason_for_coercion (str): Reason for coercion, e.g. 'farlighed'. Defaults to None.
         n_rows: Number of rows to return. Defaults to None which returns entire coercion data view.
-        unpack_to_intervals: if we want to create features about the "current state" of the coercion instance, we need to unpack the start and end times to one row per day in the interval. Defaults to False.
+        unpack_to_intervals: Unpack time interval to rows with set frequency (see below). Defaults to False.
         unpack_freq:  unpack_freq: Frequency string by which the interval will be unpacked. Default to "D" (day). For e.g., 5 hours, write "5H".
 
     Returns:
@@ -94,7 +94,8 @@ def _concatenate_coercion(
     Args:
         coercion_types_list (list): list of dictionaries containing a 'coercion_type' key and a 'reason_for_coercion' key. If keys not in dicts, they are set to None # noqa: DAR102
         n (int, optional): Number of rows to return. Defaults to None.
-        unpack_interval: if we want to create features about the "current state" of the coercion instance, we need to unpack the start and end times to one row per day in the interval. Defaults to False.
+        unpack_to_intervals: Unpack time interval to rows with set frequency (see below). Defaults to False.
+        unpack_freq:  unpack_freq: Frequency string by which the interval will be unpacked. Default to "D" (day). For e.g., 5 hours, write "5H".
 
     Returns:
         pd.DataFrame
