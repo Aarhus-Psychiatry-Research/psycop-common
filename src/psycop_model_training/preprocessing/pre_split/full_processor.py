@@ -1,7 +1,10 @@
 """Full processor for pre-split preprocessing."""
+import logging
+from pathlib import Path
+from typing import Optional
+
 import pandas as pd
 from psycop_model_training.config_schemas.data import DataSchema
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.config_schemas.preprocessing import (
     PreSplitPreprocessingConfigSchema,
 )
@@ -17,6 +20,40 @@ from psycop_model_training.preprocessing.pre_split.processors.value_cleaner impo
 from psycop_model_training.preprocessing.pre_split.processors.value_transformer import (
     PreSplitValueTransformer,
 )
+from psycop_model_training.utils.utils import PROJECT_ROOT
+
+log = logging.getLogger(__name__)
+
+from joblib import Memory
+
+
+def process_full_dataset(
+    dataset: pd.DataFrame,
+    pre_split_cfg: PreSplitPreprocessingConfigSchema,
+    data_cfg: DataSchema,
+    cache_dir: Optional[Path] = None,
+) -> pd.DataFrame:
+    """Process a full dataset using the configuration."""
+    mem = Memory(location=cache_dir, verbose=1)
+    hash_list = [process_full_dataset, dataset, pre_split_cfg, data_cfg]
+
+    @mem.cache(ignore=["cache_dir"])
+    def __process_dataset(
+        dataset: pd.DataFrame,
+        pre_split_cfg: PreSplitPreprocessingConfigSchema,
+        data_cfg: DataSchema,
+    ) -> pd.DataFrame:
+        processor = FullProcessor(
+            pre_split_cfg=pre_split_cfg,
+            data_cfg=data_cfg,
+        )
+        processed_dataset = processor.process(dataset=dataset)
+        return processed_dataset
+
+    processed_dataset = __process_dataset(dataset, pre_split_cfg, data_cfg)
+
+    mem.put(hash_list, processed_dataset)
+    return processed_dataset
 
 
 class FullProcessor:
