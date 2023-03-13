@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.44.1 (2023-03-13)
+### Fix
+* Different colors for bar and line chart ([`72c814c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/72c814cfd7c3ab13501f7bb362afe1adf9abdf80))
+
 ## v0.44.0 (2023-03-13)
 ### Feature
 * Make it optional to drop outcome columns ([`5a3b8da`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5a3b8da17a4756c83df48bc6ade5c52fdd07f5bc))
