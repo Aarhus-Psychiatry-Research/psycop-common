@@ -1,6 +1,6 @@
 """Module for filtering columns before split."""
 import re
-from typing import Sequence
+from collections.abc import Sequence
 
 import pandas as pd
 from psycop_model_training.config_schemas.data import DataSchema
@@ -168,7 +168,7 @@ class PresSplitColFilter:
             return dataset
 
         df = dataset.drop(col_to_drop, axis=1)
-        
+
         n_col_names = len(infer_outcome_col_name(df))
         if n_col_names > 1:
             raise ValueError(
@@ -217,9 +217,10 @@ class PresSplitColFilter:
         if self.pre_split_cfg.lookbehind_combination:
             dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
 
-        dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
-            dataset=dataset,
-        )
+        if self.pre_split_cfg.keep_only_one_outcome_col:
+            dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
+                dataset=dataset,
+            )
 
         if self.pre_split_cfg.drop_datetime_predictor_columns:
             dataset = self._drop_datetime_columns(

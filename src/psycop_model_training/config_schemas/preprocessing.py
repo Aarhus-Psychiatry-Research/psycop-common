@@ -49,6 +49,9 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     lookbehind_combination: Optional[list[int]]
     # Which combination of features to use. Only uses features that have "within_X_days" in their column name, where X is any of the numbers in this list.
 
+    keep_only_one_outcome_col: bool = True
+    # Whether to keep only one outcome column, or all of them. If True, keeps the outcome column that matches the min_lookahead_days.
+
 
 class PostSplitPreprocessingConfigSchema(BaseModel):
     """Post split preprocessing config."""
