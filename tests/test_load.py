@@ -1,7 +1,6 @@
 """Testing of loader functions."""
 
 import time
-from functools import cache
 from pathlib import Path
 
 import pandas as pd
