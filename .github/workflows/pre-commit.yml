@@ -12,9 +12,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-      - uses: pre-commit/action@v3.0.0
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Install pre-push hooks
+        run: pre-commit install --install-hooks -t pre-push
+
+      - name: Run pre-commit
+        run: |
+          if pre-commit run --hook-stage push --all-files; then
+            echo "Pre-commit check passed"
+            echo "pre_commit_failed=0" >> $GITHUB_OUTPUT
+          else
+            echo "Pre-commit check failed"
+            echo "pre_commit_failed=1" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: find_comment
         with:
-          extra_args: --hook-stage push --all-files
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: ✨ Looks like some pre-commit hooks failed ✨
+
+      - uses: mshick/add-pr-comment@v2
+        if: ${{ steps.cruft_check.outputs.cruft_failed == 1}}
+        id: add_comment
+        with:
+          message: |
+            ✨ Looks like some pre-commit hooks failed ✨
+
+            To fix this locally, in your terminal:
+              1. Install pre-commit hooks: `pre-commit install --install-hooks -t pre-push`
+              2. Run pre-commit: `pre-commit run --hook-stage push --all-files`
+              3. Fix the errors
+
+      - uses: mshick/add-pr-comment@v2
+        if: ${{ steps.cruft_check.outputs.cruft_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
+        with:
+          message: |
+            🌟 Pre-commit succeeds! 🌟
