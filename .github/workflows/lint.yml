@@ -18,7 +18,7 @@ jobs:
         with:
           path: |
             .venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v3.2.6
         with:
           path: .mypy_cache
-          key: ${{ runner.os }}-mypy-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-mypy-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Run mypy
         run: |
