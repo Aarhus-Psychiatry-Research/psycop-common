@@ -21,27 +21,27 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]]
     # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
 
-    drop_visits_after_exclusion_timestamp: Optional[bool]
+    drop_visits_after_exclusion_timestamp: bool = True
     # Whether to drop visits for a given patietn after their exclusion timestamp. If False, no visits are dropped.
 
-    convert_to_boolean: bool
+    convert_to_boolean: bool = False
     # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivity test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
 
-    convert_booleans_to_int: bool
+    convert_booleans_to_int: bool = False
     # Whether to convert columns containing booleans to int
 
-    drop_datetime_predictor_columns: bool
+    drop_datetime_predictor_columns: bool = False
     # Whether to drop datetime columns prefixed with data.pred_prefix.
     # Typically, we don't want to use these as features, since they are unlikely to generalise into the future.
 
-    convert_datetimes_to_ordinal: bool
+    convert_datetimes_to_ordinal: bool = False
     # Whether to convert datetimes to ordinal.
 
-    min_age: float  # Minimum age to include in the dataset
-
     # Looking ahead
-    min_lookahead_days: int
+    min_lookahead_days: Optional[int]
     # Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
+
+    min_age: Optional[float]  # Minimum age to include in the dataset
 
     min_prediction_time_date: Optional[Union[str, datetime]]
     # Drop all prediction times before this date.
