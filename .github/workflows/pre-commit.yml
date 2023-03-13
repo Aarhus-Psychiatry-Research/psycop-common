@@ -24,6 +24,7 @@ jobs:
         run: pre-commit install --install-hooks -t pre-push
 
       - name: Run pre-commit
+        id: pre_commit
         run: |
           if pre-commit run --hook-stage push --all-files; then
             echo "Pre-commit check passed"
@@ -43,7 +44,7 @@ jobs:
           body-includes: ✨ Looks like some pre-commit hooks failed ✨
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.cruft_check.outputs.cruft_failed == 1}}
+        if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1}}
         id: add_comment
         with:
           message: |
@@ -55,7 +56,7 @@ jobs:
               3. Fix the errors
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.cruft_check.outputs.cruft_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
+        if: ${{ steps.pre_commit.outputs.pre_commit_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
         with:
           message: |
             🌟 Pre-commit succeeds! 🌟
