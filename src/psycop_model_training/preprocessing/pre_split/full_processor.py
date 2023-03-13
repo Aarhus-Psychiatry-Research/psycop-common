@@ -70,7 +70,7 @@ class FullProcessor:
         return dataset
 
 
-def process_full_dataset(
+def pre_split_process_full_dataset(
     dataset: pd.DataFrame,
     pre_split_cfg: PreSplitPreprocessingConfigSchema,
     data_cfg: DataSchema,

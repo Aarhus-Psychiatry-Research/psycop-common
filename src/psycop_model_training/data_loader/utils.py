@@ -7,7 +7,7 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
 from psycop_model_training.preprocessing.pre_split.full_processor import (
-    process_full_dataset,
+    pre_split_process_full_dataset,
 )
 from psycop_model_training.preprocessing.pre_split.processors.value_cleaner import (
     PreSplitValueCleaner,
@@ -35,7 +35,7 @@ def load_and_filter_split_from_cfg(
         pd.DataFrame: Train dataset
     """
     dataset = DataLoader(cfg=cfg).load_dataset_from_dir(split_names=split)
-    filtered_data = process_full_dataset(
+    filtered_data = pre_split_process_full_dataset(
         dataset=dataset,
         pre_split_cfg=cfg.preprocessing.pre_split,
         data_cfg=cfg.data,
