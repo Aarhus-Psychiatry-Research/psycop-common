@@ -282,10 +282,11 @@ def load_from_codes(
     )
 
 
-def unpack_intervals_to_days(
+def unpack_intervals(
     df: pd.DataFrame,
     starttime_col: str = "datotid_start_sei",
     endtime_col: str = "timestamp",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     """Transform df with starttime_col and endtime_col to day grain (one row per day in the interval starttime_col-endtime_col).
     First and last day will have the specific start and end time, while days inbetween will be 00:00:00.
@@ -293,23 +294,24 @@ def unpack_intervals_to_days(
     Args:
         df (pd.DataFrame): dataframe with time interval in separate columns.
         starttime_col (str, optional): Name of column with start time. Defaults to "datotid_start_sei".
-        endtime_col (str, optional): Name of column with end time. Defaults to "datotid_slut_slut".
+        endtime_col (str, optional): Name of column with end time. Defaults to "timestamp".
+        unpack_freq: Frequency string by which the interval will be unpacked. Default to "D" (day). For e.g., 5 hours, write "5H".
 
     Returns:
         pd.DataFrame: Dataframe with time interval unpacked to day grain.
 
     """
 
-    # create rows with start and end time
-    df_start_rows, df_end_rows = df.copy(), df.copy()
-    df_start_rows["date_range"] = df_start_rows[f"{starttime_col}"]
+    # create rows with end time
+    df_end_rows = df.copy()
     df_end_rows["date_range"] = df_end_rows[f"{endtime_col}"]
 
     # create a date range column between start date and end date for each visit/admission/coercion instance
     df["date_range"] = df.apply(
         lambda x: pd.date_range(
-            start=x[f"{starttime_col}"].date() + pd.DateOffset(1),
-            end=x[f"{endtime_col}"].date(),
+            start=x[f"{starttime_col}"],
+            end=x[f"{endtime_col}"],
+            freq=unpack_freq,
         ),
         axis=1,
     )
@@ -317,21 +319,18 @@ def unpack_intervals_to_days(
     # explode the date range column to create a new row for each date in the range
     df = df.explode("date_range")
 
-    # remove na's (produced when start date = end date)
-    df = df[df["date_range"].notnull()]
-
     # concat df with start and end time rows
-    df = pd.concat([df, df_start_rows, df_end_rows], ignore_index=True).sort_values(
+    df = pd.concat([df, df_end_rows], ignore_index=True).sort_values(
         ["dw_ek_borger", f"{starttime_col}", "date_range"]
     )
 
-    # drop duplicates (when start or end time = 00:00:00)
+    # drop duplicates (when start and/or end time = 00:00:00)
     df = df.drop_duplicates(keep="first")
 
     # reset index
     df = df.reset_index(drop=True)
 
-    # set value to 1 (duration has lost meaning now, since duration are repeated multiple times per visit/admission/coercion instance now)
+    # set value to 1 (duration has lost meaning now, since durations are repeated on multiple rows per coercion instance now)
     df["value"] = 1
 
     # only keep relevant columns and rename date_range to timestamp
