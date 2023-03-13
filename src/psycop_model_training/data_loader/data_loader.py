@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Callable, Optional, Union
 
 import pandas as pd
+from psycop_model_training.config_schemas.data import DataSchema
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from wasabi import Printer
 
@@ -22,23 +23,23 @@ class DataLoader:
 
     def __init__(
         self,
-        cfg: FullConfigSchema,
+        data_cfg: DataSchema,
         column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,
     ):
-        self.cfg: FullConfigSchema = cfg
+        self.data_cfg: FullConfigSchema = data_cfg
 
         # File handling
-        self.dir_path = Path(cfg.data.dir)
-        self.file_suffix = cfg.data.suffix
+        self.dir_path = Path(data_cfg.dir)
+        self.file_suffix = data_cfg.suffix
         self.column_name_checker = column_name_checker
 
         # Column specifications
-        self.pred_col_name_prefix = cfg.data.pred_prefix
+        self.pred_col_name_prefix = data_cfg.pred_prefix
 
     def _check_column_names(self, df: pd.DataFrame):
         """Check that all columns in the config exist in the dataset."""
         if self.column_name_checker:
-            self.column_name_checker(col_name_schema=self.cfg.data.col_name, df=df)
+            self.column_name_checker(col_name_schema=self.data_data_cfg.col_name, df=df)
         else:
             log.debug("No column name checker specified. Skipping column name check.")
 
