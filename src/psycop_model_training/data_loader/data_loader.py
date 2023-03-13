@@ -39,7 +39,7 @@ class DataLoader:
     def _check_column_names(self, df: pd.DataFrame):
         """Check that all columns in the config exist in the dataset."""
         if self.column_name_checker:
-            self.column_name_checker(col_name_schema=self.data_data_cfg.col_name, df=df)
+            self.column_name_checker(col_name_schema=self.data_cfg.col_name, df=df)
         else:
             log.debug("No column name checker specified. Skipping column name check.")
 
