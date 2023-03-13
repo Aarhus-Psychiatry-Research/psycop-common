@@ -53,6 +53,7 @@ def load_and_filter_train_from_cfg(
 
     Args:
         cfg (FullConfig): Config
+        cache_dir (Optional[Path], optional): Directory. Defaults to None, in which case no caching is used.
 
     Returns:
         pd.DataFrame: Train dataset
