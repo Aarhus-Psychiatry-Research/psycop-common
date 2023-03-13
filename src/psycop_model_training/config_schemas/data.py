@@ -7,11 +7,11 @@ from psycop_model_training.config_schemas.basemodel import BaseModel
 class ColumnNamesSchema(BaseModel):
     """Column names in the data."""
 
-    pred_timestamp: str  # Column name for prediction times
-    outcome_timestamp: str  # Column name for outcome timestamps
-    id: str  # Citizen colnames # noqa
-    age: str  # Name of the age column
-    is_female: str  # Name of the sex column
+    pred_timestamp: str = "pred_timestamp"  # Column name for prediction times
+    outcome_timestamp: str = "outc_timestamp"  # Column name for outcome timestamps
+    id: str = "dw_ek_borger"  # Citizen colnames # noqa
+    age: str = "pred_age"  # Name of the age column
+    is_female: str = "sex_is_female"  # Name of the sex column
     exclusion_timestamp: Optional[str]  # Name of the exclusion timestamps column.
     # Drops all visits whose pred_timestamp <= exclusion_timestamp.
     custom_columns: Optional[list[str]] = None
@@ -21,13 +21,13 @@ class DataSchema(BaseModel):
     """Data configuration."""
 
     dir: Union[Path, str]  # Location of the dataset # noqa
-    suffix: str  # File suffix to load.
+    suffix: str = ".parquet"  # File suffix to load.
 
     # Feature specs
-    col_name: ColumnNamesSchema
+    col_name: ColumnNamesSchema = ColumnNamesSchema()
 
-    pred_prefix: str  # prefix of predictor columns
-    outc_prefix: str  # prefix of outcome columns
+    pred_prefix: str = "pred_"  # prefix of predictor columns
+    outc_prefix: str = "outc_"  # prefix of outcome columns
 
     n_training_samples: Optional[int]
     # Number of training samples to use, defaults to null in which cases it uses all samples.
