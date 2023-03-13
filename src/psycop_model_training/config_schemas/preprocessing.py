@@ -38,7 +38,7 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     # Whether to convert datetimes to ordinal.
 
     # Looking ahead
-    min_lookahead_days: float
+    min_lookahead_days: int
     # Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
 
     min_age: Optional[float]  # Minimum age to include in the dataset

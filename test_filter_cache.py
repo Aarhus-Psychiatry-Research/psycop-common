@@ -18,13 +18,14 @@ if __name__ == "__main__":
         dir=dataset_path,
         col_name=ColumnNamesSchema(
             outcome_timestamp="timestamp_first_diabetes_lab_result",
+            exclusion_timestamp="first_diabetes_indicator",
         ),
     )
     dataset = DataLoader(data_cfg=data_cfg).load_dataset_from_dir(split_names=["train"])
 
     processed_dataset = pre_split_process_full_dataset(
         dataset=dataset,
-        pre_split_cfg=PreSplitPreprocessingConfigSchema(),
+        pre_split_cfg=PreSplitPreprocessingConfigSchema(min_lookahead_days=365),
         data_cfg=data_cfg,
         cache_dir=Path("E:/shared_resources/t2d/feature_sets/cache"),
     )

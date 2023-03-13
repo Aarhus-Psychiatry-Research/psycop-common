@@ -168,10 +168,11 @@ class PresSplitColFilter:
             return dataset
 
         df = dataset.drop(col_to_drop, axis=1)
-
-        if len(infer_outcome_col_name(df)) == 1:
+        
+        n_col_names = len(infer_outcome_col_name(df))
+        if n_col_names > 1:
             raise ValueError(
-                "Returning more than one outcome column, will cause problems during eval.",
+                f"Returning {n_col_names} outcome columns, will cause problems during eval.",
             )
 
         return df
