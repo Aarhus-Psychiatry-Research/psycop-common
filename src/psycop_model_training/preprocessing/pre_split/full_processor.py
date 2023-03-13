@@ -79,7 +79,7 @@ def pre_split_process_full_dataset(
     """Process a full dataset using the configuration."""
     mem = Memory(location=cache_dir, verbose=1)
 
-    @mem.cache(ignore=["cache_dir"], verbose=1)
+    @mem.cache(verbose=1)
     def __process_dataset(
         dataset: pd.DataFrame,
         pre_split_cfg: PreSplitPreprocessingConfigSchema,
