@@ -21,7 +21,7 @@ class DataSchema(BaseModel):
     """Data configuration."""
 
     dir: Union[Path, str]  # Location of the dataset # noqa
-    suffix: str = ".parquet"  # File suffix to load.
+    suffix: str = "parquet"  # File suffix to load.
 
     # Feature specs
     col_name: ColumnNamesSchema = ColumnNamesSchema()
