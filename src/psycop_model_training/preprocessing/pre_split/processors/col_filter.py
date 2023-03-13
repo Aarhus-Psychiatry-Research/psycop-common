@@ -2,7 +2,11 @@
 import re
 
 import pandas as pd
+from psycop_model_training.config_schemas.data import DataSchema
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.preprocessing import (
+    PreSplitPreprocessingConfigSchema,
+)
 from psycop_model_training.data_loader.data_loader import msg
 from psycop_model_training.utils.col_name_inference import (
     infer_look_distance,
@@ -16,8 +20,13 @@ from psycop_model_training.utils.utils import get_percent_lost
 class PresSplitColFilter:
     """Class for filtering columns before split."""
 
-    def __init__(self, cfg: FullConfigSchema) -> None:
-        self.cfg = cfg
+    def __init__(
+        self,
+        pre_split_cfg: PreSplitPreprocessingConfigSchema,
+        data_cfg: DataSchema,
+    ):
+        self.pre_split_cfg = pre_split_cfg
+        self.data_cfg = data_cfg
 
     @print_df_dimensions_diff
     def _drop_cols_not_in_lookbehind_combination(
@@ -34,7 +43,7 @@ class PresSplitColFilter:
             pd.DataFrame: Dataset with dropped columns.
         """
 
-        if not self.cfg.preprocessing.pre_split.lookbehind_combination:
+        if not self.pre_split_cfg.lookbehind_combination:
             raise ValueError("No lookbehind_combination provided.")
 
         # Extract all unique lookbhehinds in the dataset predictors
@@ -46,7 +55,7 @@ class PresSplitColFilter:
 
         # Convert list to set
         lookbehinds_in_spec = set(
-            self.cfg.preprocessing.pre_split.lookbehind_combination,
+            self.pre_split_cfg.lookbehind_combination,
         )
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
@@ -151,7 +160,7 @@ class PresSplitColFilter:
         col_to_drop = [
             c
             for c in outcome_cols
-            if f"_{str(self.cfg.preprocessing.pre_split.min_lookahead_days)}_" not in c
+            if f"_{str(self.pre_split_cfg.min_lookahead_days)}_" not in c
         ]
 
         # If no columns to drop, return the dataset
@@ -160,10 +169,7 @@ class PresSplitColFilter:
 
         df = dataset.drop(col_to_drop, axis=1)
 
-        if (
-            self.cfg.debug is None
-            or self.cfg.debug.assert_outcome_col_matching_lookahead_exists
-        ) and not len(infer_outcome_col_name(df)) == 1:
+        if len(infer_outcome_col_name(df)) == 1:
             raise ValueError(
                 "Returning more than one outcome column, will cause problems during eval.",
             )
@@ -193,9 +199,9 @@ class PresSplitColFilter:
         """Filter a dataframe based on the config."""
         for direction in ("ahead", "behind"):
             if direction == "ahead":
-                n_days = self.cfg.preprocessing.pre_split.min_lookahead_days
+                n_days = self.pre_split_cfg.min_lookahead_days
             elif direction == "behind":
-                n_days = max(self.cfg.preprocessing.pre_split.lookbehind_combination)
+                n_days = max(self.pre_split_cfg.lookbehind_combination)
 
             dataset = self._drop_cols_if_exceeds_look_direction_threshold(
                 dataset=dataset,
@@ -203,16 +209,16 @@ class PresSplitColFilter:
                 direction=direction,
             )
 
-        if self.cfg.preprocessing.pre_split.lookbehind_combination:
+        if self.pre_split_cfg.lookbehind_combination:
             dataset = self._drop_cols_not_in_lookbehind_combination(dataset=dataset)
 
         dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
             dataset=dataset,
         )
 
-        if self.cfg.preprocessing.pre_split.drop_datetime_predictor_columns:
+        if self.pre_split_cfg.drop_datetime_predictor_columns:
             dataset = self._drop_datetime_columns(
-                pred_prefix=self.cfg.data.pred_prefix,
+                pred_prefix=self.data_cfg.pred_prefix,
                 dataset=dataset,
             )
 

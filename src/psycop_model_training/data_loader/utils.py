@@ -31,7 +31,7 @@ def load_and_filter_split_from_cfg(
         pd.DataFrame: Train dataset
     """
     dataset = DataLoader(cfg=cfg).load_dataset_from_dir(split_names=split)
-    filtered_data = FullProcessor(cfg=cfg).process(dataset=dataset)
+    filtered_data = FullProcessor(pre_split_cfg=cfg).process(dataset=dataset)
 
     return filtered_data
 

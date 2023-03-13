@@ -1,6 +1,10 @@
 """Full processor for pre-split preprocessing."""
 import pandas as pd
+from psycop_model_training.config_schemas.data import DataSchema
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.preprocessing import (
+    PreSplitPreprocessingConfigSchema,
+)
 from psycop_model_training.preprocessing.pre_split.processors.col_filter import (
     PresSplitColFilter,
 )
@@ -27,12 +31,28 @@ class FullProcessor:
     users.
     """
 
-    def __init__(self, cfg: FullConfigSchema):
-        self.cfg = cfg
-        self.row_filterer = PreSplitRowFilter(cfg=cfg)
-        self.col_filterer = PresSplitColFilter(cfg=cfg)
-        self.value_transformer = PreSplitValueTransformer(cfg=cfg)
-        self.value_cleaner = PreSplitValueCleaner(cfg=cfg)
+    def __init__(
+        self,
+        pre_split_cfg: PreSplitPreprocessingConfigSchema,
+        data_cfg: DataSchema,
+    ):
+        self.cfg = pre_split_cfg
+        self.row_filterer = PreSplitRowFilter(
+            pre_split_cfg=pre_split_cfg,
+            data_cfg=data_cfg,
+        )
+        self.col_filterer = PresSplitColFilter(
+            pre_split_cfg=pre_split_cfg,
+            data_cfg=data_cfg,
+        )
+        self.value_transformer = PreSplitValueTransformer(
+            pre_split_cfg=pre_split_cfg,
+            data_cfg=data_cfg,
+        )
+        self.value_cleaner = PreSplitValueCleaner(
+            pre_split_cfg=pre_split_cfg,
+            data_cfg=data_cfg,
+        )
 
     def process(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process a dataframe using the configuration."""
