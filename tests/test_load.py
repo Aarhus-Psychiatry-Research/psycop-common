@@ -1,5 +1,9 @@
 """Testing of loader functions."""
 
+import time
+from functools import cache
+from pathlib import Path
+
 import pandas as pd
 import pytest
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
@@ -24,6 +28,39 @@ def test_load_lookbehind_exceeds_lookbehind_threshold(
     n_cols_after_filtering = load_and_filter_train_from_cfg(cfg=cfg).shape[1]
 
     assert n_cols_before_filtering - n_cols_after_filtering == 2
+
+
+def test_filter_with_cache(
+    muteable_test_config: FullConfigSchema,
+    tmpdir: Path,
+):
+    """Test that filtering with cache works"""
+    cfg = muteable_test_config
+
+    uncached_durations = []
+    for _ in range(10):
+        start = time.time()
+        load_and_filter_train_from_cfg(
+            cfg=cfg,
+        )
+        end = time.time()
+        print(end - start)
+        uncached_durations.append(end - start)
+    mean_uncached_duration = sum(uncached_durations) / len(uncached_durations)
+
+    cached_durations = []
+    for _ in range(10):
+        start_2 = time.time()
+        load_and_filter_train_from_cfg(
+            cfg=cfg,
+            cache_dir=tmpdir,
+        )
+        end_2 = time.time()
+        cached_durations.append(end_2 - start_2)
+    mean_cached_duration = sum(cached_durations) / len(cached_durations)
+
+    duration_ratio = mean_cached_duration / mean_uncached_duration
+    assert duration_ratio < 0.9
 
 
 def test_load_lookbehind_not_in_lookbehind_combination(
