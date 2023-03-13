@@ -286,6 +286,7 @@ def unpack_intervals(
     df: pd.DataFrame,
     starttime_col: str = "datotid_start_sei",
     endtime_col: str = "timestamp",
+    entity_id: str = "dw_ek_borger",
     unpack_freq: str = "D",
 ) -> pd.DataFrame:
     """Transform df with starttime_col and endtime_col to day grain (one row per day in the interval starttime_col-endtime_col).
@@ -321,7 +322,7 @@ def unpack_intervals(
 
     # concat df with start and end time rows
     df = pd.concat([df, df_end_rows], ignore_index=True).sort_values(
-        ["dw_ek_borger", f"{starttime_col}", "date_range"]
+        [f"{entity_id}", f"{starttime_col}", "date_range"]
     )
 
     # drop duplicates (when start and/or end time = 00:00:00)
@@ -334,7 +335,7 @@ def unpack_intervals(
     df["value"] = 1
 
     # only keep relevant columns and rename date_range to timestamp
-    df = df[["dw_ek_borger", "date_range", "value"]].rename(
+    df = df[[f"{entity_id}", "date_range", "value"]].rename(
         columns={"date_range": "timestamp"}
     )
 
