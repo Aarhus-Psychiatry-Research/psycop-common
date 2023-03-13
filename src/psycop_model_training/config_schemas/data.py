@@ -20,9 +20,6 @@ class ColumnNamesSchema(BaseModel):
 class DataSchema(BaseModel):
     """Data configuration."""
 
-    n_training_samples: Optional[int]
-    # Number of training samples to use, defaults to null in which cases it uses all samples.
-
     dir: Union[Path, str]  # Location of the dataset # noqa
     suffix: str  # File suffix to load.
 
@@ -31,3 +28,6 @@ class DataSchema(BaseModel):
 
     pred_prefix: str  # prefix of predictor columns
     outc_prefix: str  # prefix of outcome columns
+
+    n_training_samples: Optional[int]
+    # Number of training samples to use, defaults to null in which cases it uses all samples.
