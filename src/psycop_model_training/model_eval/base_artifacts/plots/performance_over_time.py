@@ -22,36 +22,6 @@ from psycop_model_training.utils.utils import bin_continuous_data, round_floats_
 from sklearn.metrics import f1_score, roc_auc_score
 
 
-def create_performance_by_calendar_time_df(
-    labels: Iterable[int],
-    y_hat: Iterable[float],
-    timestamps: Iterable[pd.Timestamp],
-    metric_fn: Callable,
-    bin_period: str,
-) -> pd.DataFrame:
-    """Calculate performance by calendar time of prediction.
-
-    Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
-        timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
-        metric_fn (Callable): Callable which returns the metric to calculate
-        bin_period (str): How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
-
-    Returns:
-        pd.DataFrame: Dataframe ready for plotting
-    """
-    df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
-
-    df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
-
-    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
-
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
-
-    return output_df
-
-
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
     pred_proba_percentile: Union[float, Iterable[float]],
@@ -107,6 +77,36 @@ def plot_recall_by_calendar_time(
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
+
+
+def create_performance_by_calendar_time_df(
+    labels: Iterable[int],
+    y_hat: Iterable[float],
+    timestamps: Iterable[pd.Timestamp],
+    metric_fn: Callable,
+    bin_period: str,
+) -> pd.DataFrame:
+    """Calculate performance by calendar time of prediction.
+
+    Args:
+        labels (Iterable[int]): True labels
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
+        timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
+        metric_fn (Callable): Callable which returns the metric to calculate
+        bin_period (str): How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
+
+    Returns:
+        pd.DataFrame: Dataframe ready for plotting
+    """
+    df = pd.DataFrame({"y": labels, "y_hat": y_hat, "timestamp": timestamps})
+
+    df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
+
+    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
+
+    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
+
+    return output_df
 
 
 def plot_metric_by_calendar_time(

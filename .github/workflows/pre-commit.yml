@@ -12,9 +12,54 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-      - uses: pre-commit/action@v3.0.0
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Install pre-push hooks
+        run: pre-commit install --install-hooks -t pre-push
+
+      - name: Run pre-commit
+        id: pre_commit
+        continue-on-error: true
+        run: |
+          if pre-commit run --hook-stage push --all-files; then
+            echo "Pre-commit check passed"
+            echo "pre_commit_failed=0" >> $GITHUB_OUTPUT
+          else
+            echo "Pre-commit check failed"
+            echo "pre_commit_failed=1" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: find_comment
         with:
-          extra_args: --hook-stage push --all-files
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: ✨ Looks like some pre-commit hooks failed ✨
+
+      - uses: mshick/add-pr-comment@v2
+        if: ${{ failure() }}
+        id: add_comment
+        with:
+          message: |
+            ✨ Looks like some pre-commit hooks failed ✨
+
+            If you want to fix this, we recommend doing it locally by:
+              1. Installing pre-commit hooks: `pre-commit install --install-hooks -t pre-push`
+              2. Diagnosing the errors by running `pre-commit run --hook-stage push --all-files` 
+
+            After installing pre-commit hooks, they will run automatically in the future when you run `git push`.
+
+      - uses: mshick/add-pr-comment@v2
+        if: ${{ steps.pre_commit.outputs.pre_commit_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
+        with:
+          message_id: ${{ steps.find_comment.outputs.comment-id }}
+          message: |
+            🌟 Pre-commit succeeds! 🌟
