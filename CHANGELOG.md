@@ -2,6 +2,31 @@
 
 <!--next-version-placeholder-->
 
+## v0.44.0 (2023-03-13)
+### Feature
+* Make it optional to drop outcome columns ([`5a3b8da`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5a3b8da17a4756c83df48bc6ade5c52fdd07f5bc))
+* Add data loader example ([`a0f4940`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a0f494028a860e8e4fe8cd77920777c1121ee51e))
+* Add exclusion timestamp ([`e88c13a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e88c13a02950b79c04090f31efeedde5853ae3fe))
+* Update default age and sex col name ([`f825ca7`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f825ca762e818c4f8b9eccbc78e76faa6fc350a9))
+* Add example of caching filtered datasets ([`8cf3ef3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8cf3ef334fed42ba8e7b2e92fc78cc015e6d3baa))
+* Make most preprocessing steps optional or hav reasonable defaults ([`1125ae0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1125ae0aadfd41d181cac1ba8e6b9021a072a7da))
+* Set reasonable defaults for most options for dataschema ([`2e6c22f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2e6c22f57f5d602e76658a39c5268c86c4f3d4ed))
+* Add cache dir to calling functions ([`f71385d`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f71385d56681c4d9ed06c3cd57ce42d43f6a4153))
+* Add dataset cache to process_full_dataset ([`ab3c7a4`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ab3c7a443d08cc1e727ec9719ff6961c1ee05018))
+
+### Fix
+* Casting min_age to float resulted in error ([`04a56dd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/04a56ddc4d05da8f179b8ca18eb8e733de2fe1d0))
+* Min_lookahead_days is not optional, required to select outcome column ([`3a5bbbe`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3a5bbbed56bf6f1580abad6aa8e59d667af1d691))
+* Handle n_days = None in both ([`d3c1664`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d3c1664531196af121bd7e400c5112f03ab543d4))
+* Handle lookahead filter = None ([`10a63f9`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/10a63f91f119f86b8e6a3a55f4b4d228154efc6d))
+* Handle lookahead filter = None ([`00d3efe`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/00d3efe6e443661df34654c6cfe3a642296d4093))
+* No need to ignore unpassed argument ([`ced1522`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ced15224adb97719d94b6fe9a1545a25a1aa9881))
+* Default pred_timestamp col name ([`24d50e0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/24d50e0d61d02783de0247b43a1c84a476550e4c))
+* Typo in suffix ([`b7420d4`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b7420d4cc05a2c908885c26aa0eae1c70444f7bd))
+
+### Performance
+* Cache datasets ([#421](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/421)) ([`3bceccd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3bceccdce86dc726314d92b122489026273fdc2c))
+
 ## v0.43.0 (2023-03-10)
 ### Feature
 * Return bins if series is NaN, but only NaN values ([`060ca14`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/060ca1403778b6d4a5f071faa5cf36d0ec8a6ecc))
