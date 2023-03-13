@@ -25,6 +25,7 @@ jobs:
 
       - name: Run pre-commit
         id: pre_commit
+        continue-on-error: true
         run: |
           if pre-commit run --hook-stage push --all-files; then
             echo "Pre-commit check passed"
@@ -32,7 +33,7 @@ jobs:
           else
             echo "Pre-commit check failed"
             echo "pre_commit_failed=1" >> $GITHUB_OUTPUT
-            exit 0
+            exit 1
           fi
 
       - name: Find Comment
@@ -44,7 +45,7 @@ jobs:
           body-includes: ✨ Looks like some pre-commit hooks failed ✨
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1}}
+        if: ${{ failure() }}
         id: add_comment
         with:
           message: |
