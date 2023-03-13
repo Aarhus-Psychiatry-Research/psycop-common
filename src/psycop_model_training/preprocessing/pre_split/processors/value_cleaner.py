@@ -2,7 +2,10 @@
 negative values etc."""
 import numpy as np
 import pandas as pd
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.data import DataSchema
+from psycop_model_training.config_schemas.preprocessing import (
+    PreSplitPreprocessingConfigSchema,
+)
 from psycop_model_training.utils.col_name_inference import infer_predictor_col_name
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 
@@ -11,8 +14,13 @@ class PreSplitValueCleaner:
     """Class for cleaning values before split, e.g. assigning datetime,
     removing negative values etc."""
 
-    def __init__(self, cfg: FullConfigSchema) -> None:
-        self.cfg = cfg
+    def __init__(
+        self,
+        pre_split_cfg: PreSplitPreprocessingConfigSchema,
+        data_cfg: DataSchema,
+    ):
+        self.pre_split_cfg = pre_split_cfg
+        self.data_cfg = data_cfg
 
     @staticmethod
     @print_df_dimensions_diff
@@ -58,7 +66,6 @@ class PreSplitValueCleaner:
         # 1a. See if there's a way of using feature selection that permits negative values, or
         # 1b. Always use z-score normalisation?
         dataset = self._negative_values_to_nan(dataset=dataset)
-
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
         return dataset

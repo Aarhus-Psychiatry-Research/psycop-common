@@ -80,6 +80,6 @@ jobs:
       - uses: mshick/add-pr-comment@v2
         if: ${{ steps.mypy.outputs.mypy_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
         with:
-          message_id: ${{ steps.find_comment.outputs.comment-id }}
+          message-id: ${{ steps.find_comment.outputs.comment-id }}
           message: |
             🌟 mypy succeeds! 🌟

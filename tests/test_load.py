@@ -1,5 +1,6 @@
 """Testing of loader functions."""
 
+
 import pandas as pd
 import pytest
 from psycop_model_training.config_schemas.data import ColumnNamesSchema

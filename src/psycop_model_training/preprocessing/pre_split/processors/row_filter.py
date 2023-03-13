@@ -3,7 +3,10 @@ from datetime import timedelta
 from typing import Union
 
 import pandas as pd
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.data import DataSchema
+from psycop_model_training.config_schemas.preprocessing import (
+    PreSplitPreprocessingConfigSchema,
+)
 from psycop_model_training.data_loader.data_loader import msg
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from psycop_model_training.utils.utils import get_percent_lost
@@ -12,8 +15,13 @@ from psycop_model_training.utils.utils import get_percent_lost
 class PreSplitRowFilter:
     """Row filter for pre-split data."""
 
-    def __init__(self, cfg: FullConfigSchema):
-        self.cfg = cfg
+    def __init__(
+        self,
+        pre_split_cfg: PreSplitPreprocessingConfigSchema,
+        data_cfg: DataSchema,
+    ):
+        self.pre_split_cfg = pre_split_cfg
+        self.data_cfg = data_cfg
 
     @print_df_dimensions_diff
     def _drop_rows_if_datasets_ends_within_days(
@@ -43,17 +51,17 @@ class PreSplitRowFilter:
 
         if direction == "ahead":
             max_datetime = (
-                dataset[self.cfg.data.col_name.pred_timestamp].max() - n_days_timedelt
+                dataset[self.data_cfg.col_name.pred_timestamp].max() - n_days_timedelt
             )
             before_max_dt = (
-                dataset[self.cfg.data.col_name.pred_timestamp] < max_datetime
+                dataset[self.data_cfg.col_name.pred_timestamp] < max_datetime
             )
             dataset = dataset[before_max_dt]
         elif direction == "behind":
             min_datetime = (
-                dataset[self.cfg.data.col_name.pred_timestamp].min() + n_days_timedelt
+                dataset[self.data_cfg.col_name.pred_timestamp].min() + n_days_timedelt
             )
-            after_min_dt = dataset[self.cfg.data.col_name.pred_timestamp] > min_datetime
+            after_min_dt = dataset[self.data_cfg.col_name.pred_timestamp] > min_datetime
             dataset = dataset[after_min_dt]
 
         n_rows_after_modification = dataset.shape[0]
@@ -80,14 +88,14 @@ class PreSplitRowFilter:
         n_rows_before_modification = dataset.shape[0]
 
         outcome_before_date = (
-            dataset[self.cfg.data.col_name.exclusion_timestamp]
-            < self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date
+            dataset[self.data_cfg.col_name.exclusion_timestamp]
+            < self.pre_split_cfg.drop_patient_if_exclusion_before_date
         )
 
         patients_to_drop = set(
-            dataset[self.cfg.data.col_name.id][outcome_before_date].unique(),
+            dataset[self.data_cfg.col_name.id][outcome_before_date].unique(),
         )
-        dataset = dataset[~dataset[self.cfg.data.col_name.id].isin(patients_to_drop)]
+        dataset = dataset[~dataset[self.data_cfg.col_name.id].isin(patients_to_drop)]
 
         n_rows_after_modification = dataset.shape[0]
 
@@ -98,11 +106,11 @@ class PreSplitRowFilter:
 
         if n_rows_before_modification - n_rows_after_modification != 0:
             msg.info(
-                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because they met exclusion criteria before {self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date}.",
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because they met exclusion criteria before {self.pre_split_cfg.drop_patient_if_exclusion_before_date}.",
             )
         else:
             msg.info(
-                f"No rows met exclusion criteria before {self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date}. Didn't drop any.",
+                f"No rows met exclusion criteria before {self.pre_split_cfg.drop_patient_if_exclusion_before_date}. Didn't drop any.",
             )
 
         return dataset
@@ -112,8 +120,7 @@ class PreSplitRowFilter:
         """Keep only rows that are older than the minimum age specified in the
         config."""
         return dataset[
-            dataset[self.cfg.data.col_name.age]
-            >= self.cfg.preprocessing.pre_split.min_age
+            dataset[self.data_cfg.col_name.age] >= self.pre_split_cfg.min_age
         ]
 
     @print_df_dimensions_diff
@@ -125,8 +132,8 @@ class PreSplitRowFilter:
         time."""
 
         rows_to_drop = (
-            dataset[self.cfg.data.col_name.pred_timestamp]
-            > dataset[self.cfg.data.col_name.exclusion_timestamp]
+            dataset[self.data_cfg.col_name.pred_timestamp]
+            > dataset[self.data_cfg.col_name.exclusion_timestamp]
         )
 
         return dataset[~rows_to_drop]
@@ -135,39 +142,51 @@ class PreSplitRowFilter:
     def _drop_rows_after_event_time(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop all rows where prediction timestamp is after the outcome."""
         rows_to_drop = (
-            dataset[self.cfg.data.col_name.pred_timestamp]
-            > dataset[self.cfg.data.col_name.outcome_timestamp]
+            dataset[self.data_cfg.col_name.pred_timestamp]
+            > dataset[self.data_cfg.col_name.outcome_timestamp]
         )
 
         return dataset[~rows_to_drop]
 
     def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Run filters based on config."""
-        if self.cfg.preprocessing.pre_split.min_prediction_time_date:
+        if self.pre_split_cfg.min_prediction_time_date:
             dataset = dataset[
-                dataset[self.cfg.data.col_name.pred_timestamp]
-                > self.cfg.preprocessing.pre_split.min_prediction_time_date
+                dataset[self.data_cfg.col_name.pred_timestamp]
+                > self.pre_split_cfg.min_prediction_time_date
             ]
 
         for direction in ("ahead", "behind"):
             if direction == "ahead":
-                n_days = self.cfg.preprocessing.pre_split.min_lookahead_days
+                n_days = self.pre_split_cfg.min_lookahead_days
             elif direction == "behind":
-                n_days = max(self.cfg.preprocessing.pre_split.lookbehind_combination)
+                if self.pre_split_cfg.lookbehind_combination is not None:
+                    n_days = min(self.pre_split_cfg.lookbehind_combination)
+                else:
+                    None
 
-            dataset = self._drop_rows_if_datasets_ends_within_days(
-                n_days=n_days,
-                dataset=dataset,
-                direction=direction,
-            )
+            if n_days is not None:
+                dataset = self._drop_rows_if_datasets_ends_within_days(
+                    n_days=n_days,
+                    dataset=dataset,
+                    direction=direction,
+                )
 
-        if self.cfg.preprocessing.pre_split.drop_patient_if_exclusion_before_date:
+        if self.pre_split_cfg.drop_patient_if_exclusion_before_date:
+            if self.data_cfg.col_name.exclusion_timestamp is None:
+                raise ValueError(
+                    "Can't drop patients if exclusion timestamp is not specified in config.",
+                )
             dataset = self._drop_patient_if_excluded_by_date(dataset)
 
-        if self.cfg.preprocessing.pre_split.drop_visits_after_exclusion_timestamp:
+        if self.pre_split_cfg.drop_visits_after_exclusion_timestamp:
+            if self.data_cfg.col_name.exclusion_timestamp is None:
+                raise ValueError(
+                    "Can't drop visits if exclusion timestamp is not specified in config.",
+                )
             dataset = self._drop_visit_after_exclusion_timestamp(dataset)
 
-        if self.cfg.preprocessing.pre_split.min_age:
+        if self.pre_split_cfg.min_age:
             dataset = self._keep_only_if_older_than_min_age(dataset)
 
         dataset = self._drop_rows_after_event_time(dataset=dataset)

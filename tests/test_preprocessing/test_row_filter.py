@@ -28,6 +28,7 @@ def test_drop_rows_with_insufficient_lookahead(
     """Test that rows are dropped if they can't look sufficiently far into the
     correct direction."""
     cfg = muteable_test_config
+    cfg.preprocessing.pre_split.keep_only_one_outcome_col = False
     cfg.debug = DebugConfSchema(assert_outcome_col_matching_lookahead_exists=False)
 
     # No lookahead

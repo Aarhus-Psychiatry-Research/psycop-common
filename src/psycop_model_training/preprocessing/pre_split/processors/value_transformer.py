@@ -7,7 +7,10 @@ information about the values in the dataset.
 from datetime import datetime
 
 import pandas as pd
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from psycop_model_training.config_schemas.data import DataSchema
+from psycop_model_training.config_schemas.preprocessing import (
+    PreSplitPreprocessingConfigSchema,
+)
 from psycop_model_training.utils.col_name_inference import infer_predictor_col_name
 from psycop_model_training.utils.decorators import print_df_dimensions_diff
 from wasabi import Printer
@@ -18,8 +21,13 @@ msg = Printer(timestamp=True)
 class PreSplitValueTransformer:
     """Pre-split value transformer."""
 
-    def __init__(self, cfg: FullConfigSchema) -> None:
-        self.cfg = cfg
+    def __init__(
+        self,
+        pre_split_cfg: PreSplitPreprocessingConfigSchema,
+        data_cfg: DataSchema,
+    ):
+        self.pre_split_cfg = pre_split_cfg
+        self.data_cfg = data_cfg
 
     @print_df_dimensions_diff
     def _convert_boolean_dtypes_to_int(self, dataset: pd.DataFrame) -> pd.DataFrame:
@@ -51,7 +59,7 @@ class PreSplitValueTransformer:
         ignore_dtypes: tuple = ("datetime64[ns]", "<M8[ns]"),
     ) -> pd.DataFrame:
         """Convert predictors to boolean."""
-        columns = infer_predictor_col_name(df=dataset, prefix=self.cfg.data.pred_prefix)
+        columns = infer_predictor_col_name(df=dataset, prefix=self.data_cfg.pred_prefix)
 
         cols_to_round = [
             c
@@ -66,13 +74,13 @@ class PreSplitValueTransformer:
 
     def transform(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Transform the dataset."""
-        if self.cfg.preprocessing.pre_split.convert_booleans_to_int:
+        if self.pre_split_cfg.convert_booleans_to_int:
             dataset = self._convert_boolean_dtypes_to_int(dataset=dataset)
 
-        if self.cfg.preprocessing.pre_split.convert_datetimes_to_ordinal:
+        if self.pre_split_cfg.convert_datetimes_to_ordinal:
             dataset = self._convert_datetimes_to_ordinal(dataset=dataset)
 
-        if self.cfg.preprocessing.pre_split.convert_to_boolean:
+        if self.pre_split_cfg.convert_to_boolean:
             dataset = self._convert_predictors_to_boolean(dataset=dataset)
 
         msg.info("Finished processing dataset")
