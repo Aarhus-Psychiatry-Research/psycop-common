@@ -7,7 +7,7 @@ from psycop_model_training.config_schemas.basemodel import BaseModel
 class ColumnNamesSchema(BaseModel):
     """Column names in the data."""
 
-    pred_timestamp: str = "pred_timestamp"  # Column name for prediction times
+    pred_timestamp: str = "timestamp"  # Column name for prediction times
     outcome_timestamp: str = "outc_timestamp"  # Column name for outcome timestamps
     id: str = "dw_ek_borger"  # Citizen colnames # noqa
     age: str = "pred_age_in_years"  # Name of the age column
