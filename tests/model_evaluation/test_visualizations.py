@@ -125,7 +125,7 @@ def test_plot_recall_by_calendar_time(
     plot_recall_by_calendar_time(
         eval_dataset=synth_eval_dataset,
         pos_rate=[0.8, 0.9, 0.95],
-        month_bins=list(range(0, 1460, 180)),
+        bins=list(range(0, 1460, 180)),
         y_limits=(0, 0.5),
         save_path=TEST_PLOT_PATH / "test_recall_by_calendar_time.png",
     )

@@ -6,7 +6,7 @@
 
 from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -25,7 +25,8 @@ from sklearn.metrics import f1_score, roc_auc_score
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
     pos_rate: Union[float, Iterable[float]],
-    month_bins: Iterable[float],
+    bins: Iterable[float],
+    bin_delta: Literal["D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -60,16 +61,25 @@ def plot_recall_by_calendar_time(
             pred_proba_threshold=threshold,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
-            bins=month_bins,
-            bin_delta="M",
+            bins=bins,
+            bin_delta=bin_delta,
         )
         for threshold in pos_rate_threshold
     ]
 
+    bin_delta_to_str = {
+        "D": "Day",
+        "W": "Week",
+        "M": "Month",
+        "Q": "Quarter",
+        "Y": "Year",
+    }
+
+    x_title_unit = bin_delta_to_str[bin_delta]
     return plot_basic_chart(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
-        x_title="Days to event",
+        x_title=f"{x_title_unit} to event",
         labels=pos_rate_threshold_labels,
         y_title=y_title,
         y_limits=y_limits,
