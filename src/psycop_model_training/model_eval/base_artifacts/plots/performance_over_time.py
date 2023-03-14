@@ -24,7 +24,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
-    pred_proba_percentile: Union[float, Iterable[float]],
+    pos_rate: Union[float, Iterable[float]],
     bins: Iterable[float],
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
@@ -43,34 +43,33 @@ def plot_recall_by_calendar_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    if not isinstance(pred_proba_percentile, Iterable):
-        pred_proba_percentile = [pred_proba_percentile]
-
-    pred_proba_percentile = list(pred_proba_percentile)
-    pred_proba_percentile_labels = [
-        str(percentile) for percentile in pred_proba_percentile
-    ]
+    if not isinstance(pos_rate, Iterable):
+        pos_rate = [pos_rate]
+    pos_rate = list(pos_rate)
 
     # Get percentiles from a series of predicted probabilities
-    pred_proba_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
+    y_hat_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
+
+    pos_rate_threshold = [1 - threshold for threshold in list(pos_rate)]
+    pos_rate_threshold_labels = [str(threshold) for threshold in list(pos_rate)]
 
     dfs = [
         create_sensitivity_by_time_to_outcome_df(
             labels=eval_dataset.y,
-            y_hat_probs=pred_proba_percentiles,
+            y_hat_probs=y_hat_percentiles,
             pred_proba_threshold=threshold,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
         )
-        for threshold in pred_proba_percentile
+        for threshold in pos_rate_threshold
     ]
 
     return plot_basic_chart(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
         x_title="Days from event",
-        labels=pred_proba_percentile_labels,
+        labels=pos_rate_threshold_labels,
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
