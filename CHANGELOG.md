@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.2 (2023-03-14)
+### Fix
+* Add skema_2_without_nutrition again ([`685c5cb`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/685c5cbc6188a5d516f3028adc37e5d1157064df))
+
 ## v0.20.1 (2023-03-11)
 ### Fix
 * Cruft github action ([`c8f6278`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c8f627877da2ac5e0b468b65e7bd9f9bfaacb483))
