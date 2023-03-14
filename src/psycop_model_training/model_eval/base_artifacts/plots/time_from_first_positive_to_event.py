@@ -3,8 +3,11 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Union
 
+import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
+from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
+    plot_basic_chart,
+)
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data
 
@@ -13,6 +16,8 @@ def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
     min_n_in_bin: Optional[int] = None,
     bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
+    fig_size: tuple[int, int] = (5, 5),
+    dpi: int = 300,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot histogram of time from first positive prediction to event.
@@ -21,6 +26,8 @@ def plot_time_from_first_positive_to_event(
         eval_dataset: EvalDataset object
         min_n_in_bin (int): Minimum number of patients in each bin. If fewer, bin is dropped.
         bins (Sequence[float]): Bins to group by. Defaults to (5, 25, 35, 50, 70).
+        fig_size (tuple[int, int]): Figure size. Defaults to (5,5).
+        dpi (int): DPI. Defaults to 300.
         save_path (Path, optional): Path to save figure. Defaults to None.
     """
 
@@ -56,21 +63,19 @@ def plot_time_from_first_positive_to_event(
         use_min_as_label=True,
     )
 
-    # Plot a histogram of time from first positive prediction to event
-    axes = sns.histplot(
-        data=df,
-        x="time_from_first_positive_to_event_binned",
-        stat="proportion",
-    )
-    axes.set(
-        xlabel="Months from first positive to event",
-    )
-    axes.invert_xaxis()
-    axes.tick_params(axis="x", rotation=90)
+    counts = df.groupby("time_from_first_positive_to_event_binned").size().reset_index()
 
-    if save_path is not None:
-        save_path.parent.mkdir(parents=True, exist_ok=True)
-        axes.figure.savefig(save_path, bbox_inches="tight")
-        return save_path
+    x_labels = counts["time_from_first_positive_to_event_binned"].to_list()
+    y_values = counts[0].to_list()
 
-    return None
+    plot = plot_basic_chart(
+        x_values=x_labels,
+        y_values=new_var,
+        x_title="Months from first positive to event",
+        y_title="Count",
+        plot_type="bar",
+        save_path=save_path,
+        sort_x=,
+    )
+
+    return plot
