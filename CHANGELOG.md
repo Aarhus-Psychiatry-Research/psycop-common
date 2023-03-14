@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.44.2 (2023-03-14)
+### Fix
+* Add prefix arg to allow optional prefix ([#425](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/425)) ([`fa8e366`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/fa8e366a5c3c56329d2ac5a76cd85fda1af8e4c6))
+* Save all test plots to TEST_PLOT_PATH ([`7ea5d14`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7ea5d14d7a82d9280e3299c77d1e75a6d1b66b2f))
+* Send to test_plot_path ([`8b0f605`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8b0f605c4fd7f0bda4237cb41427924cf29d8190))
+* Add prefix arg to allow optional prefix ([`a6af9c3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a6af9c3bc5cf88caf7a355cd158b24e76b9352d9))
+
 ## v0.44.1 (2023-03-13)
 ### Fix
 * Different colors for bar and line chart ([`72c814c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/72c814cfd7c3ab13501f7bb362afe1adf9abdf80))
