@@ -278,6 +278,30 @@ def skema_2(
     )
 
 
+@data_loaders.register("skema_2_without_nutrition")
+def skema_2_without_nutrition(
+    n_rows: Optional[int] = None,
+    unpack_to_intervals: Optional[bool] = False,
+    unpack_freq: Optional[str] = "D",
+) -> pd.DataFrame:
+    coercion_types_list = [
+        {
+            "coercion_type": "Af legemlig lidelse",
+        },
+        {
+            "coercion_type": "Medicinering",
+        },
+        {
+            "coercion_type": "ECT",
+        },
+    ]
+
+    return _concatenate_coercion(
+        coercion_types_list=coercion_types_list,
+        n_rows=n_rows,
+    )
+
+
 # magtanvendelse
 @data_loaders.register("skema_3")
 def skema_3(
