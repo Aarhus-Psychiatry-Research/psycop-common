@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.45.0 (2023-03-14)
+### Feature
+* Add pos_rate argument to time_from_first_positive_to_event ([`bff99be`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/bff99be5f1eb84820d9c6faf7698abe586806e07))
+
+### Fix
+* Do not hardcode risk to be 0.12 ([`35db4c3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/35db4c34b9fe8b57f4681c60021dd1ae6dcd8084))
+
 ## v0.44.2 (2023-03-14)
 ### Fix
 * Add prefix arg to allow optional prefix ([#425](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/425)) ([`fa8e366`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/fa8e366a5c3c56329d2ac5a76cd85fda1af8e4c6))
