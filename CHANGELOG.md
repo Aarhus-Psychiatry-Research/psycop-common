@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.3 (2023-03-14)
+### Fix
+* Set unpack_to_intervals to default ([`64391ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/64391cabcfd9e95d915f75f12fa64c4b81ee3365))
+* Remove unintended space ([`9c6cd33`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/9c6cd33abd7f0b33c2497eebd2c2be2543890beb))
+
 ## v0.20.2 (2023-03-14)
 ### Fix
 * Add skema_2_without_nutrition again ([`685c5cb`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/685c5cbc6188a5d516f3028adc37e5d1157064df))
