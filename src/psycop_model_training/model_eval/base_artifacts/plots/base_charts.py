@@ -21,6 +21,7 @@ def plot_basic_chart(
     bar_count_values: Optional[pd.Series] = None,
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple[float, float]] = (5, 5),
+    legend_title: Optional[str] = None,
     dpi: Optional[int] = 300,
     save_path: Optional[Union[Path, str]] = None,
 ) -> Union[None, Path]:

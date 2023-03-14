@@ -25,7 +25,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
     pos_rate: Union[float, Iterable[float]],
-    bins: Iterable[float],
+    month_bins: Iterable[float],
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -60,7 +60,8 @@ def plot_recall_by_calendar_time(
             pred_proba_threshold=threshold,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
-            bins=bins,
+            bins=month_bins,
+            bin_delta="M",
         )
         for threshold in pos_rate_threshold
     ]
@@ -68,12 +69,13 @@ def plot_recall_by_calendar_time(
     return plot_basic_chart(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
-        x_title="Days from event",
+        x_title="Days to event",
         labels=pos_rate_threshold_labels,
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
         plot_type=["line", "scatter"],
+        legend_title="Positive rate",
         save_path=save_path,
     )
 
