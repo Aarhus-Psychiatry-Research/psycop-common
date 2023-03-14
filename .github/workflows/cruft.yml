@@ -1,9 +1,6 @@
 name: Cruft Check
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -43,6 +40,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: ✨ There is a newer version of continuous integration files or other tooling available ✨
+          continue-on-error: true
 
       - uses: mshick/add-pr-comment@v2
         if: ${{ steps.cruft_check.outputs.cruft_failed == 1}}

@@ -4,8 +4,7 @@ name: run-pre-commit
 
 on:
   pull_request:
-  push:
-    branches: [main, dev]
+    branches: [main]
 
 jobs:
   pre-commit:
@@ -43,6 +42,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: ✨ Looks like some pre-commit hooks failed ✨
+          continue-on-error: true
 
       - uses: mshick/add-pr-comment@v2
         if: ${{ failure() }}
