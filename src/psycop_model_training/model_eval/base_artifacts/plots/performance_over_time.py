@@ -79,7 +79,7 @@ def plot_recall_by_calendar_time(
     return plot_basic_chart(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
-        x_title=f"{x_title_unit} to event",
+        x_title=f"{x_title_unit}s to event",
         labels=pos_rate_threshold_labels,
         y_title=y_title,
         y_limits=y_limits,
