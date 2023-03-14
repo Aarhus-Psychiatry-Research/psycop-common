@@ -43,7 +43,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import (
-    PROJECT_ROOT,
     TEST_PLOT_PATH,
     positive_rate_to_pred_probs,
 )
@@ -86,21 +85,21 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
         x_title="Days to outcome",
         y_title="Sensitivity",
         plot_type="bar",
-        save_path=PROJECT_ROOT / "12345.png",
+        save_path=TEST_PLOT_PATH / "12345.png",
     )
 
 
 def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
     plot_performance_by_age(
         eval_dataset=synth_eval_dataset,
-        save_path=PROJECT_ROOT / "test_performance_plot_by_age.png",
+        save_path=TEST_PLOT_PATH / "test_performance_plot_by_age.png",
     )
 
 
 def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
     plot_performance_by_sex(
         eval_dataset=synth_eval_dataset,
-        save_path=PROJECT_ROOT / "test_performance_plot_by_sex.png",
+        save_path=TEST_PLOT_PATH / "test_performance_plot_by_sex.png",
     )
 
 
@@ -116,7 +115,7 @@ def test_plot_performance_by_calendar_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
         metric_fn=roc_auc_score,
-        save_path=PROJECT_ROOT / "test.png",
+        save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",
     )
 
 
@@ -203,14 +202,16 @@ def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset)
         eval_dataset=synth_eval_dataset,
         bins=list(range(0, 60, 3)),
         min_n_in_bin=1,
-        save_path=PROJECT_ROOT / "test_plot_time_from_first_positive_to_event.png",
+        save_path=TEST_PLOT_PATH / "test_plot_time_from_first_positive_to_event.png",
     )
 
 
 def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
     plot_precision_recall(
         eval_dataset=synth_eval_dataset,
-        save_path=Path(PROJECT_ROOT / "tests" / "test_plots" / "precision_recall.png"),
+        save_path=Path(
+            TEST_PLOT_PATH / "tests" / "test_plots" / "precision_recall.png",
+        ),
     )
 
 
@@ -219,5 +220,5 @@ def test_overlay_barplot(synth_eval_dataset: EvalDataset):
         eval_dataset=synth_eval_dataset,
         metric_fn=f1_score,
         y_title="F1",
-        save_path=PROJECT_ROOT / "test_overlay_barplot.png",
+        save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
     )

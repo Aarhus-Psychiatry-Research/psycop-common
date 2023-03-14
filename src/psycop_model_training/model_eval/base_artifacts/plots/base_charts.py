@@ -130,7 +130,8 @@ def plot_basic_chart(
 
     if save_path is not None:
         save_path = Path(save_path)
-        save_path.mkdir(parents=True, exist_ok=True)
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+
         plt.savefig(save_path)
 
     plt.close()
