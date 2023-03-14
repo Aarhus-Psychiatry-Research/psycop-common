@@ -176,7 +176,7 @@ def af_helbredsmaessige_grunde(
     return coercion_duration(
         reason_for_coercion="Af helbredsmæssige grunde",
         n_rows=n_rows,
-        unpack_to_intervals=True,
+        unpack_to_intervals=unpack_to_intervals,
         unpack_freq=unpack_freq,
     )
 
