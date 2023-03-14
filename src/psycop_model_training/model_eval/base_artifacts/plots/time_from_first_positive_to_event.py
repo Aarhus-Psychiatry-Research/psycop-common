@@ -60,9 +60,7 @@ def plot_time_from_first_positive_to_event(
     df_top_risk = get_top_fraction(df, "y_hat_probs", fraction=pos_rate)
 
     # Get only rows where prediction is positive and outcome is positive
-    df_true_pos = df_top_risk[
-        (df_top_risk["y_hat_probs"] >= 0.120) & (df_top_risk["y"] == 1)
-    ]
+    df_true_pos = df_top_risk[df_top_risk["y"] == 1]
 
     # Sort by timestamp
     df_true_pos = df_true_pos.sort_values("pred_timestamp")
