@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.46.0 (2023-03-15)
+### Feature
+* Add support for custom units to "time until diagnosis" ([`44548ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/44548ca2a329c6448dda81a39c1c6e7a221dcf82))
+* Add support to performance by calendar time ([`42fb140`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/42fb1407c3301181bd6a9d1c7ed489e5893664e7))
+* Add bins to robustness by age ([`85614a2`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/85614a2d49d1991d7f9942134c4fa9756d781ff9))
+* Less opacity for bar plots ([`4a233f5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/4a233f583ab8eb861966af6e72a0abbb667c0128))
+* Style bar counts and add to performance by cyclic time ([`28ac722`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/28ac7223bd26340d25fd3ef12ac7f696b1bbd1c6))
+* Change x_title based on bin_delta ([`95b26b7`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/95b26b73126298ef35e6fed647ad5631d1c8c606))
+* Add custom bin width ([`ade2afa`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ade2afac7fa81751b94023edcc22e1b99d70cc9c))
+* Init ([`ea7d9de`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ea7d9de249b4e5e3009843950217661514d8c44a))
+
+### Fix
+* Bunch of plot fixes ([#427](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/427)) ([`aaba25a`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/aaba25a74cbe5893f9e4432ed8a0ac26ff6f78fb))
+* Unit ([`1f628a3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1f628a3840b880c261ecb1d27aeb496eac715381))
+
+### Documentation
+* Missing arg ([`2d4054c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2d4054cf1a418b9d23a3864ecbd147def39248ea))
+
 ## v0.45.0 (2023-03-14)
 ### Feature
 * Add pos_rate argument to time_from_first_positive_to_event ([`bff99be`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/bff99be5f1eb84820d9c6faf7698abe586806e07))
