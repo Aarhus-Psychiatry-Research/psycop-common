@@ -317,6 +317,7 @@ def create_performance_by_time_from_event_df(
         direction (str): Which direction to calculate time difference.
         Can either be 'prediction-event' or 'event-prediction'.
         bins (Iterable[float]): Bins to group by.
+        bin_unit (Literal["D", "M", "Q", "Y"]): Unit of time to use for bins.
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
         min_n_in_bin (int, optional): Minimum number of rows in a bin to include in output. Defaults to 10.
