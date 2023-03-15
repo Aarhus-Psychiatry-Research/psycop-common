@@ -6,7 +6,7 @@
 
 from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -24,8 +24,9 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
-    pred_proba_percentile: Union[float, Iterable[float]],
+    pos_rate: Union[float, Iterable[float]],
     bins: Iterable[float],
+    bin_unit: Literal["D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -34,8 +35,9 @@ def plot_recall_by_calendar_time(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
-        pred_proba_percentile (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
+        pos_rate (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
         bins (Iterable[float], optional): Bins to use for time to outcome.
+        bin_unit (Literal["D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         y_title (str): Title of y-axis. Defaults to "AUC".
         save_path (str, optional): Path to save figure. Defaults to None.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
@@ -43,34 +45,43 @@ def plot_recall_by_calendar_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    if not isinstance(pred_proba_percentile, Iterable):
-        pred_proba_percentile = [pred_proba_percentile]
-
-    pred_proba_percentile = list(pred_proba_percentile)
-    pred_proba_percentile_labels = [
-        str(percentile) for percentile in pred_proba_percentile
-    ]
+    if not isinstance(pos_rate, Iterable):
+        pos_rate = [pos_rate]
+    pos_rate = list(pos_rate)
 
     # Get percentiles from a series of predicted probabilities
-    pred_proba_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
+    y_hat_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
+
+    pos_rate_threshold = [1 - threshold for threshold in list(pos_rate)]
+    pos_rate_threshold_labels = [str(threshold) for threshold in list(pos_rate)]
 
     dfs = [
         create_sensitivity_by_time_to_outcome_df(
             labels=eval_dataset.y,
-            y_hat_probs=pred_proba_percentiles,
+            y_hat_probs=y_hat_percentiles,
             pred_proba_threshold=threshold,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
+            bin_delta=bin_unit,
         )
-        for threshold in pred_proba_percentile
+        for threshold in pos_rate_threshold
     ]
 
+    bin_delta_to_str = {
+        "D": "Day",
+        "W": "Week",
+        "M": "Month",
+        "Q": "Quarter",
+        "Y": "Year",
+    }
+
+    x_title_unit = bin_delta_to_str[bin_unit]
     return plot_basic_chart(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
-        x_title="Days from event",
-        labels=pred_proba_percentile_labels,
+        x_title=f"{x_title_unit}s to event",
+        labels=pos_rate_threshold_labels,
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
@@ -112,7 +123,7 @@ def create_performance_by_calendar_time_df(
 def plot_metric_by_calendar_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
-    bin_period: str = "Y",
+    bin_period: Literal["D", "W", "M", "Q", "Y"] = "Y",
     save_path: Optional[str] = None,
     metric_fn: Callable = roc_auc_score,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
@@ -139,17 +150,23 @@ def plot_metric_by_calendar_time(
     )
     sort_order = np.arange(len(df))
 
+    x_titles = {
+        "D": "Day",
+        "W": "Week",
+        "M": "Month",
+        "Q": "Quarter",
+        "Y": "Year",
+    }
+
     return plot_basic_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
-        x_title="Month"
-        if bin_period == "M"
-        else "Quarter"
-        if bin_period == "Q"
-        else "Year",
+        x_title=x_titles[bin_period],
         y_title=y_title,
         sort_x=sort_order,
         y_limits=y_limits,
+        bar_count_values=df["n_in_bin"],
+        bar_count_y_axis_title="Number of visits",
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
@@ -269,6 +286,8 @@ def plot_metric_by_cyclic_time(
         y_title=y_title,
         y_limits=y_limits,
         plot_type=["line", "scatter"],
+        bar_count_values=df["n_in_bin"],
+        bar_count_y_axis_title="Number of visits",
         save_path=save_path,
     )
 
@@ -281,6 +300,7 @@ def create_performance_by_time_from_event_df(
     metric_fn: Callable,
     direction: str,
     bins: Sequence[float],
+    bin_unit: Literal["D", "M", "Q", "Y"],
     bin_continuous_input: Optional[bool] = True,
     drop_na_events: Optional[bool] = True,
     min_n_in_bin: int = 5,
@@ -297,12 +317,13 @@ def create_performance_by_time_from_event_df(
         direction (str): Which direction to calculate time difference.
         Can either be 'prediction-event' or 'event-prediction'.
         bins (Iterable[float]): Bins to group by.
+        bin_unit (Literal["D", "M", "Q", "Y"]): Unit of time to use for bins.
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
         min_n_in_bin (int, optional): Minimum number of rows in a bin to include in output. Defaults to 10.
 
     Returns:
-        pd.DataFrame: Dataframe ready for plotting
+        pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
 
     df = pd.DataFrame(
@@ -319,19 +340,19 @@ def create_performance_by_time_from_event_df(
 
     # Calculate difference in days between prediction and event
     if direction == "event-prediction":
-        df["days_from_event"] = (
+        df["unit_from_event"] = (
             df["event_timestamp"] - df["prediction_timestamp"]
         ) / np.timedelta64(
             1,
-            "D",
+            bin_unit,
         )  # type: ignore
 
     elif direction == "prediction-event":
-        df["days_from_event"] = (
+        df["unit_from_event"] = (
             df["prediction_timestamp"] - df["event_timestamp"]
         ) / np.timedelta64(
             1,
-            "D",
+            bin_unit,
         )  # type: ignore
 
     else:
@@ -341,32 +362,26 @@ def create_performance_by_time_from_event_df(
 
     # bin data
     if bin_continuous_input:
-        # Convert df["days_from_event"] to int if possible
-        df["days_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
-            df["days_from_event"],
+        # Convert df["unit_from_event"] to int if possible
+        df["unit_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
+            df["unit_from_event"],
             bins=bins,
             min_n_in_bin=min_n_in_bin,
         )
     else:
-        df["days_from_event_binned"] = round_floats_to_edge(
-            df["days_from_event"],
+        df["unit_from_event_binned"] = round_floats_to_edge(
+            df["unit_from_event"],
             bins=bins,
         )
 
     # Calc performance and prettify output
-    output_df = df.groupby(["days_from_event_binned"]).apply(
-        calc_performance,
-        metric_fn,
-    )
-
     output_df = (
-        output_df.reset_index()
-        .rename({0: "metric"}, axis=1)
-        .merge(
-            df[["days_from_event_binned", "n_in_bin"]],
-            on="days_from_event_binned",
-            how="left",
+        df.groupby(["unit_from_event_binned"])
+        .apply(
+            calc_performance,
+            metric_fn,
         )
+        .reset_index()
     )
 
     return output_df
@@ -375,6 +390,7 @@ def create_performance_by_time_from_event_df(
 def plot_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: tuple = (0, 28, 182, 365, 730, 1825),
+    bin_unit: Literal["D", "M", "Q", "Y"] = "D",
     bin_continuous_input: Optional[bool] = True,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
     save_path: Optional[Path] = None,
@@ -384,6 +400,7 @@ def plot_auc_by_time_from_first_visit(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
+        bin_unit (Literal["D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -404,20 +421,30 @@ def plot_auc_by_time_from_first_visit(
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="prediction-event",
         bins=list(bins),
+        bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
         drop_na_events=False,
         metric_fn=roc_auc_score,
     )
 
+    bin_unit2str = {
+        "D": "Days",
+        "M": "Months",
+        "Q": "Quarters",
+        "Y": "Years",
+    }
+
     sort_order = np.arange(len(df))
     return plot_basic_chart(
-        x_values=df["days_from_event_binned"],
+        x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
-        x_title="Days from first visit",
+        x_title=f"{bin_unit2str[bin_unit]} from first visit",
         y_title="AUC",
         sort_x=sort_order,
         y_limits=y_limits,
         plot_type=["line", "scatter"],
+        bar_count_values=df["n_in_bin"],
+        bar_count_y_axis_title="Number of visits",
         save_path=save_path,
     )
 
@@ -432,6 +459,7 @@ def plot_metric_by_time_until_diagnosis(
         -28,
         -0,
     ),
+    bin_unit: Literal["D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
@@ -445,6 +473,7 @@ def plot_metric_by_time_until_diagnosis(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Negative values indicate days after
+        bin_unit (Literal["D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
@@ -462,6 +491,7 @@ def plot_metric_by_time_until_diagnosis(
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="event-prediction",
         bins=bins,
+        bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
         min_n_in_bin=0,
         drop_na_events=True,
@@ -469,10 +499,17 @@ def plot_metric_by_time_until_diagnosis(
     )
     sort_order = np.arange(len(df))
 
+    bin_unit2str = {
+        "D": "Days",
+        "M": "Months",
+        "Q": "Quarters",
+        "Y": "Years",
+    }
+
     return plot_basic_chart(
-        x_values=df["days_from_event_binned"],
+        x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
-        x_title="Days to diagnosis",
+        x_title=f"{bin_unit2str[bin_unit]} to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
         bar_count_values=df["n_in_bin"],

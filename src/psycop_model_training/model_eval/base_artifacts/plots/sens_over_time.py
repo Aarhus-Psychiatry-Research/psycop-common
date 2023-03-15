@@ -2,7 +2,7 @@
 from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -19,6 +19,7 @@ def create_sensitivity_by_time_to_outcome_df(
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: Iterable = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
+    bin_delta: Literal["D", "W", "M", "Q", "Y"] = "D",
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
 
@@ -61,7 +62,7 @@ def create_sensitivity_by_time_to_outcome_df(
         df["outcome_timestamp"] - df["prediction_timestamp"]
     ) / np.timedelta64(
         1,
-        "D",
+        bin_delta,
     )  # type: ignore
 
     df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
