@@ -265,7 +265,7 @@ def _format_sens_by_time_heatmap(
 def plot_sensitivity_by_time_to_outcome_heatmap(  # pylint: disable=too-many-locals
     eval_dataset: EvalDataset,
     pred_proba_thresholds: list[float],
-    bins: Iterable[int] = (0, 28, 182, 365, 730, 1825),
+    bins: Iterable[float] = (0, 28, 182, 365, 730, 1825),
     color_map: str = "PuBu",
     colorbar_label: str = "Sensitivity",
     x_title: str = "Days to outcome",
