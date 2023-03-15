@@ -85,7 +85,6 @@ def plot_recall_by_calendar_time(
         y_limits=y_limits,
         flip_x_axis=True,
         plot_type=["line", "scatter"],
-        legend_title="Positive rate",
         save_path=save_path,
     )
 
@@ -458,6 +457,7 @@ def plot_metric_by_time_until_diagnosis(
         -28,
         -0,
     ),
+    bin_unit: Literal["D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
@@ -471,6 +471,7 @@ def plot_metric_by_time_until_diagnosis(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Negative values indicate days after
+        bin_unit (Literal["D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
@@ -488,6 +489,7 @@ def plot_metric_by_time_until_diagnosis(
         prediction_timestamps=eval_dataset.pred_timestamps,
         direction="event-prediction",
         bins=bins,
+        bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
         min_n_in_bin=0,
         drop_na_events=True,
@@ -495,10 +497,17 @@ def plot_metric_by_time_until_diagnosis(
     )
     sort_order = np.arange(len(df))
 
+    bin_unit2str = {
+        "D": "Days",
+        "M": "Months",
+        "Q": "Quarters",
+        "Y": "Years",
+    }
+
     return plot_basic_chart(
-        x_values=df["days_from_event_binned"],
+        x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
-        x_title="Days to diagnosis",
+        x_title=f"{bin_unit2str[bin_unit]} to diagnosis",
         y_title=y_title,
         sort_x=sort_order,
         bar_count_values=df["n_in_bin"],
