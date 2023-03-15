@@ -280,6 +280,8 @@ def plot_metric_by_cyclic_time(
         y_title=y_title,
         y_limits=y_limits,
         plot_type=["line", "scatter"],
+        bar_count_values=df["n_in_bin"],
+        bar_count_y_axis_title="Number of visits",
         save_path=save_path,
     )
 

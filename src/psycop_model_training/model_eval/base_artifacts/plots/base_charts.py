@@ -19,9 +19,9 @@ def plot_basic_chart(
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
     bar_count_values: Optional[pd.Series] = None,
+    bar_count_y_axis_title: str = "Number of observations",
     y_limits: Optional[tuple[float, float]] = None,
     fig_size: Optional[tuple[float, float]] = (5, 5),
-    legend_title: Optional[str] = None,
     dpi: Optional[int] = 300,
     save_path: Optional[Union[Path, str]] = None,
 ) -> Union[None, Path]:
@@ -42,6 +42,7 @@ def plot_basic_chart(
         flip_x_axis: Whether to flip the x axis. Defaults to False.
         flip_y_axis: Whether to flip the y axis. Defaults to False.
         bar_count_values: Values to use for overlaid histogram of n in bins. Defaults to None.
+        bar_count_y_axis_title: Title of y axis of overlaid histogram. Defaults to "Number of observations".
         y_limits: y-axis limits. Defaults to None.
         fig_size: figure size. Defaults to None.
         dpi: dpi of figure. Defaults to 300.
@@ -116,16 +117,13 @@ def plot_basic_chart(
     if bar_count_values is not None:
         # add additional y-axis for count
         bar_overlay = plt.gca().twinx()
-        bar_overlay.bar(df["x"], bar_count_values, color="blue")
-        bar_overlay.set_ylabel("Number of observations")
+        bar_overlay.bar(df["x"], bar_count_values, color="orange")
+        bar_overlay.set_ylabel(bar_count_y_axis_title)
 
         # put bar plots behind other plots
         axs.set_zorder(bar_overlay.get_zorder() + 1)
         axs.set_facecolor("none")
         bar_overlay.set_facecolor("none")
-
-        # add counts to bars
-        bar_overlay.bar_label(bar_overlay.bar(df["x"], bar_count_values))
 
     plt.tight_layout()
 

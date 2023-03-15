@@ -22,7 +22,7 @@ def log_image_to_wandb(chart_path: Path, chart_name: str):
     wandb.log({f"image_{chart_name}": wandb.Image(str(chart_path))})
 
 
-def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
+def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
     """Calculates performance metrics of a df with 'y' and 'y_hat' columns.
 
     Args:
@@ -33,15 +33,17 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> float:
         float: performance
     """
     if df.empty:
-        return np.nan
+        return pd.Series({"metric": np.nan})
     if metric is roc_auc_score and len(df["y"].unique()) == 1:
         # msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan") This was hit almost once per month, making it very hard to read.
         # Many of our models probably try to predict the majority class.
         # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
         # For now, suppressing this message.
-        return np.nan
+        return pd.Series({"metric": np.nan})
 
-    return metric(df["y"], df["y_hat"])
+    perf_metric = metric(df["y"], df["y_hat"])
+    n_in_bin = len(df)
+    return pd.Series({"metric": perf_metric, "n_in_bin": n_in_bin})
 
 
 def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
