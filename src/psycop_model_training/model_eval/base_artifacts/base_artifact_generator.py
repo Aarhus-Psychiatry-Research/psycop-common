@@ -169,7 +169,7 @@ class BaseArtifactGenerator:
                 label="recall_by_calendar_time",
                 artifact=plot_recall_by_calendar_time(
                     eval_dataset=self.eval_ds,
-                    pred_proba_percentile=[0.95, 0.97, 0.99],
+                    pos_rate=[0.95, 0.97, 0.99],
                     bins=self.cfg.eval.lookahead_bins,
                     y_limits=(0, 0.5),
                     save_path=self.save_dir / "recall_by_calendar_time.png",
