@@ -42,7 +42,10 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
         return pd.Series({"metric": np.nan})
 
     perf_metric = metric(df["y"], df["y_hat"])
-    n_in_bin = len(df)
+
+    # If any value in n_in_bin is smaller than 5, write NaN
+    n_in_bin = np.nan if len(df) < 5 else len(df)
+
     return pd.Series({"metric": perf_metric, "n_in_bin": n_in_bin})
 
 
