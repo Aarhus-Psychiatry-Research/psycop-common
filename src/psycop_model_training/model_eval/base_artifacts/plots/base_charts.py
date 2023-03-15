@@ -117,7 +117,7 @@ def plot_basic_chart(
     if bar_count_values is not None:
         # add additional y-axis for count
         bar_overlay = plt.gca().twinx()
-        bar_overlay.bar(df["x"], bar_count_values, color="orange")
+        bar_overlay.bar(df["x"], bar_count_values, color="gainsboro", alpha=0.5)
         bar_overlay.set_ylabel(bar_count_y_axis_title)
 
         # put bar plots behind other plots
