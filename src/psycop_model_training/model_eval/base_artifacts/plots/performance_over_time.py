@@ -26,7 +26,7 @@ def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
     pos_rate: Union[float, Iterable[float]],
     bins: Iterable[float],
-    bin_delta: Literal["D", "W", "M", "Q", "Y"] = "D",
+    bin_unit: Literal["D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -35,8 +35,9 @@ def plot_recall_by_calendar_time(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
-        pred_proba_percentile (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
+        pos_rate (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
         bins (Iterable[float], optional): Bins to use for time to outcome.
+        bin_unit (Literal["D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         y_title (str): Title of y-axis. Defaults to "AUC".
         save_path (str, optional): Path to save figure. Defaults to None.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
@@ -62,7 +63,7 @@ def plot_recall_by_calendar_time(
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
-            bin_delta=bin_delta,
+            bin_delta=bin_unit,
         )
         for threshold in pos_rate_threshold
     ]
@@ -75,7 +76,7 @@ def plot_recall_by_calendar_time(
         "Y": "Year",
     }
 
-    x_title_unit = bin_delta_to_str[bin_delta]
+    x_title_unit = bin_delta_to_str[bin_unit]
     return plot_basic_chart(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
