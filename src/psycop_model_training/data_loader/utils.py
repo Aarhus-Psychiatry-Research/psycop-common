@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -18,7 +19,15 @@ from psycop_model_training.preprocessing.pre_split.processors.value_cleaner impo
     PreSplitValueCleaner,
 )
 
-memory = Memory(location="E:/shared_resources/t2d/feature_cache", verbose=0)
+memory_path = Path("E:/shared_resources/feature_cache")
+
+# Delete any file older than 24 hours in memory_path
+for file in memory_path.glob("*"):
+    one_day = time.time() - 24 * 3600
+    if file.stat().st_mtime < one_day:
+        file.unlink()
+
+memory = Memory(location=memory_path, verbose=0)
 
 def get_latest_dataset_dir(path: Path) -> Path:
     """Get the latest dataset directory by time of creation."""
