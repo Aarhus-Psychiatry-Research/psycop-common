@@ -29,7 +29,7 @@ def create_eval_dataset(
     if len(eval_columns) > 0:
         custom_columns.update(eval_columns)
 
-    eval_dataset = EvalDataset(
+""    eval_dataset = EvalDataset(
         ids=df[col_names.id],
         y=df[outcome_col_name],
         y_hat_probs=df["y_hat_prob"],
