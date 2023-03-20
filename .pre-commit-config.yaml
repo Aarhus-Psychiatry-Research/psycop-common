@@ -1,12 +1,16 @@
-default_stages: [push]
+default_stages: [commit]
 
 repos:
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+      - id: black
+
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     # Ruff version.
     rev: v0.0.254
     hooks:
       - id: ruff
-        stages: [push]
         args:
           [
             "--extend-select",
@@ -17,22 +21,12 @@ repos:
             "--exit-non-zero-on-fix",
           ]
 
-  - repo: https://github.com/bwhmather/ssort
-    rev: v0.11.6
-    hooks:
-      - id: ssort
-
-  - repo: https://github.com/psf/black
-    rev: 22.8.0
-    hooks:
-      - id: black
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
       - id: check-yaml
 
-  - repo: https://github.com/pappasam/toml-sort
-    rev: v0.22.4
+  - repo: https://github.com/repo-helper/pyproject-parser
+    rev: v0.7.0
     hooks:
-      - id: toml-sort
+      - id: check-pyproject
