@@ -156,7 +156,7 @@ class PresSplitColFilter:
         """Keep only one outcome column with the same lookahead days as set in
         the config."""
         outcome_cols = infer_outcome_col_name(
-            df=dataset, prefix=self.data_cfg.outc_prefix, allow_multiple=True
+            df=dataset, prefix=self.data_cfg.outc_prefix, allow_multiple=True,
         )
 
         col_to_drop = [

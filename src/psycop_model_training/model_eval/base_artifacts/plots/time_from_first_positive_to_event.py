@@ -3,7 +3,6 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Union
 
-import matplotlib.pyplot as plt
 import pandas as pd
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
