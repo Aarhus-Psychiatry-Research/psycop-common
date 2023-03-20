@@ -107,8 +107,6 @@ figures/
 # wandb
 wandb
 outputs
-
-# virtual env
 .*venv*
 venv/
 

@@ -37,7 +37,7 @@ dependencies = [
   "pyarrow>=9.0.0,<10.1.0",
   "Random-Word>=1.0.11, <=1.0.12",
   "diskcache>=5.4.0",
-  "psycopmlutils>=0.3.0,<0.4.0",
+  "psycopmlutils>=0.3.0,<0.13.0",
   "Levenshtein>=0.20.0, <0.21.0",
   "seaborn>=0.10.1, <0.13.0"
 ]
@@ -47,7 +47,7 @@ dev = [
   "mypy",
   "pre-commit>=2.19.0,<3.1.2",
   "setuptools>=65.3.0,<67.6.0",
-  "ruff==0.0.254", # important that these match the pre-commit hooks
+  "ruff==0.0.257", # important that these match the pre-commit hooks
   "black==22.8.0", # important that these match the pre-commit hooks
   "pandas-stubs",
   "pydantic"
