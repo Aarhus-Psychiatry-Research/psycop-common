@@ -11,6 +11,14 @@ authors = [
   {name = "Lasse Hansen", email = "lasseh0310@gmail.com"},
   {name = "Kenneth Enevoldsen"}
 ]
+classifiers = [
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10"
+]
 requires-python = ">=3.8.0"
 dependencies = [
   "pandas>=1.4.3,<1.6.0",
@@ -131,6 +139,7 @@ ignore = [
   "F841",
   "RET504"
 ]
+ignore-init-module-imports = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]
 # Exclude a variety of commonly ignored directories.
