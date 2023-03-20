@@ -19,7 +19,7 @@ class EvalConfSchema(BaseModel):
 
     save_model_predictions_on_overtaci: bool
 
-    lookahead_bins: list[float]
+    lookahead_bins: list[int]
     # List of lookahead distances for plotting. Will create bins in between each distances. E.g. if specifying 1, 5, 10, will bin evaluation as follows: [0, 1], [1, 5], [5, 10], [10, inf].
 
     lookbehind_bins: list[int]

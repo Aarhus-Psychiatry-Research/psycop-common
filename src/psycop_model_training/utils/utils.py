@@ -121,8 +121,8 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
     """
     _, edges = pd.cut(series, bins=bins, retbins=True, duplicates="drop")
     labels = [  # pylint: disable=unsubscriptable-object
-        f"({abs(edges[i])}, {edges[i+1]}]"  # pylint: disable=unsubscriptable-object
-        for i in range(len(edges) - 1)
+        f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]"  # pylint: disable=unsubscriptable-object
+        for i in range(len(bins) - 1)
     ]
 
     return pd.cut(series, bins=bins, labels=labels)
