@@ -8,54 +8,58 @@ on:
 jobs:
   cruft-check:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
+      # Avoid infinite loop where main 
+      # Feature PR -> cruft check from main ->
+      # Cruft update PR -> cruft check from main ->
+      # Cruft update PR ...
+      - name: Check if pull request is from a fork
+        run: |
+          if [ "${{ github.event.pull_request.head.repo.fork }}" = "true" ]; then
+            echo "Pull request is from a fork and does not have permissions for PR creation. Exiting gracefully."
+            exit 0
+          elif [ "${{github.event.pull_request.title}}"  == "update cruft" ]; then
+            echo "Pull request is already a cruft update. Exiting gracefully."
+            exit 0
+          else
+            echo "Pull request is not from a fork, continuing."
+          fi
+
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          ref: main
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
 
       - name: Install Cruft
         run: pip install cruft
 
-      - name: Run Cruft Check
+      - name: Update cruft
         id: cruft_check
         run: |
-          if cruft check; then
-            echo "Cruft check passed"
-            echo "cruft_failed=0" >> $GITHUB_OUTPUT
+          cruft_output=$(cruft update --skip-apply-ask)
+          if echo "$cruft_output" | grep -q "Good work!"; then
+            echo "$cruft_output"
+            echo "cruft_updated=true" >> $GITHUB_OUTPUT
           else
-            echo "Cruft check failed"
-            echo "cruft_failed=1" >> $GITHUB_OUTPUT
-            exit 0
+            echo "$cruft_output"
+            echo "cruft_updated=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Find Comment
-        uses: peter-evans/find-comment@v2
-        id: find_comment
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        if: ${{ steps.cruft_check.outputs.cruft_updated == 'true' }}
+        continue-on-error: true
         with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: "github-actions[bot]"
-          body-includes: ✨ There is a newer version of continuous integration files or other tooling available ✨
-          continue-on-error: true
-
-      - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.cruft_check.outputs.cruft_failed == 1}}
-        id: add_comment
-        with:
-          message: |
-            ✨ There is a newer version of continuous integration files or other tooling available ✨
-
-            Feel free to either:
-            😎 Keep up the good work and ignore this comment or
-            🧠 If you're feeling extra helpful, run `cruft update` and merge in the updates
-
-      - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.cruft_check.outputs.cruft_failed == 0 && steps.find_comment.outputs.comment-id != ''}}
-        with:
-          message-id: ${{ steps.find_comment.outputs.comment-id }}
-          message: |
-            🌟 Cruft has been updated, thanks a lot! 🌟
+          title: "update cruft"
+          branch: "update-cruft"
+          body: "🌲 Cruft updates"
+          token: ${{ secrets.PAT }}
+          commit-message: "ci: update cruft"
