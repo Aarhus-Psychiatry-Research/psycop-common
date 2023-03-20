@@ -500,6 +500,7 @@ def plot_metric_by_time_until_diagnosis(
     sort_order = np.arange(len(df))
 
     bin_unit2str = {
+        "h": "Hours",
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",

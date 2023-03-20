@@ -78,14 +78,14 @@ class BaseArtifactGenerator:
                     save_path=self.save_dir / "sensitivity_by_time_by_threshold.png",
                 ),
             ),
-            ArtifactContainer(
-                label="auc_by_time_from_first_visit",
-                artifact=plot_auc_by_time_from_first_visit(
-                    eval_dataset=self.eval_ds,
-                    bins=lookahead_bins,
-                    save_path=self.save_dir / "auc_by_time_from_first_visit.png",
-                ),
-            ),
+            # ArtifactContainer(
+            #     label="auc_by_time_from_first_visit",
+            #     artifact=plot_auc_by_time_from_first_visit(
+            #         eval_dataset=self.eval_ds,
+            #         bins=lookahead_bins,
+            #         save_path=self.save_dir / "auc_by_time_from_first_visit.png",
+            #     ),
+            # ),
             ArtifactContainer(
                 label="auc_by_calendar_time",
                 artifact=plot_metric_by_calendar_time(
