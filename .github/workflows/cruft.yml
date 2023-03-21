@@ -12,7 +12,7 @@ jobs:
       pull-requests: write
 
     steps:
-      # Avoid infinite loop where main 
+      # Avoid infinite loop where main
       # Feature PR -> cruft check from main ->
       # Cruft update PR -> cruft check from main ->
       # Cruft update PR ...
@@ -21,7 +21,7 @@ jobs:
           if [ "${{ github.event.pull_request.head.repo.fork }}" = "true" ]; then
             echo "Pull request is from a fork and does not have permissions for PR creation. Exiting gracefully."
             exit 0
-          elif [ "${{github.event.pull_request.title}}"  == "update cruft" ]; then
+          elif [ "${{github.event.pull_request.title}}"  == "ci - update cruft" ]; then
             echo "Pull request is already a cruft update. Exiting gracefully."
             exit 0
           else
@@ -55,10 +55,10 @@ jobs:
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
-        if: ${{ steps.cruft_check.outputs.cruft_updated == 'true' }}
+        if: ${{ steps.cruft_check.outputs.cruft_updated == 'true' && github.event.pull_request.title != 'ci - update cruft' }}
         continue-on-error: true
         with:
-          title: "update cruft"
+          title: "ci - update cruft"
           branch: "update-cruft"
           body: "🌲 Cruft updates"
           token: ${{ secrets.PAT }}
