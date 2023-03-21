@@ -43,7 +43,7 @@ jobs:
             exit 1
           fi
 
-      # Have this step before commit in case the PR is from a fork. In this case, we want the 
+      # Have this step before commit in case the PR is from a fork. In this case, we want the
       # add-pr-comment to fail, because it makes it means that the contributer is directed here,
       # and are given the informative error message, instead of directed to a "could not commit error message".
       - uses: mshick/add-pr-comment@v2
@@ -52,16 +52,18 @@ jobs:
         with:
           message: |
             Looks like some formatting rules failed.
-            
+
             ✨ The action has attempted automatic fixes ✨
 
             If any were succesful, they were committed to the branch.
             We suggest using `git pull --rebase` to apply them locally. 
-            
+
             If some errors could not be fixed automatically, you can:
-            
+
             🏎️ Get results locally by running `pre-commit run --all-files`
             🕵️ Examine the results in the `Run pre-commit` section of this workflow `pre-commit` 
+
+            We also strongly recommend setting up the `ruff` and `black` extensions to auto-format on save in your chosen editor.
 
       - name: Commit formatting
         if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
