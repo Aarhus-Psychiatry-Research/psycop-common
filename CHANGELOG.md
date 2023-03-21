@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.46.1 (2023-03-21)
+### Fix
+* Added max bin creates different shapes ([#443](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/443)) ([`c73819c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c73819cb2be4f1dbb4271766bf6ff906ec55e6ad))
+* Added max bin creates different shapes ([`7204c54`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7204c5421118f20cbcbf5daa7945b999c06b4415))
+
 ## v0.46.0 (2023-03-15)
 ### Feature
 * Add support for custom units to "time until diagnosis" ([`44548ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/44548ca2a329c6448dda81a39c1c6e7a221dcf82))
