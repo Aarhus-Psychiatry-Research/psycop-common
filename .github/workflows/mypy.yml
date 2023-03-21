@@ -34,8 +34,6 @@ jobs:
         if: steps.cache_venv.outputs.cache-hit != 'true'
         with:
           python-version: "3.9"
-          cache: "pip"
-          cache-dependency-path: "**/pyproject.toml"
 
       - name: Install dependencies
         shell: bash
