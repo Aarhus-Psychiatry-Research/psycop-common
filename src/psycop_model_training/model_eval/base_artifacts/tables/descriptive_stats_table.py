@@ -36,13 +36,12 @@ class DescriptiveStatsTable:
 
         df = self._get_column_header_df()
 
-        age_mean = round(self.eval_dataset.age.mean(), 2)
-
-        age_span = f"{self.eval_dataset.age.quantile(0.05)} - {self.eval_dataset.age.quantile(0.95)}"
+        age_mean = round(self.eval_dataset.age.mean(), 1)
+        age_span = f"{self.eval_dataset.age.quantile(0.25)} - {self.eval_dataset.age.quantile(0.75)}"
 
         df = df.append(  # type: ignore
             {
-                "category": "(visit_level) age (mean / interval)",
+                "category": "(visit_level) age (mean / 5-95 quartile interval)",
                 "stat_1": age_mean,
                 "stat_1_unit": "years",
                 "stat_2": age_span,
@@ -50,12 +49,13 @@ class DescriptiveStatsTable:
             },
             ignore_index=True,
         )
+
         age_counts = bin_continuous_data(
             self.eval_dataset.age,
-            bins=[0, 18, 35, 60, 100],
+            bins=[0, 17, *range(24, 75, 10)],
         )[0].value_counts()
 
-        age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 2)
+        age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 1)
 
         for i, _ in enumerate(age_counts):
             df = df.append(  # type: ignore
@@ -110,6 +110,12 @@ class DescriptiveStatsTable:
         """
 
         df = self._get_column_header_df()
+
+        if (
+            not hasattr(self.eval_dataset, "custom_columns")
+            or self.eval_dataset.custom_columns is None
+        ):
+            return df
 
         eval_cols: list[dict[str, pd.Series]] = [
             {name: values}
@@ -174,6 +180,7 @@ class DescriptiveStatsTable:
 
         # General stats
         visits_followed_by_positive_outcome = self.eval_dataset.y.sum()
+        
         visits_followed_by_positive_outcome_percentage = round(
             (visits_followed_by_positive_outcome / len(self.eval_dataset.ids) * 100),
             2,
@@ -290,6 +297,8 @@ class DescriptiveStatsTable:
         Returns:
             Union[pd.DataFrame, wandb.Table]: Table 1.
         """
+        if save_path is not None:
+            save_path.parent.mkdir(parents=True, exist_ok=True)
 
         if self.eval_dataset.age is not None:
             age_stats = self._generate_age_stats()
