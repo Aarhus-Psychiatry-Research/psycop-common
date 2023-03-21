@@ -193,14 +193,10 @@ def bin_continuous_data(
     df = df.dropna()
 
     # Add a column with counts for the bin each row belongs to
-    df["n_in_bin"] = df.groupby("bin")["bin"].transform("count").reset_index(drop=True)
+    df["n_in_bin"] = df.groupby("bin")["bin"].transform("count")
 
     # Mask n_in_bin if less than min_n_in_bin
-    df["n_in_bin"] = (
-        df["n_in_bin"]
-        .mask(df["n_in_bin"] < min_n_in_bin, np.nan)
-        .reset_index(drop=True)
-    )
+    df["n_in_bin"] = df["n_in_bin"].mask(df["n_in_bin"] < min_n_in_bin, np.nan)
 
     return df["bin"], df["n_in_bin"]
 
