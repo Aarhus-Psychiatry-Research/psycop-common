@@ -86,7 +86,7 @@ def plot_time_from_first_positive_to_event(
         .reset_index()
     )
 
-    x_labels = list(bins)
+    x_labels = list(counts["time_from_first_positive_to_event_binned"])
     y_values = counts[0].to_list()
 
     plot = plot_basic_chart(
