@@ -29,7 +29,6 @@ Feel free to delete or ignore this markdown file.
 * Branches
   * Add a branch protection rule for "main"
     * Require a pull request before merging
-      * Require approvals
     * Require status checks to pass before merging
       * Require branches to be up to date before merging
       * Status checks that are required:
