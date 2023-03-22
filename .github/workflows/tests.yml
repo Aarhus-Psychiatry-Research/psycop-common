@@ -39,12 +39,9 @@ jobs:
         if: steps.cache_venv.outputs.cache-hit != 'true'
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
-          cache-dependency-path: "**/pyproject.toml"
 
       - name: Install dependencies
         shell: bash
-        if: steps.cache_venv.outputs.cache-hit != 'true'
         run: |
           python -m venv .venv
           source .venv/bin/activate
@@ -52,12 +49,10 @@ jobs:
           pip install -e .[tests]
 
       - name: Run and write pytest
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}
         shell: bash
         run: |
-          set -o pipefail
           source .venv/bin/activate
-          pytest -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/ | tee pytest-coverage.txt
+          pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/
 
       # if it is run on ubuntu-latest, python 3.9, then create the badge
       - name: Pytest coverage comment

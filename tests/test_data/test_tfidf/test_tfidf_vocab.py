@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     p = Path("tests") / "test_data" / "test_tfidf"
 
-    with open(p / "tfidf_10.pkl", "rb") as f:
+    with open(p / "tfidf_10.pkl", "rb") as f:  # noqa
         tfidf = pkl.load(f)
 
     print(tfidf.get_feature_names())

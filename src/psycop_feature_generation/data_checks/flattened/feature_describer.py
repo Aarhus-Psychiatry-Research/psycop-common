@@ -1,11 +1,16 @@
 """Generates a df with feature descriptions for the predictors in the source
 df."""
+from __future__ import annotations
+
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 import pandas as pd
+from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
+from psycop_feature_generation.loaders.flattened.local_feature_loaders import (
+    load_split_predictors,
+)
 from timeseriesflattener.feature_spec_objects import (
     PredictorSpec,
     StaticSpec,
@@ -13,11 +18,6 @@ from timeseriesflattener.feature_spec_objects import (
     _AnySpec,
 )
 from wasabi import Printer
-
-from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
-from psycop_feature_generation.loaders.flattened.local_feature_loaders import (
-    load_split_predictors,
-)
 
 UNICODE_HIST = {
     0: " ",
@@ -38,8 +38,7 @@ def get_value_proportion(series, value):
     """Get proportion of series that is equal to the value argument."""
     if np.isnan(value):
         return round(series.isna().mean(), 2)
-    else:
-        return round(series.eq(value).mean(), 2)
+    return round(series.eq(value).mean(), 2)
 
 
 def _find_nearest(array, value):
@@ -191,10 +190,10 @@ def generate_feature_description_df(
 
 def save_feature_descriptive_stats_from_dir(
     feature_set_dir: Path,
-    feature_specs: list[Union[TemporalSpec, StaticSpec]],
+    feature_specs: list[TemporalSpec | StaticSpec],
     file_suffix: str,
     splits: Sequence[str] = ("train",),
-    out_dir: Path = None,
+    out_dir: Path | None = None,
 ):
     """Write a html table and csv with descriptive stats for features in the directory.
 

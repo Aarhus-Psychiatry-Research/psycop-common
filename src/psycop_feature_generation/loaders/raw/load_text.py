@@ -1,8 +1,9 @@
 """Load text data from sql warehouse."""
+from __future__ import annotations
 
+from collections.abc import Iterable
 from functools import partial
 from multiprocessing import Pool
-from typing import Iterable, Optional, Union
 
 import pandas as pd
 
@@ -42,16 +43,16 @@ def get_all_valid_note_types() -> set[str]:
 
 
 def _load_notes_for_year(
-    note_types: Union[str, list[str]],
+    note_types: str | list[str],
     year: str,
-    view: Optional[str] = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret",
-    n_rows: Optional[int] = None,
+    view: str | None = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret",
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads clinical notes from sql from a specified year and matching
     specified note types.
 
     Args:
-        note_names (Union[str, list[str]]): Which types of notes to load.
+        note_types (Union[str, list[str]]): Which types of notes to load.
         year (str): Which year to load
         view (str, optional): Which table to load.
             Defaults to "[FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret".
@@ -75,8 +76,8 @@ def _load_notes_for_year(
 
 
 def load_notes(
-    note_types: Union[str, Iterable[str]],
-    n_rows: Optional[int] = None,
+    note_types: str | Iterable[str],
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads all clinical notes that match the specified note from all years.
 
@@ -127,7 +128,7 @@ def load_notes(
 
 @data_loaders.register("all_notes")
 def load_all_notes(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Returns all notes from all years.
 
@@ -145,7 +146,7 @@ def load_all_notes(
 
 @data_loaders.register("aktuelt_psykisk")
 def load_aktuel_psykisk(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Returns 'Aktuelt psykisk' notes from all years.
 
@@ -163,8 +164,8 @@ def load_aktuel_psykisk(
 
 @data_loaders.register("load_note_types")
 def load_arbitrary_notes(
-    note_types: Union[str, list[str]],
-    n_rows: Optional[int] = None,
+    note_types: str | list[str],
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Returns one or multiple note types from all years.
 

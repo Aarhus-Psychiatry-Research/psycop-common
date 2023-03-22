@@ -1,13 +1,13 @@
 """Loaders for patient IDs."""
 
-from typing import Optional
+from __future__ import annotations
 
 import pandas as pd
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 
 
-def load_ids(split: str, n_rows: Optional[int] = None) -> pd.DataFrame:
+def load_ids(split: str, n_rows: int | None = None) -> pd.DataFrame:
     """Loads ids for a given split.
 
     Args:

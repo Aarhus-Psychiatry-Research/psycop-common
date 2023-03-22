@@ -1,7 +1,8 @@
 """Class for filtering prediction times before they are used for feature
 generation."""
+from __future__ import annotations
+
 import logging
-from typing import Optional
 
 import pandas as pd
 
@@ -16,19 +17,19 @@ class PredictionTimeFilterer:
         self,
         prediction_times_df: pd.DataFrame,
         entity_id_col_name: str,
-        quarantine_timestamps_df: Optional[pd.DataFrame] = None,
-        quarantine_interval_days: Optional[int] = None,
-        timestamp_col_name: Optional[str] = "timestamp",
+        quarantine_timestamps_df: pd.DataFrame | None = None,
+        quarantine_interval_days: int | None = None,
+        timestamp_col_name: str | None = "timestamp",
     ):
         """Initialize PredictionTimeFilterer.
 
         Args:
             prediction_times_df (pd.DataFrame): Prediction times dataframe.
                 Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
-            quarantine_df (pd.DataFrame, optional): A dataframe with timestamp column from which to start the quarantine.
-                Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
-            quarantine_days (int, optional): Number of days to quarantine.
             entity_id_col_name (str): Name of the entity_id_col_name column.
+            quarantine_timestamps_df (pd.DataFrame, optional): A dataframe with timestamp column from which to start the quarantine.
+                Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
+            quarantine_interval_days (int, optional): Number of days to quarantine.
             timestamp_col_name (str, optional): Name of the timestamp column.
         """
         self.prediction_times_df = prediction_times_df
@@ -36,9 +37,9 @@ class PredictionTimeFilterer:
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
 
-        if any(v is None for v in (self.quarantine_days, self.quarantine_df)) and not all(
+        if any(
             v is None for v in (self.quarantine_days, self.quarantine_df)
-        ):
+        ) and not all(v is None for v in (self.quarantine_days, self.quarantine_df)):
             raise ValueError(
                 "If either of quarantine_df and quarantine_days are provided, both must be provided.",
             )
@@ -93,7 +94,7 @@ class PredictionTimeFilterer:
 
         # Get only the rows that were hit by the quarantine date
         df_hit_by_quarantine = df.loc[
-            df["hit_by_quarantine"] == True  # pylint: disable=singleton-comparison
+            df["hit_by_quarantine"] == True  # noqa
         ].drop_duplicates(subset=[self.pred_time_uuid_col_name])[
             ["pred_time_uuid", "hit_by_quarantine"]
         ]
@@ -107,9 +108,7 @@ class PredictionTimeFilterer:
             validate="one_to_one",
         )
 
-        df = df.loc[
-            df["hit_by_quarantine"] != True  # pylint: disable=singleton-comparison
-        ]
+        df = df.loc[df["hit_by_quarantine"] != True]  # noqa
 
         # Drop the columns we added
         df = df.drop(
@@ -125,7 +124,7 @@ class PredictionTimeFilterer:
 
         return df
 
-    def filter(self):
+    def run_filter(self):
         """Run filters based on the provided parameters."""
         df = self.prediction_times_df
 

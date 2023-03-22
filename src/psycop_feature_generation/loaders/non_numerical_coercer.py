@@ -3,8 +3,7 @@
 
 This function takes a df and coerces all strings into numerical.
 """
-
-from typing import Optional
+from __future__ import annotations
 
 import pandas as pd
 
@@ -12,7 +11,7 @@ import pandas as pd
 def multiply_inequalities_in_df(
     df: pd.DataFrame,
     round_to_decimals: int = 6,
-    ineq2mult: Optional[dict[str, float]] = None,
+    ineq2mult: dict[str, float] | None = None,
     col_to_multiply: str = "value",
 ) -> pd.DataFrame:
     """Multiply inequalities in a dataframe by a factor.

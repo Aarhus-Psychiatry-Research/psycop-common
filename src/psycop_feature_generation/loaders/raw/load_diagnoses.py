@@ -3,18 +3,17 @@
 Is growing quite a bit, loaders may have to be split out into separate
 files (e.g. psychiatric, cardiovascular, metabolic etc.) over time.
 """
-
-# pylint: disable=missing-function-docstring
+from __future__ import annotations
 
 import logging
-from typing import Optional, Union, Literal
+from typing import Literal
 
 import pandas as pd
-from psycop_feature_generation.loaders.filters.diabetes_filters import (
-    keep_rows_where_diag_matches_t2d_diag,
-    keep_rows_where_diag_matches_t1d_diag,
-)
 
+from psycop_feature_generation.loaders.filters.diabetes_filters import (
+    keep_rows_where_diag_matches_t1d_diag,
+    keep_rows_where_diag_matches_t2d_diag,
+)
 from psycop_feature_generation.loaders.raw.utils import load_from_codes
 from psycop_feature_generation.utils import data_loaders
 
@@ -22,15 +21,15 @@ log = logging.getLogger(__name__)
 
 
 def from_contacts(
-    icd_code: Union[list[str], str],
-    output_col_name: Optional[str] = "value",
-    n_rows: Optional[int] = None,
-    wildcard_icd_code: Optional[bool] = False,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    keep_code_col: Optional[bool] = False,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    icd_code: list[str] | str,
+    output_col_name: str = "value",
+    n_rows: int | None = None,
+    wildcard_icd_code: bool = False,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    keep_code_col: bool = False,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     """Load diagnoses from all hospital contacts. If icd_code is a list, will
     aggregate as one column (e.g. ["E780", "E785"] into a ypercholesterolemia
@@ -53,11 +52,11 @@ def from_contacts(
     """
 
     log.warning(
-        "The DNPR3 data model replaced the DNPR2 model on 3 February 2019. Due to changes in DNPR3 granularity of diagnoses differ across the two models. If your prediction timestamps, lookbehind or lookahead span across this date, you should not use count as a resolve_multiple_fn. See the wiki (LPR2 compared to LPR3) for more information."
+        "The DNPR3 data model replaced the DNPR2 model on 3 February 2019. Due to changes in DNPR3 granularity of diagnoses differ across the two models. If your prediction timestamps, lookbehind or lookahead span across this date, you should not use count as a resolve_multiple_fn. See the wiki (LPR2 compared to LPR3) for more information.",
     )
 
     log.warning(
-        "Diagnoses should be identified by either contact start or end time, depending on whether the diagnoses are intended as predictors or outcomes. See the wiki (OBS: Diagnosis as outcome) for more information."
+        "Diagnoses should be identified by either contact start or end time, depending on whether the diagnoses are intended as predictors or outcomes. See the wiki (OBS: Diagnosis as outcome) for more information.",
     )
 
     allowed_timestamp_purposes = (
@@ -67,7 +66,7 @@ def from_contacts(
     if timestamp_purpose not in allowed_timestamp_purposes:
         raise ValueError(
             f"Invalid value for timestamp_purpose. "
-            f"Allowed values are {allowed_timestamp_purposes}."
+            f"Allowed values are {allowed_timestamp_purposes}.",
         )
 
     if timestamp_purpose == "predictor":
@@ -100,11 +99,11 @@ def from_contacts(
 
 @data_loaders.register("essential_hypertension")
 def essential_hypertension(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="I109",
@@ -119,11 +118,11 @@ def essential_hypertension(
 
 @data_loaders.register("hyperlipidemia")
 def hyperlipidemia(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=[
@@ -141,11 +140,11 @@ def hyperlipidemia(
 
 @data_loaders.register("liverdisease_unspecified")
 def liverdisease_unspecified(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="K769",
@@ -160,11 +159,11 @@ def liverdisease_unspecified(
 
 @data_loaders.register("polycystic_ovarian_syndrome")
 def polycystic_ovarian_syndrome(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="E282",
@@ -179,11 +178,11 @@ def polycystic_ovarian_syndrome(
 
 @data_loaders.register("sleep_apnea")
 def sleep_apnea(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["G473", "G4732"],
@@ -198,11 +197,11 @@ def sleep_apnea(
 
 @data_loaders.register("sleep_problems_unspecified")
 def sleep_problems_unspecified(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="G479",
@@ -217,11 +216,11 @@ def sleep_problems_unspecified(
 
 @data_loaders.register("copd")
 def copd(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["j44"],
@@ -236,11 +235,11 @@ def copd(
 
 @data_loaders.register("type_2_diabetes")
 def type_2_diabetes(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
@@ -276,11 +275,11 @@ def type_2_diabetes(
 
 @data_loaders.register("type_1_diabetes")
 def type_1_diabetes(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
@@ -318,11 +317,11 @@ def type_1_diabetes(
 # data loaders for all diagnoses in the f0-chapter (organic mental disorders)
 @data_loaders.register("f0_disorders")
 def f0_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f0",
@@ -337,11 +336,11 @@ def f0_disorders(
 
 @data_loaders.register("dementia")
 def dementia(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f00", "f01", "f02", "f03", "f04"],
@@ -356,11 +355,11 @@ def dementia(
 
 @data_loaders.register("delirium")
 def delirium(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f05",
@@ -375,11 +374,11 @@ def delirium(
 
 @data_loaders.register("miscellaneous_organic_mental_disorders")
 def misc_organic_mental_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f06", "f07", "f09"],
@@ -395,11 +394,11 @@ def misc_organic_mental_disorders(
 # data loaders for all diagnoses in the f1-chapter (mental and behavioural disorders due to psychoactive substance use)
 @data_loaders.register("f1_disorders")
 def f1_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f1",
@@ -414,11 +413,11 @@ def f1_disorders(
 
 @data_loaders.register("alcohol_dependency")
 def alcohol_dependency(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f10",
@@ -433,11 +432,11 @@ def alcohol_dependency(
 
 @data_loaders.register("opioid_dependency")
 def opioids_and_sedatives(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f11",
@@ -452,11 +451,11 @@ def opioids_and_sedatives(
 
 @data_loaders.register("cannabinoid_dependency")
 def cannabinoid_dependency(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f12",
@@ -471,11 +470,11 @@ def cannabinoid_dependency(
 
 @data_loaders.register("sedative_dependency")
 def sedative_dependency(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f13",
@@ -490,11 +489,11 @@ def sedative_dependency(
 
 @data_loaders.register("stimulant_dependencies")
 def stimulant_deo(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f14", "f15"],
@@ -509,11 +508,11 @@ def stimulant_deo(
 
 @data_loaders.register("hallucinogen_dependency")
 def hallucinogen_dependency(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f16",
@@ -528,11 +527,11 @@ def hallucinogen_dependency(
 
 @data_loaders.register("tobacco_dependency")
 def tobacco_dependency(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f17",
@@ -547,11 +546,11 @@ def tobacco_dependency(
 
 @data_loaders.register("miscellaneous_drug_dependencies")
 def misc_drugs(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f18", "f19"],
@@ -569,11 +568,11 @@ def misc_drugs(
 
 @data_loaders.register("f2_disorders")
 def f2_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f2",
@@ -588,11 +587,11 @@ def f2_disorders(
 
 @data_loaders.register("schizophrenia")
 def schizophrenia(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f20",
@@ -607,11 +606,11 @@ def schizophrenia(
 
 @data_loaders.register("schizoaffective")
 def schizoaffective(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f25",
@@ -626,11 +625,11 @@ def schizoaffective(
 
 @data_loaders.register("miscellaneous_psychotic_disorders")
 def misc_psychosis(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f21", "f22", "f23", "f24", "f28", "f29"],
@@ -648,11 +647,11 @@ def misc_psychosis(
 
 @data_loaders.register("f3_disorders")
 def f3_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f3",
@@ -667,11 +666,11 @@ def f3_disorders(
 
 @data_loaders.register("manic_and_bipolar")
 def manic_and_bipolar(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f30", "f31"],
@@ -686,11 +685,11 @@ def manic_and_bipolar(
 
 @data_loaders.register("depressive_disorders")
 def depressive_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f32", "f33", "f34", "f38"],
@@ -705,11 +704,11 @@ def depressive_disorders(
 
 @data_loaders.register("miscellaneous_affective_disorders")
 def misc_affective_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f38", "f39"],
@@ -727,11 +726,11 @@ def misc_affective_disorders(
 
 @data_loaders.register("f4_disorders")
 def f4_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f4",
@@ -746,11 +745,11 @@ def f4_disorders(
 
 @data_loaders.register("phobic_anxiety_ocd")
 def phobic_and_anxiety(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f40", "f41", "f42"],
@@ -765,11 +764,11 @@ def phobic_and_anxiety(
 
 @data_loaders.register("reaction_to_severe_stress_and_adjustment_disorders")
 def stress_and_adjustment(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f43",
@@ -784,11 +783,11 @@ def stress_and_adjustment(
 
 @data_loaders.register("dissociative_somatoform_miscellaneous")
 def dissociative_somatoform_and_misc(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f44", "f45", "f48"],
@@ -806,11 +805,11 @@ def dissociative_somatoform_and_misc(
 
 @data_loaders.register("f5_disorders")
 def f5_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f5",
@@ -825,11 +824,11 @@ def f5_disorders(
 
 @data_loaders.register("eating_disorders")
 def eating_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f50",
@@ -844,11 +843,11 @@ def eating_disorders(
 
 @data_loaders.register("sleeping_and_sexual_disorders")
 def sleeping_and_sexual_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f51", "f52"],
@@ -863,11 +862,11 @@ def sleeping_and_sexual_disorders(
 
 @data_loaders.register("miscellaneous_f5_disorders")
 def misc_f5(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f53", "f54", "f55", "f59"],
@@ -883,11 +882,11 @@ def misc_f5(
 # data loaders for all diagnoses in the f6-chapter (disorders of adult personality and behaviour).
 @data_loaders.register("f6_disorders")
 def f6_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f6",
@@ -902,11 +901,11 @@ def f6_disorders(
 
 @data_loaders.register("cluster_a")
 def cluster_a(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f600", "f601"],
@@ -921,11 +920,11 @@ def cluster_a(
 
 @data_loaders.register("cluster_b")
 def cluster_b(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f602", "f603", "f604"],
@@ -940,11 +939,11 @@ def cluster_b(
 
 @data_loaders.register("cluster_c")
 def cluster_c(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f605", "f606", "f607"],
@@ -959,11 +958,11 @@ def cluster_c(
 
 @data_loaders.register("miscellaneous_personality_disorders")
 def misc_personality_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f608", "f609", "f61", "f62", "f63", "f68", "f69"],
@@ -978,11 +977,11 @@ def misc_personality_disorders(
 
 @data_loaders.register("sexual_disorders")
 def misc_personality(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f65", "f66"],
@@ -1000,11 +999,11 @@ def misc_personality(
 # data loaders for all diagnoses in the f7-chapter (mental retardation).
 @data_loaders.register("f7_disorders")
 def f7_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f7",
@@ -1019,11 +1018,11 @@ def f7_disorders(
 
 @data_loaders.register("mild_mental_retardation")
 def mild_mental_retardation(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f70",
@@ -1038,11 +1037,11 @@ def mild_mental_retardation(
 
 @data_loaders.register("moderate_mental_retardation")
 def moderate_mental_retardation(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f71",
@@ -1057,11 +1056,11 @@ def moderate_mental_retardation(
 
 @data_loaders.register("severe_mental_retardation")
 def severe_mental_retardation(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f72", "f73"],
@@ -1076,11 +1075,11 @@ def severe_mental_retardation(
 
 @data_loaders.register("miscellaneous_mental_retardation_disorders")
 def misc_mental_retardation(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f78", "f79"],
@@ -1096,11 +1095,11 @@ def misc_mental_retardation(
 # data loaders for all diagnoses in the f8-chapter (disorders of psychological development).
 @data_loaders.register("f8_disorders")
 def f8_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f8",
@@ -1115,11 +1114,11 @@ def f8_disorders(
 
 @data_loaders.register("pervasive_developmental_disorders")
 def pervasive_developmental_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f84",
@@ -1134,11 +1133,11 @@ def pervasive_developmental_disorders(
 
 @data_loaders.register("miscellaneous_f8_disorders")
 def misc_f8(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f80", "f81", "f82", "f83", "f88", "f89"],
@@ -1154,11 +1153,11 @@ def misc_f8(
 # data loaders for all diagnoses in the f9-chapter (child and adolescent disorders).
 @data_loaders.register("f9_disorders")
 def f9_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f9",
@@ -1173,11 +1172,11 @@ def f9_disorders(
 
 @data_loaders.register("hyperkinetic_disorders")
 def hyperkinetic_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code="f90",
@@ -1192,11 +1191,11 @@ def hyperkinetic_disorders(
 
 @data_loaders.register("behavioural_disorders")
 def behavioural_disorders(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f91", "f92", "f93", "f94"],
@@ -1211,11 +1210,11 @@ def behavioural_disorders(
 
 @data_loaders.register("tics_and_miscellaneous_f9")
 def tics_and_misc(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f95", "f98"],
@@ -1230,11 +1229,11 @@ def tics_and_misc(
 
 @data_loaders.register("gerd")
 def gerd(
-    n_rows: Optional[int] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
-    shak_sql_operator: Optional[str] = None,
-    timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     """Gastroesophageal reflux disease (GERD) diagnoses."""
     return from_contacts(

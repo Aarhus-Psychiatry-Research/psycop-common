@@ -1,8 +1,6 @@
 """Loaders for T2D outcomes."""
 
-# pylint: disable=missing-function-docstring
-
-from typing import Optional
+from __future__ import annotations
 
 import pandas as pd
 
@@ -11,7 +9,7 @@ from psycop_feature_generation.utils import data_loaders
 
 
 @data_loaders.register("t2d")
-def t2d(n_rows: Optional[int] = None) -> pd.DataFrame:
+def t2d(n_rows: int | None = None) -> pd.DataFrame:
     df = sql_load(
         "SELECT dw_ek_borger, timestamp FROM [fct].[psycop_t2d_first_diabetes_t2d] WHERE timestamp IS NOT NULL",
         database="USR_PS_FORSK",
@@ -28,7 +26,7 @@ def t2d(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 
 @data_loaders.register("any_diabetes")
-def any_diabetes(n_rows: Optional[int] = None):
+def any_diabetes(n_rows: int | None = None):
     df = sql_load(
         "SELECT * FROM [fct].[psycop_t2d_first_diabetes_any] WHERE timestamp IS NOT NULL",
         database="USR_PS_FORSK",
@@ -39,7 +37,7 @@ def any_diabetes(n_rows: Optional[int] = None):
     df = df[["dw_ek_borger", "datotid_first_diabetes_any"]]
     df["value"] = 1
 
-    df.rename(columns={"datotid_first_diabetes_any": "timestamp"}, inplace=True)
+    df = df.rename(columns={"datotid_first_diabetes_any": "timestamp"})
     df["timestamp"] = pd.to_datetime(df["timestamp"]).dt.tz_localize(None)
 
     output = df[["dw_ek_borger", "timestamp", "value"]]
