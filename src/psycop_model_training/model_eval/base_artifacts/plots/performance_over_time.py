@@ -302,15 +302,9 @@ def create_performance_by_timedelta(
     metric_fn: Callable,
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
-<<<<<<< HEAD
-    bin_unit: Literal["h", "D", "M", "Q", "Y"],
-    bin_continuous_input: Optional[bool] = True,
-    drop_na_events: Optional[bool] = True,
-=======
     bin_unit: Literal["H", "D", "M", "Q", "Y"],
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
->>>>>>> main
     min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
@@ -398,15 +392,9 @@ def create_performance_by_timedelta(
 def plot_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: tuple = (0, 28, 182, 365, 730, 1825),
-<<<<<<< HEAD
-    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "h",
-    bin_continuous_input: Optional[bool] = True,
-    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
-=======
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     y_limits: tuple[float, float] = (0.5, 1.0),
->>>>>>> main
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time from first visit.
@@ -474,11 +462,7 @@ def plot_metric_by_time_until_diagnosis(
         -28,
         -0,
     ),
-<<<<<<< HEAD
-    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "h",
-=======
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
->>>>>>> main
     bin_continuous_input: bool = True,
     metric_fn: Callable = f1_score,
     y_title: str = "F1",
@@ -519,11 +503,7 @@ def plot_metric_by_time_until_diagnosis(
     sort_order = np.arange(len(df))
 
     bin_unit2str = {
-<<<<<<< HEAD
-        "h": "Hours",
-=======
         "H": "Hours",
->>>>>>> main
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",
