@@ -1,5 +1,7 @@
 """Functions for validating raw data - in the sense of data returned from a
 loader."""
+from __future__ import annotations
+
 from pathlib import Path
 
 import numpy as np

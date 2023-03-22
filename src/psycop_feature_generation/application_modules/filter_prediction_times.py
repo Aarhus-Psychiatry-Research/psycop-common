@@ -1,5 +1,7 @@
 """Class for filtering prediction times before they are used for feature
 generation."""
+from __future__ import annotations
+
 import logging
 
 import pandas as pd
@@ -91,9 +93,11 @@ class PredictionTimeFilterer:
         ] = True
 
         # Get only the rows that were hit by the quarantine date
-        df_hit_by_quarantine = df.loc[df["hit_by_quarantine"] is True].drop_duplicates(
-            subset=[self.pred_time_uuid_col_name],
-        )[["pred_time_uuid", "hit_by_quarantine"]]
+        df_hit_by_quarantine = df.loc[
+            df["hit_by_quarantine"] == True  # noqa
+        ].drop_duplicates(subset=[self.pred_time_uuid_col_name])[
+            ["pred_time_uuid", "hit_by_quarantine"]
+        ]
 
         # Use these rows to filter the prediction times
         df = self.prediction_times_df.merge(
@@ -104,7 +108,7 @@ class PredictionTimeFilterer:
             validate="one_to_one",
         )
 
-        df = df.loc[df["hit_by_quarantine"] is not True]
+        df = df.loc[df["hit_by_quarantine"] != True]  # noqa
 
         # Drop the columns we added
         df = df.drop(

@@ -3,6 +3,8 @@
 utilities. If this file grows, consider splitting it up.
 """
 
+from __future__ import annotations
+
 import os
 from collections.abc import Hashable
 from pathlib import Path

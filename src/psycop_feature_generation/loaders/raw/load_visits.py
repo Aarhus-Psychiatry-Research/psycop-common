@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from typing import Literal
 
 import pandas as pd
-from timeseriesflattener.feature_spec_objects import BaseModel
+from pydantic import BaseModel
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders

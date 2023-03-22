@@ -1,4 +1,6 @@
 """Code to generate data integrity and train/val/test drift reports."""
+from __future__ import annotations
+
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any

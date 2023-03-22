@@ -1,5 +1,6 @@
 """Loaders for synth data."""
 
+from __future__ import annotations
 
 import pandas as pd
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT, data_loaders

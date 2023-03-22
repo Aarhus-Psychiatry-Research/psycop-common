@@ -2,6 +2,8 @@
 
 Also kcheck that they return meaningful dictionaries.
 """
+from __future__ import annotations
+
 from collections.abc import Sequence
 
 import pandas as pd

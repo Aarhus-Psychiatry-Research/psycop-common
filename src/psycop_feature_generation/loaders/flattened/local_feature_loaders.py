@@ -1,4 +1,5 @@
 """Feature loaders for loading .csv from disk."""
+from __future__ import annotations
 
 from pathlib import Path
 
