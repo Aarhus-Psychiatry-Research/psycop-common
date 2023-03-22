@@ -40,7 +40,6 @@ def test_load_lookbehind_not_in_lookbehind_combination(
     n_cols_after_filtering = load_and_filter_train_from_cfg(cfg=cfg).shape[1]
 
     assert n_cols_before_filtering - n_cols_after_filtering == 3
-    raise ValueError("Testing test failure")
 
 
 def test_check_columns_exist_in_dataset():
