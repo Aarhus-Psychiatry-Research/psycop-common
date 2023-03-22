@@ -12,6 +12,11 @@ on:
 jobs:
   pytest:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
     strategy:
       matrix:
         os: [ubuntu-latest] #, macos-latest]
@@ -51,70 +56,13 @@ jobs:
       - name: Run and write pytest
         id: run_pytest
         shell: bash
-        continue-on-error: true
         run: |
           source .venv/bin/activate
+          pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/
 
-          if pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/; then
-            echo "Tests passed"
-            echo "tests_failed=0" >> $GITHUB_OUTPUT
-          else
-            echo "Tests failed"
-            echo "tests_failed=1" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-
-      - name: Install junitparser
-        run: npm install junit2json
-
-      - name: Parse test results
-        uses: actions/github-script@v4
-        id: parse_test_results
-        if: ${{ steps.run_pytest.outputs.tests_failed == 1 }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+      - name: Test Report
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: success() || failure() # run this step even if previous step failed
         with:
-          script: |
-            const parser = require('junit2json');
-            const fs = require('fs');
-            const results = parser.parse(fs.readFileSync('pytest.xml'));
-            const summary = results.testsuites[0];
-            let failedTests = '';
-            for (const testCase of summary.testcases) {
-              if (testCase.failure !== undefined || testCase.error !== undefined) {
-                failedTests += `- ${testCase.name}\n`;
-              }
-            }
-            let commentBody = `Test Summary: ${summary.tests} tests run, ${summary.failures} failures, ${summary.errors} errors\n\n`;
-            if (failedTests !== '') {
-              commentBody += 'The following tests failed or had errors:\n';
-              commentBody += failedTests;
-            } else {
-              commentBody += 'All tests passed!';
-            }
-            return { comment_body: commentBody };
-
-      - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.run_pytest.outputs.tests_failed == 1 && github.event_name == 'pull_request' }}
-        id: add_comment
-        with:
-          message: |
-            ${{ steps.parse_test_results.outputs.comment_body }}
-
-      # if it is run on ubuntu-latest, python 3.9, then create the badge
-      - name: Pytest coverage comment
-        id: coverage-comment
-        uses: MishaKav/pytest-coverage-comment@main
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        with:
-          create-new-comment: false
-          report-only-changed-files: false
-          pytest-coverage-path: pytest-coverage.txt
-          junitxml-path: ./pytest.xml
-
-      - name: Check the output coverage
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}
-        shell: bash
-        run: |
-          echo "Coverage Report - ${{ steps.coverage-comment.outputs.coverage }}"
-          echo "Coverage Color - ${{ steps.coverage-comment.outputs.color }}"
+          files: |
+            pytest.xml
