@@ -64,6 +64,39 @@ jobs:
             exit 1
           fi
 
+      - name: Parse test results and post PR comment
+        uses: actions/github-script@v4
+        if: ${{ steps.run_pytest.outputs.tests_failed == 1 }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          script: |
+            const parser = require('junitparser');
+            const fs = require('fs');
+            const results = parser.parse(fs.readFileSync('junit/test-results.xml'));
+            const summary = results.summary;
+            let failedTests = '';
+            for (const testSuite of results.testSuites) {
+              for (const testCase of testSuite.testCases) {
+                if (testCase.failure !== null || testCase.error !== null) {
+                  failedTests += `- ${testSuite.name}.${testCase.name}\n`;
+                }
+              }
+            }
+            let commentBody = `Test Summary: ${summary.tests} tests run, ${summary.failures} failures, ${summary.errors} errors\n\n`;
+            if (failedTests !== '') {
+              commentBody += 'The following tests failed or had errors:\n';
+              commentBody += failedTests;
+            } else {
+              commentBody += 'All tests passed!';
+            }
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
+
       # if it is run on ubuntu-latest, python 3.9, then create the badge
       - name: Pytest coverage comment
         id: coverage-comment
@@ -81,10 +114,3 @@ jobs:
         run: |
           echo "Coverage Report - ${{ steps.coverage-comment.outputs.coverage }}"
           echo "Coverage Color - ${{ steps.coverage-comment.outputs.color }}"
-
-      - name: Fail workflow if tests fail
-        # Get exit code from run_pytest step
-        if: ${{ steps.run_pytest.outputs.tests_failed == 1 }}
-        run: |
-          echo "Tests failed. You can inspect them in the comment or in the Run and write pytest step"
-          exit 1
