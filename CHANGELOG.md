@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.46.2 (2023-03-22)
+### Fix
+* Reset index introduces nan ([#445](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/445)) ([`eeb5f32`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/eeb5f32ec24aa0eccb20b0f6c62692952c304808))
+* Reset index introduces nan ([`d37e2aa`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d37e2aa40c401fae0755bc8d9ce0d68cb5709269))
+
+## v0.46.1 (2023-03-21)
+### Fix
+* Added max bin creates different shapes ([#443](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/443)) ([`c73819c`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c73819cb2be4f1dbb4271766bf6ff906ec55e6ad))
+* Added max bin creates different shapes ([`7204c54`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7204c5421118f20cbcbf5daa7945b999c06b4415))
+
 ## v0.46.0 (2023-03-15)
 ### Feature
 * Add support for custom units to "time until diagnosis" ([`44548ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/44548ca2a329c6448dda81a39c1c6e7a221dcf82))

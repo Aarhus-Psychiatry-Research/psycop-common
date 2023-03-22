@@ -39,8 +39,6 @@ jobs:
         if: steps.cache_venv.outputs.cache-hit != 'true'
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
-          cache-dependency-path: "**/pyproject.toml"
 
       - name: Install dependencies
         shell: bash
@@ -51,10 +49,20 @@ jobs:
           pip install -e .[tests]
 
       - name: Run and write pytest
+        id: run_pytest
         shell: bash
+        continue-on-error: true
         run: |
           source .venv/bin/activate
-          pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/
+
+          if pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/; then
+            echo "Tests passed"
+            echo "tests_failed=0" >> $GITHUB_OUTPUT
+          else
+            echo "Tests failed"
+            echo "tests_failed=1" >> $GITHUB_OUTPUT
+            exit 1
+          fi
 
       # if it is run on ubuntu-latest, python 3.9, then create the badge
       - name: Pytest coverage comment
@@ -73,3 +81,10 @@ jobs:
         run: |
           echo "Coverage Report - ${{ steps.coverage-comment.outputs.coverage }}"
           echo "Coverage Color - ${{ steps.coverage-comment.outputs.color }}"
+
+      - name: Fail workflow if tests fail
+        # Get exit code from run_pytest step
+        if: ${{ steps.run_pytest.tests_failed == 1 }}
+        run: |
+          echo "Tests failed. You can inspect them in the comment or in the Run and write pytest step"
+          exit 1
