@@ -71,7 +71,7 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           create-new-comment: false
-          report-only-changed-files: true
+          report-only-changed-files: false
           pytest-coverage-path: pytest-coverage.txt
           junitxml-path: ./pytest.xml
 
