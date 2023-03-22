@@ -150,7 +150,7 @@ def weight_in_kg(n_rows: int | None = None) -> pd.DataFrame:
         value_col="numelementvaerdi",
     )
 
-    df = df[df["value"] > 0]
+    df = df[df["value"] > 0.5]
 
     return df
 
