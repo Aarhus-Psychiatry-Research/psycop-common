@@ -62,7 +62,7 @@ def load_dataset_from_file(
     if file_suffix == ".csv":
         return pd.read_csv(file_path, nrows=nrows)
 
-    elif file_suffix == ".parquet":
+    elif file_suffix == ".parquet":  # noqa
         if nrows:
             raise ValueError("nrows not supported for parquet files")
 
@@ -146,9 +146,9 @@ def assert_no_duplicate_dicts_in_list(predictor_spec_list: list[dict[str, Any]])
     for d in predictor_spec_list:
         # Remove any keys with unhashable values
         # Otherwise, we get an error when using "in".
-        d = {k: v for k, v in d.items() if isinstance(v, Hashable)}
+        exploded_d = {k: v for k, v in d.items() if isinstance(v, Hashable)}
 
-        d_as_tuple = tuple(d.items())
+        d_as_tuple = tuple(exploded_d.items())
         if d_as_tuple in seen:
             duplicates.add(d_as_tuple)
         else:

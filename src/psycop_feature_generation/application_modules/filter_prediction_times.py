@@ -24,10 +24,10 @@ class PredictionTimeFilterer:
         Args:
             prediction_times_df (pd.DataFrame): Prediction times dataframe.
                 Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
-            quarantine_df (pd.DataFrame, optional): A dataframe with timestamp column from which to start the quarantine.
-                Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
-            quarantine_days (int, optional): Number of days to quarantine.
             entity_id_col_name (str): Name of the entity_id_col_name column.
+            quarantine_timestamps_df (pd.DataFrame, optional): A dataframe with timestamp column from which to start the quarantine.
+                Any prediction times within the quarantine_interval_days after this timestamp will be dropped.
+            quarantine_interval_days (int, optional): Number of days to quarantine.
             timestamp_col_name (str, optional): Name of the timestamp column.
         """
         self.prediction_times_df = prediction_times_df
@@ -120,7 +120,7 @@ class PredictionTimeFilterer:
 
         return df
 
-    def filter(self):
+    def run_filter(self):
         """Run filters based on the provided parameters."""
         df = self.prediction_times_df
 

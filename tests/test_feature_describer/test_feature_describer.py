@@ -11,7 +11,7 @@ from timeseriesflattener.feature_spec_objects import PredictorSpec, StaticSpec
 
 
 @pytest.fixture()
-def predictor_specs(df):
+def predictor_specs():
     return [
         PredictorSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),

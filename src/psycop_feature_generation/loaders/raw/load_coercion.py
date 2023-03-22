@@ -1,5 +1,5 @@
 """Loaders for coercion data."""
-
+from __future__ import annotations
 
 import pandas as pd
 
@@ -65,7 +65,7 @@ def coercion_duration(
     )
 
     # Change NaNs to 0
-    df["value"].fillna(0, inplace=True)
+    df["value"].fillna(0, inplace=True)  # noqa
 
     if unpack_to_intervals:
         df = unpack_intervals(
@@ -89,7 +89,7 @@ def _concatenate_coercion(
 
     Args:
         coercion_types_list (list): list of dictionaries containing a 'coercion_type' key and a 'reason_for_coercion' key. If keys not in dicts, they are set to None # noqa: DAR102
-        n (int, optional): Number of rows to return. Defaults to None.
+        n_rows (int, optional): Number of rows to return. Defaults to None.
         unpack_to_intervals: Unpack time interval to rows with set frequency (see below). Defaults to False.
         unpack_freq:  unpack_freq: Frequency string by which the interval will be unpacked. Default to "D" (day). For e.g., 5 hours, write "5H".
 
@@ -119,9 +119,6 @@ def _concatenate_coercion(
     ]
 
     return pd.concat(dfs, axis=0).reset_index(drop=True)
-
-
-# REASON (begrundtekst_sei) #
 
 
 @data_loaders.register("farlighed")
@@ -277,8 +274,6 @@ def skema_2(
 @data_loaders.register("skema_2_without_nutrition")
 def skema_2_without_nutrition(
     n_rows: int | None = None,
-    unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
 ) -> pd.DataFrame:
     coercion_types_list = [
         {

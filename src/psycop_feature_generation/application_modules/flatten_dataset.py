@@ -45,7 +45,7 @@ def filter_prediction_times(
         quarantine_interval_days=quarantine_days,
     )
 
-    return filterer.filter()
+    return filterer.run_filter()
 
 
 @wandb_alert_on_exception

@@ -68,5 +68,5 @@ def save_df_to_pretty_html_table(
         html += f"<h3> {subtitle} </h3>\n"
     html += df.to_html(classes="wide", escape=False)
 
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8") as f:  # noqa
         f.write(HTML_TEMPLATE1 + html + HTML_TEMPLATE2)

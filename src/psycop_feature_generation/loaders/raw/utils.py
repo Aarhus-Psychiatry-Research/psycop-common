@@ -295,6 +295,7 @@ def unpack_intervals(
         df (pd.DataFrame): dataframe with time interval in separate columns.
         starttime_col (str, optional): Name of column with start time. Defaults to "datotid_start_sei".
         endtime_col (str, optional): Name of column with end time. Defaults to "timestamp".
+        entity_id (str, optional): Name of column with entity id. Defaults to "dw_ek_borger".
         unpack_freq: Frequency string by which the interval will be unpacked. Default to "D" (day). For e.g., 5 hours, write "5H".
 
     Returns:

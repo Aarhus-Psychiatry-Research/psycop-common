@@ -36,8 +36,7 @@ def get_value_proportion(series, value):
     """Get proportion of series that is equal to the value argument."""
     if np.isnan(value):
         return round(series.isna().mean(), 2)
-    else:
-        return round(series.eq(value).mean(), 2)
+    return round(series.eq(value).mean(), 2)
 
 
 def _find_nearest(array, value):

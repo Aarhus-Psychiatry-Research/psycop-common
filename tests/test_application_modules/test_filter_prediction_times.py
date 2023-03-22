@@ -51,7 +51,7 @@ def test_filter_by_quarantine_period():
         entity_id_col_name="entity_id",
     )
 
-    result_df = filterer.filter()
+    result_df = filterer.run_filter()
 
     # Check that the result is as expected using pandas.testing.assert_frame_equal
     pd.testing.assert_frame_equal(

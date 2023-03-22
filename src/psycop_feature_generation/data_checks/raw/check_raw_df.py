@@ -52,10 +52,9 @@ def get_column_dtype_failures(
         # Check that column has a valid datetime format
         if df[col].dtype != "datetime64[ns]":
             return f"{col}: invalid datetime format"
-    elif "value" in col:
+    elif "value" in col and df[col].dtype not in expected_val_dtypes:
         # Check that column has a valid numeric format
-        if df[col].dtype not in expected_val_dtypes:
-            return f"{col}: dtype {df[col].dtype}, expected {expected_val_dtypes}"
+        return f"{col}: dtype {df[col].dtype}, expected {expected_val_dtypes}"
 
     return None
 
@@ -78,12 +77,11 @@ def get_na_prop_failures(
 
     na_prop = df[col].isna().sum() / df.shape[0]
 
-    if na_prop > 0:
-        if col != "value":
-            return f"{col}: {na_prop} NaN"
-        else:
-            if na_prop > allowed_nan_value_prop:
-                return f"{col}: {na_prop} NaN (allowed {allowed_nan_value_prop})"
+    if na_prop > 0 and col != "value":
+        return f"{col}: {na_prop} NaN"
+
+    if na_prop > allowed_nan_value_prop:
+        return f"{col}: {na_prop} NaN (allowed {allowed_nan_value_prop})"
 
     return None
 

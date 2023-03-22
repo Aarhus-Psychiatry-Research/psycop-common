@@ -51,7 +51,7 @@ def _load_notes_for_year(
     specified note types.
 
     Args:
-        note_names (Union[str, list[str]]): Which types of notes to load.
+        note_types (Union[str, list[str]]): Which types of notes to load.
         year (str): Which year to load
         view (str, optional): Which table to load.
             Defaults to "[FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret".

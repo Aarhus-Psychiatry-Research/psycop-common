@@ -1,6 +1,7 @@
 """Loaders for visits to psychiatry."""
 
 import logging
+from collections.abc import Sequence
 from typing import Literal
 
 import pandas as pd
@@ -38,9 +39,9 @@ def physical_visits(
     where_separator: str | None = "AND",
     n_rows: int | None = None,
     return_value_as_visit_length_days: bool | None = False,
-    visit_types: list[
+    visit_types: Sequence[
         Literal["admissions", "ambulatory_visits", "emergency_visits"]
-    ] = ["admissions", "ambulatory_visits", "emergency_visits"],
+    ] = ("admissions", "ambulatory_visits", "emergency_visits"),
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 

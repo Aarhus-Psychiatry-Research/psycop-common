@@ -96,11 +96,7 @@ def load(
         df = pd.concat([df, df_medication_administered])
 
     if output_col_name is None:
-        if isinstance(atc_code, list):
-            # Joint list of atc_codes
-            output_col_name = "_".join(atc_code)
-        else:
-            output_col_name = atc_code
+        output_col_name = "_".join(atc_code) if isinstance(atc_code, list) else atc_code
 
     df = df.rename(
         columns={
@@ -136,7 +132,7 @@ def concat_medications(
             output_col_name=output_col_name,
             n_rows=n_rows,
         )
-        for id in atc_code_prefixes
+        for id in atc_code_prefixes  # noqa
     ]
 
     return (
@@ -500,7 +496,7 @@ def antidepressives(
     )
 
 
-# SSRIs [escitalopram, citalopram, fluvoxamin, fluoxetin, paroxetin]
+# SSRIs, escitalopram, citalopram, fluvoxamin, fluoxetin, paroxetin
 @data_loaders.register("ssri")
 def ssri(
     n_rows: int | None = None,
@@ -520,7 +516,7 @@ def ssri(
     )
 
 
-# SNRIs [duloxetin, venlafaxin]
+# SNRIs, duloxetin, venlafaxin
 @data_loaders.register("snri")
 def snri(
     n_rows: int | None = None,

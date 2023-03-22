@@ -15,9 +15,9 @@ def check_df_conforms_to_feature_spec(
     msg_prefix: str,
     arg_dict: dict,
     allowed_nan_value_prop: float = 0.01,
-    required_columns: Sequence[str] = ["dw_ek_borger", "timestamp", "value"],
-    subset_duplicates_columns: Sequence[str] = ["dw_ek_borger", "timestamp", "value"],
-    expected_val_dtypes: list[str] = ["float64", "int64"],
+    required_columns: Sequence[str] = ("dw_ek_borger", "timestamp", "value"),
+    subset_duplicates_columns: Sequence[str] = ("dw_ek_borger", "timestamp", "value"),
+    expected_val_dtypes: Sequence[str] = ("float64", "int64"),
 ):
     """Check that a loaded df conforms to to a given feature specification.
     Useful when creating loaders.
@@ -56,11 +56,11 @@ def check_df_conforms_to_feature_spec(
     if len(source_failures) != 0:
         msg.fail(f"{msg_prefix} errors: {source_failures}")
         return {arg_dict["predictor_df"]: source_failures}
-    else:
-        msg.good(
-            f"{msg_prefix} passed data validation criteria.",
-        )
-        return None
+
+    msg.good(
+        f"{msg_prefix} passed data validation criteria.",
+    )
+    return None
 
 
 def get_predictor_df_with_loader_fn(d: dict, n_rows: int) -> pd.DataFrame:
@@ -78,8 +78,7 @@ def get_predictor_df_with_loader_fn(d: dict, n_rows: int) -> pd.DataFrame:
 
     if "loader_kwargs" in d:
         return loader_fns_dict[d["predictor_df"]](n_rows=n_rows, **d["loader_kwargs"])
-    else:
-        return loader_fns_dict[d["predictor_df"]](n_rows=n_rows)
+    return loader_fns_dict[d["predictor_df"]](n_rows=n_rows)
 
 
 def get_unique_predictor_dfs(predictor_dict_list: list[dict], required_keys: list[str]):

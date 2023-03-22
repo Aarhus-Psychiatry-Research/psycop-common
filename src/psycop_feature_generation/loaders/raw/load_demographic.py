@@ -21,7 +21,6 @@ def birthdays(n_rows: int | None = None) -> pd.DataFrame:
 
     df = df.rename(columns={"foedselsdato": "date_of_birth"})
 
-    # msg.good("Loaded birthdays")
     return df.reset_index(drop=True)
 
 
