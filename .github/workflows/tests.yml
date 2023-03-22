@@ -60,9 +60,22 @@ jobs:
           source .venv/bin/activate
           pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/
 
-      - name: Test Report
+      - name: Test report on failures
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: success() || failure() # run this step even if previous step failed
+        id: test_report_with_annotations
+        if: ${{ github.actor != 'dependabot[bot]' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
         with:
+          comment_mode: "changes"
           files: |
             pytest.xml
+
+      # if it is run on ubuntu-latest, python 3.9, then create the badge
+      - name: Pytest coverage comment
+        id: coverage-comment
+        uses: MishaKav/pytest-coverage-comment@main
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          create-new-comment: false
+          report-only-changed-files: true
+          pytest-coverage-path: pytest-coverage.txt
+          junitxml-path: ./pytest.xml
