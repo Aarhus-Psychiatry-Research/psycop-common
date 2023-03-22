@@ -12,6 +12,11 @@ on:
 jobs:
   pytest:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
     strategy:
       matrix:
         os: [ubuntu-latest] #, macos-latest]
@@ -51,18 +56,18 @@ jobs:
       - name: Run and write pytest
         id: run_pytest
         shell: bash
-        continue-on-error: true
         run: |
           source .venv/bin/activate
+          pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/
 
-          if pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/; then
-            echo "Tests passed"
-            echo "tests_failed=0" >> $GITHUB_OUTPUT
-          else
-            echo "Tests failed"
-            echo "tests_failed=1" >> $GITHUB_OUTPUT
-            exit 1
-          fi
+      - name: Test report on failures
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        id: test_report_with_annotations
+        if: ${{ github.actor != 'dependabot[bot]' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
+        with:
+          comment_mode: "failures"
+          files: |
+            pytest.xml
 
       # if it is run on ubuntu-latest, python 3.9, then create the badge
       - name: Pytest coverage comment
@@ -74,17 +79,3 @@ jobs:
           report-only-changed-files: true
           pytest-coverage-path: pytest-coverage.txt
           junitxml-path: ./pytest.xml
-
-      - name: Check the output coverage
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}
-        shell: bash
-        run: |
-          echo "Coverage Report - ${{ steps.coverage-comment.outputs.coverage }}"
-          echo "Coverage Color - ${{ steps.coverage-comment.outputs.color }}"
-
-      - name: Fail workflow if tests fail
-        # Get exit code from run_pytest step
-        if: ${{ steps.run_pytest.tests_failed == 1 }}
-        run: |
-          echo "Tests failed. You can inspect them in the comment or in the Run and write pytest step"
-          exit 1
