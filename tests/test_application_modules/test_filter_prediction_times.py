@@ -1,6 +1,5 @@
 """Tests of the filter_prediction_times module."""
 import pandas as pd
-
 from psycop_feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )

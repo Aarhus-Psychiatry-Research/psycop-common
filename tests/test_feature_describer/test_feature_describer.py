@@ -25,7 +25,7 @@ def predictor_specs(df):
 
 
 @pytest.fixture()
-def static_spec(df):
+def static_spec():
     return [
         StaticSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),

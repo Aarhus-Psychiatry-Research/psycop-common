@@ -1,7 +1,6 @@
 """Feature loaders for loading .csv from disk."""
 
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 
@@ -31,7 +30,7 @@ def load_split(
     feature_set_dir: Path,
     file_suffix: str,
     split: str,
-    nrows: Optional[int] = None,
+    nrows: int | None = None,
 ) -> pd.DataFrame:
     """Loads a given data split as a dataframe from a directory.
 
@@ -54,7 +53,7 @@ def load_split_predictors(
     file_suffix: str,
     split: str,
     include_id: bool,
-    nrows: Optional[int] = None,
+    nrows: int | None = None,
 ) -> pd.DataFrame:
     """Loads predictors from a given data split as a dataframe from a
     directory.
@@ -99,7 +98,7 @@ def load_split_outcomes(
     feature_set_dir: Path,
     file_suffix: str,
     split: str,
-    nrows: Optional[int] = None,
+    nrows: int | None = None,
 ) -> pd.DataFrame:
     """Loads outcomes from a given data split as a dataframe from a directory.
 

@@ -1,13 +1,11 @@
 """Loaders for synth data."""
 
-from typing import Optional
 
 import pandas as pd
-
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT, data_loaders
 
 
-def load_raw_test_csv(filename: str, n_rows: Optional[int] = None) -> pd.DataFrame:
+def load_raw_test_csv(filename: str, n_rows: int | None = None) -> pd.DataFrame:
     """Load raw csv.
 
     Args:
@@ -28,7 +26,7 @@ def load_raw_test_csv(filename: str, n_rows: Optional[int] = None) -> pd.DataFra
 
 @data_loaders.register("synth_predictor_float")
 def synth_predictor_float(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Load synth predictor data.".
 
@@ -43,7 +41,7 @@ def synth_predictor_float(
 
 @data_loaders.register("synth_predictor_binary")
 def synth_predictor_binary(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Load synth predictor data.".
 
@@ -58,7 +56,7 @@ def synth_predictor_binary(
 
 @data_loaders.register("synth_outcome")
 def load_synth_outcome(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Load synth predictor data.".
 
@@ -76,7 +74,7 @@ def load_synth_outcome(
 
 @data_loaders.register("synth_prediction_times")
 def load_synth_prediction_times(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Load synth predictor data.".
 

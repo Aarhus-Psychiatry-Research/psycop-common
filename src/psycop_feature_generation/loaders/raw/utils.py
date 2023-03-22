@@ -1,7 +1,6 @@
 """Example of."""
 
 import logging
-from typing import Optional, Union
 
 import pandas as pd
 
@@ -78,21 +77,21 @@ def list_to_sql_logic(
 
 
 def load_from_codes(
-    codes_to_match: Union[list[str], str],
+    codes_to_match: list[str] | str,
     load_diagnoses: bool,
     code_col_name: str,
     source_timestamp_col_name: str,
     view: str,
-    output_col_name: Optional[str] = None,
+    output_col_name: str | None = None,
     match_with_wildcard: bool = True,
-    n_rows: Optional[int] = None,
-    exclude_codes: Optional[list[str]] = None,
-    administration_route: Optional[str] = None,
-    administration_method: Optional[str] = None,
-    shak_location_col: Optional[str] = None,
-    shak_code: Optional[int] = None,
+    n_rows: int | None = None,
+    exclude_codes: list[str] | None = None,
+    administration_route: str | None = None,
+    administration_method: str | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
     keep_code_col: bool = False,
-    shak_sql_operator: Optional[str] = None,
+    shak_sql_operator: str | None = None,
 ) -> pd.DataFrame:
     """Load the visits that have diagnoses that match icd_code or atc code from
     the beginning of their adiagnosekode or atc code string. Aggregates all
@@ -322,7 +321,7 @@ def unpack_intervals(
 
     # concat df with start and end time rows
     df = pd.concat([df, df_end_rows], ignore_index=True).sort_values(
-        [f"{entity_id}", f"{starttime_col}", "date_range"]
+        [f"{entity_id}", f"{starttime_col}", "date_range"],
     )
 
     # drop duplicates (when start and/or end time = 00:00:00)
@@ -336,7 +335,7 @@ def unpack_intervals(
 
     # only keep relevant columns and rename date_range to timestamp
     df = df[[f"{entity_id}", "date_range", "value"]].rename(
-        columns={"date_range": "timestamp"}
+        columns={"date_range": "timestamp"},
     )
 
     return df

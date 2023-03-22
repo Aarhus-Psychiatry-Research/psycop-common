@@ -1,10 +1,8 @@
 """Flatten the dataset."""
 import logging
-from typing import Optional
 
 import pandas as pd
 import psutil
-from timeseriesflattener.feature_cache.cache_to_disk import DiskCache
 from timeseriesflattener.feature_spec_objects import _AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
@@ -23,8 +21,8 @@ log = logging.getLogger(__name__)
 def filter_prediction_times(
     prediction_times_df: pd.DataFrame,
     project_info: ProjectInfo,
-    quarantine_df: Optional[pd.DataFrame] = None,
-    quarantine_days: Optional[int] = None,
+    quarantine_df: pd.DataFrame | None = None,
+    quarantine_days: int | None = None,
 ) -> pd.DataFrame:
     """Filter prediction times.
 
@@ -56,8 +54,8 @@ def create_flattened_dataset(
     prediction_times_df: pd.DataFrame,
     drop_pred_times_with_insufficient_look_distance: bool,
     project_info: ProjectInfo,
-    quarantine_df: Optional[pd.DataFrame] = None,
-    quarantine_days: Optional[int] = None,
+    quarantine_df: pd.DataFrame | None = None,
+    quarantine_days: int | None = None,
 ) -> pd.DataFrame:
     """Create flattened dataset.
 
