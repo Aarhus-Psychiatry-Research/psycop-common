@@ -77,7 +77,7 @@ jobs:
           script: |
             const parser = require('junit2json');
             const fs = require('fs');
-            const results = parser.parse(fs.readFileSync('junit/test-results.xml'));
+            const results = parser.parse(fs.readFileSync('pytest.xml'));
             const summary = results.summary;
             let failedTests = '';
             for (const testSuite of results.testSuites) {
