@@ -64,6 +64,9 @@ jobs:
             exit 1
           fi
 
+      - name: Install junitparser
+        run: npm install junitparser
+
       - name: Parse test results and post PR comment
         uses: actions/github-script@v4
         if: ${{ steps.run_pytest.outputs.tests_failed == 1 }}
