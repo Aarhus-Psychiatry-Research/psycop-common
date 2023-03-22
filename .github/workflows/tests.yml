@@ -65,7 +65,6 @@ jobs:
         id: test_report_with_annotations
         if: ${{ github.actor != 'dependabot[bot]' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
         with:
-          comment_mode: "changes"
           files: |
             pytest.xml
 
