@@ -1,8 +1,3 @@
-# pylint: disable-all
-
-import os
-import sys
-
 import pytest
 
 

@@ -1,14 +1,13 @@
-"""Functions for validating raw data – in the sense of data returned from a
+"""Functions for validating raw data - in the sense of data returned from a
 loader."""
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import pandas as pd
 from deepchecks.tabular import Dataset
 from deepchecks.tabular.suites import data_integrity
-from wasabi import Printer
-
 from psycop_feature_generation.data_checks.flattened.data_integrity import (
     get_failed_check_names,
 )
@@ -16,6 +15,7 @@ from psycop_feature_generation.data_checks.flattened.feature_describer import (
     create_unicode_hist,
 )
 from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
+from wasabi import Printer
 
 
 def median_absolute_deviation(series: pd.Series) -> float:
@@ -109,9 +109,9 @@ def validate_raw_data(
     save_path: Path,
     df: pd.DataFrame,
     feature_set_name: str,
-    deviation_baseline_column: Optional[str] = "median",
-    deviation_threshold_ratio: Optional[float] = 4.0,
-    deviation_variation_column: Optional[str] = "median_absolute_deviation",
+    deviation_baseline_column: str | None = "median",
+    deviation_threshold_ratio: float | None = 4.0,
+    deviation_variation_column: str | None = "median_absolute_deviation",
 ) -> None:
     """Validates raw data from SQL database (or any dataframe, really). Runs
     data integrity checks from deepchecks, and calculates summary statistics.

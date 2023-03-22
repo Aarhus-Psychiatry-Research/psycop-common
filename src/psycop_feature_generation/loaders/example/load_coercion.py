@@ -1,6 +1,5 @@
 """Testing loading of coercion functions."""
 
-# pylint: disable=non-ascii-name
 
 import psycop_feature_generation.loaders.raw.load_coercion as c
 

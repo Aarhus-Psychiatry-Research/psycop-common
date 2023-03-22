@@ -1,7 +1,7 @@
 """Utilities for data checks."""
+from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 
@@ -14,7 +14,7 @@ HTML_TEMPLATE1 = """
     text-align: center;
     font-family: Helvetica, Arial, sans-serif;
   }
-  table { 
+  table {
     margin-left: auto;
     margin-right: auto;
   }
@@ -32,7 +32,7 @@ HTML_TEMPLATE1 = """
     background-color: #dddddd;
   }
   .wide {
-    width: 90%; 
+    width: 90%;
   }
 </style>
 </head>
@@ -48,8 +48,8 @@ HTML_TEMPLATE2 = """
 def save_df_to_pretty_html_table(
     df: pd.DataFrame,
     path: Path,
-    title: Optional[str] = None,
-    subtitle: Optional[str] = None,
+    title: str | None = None,
+    subtitle: str | None = None,
 ) -> None:
     """Write dataframe to a HTML file with nice formatting. Stolen from
     stackoverflow: https://stackoverflow.com/a/52722850.
@@ -69,5 +69,5 @@ def save_df_to_pretty_html_table(
         html += f"<h3> {subtitle} </h3>\n"
     html += df.to_html(classes="wide", escape=False)
 
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8") as f:  # noqa
         f.write(HTML_TEMPLATE1 + html + HTML_TEMPLATE2)

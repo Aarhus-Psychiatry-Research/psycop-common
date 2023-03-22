@@ -2,19 +2,16 @@
 import numpy as np
 import pandas as pd
 import pytest
-from timeseriesflattener.feature_spec_objects import PredictorSpec, StaticSpec
-
 from psycop_feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_df,
     generate_feature_description_row,
 )
 from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
-
-# pylint: disable=redefined-outer-name, missing-function-docstring
+from timeseriesflattener.feature_spec_objects import PredictorSpec, StaticSpec
 
 
 @pytest.fixture()
-def predictor_specs(df):  # pylint: disable=unused-argument
+def predictor_specs():
     return [
         PredictorSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
@@ -28,7 +25,7 @@ def predictor_specs(df):  # pylint: disable=unused-argument
 
 
 @pytest.fixture()
-def static_spec(df):  # pylint: disable=unused-argument
+def static_spec():
     return [
         StaticSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
@@ -74,9 +71,8 @@ def test_generate_feature_description_row_for_static_spec(
 
     column_name = spec.get_col_str()
 
-    df.rename(
+    df = df.rename(
         columns={"pred_hba1c_within_100_days_max_fallback_nan": column_name},
-        inplace=True,
     )
 
     generate_feature_description_row(series=df[column_name], predictor_spec=spec)

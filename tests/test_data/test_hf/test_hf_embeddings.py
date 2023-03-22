@@ -1,6 +1,6 @@
 """Tests for generating huggingface embeddings."""
 
-_test_hf_embeddings = [i for i in range(384)]
+_test_hf_embeddings = list(range(384))
 
 
 TEST_HF_EMBEDDINGS = [
