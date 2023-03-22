@@ -24,7 +24,7 @@ FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-TEST_PLOT_PATH = PROJECT_ROOT / "tests" / "test_plots"
+TEST_PLOT_PATH = PROJECT_ROOT / "tests" / "plots_from_tests"
 
 
 def format_dict_for_printing(d: dict) -> str:
