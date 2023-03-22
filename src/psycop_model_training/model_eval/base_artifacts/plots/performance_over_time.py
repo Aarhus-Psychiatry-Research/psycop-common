@@ -295,10 +295,10 @@ def plot_metric_by_cyclic_time(
 
 
 def create_performance_by_timedelta(
-    labels: pd.Series[int],
-    y_hat: pd.Series[float],
-    time_one: pd.Series[pd.Timestamp],
-    time_two: pd.Series[pd.Timestamp],
+    labels: Iterable[int],
+    y_hat: Iterable[float],
+    time_one: Iterable[pd.Timestamp],
+    time_two: Iterable[pd.Timestamp],
     metric_fn: Callable,
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
@@ -311,14 +311,14 @@ def create_performance_by_timedelta(
     some event (e.g. time of diagnosis, time from first visit).
 
     Args:
-        labels (Sequence[int]): True labels
-        y_hat (Sequence[int, float]): Predicted probabilities or labels depending on metric
-        time_one (Sequence[pd.Timestamp]): Timestamps for time one (e.g. first visit).
-        time_two (Sequence[pd.Timestamp]): Timestamps for time two.
+        labels (Iterable[int]): True labels
+        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
+        time_one (Iterable[pd.Timestamp]): Timestamps for time one (e.g. first visit).
+        time_two (Iterable[pd.Timestamp]): Timestamps for time two.
         metric_fn (Callable): Which performance metric function to use (e.g. roc_auc_score)
         direction (str): Which direction to calculate time difference.
         Can either be 't2-t1' or 't1-t2'.
-        bins (Sequence[float]): Bins to group by.
+        bins (Iterable[float]): Bins to group by.
         bin_unit (Literal["H", "D", "M", "Q", "Y"]): Unit of time to use for bins.
         bin_continuous_input (bool, ): Whether to bin input. Defaults to True.
         drop_na_events (bool, ): Whether to drop rows where the event is NA. Defaults to True.
@@ -327,11 +327,6 @@ def create_performance_by_timedelta(
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
-    if metric_fn == roc_auc_score:
-        raise ValueError(
-            "roc_auc_score is not defined for time from event, since all predictions will have a true value (y) == 1",
-        )
-
     df = pd.DataFrame(
         {
             "y": labels,
