@@ -143,12 +143,16 @@ def height_in_cm(n_rows: int | None = None) -> pd.DataFrame:
 
 @data_loaders.register("weight_in_kg")
 def weight_in_kg(n_rows: int | None = None) -> pd.DataFrame:
-    return sfi_loader(
+    df = sfi_loader(
         aktivitetstypenavn="Måling af patientvægt (kg)",
         elementledetekst="Vægt i kg",
         n_rows=n_rows,
         value_col="numelementvaerdi",
     )
+
+    df = df[df["value"] > 0.5]
+
+    return df
 
 
 @data_loaders.register("bmi")
