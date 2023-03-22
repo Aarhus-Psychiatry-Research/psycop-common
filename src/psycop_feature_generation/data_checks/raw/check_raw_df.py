@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 import pandas as pd
@@ -9,8 +10,8 @@ import pandas as pd
 
 def check_for_duplicates(
     df: pd.DataFrame,
-    subset_duplicates_columns: list[str] | str,
-) -> tuple[pd.Series, list[str]]:
+    subset_duplicates_columns: Sequence[str] | str,
+) -> tuple[pd.DataFrame, list[str]]:
     """Check for duplicates in the dataframe.
 
     Args:
@@ -36,7 +37,7 @@ def check_for_duplicates(
 
 def get_column_dtype_failures(
     df: pd.DataFrame,
-    expected_val_dtypes: list[str],
+    expected_val_dtypes: Sequence[str],
     col: str,
 ) -> str | None:
     """Check that the column is of the correct dtype.
@@ -90,9 +91,9 @@ def get_na_prop_failures(
 
 def check_required_columns(
     df: pd.DataFrame,
-    required_columns: list[str],
+    required_columns: Sequence[str],
     allowed_nan_value_prop: float,
-    expected_val_dtypes: list[str],
+    expected_val_dtypes: Sequence[str],
 ) -> list[str]:
     """Check that the required columns are present and that the value column.
 
@@ -136,10 +137,10 @@ def check_required_columns(
 
 def check_raw_df(
     df: pd.DataFrame,
-    required_columns: list[str] | None = None,
+    required_columns: Sequence[str] | None = None,
     allowed_nan_value_prop: float = 0.0,
-    expected_val_dtypes: list[str] | None = None,
-    subset_duplicates_columns: list | str = "all",
+    expected_val_dtypes: Sequence[str] | None = None,
+    subset_duplicates_columns: Sequence | str = "all",
     raise_error: bool = True,
 ) -> tuple[list[str], Any]:
     """Check that the raw df conforms to the required format and doesn't

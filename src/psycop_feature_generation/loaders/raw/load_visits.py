@@ -1,4 +1,5 @@
 """Loaders for visits to psychiatry."""
+from __future__ import annotations
 
 import logging
 from collections.abc import Sequence

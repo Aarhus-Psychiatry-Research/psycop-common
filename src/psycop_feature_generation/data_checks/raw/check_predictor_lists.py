@@ -5,6 +5,7 @@ Also kcheck that they return meaningful dictionaries.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Any
 
 import pandas as pd
 from psycop_feature_generation.data_checks.raw.check_raw_df import check_raw_df
@@ -83,7 +84,10 @@ def get_predictor_df_with_loader_fn(d: dict, n_rows: int) -> pd.DataFrame:
     return loader_fns_dict[d["predictor_df"]](n_rows=n_rows)
 
 
-def get_unique_predictor_dfs(predictor_dict_list: list[dict], required_keys: list[str]):
+def get_unique_predictor_dfs(
+    predictor_dict_list: Sequence[dict],
+    required_keys: list[str],
+):
     """Get unique predictor_dfs from predictor_dict_list.
 
     Args:
@@ -115,12 +119,12 @@ def get_unique_predictor_dfs(predictor_dict_list: list[dict], required_keys: lis
 
 
 def check_feature_combinations_return_correct_dfs(
-    predictor_dict_list: list[dict[str, str | float | int]],
+    predictor_dict_list: Sequence[dict[str, Any]],
     n_rows: int = 1_000,
-    required_columns: list[str] | None = None,
-    subset_duplicates_columns: list[str] | None = None,
+    required_columns: Sequence[str] | None = None,
+    subset_duplicates_columns: Sequence[str] | None = None,
     allowed_nan_value_prop: float = 0.01,
-    expected_val_dtypes: list[str] | None = None,
+    expected_val_dtypes: Sequence[str] | None = None,
 ):
     """Test that all predictor_dfs in predictor_list return a valid df.
 
