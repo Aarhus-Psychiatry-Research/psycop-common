@@ -294,35 +294,35 @@ def plot_metric_by_cyclic_time(
     )
 
 
-def create_performance_by_time_from_event_df(
-    labels: Iterable[int],
-    y_hat: Iterable[float],
-    event_timestamps: Iterable[pd.Timestamp],
-    prediction_timestamps: Iterable[pd.Timestamp],
+def create_performance_by_timedelta(
+    labels: pd.Series[int],
+    y_hat: pd.Series[float],
+    time_one: pd.Series[pd.Timestamp],
+    time_two: pd.Series[pd.Timestamp],
     metric_fn: Callable,
-    direction: Literal["event-prediction", "prediction-event"],
+    direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
     bin_unit: Literal["H", "D", "M", "Q", "Y"],
-    bin_continuous_input: Optional[bool] = True,
-    drop_na_events: Optional[bool] = True,
+    bin_continuous_input: bool = True,
+    drop_na_events: bool = True,
     min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
     some event (e.g. time of diagnosis, time from first visit).
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
-        event_timestamps (Iterable[pd.Timestamp]): Timestamp of event (e.g. first visit)
-        prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of prediction
+        labels (Sequence[int]): True labels
+        y_hat (Sequence[int, float]): Predicted probabilities or labels depending on metric
+        time_one (Sequence[pd.Timestamp]): Timestamps for time one (e.g. first visit).
+        time_two (Sequence[pd.Timestamp]): Timestamps for time two.
         metric_fn (Callable): Which performance metric function to use (e.g. roc_auc_score)
         direction (str): Which direction to calculate time difference.
-        Can either be 'prediction-event' or 'event-prediction'.
-        bins (Iterable[float]): Bins to group by.
+        Can either be 't2-t1' or 't1-t2'.
+        bins (Sequence[float]): Bins to group by.
         bin_unit (Literal["H", "D", "M", "Q", "Y"]): Unit of time to use for bins.
-        bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
-        drop_na_events (bool, optional): Whether to drop rows where the event is NA. Defaults to True.
-        min_n_in_bin (int, optional): Minimum number of rows in a bin to include in output. Defaults to 10.
+        bin_continuous_input (bool, ): Whether to bin input. Defaults to True.
+        drop_na_events (bool, ): Whether to drop rows where the event is NA. Defaults to True.
+        min_n_in_bin (int, ): Minimum number of rows in a bin to include in output. Defaults to 10.
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
@@ -336,26 +336,26 @@ def create_performance_by_time_from_event_df(
         {
             "y": labels,
             "y_hat": y_hat,
-            "event_timestamp": event_timestamps,
-            "prediction_timestamp": prediction_timestamps,
+            "t1_timestamp": time_one,
+            "t2_timestamp": time_two,
         },
     )
     # Drop rows with no events if specified
     if drop_na_events:
-        df = df.dropna(subset=["event_timestamp"])
+        df = df.dropna(subset=["t1_timestamp"])
 
     # Calculate difference in days between prediction and event
-    if direction == "event-prediction":
+    if direction == "t1-t2":
         df["unit_from_event"] = (
-            df["event_timestamp"] - df["prediction_timestamp"]
+            df["t1_timestamp"] - df["t2_timestamp"]
         ) / np.timedelta64(
             1,
             bin_unit,
         )  # type: ignore
 
-    elif direction == "prediction-event":
+    elif direction == "t2-t1":
         df["unit_from_event"] = (
-            df["prediction_timestamp"] - df["event_timestamp"]
+            df["t2_timestamp"] - df["t1_timestamp"]
         ) / np.timedelta64(
             1,
             bin_unit,
@@ -363,7 +363,7 @@ def create_performance_by_time_from_event_df(
 
     else:
         raise ValueError(
-            f"Direction should be one of ['event-prediction', 'prediction-event'], not {direction}",
+            f"Direction should be one of ['t1-t2', 't2-t1'], not {direction}",
         )
 
     # bin data
@@ -393,8 +393,8 @@ def plot_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: tuple = (0, 28, 182, 365, 730, 1825),
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
-    bin_continuous_input: Optional[bool] = True,
-    y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
+    bin_continuous_input: bool = True,
+    y_limits: tuple[float, float] = (0.5, 1.0),
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time from first visit.
@@ -416,12 +416,12 @@ def plot_auc_by_time_from_first_visit(
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
-    df = create_performance_by_time_from_event_df(
+    df = create_performance_by_timedelta(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_probs,
-        event_timestamps=first_visit_timestamps,
-        prediction_timestamps=eval_dataset.pred_timestamps,
-        direction="prediction-event",
+        time_one=first_visit_timestamps,
+        time_two=eval_dataset.pred_timestamps,
+        direction="t2-t1",
         bins=list(bins),
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
@@ -487,12 +487,12 @@ def plot_metric_by_time_until_diagnosis(
     Returns:
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
-    df = create_performance_by_time_from_event_df(
+    df = create_performance_by_timedelta(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_int,
-        event_timestamps=eval_dataset.outcome_timestamps,
-        prediction_timestamps=eval_dataset.pred_timestamps,
-        direction="event-prediction",
+        time_one=eval_dataset.outcome_timestamps,
+        time_two=eval_dataset.pred_timestamps,
+        direction="t1-t2",
         bins=bins,
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
