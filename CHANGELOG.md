@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.46.3 (2023-03-22)
+### Fix
+* Incorrect type hints, sequence cannot be subscripted ([`99984b6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/99984b646729a72808022a1522b13751d1f63b77))
+* Incorrect valueerror ([`46766b9`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/46766b91f93ae470277cb960fe5171c891fc5b75))
+
 ## v0.46.2 (2023-03-22)
 ### Fix
 * Reset index introduces nan ([#445](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/445)) ([`eeb5f32`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/eeb5f32ec24aa0eccb20b0f6c62692952c304808))

@@ -27,7 +27,7 @@ def test_create_performance_by_time_from_event_df(synth_eval_dataset: EvalDatase
         time_one=eval_ds.outcome_timestamps,
         time_two=eval_ds.pred_timestamps,
         metric_fn=recall_score,
-        direction="prediction-event",
+        direction="t2-t1",
         bins=[-500, -100, 0, 100, 500, 1000],
         bin_unit="D",
         bin_continuous_input=True,
