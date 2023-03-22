@@ -65,16 +65,17 @@ jobs:
           fi
 
       - name: Install junitparser
-        run: npm install junitparser
+        run: npm install junit2json
 
-      - name: Parse test results and post PR comment
+      - name: Parse test results
         uses: actions/github-script@v4
+        id: parse_test_results
         if: ${{ steps.run_pytest.outputs.tests_failed == 1 }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           script: |
-            const parser = require('junitparser');
+            const parser = require('junit2json');
             const fs = require('fs');
             const results = parser.parse(fs.readFileSync('junit/test-results.xml'));
             const summary = results.summary;
@@ -93,12 +94,14 @@ jobs:
             } else {
               commentBody += 'All tests passed!';
             }
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: commentBody
-            });
+            return { comment_body: commentBody };
+
+      - uses: mshick/add-pr-comment@v2
+        if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
+        id: add_comment
+        with:
+          message: |
+            ${{ steps.parse_test_results.outputs.comment_body }}
 
       # if it is run on ubuntu-latest, python 3.9, then create the badge
       - name: Pytest coverage comment
