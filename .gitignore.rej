@@ -1,0 +1,10 @@
+diff a/.gitignore b/.gitignore	(rejected hunks)
+@@ -6,7 +6,7 @@
+ /docs/_build/
+ /src/*.egg-info/
+ __pycache__/
+-.venv
++.*venv*
+ 
+ # VSCode
+ .vscode/
