@@ -327,11 +327,6 @@ def create_performance_by_timedelta(
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
-    if metric_fn == roc_auc_score:
-        raise ValueError(
-            "roc_auc_score is not defined for time from event, since all predictions will have a true value (y) == 1",
-        )
-
     df = pd.DataFrame(
         {
             "y": labels,
