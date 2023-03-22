@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.21.1 (2023-03-22)
+### Fix
+* Only keep weights above 0.5 kg ([`8a5a104`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/8a5a10401442337efd5bd33ce8bcf899fef4c642))
+* Do not load invalid weights ([`7be4653`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/7be465301d57831a425f28f5eaedda1b783df9b9))
+
 ## v0.21.0 (2023-03-22)
 ### Feature
 * Support new pipe annotation ([`a1bde17`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/a1bde17e354741a65bd85b8364b2cd45eeaab4d0))
