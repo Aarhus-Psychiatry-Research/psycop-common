@@ -1,9 +1,7 @@
 """Loaders for visits to psychiatry."""
-from __future__ import annotations
-
 import logging
 from collections.abc import Sequence
-from typing import Literal
+from typing import Literal, Union
 
 import pandas as pd
 from pydantic import BaseModel
@@ -27,19 +25,19 @@ class RawValueSourceSchema(BaseModel):
 
     view: str
     end_datetime_col_name: str
-    start_datetime_col_name: str | None = None
-    location_col_name: str | None = None
+    start_datetime_col_name: Union[str, None] = None
+    location_col_name: Union[str, None] = None
     where_clause: str
 
 
 def physical_visits(
     timestamp_for_output: Literal["start", "end"] = "end",
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = "=",
-    where_clause: str | None = None,
-    where_separator: str | None = "AND",
-    n_rows: int | None = None,
-    return_value_as_visit_length_days: bool | None = False,
+    shak_code: Union[int, None] = None,
+    shak_sql_operator: Union[str, None] = "=",
+    where_clause: Union[str, None] = None,
+    where_separator: Union[str, None] = "AND",
+    n_rows: Union[int, None] = None,
+    return_value_as_visit_length_days: Union[bool, None] = False,
     visit_types: Sequence[
         Literal["admissions", "ambulatory_visits", "emergency_visits"]
     ] = ("admissions", "ambulatory_visits", "emergency_visits"),
@@ -172,8 +170,8 @@ def physical_visits(
 
 @data_loaders.register("physical_visits")
 def physical_visits_loader(
-    n_rows: int | None = None,
-    return_value_as_visit_length_days: bool | None = False,
+    n_rows: Union[int, None] = None,
+    return_value_as_visit_length_days: Union[bool, None] = False,
 ) -> pd.DataFrame:
     """Load physical visits to all units."""
     return physical_visits(
@@ -184,9 +182,9 @@ def physical_visits_loader(
 
 @data_loaders.register("physical_visits_to_psychiatry")
 def physical_visits_to_psychiatry(
-    n_rows: int | None = None,
+    n_rows: Union[int, None] = None,
     timestamps_only: bool = False,
-    return_value_as_visit_length_days: bool | None = True,
+    return_value_as_visit_length_days: Union[bool, None] = True,
     timestamp_for_output: Literal["start", "end"] = "start",
 ) -> pd.DataFrame:
     """Load physical visits to psychiatry."""
@@ -206,8 +204,8 @@ def physical_visits_to_psychiatry(
 
 @data_loaders.register("physical_visits_to_somatic")
 def physical_visits_to_somatic(
-    n_rows: int | None = None,
-    return_value_as_visit_length_days: bool | None = False,
+    n_rows: Union[int, None] = None,
+    return_value_as_visit_length_days: Union[bool, None] = False,
 ) -> pd.DataFrame:
     """Load physical visits to somatic."""
     return physical_visits(
@@ -220,10 +218,10 @@ def physical_visits_to_somatic(
 
 @data_loaders.register("admissions")
 def admissions(
-    n_rows: int | None = None,
-    return_value_as_visit_length_days: bool | None = False,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
+    n_rows: Union[int, None] = None,
+    return_value_as_visit_length_days: Union[bool, None] = False,
+    shak_code: Union[int, None] = None,
+    shak_sql_operator: Union[str, None] = None,
 ) -> pd.DataFrame:
     """Load admissions."""
     return physical_visits(
@@ -237,10 +235,10 @@ def admissions(
 
 @data_loaders.register("ambulatory_visits")
 def ambulatory_visits(
-    n_rows: int | None = None,
-    return_value_as_visit_length_days: bool | None = False,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
+    n_rows: Union[int, None] = None,
+    return_value_as_visit_length_days: Union[bool, None] = False,
+    shak_code: Union[int, None] = None,
+    shak_sql_operator: Union[str, None] = None,
 ) -> pd.DataFrame:
     """Load ambulatory visits."""
     return physical_visits(
@@ -254,10 +252,10 @@ def ambulatory_visits(
 
 @data_loaders.register("emergency_visits")
 def emergency_visits(
-    n_rows: int | None = None,
-    return_value_as_visit_length_days: bool | None = False,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
+    n_rows: Union[int, None] = None,
+    return_value_as_visit_length_days: Union[bool, None] = False,
+    shak_code: Union[int, None] = None,
+    shak_sql_operator: Union[str, None] = None,
 ) -> pd.DataFrame:
     """Load emergency visits."""
     return physical_visits(
@@ -271,10 +269,10 @@ def emergency_visits(
 
 @data_loaders.register("ambulatory_and_emergency_visits")
 def ambulatory_and_emergency_visits(
-    n_rows: int | None = None,
-    return_value_as_visit_length_days: bool | None = False,
-    shak_code: int | None = None,
-    shak_sql_operator: str | None = None,
+    n_rows: Union[int, None] = None,
+    return_value_as_visit_length_days: Union[bool, None] = False,
+    shak_code: Union[int, None] = None,
+    shak_sql_operator: Union[str, None] = None,
 ) -> pd.DataFrame:
     """Load emergency visits."""
     return physical_visits(

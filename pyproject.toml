@@ -116,6 +116,34 @@ ignore = [
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]
 
+# Exclude a variety of commonly ignored directories.
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
+  "__init__.py"
+]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+target-version = "py39"
+
 [tool.ruff.flake8-annotations]
 mypy-init-return = true
 suppress-none-returning = true
@@ -135,3 +163,6 @@ version_variable = [
 upload_to_pypi = true
 upload_to_release = true
 build_command = "python -m pip install build; python -m build"
+
+[tool.setuptools]
+include-package-data = true
