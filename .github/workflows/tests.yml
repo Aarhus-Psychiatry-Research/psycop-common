@@ -78,13 +78,11 @@ jobs:
             const parser = require('junit2json');
             const fs = require('fs');
             const results = parser.parse(fs.readFileSync('pytest.xml'));
-            const summary = results.summary;
+            const summary = results.testsuites[0];
             let failedTests = '';
-            for (const testSuite of results.testSuites) {
-              for (const testCase of testSuite.testCases) {
-                if (testCase.failure !== null || testCase.error !== null) {
-                  failedTests += `- ${testSuite.name}.${testCase.name}\n`;
-                }
+            for (const testCase of summary.testcases) {
+              if (testCase.failure !== undefined || testCase.error !== undefined) {
+                failedTests += `- ${testCase.name}\n`;
               }
             }
             let commentBody = `Test Summary: ${summary.tests} tests run, ${summary.failures} failures, ${summary.errors} errors\n\n`;
@@ -97,7 +95,7 @@ jobs:
             return { comment_body: commentBody };
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
+        if: ${{ steps.run_pytest.outputs.tests_failed == 1 && github.event_name == 'pull_request' }}
         id: add_comment
         with:
           message: |
