@@ -84,7 +84,7 @@ jobs:
 
       - name: Fail workflow if tests fail
         # Get exit code from run_pytest step
-        if: ${{ steps.run_pytest.tests_failed == 1 }}
+        if: ${{ steps.run_pytest.outputs.tests_failed == 1 }}
         run: |
           echo "Tests failed. You can inspect them in the comment or in the Run and write pytest step"
           exit 1
