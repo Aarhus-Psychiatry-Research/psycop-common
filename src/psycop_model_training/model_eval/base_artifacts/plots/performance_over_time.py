@@ -300,7 +300,7 @@ def create_performance_by_time_from_event_df(
     event_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     metric_fn: Callable,
-    direction: str,
+    direction: Literal["event-prediction", "prediction-event"],
     bins: Sequence[float],
     bin_unit: Literal["H", "D", "M", "Q", "Y"],
     bin_continuous_input: Optional[bool] = True,
@@ -327,6 +327,10 @@ def create_performance_by_time_from_event_df(
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
+    if metric_fn == roc_auc_score:
+        raise ValueError(
+            "roc_auc_score is not defined for time from event, since all predictions will have a true value (y) == 1",
+        )
 
     df = pd.DataFrame(
         {
