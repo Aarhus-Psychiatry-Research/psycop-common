@@ -2,13 +2,12 @@
 
 Also kcheck that they return meaningful dictionaries.
 """
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
 
 import pandas as pd
-from wasabi import Printer
-
 from psycop_feature_generation.data_checks.raw.check_raw_df import check_raw_df
 from psycop_feature_generation.utils import data_loaders
+from wasabi import Printer
 
 
 def check_df_conforms_to_feature_spec(
@@ -114,13 +113,13 @@ def get_unique_predictor_dfs(predictor_dict_list: list[dict], required_keys: lis
     return unique_subset_dicts
 
 
-def check_feature_combinations_return_correct_dfs(  # noqa pylint: disable=too-many-branches
-    predictor_dict_list: list[dict[str, Union[str, float, int]]],
+def check_feature_combinations_return_correct_dfs(
+    predictor_dict_list: list[dict[str, str | float | int]],
     n_rows: int = 1_000,
-    required_columns: Optional[list[str]] = None,
-    subset_duplicates_columns: Optional[list[str]] = None,
+    required_columns: list[str] | None = None,
+    subset_duplicates_columns: list[str] | None = None,
     allowed_nan_value_prop: float = 0.01,
-    expected_val_dtypes: Optional[list[str]] = None,
+    expected_val_dtypes: list[str] | None = None,
 ):
     """Test that all predictor_dfs in predictor_list return a valid df.
 
