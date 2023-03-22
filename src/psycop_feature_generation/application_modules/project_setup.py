@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Literal
 
 import wandb
-from timeseriesflattener.feature_spec_objects import (  # pylint: disable=no-name-in-module
+from timeseriesflattener.feature_spec_objects import (
     BaseModel,
 )
 

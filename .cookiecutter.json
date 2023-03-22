@@ -11,5 +11,6 @@
     "license": "MIT",
     "package_name": "psycop_feature_generation",
     "project_name": "psycop-feature-generation",
+    "setup_for_dev_bash_script": "y",
     "version": "0.0.0"
 }

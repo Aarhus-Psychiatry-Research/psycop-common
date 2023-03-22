@@ -6,7 +6,7 @@ utilities. If this file grows, consider splitting it up.
 import os
 from collections.abc import Hashable
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import catalogue
 import pandas as pd
@@ -45,7 +45,7 @@ def format_dict_for_printing(d: dict) -> str:
 
 def load_dataset_from_file(
     file_path: Path,
-    nrows: Optional[int] = None,
+    nrows: int | None = None,
 ) -> pd.DataFrame:
     """Load dataset from file. Handles csv and parquet files based on suffix.
 
@@ -149,7 +149,7 @@ def assert_no_duplicate_dicts_in_list(predictor_spec_list: list[dict[str, Any]])
         d = {k: v for k, v in d.items() if isinstance(v, Hashable)}
 
         d_as_tuple = tuple(d.items())
-        if d_as_tuple in seen:  # pylint: disable=R6103
+        if d_as_tuple in seen:
             duplicates.add(d_as_tuple)
         else:
             seen.add(d_as_tuple)

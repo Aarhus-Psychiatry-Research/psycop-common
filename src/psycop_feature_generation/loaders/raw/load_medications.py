@@ -1,5 +1,5 @@
 """Loaders for medications."""
-# pylint: disable=missing-function-docstring
+
 import logging
 
 import pandas as pd

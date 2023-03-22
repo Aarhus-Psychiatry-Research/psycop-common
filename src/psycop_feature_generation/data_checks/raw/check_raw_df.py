@@ -1,13 +1,13 @@
 """Check that any raw df conforms to the required format."""
 
-from typing import Any, Optional, Union
+from typing import Any
 
 import pandas as pd
 
 
 def check_for_duplicates(
     df: pd.DataFrame,
-    subset_duplicates_columns: Union[list[str], str],
+    subset_duplicates_columns: list[str] | str,
 ) -> tuple[pd.Series, list[str]]:
     """Check for duplicates in the dataframe.
 
@@ -36,7 +36,7 @@ def get_column_dtype_failures(
     df: pd.DataFrame,
     expected_val_dtypes: list[str],
     col: str,
-) -> Union[str, None]:
+) -> str | None:
     """Check that the column is of the correct dtype.
 
     Args:
@@ -64,7 +64,7 @@ def get_na_prop_failures(
     df: pd.DataFrame,
     allowed_nan_value_prop: float,
     col: str,
-) -> Union[str, None]:
+) -> str | None:
     """Check if column has too many missing values.
 
     Args:
@@ -134,12 +134,12 @@ def check_required_columns(
     return source_failures
 
 
-def check_raw_df(  # pylint: disable=too-many-branches
+def check_raw_df(
     df: pd.DataFrame,
-    required_columns: Optional[list[str]] = None,
+    required_columns: list[str] | None = None,
     allowed_nan_value_prop: float = 0.0,
-    expected_val_dtypes: Optional[list[str]] = None,
-    subset_duplicates_columns: Union[list, str] = "all",
+    expected_val_dtypes: list[str] | None = None,
+    subset_duplicates_columns: list | str = "all",
     raise_error: bool = True,
 ) -> tuple[list[str], Any]:
     """Check that the raw df conforms to the required format and doesn't

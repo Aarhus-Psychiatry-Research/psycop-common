@@ -1,8 +1,5 @@
 """Loaders for structured SFI-data."""
 
-# pylint: disable = missing-function-docstring
-
-from typing import Optional
 
 import pandas as pd
 
@@ -11,9 +8,9 @@ from psycop_feature_generation.utils import data_loaders
 
 
 def sfi_loader(
-    aktivitetstypenavn: Optional[str] = None,
-    elementledetekst: Optional[str] = None,
-    n_rows: Optional[int] = None,
+    aktivitetstypenavn: str | None = None,
+    elementledetekst: str | None = None,
+    n_rows: int | None = None,
     value_col: str = "numelementvaerdi",
 ) -> pd.DataFrame:
     """Load structured_sfi data. By default returns entire structured_sfi data
@@ -48,19 +45,18 @@ def sfi_loader(
         keep="first",
     )
 
-    df.rename(
+    df = df.rename(
         columns={
             "datotid_resultat_udfoert": "timestamp",
             value_col: "value",
         },
-        inplace=True,
     )
 
     return df.reset_index(drop=True)
 
 
 @data_loaders.register("broeset_violence_checklist")
-def broeset_violence_checklist(n_rows: Optional[int] = None) -> pd.DataFrame:
+def broeset_violence_checklist(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Brøset Violence Checkliste (BVC)",
         elementledetekst="Sum",
@@ -71,7 +67,7 @@ def broeset_violence_checklist(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 @data_loaders.register("broeset_violence_checklist_physical_threats")
 def broeset_violence_checklist_physical_threats(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Brøset Violence Checkliste (BVC)",
@@ -93,7 +89,7 @@ def broeset_violence_checklist_physical_threats(
 
 
 @data_loaders.register("selvmordsrisiko")
-def selvmordsrisiko(n_rows: Optional[int] = None) -> pd.DataFrame:
+def selvmordsrisiko(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Screening for selvmordsrisiko",
         elementledetekst="ScrSelvmordlRisikoniveauKonkl",
@@ -115,7 +111,7 @@ def selvmordsrisiko(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 
 @data_loaders.register("hamilton_d17")
-def hamilton_d17(n_rows: Optional[int] = None) -> pd.DataFrame:
+def hamilton_d17(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Vurdering af depressionssværhedsgrad med HAM-D17",
         elementledetekst="Samlet score HAM-D17",
@@ -125,7 +121,7 @@ def hamilton_d17(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 
 @data_loaders.register("mas_m")
-def mas_m(n_rows: Optional[int] = None) -> pd.DataFrame:
+def mas_m(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="MAS-M maniscoringsskema (Modificeret Bech-Rafaelsen Maniskala)",
         elementledetekst="MAS-M score",
@@ -135,7 +131,7 @@ def mas_m(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 
 @data_loaders.register("height_in_cm")
-def height_in_cm(n_rows: Optional[int] = None) -> pd.DataFrame:
+def height_in_cm(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Måling af patienthøjde (cm)",
         elementledetekst="Højde i cm",
@@ -145,7 +141,7 @@ def height_in_cm(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 
 @data_loaders.register("weight_in_kg")
-def weight_in_kg(n_rows: Optional[int] = None) -> pd.DataFrame:
+def weight_in_kg(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Måling af patientvægt (kg)",
         elementledetekst="Vægt i kg",
@@ -155,7 +151,7 @@ def weight_in_kg(n_rows: Optional[int] = None) -> pd.DataFrame:
 
 
 @data_loaders.register("bmi")
-def bmi(n_rows: Optional[int] = None) -> pd.DataFrame:
+def bmi(n_rows: int | None = None) -> pd.DataFrame:
     return sfi_loader(
         aktivitetstypenavn="Bestemmelse af Body Mass Index (BMI)",
         elementledetekst="BMI",

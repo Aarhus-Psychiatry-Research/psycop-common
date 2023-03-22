@@ -99,7 +99,7 @@ def physical_visits(
             f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
         )
 
-    english_to_lpr3_visit_type = {  # pylint: disable=invalid-name
+    english_to_lpr3_visit_type = {
         "admissions": "'Indlæggelse'",
         "ambulatory_visits": "'Ambulant'",
         "emergency_visits": "'Akut ambulant'",

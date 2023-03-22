@@ -161,7 +161,7 @@ def check_feature_combinations_return_correct_dfs(
     failure_dicts = []
 
     # Check each predictor df
-    for i, d in enumerate(unique_subset_dicts):  # pylint: disable=invalid-name
+    for i, d in enumerate(unique_subset_dicts):
         # Check that it returns a dataframe
         try:
             df = get_predictor_df_with_loader_fn(d=d, n_rows=n_rows)

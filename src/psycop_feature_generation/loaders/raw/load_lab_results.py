@@ -9,8 +9,6 @@ from psycop_feature_generation.loaders.non_numerical_coercer import (
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
 
-# pylint: disable=missing-function-docstring
-
 
 def load_non_numerical_values_and_coerce_inequalities(
     blood_sample_id: str | list[str],
@@ -33,7 +31,7 @@ def load_non_numerical_values_and_coerce_inequalities(
 
     if isinstance(blood_sample_id, list):
         npu_codes = ", ".join(
-            [f"'{x}'" for x in blood_sample_id],  # pylint: disable=not-an-iterable
+            [f"'{x}'" for x in blood_sample_id],
         )
 
         npu_where = f"npukode in ({npu_codes})"
@@ -117,7 +115,7 @@ def load_cancelled(
 
     if isinstance(blood_sample_id, list):
         npu_codes = ", ".join(
-            [f"'{x}'" for x in blood_sample_id],  # pylint: disable=not-an-iterable
+            [f"'{x}'" for x in blood_sample_id],
         )
 
         npu_where = f"npukode in ({npu_codes})"
@@ -162,7 +160,7 @@ def load_all_values(
 
     if isinstance(blood_sample_id, list):
         npu_codes = ", ".join(
-            [f"'{x}'" for x in blood_sample_id],  # pylint: disable=not-an-iterable
+            [f"'{x}'" for x in blood_sample_id],
         )
 
         npu_where = f"npukode in ({npu_codes})"
@@ -228,7 +226,7 @@ def blood_sample(
 
     n_rows_per_fn = int(n_rows / len(sources_to_load)) if n_rows else None
 
-    for k in sources_to_load:  # pylint: disable=invalid-name
+    for k in sources_to_load:
         dfs.append(
             fn_dict[k](  # type: ignore
                 blood_sample_id=blood_sample_id,

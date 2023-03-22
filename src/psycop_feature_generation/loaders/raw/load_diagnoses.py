@@ -4,7 +4,6 @@ Is growing quite a bit, loaders may have to be split out into separate
 files (e.g. psychiatric, cardiovascular, metabolic etc.) over time.
 """
 
-# pylint: disable=missing-function-docstring
 
 import logging
 from typing import Literal

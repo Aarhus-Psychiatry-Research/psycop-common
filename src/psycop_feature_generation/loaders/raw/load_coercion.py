@@ -1,7 +1,5 @@
 """Loaders for coercion data."""
 
-# pylint: disable = non-ascii-name,missing-function-docstring
-
 
 import pandas as pd
 

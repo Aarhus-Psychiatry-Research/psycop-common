@@ -1,7 +1,6 @@
 """Class for filtering prediction times before they are used for feature
 generation."""
 import logging
-from typing import Optional
 
 import pandas as pd
 
@@ -16,9 +15,9 @@ class PredictionTimeFilterer:
         self,
         prediction_times_df: pd.DataFrame,
         entity_id_col_name: str,
-        quarantine_timestamps_df: Optional[pd.DataFrame] = None,
-        quarantine_interval_days: Optional[int] = None,
-        timestamp_col_name: Optional[str] = "timestamp",
+        quarantine_timestamps_df: pd.DataFrame | None = None,
+        quarantine_interval_days: int | None = None,
+        timestamp_col_name: str | None = "timestamp",
     ):
         """Initialize PredictionTimeFilterer.
 
@@ -36,9 +35,9 @@ class PredictionTimeFilterer:
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days
 
-        if any(v is None for v in (self.quarantine_days, self.quarantine_df)) and not all(
+        if any(
             v is None for v in (self.quarantine_days, self.quarantine_df)
-        ):
+        ) and not all(v is None for v in (self.quarantine_days, self.quarantine_df)):
             raise ValueError(
                 "If either of quarantine_df and quarantine_days are provided, both must be provided.",
             )
@@ -92,11 +91,9 @@ class PredictionTimeFilterer:
         ] = True
 
         # Get only the rows that were hit by the quarantine date
-        df_hit_by_quarantine = df.loc[
-            df["hit_by_quarantine"] == True  # pylint: disable=singleton-comparison
-        ].drop_duplicates(subset=[self.pred_time_uuid_col_name])[
-            ["pred_time_uuid", "hit_by_quarantine"]
-        ]
+        df_hit_by_quarantine = df.loc[df["hit_by_quarantine"] is True].drop_duplicates(
+            subset=[self.pred_time_uuid_col_name],
+        )[["pred_time_uuid", "hit_by_quarantine"]]
 
         # Use these rows to filter the prediction times
         df = self.prediction_times_df.merge(
@@ -107,9 +104,7 @@ class PredictionTimeFilterer:
             validate="one_to_one",
         )
 
-        df = df.loc[
-            df["hit_by_quarantine"] != True  # pylint: disable=singleton-comparison
-        ]
+        df = df.loc[df["hit_by_quarantine"] is not True]
 
         # Drop the columns we added
         df = df.drop(

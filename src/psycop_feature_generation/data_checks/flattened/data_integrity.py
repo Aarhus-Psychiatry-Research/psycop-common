@@ -1,7 +1,7 @@
 """Code to generate data integrity and train/val/test drift reports."""
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas as pd
 from deepchecks.core.suite import SuiteResult
@@ -23,12 +23,11 @@ from deepchecks.tabular.checks import (
     StringLengthOutOfBounds,
     TrainTestLabelDrift,
 )
-from wasabi import Printer
-
 from psycop_feature_generation.loaders.flattened import (
     load_split_outcomes,
     load_split_predictors,
 )
+from wasabi import Printer
 
 
 def pruned_data_integrity_checks(**kwargs) -> Suite:
@@ -48,12 +47,12 @@ def pruned_data_integrity_checks(**kwargs) -> Suite:
         MixedDataTypes(**kwargs).add_condition_rare_type_ratio_not_in_range(),
         DataDuplicates(**kwargs).add_condition_ratio_less_or_equal(),
         StringLengthOutOfBounds(
-            **kwargs
+            **kwargs,
         ).add_condition_ratio_of_outliers_less_or_equal(),
         OutlierSampleDetection(**kwargs),
         FeatureLabelCorrelation(**kwargs).add_condition_feature_pps_less_than(),
         FeatureFeatureCorrelation(
-            **kwargs
+            **kwargs,
         ).add_condition_max_number_of_pairs_above_threshold(),
         IdentifierLabelCorrelation(**kwargs).add_condition_pps_less_or_equal(),
     )
@@ -90,11 +89,11 @@ def custom_train_test_validation(**kwargs) -> Suite:
     return Suite(
         "Train Test Validation Suite",
         DatasetsSizeComparison(
-            **kwargs
+            **kwargs,
         ).add_condition_test_train_size_ratio_greater_than(),
         NewLabelTrainTest(**kwargs).add_condition_new_labels_number_less_or_equal(),
         CategoryMismatchTrainTest(
-            **kwargs
+            **kwargs,
         ).add_condition_new_category_ratio_less_or_equal(),
         IndexTrainTestLeakage(**kwargs).add_condition_ratio_less_or_equal(),
     )
@@ -135,7 +134,7 @@ def check_train_data_integrity(
     out_dir: Path,
     train_outcomes_df: pd.DataFrame,
     outcome_checks_dir: Path,
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ):
     """Runs Deepcheck data integrity checks for the train split.
 
@@ -248,7 +247,7 @@ def get_suite_results_for_split_pair_and_save_to_disk(
 
 def get_split_as_ds_dict(
     feature_set_dir: Path,
-    n_rows: Optional[int],
+    n_rows: int | None,
     split: str,
     file_suffix: str,
 ) -> dict[str, Any]:
@@ -299,7 +298,7 @@ def run_validation_requiring_split_comparison(
     file_suffix: str,
     out_dir: Path,
     train_outcome_df: pd.DataFrame,
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ):
     """Runs Deepcheck data validation checks for the train/val/test splits.
 
@@ -390,11 +389,11 @@ def run_validation_requiring_split_comparison(
             msg.warn(f"Failed checks: {failed_checks}")
 
 
-def save_feature_set_integrity_checks_from_dir(  # noqa pylint: disable=too-many-statements
+def save_feature_set_integrity_checks_from_dir(
     feature_set_dir: Path,
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
     splits: Iterable[str] = ("train", "val", "test"),
-    out_dir: Optional[Path] = None,
+    out_dir: Path | None = None,
     dataset_format: str = "parquet",
     compare_splits: bool = True,
 ) -> None:
@@ -438,7 +437,7 @@ def save_feature_set_integrity_checks_from_dir(  # noqa pylint: disable=too-many
     for split_name in splits:
         file = list(feature_set_dir.glob(f"*{split_name}*{dataset_format}"))
 
-        if not file:  # pylint: disable=consider-using-assignment-expr
+        if not file:
             raise ValueError(f"{split_name} split not found in {feature_set_dir}")
         if len(file) > 1:
             raise ValueError(

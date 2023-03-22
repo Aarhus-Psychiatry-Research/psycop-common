@@ -50,7 +50,7 @@
 #         if not FEATURIZERS_PATH.exists():
 #             FEATURIZERS_PATH.mkdir()
 
-#         text = load_all_notes(  # pylint: disable=undefined-variable
+#         text = load_all_notes(
 #             featurizer=None,
 #             n_rows=None,
 #             featurizer_kwargs=None,
@@ -71,7 +71,7 @@
 #                 pkl.dump(vectorizer, f)
 
 #             vocab = ["tfidf-" + word for word in vectorizer.get_feature_names()]
-#             with open(  # type: ignore # pylint: disable=unspecified-encoding
+#             with open(  # type: ignore
 #                 FEATURIZERS_PATH / f"tfidf_{n_features}_vocab.txt",
 #                 "w",
 #             ) as f:
