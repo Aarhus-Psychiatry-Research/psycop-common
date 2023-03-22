@@ -17,7 +17,7 @@ def coercion_duration(
     reason_for_coercion: Optional[str] = None,
     n_rows: Optional[int] = None,
     unpack_to_intervals: Optional[bool] = False,
-    unpack_freq: Optional[str] = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     """Load coercion data. By default returns entire coercion data view with
     duration in hours as the value column.

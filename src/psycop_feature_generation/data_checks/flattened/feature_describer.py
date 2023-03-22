@@ -2,7 +2,7 @@
 df."""
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -194,7 +194,7 @@ def save_feature_descriptive_stats_from_dir(
     feature_specs: list[Union[TemporalSpec, StaticSpec]],
     file_suffix: str,
     splits: Sequence[str] = ("train",),
-    out_dir: Path = None,
+    out_dir: Optional[Path] = None,
 ):
     """Write a html table and csv with descriptive stats for features in the directory.
 

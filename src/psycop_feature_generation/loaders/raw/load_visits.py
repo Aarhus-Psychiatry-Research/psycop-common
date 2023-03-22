@@ -107,7 +107,7 @@ def physical_visits(
     chosen_schemas = {
         visit_type: source_schemas[visit_type] for visit_type in visit_types + ["LPR3"]
     }
-    english_to_lpr3_visit_type = [
+    english_to_lpr3_visit_type = [  # type: ignore
         english_to_lpr3_visit_type[visit] for visit in visit_types
     ]
     chosen_schemas[

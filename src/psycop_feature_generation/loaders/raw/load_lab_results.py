@@ -59,7 +59,7 @@ def load_non_numerical_values_and_coerce_inequalities(
 
 
 def load_numerical_values(
-    blood_sample_id: str,
+    blood_sample_id: Union[str, list[str]],
     n_rows: Optional[int],
     view: str,
 ) -> pd.DataFrame:
@@ -78,7 +78,7 @@ def load_numerical_values(
 
     if isinstance(blood_sample_id, list):
         npu_codes = ", ".join(
-            [f"'{x}'" for x in blood_sample_id],  # pylint: disable=not-an-iterable
+            [f"'{x}'" for x in blood_sample_id],
         )
 
         npu_where = f"npukode in ({npu_codes})"
@@ -102,7 +102,7 @@ def load_numerical_values(
 
 
 def load_cancelled(
-    blood_sample_id: str,
+    blood_sample_id: Union[str, list[str]],
     n_rows: Optional[int],
     view: str,
 ) -> pd.DataFrame:
@@ -148,7 +148,7 @@ def load_cancelled(
 
 
 def load_all_values(
-    blood_sample_id: str,
+    blood_sample_id: Union[str, list[str]],
     n_rows: Optional[int],
     view: str,
 ) -> pd.DataFrame:
@@ -221,9 +221,6 @@ def blood_sample(
         raise ValueError(
             f"values_to_load must be one of {allowed_values_to_load}, not {values_to_load}",
         )
-
-    if values_to_load is None:
-        values_to_load = "all"
 
     fn_dict = {
         "coerce": load_non_numerical_values_and_coerce_inequalities,

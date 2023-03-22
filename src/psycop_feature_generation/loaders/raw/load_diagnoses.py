@@ -23,12 +23,12 @@ log = logging.getLogger(__name__)
 
 def from_contacts(
     icd_code: Union[list[str], str],
-    output_col_name: Optional[str] = "value",
+    output_col_name: str = "value",
     n_rows: Optional[int] = None,
-    wildcard_icd_code: Optional[bool] = False,
+    wildcard_icd_code: bool = False,
     shak_location_col: Optional[str] = None,
     shak_code: Optional[int] = None,
-    keep_code_col: Optional[bool] = False,
+    keep_code_col: bool = False,
     shak_sql_operator: Optional[str] = None,
     timestamp_purpose: Optional[Literal["predictor", "outcome"]] = "predictor",
 ) -> pd.DataFrame:

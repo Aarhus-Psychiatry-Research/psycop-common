@@ -1,8 +1,8 @@
 """Check that all feature_dicts conform to correct formatting.
 
-Also check that they return meaningful dictionaries.
+Also kcheck that they return meaningful dictionaries.
 """
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 
 import pandas as pd
 from wasabi import Printer
@@ -13,38 +13,29 @@ from psycop_feature_generation.utils import data_loaders
 
 def check_df_conforms_to_feature_spec(
     df: pd.DataFrame,
-    required_columns: list[str],
-    subset_duplicates_columns: list[str],
-    expected_val_dtypes: list[str],
     msg_prefix: str,
     arg_dict: dict,
     allowed_nan_value_prop: float = 0.01,
+    required_columns: Sequence[str] = ["dw_ek_borger", "timestamp", "value"],
+    subset_duplicates_columns: Sequence[str] = ["dw_ek_borger", "timestamp", "value"],
+    expected_val_dtypes: list[str] = ["float64", "int64"],
 ):
     """Check that a loaded df conforms to to a given feature specification.
     Useful when creating loaders.
 
     Args:
         df (pd.DataFrame): Dataframe to check.
-        required_columns (list[str]): list of required columns.
         subset_duplicates_columns (list[str]): list of columns to subset on when
             checking for duplicates.
         expected_val_dtypes (list[str]): Expected value dtype.
         msg_prefix (str): Prefix to add to all messages.
         arg_dict (dict): Dictionary with specifications for what df should conform to.
         allowed_nan_value_prop (float): Allowed proportion of missing values. Defaults to 0.01.
+        required_columns (Sequence[str]): Sequence of columns that must exist.
 
     Raises:
         ValueError: If df does not conform to d.
     """
-
-    if required_columns is None:
-        required_columns = ["dw_ek_borger", "timestamp", "value"]
-
-    if subset_duplicates_columns is None:
-        subset_duplicates_columns = ["dw_ek_borger", "timestamp", "value"]
-
-    if expected_val_dtypes is None:
-        expected_val_dtypes = ["float64", "int64"]
 
     msg = Printer(timestamp=True)
 
