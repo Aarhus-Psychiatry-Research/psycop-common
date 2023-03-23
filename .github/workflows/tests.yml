@@ -11,7 +11,7 @@ on:
 
 jobs:
   pytest:
-    runs-on: ${{ matrix.os }}p
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
       issues: read
