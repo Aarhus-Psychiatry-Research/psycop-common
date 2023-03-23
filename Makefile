@@ -54,6 +54,8 @@ test:
 		echo "\n✅ All tests passed!"; \
 	fi
 
+	@rm -rf tests/.pytest_results
+
 lint: ## Lint and static check
 	@$(MAKE) pre_commit
 	@$(MAKE) mypy
