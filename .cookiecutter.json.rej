@@ -1,0 +1,16 @@
+diff a/.cookiecutter.json b/.cookiecutter.json	(rejected hunks)
+@@ -3,6 +3,7 @@
+         "*.github"
+     ],
+     "_template": "https://github.com/MartinBernstorff/swift-python-cookiecutter",
++    "add_makefile": "y",
+     "author": "Martin Bernstorff",
+     "copyright_year": "2023",
+     "email": "martinbernstorfff@gmail.com",
+@@ -11,6 +12,5 @@
+     "license": "MIT",
+     "package_name": "psycop_model_training",
+     "project_name": "psycop-model-training",
+-    "setup_for_dev_bash_script": "y",
+     "version": "0.0.0"
+ }
