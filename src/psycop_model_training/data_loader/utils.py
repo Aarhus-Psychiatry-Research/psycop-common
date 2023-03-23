@@ -19,21 +19,12 @@ from psycop_model_training.preprocessing.pre_split.processors.value_cleaner impo
     PreSplitValueCleaner,
 )
 
-memory_path = Path("E:/shared_resources/feature_cache")
-
-# Delete any file older than 24 hours in memory_path
-for file in memory_path.glob("*"):
-    one_day = time.time() - 24 * 3600
-    if file.stat().st_mtime < one_day:
-        file.unlink()
-
-memory = Memory(location=memory_path, verbose=0)
 
 def get_latest_dataset_dir(path: Path) -> Path:
     """Get the latest dataset directory by time of creation."""
     return max(path.glob("*"), key=os.path.getctime)
 
-@memory.cache
+
 def load_and_filter_split_from_cfg(
     data_cfg: DataSchema,
     pre_split_cfg: PreSplitPreprocessingConfigSchema,
@@ -75,14 +66,27 @@ def load_and_filter_train_from_cfg(
     Returns:
         pd.DataFrame: Train dataset
     """
-    return load_and_filter_split_from_cfg(pre_split_cfg=cfg.preprocessing.pre_split, data_cfg=cfg.data, split="train", cache_dir=cache_dir)
+    return load_and_filter_split_from_cfg(
+        pre_split_cfg=cfg.preprocessing.pre_split,
+        data_cfg=cfg.data,
+        split="train",
+        cache_dir=cache_dir,
+    )
 
 
 def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema) -> SplitDataset:
     """Load train and validation data from file."""
     return SplitDataset(
-        train=load_and_filter_split_from_cfg(pre_split_cfg=cfg.preprocessing.pre_split, data_cfg=cfg.data, split="train"),
-        val=load_and_filter_split_from_cfg(pre_split_cfg=cfg.preprocessing.pre_split, data_cfg=cfg.data, split="val"),
+        train=load_and_filter_split_from_cfg(
+            pre_split_cfg=cfg.preprocessing.pre_split,
+            data_cfg=cfg.data,
+            split="train",
+        ),
+        val=load_and_filter_split_from_cfg(
+            pre_split_cfg=cfg.preprocessing.pre_split,
+            data_cfg=cfg.data,
+            split="val",
+        ),
     )
 
 
