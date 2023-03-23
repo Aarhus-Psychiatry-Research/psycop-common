@@ -41,7 +41,7 @@ class DescriptiveStatsTable:
 
         df = df.append(  # type: ignore
             {
-                "category": "(visit_level) age (mean / 5-95 quartile interval)",
+                "category": "(visit_level) age (mean / 25-75 quartile interval)",
                 "stat_1": age_mean,
                 "stat_1_unit": "years",
                 "stat_2": age_span,
