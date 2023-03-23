@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Sequence
 from pathlib import Path, PosixPath, WindowsPath
 from typing import Optional
 
@@ -10,9 +11,6 @@ import pandas as pd
 import wandb
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
-from psycop_model_training.model_eval.base_artifacts.base_artifact_generator import (
-    BaseArtifactGenerator,
-)
 from psycop_model_training.model_eval.base_artifacts.plots.utils import (
     log_image_to_wandb,
 )
@@ -60,6 +58,7 @@ class ModelEvaluator:
         cfg: FullConfigSchema,
         raw_train_set: pd.DataFrame,
         pipe: Pipeline,
+        artifacts: Sequence[ArtifactContainer],
         eval_ds: EvalDataset,
         custom_artifacts: Optional[list[ArtifactContainer]] = None,
         upload_to_wandb: bool = True,
@@ -69,6 +68,7 @@ class ModelEvaluator:
         Args:
             eval_dir_path (Path): Path to directory where artifacts will be saved.
             cfg (FullConfigSchema): Full config object.
+            artifacts (Sequence[ArtifactContainer]): List of artifacts to save.
             raw_train_set (pd.DataFrame): Training set before feature selection.
             pipe (Pipeline): Pipeline object.
             eval_ds (EvalDataset): EvalDataset object.
@@ -87,22 +87,9 @@ class ModelEvaluator:
         self.pipeline_metadata = self._get_pipeline_metadata()
 
         self.disk_saver = ArtifactsToDiskSaver(dir_path=eval_dir_path)
-        self.base_artifact_generator = BaseArtifactGenerator(
-            cfg=cfg,
-            eval_ds=eval_ds,
-            save_dir=self.eval_dir_path,
-            pipe_metadata=self.pipeline_metadata,
-        )
+        self.artifacts = artifacts
         self.custom_artifacts = custom_artifacts
         self.upload_to_wandb = upload_to_wandb
-
-    def _get_artifacts(self) -> list[ArtifactContainer]:
-        artifact_containers = self.base_artifact_generator.get_all_artifacts()
-
-        if self.custom_artifacts:
-            artifact_containers += self.custom_artifacts
-
-        return artifact_containers
 
     def upload_artifact_to_wandb(
         self,
@@ -153,10 +140,8 @@ class ModelEvaluator:
             f"ROC AUC: {roc_auc}",
         )
 
-        artifacts = self._get_artifacts()
-
-        if self.upload_to_wandb:
-            for artifact in artifacts:
+        if self.upload_to_wandb and self.artifacts is not None:
+            for artifact in self.artifacts:
                 self.upload_artifact_to_wandb(artifact)
 
         return roc_auc
