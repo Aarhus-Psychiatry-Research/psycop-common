@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.46.4 (2023-03-23)
+### Fix
+* Import error ([`5282726`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/52827269264f856f14a1ba2fd4bde860a26b81ed))
+* Erroneuous psycopmltutils import in test ([`61e1dd5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/61e1dd57345ca977604aebb47d2cf9f350f9c2ca))
+* Calc_performance return statements ([`f4ebef9`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f4ebef9fd8d5975e9242b4fd58b3e3157debbfd9))
+
 ## v0.46.3 (2023-03-22)
 ### Fix
 * Incorrect type hints, sequence cannot be subscripted ([`99984b6`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/99984b646729a72808022a1522b13751d1f63b77))
