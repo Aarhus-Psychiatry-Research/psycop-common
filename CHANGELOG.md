@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.47.0 (2023-03-23)
+### Feature
+* Update descriptive stats table ([#444](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/444)) ([`8498bc8`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8498bc8493cc90bf6bba151eea696c777379abb2))
+* Cache preprocessed datasets for higher performance ([`2034c5e`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2034c5e33fb87745c6284cd2558b114e4d10238b))
+
+### Fix
+* Typo ([`8e9f9de`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8e9f9de181706ff9ebabd99038a97458597aa577))
+
 ## v0.46.4 (2023-03-23)
 ### Fix
 * Import error ([`5282726`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/52827269264f856f14a1ba2fd4bde860a26b81ed))
