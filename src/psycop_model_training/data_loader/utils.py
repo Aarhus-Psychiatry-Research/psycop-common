@@ -1,10 +1,8 @@
 import os
-import time
 from pathlib import Path
 from typing import Literal, Optional
 
 import pandas as pd
-from joblib import Memory
 from psycop_model_training.config_schemas.data import DataSchema
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.config_schemas.preprocessing import (

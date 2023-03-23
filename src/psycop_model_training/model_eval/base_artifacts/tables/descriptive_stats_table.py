@@ -180,7 +180,7 @@ class DescriptiveStatsTable:
 
         # General stats
         visits_followed_by_positive_outcome = self.eval_dataset.y.sum()
-        
+
         visits_followed_by_positive_outcome_percentage = round(
             (visits_followed_by_positive_outcome / len(self.eval_dataset.ids) * 100),
             2,
