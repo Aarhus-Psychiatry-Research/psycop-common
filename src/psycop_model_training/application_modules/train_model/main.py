@@ -77,7 +77,7 @@ def post_wandb_setup_train_model(
 
 def train_model(
     cfg: FullConfigSchema,
-    custom_artifact_fn: Optional[Callable] = None,
+    artifacts: Optional[Sequence[ArtifactContainer]] = None,
 ) -> float:
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
@@ -85,6 +85,6 @@ def train_model(
     # Try except block ensures process doesn't die in the case of an exception,
     # but rather logs to wandb and starts another run with a new combination of
     # hyperparameters
-    roc_auc = post_wandb_setup_train_model(cfg, custom_artifact_fn)
+    roc_auc = post_wandb_setup_train_model(cfg, artifacts=artifacts)
 
     return roc_auc
