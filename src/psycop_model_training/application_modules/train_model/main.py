@@ -1,4 +1,5 @@
 """Train a single model and evaluate it."""
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -8,6 +9,7 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.utils import (
     load_and_filter_train_and_val_from_cfg,
 )
+from psycop_model_training.model_eval.dataclasses import ArtifactContainer
 from psycop_model_training.model_eval.model_evaluator import ModelEvaluator
 from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
@@ -41,7 +43,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
 @wandb_alert_on_exception_return_terrible_auc
 def post_wandb_setup_train_model(
     cfg: FullConfigSchema,
-    custom_artifact_fn: Optional[Callable] = None,
+    artifacts: Optional[Sequence[ArtifactContainer]] = None,
 ) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
@@ -60,22 +62,13 @@ def post_wandb_setup_train_model(
         n_splits=cfg.train.n_splits,
     )
 
-    custom_artifacts = (
-        custom_artifact_fn(
-            eval_dataset=eval_dataset,
-            save_dir=eval_dir_path,
-        )
-        if custom_artifact_fn
-        else None
-    )
-
     roc_auc = ModelEvaluator(
         eval_dir_path=eval_dir_path,
         cfg=cfg,
         pipe=pipe,
         eval_ds=eval_dataset,
         raw_train_set=dataset.train,
-        custom_artifacts=custom_artifacts,
+        artifacts=artifacts,
         upload_to_wandb=cfg.project.wandb.mode != "offline",
     ).evaluate()
 

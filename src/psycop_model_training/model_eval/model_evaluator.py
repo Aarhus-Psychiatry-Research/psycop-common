@@ -1,7 +1,6 @@
 import logging
 from collections.abc import Sequence
 from pathlib import Path, PosixPath, WindowsPath
-from typing import Optional
 
 import matplotlib as mpl
 
@@ -60,7 +59,6 @@ class ModelEvaluator:
         pipe: Pipeline,
         artifacts: Sequence[ArtifactContainer],
         eval_ds: EvalDataset,
-        custom_artifacts: Optional[list[ArtifactContainer]] = None,
         upload_to_wandb: bool = True,
     ):
         """Class for evaluating a model.
@@ -72,7 +70,6 @@ class ModelEvaluator:
             raw_train_set (pd.DataFrame): Training set before feature selection.
             pipe (Pipeline): Pipeline object.
             eval_ds (EvalDataset): EvalDataset object.
-            custom_artifacts (list[ArtifactContainer], optional): List of custom artifacts to save. Defaults to None.
             upload_to_wandb (bool, optional): Whether to upload artifacts to wandb. Defaults to True.
         """
         self.cfg = cfg
@@ -88,7 +85,6 @@ class ModelEvaluator:
 
         self.disk_saver = ArtifactsToDiskSaver(dir_path=eval_dir_path)
         self.artifacts = artifacts
-        self.custom_artifacts = custom_artifacts
         self.upload_to_wandb = upload_to_wandb
 
     def upload_artifact_to_wandb(
