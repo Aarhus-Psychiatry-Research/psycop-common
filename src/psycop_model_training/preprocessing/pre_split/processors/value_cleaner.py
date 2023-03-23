@@ -51,7 +51,7 @@ class PreSplitValueCleaner:
             c for c in cols_with_numerical_values if preds[c].min() < 0
         ]
 
-        df_to_replace = dataset[numerical_columns_with_negative_values]
+        df_to_replace = dataset[numerical_columns_with_negative_values].copy()
 
         # Convert to NaN
         df_to_replace[df_to_replace < 0] = np.nan

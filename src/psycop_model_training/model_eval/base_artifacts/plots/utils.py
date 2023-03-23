@@ -34,6 +34,7 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
     """
     if df.empty:
         return pd.Series({"metric": np.nan})
+
     if metric is roc_auc_score and len(df["y"].unique()) == 1:
         # msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan") This was hit almost once per month, making it very hard to read.
         # Many of our models probably try to predict the majority class.

@@ -3,7 +3,6 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Union
 
-import matplotlib.pyplot as plt
 import pandas as pd
 from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
@@ -12,7 +11,7 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data
 
 
-def get_top_fraction(df: pd.DataFrame, col_name: str, fraction: float):
+def get_top_fraction(df: pd.DataFrame, col_name: str, fraction: float) -> pd.DataFrame:
     """
     Returns the top N percent of the data sorted by column y in a dataframe df.
     """
@@ -43,6 +42,7 @@ def plot_time_from_first_positive_to_event(
         bins (Sequence[float]): Bins to group by. Defaults to (5, 25, 35, 50, 70).
         fig_size (tuple[int, int]): Figure size. Defaults to (5,5).
         dpi (int): DPI. Defaults to 300.
+        pos_rate (float): Desired positive rate for computing which threshold above which a prediction is marked as "positive". Defaults to 0.05.
         save_path (Path, optional): Path to save figure. Defaults to None.
     """
 
@@ -86,7 +86,7 @@ def plot_time_from_first_positive_to_event(
         .reset_index()
     )
 
-    x_labels = list(bins)
+    x_labels = list(counts["time_from_first_positive_to_event_binned"])
     y_values = counts[0].to_list()
 
     plot = plot_basic_chart(

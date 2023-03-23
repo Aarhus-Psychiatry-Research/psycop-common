@@ -30,6 +30,7 @@ def create_sensitivity_by_time_to_outcome_df(
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
+        bin_delta (str, optional): The unit of time for the bins. Defaults to "D".
 
     Returns:
         pd.DataFrame

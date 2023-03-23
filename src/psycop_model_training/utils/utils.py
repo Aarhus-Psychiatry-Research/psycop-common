@@ -24,7 +24,7 @@ FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-TEST_PLOT_PATH = PROJECT_ROOT / "tests" / "test_plots"
+TEST_PLOT_PATH = PROJECT_ROOT / "tests" / "plots_from_tests"
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -193,14 +193,10 @@ def bin_continuous_data(
     df = df.dropna()
 
     # Add a column with counts for the bin each row belongs to
-    df["n_in_bin"] = df.groupby("bin")["bin"].transform("count").reset_index(drop=True)
+    df["n_in_bin"] = df.groupby("bin")["bin"].transform("count")
 
     # Mask n_in_bin if less than min_n_in_bin
-    df["n_in_bin"] = (
-        df["n_in_bin"]
-        .mask(df["n_in_bin"] < min_n_in_bin, np.nan)
-        .reset_index(drop=True)
-    )
+    df["n_in_bin"] = df["n_in_bin"].mask(df["n_in_bin"] < min_n_in_bin, np.nan)
 
     return df["bin"], df["n_in_bin"]
 
