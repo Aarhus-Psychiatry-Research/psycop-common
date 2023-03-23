@@ -107,7 +107,9 @@ figures/
 # wandb
 wandb
 outputs
-.*venv*
+
+# virtual env
+.venv*/
 venv/
 
 # MacOS
