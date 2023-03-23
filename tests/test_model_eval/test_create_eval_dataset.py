@@ -20,7 +20,6 @@ def test_create_eval_dataset():
             "id": [1, 2, 3, 4, 5],
             "y": [1, 0, 1, 0, 1],
             "y_hat_prob": [0.1, 0.2, 0.3, 0.4, 0.5],
-            "y_hat_int": [0, 0, 0, 0, 1],
             "pred_timestamp": [1, 2, 3, 4, 5],
             "outcome_timestamp": [1, 2, 3, 4, 5],
             "age": [1, 2, 3, 4, 5],

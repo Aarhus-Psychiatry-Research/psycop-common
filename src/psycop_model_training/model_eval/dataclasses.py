@@ -19,7 +19,6 @@ class EvalDataset(BaseModel):
     outcome_timestamps: pd.Series
     y: pd.Series
     y_hat_probs: pd.Series
-    y_hat_int: pd.Series
     age: Optional[pd.Series] = None
     is_female: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None

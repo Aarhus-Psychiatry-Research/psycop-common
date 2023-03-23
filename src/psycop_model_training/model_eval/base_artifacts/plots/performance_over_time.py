@@ -460,6 +460,7 @@ def plot_metric_by_time_until_diagnosis(
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     metric_fn: Callable = f1_score,
+    positive_rate: float = 0.5,
     y_title: str = "F1",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
@@ -475,6 +476,7 @@ def plot_metric_by_time_until_diagnosis(
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
+        positive_rate (float, optional): Positive rate to use for binary classification.
         y_title (str): Title for y-axis (metric name)
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -482,9 +484,16 @@ def plot_metric_by_time_until_diagnosis(
     Returns:
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
+    positive_rate_threshold = eval_dataset.y_hat_probs.quantile(positive_rate)
+
+    # Remap y_hat_probs to 0/1 based on positive rate threshold
+    y_hat_int = pd.Series(
+        (eval_dataset.y_hat_probs > positive_rate_threshold).astype(int),
+    )
+
     df = create_performance_by_timedelta(
         labels=eval_dataset.y,
-        y_hat=eval_dataset.y_hat_int,
+        y_hat=y_hat_int,
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t1-t2",

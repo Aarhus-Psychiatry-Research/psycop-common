@@ -40,7 +40,6 @@ def synth_eval_dataset() -> EvalDataset:
         ids=df["dw_ek_borger"],
         y=df["label"],
         y_hat_probs=df["pred_prob"],
-        y_hat_int=df["pred"],
         pred_timestamps=df["timestamp"],
         outcome_timestamps=df["timestamp_t2d_diag"],
         age=df["age"],
