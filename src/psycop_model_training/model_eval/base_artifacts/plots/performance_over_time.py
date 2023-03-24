@@ -75,7 +75,7 @@ def plot_recall_by_calendar_time(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
         x_title=f"{x_title_unit}s to event",
-        labels=[str(pos_rate) for pos_rate in positive_rates],
+        labels=[df["actual_positive_rate"][0] for df in dfs],
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,

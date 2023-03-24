@@ -36,7 +36,6 @@ from psycop_model_training.model_eval.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 from sklearn.metrics import recall_score
 
 
