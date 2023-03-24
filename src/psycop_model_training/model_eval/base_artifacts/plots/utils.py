@@ -23,7 +23,7 @@ def log_image_to_wandb(chart_path: Path, chart_name: str):
 
 
 def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
-    """Calculates performance metrics of a df with 'y' and 'y_hat' columns.
+    """Calculates performance metrics of a df with 'y' and 'input_to_fn' columns.
 
     Args:
         df (pd.DataFrame): dataframe

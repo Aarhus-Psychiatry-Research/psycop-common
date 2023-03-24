@@ -12,7 +12,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_recall_by_calendar_time,
     plot_roc_auc_by_cyclic_time,
     plot_roc_auc_by_time_from_first_visit,
-    plot_roc_auc_by_time_until_diagnosis,
+    plot_sensitivity_by_time_until_diagnosis,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
@@ -108,7 +108,7 @@ class BaseArtifactGenerator:
             ),
             ArtifactContainer(
                 label="recall_by_time_to_diagnosis",
-                artifact=plot_roc_auc_by_time_until_diagnosis(
+                artifact=plot_sensitivity_by_time_until_diagnosis(
                     eval_dataset=self.eval_ds,
                     bins=lookahead_bins,
                     roc_auc_score=recall_score,

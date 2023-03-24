@@ -25,7 +25,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_recall_by_calendar_time,
     plot_roc_auc_by_cyclic_time,
     plot_roc_auc_by_time_from_first_visit,
-    plot_roc_auc_by_time_until_diagnosis,
+    plot_sensitivity_by_time_until_diagnosis,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
@@ -143,7 +143,7 @@ def test_plot_performance_by_cyclic_time(
 
 
 def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
-    plot_roc_auc_by_time_until_diagnosis(
+    plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
         roc_auc_score=f1_score,
         y_title="F1",
@@ -196,7 +196,7 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
 
 
 def test_overlay_barplot(synth_eval_dataset: EvalDataset):
-    plot_roc_auc_by_time_until_diagnosis(
+    plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
         roc_auc_score=f1_score,
         y_title="F1",

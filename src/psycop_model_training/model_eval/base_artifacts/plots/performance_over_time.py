@@ -19,7 +19,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import
 from psycop_model_training.model_eval.base_artifacts.plots.utils import calc_performance
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data, round_floats_to_edge
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import f1_score, recall_score, roc_auc_score
 
 
 def plot_recall_by_calendar_time(
@@ -283,9 +283,10 @@ def plot_roc_auc_by_cyclic_time(
     )
 
 
-def create_roc_auc_by_timedelta(
-    labels: Iterable[int],
-    y_hat: Iterable[float],
+def create_performance_by_timedelta(
+    y: Iterable[int],
+    y_to_fn: Iterable[float],
+    metric_fn: Callable,
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -299,8 +300,9 @@ def create_roc_auc_by_timedelta(
     some event (e.g. time of diagnosis, time from first visit).
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
+        y (Iterable[int]): True labels
+        y_to_fn (Iterable[float]): The input to the function
+        metric_fn (Callable): Function to calculate metric
         time_one (Iterable[pd.Timestamp]): Timestamps for time one (e.g. first visit).
         time_two (Iterable[pd.Timestamp]): Timestamps for time two.
         direction (str): Which direction to calculate time difference.
@@ -316,8 +318,8 @@ def create_roc_auc_by_timedelta(
     """
     df = pd.DataFrame(
         {
-            "y": labels,
-            "y_hat": y_hat,
+            "y": y,
+            "y_hat": y_to_fn,
             "t1_timestamp": time_one,
             "t2_timestamp": time_two,
         },
@@ -365,7 +367,7 @@ def create_roc_auc_by_timedelta(
     # Calc performance and prettify output
     output_df = df.groupby(["unit_from_event_binned"], as_index=False).apply(
         calc_performance,
-        roc_auc_score,
+        metric=metric_fn,
     )
 
     return output_df
@@ -398,9 +400,9 @@ def plot_roc_auc_by_time_from_first_visit(
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
-    df = create_roc_auc_by_timedelta(
-        labels=eval_dataset.y,
-        y_hat=eval_dataset.y_hat_probs,
+    df = create_performance_by_timedelta(
+        y=eval_dataset.y,
+        y_to_fn=eval_dataset.y_hat_probs,
         time_one=first_visit_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t2-t1",
@@ -433,7 +435,7 @@ def plot_roc_auc_by_time_from_first_visit(
     )
 
 
-def plot_roc_auc_by_time_until_diagnosis(
+def plot_sensitivity_by_time_until_diagnosis(
     eval_dataset: EvalDataset,
     bins: Sequence[int] = (
         -1825,
@@ -446,7 +448,7 @@ def plot_roc_auc_by_time_until_diagnosis(
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     positive_rate: float = 0.5,
-    y_title: str = "F1",
+    y_title: str = "Sensitivity (recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
@@ -468,9 +470,12 @@ def plot_roc_auc_by_time_until_diagnosis(
     Returns:
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
-    df = create_roc_auc_by_timedelta(
-        labels=eval_dataset.y,
-        y_hat=eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
+    df = create_performance_by_timedelta(
+        y=eval_dataset.y,
+        y_to_fn=eval_dataset.get_predictions_for_positive_rate(
+            positive_rate=positive_rate,
+        ),
+        metric_fn=recall_score,
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t1-t2",
