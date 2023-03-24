@@ -36,7 +36,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.prob_over_time import
 from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
 from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
-    plot_sensitivity_by_time_to_outcome_heatmap,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
@@ -44,7 +43,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import (
     TEST_PLOT_PATH,
-    positive_rate_to_pred_probs,
 )
 from sklearn.metrics import f1_score, roc_auc_score
 
