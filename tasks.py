@@ -102,27 +102,26 @@ def test(c: Context):
         exit(0)
 
 
-def add_commit(c: Context, msg: Optional[str] = None):
+def _add_commit(c: Context, msg: Optional[str] = None):
     print("🔨 Adding and committing changes")
     c.run("git add .")
 
     if msg is None:
         msg = input("Commit message: ")
-    c.run(f'git commit -m "{msg}"')
-    print("🤖 Changes added and committed")
+
+    c.run(f'git commit -m "{msg}"', pty=True, hide=True)
+    print("\n🤖 Changes added and committed\n")
 
 
-def add_and_commit(c: Context):
-    git_status_result: Result = c.run(
-        "git status --porcelain",
-        pty=True,
-        hide=True,
-    )
+def add_and_commit(c: Context, msg: Optional[str] = None):
+    """Add and commit all changes."""
+    if is_uncommitted_changes(c):
+        uncommitted_changes_descr = c.run(
+            "git status --porcelain",
+            pty=True,
+            hide=True,
+        ).stdout
 
-    uncommitted_changes = git_status_result.stdout != ""
-    uncommitted_changes_descr = git_status_result.stdout
-
-    if uncommitted_changes:
         echo_header(
             f"{Emo.WARNING} Uncommitted changes detected",
         )
@@ -132,7 +131,18 @@ def add_and_commit(c: Context):
         for line in uncommitted_changes_descr.splitlines():
             print(f"    {line.strip()}")
         print("\n")
-        add_commit(c)
+        _add_commit(c, msg=msg)
+
+
+def is_uncommitted_changes(c: Context) -> bool:
+    git_status_result: Result = c.run(
+        "git status --porcelain",
+        pty=True,
+        hide=True,
+    )
+
+    uncommitted_changes = git_status_result.stdout != ""
+    return uncommitted_changes
 
 
 @task
@@ -194,6 +204,12 @@ def branch_exists_on_remote(c: Context) -> bool:
 
 @task
 def lint(c: Context):
+    if is_uncommitted_changes(c):
+        print(
+            f"{Emo.WARNING} Your git working directory is not clean. Stash or commit before linting.",
+        )
+        exit(0)
+
     pre_commit(c)
     mypy(c)
 
@@ -203,16 +219,18 @@ def pre_commit(c: Context):
     pre_commit_cmd = "pre-commit run --all-files"
     result = c.run(pre_commit_cmd, pty=True, warn=True)
 
-    if "error" in result.stdout:
-        exit(0)
+    exit_if_error_in_stdout(result)
 
     if "fixed" in result.stdout or "reformatted" in result.stdout:
-        add_commit(c, msg="style: linting")
+        _add_commit(c, msg="style: linting")
 
-    print("Fixed errors, re-running pre-commit checks")
-    second_result = c.run(pre_commit_cmd, pty=True, warn=True)
+        print(f"{Emo.APPLY} Fixed errors, re-running pre-commit checks")
+        second_result = c.run(pre_commit_cmd, pty=True, warn=True)
+        exit_if_error_in_stdout(second_result)
 
-    if "error" in second_result.stdout:
+
+def exit_if_error_in_stdout(result: Result):
+    if "error" in result.stdout:
         exit(0)
 
 
