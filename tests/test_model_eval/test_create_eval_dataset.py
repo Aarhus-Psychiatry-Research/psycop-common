@@ -1,5 +1,7 @@
 import pandas as pd
+import pytest
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
+from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.utils import create_eval_dataset
 
 
@@ -35,5 +37,16 @@ def test_create_eval_dataset():
     assert eval_dataset.custom_columns["custom1"].equals(df["custom1"])
 
 
-if __name__ == "__main__":
-    test_create_eval_dataset()
+@pytest.mark.parametrize("positive_rate", [0.3, 0.5, 0.8])
+def test_predictions_for_positive_rate(
+    synth_eval_dataset: EvalDataset,
+    positive_rate: float,
+):
+    pos_rate_series = synth_eval_dataset.get_predictions_for_positive_rate(
+        positive_rate=positive_rate,
+    )
+
+    y_hat_probs = synth_eval_dataset.y_hat_probs
+
+    # Assert that number of 1s in pos_rate_series matches the positive_rate
+    assert pos_rate_series.sum() == int(positive_rate * len(pos_rate_series))

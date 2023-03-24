@@ -34,7 +34,7 @@ class EvalDataset(BaseModel):
 
         # Remap y_hat_probs to 0/1 based on positive rate threshold
         y_hat_int = pd.Series(
-            (self.y_hat_probs > positive_rate_threshold).astype(int),
+            (self.y_hat_probs <= positive_rate_threshold).astype(int),
         )
 
         return y_hat_int
