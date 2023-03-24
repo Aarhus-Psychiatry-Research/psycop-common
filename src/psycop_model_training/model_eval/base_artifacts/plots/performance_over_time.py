@@ -474,8 +474,8 @@ def plot_sensitivity_by_time_until_diagnosis(
     df = create_performance_by_timedelta(
         y=eval_dataset.y,
         y_to_fn=eval_dataset.get_predictions_for_positive_rate(
-            positive_rate=positive_rate,
-        ),
+            desired_positive_rate=positive_rate,
+        )[0],
         metric_fn=recall_score,
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
