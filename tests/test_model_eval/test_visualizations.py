@@ -67,17 +67,16 @@ def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
         y_hat_probs=synth_eval_dataset.y_hat_probs,
         outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         prediction_timestamps=synth_eval_dataset.pred_timestamps,
-        positive_rate=0.5,
+        desired_positive_rate=0.5,
     )
 
 
 def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
     plot_df = create_sensitivity_by_time_to_outcome_df(
-        labels=synth_eval_dataset.y,
-        y_hat_probs=synth_eval_dataset.y_hat_probs,
+        eval_dataset=synth_eval_dataset,
         outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         prediction_timestamps=synth_eval_dataset.pred_timestamps,
-        positive_rate=0.5,
+        desired_positive_rate=0.5,
     )
     plot_basic_chart(
         x_values=plot_df["days_to_outcome_binned"],

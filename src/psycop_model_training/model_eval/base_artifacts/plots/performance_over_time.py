@@ -52,7 +52,7 @@ def plot_recall_by_calendar_time(
     dfs = [
         create_sensitivity_by_time_to_outcome_df(
             eval_dataset=eval_dataset,
-            positive_rate=positive_rate,
+            desired_positive_rate=positive_rate,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,

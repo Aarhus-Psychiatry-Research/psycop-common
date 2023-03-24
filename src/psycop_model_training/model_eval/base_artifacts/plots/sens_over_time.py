@@ -14,7 +14,7 @@ from psycop_model_training.utils.utils import round_floats_to_edge
 
 def create_sensitivity_by_time_to_outcome_df(
     eval_dataset: EvalDataset,
-    positive_rate: float,
+    desired_positive_rate: float,
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: Iterable = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
@@ -24,7 +24,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     Args:
         eval_dataset (EvalDataset): Eval dataset.
-        positive_rate (float): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+        desired_positive_rate (float): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
@@ -34,12 +34,14 @@ def create_sensitivity_by_time_to_outcome_df(
         pd.DataFrame
     """
 
+    y_hat_series, actual_positive_rate = eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=desired_positive_rate,
+    )
+
     df = pd.DataFrame(
         {
             "y": eval_dataset.y,
-            "y_hat": eval_dataset.get_predictions_for_positive_rate(
-                desired_positive_rate=positive_rate,
-            ),
+            "y_hat": y_hat_series,
             "outcome_timestamp": outcome_timestamps,
             "prediction_timestamp": prediction_timestamps,
         },
@@ -47,7 +49,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     # Get proportion of y_hat == 1, which is equal to the actual positive rate in the data.
     threshold_percentile = round(
-        df[df["y_hat"] == 1].shape[0] / df.shape[0] * 100,
+        actual_positive_rate * 100,
         2,
     )
 
@@ -83,7 +85,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     # Prep for plotting
     ## Save the threshold for each bin
-    output_df["threshold"] = positive_rate
+    output_df["threshold"] = desired_positive_rate
 
     output_df["threshold_percentile"] = threshold_percentile
 
