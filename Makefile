@@ -7,7 +7,7 @@ PYTHON         = $(or $(wildcard $(VENV_PYTHON)), $(SYSTEM_PYTHON))
 .DEFAULT_GOAL := help
 .PHONY: coverage deps help lint publish push test tox
 
-setup: ## Setup the environment for development
+setup:
 	@$(MAKE) git_init
 	@$(MAKE) setup_venv
 	@$(MAKE) install
@@ -49,17 +49,20 @@ test: ## Run tests
 		echo "––– 🚨 Test failure! 🚨 –––"; \
 		cat tests/.pytest_results | grep --color=always "^FAILED" | sed 's/.*test_/FAILURE #test_/' || true; \
 		echo "\n"; \
-		rm -rf tests/.pytest_results; \
 		exit 1; \
 	else \
 		echo "\n✅ All tests passed!"; \
-		rm -rf tests/.pytest_results; \
 	fi
+
+	@rm -rf tests/.pytest_results
+
+lint: ## Lint and static check
+	@$(MAKE) pre_commit
+	@$(MAKE) mypy
 
 pr: ## Run linting and tests. If they pass, create a PR.
 	@$(MAKE) lint
 	@$(MAKE) test
-
 	@if [ `gh pr list | wc -l` -gt 0 ]; then \
 		echo "🚂 Pushing to existing PR..."; \
 		git push; \
@@ -68,10 +71,6 @@ pr: ## Run linting and tests. If they pass, create a PR.
 	fi
 
 	@echo "🎉 PR up-to-date!"
-
-lint:
-	@$(MAKE) pre_commit
-	@$(MAKE) mypy
 
 mypy:
 	@echo "\n––– 🧹 Running mypy –––"
