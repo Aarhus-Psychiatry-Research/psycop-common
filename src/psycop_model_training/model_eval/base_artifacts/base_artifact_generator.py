@@ -5,14 +5,14 @@ from psycop_model_training.model_eval.base_artifacts.plots.feature_importance im
     plot_feature_importances,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age import (
-    plot_performance_by_age,
+    plot_roc_auc_by_age,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
-    plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
-    plot_metric_by_cyclic_time,
-    plot_metric_by_time_until_diagnosis,
     plot_recall_by_calendar_time,
+    plot_roc_auc_by_cyclic_time,
+    plot_roc_auc_by_time_from_first_visit,
+    plot_sensitivity_by_time_until_diagnosis,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
@@ -62,7 +62,7 @@ class BaseArtifactGenerator:
         return [
             ArtifactContainer(
                 label="auc_by_time_from_first_visit",
-                artifact=plot_auc_by_time_from_first_visit(
+                artifact=plot_roc_auc_by_time_from_first_visit(
                     eval_dataset=self.eval_ds,
                     bins=lookahead_bins,
                     save_path=self.save_dir / "auc_by_time_from_first_visit.png",
@@ -77,7 +77,7 @@ class BaseArtifactGenerator:
             ),
             ArtifactContainer(
                 label="auc_by_hour_of_day",
-                artifact=plot_metric_by_cyclic_time(
+                artifact=plot_roc_auc_by_cyclic_time(
                     eval_dataset=self.eval_ds,
                     bin_period="H",
                     save_path=self.save_dir / "auc_by_hour_of_day.png",
@@ -85,7 +85,7 @@ class BaseArtifactGenerator:
             ),
             ArtifactContainer(
                 label="auc_by_day_of_week",
-                artifact=plot_metric_by_cyclic_time(
+                artifact=plot_roc_auc_by_cyclic_time(
                     eval_dataset=self.eval_ds,
                     bin_period="D",
                     save_path=self.save_dir / "auc_by_day_of_week.png",
@@ -93,7 +93,7 @@ class BaseArtifactGenerator:
             ),
             ArtifactContainer(
                 label="auc_by_month_of_year",
-                artifact=plot_metric_by_cyclic_time(
+                artifact=plot_roc_auc_by_cyclic_time(
                     eval_dataset=self.eval_ds,
                     bin_period="M",
                     save_path=self.save_dir / "auc_by_month_of_year.png",
@@ -108,10 +108,10 @@ class BaseArtifactGenerator:
             ),
             ArtifactContainer(
                 label="recall_by_time_to_diagnosis",
-                artifact=plot_metric_by_time_until_diagnosis(
+                artifact=plot_sensitivity_by_time_until_diagnosis(
                     eval_dataset=self.eval_ds,
                     bins=lookahead_bins,
-                    metric_fn=recall_score,
+                    roc_auc_score=recall_score,
                     y_title="Sensitivity (recall)",
                     save_path=self.save_dir / "recall_by_time_to_diagnosis.png",
                 ),
@@ -125,7 +125,7 @@ class BaseArtifactGenerator:
             ),
             ArtifactContainer(
                 label="performance_by_age",
-                artifact=plot_performance_by_age(
+                artifact=plot_roc_auc_by_age(
                     eval_dataset=self.eval_ds,
                     save_path=self.save_dir / "performance_by_age.png",
                 ),

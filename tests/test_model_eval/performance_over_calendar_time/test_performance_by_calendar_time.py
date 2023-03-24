@@ -22,8 +22,8 @@ def test_create_performance_by_time_from_event_df(synth_eval_dataset: EvalDatase
     pass
 
     df = create_performance_by_timedelta(
-        labels=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs.round(),
+        y=eval_ds.y,
+        y_to_fn=eval_ds.y_hat_probs.round(),
         time_one=eval_ds.outcome_timestamps,
         time_two=eval_ds.pred_timestamps,
         metric_fn=recall_score,

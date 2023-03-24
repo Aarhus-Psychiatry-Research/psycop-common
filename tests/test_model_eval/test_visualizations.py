@@ -15,17 +15,17 @@ from psycop_model_training.model_eval.base_artifacts.plots.feature_importance im
     plot_feature_importances,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age import (
-    plot_performance_by_age,
+    plot_roc_auc_by_age,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_by_sex import (
-    plot_performance_by_sex,
+    plot_roc_auc_by_sex,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
-    plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
-    plot_metric_by_cyclic_time,
-    plot_metric_by_time_until_diagnosis,
     plot_recall_by_calendar_time,
+    plot_roc_auc_by_cyclic_time,
+    plot_roc_auc_by_time_from_first_visit,
+    plot_sensitivity_by_time_until_diagnosis,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
@@ -44,7 +44,6 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import (
     TEST_PLOT_PATH,
 )
-from sklearn.metrics import f1_score, roc_auc_score
 
 
 def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
@@ -86,14 +85,14 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
 
 
 def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
-    plot_performance_by_age(
+    plot_roc_auc_by_age(
         eval_dataset=synth_eval_dataset,
         save_path=TEST_PLOT_PATH / "test_performance_plot_by_age.png",
     )
 
 
 def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
-    plot_performance_by_sex(
+    plot_roc_auc_by_sex(
         eval_dataset=synth_eval_dataset,
         save_path=TEST_PLOT_PATH / "test_performance_plot_by_sex.png",
     )
@@ -110,7 +109,6 @@ def test_plot_performance_by_calendar_time(
     plot_metric_by_calendar_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
-        metric_fn=roc_auc_score,
         save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",
     )
 
@@ -135,23 +133,21 @@ def test_plot_performance_by_cyclic_time(
     synth_eval_dataset: EvalDataset,
     bin_period: str,
 ):
-    plot_metric_by_cyclic_time(
+    plot_roc_auc_by_cyclic_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
-        metric_fn=roc_auc_score,
     )
 
 
 def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
-    plot_metric_by_time_until_diagnosis(
+    plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        metric_fn=f1_score,
-        y_title="F1",
+        y_title="Sensitivity (recall)",
     )
 
 
 def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
-    plot_auc_by_time_from_first_visit(
+    plot_roc_auc_by_time_from_first_visit(
         eval_dataset=synth_eval_dataset,
     )
 
@@ -196,9 +192,8 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
 
 
 def test_overlay_barplot(synth_eval_dataset: EvalDataset):
-    plot_metric_by_time_until_diagnosis(
+    plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        metric_fn=f1_score,
-        y_title="F1",
+        y_title="Sensitivity",
         save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
     )
