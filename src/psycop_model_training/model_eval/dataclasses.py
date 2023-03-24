@@ -28,6 +28,17 @@ class EvalDataset(BaseModel):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
 
+    def get_predictions_for_positive_rate(self, positive_rate: float) -> pd.Series:
+        """Converts predicted probabilities to discrete predictions (0/1) based no a desired positive rate."""
+        positive_rate_threshold = self.y_hat_probs.quantile(positive_rate)
+
+        # Remap y_hat_probs to 0/1 based on positive rate threshold
+        y_hat_int = pd.Series(
+            (self.y_hat_probs > positive_rate_threshold).astype(int),
+        )
+
+        return y_hat_int
+
 
 class ArtifactContainer(BaseModel):
     """A container for artifacts."""
