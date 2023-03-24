@@ -43,7 +43,7 @@ def test_predictions_for_positive_rate(
     positive_rate: float,
 ):
     pos_rate_series = synth_eval_dataset.get_predictions_for_positive_rate(
-        positive_rate=positive_rate,
+        desired_positive_rate=positive_rate,
     )
 
     y_hat_probs = synth_eval_dataset.y_hat_probs

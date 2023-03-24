@@ -41,7 +41,7 @@ def get_true_positives(
     return df[df["true_positive"]]
 
 
-def performance_by_threshold(  # pylint: disable=too-many-locals
+def performance_by_positive_rate(  # pylint: disable=too-many-locals
     eval_dataset: EvalDataset,
     positive_rate: float,
     round_to: int = 4,
@@ -202,7 +202,7 @@ def generate_performance_by_positive_rate_table(
 
     # For each percentile, calculate relevant performance metrics
     for positive_rate in positive_rates:
-        threshold_metrics = performance_by_threshold(
+        threshold_metrics = performance_by_positive_rate(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
         )

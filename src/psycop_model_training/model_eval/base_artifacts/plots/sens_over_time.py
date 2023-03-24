@@ -38,7 +38,7 @@ def create_sensitivity_by_time_to_outcome_df(
         {
             "y": eval_dataset.y,
             "y_hat": eval_dataset.get_predictions_for_positive_rate(
-                positive_rate=positive_rate,
+                desired_positive_rate=positive_rate,
             ),
             "outcome_timestamp": outcome_timestamps,
             "prediction_timestamp": prediction_timestamps,
