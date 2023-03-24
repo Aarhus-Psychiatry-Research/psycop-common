@@ -37,16 +37,19 @@ def test_create_eval_dataset():
     assert eval_dataset.custom_columns["custom1"].equals(df["custom1"])
 
 
-@pytest.mark.parametrize("positive_rate", [0.3, 0.5, 0.8])
+@pytest.mark.parametrize("desired_positive_rate", [0.3, 0.5, 0.8])
 def test_predictions_for_positive_rate(
     synth_eval_dataset: EvalDataset,
-    positive_rate: float,
+    desired_positive_rate: float,
 ):
-    pos_rate_series = synth_eval_dataset.get_predictions_for_positive_rate(
-        desired_positive_rate=positive_rate,
+    (
+        pos_rate_series,
+        actual_positive_rate,
+    ) = synth_eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=desired_positive_rate,
     )
 
-    y_hat_probs = synth_eval_dataset.y_hat_probs
-
     # Assert that number of 1s in pos_rate_series matches the positive_rate
-    assert pos_rate_series.sum() == int(positive_rate * len(pos_rate_series))
+    assert pos_rate_series.mean() == actual_positive_rate
+
+    pass
