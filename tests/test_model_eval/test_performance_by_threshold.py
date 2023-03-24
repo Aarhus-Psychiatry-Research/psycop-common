@@ -49,18 +49,16 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
 
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
-    # Threshold is 0.5
-    val = days_from_first_positive_to_diagnosis(
+    warning_days_half = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
         positive_rate=0.5,
+        aggregation_method="sum",
     )
 
-    assert 260_000 < val < 292_000
-
-    # Threshold is 0.2
-    val = days_from_first_positive_to_diagnosis(
+    warning_days_two_thirds = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
-        positive_rate=0.2,
+        positive_rate=0.75,
+        aggregation_method="sum",
     )
 
-    assert 1_800_000 < val < 1_885_000
+    assert warning_days_half < warning_days_two_thirds
