@@ -58,7 +58,7 @@ def update(c: Context):
 def test(c: Context):
     echo_header("🧪 Running tests")
     test_result: Result = c.run(
-        "pytest -x -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q",
+        "pytest -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q",
         warn=True,
         pty=True,
     )
