@@ -59,7 +59,7 @@ def plot_recall_by_calendar_time(
         create_sensitivity_by_time_to_outcome_df(
             labels=eval_dataset.y,
             y_hat_probs=y_hat_percentiles,
-            pred_proba_threshold=threshold,
+            positive_rate=threshold,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
@@ -484,16 +484,9 @@ def plot_metric_by_time_until_diagnosis(
     Returns:
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
-    positive_rate_threshold = eval_dataset.y_hat_probs.quantile(positive_rate)
-
-    # Remap y_hat_probs to 0/1 based on positive rate threshold
-    y_hat_int = pd.Series(
-        (eval_dataset.y_hat_probs > positive_rate_threshold).astype(int),
-    )
-
     df = create_performance_by_timedelta(
         labels=eval_dataset.y,
-        y_hat=y_hat_int,
+        y_hat=eval_dataset.get_predictions_for_positive_rate(positive_rate),
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t1-t2",

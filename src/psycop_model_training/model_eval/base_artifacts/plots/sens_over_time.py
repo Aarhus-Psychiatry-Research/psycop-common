@@ -13,9 +13,8 @@ from psycop_model_training.utils.utils import round_floats_to_edge
 
 
 def create_sensitivity_by_time_to_outcome_df(
-    labels: Iterable[int],
-    y_hat_probs: Iterable[int],
-    pred_proba_threshold: float,
+    eval_dataset: EvalDataset,
+    positive_rate: float,
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: Iterable = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
@@ -24,9 +23,8 @@ def create_sensitivity_by_time_to_outcome_df(
     """Calculate sensitivity by time to outcome.
 
     Args:
-        labels (Iterable[int]): True labels of the data.
-        y_hat_probs (Iterable[int]): Predicted label probability.
-        pred_proba_threshold (float): The pred_proba threshold above which predictions are classified as positive.
+        eval_dataset (EvalDataset): Eval dataset.
+        positive_rate (float): Positive rate to use for calculating sensitivity.
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
@@ -36,21 +34,18 @@ def create_sensitivity_by_time_to_outcome_df(
         pd.DataFrame
     """
 
-    # Modify pandas series to 1 if y_hat is larger than threshold, otherwise 0
-    y_hat = pd.Series(y_hat_probs).apply(
-        lambda x: 1 if x > pred_proba_threshold else 0,
-    )
-
     df = pd.DataFrame(
         {
-            "y": labels,
-            "y_hat": y_hat,
+            "y": eval_dataset.y,
+            "y_hat": eval_dataset.get_predictions_for_positive_rate(
+                positive_rate=positive_rate,
+            ),
             "outcome_timestamp": outcome_timestamps,
             "prediction_timestamp": prediction_timestamps,
         },
     )
 
-    # Get proportion of y_hat == 1, which is equal to the positive rate in the data
+    # Get proportion of y_hat == 1, which is equal to the actual positive rate in the data.
     threshold_percentile = round(
         df[df["y_hat"] == 1].shape[0] / df.shape[0] * 100,
         2,
@@ -88,7 +83,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     # Prep for plotting
     ## Save the threshold for each bin
-    output_df["threshold"] = pred_proba_threshold
+    output_df["threshold"] = positive_rate
 
     output_df["threshold_percentile"] = threshold_percentile
 

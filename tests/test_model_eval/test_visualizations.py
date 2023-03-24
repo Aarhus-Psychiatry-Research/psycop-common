@@ -67,7 +67,7 @@ def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
         y_hat_probs=synth_eval_dataset.y_hat_probs,
         outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         prediction_timestamps=synth_eval_dataset.pred_timestamps,
-        pred_proba_threshold=0.5,
+        positive_rate=0.5,
     )
 
 
@@ -77,7 +77,7 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
         y_hat_probs=synth_eval_dataset.y_hat_probs,
         outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         prediction_timestamps=synth_eval_dataset.pred_timestamps,
-        pred_proba_threshold=0.5,
+        positive_rate=0.5,
     )
     plot_basic_chart(
         x_values=plot_df["days_to_outcome_binned"],
