@@ -33,14 +33,14 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
         float: performance
     """
     if df.empty:
-        return pd.Series({"metric": np.nan})
+        return pd.Series({"metric": np.nan, "n_in_bin": np.nan})
 
     if metric is roc_auc_score and len(df["y"].unique()) == 1:
         # msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan") This was hit almost once per month, making it very hard to read.
         # Many of our models probably try to predict the majority class.
         # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
         # For now, suppressing this message.
-        return pd.Series({"metric": np.nan})
+        return pd.Series({"metric": np.nan, "n_in_bin": np.nan})
 
     perf_metric = metric(df["y"], df["y_hat"])
 

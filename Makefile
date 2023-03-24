@@ -40,7 +40,7 @@ update: ## Update dependencies
 	@echo 🔨 Updating project... \	
 	$(PYTHON) -m pip install --upgrade -e ".[dev,tests]" \
 
-test:
+test: ## Run tests
 	@echo "\n––– 🧪 Running tests –––"
 	@$(PYTHON) -m pytest -x -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q | tee tests/.pytest_results || true
 
@@ -63,7 +63,6 @@ lint: ## Lint and static check
 pr: ## Run linting and tests. If they pass, create a PR.
 	@$(MAKE) lint
 	@$(MAKE) test
-	
 	@if [ `gh pr list | wc -l` -gt 0 ]; then \
 		echo "🚂 Pushing to existing PR..."; \
 		git push; \
@@ -81,12 +80,12 @@ pre_commit:
 	@echo "\n––– 🧹 Running pre-commit checks –––"
 	@pre-commit run --all-files
 
-help: ## Show help message
+help:
 	@IFS=$$'\n' ; \
 	help_lines=(`fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##/:/'`); \
 	printf "%s\n\n" "Usage: make [task]"; \
-	printf "%-20s %s\n" "task" "help" ; \
-	printf "%-20s %s\n" "------" "----" ; \
+	printf "%-20s %s\n" "command" "Description" ; \
+	printf "%-20s %s\n" "-------" "-----------" ; \
 	for help_line in $${help_lines[@]}; do \
 		IFS=$$':' ; \
 		help_split=($$help_line) ; \
