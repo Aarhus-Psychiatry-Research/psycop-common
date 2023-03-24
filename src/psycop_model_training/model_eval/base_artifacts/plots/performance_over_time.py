@@ -24,7 +24,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
-    pos_rate: Union[float, Iterable[float]],
+    positive_rates: Union[float, Iterable[float]],
     bins: Iterable[float],
     bin_unit: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
@@ -35,7 +35,7 @@ def plot_recall_by_calendar_time(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
-        pos_rate (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
+        positive_rates (Union[float, Iterable[float]]): Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
         bins (Iterable[float], optional): Bins to use for time to outcome.
         bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         y_title (str): Title of y-axis. Defaults to "AUC".
@@ -45,27 +45,20 @@ def plot_recall_by_calendar_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    if not isinstance(pos_rate, Iterable):
-        pos_rate = [pos_rate]
-    pos_rate = list(pos_rate)
-
-    # Get percentiles from a series of predicted probabilities
-    y_hat_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
-
-    pos_rate_threshold = [1 - threshold for threshold in list(pos_rate)]
-    pos_rate_threshold_labels = [str(threshold) for threshold in list(pos_rate)]
+    if not isinstance(positive_rates, Iterable):
+        positive_rates = [positive_rates]
+    positive_rates = list(positive_rates)
 
     dfs = [
         create_sensitivity_by_time_to_outcome_df(
-            labels=eval_dataset.y,
-            y_hat_probs=y_hat_percentiles,
-            positive_rate=threshold,
+            eval_dataset=eval_dataset,
+            positive_rate=positive_rate,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
             bin_delta=bin_unit,
         )
-        for threshold in pos_rate_threshold
+        for positive_rate in positive_rates
     ]
 
     bin_delta_to_str = {
@@ -82,7 +75,7 @@ def plot_recall_by_calendar_time(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
         x_title=f"{x_title_unit}s to event",
-        labels=pos_rate_threshold_labels,
+        labels=[str(pos_rate) for pos_rate in positive_rates],
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
