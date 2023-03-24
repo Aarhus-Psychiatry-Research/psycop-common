@@ -24,10 +24,14 @@ def get_true_positives(
     """
 
     # Generate df
+    positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=positive_rate,
+    )
+
     df = pd.DataFrame(
         {
             "id": eval_dataset.ids,
-            "pred": eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
+            "pred": positives_series,
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
         },
