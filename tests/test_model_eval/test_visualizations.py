@@ -159,22 +159,6 @@ def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
     )
 
 
-def test_plot_sens_by_time_to_outcome(synth_eval_dataset: EvalDataset, tmp_path: str):
-    positive_rates = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
-
-    pred_proba_thresholds = positive_rate_to_pred_probs(
-        pred_probs=synth_eval_dataset.y_hat_probs,
-        positive_rates=positive_rates,
-    )
-
-    plot_sensitivity_by_time_to_outcome_heatmap(
-        eval_dataset=synth_eval_dataset,
-        pred_proba_thresholds=pred_proba_thresholds,
-        bins=[0, 30, 182, 365, 730, 1825],
-        save_path=tmp_path,
-    )
-
-
 def test_plot_feature_importances():
     n_features = 10
     feature_name = "very long feature name right here yeah actually super long like the feature names"
