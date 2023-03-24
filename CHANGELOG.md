@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.50.0 (2023-03-24)
+### Feature
+* Incorrect title ([`7be3a58`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7be3a58bc736644c66d39d2aee233096fd49a6a6))
+* Support recall score by time until diagnosis ([`4bea7bc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/4bea7bc3dda867851cea711d00ccd34b9b225fde))
+
+### Fix
+* Missing argument to fn ([`a62b1ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a62b1edd44b5840edb973812c53e8ef129603564))
+
 ## v0.49.0 (2023-03-24)
 ### Feature
 * Add actual positive rates to plot_recall_by_calendar_time ([`7dd0a74`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7dd0a746f75e14749f6fe34aa76437f12ac8b3e5))
