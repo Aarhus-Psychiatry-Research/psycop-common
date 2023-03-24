@@ -19,7 +19,6 @@ class EvalDataset(BaseModel):
     outcome_timestamps: pd.Series
     y: pd.Series
     y_hat_probs: pd.Series
-    y_hat_int: pd.Series
     age: Optional[pd.Series] = None
     is_female: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None
@@ -28,6 +27,26 @@ class EvalDataset(BaseModel):
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.Config.allow_mutation = True
+
+    def get_predictions_for_positive_rate(
+        self,
+        desired_positive_rate: float,
+    ) -> tuple[pd.Series, float]:
+        """Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+
+
+        Note that this won't always match the desired positive rate exactly for e.g tree-based models, where predicted probabilities are binned, but it'll get as close as possible.
+        """
+        positive_threshold = self.y_hat_probs.quantile(desired_positive_rate)
+
+        # Remap y_hat_probs to 0/1 based on positive rate threshold
+        y_hat_int = pd.Series(
+            (self.y_hat_probs <= positive_threshold).astype(int),
+        )
+
+        actual_positive_rate = y_hat_int.mean()
+
+        return y_hat_int, actual_positive_rate
 
 
 class ArtifactContainer(BaseModel):

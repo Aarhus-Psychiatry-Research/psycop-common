@@ -18,9 +18,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.precision_recall impo
     plot_precision_recall,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
-from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
-    plot_sensitivity_by_time_to_outcome_heatmap,
-)
 from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
 )
@@ -39,7 +36,6 @@ from psycop_model_training.model_eval.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 from sklearn.metrics import recall_score
 
 
@@ -61,23 +57,9 @@ class BaseArtifactGenerator:
 
     def create_base_plot_artifacts(self) -> list[ArtifactContainer]:
         """A collection of plots that are always generated."""
-        pred_proba_percentiles = positive_rate_to_pred_probs(
-            pred_probs=self.eval_ds.y_hat_probs,
-            positive_rate_thresholds=self.cfg.eval.positive_rate_thresholds,
-        )
-
         lookahead_bins = self.cfg.eval.lookahead_bins
 
         return [
-            ArtifactContainer(
-                label="sensitivity_by_time_by_threshold",
-                artifact=plot_sensitivity_by_time_to_outcome_heatmap(
-                    eval_dataset=self.eval_ds,
-                    pred_proba_thresholds=pred_proba_percentiles,
-                    bins=lookahead_bins,
-                    save_path=self.save_dir / "sensitivity_by_time_by_threshold.png",
-                ),
-            ),
             ArtifactContainer(
                 label="auc_by_time_from_first_visit",
                 artifact=plot_auc_by_time_from_first_visit(
@@ -138,8 +120,6 @@ class BaseArtifactGenerator:
                 label="performance_by_threshold",
                 artifact=generate_performance_by_positive_rate_table(
                     eval_dataset=self.eval_ds,
-                    pred_proba_thresholds=pred_proba_percentiles,
-                    positive_rate_thresholds=self.cfg.eval.positive_rate_thresholds,
                     output_format="df",
                 ),
             ),
@@ -169,7 +149,7 @@ class BaseArtifactGenerator:
                 label="recall_by_calendar_time",
                 artifact=plot_recall_by_calendar_time(
                     eval_dataset=self.eval_ds,
-                    pos_rate=[0.95, 0.97, 0.99],
+                    positive_rates=[0.95, 0.97, 0.99],
                     bins=self.cfg.eval.lookahead_bins,
                     y_limits=(0, 0.5),
                     save_path=self.save_dir / "recall_by_calendar_time.png",
