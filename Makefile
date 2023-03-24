@@ -42,7 +42,7 @@ update: ## Update dependencies
 
 test:
 	@echo "\n––– 🧪 Running tests –––"
-	@$(PYTHON) -m pytest -x -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q | tee tests/.pytest_results || true
+	@$(PYTHON) -m pytest -x -n 4 -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q | tee tests/.pytest_results || true
 
 	@if [ `cat tests/.pytest_results | grep -c "failed"` -gt 0 ]; then \
 		echo "\n\n\n"; \
