@@ -51,5 +51,3 @@ def test_predictions_for_positive_rate(
 
     # Assert that number of 1s in pos_rate_series matches the positive_rate
     assert pos_rate_series.mean() == actual_positive_rate
-
-    pass
