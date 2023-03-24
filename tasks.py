@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 from invoke import Context, Result, task
 
@@ -86,11 +87,13 @@ def test(c: Context):
         exit(0)
 
 
-def add_commit(c: Context):
+def add_commit(c: Context, msg: Optional[str] = None):
     print("🔨 Adding and committing changes")
     c.run("git add .")
-    commit_msg = input("Commit message: ")
-    c.run(f'git commit -m "{commit_msg}"')
+
+    if msg is None:
+        msg = input("Commit message: ")
+    c.run(f'git commit -m "{msg}"')
 
 
 def add_and_commit(c: Context):
@@ -181,7 +184,10 @@ def lint(c: Context):
 
 def pre_commit(c: Context):
     echo_header("🧹 Running pre-commit checks")
-    c.run("pre-commit run --all-files", pty=True)
+    result = c.run("pre-commit run --all-files", pty=True, warn=True)
+
+    if "fixed" in result.stdout or "reformatted" in result.stdout:
+        add_commit(c, msg="style: linting")
 
 
 def mypy(c: Context):
