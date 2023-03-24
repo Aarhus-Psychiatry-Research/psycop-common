@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.48.0 (2023-03-24)
+### Feature
+* Disable model eval by default ([#452](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/452)) ([`ea08f71`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ea08f7181436996fdca636c3be0d5f54309aafcf))
+
+### Fix
+* Align interfaces ([`a55b8be`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a55b8becc559ff287e74e72e59f1735196841f34))
+
 ## v0.47.0 (2023-03-23)
 ### Feature
 * Update descriptive stats table ([#444](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/444)) ([`8498bc8`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8498bc8493cc90bf6bba151eea696c777379abb2))
