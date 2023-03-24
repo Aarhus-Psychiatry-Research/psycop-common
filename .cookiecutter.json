@@ -7,7 +7,6 @@
     "github_user": "",
     "version": "0.0.0",
     "copyright_year": "2023",
-    "setup_for_dev_bash_script": ["y", "n"],
     "license": ["MIT", "None"],
     "_copy_without_render": [
         "*.github"

@@ -486,7 +486,7 @@ def plot_metric_by_time_until_diagnosis(
         bins=bins,
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
-        min_n_in_bin=0,
+        min_n_in_bin=5,
         drop_na_events=True,
         metric_fn=metric_fn,
     )
