@@ -403,6 +403,7 @@ def plot_roc_auc_by_time_from_first_visit(
     df = create_performance_by_timedelta(
         y=eval_dataset.y,
         y_to_fn=eval_dataset.y_hat_probs,
+        metric_fn=roc_auc_score,
         time_one=first_visit_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t2-t1",
