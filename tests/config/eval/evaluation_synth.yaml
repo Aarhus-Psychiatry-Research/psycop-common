@@ -1,6 +1,6 @@
 force: false
 top_n_feature_importances: 10
-positive_rate_thresholds: [5, 3, 2, 1, 0.5, 0.3, 0.1]
+positive_rates: [5, 3, 2, 1, 0.5, 0.3, 0.1]
 save_model_predictions_on_overtaci: false
 lookahead_bins: [0, 28, 182, 365, 730, 1825]
 lookbehind_bins: [0, 28, 182, 365, 730, 1825]

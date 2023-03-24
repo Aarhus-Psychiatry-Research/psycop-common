@@ -40,9 +40,9 @@ update: ## Update dependencies
 	@echo 🔨 Updating project... \	
 	$(PYTHON) -m pip install --upgrade -e ".[dev,tests]" \
 
-test: ## Run tests
+test:
 	@echo "\n––– 🧪 Running tests –––"
-	@$(PYTHON) -m pytest -x -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q | tee tests/.pytest_results || true
+	@$(PYTHON) -m pytest -n 4 -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q | tee tests/.pytest_results || true
 
 	@if [ `cat tests/.pytest_results | grep -c "failed"` -gt 0 ]; then \
 		echo "\n\n\n"; \
@@ -63,6 +63,7 @@ lint: ## Lint and static check
 pr: ## Run linting and tests. If they pass, create a PR.
 	@$(MAKE) lint
 	@$(MAKE) test
+  
 	@if [ `gh pr list | wc -l` -gt 0 ]; then \
 		echo "🚂 Pushing to existing PR..."; \
 		git push; \

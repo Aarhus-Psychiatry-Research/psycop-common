@@ -1,63 +1,64 @@
 """Get performance by which threshold is used to classify positive."""
-from collections.abc import Iterable
 from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
 import wandb
+from git import Sequence
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from sklearn.metrics import confusion_matrix
 
 
 def get_true_positives(
     eval_dataset: EvalDataset,
-    positive_rate_threshold: Optional[float] = 0.5,
+    positive_rate: float = 0.5,
 ) -> pd.DataFrame:
     """Get dataframe containing only true positives.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
-        positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
+        positive_rate (float): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
 
     Returns:
         pd.DataFrame: Dataframe containing only true positives.
     """
 
     # Generate df
+    positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=positive_rate,
+    )
+
     df = pd.DataFrame(
         {
             "id": eval_dataset.ids,
-            "pred_probs": eval_dataset.y_hat_probs,
+            "pred": positives_series,
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
         },
     )
 
     # Keep only true positives
-    df["true_positive"] = (df["pred_probs"] >= positive_rate_threshold) & (
-        df["outcome_timestamps"].notnull()
-    )
+    df["true_positive"] = (df["pred"] == 1) & (df["outcome_timestamps"].notnull())
 
     return df[df["true_positive"]]
 
 
-def performance_by_threshold(  # pylint: disable=too-many-locals
+def performance_by_positive_rate(  # pylint: disable=too-many-locals
     eval_dataset: EvalDataset,
-    positive_threshold: float,
-    round_to: int = 4,
+    positive_rate: float,
+    round_to: int = 2,
 ) -> pd.DataFrame:
     """Generates a row for a performance_by_threshold table.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
-        positive_threshold (float): Threshold for a probability to be
-            labelled as "positive".
+        positive_rate (float): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
         round_to (int): Number of decimal places to round metrics
 
     Returns:
         pd.DataFrame
     """
-    preds = np.where(eval_dataset.y_hat_probs > positive_threshold, 1, 0)
+    preds, _ = eval_dataset.get_predictions_for_positive_rate(positive_rate)
 
     conf_matrix = confusion_matrix(eval_dataset.y, preds)
 
@@ -109,7 +110,7 @@ def performance_by_threshold(  # pylint: disable=too-many-locals
 
 def days_from_first_positive_to_diagnosis(
     eval_dataset: EvalDataset,
-    positive_rate_threshold: Optional[float] = 0.5,
+    positive_rate: float = 0.5,
     aggregation_method: str = "sum",
 ) -> float:
     """Calculate number of days from the first positive prediction to the
@@ -117,8 +118,8 @@ def days_from_first_positive_to_diagnosis(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
-        positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
-        aggregation_method (str, optional): How to aggregate the warning days. Defaults to "sum".
+        positive_rate (float): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+        aggregation_method (str): How to aggregate the warning days. Defaults to "sum".
 
     Returns:
         float: Total number of days from first positive prediction to outcome.
@@ -126,7 +127,7 @@ def days_from_first_positive_to_diagnosis(
     # Generate df with only true positives
     df = get_true_positives(
         eval_dataset=eval_dataset,
-        positive_rate_threshold=positive_rate_threshold,
+        positive_rate=positive_rate,
     )
 
     # Find timestamp of first positive prediction
@@ -161,13 +162,13 @@ def days_from_first_positive_to_diagnosis(
 
 def prop_with_at_least_one_true_positve(
     eval_dataset: EvalDataset,
-    positive_rate_threshold: Optional[float] = 0.5,
+    positive_rate: float = 0.5,
 ) -> float:
     """Get proportion of patients with at least one true positive prediction.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
-        positive_rate_threshold (float, optional): Threshold above which patients are classified as positive. Defaults to 0.5.
+        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
 
     Returns:
         float: Proportion of thresholds with at least one true positive.
@@ -175,7 +176,7 @@ def prop_with_at_least_one_true_positve(
     # Generate df with only true positives
     df = get_true_positives(
         eval_dataset=eval_dataset,
-        positive_rate_threshold=positive_rate_threshold,
+        positive_rate=positive_rate,
     )
 
     # Return number of unique patients with at least one true positive
@@ -184,8 +185,7 @@ def prop_with_at_least_one_true_positve(
 
 def generate_performance_by_positive_rate_table(
     eval_dataset: EvalDataset,
-    positive_rate_thresholds: Iterable[float],
-    pred_proba_thresholds: Iterable[float],
+    positive_rates: Sequence[float],
     output_format: Optional[str] = "df",
 ) -> Union[pd.DataFrame, str, wandb.Table]:
     """Generates a performance_by_threshold table as either a DataFrame or html
@@ -193,33 +193,27 @@ def generate_performance_by_positive_rate_table(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
-        positive_rate_thresholds (Sequence[float]): Positive_rate_thresholds to add to the table, e.g. 0.99, 0.98 etc.
+        positive_rates (Sequence[float]): positive_rates to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
-        pred_proba_thresholds (Sequence[float]): Thresholds above which predictions are classified as positive.
         output_format (str, optional): Format to output - either "df" or "wandb_table". Defaults to "df".
 
     Returns:
         pd.DataFrame
     """
-
-    # Round decimals to percent, e.g. 0.99 -> 99%
-    if min(positive_rate_thresholds) < 1:
-        positive_rate_thresholds = [x * 100 for x in positive_rate_thresholds]
-
     rows = []
 
     # For each percentile, calculate relevant performance metrics
-    for threshold_value in pred_proba_thresholds:
-        threshold_metrics = performance_by_threshold(
+    for positive_rate in positive_rates:
+        threshold_metrics = performance_by_positive_rate(
             eval_dataset=eval_dataset,
-            positive_threshold=threshold_value,
+            positive_rate=positive_rate,
         )
 
         threshold_metrics[  # pylint: disable=unsupported-assignment-operation
             "total_warning_days"
         ] = days_from_first_positive_to_diagnosis(
             eval_dataset=eval_dataset,
-            positive_rate_threshold=threshold_value,
+            positive_rate=positive_rate,
             aggregation_method="sum",
         )
 
@@ -228,7 +222,7 @@ def generate_performance_by_positive_rate_table(
         ] = round(
             days_from_first_positive_to_diagnosis(
                 eval_dataset=eval_dataset,
-                positive_rate_threshold=threshold_value,
+                positive_rate=positive_rate,
                 aggregation_method="mean",
             ),
             0,
@@ -238,7 +232,7 @@ def generate_performance_by_positive_rate_table(
             "prop_with_at_least_one_true_positive"
         ] = prop_with_at_least_one_true_positve(
             eval_dataset=eval_dataset,
-            positive_rate_threshold=threshold_value,
+            positive_rate=positive_rate,
         )
 
         rows.append(threshold_metrics)

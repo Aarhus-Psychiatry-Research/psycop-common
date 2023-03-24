@@ -24,7 +24,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
-    pos_rate: Union[float, Iterable[float]],
+    positive_rates: Union[float, Iterable[float]],
     bins: Iterable[float],
     bin_unit: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
@@ -35,7 +35,7 @@ def plot_recall_by_calendar_time(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
-        pos_rate (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
+        positive_rates (Union[float, Iterable[float]]): Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
         bins (Iterable[float], optional): Bins to use for time to outcome.
         bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         y_title (str): Title of y-axis. Defaults to "AUC".
@@ -45,27 +45,20 @@ def plot_recall_by_calendar_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    if not isinstance(pos_rate, Iterable):
-        pos_rate = [pos_rate]
-    pos_rate = list(pos_rate)
-
-    # Get percentiles from a series of predicted probabilities
-    y_hat_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
-
-    pos_rate_threshold = [1 - threshold for threshold in list(pos_rate)]
-    pos_rate_threshold_labels = [str(threshold) for threshold in list(pos_rate)]
+    if not isinstance(positive_rates, Iterable):
+        positive_rates = [positive_rates]
+    positive_rates = list(positive_rates)
 
     dfs = [
         create_sensitivity_by_time_to_outcome_df(
-            labels=eval_dataset.y,
-            y_hat_probs=y_hat_percentiles,
-            pred_proba_threshold=threshold,
+            eval_dataset=eval_dataset,
+            desired_positive_rate=positive_rate,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
             bin_delta=bin_unit,
         )
-        for threshold in pos_rate_threshold
+        for positive_rate in positive_rates
     ]
 
     bin_delta_to_str = {
@@ -82,7 +75,7 @@ def plot_recall_by_calendar_time(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
         x_title=f"{x_title_unit}s to event",
-        labels=pos_rate_threshold_labels,
+        labels=[df["actual_positive_rate"][0] for df in dfs],
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
@@ -460,6 +453,7 @@ def plot_metric_by_time_until_diagnosis(
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     metric_fn: Callable = f1_score,
+    positive_rate: float = 0.5,
     y_title: str = "F1",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
@@ -475,6 +469,7 @@ def plot_metric_by_time_until_diagnosis(
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
+        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
         y_title (str): Title for y-axis (metric name)
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -484,7 +479,7 @@ def plot_metric_by_time_until_diagnosis(
     """
     df = create_performance_by_timedelta(
         labels=eval_dataset.y,
-        y_hat=eval_dataset.y_hat_int,
+        y_hat=eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t1-t2",
