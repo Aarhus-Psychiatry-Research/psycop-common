@@ -110,7 +110,6 @@ def test_plot_performance_by_calendar_time(
     plot_metric_by_calendar_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
-        roc_auc_score=roc_auc_score,
         save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",
     )
 
@@ -138,14 +137,12 @@ def test_plot_performance_by_cyclic_time(
     plot_roc_auc_by_cyclic_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
-        roc_auc_score=roc_auc_score,
     )
 
 
 def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        roc_auc_score=f1_score,
         y_title="F1",
     )
 
@@ -198,7 +195,6 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
 def test_overlay_barplot(synth_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        roc_auc_score=f1_score,
         y_title="F1",
         save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
     )

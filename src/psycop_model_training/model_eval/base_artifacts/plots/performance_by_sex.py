@@ -31,7 +31,6 @@ def plot_roc_auc_by_sex(
         eval_dataset=eval_dataset,
         input_values=eval_dataset.is_female,
         input_name="sex",
-        roc_auc_score=roc_auc_score,
         bins=None,
         bin_continuous_input=False,
     )

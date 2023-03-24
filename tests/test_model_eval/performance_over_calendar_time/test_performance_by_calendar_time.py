@@ -26,7 +26,7 @@ def test_create_performance_by_time_from_event_df(synth_eval_dataset: EvalDatase
         y_to_fn=eval_ds.y_hat_probs.round(),
         time_one=eval_ds.outcome_timestamps,
         time_two=eval_ds.pred_timestamps,
-        roc_auc_score=recall_score,
+        metric_fn=recall_score,
         direction="t2-t1",
         bins=[-500, -100, 0, 100, 500, 1000],
         bin_unit="D",
