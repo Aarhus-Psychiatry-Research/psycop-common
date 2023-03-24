@@ -1,11 +1,26 @@
 from pathlib import Path
 from typing import Optional
 
+from attr import dataclass
 from invoke import Context, Result, task
 
 
 def echo_header(msg: str):
     print(f"\n--- {msg} ---")
+
+
+@dataclass
+class Emo:
+    APPLY = "🤖"
+    SUCCESS = "✅"
+    FAILURE = "🚨"
+    WARNING = "🚧"
+    SYNC = "🚂"
+    STARTING = "🔨"
+    PYTHON = "🐍"
+    CLEAN = "🧹"
+    TEST = "🧪"
+    COMMUNICATE = "📣"
 
 
 @task
@@ -18,13 +33,13 @@ def setup(c: Context, python_version: str = "3.9"):
 def git_init(c: Context):
     # If no .git directory exits
     if not Path(".git").exists():
-        echo_header("🔨 Initializing Git repository")
+        echo_header(f"{Emo.STARTING} Initializing Git repository")
         c.run("git init")
         c.run("git add .")
         c.run("git commit -m 'Initial commit'")
-        print("✅ Git repository initialized")
+        print(f"{Emo.SUCCESS} Git repository initialized")
     else:
-        print("✅ Git repository already initialized")
+        print(f"{Emo.SUCCESS} Git repository already initialized")
 
 
 def setup_venv(
@@ -34,30 +49,30 @@ def setup_venv(
     venv_name = f'.venv{python_version.replace(".", "")}'
 
     if not Path(venv_name).exists():
-        echo_header("🔨 Creating virtual environment")
+        echo_header(f"{Emo.STARTING} Creating virtual environment")
         c.run(f"python{python_version} -m venv {venv_name}")
-        print("✅ Virtual environment created")
+        print(f"{Emo.SUCCESS} Virtual environment created")
     else:
-        print("✅ Virtual environment already exists")
+        print(f"{Emo.SUCCESS} Virtual environment already exists")
 
     c.run(f"source {venv_name}/bin/activate")
 
 
 @task
 def install(c: Context):
-    echo_header("🔨 Installing project")
+    echo_header(f"{Emo.STARTING} Installing project")
     c.run("pip install -e '.[dev,tests]'")
 
 
 @task
 def update(c: Context):
-    echo_header("🔨 Updating project")
+    echo_header(f"{Emo.STARTING} Updating project")
     c.run("pip install --upgrade -e '.[dev,tests]'")
 
 
 @task
 def test(c: Context):
-    echo_header("🧪 Running tests")
+    echo_header(f"{Emo.TEST} Running tests")
     test_result: Result = c.run(
         "pytest -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q",
         warn=True,
@@ -82,7 +97,7 @@ def test(c: Context):
 
             # Keep only that after ::
             line_sans_suffix = line_sans_prefix[line_sans_prefix.find("::") + 2 :]
-            print(f"FAILED 🚨 #{line_sans_suffix}     ")
+            print(f"FAILED {Emo.FAILURE} #{line_sans_suffix}     ")
 
         exit(0)
 
@@ -94,6 +109,7 @@ def add_commit(c: Context, msg: Optional[str] = None):
     if msg is None:
         msg = input("Commit message: ")
     c.run(f'git commit -m "{msg}"')
+    print("🤖 Changes added and committed")
 
 
 def add_and_commit(c: Context):
@@ -108,7 +124,7 @@ def add_and_commit(c: Context):
 
     if uncommitted_changes:
         echo_header(
-            "🚧 Uncommitted changes detected",
+            f"{Emo.WARNING} Uncommitted changes detected",
         )
 
         input("Press enter to add and commit the changes...")
@@ -129,7 +145,7 @@ def pr(c: Context):
 
 
 def sync_with_git_remote(c: Context):
-    echo_header("🚂 Syncing branch with remote")
+    echo_header(f"{Emo.SYNC} Syncing branch with remote")
 
     if not branch_exists_on_remote(c):
         c.run("git push --set-upstream origin HEAD")
@@ -141,7 +157,7 @@ def sync_with_git_remote(c: Context):
 
 
 def sync_pr(c: Context):
-    echo_header("💬 Syncing PR")
+    echo_header(f"{Emo.COMMUNICATE} Syncing PR")
     # Get current branch name
     branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
     pr_result: Result = c.run(
@@ -183,7 +199,7 @@ def lint(c: Context):
 
 
 def pre_commit(c: Context):
-    echo_header("🧹 Running pre-commit checks")
+    echo_header(f"{Emo.CLEAN} Running pre-commit checks")
     pre_commit_cmd = "pre-commit run --all-files"
     result = c.run(pre_commit_cmd, pty=True, warn=True)
 
@@ -201,5 +217,5 @@ def pre_commit(c: Context):
 
 
 def mypy(c: Context):
-    echo_header("🧹 Running mypy")
+    echo_header(f"{Emo.CLEAN} Running mypy")
     c.run("mypy .", pty=True)
