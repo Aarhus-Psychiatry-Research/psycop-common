@@ -44,7 +44,7 @@ def get_true_positives(
 def performance_by_positive_rate(  # pylint: disable=too-many-locals
     eval_dataset: EvalDataset,
     positive_rate: float,
-    round_to: int = 4,
+    round_to: int = 2,
 ) -> pd.DataFrame:
     """Generates a row for a performance_by_threshold table.
 
