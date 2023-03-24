@@ -8,7 +8,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.utils import (
     create_roc_auc_by_input,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from sklearn.metrics import roc_auc_score
 
 
 def plot_roc_auc_by_sex(

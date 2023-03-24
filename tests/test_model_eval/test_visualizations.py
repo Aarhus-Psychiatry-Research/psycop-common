@@ -44,7 +44,6 @@ from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import (
     TEST_PLOT_PATH,
 )
-from sklearn.metrics import f1_score, roc_auc_score
 
 
 def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
