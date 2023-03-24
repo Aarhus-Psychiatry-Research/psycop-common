@@ -479,7 +479,7 @@ def plot_metric_by_time_until_diagnosis(
     """
     df = create_performance_by_timedelta(
         labels=eval_dataset.y,
-        y_hat=eval_dataset.get_predictions_for_positive_rate(positive_rate),
+        y_hat=eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t1-t2",
