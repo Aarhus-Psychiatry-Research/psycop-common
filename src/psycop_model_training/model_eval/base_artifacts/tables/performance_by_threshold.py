@@ -27,16 +27,14 @@ def get_true_positives(
     df = pd.DataFrame(
         {
             "id": eval_dataset.ids,
-            "pred_probs": eval_dataset.y_hat_probs,
+            "pred": eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
         },
     )
 
     # Keep only true positives
-    df["true_positive"] = (df["pred_probs"] >= positive_rate) & (
-        df["outcome_timestamps"].notnull()
-    )
+    df["true_positive"] = (df["pred"] == 1) & (df["outcome_timestamps"].notnull())
 
     return df[df["true_positive"]]
 
@@ -56,7 +54,7 @@ def performance_by_positive_rate(  # pylint: disable=too-many-locals
     Returns:
         pd.DataFrame
     """
-    preds = eval_dataset.get_predictions_for_positive_rate(positive_rate)
+    preds, _ = eval_dataset.get_predictions_for_positive_rate(positive_rate)
 
     conf_matrix = confusion_matrix(eval_dataset.y, preds)
 
