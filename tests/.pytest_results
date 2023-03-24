@@ -1,0 +1,203 @@
+bringing up nodes...
+bringing up nodes...
+
+...................................s.F......F..                          [100%]
+=================================== FAILURES ===================================
+_____________________________ test_overlay_barplot _____________________________
+[gw2] darwin -- Python 3.9.16 /Users/au484925/Desktop/psycop-model-training/.venv/bin/python
+
+synth_eval_dataset = EvalDataset(ids=0        23143
+1        23143
+2        28277
+3        48336
+4        48336
+         ...  
+99995    437.....
+99995     7
+99996    16
+99997     1
+99998     0
+99999     4
+Name: eval_n_hbac1_count, Length: 100000, dtype: int64})
+
+    def test_overlay_barplot(synth_eval_dataset: EvalDataset):
+>       plot_sensitivity_by_time_until_diagnosis(
+            eval_dataset=synth_eval_dataset,
+            y_title="F1",
+            save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
+        )
+
+tests/test_model_eval/test_visualizations.py:195: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+eval_dataset = EvalDataset(ids=0        23143
+1        23143
+2        28277
+3        48336
+4        48336
+         ...  
+99995    437.....
+99995     7
+99996    16
+99997     1
+99998     0
+99999     4
+Name: eval_n_hbac1_count, Length: 100000, dtype: int64})
+bins = (-1825, -730, -365, -182, -28, 0), bin_unit = 'D'
+bin_continuous_input = True, positive_rate = 0.5, y_title = 'F1'
+y_limits = None
+save_path = PosixPath('/Users/au484925/Desktop/psycop-model-training/tests/plots_from_tests/test_overlay_barplot.png')
+
+    def plot_sensitivity_by_time_until_diagnosis(
+        eval_dataset: EvalDataset,
+        bins: Sequence[int] = (
+            -1825,
+            -730,
+            -365,
+            -182,
+            -28,
+            -0,
+        ),
+        bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
+        bin_continuous_input: bool = True,
+        positive_rate: float = 0.5,
+        y_title: str = "Sensitivity (recall)",
+        y_limits: Optional[tuple[float, float]] = None,
+        save_path: Optional[Path] = None,
+    ) -> Union[None, Path]:
+        """Plots performance of a specified performance metric in bins of time
+        until diagnosis. Rows with no date of diagnosis (i.e. no outcome) are
+        removed.
+    
+        Args:
+            eval_dataset (EvalDataset): EvalDataset object
+            bins (list, optional): Bins to group by. Negative values indicate days after
+            bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+            diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
+            bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
+            positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+            y_title (str): Title for y-axis (metric name)
+            y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
+            save_path (Path, optional): Path to save figure. Defaults to None.
+    
+        Returns:
+            Union[None, Path]: Path to saved figure if save_path is specified, else None
+        """
+        df = create_performance_by_timedelta(
+            y=eval_dataset.y,
+>           y_to_fn=eval_dataset.get_predictions_for_positive_rate(
+                positive_rate=positive_rate,
+            ),
+            metric_fn=recall_score,
+            time_one=eval_dataset.outcome_timestamps,
+            time_two=eval_dataset.pred_timestamps,
+            direction="t1-t2",
+            bins=bins,
+            bin_unit=bin_unit,
+            bin_continuous_input=bin_continuous_input,
+            min_n_in_bin=5,
+            drop_na_events=True,
+        )
+E       TypeError: get_predictions_for_positive_rate() got an unexpected keyword argument 'positive_rate'
+
+src/psycop_model_training/model_eval/base_artifacts/plots/performance_over_time.py:476: TypeError
+_______________________ test_plot_metric_until_diagnosis _______________________
+[gw3] darwin -- Python 3.9.16 /Users/au484925/Desktop/psycop-model-training/.venv/bin/python
+
+synth_eval_dataset = EvalDataset(ids=0        23143
+1        23143
+2        28277
+3        48336
+4        48336
+         ...  
+99995    437.....
+99995     4
+99996     9
+99997     5
+99998    12
+99999     2
+Name: eval_n_hbac1_count, Length: 100000, dtype: int64})
+
+    def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
+>       plot_sensitivity_by_time_until_diagnosis(
+            eval_dataset=synth_eval_dataset,
+            y_title="F1",
+        )
+
+tests/test_model_eval/test_visualizations.py:143: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+eval_dataset = EvalDataset(ids=0        23143
+1        23143
+2        28277
+3        48336
+4        48336
+         ...  
+99995    437.....
+99995     4
+99996     9
+99997     5
+99998    12
+99999     2
+Name: eval_n_hbac1_count, Length: 100000, dtype: int64})
+bins = (-1825, -730, -365, -182, -28, 0), bin_unit = 'D'
+bin_continuous_input = True, positive_rate = 0.5, y_title = 'F1'
+y_limits = None, save_path = None
+
+    def plot_sensitivity_by_time_until_diagnosis(
+        eval_dataset: EvalDataset,
+        bins: Sequence[int] = (
+            -1825,
+            -730,
+            -365,
+            -182,
+            -28,
+            -0,
+        ),
+        bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
+        bin_continuous_input: bool = True,
+        positive_rate: float = 0.5,
+        y_title: str = "Sensitivity (recall)",
+        y_limits: Optional[tuple[float, float]] = None,
+        save_path: Optional[Path] = None,
+    ) -> Union[None, Path]:
+        """Plots performance of a specified performance metric in bins of time
+        until diagnosis. Rows with no date of diagnosis (i.e. no outcome) are
+        removed.
+    
+        Args:
+            eval_dataset (EvalDataset): EvalDataset object
+            bins (list, optional): Bins to group by. Negative values indicate days after
+            bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+            diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
+            bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
+            positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+            y_title (str): Title for y-axis (metric name)
+            y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
+            save_path (Path, optional): Path to save figure. Defaults to None.
+    
+        Returns:
+            Union[None, Path]: Path to saved figure if save_path is specified, else None
+        """
+        df = create_performance_by_timedelta(
+            y=eval_dataset.y,
+>           y_to_fn=eval_dataset.get_predictions_for_positive_rate(
+                positive_rate=positive_rate,
+            ),
+            metric_fn=recall_score,
+            time_one=eval_dataset.outcome_timestamps,
+            time_two=eval_dataset.pred_timestamps,
+            direction="t1-t2",
+            bins=bins,
+            bin_unit=bin_unit,
+            bin_continuous_input=bin_continuous_input,
+            min_n_in_bin=5,
+            drop_na_events=True,
+        )
+E       TypeError: get_predictions_for_positive_rate() got an unexpected keyword argument 'positive_rate'
+
+src/psycop_model_training/model_eval/base_artifacts/plots/performance_over_time.py:476: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_model_eval/test_visualizations.py::test_overlay_barplot - T...
+FAILED tests/test_model_eval/test_visualizations.py::test_plot_metric_until_diagnosis
+2 failed, 44 passed, 1 skipped, 21 warnings in 20.12s

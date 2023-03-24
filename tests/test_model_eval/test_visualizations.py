@@ -142,7 +142,7 @@ def test_plot_performance_by_cyclic_time(
 def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        y_title="F1",
+        y_title="Sensitivity (recall)",
     )
 
 
@@ -194,6 +194,6 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
 def test_overlay_barplot(synth_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        y_title="F1",
+        y_title="Sensitivity",
         save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
     )
