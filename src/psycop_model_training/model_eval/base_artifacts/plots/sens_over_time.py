@@ -24,7 +24,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     Args:
         eval_dataset (EvalDataset): Eval dataset.
-        positive_rate (float): Positive rate to use for calculating sensitivity.
+        positive_rate (float): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
         outcome_timestamps (Iterable[pd.Timestamp]): Timestamp of the outcome, if any.
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
@@ -295,11 +295,11 @@ def plot_sensitivity_by_time_to_outcome_heatmap(  # pylint: disable=too-many-loc
         >>> path = repo_path / "tests" / "test_data" / "synth_eval_data.csv"
         >>> df = pd.read_csv(path)
 
-        >>> positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+        >>> positive_rates = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 
         >>> pred_proba_thresholds = positive_rate_to_pred_probs(
         >>>     pred_probs=df["pred_prob"],
-        >>>     positive_rate_thresholds=positive_rate_thresholds,
+        >>>     positive_rates=positive_rates,
         >>> )
 
         >>> plot_sensitivity_by_time_to_outcome(

@@ -29,15 +29,16 @@ class EvalDataset(BaseModel):
         self.Config.allow_mutation = True
 
     def get_predictions_for_positive_rate(self, positive_rate: float) -> pd.Series:
-        """Converts predicted probabilities to discrete predictions (0/1) based no a desired positive rate.
+        """Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+
 
         Note that this won't always match the desired positive rate exactly for e.g tree-based models, where predicted probabilities are binned, but it'll get as close as possible.
         """
-        positive_rate_threshold = self.y_hat_probs.quantile(positive_rate)
+        positive_rate = self.y_hat_probs.quantile(positive_rate)
 
         # Remap y_hat_probs to 0/1 based on positive rate threshold
         y_hat_int = pd.Series(
-            (self.y_hat_probs <= positive_rate_threshold).astype(int),
+            (self.y_hat_probs <= positive_rate).astype(int),
         )
 
         return y_hat_int

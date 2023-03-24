@@ -469,7 +469,7 @@ def plot_metric_by_time_until_diagnosis(
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         metric_fn (Callable): Which performance metric  function to use.
-        positive_rate (float, optional): Positive rate to use for binary classification.
+        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
         y_title (str): Title for y-axis (metric name)
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.

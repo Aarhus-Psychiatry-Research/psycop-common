@@ -63,7 +63,7 @@ class BaseArtifactGenerator:
         """A collection of plots that are always generated."""
         pred_proba_percentiles = positive_rate_to_pred_probs(
             pred_probs=self.eval_ds.y_hat_probs,
-            positive_rate_thresholds=self.cfg.eval.positive_rate_thresholds,
+            positive_rates=self.cfg.eval.positive_rates,
         )
 
         lookahead_bins = self.cfg.eval.lookahead_bins
@@ -139,7 +139,7 @@ class BaseArtifactGenerator:
                 artifact=generate_performance_by_positive_rate_table(
                     eval_dataset=self.eval_ds,
                     pred_proba_thresholds=pred_proba_percentiles,
-                    positive_rate_thresholds=self.cfg.eval.positive_rate_thresholds,
+                    positive_rates=self.cfg.eval.positive_rates,
                     output_format="df",
                 ),
             ),

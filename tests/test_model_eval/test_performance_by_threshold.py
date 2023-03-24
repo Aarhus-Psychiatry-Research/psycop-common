@@ -16,18 +16,18 @@ from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 
 
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
-    positive_rate_thresholds = [0.9, 0.5, 0.1]
+    positive_rates = [0.9, 0.5, 0.1]
 
     pred_proba_thresholds = positive_rate_to_pred_probs(
         pred_probs=synth_eval_dataset.y_hat_probs,
-        positive_rate_thresholds=positive_rate_thresholds,
+        positive_rates=positive_rates,
     )
 
     table_spec = ArtifactContainer(
         label="performance_by_threshold_table",
         artifact=generate_performance_by_positive_rate_table(
             eval_dataset=synth_eval_dataset,
-            positive_rate_thresholds=positive_rate_thresholds,
+            positive_rates=positive_rates,
             pred_proba_thresholds=pred_proba_thresholds,
             output_format="df",
         ),
@@ -59,7 +59,7 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
     # Threshold is 0.5
     val = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
-        positive_rate_threshold=0.5,
+        positive_rate=0.5,
     )
 
     assert 260_000 < val < 292_000
@@ -67,7 +67,7 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
     # Threshold is 0.2
     val = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
-        positive_rate_threshold=0.2,
+        positive_rate=0.2,
     )
 
     assert 1_800_000 < val < 1_885_000

@@ -14,7 +14,7 @@ class EvalConfSchema(BaseModel):
     top_n_feature_importances: int
     # How many feature_importances to plot. Plots the most important n features. A table with all features is also logged.
 
-    positive_rate_thresholds: list[int]
+    positive_rates: list[int]
     # The threshold mapping a model's predicted probability to a binary outcome can be computed if we know, which positive rate we're targeting. We can't know beforehand which positive rate is best, because it's a trade-off between false-positives and false-negatives. Therefore, we compute performacne for a range of positive rates.
 
     save_model_predictions_on_overtaci: bool
