@@ -1,11 +1,7 @@
 """Generate a plot of sensitivity by time to outcome."""
 from collections.abc import Iterable
-from functools import partial
-from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Literal
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from psycop_model_training.model_eval.dataclasses import EvalDataset

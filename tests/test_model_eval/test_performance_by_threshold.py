@@ -12,7 +12,6 @@ from psycop_model_training.model_eval.base_artifacts.tables.performance_by_thres
     generate_performance_by_positive_rate_table,
 )
 from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
-from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 
 
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
