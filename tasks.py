@@ -184,10 +184,20 @@ def lint(c: Context):
 
 def pre_commit(c: Context):
     echo_header("🧹 Running pre-commit checks")
-    result = c.run("pre-commit run --all-files", pty=True, warn=True)
+    pre_commit_cmd = "pre-commit run --all-files"
+    result = c.run(pre_commit_cmd, pty=True, warn=True)
+
+    if "error" in result.stdout:
+        exit(0)
 
     if "fixed" in result.stdout or "reformatted" in result.stdout:
         add_commit(c, msg="style: linting")
+
+    print("Fixed errors, re-running pre-commit checks")
+    second_result = c.run(pre_commit_cmd, pty=True, warn=True)
+
+    if "error" in second_result.stdout:
+        exit(0)
 
 
 def mypy(c: Context):
