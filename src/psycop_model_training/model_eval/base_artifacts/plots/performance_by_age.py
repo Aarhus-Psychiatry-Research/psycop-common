@@ -1,6 +1,6 @@
 """Plotting function for performance by age at time of predictio."""
 
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional, Union
 

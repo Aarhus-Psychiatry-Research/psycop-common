@@ -19,7 +19,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import
 from psycop_model_training.model_eval.base_artifacts.plots.utils import calc_performance
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data, round_floats_to_edge
-from sklearn.metrics import f1_score, recall_score, roc_auc_score
+from sklearn.metrics import recall_score, roc_auc_score
 
 
 def plot_recall_by_calendar_time(
