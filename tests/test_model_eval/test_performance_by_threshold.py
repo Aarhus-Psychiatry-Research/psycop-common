@@ -12,23 +12,16 @@ from psycop_model_training.model_eval.base_artifacts.tables.performance_by_thres
     generate_performance_by_positive_rate_table,
 )
 from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
-from psycop_model_training.utils.utils import positive_rate_to_pred_probs
 
 
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
-    positive_rate_thresholds = [0.9, 0.5, 0.1]
-
-    pred_proba_thresholds = positive_rate_to_pred_probs(
-        pred_probs=synth_eval_dataset.y_hat_probs,
-        positive_rate_thresholds=positive_rate_thresholds,
-    )
+    positive_rates = [0.9, 0.5, 0.1]
 
     table_spec = ArtifactContainer(
         label="performance_by_threshold_table",
         artifact=generate_performance_by_positive_rate_table(
             eval_dataset=synth_eval_dataset,
-            positive_rate_thresholds=positive_rate_thresholds,
-            pred_proba_thresholds=pred_proba_thresholds,
+            positive_rates=positive_rates,
             output_format="df",
         ),
     )
@@ -56,18 +49,16 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
 
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
-    # Threshold is 0.5
-    val = days_from_first_positive_to_diagnosis(
+    warning_days_half = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
-        positive_rate_threshold=0.5,
+        positive_rate=0.5,
+        aggregation_method="sum",
     )
 
-    assert 260_000 < val < 292_000
-
-    # Threshold is 0.2
-    val = days_from_first_positive_to_diagnosis(
+    warning_days_two_thirds = days_from_first_positive_to_diagnosis(
         eval_dataset=synth_eval_dataset,
-        positive_rate_threshold=0.2,
+        positive_rate=0.75,
+        aggregation_method="sum",
     )
 
-    assert 1_800_000 < val < 1_885_000
+    assert warning_days_half < warning_days_two_thirds

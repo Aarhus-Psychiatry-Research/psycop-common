@@ -23,7 +23,7 @@ def log_image_to_wandb(chart_path: Path, chart_name: str):
 
 
 def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
-    """Calculates performance metrics of a df with 'y' and 'y_hat' columns.
+    """Calculates performance metrics of a df with 'y' and 'input_to_fn' columns.
 
     Args:
         df (pd.DataFrame): dataframe
@@ -50,31 +50,12 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
     return pd.Series({"metric": perf_metric, "n_in_bin": n_in_bin})
 
 
-def metric_fn_to_input(metric_fn: Callable, eval_dataset: EvalDataset) -> str:
-    """Selects the input to use for the metric function.
-
-    Args:
-        metric_fn (Callable): Metric function
-        eval_dataset (EvalDataset): Evaluation dataset
-
-    Returns:
-        str: Input name
-    """
-    fn2input = {roc_auc_score: eval_dataset.y_hat_probs}
-
-    if metric_fn in fn2input:
-        return fn2input[metric_fn]
-
-    raise ValueError(f"Don't know which input to use for {metric_fn}")
-
-
-def create_performance_by_input(
+def create_roc_auc_by_input(
     eval_dataset: EvalDataset,
     input_values: Sequence[float],
     input_name: str,
     bins: Sequence[float] = (0, 1, 2, 5, 10),
     bin_continuous_input: Optional[bool] = True,
-    metric_fn: Callable = roc_auc_score,
 ) -> pd.DataFrame:
     """Calculate performance by given input values, e.g. age or number of hbac1
     measurements.bio.
@@ -85,7 +66,6 @@ def create_performance_by_input(
         input_name (str): Name of the input
         bins (Sequence[float]): Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
-        metric_fn (Callable): Callable which returns the metric to calculate
 
     Returns:
         pd.DataFrame: Dataframe ready for plotting
@@ -93,7 +73,7 @@ def create_performance_by_input(
     df = pd.DataFrame(
         {
             "y": eval_dataset.y,
-            "y_hat": metric_fn_to_input(metric_fn=metric_fn, eval_dataset=eval_dataset),
+            "y_hat": eval_dataset.y_hat_probs,
             input_name: input_values,
         },
     )
@@ -104,11 +84,11 @@ def create_performance_by_input(
 
         output_df = df.groupby(f"{input_name}_binned").apply(
             calc_performance,  # type: ignore
-            metric_fn,
+            roc_auc_score,
         )
 
     else:
-        output_df = df.groupby(input_name).apply(calc_performance, metric_fn)  # type: ignore
+        output_df = df.groupby(input_name).apply(calc_performance, roc_auc_score)  # type: ignore
 
     final_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return final_df

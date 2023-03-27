@@ -2,6 +2,35 @@
 
 <!--next-version-placeholder-->
 
+## v0.50.0 (2023-03-24)
+### Feature
+* Incorrect title ([`7be3a58`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7be3a58bc736644c66d39d2aee233096fd49a6a6))
+* Support recall score by time until diagnosis ([`4bea7bc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/4bea7bc3dda867851cea711d00ccd34b9b225fde))
+
+### Fix
+* Missing argument to fn ([`a62b1ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a62b1edd44b5840edb973812c53e8ef129603564))
+
+## v0.49.0 (2023-03-24)
+### Feature
+* Add actual positive rates to plot_recall_by_calendar_time ([`7dd0a74`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7dd0a746f75e14749f6fe34aa76437f12ac8b3e5))
+* Migrate plot_recall_by_calendar_time ([`02b5e8d`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/02b5e8d9d2d86f80ccc93fe547f40818f37eff5b))
+* Add predictions_for_pos_rate ([`011e356`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/011e35690167fc643ad869409bf4eaad5787cbac))
+
+### Fix
+* Get actual warning days series ([`dede61e`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/dede61ec60011804c410602e14db0c074929280c))
+* Remove unused imports ([`5dad51e`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5dad51ed9c77f8536c3ba2bc9bd657f9f69080d3))
+
+### Documentation
+* Deprecate positive_rates ([`ff0d8f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ff0d8f0555517683c4add73cbe602fd3fc6d95db))
+* Add note re: quantiles ([`a002694`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a00269497231aec0aea1f956437614f0c8e764d8))
+
+## v0.48.0 (2023-03-24)
+### Feature
+* Disable model eval by default ([#452](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/452)) ([`ea08f71`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/ea08f7181436996fdca636c3be0d5f54309aafcf))
+
+### Fix
+* Align interfaces ([`a55b8be`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a55b8becc559ff287e74e72e59f1735196841f34))
+
 ## v0.47.0 (2023-03-23)
 ### Feature
 * Update descriptive stats table ([#444](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/444)) ([`8498bc8`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8498bc8493cc90bf6bba151eea696c777379abb2))

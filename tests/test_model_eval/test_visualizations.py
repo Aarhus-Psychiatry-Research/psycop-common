@@ -15,17 +15,17 @@ from psycop_model_training.model_eval.base_artifacts.plots.feature_importance im
     plot_feature_importances,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age import (
-    plot_performance_by_age,
+    plot_roc_auc_by_age,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_by_sex import (
-    plot_performance_by_sex,
+    plot_roc_auc_by_sex,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
-    plot_auc_by_time_from_first_visit,
     plot_metric_by_calendar_time,
-    plot_metric_by_cyclic_time,
-    plot_metric_by_time_until_diagnosis,
     plot_recall_by_calendar_time,
+    plot_roc_auc_by_cyclic_time,
+    plot_roc_auc_by_time_from_first_visit,
+    plot_sensitivity_by_time_until_diagnosis,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
@@ -36,7 +36,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.prob_over_time import
 from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
 from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
-    plot_sensitivity_by_time_to_outcome_heatmap,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
@@ -44,9 +43,7 @@ from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_posit
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import (
     TEST_PLOT_PATH,
-    positive_rate_to_pred_probs,
 )
-from sklearn.metrics import f1_score, roc_auc_score
 
 
 def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
@@ -63,21 +60,19 @@ def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
 
 def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
     create_sensitivity_by_time_to_outcome_df(
-        labels=synth_eval_dataset.y,
-        y_hat_probs=synth_eval_dataset.y_hat_probs,
+        eval_dataset=synth_eval_dataset,
         outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         prediction_timestamps=synth_eval_dataset.pred_timestamps,
-        pred_proba_threshold=0.5,
+        desired_positive_rate=0.5,
     )
 
 
 def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
     plot_df = create_sensitivity_by_time_to_outcome_df(
-        labels=synth_eval_dataset.y,
-        y_hat_probs=synth_eval_dataset.y_hat_probs,
+        eval_dataset=synth_eval_dataset,
         outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         prediction_timestamps=synth_eval_dataset.pred_timestamps,
-        pred_proba_threshold=0.5,
+        desired_positive_rate=0.5,
     )
     plot_basic_chart(
         x_values=plot_df["days_to_outcome_binned"],
@@ -90,14 +85,14 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
 
 
 def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
-    plot_performance_by_age(
+    plot_roc_auc_by_age(
         eval_dataset=synth_eval_dataset,
         save_path=TEST_PLOT_PATH / "test_performance_plot_by_age.png",
     )
 
 
 def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
-    plot_performance_by_sex(
+    plot_roc_auc_by_sex(
         eval_dataset=synth_eval_dataset,
         save_path=TEST_PLOT_PATH / "test_performance_plot_by_sex.png",
     )
@@ -114,7 +109,6 @@ def test_plot_performance_by_calendar_time(
     plot_metric_by_calendar_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
-        metric_fn=roc_auc_score,
         save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",
     )
 
@@ -124,9 +118,9 @@ def test_plot_recall_by_calendar_time(
 ):
     plot_recall_by_calendar_time(
         eval_dataset=synth_eval_dataset,
-        pos_rate=[0.8, 0.9, 0.95],
+        positive_rates=[0.4, 0.6, 0.8],
         bins=list(range(0, 1460, 180)),
-        y_limits=(0, 0.5),
+        y_limits=(0, 1),
         save_path=TEST_PLOT_PATH / "test_recall_by_calendar_time.png",
     )
 
@@ -139,40 +133,22 @@ def test_plot_performance_by_cyclic_time(
     synth_eval_dataset: EvalDataset,
     bin_period: str,
 ):
-    plot_metric_by_cyclic_time(
+    plot_roc_auc_by_cyclic_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
-        metric_fn=roc_auc_score,
     )
 
 
 def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
-    plot_metric_by_time_until_diagnosis(
+    plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        metric_fn=f1_score,
-        y_title="F1",
+        y_title="Sensitivity (recall)",
     )
 
 
 def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
-    plot_auc_by_time_from_first_visit(
+    plot_roc_auc_by_time_from_first_visit(
         eval_dataset=synth_eval_dataset,
-    )
-
-
-def test_plot_sens_by_time_to_outcome(synth_eval_dataset: EvalDataset, tmp_path: str):
-    positive_rate_thresholds = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
-
-    pred_proba_thresholds = positive_rate_to_pred_probs(
-        pred_probs=synth_eval_dataset.y_hat_probs,
-        positive_rate_thresholds=positive_rate_thresholds,
-    )
-
-    plot_sensitivity_by_time_to_outcome_heatmap(
-        eval_dataset=synth_eval_dataset,
-        pred_proba_thresholds=pred_proba_thresholds,
-        bins=[0, 30, 182, 365, 730, 1825],
-        save_path=tmp_path,
     )
 
 
@@ -216,9 +192,8 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
 
 
 def test_overlay_barplot(synth_eval_dataset: EvalDataset):
-    plot_metric_by_time_until_diagnosis(
+    plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
-        metric_fn=f1_score,
-        y_title="F1",
+        y_title="Sensitivity",
         save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
     )

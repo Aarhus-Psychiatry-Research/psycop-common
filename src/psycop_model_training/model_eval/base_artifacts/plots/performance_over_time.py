@@ -19,12 +19,12 @@ from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import
 from psycop_model_training.model_eval.base_artifacts.plots.utils import calc_performance
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import bin_continuous_data, round_floats_to_edge
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import recall_score, roc_auc_score
 
 
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
-    pos_rate: Union[float, Iterable[float]],
+    positive_rates: Union[float, Iterable[float]],
     bins: Iterable[float],
     bin_unit: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
@@ -35,7 +35,7 @@ def plot_recall_by_calendar_time(
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object
-        pos_rate (Union[float, Iterable[float]]): Percentile of highest predicted probabilities to mark as positive in binary classification.
+        positive_rates (Union[float, Iterable[float]]): Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
         bins (Iterable[float], optional): Bins to use for time to outcome.
         bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         y_title (str): Title of y-axis. Defaults to "AUC".
@@ -45,27 +45,20 @@ def plot_recall_by_calendar_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    if not isinstance(pos_rate, Iterable):
-        pos_rate = [pos_rate]
-    pos_rate = list(pos_rate)
-
-    # Get percentiles from a series of predicted probabilities
-    y_hat_percentiles = eval_dataset.y_hat_probs.rank(pct=True)
-
-    pos_rate_threshold = [1 - threshold for threshold in list(pos_rate)]
-    pos_rate_threshold_labels = [str(threshold) for threshold in list(pos_rate)]
+    if not isinstance(positive_rates, Iterable):
+        positive_rates = [positive_rates]
+    positive_rates = list(positive_rates)
 
     dfs = [
         create_sensitivity_by_time_to_outcome_df(
-            labels=eval_dataset.y,
-            y_hat_probs=y_hat_percentiles,
-            pred_proba_threshold=threshold,
+            eval_dataset=eval_dataset,
+            desired_positive_rate=positive_rate,
             outcome_timestamps=eval_dataset.outcome_timestamps,
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
             bin_delta=bin_unit,
         )
-        for threshold in pos_rate_threshold
+        for positive_rate in positive_rates
     ]
 
     bin_delta_to_str = {
@@ -82,7 +75,7 @@ def plot_recall_by_calendar_time(
         x_values=dfs[0]["days_to_outcome_binned"],
         y_values=[df["sens"] for df in dfs],
         x_title=f"{x_title_unit}s to event",
-        labels=pos_rate_threshold_labels,
+        labels=[df["actual_positive_rate"][0] for df in dfs],
         y_title=y_title,
         y_limits=y_limits,
         flip_x_axis=True,
@@ -91,11 +84,10 @@ def plot_recall_by_calendar_time(
     )
 
 
-def create_performance_by_calendar_time_df(
+def create_roc_auc_by_calendar_time_df(
     labels: Iterable[int],
     y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
-    metric_fn: Callable,
     bin_period: str,
 ) -> pd.DataFrame:
     """Calculate performance by calendar time of prediction.
@@ -104,7 +96,6 @@ def create_performance_by_calendar_time_df(
         labels (Iterable[int]): True labels
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
-        metric_fn (Callable): Callable which returns the metric to calculate
         bin_period (str): How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
 
     Returns:
@@ -114,7 +105,10 @@ def create_performance_by_calendar_time_df(
 
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
-    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
+    output_df = df.groupby("time_bin").apply(
+        func=calc_performance,
+        metric=roc_auc_score,
+    )
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
@@ -126,7 +120,6 @@ def plot_metric_by_calendar_time(
     y_title: str = "AUC",
     bin_period: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
     save_path: Optional[str] = None,
-    metric_fn: Callable = roc_auc_score,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
@@ -136,17 +129,15 @@ def plot_metric_by_calendar_time(
         y_title (str): Title of y-axis. Defaults to "AUC".
         bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
         save_path (str, optional): Path to save figure. Defaults to None.
-        metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    df = create_performance_by_calendar_time_df(
+    df = create_roc_auc_by_calendar_time_df(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
-        metric_fn=metric_fn,
         bin_period=bin_period,
     )
     sort_order = np.arange(len(df))
@@ -174,11 +165,10 @@ def plot_metric_by_calendar_time(
     )
 
 
-def create_performance_by_cyclic_time_df(
+def roc_auc_by_cyclic_time_df(
     labels: Iterable[int],
     y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
-    metric_fn: Callable,
     bin_period: str,
 ) -> pd.DataFrame:
     """Calculate performance by cyclic time period of prediction time data
@@ -188,7 +178,6 @@ def create_performance_by_cyclic_time_df(
         labels (Iterable[int]): True labels
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
-        metric_fn (Callable): Callable which returns the metric to calculate
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
 
     Returns:
@@ -240,19 +229,21 @@ def create_performance_by_cyclic_time_df(
             "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year",
         )
 
-    output_df = df.groupby("time_bin").apply(func=calc_performance, metric=metric_fn)
+    output_df = df.groupby("time_bin").apply(
+        func=calc_performance,
+        metric=roc_auc_score,
+    )
 
     output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
 
     return output_df
 
 
-def plot_metric_by_cyclic_time(
+def plot_roc_auc_by_cyclic_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: str = "Y",
     save_path: Optional[str] = None,
-    metric_fn: Callable = roc_auc_score,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by cyclic time period of prediction time. Cyclic time
@@ -263,17 +254,15 @@ def plot_metric_by_cyclic_time(
         y_title (str): Title for y-axis (metric name). Defaults to "AUC"
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
         save_path (str, optional): Path to save figure. Defaults to None.
-        metric_fn (Callable): Function which returns the metric. Defaults to roc_auc_score.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
 
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    df = create_performance_by_cyclic_time_df(
+    df = roc_auc_by_cyclic_time_df(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
-        metric_fn=metric_fn,
         bin_period=bin_period,
     )
 
@@ -295,11 +284,11 @@ def plot_metric_by_cyclic_time(
 
 
 def create_performance_by_timedelta(
-    labels: Iterable[int],
-    y_hat: Iterable[float],
+    y: Iterable[int],
+    y_to_fn: Iterable[float],
+    metric_fn: Callable,
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
-    metric_fn: Callable,
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
     bin_unit: Literal["H", "D", "M", "Q", "Y"],
@@ -311,11 +300,11 @@ def create_performance_by_timedelta(
     some event (e.g. time of diagnosis, time from first visit).
 
     Args:
-        labels (Iterable[int]): True labels
-        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
+        y (Iterable[int]): True labels
+        y_to_fn (Iterable[float]): The input to the function
+        metric_fn (Callable): Function to calculate metric
         time_one (Iterable[pd.Timestamp]): Timestamps for time one (e.g. first visit).
         time_two (Iterable[pd.Timestamp]): Timestamps for time two.
-        metric_fn (Callable): Which performance metric function to use (e.g. roc_auc_score)
         direction (str): Which direction to calculate time difference.
         Can either be 't2-t1' or 't1-t2'.
         bins (Iterable[float]): Bins to group by.
@@ -329,8 +318,8 @@ def create_performance_by_timedelta(
     """
     df = pd.DataFrame(
         {
-            "y": labels,
-            "y_hat": y_hat,
+            "y": y,
+            "y_hat": y_to_fn,
             "t1_timestamp": time_one,
             "t2_timestamp": time_two,
         },
@@ -378,13 +367,13 @@ def create_performance_by_timedelta(
     # Calc performance and prettify output
     output_df = df.groupby(["unit_from_event_binned"], as_index=False).apply(
         calc_performance,
-        metric_fn,
+        metric=metric_fn,
     )
 
     return output_df
 
 
-def plot_auc_by_time_from_first_visit(
+def plot_roc_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: tuple = (0, 28, 182, 365, 730, 1825),
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
@@ -412,8 +401,9 @@ def plot_auc_by_time_from_first_visit(
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
     df = create_performance_by_timedelta(
-        labels=eval_dataset.y,
-        y_hat=eval_dataset.y_hat_probs,
+        y=eval_dataset.y,
+        y_to_fn=eval_dataset.y_hat_probs,
+        metric_fn=roc_auc_score,
         time_one=first_visit_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t2-t1",
@@ -421,7 +411,6 @@ def plot_auc_by_time_from_first_visit(
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
         drop_na_events=False,
-        metric_fn=roc_auc_score,
     )
 
     bin_unit2str = {
@@ -447,7 +436,7 @@ def plot_auc_by_time_from_first_visit(
     )
 
 
-def plot_metric_by_time_until_diagnosis(
+def plot_sensitivity_by_time_until_diagnosis(
     eval_dataset: EvalDataset,
     bins: Sequence[int] = (
         -1825,
@@ -459,8 +448,8 @@ def plot_metric_by_time_until_diagnosis(
     ),
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
-    metric_fn: Callable = f1_score,
-    y_title: str = "F1",
+    positive_rate: float = 0.5,
+    y_title: str = "Sensitivity (recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
@@ -474,7 +463,7 @@ def plot_metric_by_time_until_diagnosis(
         bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
-        metric_fn (Callable): Which performance metric  function to use.
+        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
         y_title (str): Title for y-axis (metric name)
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -483,8 +472,11 @@ def plot_metric_by_time_until_diagnosis(
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
     df = create_performance_by_timedelta(
-        labels=eval_dataset.y,
-        y_hat=eval_dataset.y_hat_int,
+        y=eval_dataset.y,
+        y_to_fn=eval_dataset.get_predictions_for_positive_rate(
+            desired_positive_rate=positive_rate,
+        )[0],
+        metric_fn=recall_score,
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t1-t2",
@@ -493,7 +485,6 @@ def plot_metric_by_time_until_diagnosis(
         bin_continuous_input=bin_continuous_input,
         min_n_in_bin=5,
         drop_na_events=True,
-        metric_fn=metric_fn,
     )
     sort_order = np.arange(len(df))
 
