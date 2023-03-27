@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.21.2 (2023-03-27)
+### Fix
+* Add unpack args to skema 2 wo nutrition ([`95c35c8`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/95c35c81991ae7df4b387f3edccb21c03d1aa8ca))
+
 ## v0.21.1 (2023-03-22)
 ### Fix
 * Only keep weights above 0.5 kg ([`8a5a104`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/8a5a10401442337efd5bd33ce8bcf899fef4c642))
