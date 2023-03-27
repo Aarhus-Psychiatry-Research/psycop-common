@@ -274,6 +274,8 @@ def skema_2(
 @data_loaders.register("skema_2_without_nutrition")
 def skema_2_without_nutrition(
     n_rows: int | None = None,
+    unpack_to_intervals: bool | None = False,
+    unpack_freq: str | None = "D",
 ) -> pd.DataFrame:
     coercion_types_list = [
         {
@@ -290,6 +292,8 @@ def skema_2_without_nutrition(
     return _concatenate_coercion(
         coercion_types_list=coercion_types_list,
         n_rows=n_rows,
+        unpack_to_intervals=unpack_to_intervals,
+        unpack_freq=unpack_freq,
     )
 
 
