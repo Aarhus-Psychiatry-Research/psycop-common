@@ -134,7 +134,7 @@ class BaseArtifactGenerator:
                 label="time_from_first_positive_to_event",
                 artifact=plot_time_from_first_positive_to_event(
                     eval_dataset=self.eval_ds,
-                    bins=range(0, 730, 24),
+                    bins=lookahead_bins,
                     save_path=self.save_dir / "time_from_first_positive_to_event.png",
                 ),
             ),
@@ -149,8 +149,8 @@ class BaseArtifactGenerator:
                 label="recall_by_calendar_time",
                 artifact=plot_recall_by_calendar_time(
                     eval_dataset=self.eval_ds,
-                    positive_rates=[0.95, 0.97, 0.99],
-                    bins=self.cfg.eval.lookahead_bins,
+                    pos_rate=[0.95, 0.97, 0.99],
+                    bins=lookahead_bins,
                     y_limits=(0, 0.5),
                     save_path=self.save_dir / "recall_by_calendar_time.png",
                 ),
