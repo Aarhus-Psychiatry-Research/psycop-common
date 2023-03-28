@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 from joblib import Memory
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 # Create a memory cache with the desired directory to store cached results
 cache_dir = Path("E:/shared_resources/sql_cache/")
@@ -60,8 +60,7 @@ def sql_load(
         stream_results=True,
         fast_executemany=True,
     )
-
-    df = pd.read_sql(query, conn, chunksize=chunksize)
+    df = pd.read_sql(text(query), conn, chunksize=chunksize)
 
     if format_timestamp_cols_to_datetime:
         datetime_col_names = [
