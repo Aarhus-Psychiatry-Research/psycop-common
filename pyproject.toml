@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psycop_model_training"
-version = "0.50.0"
+version = "0.50.1"
 description = "PSYCOP model training utilities"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"},
