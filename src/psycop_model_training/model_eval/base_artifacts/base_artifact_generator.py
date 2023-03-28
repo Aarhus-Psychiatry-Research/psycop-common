@@ -1,4 +1,5 @@
 from pathlib import Path
+from psycop-t2d.src.psycopt2d.visualization.performance_over_time import plot_auc_by_time_from_first_visit
 
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.base_artifacts.plots.feature_importance import (
@@ -61,23 +62,14 @@ class BaseArtifactGenerator:
         lookahead_bins = self.cfg.eval.lookahead_bins
 
         return [
-            # ArtifactContainer(
-            #     label="sensitivity_by_time_by_threshold",
-            #     artifact=plot_sensitivity_by_time_to_outcome_heatmap(
-            #         eval_dataset=self.eval_ds,
-            #         pred_proba_thresholds=pred_proba_percentiles,
-            #         bins=lookahead_bins,
-            #         save_path=self.save_dir / "sensitivity_by_time_by_threshold.png",
-            #     ),
-            # ),
-            # ArtifactContainer(
-            #     label="auc_by_time_from_first_visit",
-            #     artifact=plot_auc_by_time_from_first_visit(
-            #         eval_dataset=self.eval_ds,
-            #         bins=lookahead_bins,
-            #         save_path=self.save_dir / "auc_by_time_from_first_visit.png",
-            #     ),
-            # ),
+            ArtifactContainer(
+                label="auc_by_time_from_first_visit",
+                artifact=plot_auc_by_time_from_first_visit(
+                    eval_dataset=self.eval_ds,
+                    bins=lookahead_bins,
+                    save_path=self.save_dir / "auc_by_time_from_first_visit.png",
+                ),
+            ),
             ArtifactContainer(
                 label="auc_by_calendar_time",
                 artifact=plot_metric_by_calendar_time(
