@@ -13,7 +13,6 @@ from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time
     plot_roc_auc_by_cyclic_time,
     plot_roc_auc_by_time_from_first_visit,
     plot_sensitivity_by_time_until_diagnosis,
-    plot_sensitivity_by_time_to_outcome_heatmap,
 )
 from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
