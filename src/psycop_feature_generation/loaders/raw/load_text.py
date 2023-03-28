@@ -43,8 +43,8 @@ def get_all_valid_note_types() -> set[str]:
 
 
 def _load_notes_for_year(
-    note_types: str | list[str],
     year: str,
+    note_types: str | list[str],
     view: str | None = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret",
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -93,7 +93,7 @@ def load_notes(
         pd.DataFrame: Featurized clinical notes
     """
     if isinstance(note_types, str):
-        note_types = list(note_types)
+        note_types = [note_types]
     # check for invalid note types
     if not set(note_types).issubset(get_all_valid_note_types()):
         raise ValueError(
