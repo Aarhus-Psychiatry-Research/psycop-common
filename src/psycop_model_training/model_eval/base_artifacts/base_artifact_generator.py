@@ -1,5 +1,4 @@
 from pathlib import Path
-from psycop-t2d.src.psycopt2d.visualization.performance_over_time import plot_auc_by_time_from_first_visit
 
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.model_eval.base_artifacts.plots.feature_importance import (
@@ -64,7 +63,7 @@ class BaseArtifactGenerator:
         return [
             ArtifactContainer(
                 label="auc_by_time_from_first_visit",
-                artifact=plot_auc_by_time_from_first_visit(
+                artifact=plot_roc_auc_by_time_from_first_visit(
                     eval_dataset=self.eval_ds,
                     bins=lookahead_bins,
                     save_path=self.save_dir / "auc_by_time_from_first_visit.png",
