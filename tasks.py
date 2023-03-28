@@ -1,8 +1,8 @@
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 from invoke import Context, Result, task
-from dataclasses import dataclass
 
 
 def echo_header(msg: str):
@@ -41,7 +41,9 @@ def setup_venv(
     venv_name = f'.venv{python_version.replace(".", "")}'
 
     if not Path(venv_name).exists():
-        echo_header(f"{Emo.DO} Creating virtual environment for {Emo.PY}{python_version}")
+        echo_header(
+            f"{Emo.DO} Creating virtual environment for {Emo.PY}{python_version}",
+        )
         c.run(f"python{python_version} -m venv {venv_name}")
         print(f"{Emo.GOOD} Virtual environment created")
     else:
@@ -146,7 +148,7 @@ def exit_if_error_in_stdout(result: Result):
 
 def pre_commit(c: Context):
     """Run pre-commit checks."""
-    
+
     # Essential to have a clean working directory before pre-commit to avoid committing
     # heterogenous files under a "style: linting" commit
     if is_uncommitted_changes(c):
@@ -154,7 +156,7 @@ def pre_commit(c: Context):
             f"{Emo.WARN} Your git working directory is not clean. Stash or commit before running pre-commit.",
         )
         exit(0)
-        
+
     echo_header(f"{Emo.CLEAN} Running pre-commit checks")
     pre_commit_cmd = "pre-commit run --all-files"
     result = c.run(pre_commit_cmd, pty=True, warn=True)
@@ -223,6 +225,7 @@ def test(c: Context):
             print(f"FAILED {Emo.FAIL} #{line_sans_suffix}     ")
 
         exit(0)
+
 
 @task
 def lint(c: Context):
