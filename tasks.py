@@ -86,6 +86,7 @@ def test(c: Context, min_latency: bool = True):
         extra_args = "-x"
     else:
         n = "-n auto "
+        plugins = ""
         extra_args = ""
 
     test_result: Result = c.run(
