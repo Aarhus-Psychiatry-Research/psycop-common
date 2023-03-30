@@ -43,7 +43,7 @@ def get_true_positives(
     return df[df["true_positive"]]
 
 
-def performance_by_positive_rate(  # pylint: disable=too-many-locals
+def performance_by_positive_rate(
     eval_dataset: EvalDataset,
     positive_rate: float,
     round_to: int = 2,
@@ -209,17 +209,13 @@ def generate_performance_by_positive_rate_table(
             positive_rate=positive_rate,
         )
 
-        threshold_metrics[  # pylint: disable=unsupported-assignment-operation
-            "total_warning_days"
-        ] = days_from_first_positive_to_diagnosis(
+        threshold_metrics["total_warning_days"] = days_from_first_positive_to_diagnosis(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
             aggregation_method="sum",
         )
 
-        threshold_metrics[  # pylint: disable=unsupported-assignment-operation
-            "mean_warning_days"
-        ] = round(
+        threshold_metrics["mean_warning_days"] = round(
             days_from_first_positive_to_diagnosis(
                 eval_dataset=eval_dataset,
                 positive_rate=positive_rate,
@@ -228,7 +224,7 @@ def generate_performance_by_positive_rate_table(
             0,
         )
 
-        threshold_metrics[  # pylint: disable=unsupported-assignment-operation
+        threshold_metrics[
             "prop_with_at_least_one_true_positive"
         ] = prop_with_at_least_one_true_positve(
             eval_dataset=eval_dataset,

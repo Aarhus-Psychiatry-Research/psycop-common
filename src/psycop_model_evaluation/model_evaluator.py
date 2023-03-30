@@ -132,7 +132,7 @@ class ModelEvaluator:
             },
         )
 
-        logging.info(  # pylint: disable=logging-not-lazy,logging-fstring-interpolation
+        logging.info(
             f"ROC AUC: {roc_auc}",
         )
 

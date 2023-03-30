@@ -1,4 +1,3 @@
-# pylint: skip-file
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Optional

@@ -117,13 +117,13 @@ def plot_prob_over_time(
     # Add shaded area for look-behind window
     if look_behind_distance is not None:
         plt.axvspan(
-            -look_behind_distance,  # pylint: disable=invalid-unary-operand-type
+            -look_behind_distance,
             0,
             color="grey",
             alpha=0.2,
         )
         plt.text(
-            -look_behind_distance / 2,  # pylint: disable=invalid-unary-operand-type
+            -look_behind_distance / 2,
             plot_df["pred_prob"].max(),
             "Predictive window",
             horizontalalignment="center",

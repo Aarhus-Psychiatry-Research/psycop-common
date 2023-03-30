@@ -2,7 +2,7 @@
 
 Mainly tests that they run without errors.
 """
-# pylint: disable=missing-function-docstring
+
 
 from pathlib import Path
 

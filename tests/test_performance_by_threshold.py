@@ -3,8 +3,6 @@
 E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 """
 
-# pylint: disable=missing-function-docstring
-
 
 import pandas as pd
 from psycop_model_evaluation.base_artifacts.tables.performance_by_threshold import (
