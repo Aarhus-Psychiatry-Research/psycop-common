@@ -1,6 +1,5 @@
 """Dataclasses for evaluation."""
-from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import pandas as pd
 from psycop_model_training.config_schemas.basemodel import BaseModel
@@ -47,16 +46,6 @@ class EvalDataset(BaseModel):
         actual_positive_rate = y_hat_int.mean()
 
         return y_hat_int, actual_positive_rate
-
-
-class ArtifactContainer(BaseModel):
-    """A container for artifacts."""
-
-    label: str
-    # We're not a big fan of the naming here, super open to suggestions!
-    # We need to keep the artifact and its labeled coupled, hence the
-    # need for a container.
-    artifact: Union[Path, pd.DataFrame]
 
 
 class PipeMetadata(BaseModel):
