@@ -1,7 +1,5 @@
 """Train a single model and evaluate it."""
-from collections.abc import Sequence
 from pathlib import Path
-from typing import Optional
 
 import wandb
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
