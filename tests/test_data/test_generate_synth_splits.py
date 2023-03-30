@@ -90,7 +90,7 @@ def test_synth_data_generator():
             n_samples=n_samples,
             logistic_outcome_model="1*pred_hba1c_within_100_days_max_fallback_nan+1*pred_hdl_within_100_days_max_fallback_nan",
             prob_outcome=0.08,
-            na_ignore_cols=outcome_col_name,
+            na_ignore_cols=[outcome_col_name],
         )
 
         if override_dataset_on_test_run:

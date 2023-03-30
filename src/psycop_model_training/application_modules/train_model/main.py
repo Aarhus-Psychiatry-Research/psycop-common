@@ -13,7 +13,6 @@ from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
 from psycop_model_training.training.train_and_predict import train_and_predict
-from psycop_model_training.training_output.dataclasses import ArtifactContainer
 from psycop_model_training.training_output.model_evaluator import ModelEvaluator
 from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.decorators import (
@@ -43,7 +42,6 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
 @wandb_alert_on_exception_return_terrible_auc
 def post_wandb_setup_train_model(
     cfg: FullConfigSchema,
-    artifacts: Optional[Sequence[ArtifactContainer]] = None,
 ) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
@@ -68,16 +66,13 @@ def post_wandb_setup_train_model(
         pipe=pipe,
         eval_ds=eval_dataset,
         raw_train_set=dataset.train,
-        artifacts=artifacts,
-        upload_to_wandb=cfg.project.wandb.mode != "offline",
-    ).evaluate()
+    ).evaluate_and_save_eval_data()
 
     return roc_auc
 
 
 def train_model(
     cfg: FullConfigSchema,
-    artifacts: Optional[Sequence[ArtifactContainer]] = None,
 ) -> float:
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
@@ -85,6 +80,6 @@ def train_model(
     # Try except block ensures process doesn't die in the case of an exception,
     # but rather logs to wandb and starts another run with a new combination of
     # hyperparameters
-    roc_auc = post_wandb_setup_train_model(cfg, artifacts=artifacts)
+    roc_auc = post_wandb_setup_train_model(cfg)
 
     return roc_auc

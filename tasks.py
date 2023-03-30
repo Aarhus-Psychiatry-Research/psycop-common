@@ -75,6 +75,7 @@ def test(c: Context, min_latency: bool = True):
     """Run tests.
 
     Args:
+        c (Context): Invoke context
         min_latency (bool): If false, go for maximum throughput. If true, go for minimum latency.
     """
     echo_header(f"{Emo.TEST} Running tests")
