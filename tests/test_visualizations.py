@@ -43,10 +43,8 @@ from psycop_model_evaluation.base_artifacts.plots.sens_over_time import (
 from psycop_model_evaluation.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
 )
-from psycop_model_evaluationmodel_eval.dataclasses import EvalDataset
-from psycop_model_evaluationutils.utils import (
-    TEST_PLOT_PATH,
-)
+from psycop_model_evaluation.utils.utils import TEST_PLOT_PATH
+from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
 def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):

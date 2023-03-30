@@ -5,11 +5,12 @@ from typing import Callable, Optional, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from pandas import Series
 
 
 def plot_basic_chart(
-    x_values: Sequence[float],
-    y_values: Union[Sequence[float], Sequence[Sequence[float]]],
+    x_values: Series[float],
+    y_values: Union[Series[float], Sequence[Series[float]]],
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],
@@ -121,8 +122,8 @@ def plot_basic_chart(
         bar_overlay.set_ylabel(bar_count_y_axis_title)
 
         # put bar plots behind other plots
-        axs.set_zorder(bar_overlay.get_zorder() + 1)
-        axs.set_facecolor("none")
+        axs.set_zorder(bar_overlay.get_zorder() + 1)  # type: ignore
+        axs.set_facecolor("none")  # type: ignore
         bar_overlay.set_facecolor("none")
 
     plt.tight_layout()

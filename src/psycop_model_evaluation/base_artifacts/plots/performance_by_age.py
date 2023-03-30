@@ -6,10 +6,10 @@ from typing import Optional, Union
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
-from psycop_model_evaluation.model_eval.base_artifacts.plots.base_charts import (
+from psycop_model_evaluation.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.utils import (
+from psycop_model_evaluation.base_artifacts.plots.utils import (
     create_roc_auc_by_input,
 )
 
@@ -36,7 +36,7 @@ def plot_roc_auc_by_age(
 
     df = create_roc_auc_by_input(
         eval_dataset=eval_dataset,
-        input_values=eval_dataset.age,
+        input_values=eval_dataset.age,  # type: ignore
         input_name="age",
         bins=bins,
         bin_continuous_input=bin_continuous_input,
@@ -45,8 +45,8 @@ def plot_roc_auc_by_age(
     sort_order = sorted(df["age_binned"].unique())
 
     return plot_basic_chart(
-        x_values=df["age_binned"],
-        y_values=df["metric"],
+        x_values=df["age_binned"],  # type: ignore
+        y_values=df["metric"],  # type: ignore
         x_title="Age",
         y_title="AUC",
         sort_x=sort_order,

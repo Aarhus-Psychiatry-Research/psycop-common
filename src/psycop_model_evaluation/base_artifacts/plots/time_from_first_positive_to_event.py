@@ -6,7 +6,7 @@ from typing import Optional, Union
 import pandas as pd
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
-from psycop_model_evaluation.model_eval.base_artifacts.plots.base_charts import (
+from psycop_model_evaluation.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
 from psycop_model_evaluation.utils.utils import bin_continuous_data

@@ -15,7 +15,7 @@ def create_sensitivity_by_time_to_outcome_df(
     outcome_timestamps: Iterable[pd.Timestamp],
     prediction_timestamps: Iterable[pd.Timestamp],
     bins: Iterable = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
-    bin_delta: Literal["D", "W", "M", "Q", "Y"] = "D",
+    bin_delta: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
 

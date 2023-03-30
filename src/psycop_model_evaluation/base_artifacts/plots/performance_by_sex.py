@@ -3,10 +3,10 @@ from typing import Optional, Union
 
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
-from psycop_model_evaluation.model_eval.base_artifacts.plots.base_charts import (
+from psycop_model_evaluation.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.utils import (
+from psycop_model_evaluation.base_artifacts.plots.utils import (
     create_roc_auc_by_input,
 )
 
@@ -29,9 +29,9 @@ def plot_roc_auc_by_sex(
 
     df = create_roc_auc_by_input(
         eval_dataset=eval_dataset,
-        input_values=eval_dataset.is_female,
+        input_values=eval_dataset.is_female,  # type: ignore
         input_name="sex",
-        bins=None,
+        bins=[0, 1],
         bin_continuous_input=False,
     )
 

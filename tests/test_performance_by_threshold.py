@@ -9,26 +9,17 @@ from psycop_model_evaluation.base_artifacts.tables.performance_by_threshold impo
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )
-from psycop_model_evaluationmodel_eval.dataclasses import (
-    ArtifactContainer,
-    EvalDataset,
-)
+from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
     positive_rates = [0.9, 0.5, 0.1]
 
-    table_spec = ArtifactContainer(
-        label="performance_by_threshold_table",
-        artifact=generate_performance_by_positive_rate_table(
-            eval_dataset=synth_eval_dataset,
-            positive_rates=positive_rates,
-            output_format="df",
-        ),
+    output_table: pd.DataFrame = generate_performance_by_positive_rate_table(  # type: ignore
+        eval_dataset=synth_eval_dataset,
+        positive_rates=positive_rates,
+        output_format="df",
     )
-
-    output_table: pd.DataFrame = table_spec.artifact
-
     assert output_table["true_prevalence"].std() == 0
     assert output_table["positive_rate"].is_monotonic_decreasing
     assert output_table["negative_rate"].is_monotonic_increasing

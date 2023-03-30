@@ -2,37 +2,37 @@ from pathlib import Path
 
 from sklearn.metrics import recall_score
 
-from psycop_model_evaluation.config_schemas.full_config import FullConfigSchema
-from psycop_model_evaluation.model_eval.base_artifacts.plots.feature_importance import (
+from psycop_model_evaluation.base_artifacts.plots.feature_importance import (
     plot_feature_importances,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.performance_by_age import (
+from psycop_model_evaluation.base_artifacts.plots.performance_by_age import (
     plot_roc_auc_by_age,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.performance_over_time import (
+from psycop_model_evaluation.base_artifacts.plots.performance_over_time import (
     plot_metric_by_calendar_time,
     plot_recall_by_calendar_time,
     plot_roc_auc_by_cyclic_time,
     plot_roc_auc_by_time_from_first_visit,
     plot_sensitivity_by_time_until_diagnosis,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.precision_recall import (
+from psycop_model_evaluation.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
-from psycop_model_evaluation.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
+from psycop_model_evaluation.base_artifacts.plots.roc_auc import plot_auc_roc
+from psycop_model_evaluation.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.tables.descriptive_stats_table import (
+from psycop_model_evaluation.base_artifacts.tables.descriptive_stats_table import (
     DescriptiveStatsTable,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.tables.performance_by_threshold import (
+from psycop_model_evaluation.base_artifacts.tables.performance_by_threshold import (
     generate_performance_by_positive_rate_table,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.tables.tables import (
+from psycop_model_evaluation.base_artifacts.tables.tables import (
     generate_feature_importances_table,
     generate_selected_features_table,
 )
+from psycop_model_evaluation.config_schemas.full_config import FullConfigSchema
 from psycop_model_evaluation.model_eval.dataclasses import (
     ArtifactContainer,
     EvalDataset,

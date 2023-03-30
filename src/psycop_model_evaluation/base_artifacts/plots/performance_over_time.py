@@ -13,13 +13,13 @@ import pandas as pd
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from sklearn.metrics import recall_score, roc_auc_score
 
-from psycop_model_evaluation.model_eval.base_artifacts.plots.base_charts import (
+from psycop_model_evaluation.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.sens_over_time import (
+from psycop_model_evaluation.base_artifacts.plots.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
 )
-from psycop_model_evaluation.model_eval.base_artifacts.plots.utils import (
+from psycop_model_evaluation.base_artifacts.plots.utils import (
     calc_performance,
 )
 from psycop_model_evaluation.utils.utils import (
@@ -112,7 +112,7 @@ def create_roc_auc_by_calendar_time_df(
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
     output_df = df.groupby("time_bin").apply(
-        func=calc_performance,
+        func=calc_performance,  # type: ignore
         metric=roc_auc_score,
     )
 
@@ -162,7 +162,7 @@ def plot_metric_by_calendar_time(
         y_values=df["metric"],
         x_title=x_titles[bin_period],
         y_title=y_title,
-        sort_x=sort_order,
+        sort_x=sort_order,  # type: ignore
         y_limits=y_limits,
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title="Number of visits",
@@ -236,7 +236,7 @@ def roc_auc_by_cyclic_time_df(
         )
 
     output_df = df.groupby("time_bin").apply(
-        func=calc_performance,
+        func=calc_performance,  # type: ignore
         metric=roc_auc_score,
     )
 
