@@ -116,9 +116,7 @@ def create_roc_auc_by_calendar_time_df(
         metric=roc_auc_score,
     )
 
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
-
-    return output_df
+    return output_df.reset_index().rename({0: "metric"}, axis=1)
 
 
 def plot_metric_by_calendar_time(
