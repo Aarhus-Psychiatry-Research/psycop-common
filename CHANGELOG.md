@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.51.0 (2023-03-30)
+### Feature
+* Commit if changes were autofixed by pre-commit ([`f224a24`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f224a24c5c10b0c0aeaaaaf9e2120a99bb91cf1c))
+
 ## v0.50.1 (2023-03-28)
 ### Fix
 * Allow optional outcome prefix ([`12ac771`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/12ac7711a96a598fcc384215dcd84da80bded3df))
