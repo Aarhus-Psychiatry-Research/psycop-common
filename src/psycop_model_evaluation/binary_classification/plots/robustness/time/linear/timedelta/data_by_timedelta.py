@@ -7,7 +7,7 @@ from pandas import Series
 from psycop_model_evaluation.binary_classification.plots.utils import (
     calc_performance,
 )
-from psycop_model_evaluation.utils.utils import (
+from psycop_model_evaluation.utils import (
     bin_continuous_data,
     round_floats_to_edge,
 )

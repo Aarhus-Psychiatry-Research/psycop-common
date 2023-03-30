@@ -8,7 +8,7 @@ import wandb
 from psycop_model_evaluation.binary_classification.tables.output_table import (
     output_table,
 )
-from psycop_model_evaluation.utils.utils import bin_continuous_data
+from psycop_model_evaluation.utils import bin_continuous_data
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 

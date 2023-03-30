@@ -14,7 +14,7 @@ from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.
 from psycop_model_evaluation.binary_classification.plots.utils import (
     get_top_fraction,
 )
-from psycop_model_evaluation.utils.utils import bin_continuous_data
+from psycop_model_evaluation.utils import bin_continuous_data
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 from sklearn.metrics import recall_score, roc_auc_score
 
