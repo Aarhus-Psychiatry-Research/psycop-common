@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.50.1 (2023-03-28)
+### Fix
+* Allow optional outcome prefix ([`12ac771`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/12ac7711a96a598fcc384215dcd84da80bded3df))
+
 ## v0.50.0 (2023-03-24)
 ### Feature
 * Incorrect title ([`7be3a58`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7be3a58bc736644c66d39d2aee233096fd49a6a6))

@@ -79,6 +79,7 @@ class SearchSpaceInferrer:
         outcome_col_names = infer_outcome_col_name(
             df=self.train_df,
             allow_multiple=True,
+            prefix=self.cfg.data.outc_prefix,
         )
 
         potential_lookaheads: list[int] = [
