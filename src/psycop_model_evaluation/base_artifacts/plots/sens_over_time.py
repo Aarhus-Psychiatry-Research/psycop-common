@@ -1,9 +1,10 @@
 """Generate a plot of sensitivity by time to outcome."""
 from collections.abc import Iterable
-from typing import Literal
+from typing import Literal, Sequence
 
 import numpy as np
 import pandas as pd
+from pandas import Series
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 from psycop_model_evaluation.utils.utils import round_floats_to_edge
@@ -12,9 +13,9 @@ from psycop_model_evaluation.utils.utils import round_floats_to_edge
 def create_sensitivity_by_time_to_outcome_df(
     eval_dataset: EvalDataset,
     desired_positive_rate: float,
-    outcome_timestamps: Iterable[pd.Timestamp],
-    prediction_timestamps: Iterable[pd.Timestamp],
-    bins: Iterable = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
+    outcome_timestamps: Series[pd.Timestamp],
+    prediction_timestamps: Series[pd.Timestamp],
+    bins: Sequence[float] = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
     bin_delta: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.

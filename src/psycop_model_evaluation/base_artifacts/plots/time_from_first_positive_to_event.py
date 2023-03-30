@@ -28,7 +28,7 @@ def get_top_fraction(df: pd.DataFrame, col_name: str, fraction: float) -> pd.Dat
 
 def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
-    min_n_in_bin: Optional[int] = None,
+    min_n_in_bin: int = 0,
     bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
     fig_size: tuple[int, int] = (5, 5),
     dpi: int = 300,
@@ -91,7 +91,7 @@ def plot_time_from_first_positive_to_event(
     y_values = counts[0].to_list()
 
     plot = plot_basic_chart(
-        x_values=x_labels,
+        x_values=x_labels,  # type: ignore
         y_values=y_values,
         x_title="Months from first positive to event",
         y_title="Count",

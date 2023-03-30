@@ -107,7 +107,7 @@ def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-
     ]
 
 
-def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
+def round_floats_to_edge(series: pd.Series, bins: Sequence[float]) -> pd.Series:
     """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
     0.9 will be rounded to 0, 1.8 will be rounded to 1, etc.
 

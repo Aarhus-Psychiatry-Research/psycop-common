@@ -32,7 +32,7 @@ def plot_auc_roc(
     legend_label = "AUC = "
 
     plt.figure(figsize=fig_size, dpi=dpi)
-    plt.plot(fpr, tpr, label=legend_label + str(round(auc, 3)))
+    plt.plot(fpr, tpr, label=legend_label + str(round(auc, 3)))  # type: ignore
     plt.legend(loc=4)
 
     plt.title(title)
