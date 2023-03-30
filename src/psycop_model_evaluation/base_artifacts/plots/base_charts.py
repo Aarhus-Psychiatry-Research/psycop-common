@@ -70,10 +70,10 @@ def plot_basic_chart(
     y_sequences = [y_values] if not isinstance(y_values[0], pd.Series) else y_values  # type: ignore
 
     plot_functions = {
-        "bar": axs.bar,
-        "hbar": axs.barh,
-        "line": axs.plot,
-        "scatter": axs.scatter,
+        "bar": axs.bar,  # type: ignore
+        "hbar": axs.barh,  # type: ignore
+        "line": axs.plot,  # type: ignore
+        "scatter": axs.scatter,  # type: ignore
     }
 
     # choose the first plot type as the one to use for legend
