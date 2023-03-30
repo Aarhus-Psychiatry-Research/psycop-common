@@ -7,8 +7,6 @@ on:
 jobs:
   repo_fingerprint:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     concurrency:
       group: "${{ github.workflow }} @ ${{ github.ref }}"
       cancel-in-progress: true
@@ -19,5 +17,6 @@ jobs:
       - name: Update diagram
         uses: githubocto/repo-visualizer@0.7.1
         with:
+          root_path: "src/"
           output_file: "docs/img/fingerprint.svg"
           excluded_paths: "dist,node_modules"
