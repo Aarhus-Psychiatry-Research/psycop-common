@@ -1,12 +1,10 @@
 """Test that the descriptive stats table is generated correctly."""
 
+import pandas as pd
 from psycop_model_evaluation.base_artifacts.tables.descriptive_stats_table import (
     DescriptiveStatsTable,
 )
-from psycop_model_evaluation.dataclasses import (
-    ArtifactContainer,
-    EvalDataset,
-)
+from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
 def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
@@ -16,12 +14,9 @@ def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
         eval_dataset=synth_eval_dataset,
     )
 
-    table_spec = ArtifactContainer(
-        label="table_1",
-        artifact=table1.generate_descriptive_stats_table(),
+    output_table: pd.DataFrame = table1.generate_descriptive_stats_table(  # type: ignore
+        output_format="df"
     )
-
-    output_table = table_spec.artifact
 
     # Assert that there are no NaN values in the table
     assert not output_table.isnull().values.any()

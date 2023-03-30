@@ -19,7 +19,10 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-  "pydantic"
+  "pydantic",
+  "numpy",
+  "matplotlib",
+  "psycop-model-training @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-training.git#egg=psycop-model-training",
 ]
 
 [project.license]

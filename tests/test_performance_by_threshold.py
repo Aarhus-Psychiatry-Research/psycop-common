@@ -9,7 +9,7 @@ from psycop_model_evaluation.base_artifacts.tables.performance_by_threshold impo
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )
-from psycop_model_evaluation.dataclasses import (
+from psycop_model_training.model_eval.dataclasses import (
     ArtifactContainer,
     EvalDataset,
 )
