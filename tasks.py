@@ -81,7 +81,7 @@ def test(c: Context, min_latency: bool = True):
 
     if min_latency:
         n = ""
-        plugins = "-p no:cov -p no:xdist -p no:instafail -p no:xdist"
+        plugins = "-p no:cov -p no:xdist -p no:xdist"
     else:
         n = "-n auto "
 
