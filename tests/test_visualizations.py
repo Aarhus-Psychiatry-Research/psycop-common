@@ -5,6 +5,7 @@ Mainly tests that they run without errors.
 
 
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 import pytest
@@ -56,7 +57,7 @@ def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
         outcome_timestamp=synth_eval_dataset.outcome_timestamps,
         label=synth_eval_dataset.y,
         look_behind_distance=500,
-        save_path=tmp_path,
+        save_path=Path(tmp_path),
     )
 
 
@@ -77,8 +78,8 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
         desired_positive_rate=0.5,
     )
     plot_basic_chart(
-        x_values=plot_df["days_to_outcome_binned"],
-        y_values=plot_df["sens"],
+        x_values=plot_df["days_to_outcome_binned"],  # type: ignore
+        y_values=plot_df["sens"],  # type: ignore
         x_title="Days to outcome",
         y_title="Sensitivity",
         plot_type="bar",
@@ -106,12 +107,12 @@ def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
 )
 def test_plot_performance_by_calendar_time(
     synth_eval_dataset: EvalDataset,
-    bin_period: str,
+    bin_period: Literal["M", "Q", "Y"],
 ):
     plot_metric_by_calendar_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
-        save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",
+        save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",  # type: ignore
     )
 
 
