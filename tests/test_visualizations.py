@@ -15,10 +15,10 @@ from psycop_model_evaluation.binary_classification.plots.base_charts import (
 from psycop_model_evaluation.binary_classification.plots.feature_importance.sklearn.feature_importance import (
     plot_feature_importances,
 )
-from psycop_model_evaluation.binary_classification.plots.performance.precision_recall import (
+from psycop_model_evaluation.binary_classification.plots.global_performance.precision_recall import (
     plot_precision_recall,
 )
-from psycop_model_evaluation.binary_classification.plots.performance.roc_auc import (
+from psycop_model_evaluation.binary_classification.plots.global_performance.roc_auc import (
     plot_auc_roc,
 )
 from psycop_model_evaluation.binary_classification.plots.robustness.subgroups.performance_by_age import (
