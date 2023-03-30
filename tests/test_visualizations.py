@@ -30,10 +30,8 @@ from psycop_model_evaluation.binary_classification.plots.robustness.subgroups.pe
 from psycop_model_evaluation.binary_classification.plots.robustness.time.cyclic.plot_by_cyclic_time import (
     plot_roc_auc_by_cyclic_time,
 )
-from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.absolute.data_by_absolute_time import (
-    plot_metric_by_linear_time,
-)
 from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.absolute.plot_by_absolute_time import (
+    plot_metric_by_linear_time,
     plot_recall_by_linear_time,
 )
 from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.absolute.prob_over_time import (
