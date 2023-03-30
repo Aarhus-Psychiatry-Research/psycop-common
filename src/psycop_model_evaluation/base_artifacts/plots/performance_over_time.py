@@ -10,18 +10,22 @@ from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
-from psycop_model_evaluationmodel_eval.base_artifacts.plots.base_charts import (
+from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import recall_score, roc_auc_score
+
+from psycop_model_evaluation.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluationmodel_eval.base_artifacts.plots.sens_over_time import (
+from psycop_model_evaluation.model_eval.base_artifacts.plots.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
 )
-from psycop_model_evaluationmodel_eval.base_artifacts.plots.utils import (
+from psycop_model_evaluation.model_eval.base_artifacts.plots.utils import (
     calc_performance,
 )
-from psycop_model_evaluationmodel_eval.dataclasses import EvalDataset
-from psycop_model_evaluationutils.utils import bin_continuous_data, round_floats_to_edge
-from sklearn.metrics import recall_score, roc_auc_score
+from psycop_model_evaluation.utils.utils import (
+    bin_continuous_data,
+    round_floats_to_edge,
+)
 
 
 def plot_recall_by_calendar_time(

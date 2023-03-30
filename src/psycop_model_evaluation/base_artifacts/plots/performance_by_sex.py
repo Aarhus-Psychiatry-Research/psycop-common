@@ -1,13 +1,14 @@
 from pathlib import Path
 from typing import Optional, Union
 
-from psycop_model_evaluationmodel_eval.base_artifacts.plots.base_charts import (
+from psycop_model_training.model_eval.dataclasses import EvalDataset
+
+from psycop_model_evaluation.model_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluationmodel_eval.base_artifacts.plots.utils import (
+from psycop_model_evaluation.model_eval.base_artifacts.plots.utils import (
     create_roc_auc_by_input,
 )
-from psycop_model_evaluationmodel_eval.dataclasses import EvalDataset
 
 
 def plot_roc_auc_by_sex(
