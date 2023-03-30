@@ -62,4 +62,4 @@ To see more examples, see the [documentation].
 [github discussions]: https://github.com/MartinBernstorff/psycop-model-evaluation/discussions
 
 # Overview of repository structure
-![Visualization of the codebase](images/diagram.svg)
+![Visualization of the codebase](docs/img/fingerprint.svg)
