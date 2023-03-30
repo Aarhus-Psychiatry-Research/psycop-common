@@ -1,6 +1,6 @@
 """Generate a plot of sensitivity by time to outcome."""
-from collections.abc import Iterable
-from typing import Literal, Sequence
+from collections.abc import Sequence
+from typing import Literal
 
 import numpy as np
 import pandas as pd
