@@ -1,0 +1,16 @@
+{
+    "_copy_without_render": [
+        "*.github"
+    ],
+    "_template": "https://github.com/MartinBernstorff/swift-python-cookiecutter",
+    "add_makefile": "y",
+    "author": "Martin Bernstorff",
+    "copyright_year": "2023",
+    "email": "martinbernstorff@gmail.com",
+    "friendly_name": "PSYCOP model evaluation",
+    "github_user": "MartinBernstorff",
+    "license": "MIT",
+    "package_name": "psycop_model_evaluation",
+    "project_name": "psycop-model-evaluation",
+    "version": "0.0.0"
+}
