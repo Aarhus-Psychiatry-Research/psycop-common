@@ -13,7 +13,7 @@ from typing import Any, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from psycop_model_training.model_eval.dataclasses import ModelEvalData
+from psycop_model_training.training_output.dataclasses import ModelEvalData
 from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")

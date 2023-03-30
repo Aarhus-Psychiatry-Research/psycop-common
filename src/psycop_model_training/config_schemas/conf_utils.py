@@ -12,19 +12,17 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 def convert_omegaconf_to_pydantic_object(
     conf: DictConfig,
-    allow_mutation: bool = False,
 ) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
     Args:
         conf (DictConfig): Omegaconf DictConfig
-        allow_mutation (bool, optional): Whether to make the pydantic object mutable. Defaults to False.
 
     Returns:
         FullConfig: Pydantic object
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
-    return FullConfigSchema(**conf, allow_mutation=allow_mutation)
+    return FullConfigSchema(**conf)
 
 
 def load_cfg_as_omegaconf(
@@ -35,12 +33,12 @@ def load_cfg_as_omegaconf(
     """Load config as omegaconf object."""
     with initialize(version_base=None, config_path=config_dir_path_rel):
         if overrides:
-            cfg = compose(
+            cfg = compose(  # type: ignore
                 config_name=config_file_name,
                 overrides=overrides,
             )
         else:
-            cfg = compose(
+            cfg = compose(  # type: ignore
                 config_name=config_file_name,
             )
 
@@ -53,12 +51,11 @@ def load_cfg_as_omegaconf(
         if not gpu and cfg.model.name == "xgboost":
             cfg.model.args["tree_method"] = "auto"
 
-        return cfg
+        return cfg  # type: ignore
 
 
 def load_app_cfg_as_pydantic(
     config_file_name: str,
-    allow_mutation: bool = False,
     config_dir_path_rel: str = "../../../../../application/config/",
     overrides: Optional[list[str]] = None,
 ) -> FullConfigSchema:
@@ -69,12 +66,11 @@ def load_app_cfg_as_pydantic(
         config_dir_path_rel=config_dir_path_rel,
     )
 
-    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
+    return convert_omegaconf_to_pydantic_object(conf=cfg)
 
 
 def load_test_cfg_as_pydantic(
     config_file_name: str,
-    allow_mutation: bool = False,
     overrides: Optional[list[str]] = None,
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
@@ -83,7 +79,7 @@ def load_test_cfg_as_pydantic(
         overrides=overrides,
     )
 
-    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
+    return convert_omegaconf_to_pydantic_object(conf=cfg)
 
 
 class WatcherSchema(BaseModel):

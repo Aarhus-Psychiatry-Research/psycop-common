@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 from psycop_model_training.config_schemas.data import ColumnNamesSchema
-from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.utils import create_eval_dataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 
 def test_create_eval_dataset():

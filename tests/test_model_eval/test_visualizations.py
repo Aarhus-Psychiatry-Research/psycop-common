@@ -8,39 +8,41 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
+from psycop_model_training.training_output.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.feature_importance import (
+from psycop_model_training.training_output.base_artifacts.plots.feature_importance import (
     plot_feature_importances,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.performance_by_age import (
+from psycop_model_training.training_output.base_artifacts.plots.performance_by_age import (
     plot_roc_auc_by_age,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.performance_by_sex import (
+from psycop_model_training.training_output.base_artifacts.plots.performance_by_sex import (
     plot_roc_auc_by_sex,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
+from psycop_model_training.training_output.base_artifacts.plots.performance_over_time import (
     plot_metric_by_calendar_time,
     plot_recall_by_calendar_time,
     plot_roc_auc_by_cyclic_time,
     plot_roc_auc_by_time_from_first_visit,
     plot_sensitivity_by_time_until_diagnosis,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.precision_recall import (
+from psycop_model_training.training_output.base_artifacts.plots.precision_recall import (
     plot_precision_recall,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.prob_over_time import (
+from psycop_model_training.training_output.base_artifacts.plots.prob_over_time import (
     plot_prob_over_time,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.roc_auc import plot_auc_roc
-from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
+from psycop_model_training.training_output.base_artifacts.plots.roc_auc import (
+    plot_auc_roc,
+)
+from psycop_model_training.training_output.base_artifacts.plots.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.time_from_first_positive_to_event import (
+from psycop_model_training.training_output.base_artifacts.plots.time_from_first_positive_to_event import (
     plot_time_from_first_positive_to_event,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import (
     TEST_PLOT_PATH,
 )

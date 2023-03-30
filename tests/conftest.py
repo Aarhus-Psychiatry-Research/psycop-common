@@ -8,7 +8,7 @@ from psycop_model_training.config_schemas.conf_utils import (
     FullConfigSchema,
     load_test_cfg_as_pydantic,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 CONFIG_DIR_PATH_REL = "../application/config"
 

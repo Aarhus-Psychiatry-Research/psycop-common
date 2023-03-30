@@ -9,12 +9,12 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.utils import (
     load_and_filter_train_and_val_from_cfg,
 )
-from psycop_model_training.model_eval.dataclasses import ArtifactContainer
-from psycop_model_training.model_eval.model_evaluator import ModelEvaluator
 from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
 from psycop_model_training.training.train_and_predict import train_and_predict
+from psycop_model_training.training_output.dataclasses import ArtifactContainer
+from psycop_model_training.training_output.model_evaluator import ModelEvaluator
 from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.decorators import (
     wandb_alert_on_exception_return_terrible_auc,

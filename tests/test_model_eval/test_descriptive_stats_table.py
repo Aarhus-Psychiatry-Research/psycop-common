@@ -1,9 +1,12 @@
 """Test that the descriptive stats table is generated correctly."""
 
-from psycop_model_training.model_eval.base_artifacts.tables.descriptive_stats_table import (
+from psycop_model_training.training_output.base_artifacts.tables.descriptive_stats_table import (
     DescriptiveStatsTable,
 )
-from psycop_model_training.model_eval.dataclasses import ArtifactContainer, EvalDataset
+from psycop_model_training.training_output.dataclasses import (
+    ArtifactContainer,
+    EvalDataset,
+)
 
 
 def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):

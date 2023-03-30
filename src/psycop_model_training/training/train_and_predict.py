@@ -5,9 +5,9 @@ from typing import Any, Optional
 import numpy as np
 import pandas as pd
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.model_eval.dataclasses import EvalDataset
 from psycop_model_training.training.model_specs import MODELS
 from psycop_model_training.training.utils import create_eval_dataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 from psycop_model_training.utils.utils import PROJECT_ROOT
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold

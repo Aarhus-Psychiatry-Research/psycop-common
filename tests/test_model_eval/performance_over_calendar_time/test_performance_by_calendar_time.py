@@ -1,8 +1,8 @@
 import pandas as pd
-from psycop_model_training.model_eval.base_artifacts.plots.performance_over_time import (
+from psycop_model_training.training_output.base_artifacts.plots.performance_over_time import (
     create_performance_by_timedelta,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score
 
 

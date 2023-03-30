@@ -5,8 +5,10 @@ from pathlib import Path
 import pandas as pd
 import wandb
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
-from psycop_model_training.model_eval.dataclasses import (
+from psycop_model_training.training_output.artifact_saver.to_disk import (
+    ArtifactsToDiskSaver,
+)
+from psycop_model_training.training_output.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
