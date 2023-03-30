@@ -71,10 +71,22 @@ def update(c: Context):
 
 
 @task
-def test(c: Context):
+def test(c: Context, min_latency: bool = True):
+    """Run tests.
+
+    Args:
+        min_latency (bool): If false, go for maximum throughput. If true, go for minimum latency.
+    """
     echo_header(f"{Emo.TEST} Running tests")
+
+    if min_latency:
+        n = ""
+        plugins = "-p no:cov -p no:xdist -p no:instafail -p no:xdist"
+    else:
+        n = "-n auto "
+
     test_result: Result = c.run(
-        "pytest -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q",
+        f"pytest {n}-rfE --failed-first {plugins} --disable-warnings -q",
         warn=True,
         pty=True,
     )
@@ -149,7 +161,7 @@ def is_uncommitted_changes(c: Context) -> bool:
 def pr(c: Context):
     add_and_commit(c)
     lint(c)
-    test(c)
+    test(c, min_latency=False)
     sync_with_git_remote(c)
     sync_pr(c)
 

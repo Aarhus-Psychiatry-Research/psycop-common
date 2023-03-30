@@ -55,7 +55,8 @@ dev = [
 tests = [
   "pytest>=7.1.2,<7.2.3",
   "pytest-cov>=3.0.0,<4.0.1",
-  "pytest-xdist>=3.0.0,<3.2.0"
+  "pytest-xdist>=3.0.0,<3.2.0",
+  "pytest-instafail>=0.4.2,<0.5.0",
 ]
 
 [tool.coverage.run]
@@ -95,9 +96,7 @@ markers = [
 pythonpath = [
   "."
 ]
-
-[tool.pytest-xdist]
-n = 4
+testpaths = ["tests"]
 
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
