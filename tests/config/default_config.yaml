@@ -5,5 +5,4 @@ defaults:
   - preprocessing: default_preprocessing
   - train: default_training
   - model: xgboost
-  - eval: evaluation_synth
   - sweeper: optuna_singlethread
