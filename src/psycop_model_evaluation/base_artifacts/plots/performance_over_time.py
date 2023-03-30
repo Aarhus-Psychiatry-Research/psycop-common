@@ -238,9 +238,7 @@ def roc_auc_by_cyclic_time_df(
         metric=roc_auc_score,
     )
 
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
-
-    return output_df
+    return output_df.reset_index().rename({0: "metric"}, axis=1)
 
 
 def plot_roc_auc_by_cyclic_time(
@@ -368,13 +366,10 @@ def create_performance_by_timedelta(
             bins=bins,
         )
 
-    # Calc performance and prettify output
-    output_df = df.groupby(["unit_from_event_binned"], as_index=False).apply(
+    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
         calc_performance,  # type: ignore
         metric=metric_fn,
     )
-
-    return output_df
 
 
 def plot_roc_auc_by_time_from_first_visit(
