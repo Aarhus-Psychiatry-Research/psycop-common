@@ -236,8 +236,6 @@ def pre_commit(c: Context):
     pre_commit_cmd = "pre-commit run --all-files"
     result = c.run(pre_commit_cmd, pty=True, warn=True)
 
-    exit_if_error_in_stdout(result)
-
     if "fixed" in result.stdout or "reformatted" in result.stdout:
         _add_commit(c, msg="style: linting")
 

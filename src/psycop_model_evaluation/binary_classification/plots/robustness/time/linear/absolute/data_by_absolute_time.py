@@ -1,15 +1,9 @@
 from collections.abc import Iterable
-from pathlib import Path
-from typing import Literal, Optional, Union
 
 import pandas as pd
-from psycop_model_evaluation.binary_classification.plots.base_charts import (
-    plot_basic_chart,
-)
 from psycop_model_evaluation.binary_classification.plots.utils import (
     calc_performance,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
 from sklearn.metrics import roc_auc_score
 
 
