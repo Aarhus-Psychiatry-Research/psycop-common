@@ -61,4 +61,5 @@ def muteable_test_config() -> FullConfigSchema:
     """Get a mutable config for testing."""
     return load_test_cfg_as_pydantic(
         config_file_name="default_config.yaml",
+        allow_mutation=True,
     )

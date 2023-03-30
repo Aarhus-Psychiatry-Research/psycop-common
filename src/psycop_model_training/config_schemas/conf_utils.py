@@ -12,17 +12,19 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 def convert_omegaconf_to_pydantic_object(
     conf: DictConfig,
+    allow_mutation: bool = False,
 ) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
     Args:
         conf (DictConfig): Omegaconf DictConfig
+        allow_mutation (bool, optional): Whether to allow mutation of the
 
     Returns:
         FullConfig: Pydantic object
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
-    return FullConfigSchema(**conf)
+    return FullConfigSchema(**conf, allow_mutation=allow_mutation)
 
 
 def load_cfg_as_omegaconf(
@@ -72,6 +74,7 @@ def load_app_cfg_as_pydantic(
 def load_test_cfg_as_pydantic(
     config_file_name: str,
     overrides: Optional[list[str]] = None,
+    allow_mutation: bool = False,
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
     cfg = load_cfg_as_omegaconf(
@@ -79,7 +82,7 @@ def load_test_cfg_as_pydantic(
         overrides=overrides,
     )
 
-    return convert_omegaconf_to_pydantic_object(conf=cfg)
+    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
 
 
 class WatcherSchema(BaseModel):

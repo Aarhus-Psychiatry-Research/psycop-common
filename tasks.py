@@ -83,11 +83,13 @@ def test(c: Context, min_latency: bool = True):
     if min_latency:
         n = ""
         plugins = "-p no:cov -p no:xdist -p no:xdist"
+        extra_args = "-x"
     else:
         n = "-n auto "
+        extra_args = ""
 
     test_result: Result = c.run(
-        f"pytest {n}-rfE --failed-first {plugins} --disable-warnings -q",
+        f"pytest {n}-rfE --failed-first {plugins} --disable-warnings {extra_args}",
         warn=True,
         pty=True,
     )
