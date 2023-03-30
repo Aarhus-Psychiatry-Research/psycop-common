@@ -167,7 +167,7 @@ def test_plot_feature_importances():
     plot_feature_importances(
         feature_importance_dict=feature_importance_dict,
         top_n_feature_importances=n_features,
-        save_path="tmp",
+        save_path=TEST_PLOT_PATH / "tmp",
     )
 
 
