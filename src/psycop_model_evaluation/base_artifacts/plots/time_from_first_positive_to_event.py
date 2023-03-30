@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 import pandas as pd
+from pandas import Series
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 from psycop_model_evaluation.base_artifacts.plots.base_charts import (
@@ -92,7 +93,7 @@ def plot_time_from_first_positive_to_event(
 
     plot = plot_basic_chart(
         x_values=x_labels,  # type: ignore
-        y_values=y_values,
+        y_values=Series(y_values),
         x_title="Months from first positive to event",
         y_title="Count",
         plot_type="bar",
