@@ -4,7 +4,7 @@ import pandas as pd
 from psycop_model_evaluation.base_artifacts.tables.descriptive_stats_table import (
     DescriptiveStatsTable,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_evaluationmodel_eval.dataclasses import EvalDataset
 
 
 def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):

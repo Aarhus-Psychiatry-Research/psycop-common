@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import Optional, Union
 
 import pandas as pd
-from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
+from psycop_model_evaluationmodel_eval.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.utils import bin_continuous_data
+from psycop_model_evaluationmodel_eval.dataclasses import EvalDataset
+from psycop_model_evaluationutils.utils import bin_continuous_data
 
 
 def get_top_fraction(df: pd.DataFrame, col_name: str, fraction: float) -> pd.DataFrame:

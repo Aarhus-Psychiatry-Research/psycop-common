@@ -5,8 +5,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import wandb
-from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.utils import bin_continuous_data
+from psycop_model_evaluationmodel_eval.dataclasses import EvalDataset
+from psycop_model_evaluationutils.utils import bin_continuous_data
 from sklearn.metrics import roc_auc_score
 
 

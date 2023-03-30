@@ -8,18 +8,20 @@ import matplotlib as mpl
 mpl.use("Agg")
 import pandas as pd
 import wandb
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
-from psycop_model_training.model_eval.base_artifacts.plots.utils import (
+from psycop_model_evaluationconfig_schemas.full_config import FullConfigSchema
+from psycop_model_evaluationmodel_eval.artifact_saver.to_disk import (
+    ArtifactsToDiskSaver,
+)
+from psycop_model_evaluationmodel_eval.base_artifacts.plots.utils import (
     log_image_to_wandb,
 )
-from psycop_model_training.model_eval.dataclasses import (
+from psycop_model_evaluationmodel_eval.dataclasses import (
     ArtifactContainer,
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.utils.col_name_inference import get_col_names
-from psycop_model_training.utils.utils import (
+from psycop_model_evaluationutils.col_name_inference import get_col_names
+from psycop_model_evaluationutils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
 )
