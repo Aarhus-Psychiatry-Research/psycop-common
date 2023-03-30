@@ -13,3 +13,7 @@ __pycache__/
 
 # MacOS
 .DS_Store
+
+# Files
+*.csv
+*.png

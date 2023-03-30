@@ -10,22 +10,28 @@ from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
-from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
+from psycop_model_training.model_eval.dataclasses import EvalDataset
+from sklearn.metrics import recall_score, roc_auc_score
+
+from psycop_model_evaluation.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.sens_over_time import (
+from psycop_model_evaluation.base_artifacts.plots.sens_over_time import (
     create_sensitivity_by_time_to_outcome_df,
 )
-from psycop_model_training.model_eval.base_artifacts.plots.utils import calc_performance
-from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.utils import bin_continuous_data, round_floats_to_edge
-from sklearn.metrics import recall_score, roc_auc_score
+from psycop_model_evaluation.base_artifacts.plots.utils import (
+    calc_performance,
+)
+from psycop_model_evaluation.utils.utils import (
+    bin_continuous_data,
+    round_floats_to_edge,
+)
 
 
 def plot_recall_by_calendar_time(
     eval_dataset: EvalDataset,
     positive_rates: Union[float, Iterable[float]],
-    bins: Iterable[float],
+    bins: Sequence[float],
     bin_unit: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
@@ -106,13 +112,11 @@ def create_roc_auc_by_calendar_time_df(
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
     output_df = df.groupby("time_bin").apply(
-        func=calc_performance,
+        func=calc_performance,  # type: ignore
         metric=roc_auc_score,
     )
 
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
-
-    return output_df
+    return output_df.reset_index().rename({0: "metric"}, axis=1)
 
 
 def plot_metric_by_calendar_time(
@@ -140,7 +144,7 @@ def plot_metric_by_calendar_time(
         timestamps=eval_dataset.pred_timestamps,
         bin_period=bin_period,
     )
-    sort_order = np.arange(len(df))
+    sort_order = list(range(len(df)))
 
     x_titles = {
         "H": "Hour",
@@ -156,7 +160,7 @@ def plot_metric_by_calendar_time(
         y_values=df["metric"],
         x_title=x_titles[bin_period],
         y_title=y_title,
-        sort_x=sort_order,
+        sort_x=sort_order,  # type: ignore
         y_limits=y_limits,
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title="Number of visits",
@@ -230,13 +234,11 @@ def roc_auc_by_cyclic_time_df(
         )
 
     output_df = df.groupby("time_bin").apply(
-        func=calc_performance,
+        func=calc_performance,  # type: ignore
         metric=roc_auc_score,
     )
 
-    output_df = output_df.reset_index().rename({0: "metric"}, axis=1)
-
-    return output_df
+    return output_df.reset_index().rename({0: "metric"}, axis=1)
 
 
 def plot_roc_auc_by_cyclic_time(
@@ -364,13 +366,10 @@ def create_performance_by_timedelta(
             bins=bins,
         )
 
-    # Calc performance and prettify output
-    output_df = df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        calc_performance,
+    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
+        calc_performance,  # type: ignore
         metric=metric_fn,
     )
-
-    return output_df
 
 
 def plot_roc_auc_by_time_from_first_visit(
@@ -421,13 +420,13 @@ def plot_roc_auc_by_time_from_first_visit(
         "Y": "Years",
     }
 
-    sort_order = np.arange(len(df))
+    sort_order = list(range(len(df)))
     return plot_basic_chart(
         x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
         x_title=f"{bin_unit2str[bin_unit]} from first visit",
         y_title="AUC",
-        sort_x=sort_order,
+        sort_x=sort_order,  # type: ignore
         y_limits=y_limits,
         plot_type=["line", "scatter"],
         bar_count_values=df["n_in_bin"],
@@ -486,7 +485,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         min_n_in_bin=5,
         drop_na_events=True,
     )
-    sort_order = np.arange(len(df))
+    sort_order = list(range(len(df)))
 
     bin_unit2str = {
         "H": "Hours",

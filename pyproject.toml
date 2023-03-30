@@ -19,7 +19,10 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-  "pydantic"
+  "pydantic",
+  "numpy",
+  "matplotlib",
+  "psycop-model-training @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-training.git#egg=psycop-model-training",
 ]
 
 [project.license]
@@ -65,7 +68,6 @@ documentation = "https://MartinBernstorff.github.io/psycop-model-evaluation/"
 [tool.mypy]
 ignore_missing_imports = true
 no_implicit_optional = true
-warn_unused_ignores = true
 warn_unreachable = true
 plugins = "pydantic.mypy"
 

@@ -39,7 +39,7 @@ def plot_precision_recall(
     legend_label = "AUPRC = "
 
     plt.figure(figsize=fig_size, dpi=dpi)
-    plt.plot(precision, recall, label=legend_label + str(round(auprc, 3)))
+    plt.plot(precision, recall, label=legend_label + str(round(auprc, 3)))  # type: ignore
     plt.legend(loc=4)
 
     plt.title(title)

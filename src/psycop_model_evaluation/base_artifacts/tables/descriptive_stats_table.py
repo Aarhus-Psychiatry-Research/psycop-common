@@ -5,9 +5,10 @@ from typing import Optional, Union
 
 import pandas as pd
 import wandb
-from psycop_model_training.model_eval.base_artifacts.tables.tables import output_table
 from psycop_model_training.model_eval.dataclasses import EvalDataset
-from psycop_model_training.utils.utils import bin_continuous_data
+
+from psycop_model_evaluation.base_artifacts.tables.tables import output_table
+from psycop_model_evaluation.utils.utils import bin_continuous_data
 
 
 class DescriptiveStatsTable:
@@ -51,11 +52,11 @@ class DescriptiveStatsTable:
         )
 
         age_counts = bin_continuous_data(
-            self.eval_dataset.age,
+            self.eval_dataset.age,  # type: ignore
             bins=[0, 17, *range(24, 75, 10)],
         )[0].value_counts()
 
-        age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 1)
+        age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 1)  # type: ignore
 
         for i, _ in enumerate(age_counts):
             df = df.append(  # type: ignore
@@ -79,7 +80,7 @@ class DescriptiveStatsTable:
         df = self._get_column_header_df()
 
         sex_counts = self.eval_dataset.is_female.value_counts()
-        sex_percentages = sex_counts / len(self.eval_dataset.is_female) * 100
+        sex_percentages = sex_counts / len(self.eval_dataset.is_female) * 100  # type: ignore
 
         for i, n in enumerate(sex_counts):
             if n < 5:
@@ -318,4 +319,4 @@ class DescriptiveStatsTable:
 
             table_1.to_csv(save_path, index=False)
 
-        return output_table(output_format=output_format, df=table_1)
+        return output_table(output_format=output_format, df=table_1)  # type: ignore

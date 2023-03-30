@@ -6,7 +6,8 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from psycop_model_training.model_eval.base_artifacts.plots.base_charts import (
+
+from psycop_model_evaluation.base_artifacts.plots.base_charts import (
     plot_basic_chart,
 )
 
@@ -44,11 +45,11 @@ def plot_feature_importances(
     df["feature_names"] = df["feature_names"].apply(lambda x: "\n".join(wrap(x, 20)))
 
     return plot_basic_chart(
-        x_values=df["feature_names"].tolist(),
-        y_values=df["feature_importances"].tolist(),
+        x_values=df["feature_names"],
+        y_values=df["feature_importances"],
         x_title="Feature importance (gain)",
         y_title="Feature name",
-        sort_x=np.flip(np.arange(len(df["feature_importances"]))),
+        sort_x=np.flip(np.arange(len(df["feature_importances"]))),  # type: ignore
         plot_type="hbar",
         fig_size=(8, 5),
         save_path=save_path,

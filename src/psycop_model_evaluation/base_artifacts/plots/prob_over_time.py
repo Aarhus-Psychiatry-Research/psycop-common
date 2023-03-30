@@ -17,9 +17,9 @@ def plot_prob_over_time(
     label: Iterable[Union[int, str]],
     outcome_timestamp: Iterable[Union[datetime, None]],
     patient_id: Iterable[Union[int, str]],
-    x_axis: Optional[str] = "Time from outcome",
-    y_axis: Optional[str] = "Model Predictive Probability",
-    legend: Optional[str] = "Highest Predictive Probability",
+    x_axis: str = "Time from outcome",
+    y_axis: str = "Model Predictive Probability",
+    legend: str = "Highest Predictive Probability",
     look_behind_distance: Optional[int] = None,
     line_opacity: Optional[float] = 0.3,
     fig_size: Optional[tuple] = (10, 10),
@@ -104,7 +104,7 @@ def plot_prob_over_time(
     )
 
     # Reformat y-axis values to percentage
-    plt.gca().yaxis.set_major_formatter(mpl.ticker.PercentFormatter(xmax=1))
+    plt.gca().yaxis.set_major_formatter(mpl.ticker.PercentFormatter(xmax=1))  # type: ignore
 
     plt.xlabel(x_axis, size=14)
     plt.ylabel(y_axis, size=14)
@@ -117,13 +117,13 @@ def plot_prob_over_time(
     # Add shaded area for look-behind window
     if look_behind_distance is not None:
         plt.axvspan(
-            -look_behind_distance,  # pylint: disable=invalid-unary-operand-type
+            -look_behind_distance,
             0,
             color="grey",
             alpha=0.2,
         )
         plt.text(
-            -look_behind_distance / 2,  # pylint: disable=invalid-unary-operand-type
+            -look_behind_distance / 2,
             plot_df["pred_prob"].max(),
             "Predictive window",
             horizontalalignment="center",
