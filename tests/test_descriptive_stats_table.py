@@ -15,7 +15,7 @@ def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
     )
 
     output_table: pd.DataFrame = table1.generate_descriptive_stats_table(  # type: ignore
-        output_format="df"
+        output_format="df",
     )
 
     # Assert that there are no NaN values in the table
