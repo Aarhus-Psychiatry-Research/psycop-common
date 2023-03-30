@@ -9,8 +9,8 @@ from pandas import Series
 
 
 def plot_basic_chart(
-    x_values: Series[float],
-    y_values: Union[Series[float], Sequence[Series[float]]],
+    x_values: Series,
+    y_values: Union[Series,
     x_title: str,
     y_title: str,
     plot_type: Union[list[str], str],

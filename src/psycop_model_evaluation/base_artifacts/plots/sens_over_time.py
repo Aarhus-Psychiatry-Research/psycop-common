@@ -13,8 +13,8 @@ from psycop_model_evaluation.utils.utils import round_floats_to_edge
 def create_sensitivity_by_time_to_outcome_df(
     eval_dataset: EvalDataset,
     desired_positive_rate: float,
-    outcome_timestamps: Series[pd.Timestamp],
-    prediction_timestamps: Series[pd.Timestamp],
+    outcome_timestamps: Series,
+    prediction_timestamps: Series,
     bins: Sequence[float] = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
     bin_delta: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
 ) -> pd.DataFrame:
