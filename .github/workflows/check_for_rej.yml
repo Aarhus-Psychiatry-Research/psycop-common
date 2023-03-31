@@ -1,0 +1,20 @@
+name: Check for .rej files
+
+on: push
+
+jobs:
+  check-for-rej-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check for .rej files
+        run: |
+          if [[ $(git diff --name-only HEAD^ HEAD | grep '\.rej$') ]]; then
+            echo "Error: Found .rej files in the repository."
+            exit 1
+          else
+            echo "No .rej files found in the repository."
+          fi
