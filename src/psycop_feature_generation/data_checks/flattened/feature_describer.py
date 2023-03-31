@@ -214,7 +214,7 @@ def save_feature_descriptive_stats_from_dir(
     for split in splits:
         msg.info(f"{split}: Creating descriptive stats for feature set")
 
-        predictors = load_split(
+        dataset = load_split(
             feature_set_dir=feature_set_dir,
             split=split,
             file_suffix=file_suffix,
@@ -223,7 +223,7 @@ def save_feature_descriptive_stats_from_dir(
         msg.info(f"{split}: Generating descriptive stats dataframe")
 
         feature_descriptive_stats = generate_feature_description_df(
-            df=predictors,
+            df=dataset,
             predictor_specs=feature_specs,
         )
 
