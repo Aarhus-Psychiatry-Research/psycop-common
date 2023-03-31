@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.52.0 (2023-03-31)
+### Feature
+* Whether to change negative values to nan optional ([#468](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/468)) ([`5c941d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5c941d3e5d8fefbfd6d0213e0409ab3e558d3b73))
+* Whether to change negative values to nan optional ([`c6a75ae`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c6a75aeddf950aedb615ad716ed7654e065fc886))
+
 ## v0.51.0 (2023-03-30)
 ### Feature
 * Commit if changes were autofixed by pre-commit ([`f224a24`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/f224a24c5c10b0c0aeaaaaf9e2120a99bb91cf1c))
