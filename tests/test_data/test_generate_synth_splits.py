@@ -1,9 +1,10 @@
 """Generate synth data with outcome."""
 import numpy as np
+
+from psycop_model_training.utils.utils import PROJECT_ROOT
 from psycop_ml_utils.synth_data_generator.synth_prediction_times_generator import (
     generate_synth_data,
 )
-from psycop_model_training.utils.utils import PROJECT_ROOT
 
 
 def test_synth_data_generator():
