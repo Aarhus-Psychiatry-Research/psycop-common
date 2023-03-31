@@ -14,7 +14,8 @@ jobs:
 
       - name: Check for .rej files
         run: |
-          if [[ find . -type f -name "*.rej" ]]; then
+          count=`find . -type f -name "*.rej"`
+          if [[ $count != 0 ]]; then
             echo "Error: Found .rej files in the repository."
             exit 1
           else
