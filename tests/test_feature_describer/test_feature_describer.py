@@ -121,7 +121,7 @@ def test_generate_feature_description_row_for_static_spec(
     df: pd.DataFrame,
     static_specs: list[PredictorSpec],
 ):
-    spec = static_spec[0]
+    spec = static_specs[0]
 
     column_name = spec.get_col_str()
 
