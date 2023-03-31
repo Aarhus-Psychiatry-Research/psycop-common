@@ -15,7 +15,7 @@ jobs:
       - name: Check for .rej files
         if: github.event.pull_request.title.contains('cruft')
         run: |
-          if [[ $(git diff --name-only HEAD^ HEAD | grep '\.rej$') ]]; then
+          if [[ find . -type f -name "*.rej" ]]; then
             echo "Error: Found .rej files in the repository."
             exit 1
           else
