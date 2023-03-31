@@ -35,7 +35,7 @@ def predictor_specs():
 def static_specs():
     return [
         StaticSpec(
-            values_df=pd.DataFrame({"hba1c": [0]}),
+            values_df=pd.DataFrame({"value": [0]}),
             prefix="pred",
         ),
     ]
