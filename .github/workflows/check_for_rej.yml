@@ -13,7 +13,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Check for .rej files
-        if: github.event.pull_request.title.contains('cruft')
         run: |
           if [[ find . -type f -name "*.rej" ]]; then
             echo "Error: Found .rej files in the repository."
