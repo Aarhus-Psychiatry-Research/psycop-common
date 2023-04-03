@@ -7,13 +7,13 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from psycop_model_evaluation.binary_classification.plots.base_charts import (
+from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.absolute.data_by_absolute_time import (
-    create_roc_auc_by_linear_time_df,
+from psycop_model_evaluation.binary_classification.time.absolute_time_data import (
+    create_roc_auc_by_absolute_time_df,
 )
-from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.timedelta.data_by_timedelta import (
+from psycop_model_evaluation.binary_classification.time.timedelta_data import (
     create_sensitivity_by_time_to_outcome_df,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
@@ -36,7 +36,7 @@ def plot_metric_by_linear_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    df = create_roc_auc_by_linear_time_df(
+    df = create_roc_auc_by_absolute_time_df(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,

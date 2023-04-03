@@ -5,10 +5,10 @@ from typing import Literal, Optional, Union
 
 import pandas as pd
 from pandas import Series
-from psycop_model_evaluation.binary_classification.plots.base_charts import (
+from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.timedelta.data_by_timedelta import (
+from psycop_model_evaluation.binary_classification.time.timedelta_data import (
     create_performance_by_timedelta,
 )
 from psycop_model_evaluation.binary_classification.utils import (

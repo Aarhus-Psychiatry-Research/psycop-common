@@ -7,7 +7,7 @@ from psycop_model_evaluation.binary_classification.utils import (
 from sklearn.metrics import roc_auc_score
 
 
-def create_roc_auc_by_linear_time_df(
+def create_roc_auc_by_absolute_time_df(
     labels: Iterable[int],
     y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
