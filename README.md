@@ -15,6 +15,36 @@
 
 Collection of model evaluations for the PSYCOP project.
 
+Currently, the repository is structured like:
+```
+src/psycop_model_evaluation
+├── base_charts.py                            # General charts, e.g. a generic "scatter" chart.
+├── binary                                    # Evaluations of binary classification
+│   ├── global_performance                    # Performance across subgroups and thresholds
+│   │   ├── precision_recall.py
+│   │   └── roc_auc.py
+│   ├── performance_by_true_positive_rate.py  # Performance for given thresholds
+│   ├── subgroups                             # Subgroups analyses
+│   │   ├── age.py
+│   │   ├── base.py
+│   │   └── sex.py
+│   ├── time                                  # Time analyses
+│   │   ├── absolute_data.py                  # Absolute time is time as we usually think of it
+│   │   ├── absolute_plots.py
+│   │   ├── periodic_data.py                  # Periodic time is e.g. "day of week" or "week of year"
+│   │   ├── periodic_plots.py
+│   │   ├── timedelta_data.py                 # Timedelta is e.g. time from first visit
+│   │   └── timedelta_plots.py
+│   └── utils.py
+├── descriptive_stats_table.py                # Descriptive statistics, e.g. a "table 1"
+├── feature_importance                        # Feature importance
+│   ├── feature_importance_table.py
+│   └── sklearn
+│       └── feature_importance.py
+├── time_to_event                             # Evaluations for time to event
+└── utils.py
+```
+
 ## Installation
 
 You can install _PSYCOP model evaluation_ into your `src` directory by:
