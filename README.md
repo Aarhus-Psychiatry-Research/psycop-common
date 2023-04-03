@@ -59,9 +59,8 @@ And when adding it to your dependencies in your `pyproject.toml`:
 
 ## Usage
 
-TODO: Add minimal usage example
+For an example use case, see [t2d-baseline-paper](https://github.com/Aarhus-Psychiatry-Research/t2d-baseline-paper).
 
-To see more examples, see the [documentation].
 <!--
 # 📖 Documentation
 
