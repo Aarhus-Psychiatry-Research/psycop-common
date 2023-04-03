@@ -22,7 +22,7 @@ dependencies = [
   "pydantic",
   "numpy",
   "matplotlib",
-  "psycop-model-training @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-training.git#egg=psycop-model-training",
+  "psycop-model-training @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-training#egg=psycop-model-training",
 ]
 
 [project.license]
