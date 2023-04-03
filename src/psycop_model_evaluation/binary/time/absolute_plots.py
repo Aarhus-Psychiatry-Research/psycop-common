@@ -23,7 +23,7 @@ def plot_metric_by_absolute_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
-    save_path: Optional[str] = None,
+    save_path: Optional[Union[str, Path]] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
@@ -58,7 +58,7 @@ def plot_metric_by_absolute_time(
         y_values=df["metric"],
         x_title=x_titles[bin_period],
         y_title=y_title,
-        sort_x=sort_order,  # type: ignore
+        sort_x=sort_order,
         y_limits=y_limits,
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title="Number of visits",
