@@ -15,7 +15,7 @@
 
 Collection of model evaluations for the PSYCOP project.
 
-Currently, the repository is structured like:
+The repository is structured like:
 ```
 src/psycop_model_evaluation
 ├── base_charts.py                            # General charts, e.g. a generic "scatter" chart.
