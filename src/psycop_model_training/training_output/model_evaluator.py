@@ -1,20 +1,14 @@
 import logging
-from collections.abc import Sequence
-from pathlib import Path, PosixPath, WindowsPath
-
-import matplotlib as mpl
+from pathlib import Path
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
-mpl.use("Agg")
 import pandas as pd
 import wandb
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.model_eval.artifact_saver.to_disk import ArtifactsToDiskSaver
-from psycop_model_training.model_eval.base_artifacts.plots.utils import (
-    log_image_to_wandb,
+from psycop_model_training.training_output.artifact_saver.to_disk import (
+    ArtifactsToDiskSaver,
 )
-from psycop_model_training.model_eval.dataclasses import (
-    ArtifactContainer,
+from psycop_model_training.training_output.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
@@ -53,13 +47,11 @@ class ModelEvaluator:
 
     def __init__(
         self,
-        eval_dir_path: Path,
         cfg: FullConfigSchema,
+        eval_dir_path: Path,
         raw_train_set: pd.DataFrame,
         pipe: Pipeline,
-        artifacts: Sequence[ArtifactContainer],
         eval_ds: EvalDataset,
-        upload_to_wandb: bool = True,
     ):
         """Class for evaluating a model.
 
@@ -80,35 +72,10 @@ class ModelEvaluator:
             dataset=raw_train_set,
         )
 
-        self.eval_dir_path = eval_dir_path
         self.pipeline_metadata = self._get_pipeline_metadata()
-
         self.disk_saver = ArtifactsToDiskSaver(dir_path=eval_dir_path)
-        self.artifacts = artifacts
-        self.upload_to_wandb = upload_to_wandb
 
-    def upload_artifact_to_wandb(
-        self,
-        artifact_container: ArtifactContainer,
-    ) -> None:
-        """Upload artifacts to wandb."""
-        allowed_artifact_types = [Path, WindowsPath, PosixPath, pd.DataFrame]
-
-        if type(artifact_container.artifact) not in allowed_artifact_types:
-            raise TypeError(
-                f"Type of artifact is {type(artifact_container.artifact)}, must be one of {allowed_artifact_types}",
-            )
-
-        if isinstance(artifact_container.artifact, Path):
-            log_image_to_wandb(
-                chart_path=artifact_container.artifact,
-                chart_name=artifact_container.label,
-            )
-        elif isinstance(artifact_container.artifact, pd.DataFrame):
-            wandb_table = wandb.Table(dataframe=artifact_container.artifact)
-            wandb.log({artifact_container.label: wandb_table})
-
-    def evaluate(self) -> float:
+    def evaluate_and_save_eval_data(self) -> float:
         """Evaluate the model and save artifacts."""
         self.disk_saver.save(
             cfg=self.cfg,
@@ -117,7 +84,7 @@ class ModelEvaluator:
             pipe_metadata=self.pipeline_metadata,
         )
 
-        roc_auc = roc_auc_score(
+        roc_auc: float = roc_auc_score(  # type: ignore
             self.eval_ds.y,
             self.eval_ds.y_hat_probs,
         )
@@ -135,9 +102,5 @@ class ModelEvaluator:
         logging.info(  # pylint: disable=logging-not-lazy,logging-fstring-interpolation
             f"ROC AUC: {roc_auc}",
         )
-
-        if self.upload_to_wandb and self.artifacts is not None:
-            for artifact in self.artifacts:
-                self.upload_artifact_to_wandb(artifact)
 
         return roc_auc

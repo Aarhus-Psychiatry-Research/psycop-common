@@ -49,7 +49,7 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     min_prediction_time_date: Optional[Union[str, datetime]]
     # Drop all prediction times before this date.
 
-    lookbehind_combination: Optional[list[int]]
+    lookbehind_combination: list[int]
     # Which combination of features to use. Only uses features that have "within_X_days" in their column name, where X is any of the numbers in this list.
 
     keep_only_one_outcome_col: bool = True

@@ -100,8 +100,8 @@ if __name__ == "__main__":
     df["time_differences"] = [
         dt.timedelta(
             seconds=np.random.randint(  # type: ignore
-                years_to_seconds(years=5),
-                years_to_seconds(years=10),
+                years_to_seconds(years=5),  # type: ignore
+                years_to_seconds(years=10),  # type: ignore
             ),
         )
         for _ in range(N_ROWS)
