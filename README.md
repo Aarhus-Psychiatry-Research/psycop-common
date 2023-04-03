@@ -18,22 +18,10 @@ The repository is structured like:
 src/psycop_model_evaluation
 ├── base_charts.py                            # General charts, e.g. a generic "scatter" chart.
 ├── binary                                    # Evaluations of binary classification
-│   ├── global_performance                    # Performance across subgroups and thresholds
-│   │   ├── precision_recall.py
-│   │   └── roc_auc.py
+│   ├── global_performance                    # E.g. precision_recall and roc_auc
 │   ├── performance_by_true_positive_rate.py  # Performance for given thresholds
-│   ├── subgroups                             # Subgroups analyses
-│   │   ├── age.py
-│   │   ├── base.py
-│   │   └── sex.py
-│   ├── time                                  # Time analyses
-│   │   ├── absolute_data.py                  # Absolute time is time as we usually think of it
-│   │   ├── absolute_plots.py
-│   │   ├── periodic_data.py                  # Periodic time is e.g. "day of week" or "week of year"
-│   │   ├── periodic_plots.py
-│   │   ├── timedelta_data.py                 # Timedelta is e.g. time from first visit
-│   │   └── timedelta_plots.py
-│   └── utils.py
+│   ├── subgroups                             # Subgroups analyses, e.g. age and sex
+│   ├── time                                  # Time analyses. Absolute (how we usually think of time), periodic (e.g. day of week, week of year) and timedelta (e.g. time from first visit)
 ├── descriptive_stats_table.py                # Descriptive statistics, e.g. a "table 1"
 ├── feature_importance                        # Feature importance
 │   ├── feature_importance_table.py
