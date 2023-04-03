@@ -65,7 +65,8 @@ class PreSplitValueCleaner:
         # In the future, we want to:
         # 1a. See if there's a way of using feature selection that permits negative values, or
         # 1b. Always use z-score normalisation?
-        dataset = self._negative_values_to_nan(dataset=dataset)
+        if self.pre_split_cfg.negative_values_to_nan:
+            dataset = self._negative_values_to_nan(dataset=dataset)
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
         return dataset
