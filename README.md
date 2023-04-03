@@ -1,16 +1,16 @@
-<a href="https://github.com/MartinBernstorff/psycop-model-evaluation"><img src="https://github.com/MartinBernstorff/psycop-model-evaluation/blob/main/docs/_static/icon.png?raw=true" width="100" align="right"/></a>
+<a href="https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation"><img src="https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/blob/main/docs/_static/icon.png?raw=true" width="100" align="right"/></a>
 
 # PSYCOP model evaluation
 
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-model-evaluation.svg)][pypi status] -->
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-model-evaluation)][pypi status] -->
-<!-- [![documentation](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation] -->
-[![Tests](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/tests/badge.svg)][tests]
+<!-- [![documentation](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation] -->
+[![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/workflows/tests/badge.svg)][tests]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 
 <!-- [pypi status]: https://pypi.org/project/psycop-model-evaluation/ -->
-<!-- [documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/ -->
-[tests]: https://github.com/MartinBernstorff/psycop-model-evaluation/actions?workflow=Tests
+<!-- [documentation]: https://Aarhus-Psychiatry-Research.github.io/psycop-model-evaluation/ -->
+[tests]: https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/actions?workflow=Tests
 [black]: https://github.com/psf/black
 
 Collection of model evaluations for the PSYCOP project.
