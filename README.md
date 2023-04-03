@@ -34,7 +34,7 @@ And when adding it to your dependencies in your `pyproject.toml`:
 TODO: Add minimal usage example
 
 To see more examples, see the [documentation].
-
+<!--
 # 📖 Documentation
 
 | Documentation         |                                                  |
@@ -44,7 +44,7 @@ To see more examples, see the [documentation].
 | 👩‍💻 **[Tutorials]**     | Tutorials for using this package                 |
 | 🎛️ **[API Reference]** | API reference for this package                   |
 | 📚 **[FAQ]**           | Frequently asked questions                       |
-
+-->
 
 # 💬 Where to ask questions
 
@@ -56,13 +56,11 @@ To see more examples, see the [documentation].
 | 👩‍💻 **Usage Questions**          | [GitHub Discussions]   |
 | 🗯 **General Discussion**       | [GitHub Discussions]   |
 
-[Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
+<!-- [Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
 [Installation]: https://MartinBernstorff.github.io/psycop-model-evaluation/installation.html
 [Tutorials]: https://MartinBernstorff.github.io/psycop-model-evaluation/tutorials.html
 [API Reference]: https://MartinBernstorff.github.io/psycop-model-evaluation/references.html
 [FAQ]: https://MartinBernstorff.github.io/psycop-model-evaluation/faq.html
 [github issue tracker]: https://github.com/MartinBernstorff/psycop-model-evaluation/issues
 [github discussions]: https://github.com/MartinBernstorff/psycop-model-evaluation/discussions
-
-# Overview of repository structure
-![Visualization of the codebase](docs/img/fingerprint.svg)
+-->
