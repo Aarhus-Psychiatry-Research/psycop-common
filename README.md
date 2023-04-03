@@ -20,10 +20,10 @@ TODO: Add a short description of the project.
 
 ## Installation
 
-You can install _PSYCOP model evaluation_ via [pip] from [PyPI]:
+You can install _PSYCOP model evaluation_ into your `src` directory by:
 
 ```bash
-pip install psycop-model-evaluation
+pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation#egg=psycop_model_evaluation
 ```
 
 ## Usage
