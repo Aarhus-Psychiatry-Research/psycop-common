@@ -94,6 +94,7 @@ def load_text_sfis(
     """
     if isinstance(text_sfi_names, str):
         text_sfi_names = [text_sfi_names]
+
     # check for invalid note types
     if not set(text_sfi_names).issubset(get_valid_text_sfi_names()):
         raise ValueError(

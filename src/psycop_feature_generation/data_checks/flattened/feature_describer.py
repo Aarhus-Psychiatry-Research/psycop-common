@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
 from psycop_feature_generation.loaders.flattened.local_feature_loaders import (
-    load_split_predictors,
+    load_split,
 )
 from timeseriesflattener.feature_spec_objects import (
     PredictorSpec,
@@ -97,9 +97,9 @@ def generate_temporal_feature_description(
     d = {
         "Predictor df": predictor_spec.feature_name,
         "Lookbehind days": predictor_spec.interval_days,
-        "Resolve multiple": predictor_spec.resolve_multiple_fn,
+        "Resolve multiple": predictor_spec.resolve_multiple_fn.__name__,
         "N unique": series.nunique(),
-        "Fallback strategy": predictor_spec.fallback,
+        "Fallback strategy": str(predictor_spec.fallback),
         "Proportion missing": series.isna().mean(),
         "Mean": round(series.mean(), 2),
         "Histogram": create_unicode_hist(series),
@@ -214,17 +214,16 @@ def save_feature_descriptive_stats_from_dir(
     for split in splits:
         msg.info(f"{split}: Creating descriptive stats for feature set")
 
-        predictors = load_split_predictors(
+        dataset = load_split(
             feature_set_dir=feature_set_dir,
             split=split,
-            include_id=False,
             file_suffix=file_suffix,
         )
 
         msg.info(f"{split}: Generating descriptive stats dataframe")
 
         feature_descriptive_stats = generate_feature_description_df(
-            df=predictors,
+            df=dataset,
             predictor_specs=feature_specs,
         )
 
