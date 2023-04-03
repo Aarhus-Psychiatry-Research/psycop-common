@@ -2,7 +2,7 @@ from typing import Union
 
 import pandas as pd
 import wandb
-from psycop_model_evaluation.binary_classification.tables.output_table import (
+from psycop_model_evaluation.utils import (
     output_table,
 )
 

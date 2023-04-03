@@ -1,7 +1,7 @@
 """Test that the descriptive stats table is generated correctly."""
 
 import pandas as pd
-from psycop_model_evaluation.binary_classification.tables.descriptive_stats_table import (
+from psycop_model_evaluation.descriptive_stats_table import (
     DescriptiveStatsTable,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset

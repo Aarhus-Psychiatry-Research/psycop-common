@@ -9,7 +9,7 @@ from typing import Literal
 
 import numpy as np
 import pytest
-from psycop_model_evaluation.binary_classification.plots.base_charts import (
+from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
 from psycop_model_evaluation.binary_classification.plots.feature_importance.sklearn.feature_importance import (

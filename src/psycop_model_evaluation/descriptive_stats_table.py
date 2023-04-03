@@ -5,11 +5,12 @@ from typing import Optional, Union
 
 import pandas as pd
 import wandb
-from psycop_model_evaluation.binary_classification.tables.output_table import (
+from psycop_model_training.model_eval.dataclasses import EvalDataset
+
+from psycop_model_evaluation.utils import (
+    bin_continuous_data,
     output_table,
 )
-from psycop_model_evaluation.utils import bin_continuous_data
-from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
 class DescriptiveStatsTable:

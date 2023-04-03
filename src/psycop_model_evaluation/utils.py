@@ -13,6 +13,7 @@ from typing import Any, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
+import wandb
 from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -85,7 +86,7 @@ def flatten_nested_dict(
     return dict(items)  # type: ignore
 
 
-def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-return-statements
+def drop_records_if_datediff_days_smaller_than(
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
@@ -119,10 +120,7 @@ def round_floats_to_edge(series: pd.Series, bins: Sequence[float]) -> pd.Series:
         A numpy ndarray with the borders.
     """
     _, edges = pd.cut(series, bins=bins, retbins=True, duplicates="drop")
-    labels = [  # pylint: disable=unsubscriptable-object
-        f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]"  # pylint: disable=unsubscriptable-object
-        for i in range(len(bins) - 1)
-    ]
+    labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
 
     return pd.cut(series, bins=bins, labels=labels)
 
@@ -325,3 +323,18 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
 def get_percent_lost(n_before: float, n_after: float) -> float:
     """Get the percent lost."""
     return round((100 * (1 - n_after / n_before)), 2)
+
+
+def output_table(
+    output_format: str,
+    df: pd.DataFrame,
+) -> Union[pd.DataFrame, wandb.Table, str]:
+    """Output table in specified format."""
+    if output_format == "html":
+        return df.reset_index(drop=True).to_html()
+    if output_format == "df":
+        return df.reset_index(drop=True)
+    if output_format == "wandb_table":
+        return wandb.Table(dataframe=df)
+
+    raise ValueError("Output format does not match anything that is allowed")

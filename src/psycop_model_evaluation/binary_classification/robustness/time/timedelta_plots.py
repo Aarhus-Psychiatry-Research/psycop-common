@@ -11,7 +11,7 @@ from psycop_model_evaluation.binary_classification.plots.base_charts import (
 from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.timedelta.data_by_timedelta import (
     create_performance_by_timedelta,
 )
-from psycop_model_evaluation.binary_classification.plots.utils import (
+from psycop_model_evaluation.binary_classification.utils import (
     get_top_fraction,
 )
 from psycop_model_evaluation.utils import bin_continuous_data
