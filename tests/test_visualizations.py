@@ -9,41 +9,35 @@ from typing import Literal
 
 import numpy as np
 import pytest
-from psycop_model_evaluation.base_artifacts.plots.base_charts import (
+from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.base_artifacts.plots.feature_importance import (
-    plot_feature_importances,
-)
-from psycop_model_evaluation.base_artifacts.plots.performance_by_age import (
-    plot_roc_auc_by_age,
-)
-from psycop_model_evaluation.base_artifacts.plots.performance_by_sex import (
-    plot_roc_auc_by_sex,
-)
-from psycop_model_evaluation.base_artifacts.plots.performance_over_time import (
-    plot_metric_by_calendar_time,
-    plot_recall_by_calendar_time,
-    plot_roc_auc_by_cyclic_time,
-    plot_roc_auc_by_time_from_first_visit,
-    plot_sensitivity_by_time_until_diagnosis,
-)
-from psycop_model_evaluation.base_artifacts.plots.precision_recall import (
+from psycop_model_evaluation.binary.global_performance.precision_recall import (
     plot_precision_recall,
 )
-from psycop_model_evaluation.base_artifacts.plots.prob_over_time import (
+from psycop_model_evaluation.binary.global_performance.roc_auc import plot_auc_roc
+from psycop_model_evaluation.binary.subgroups.age import plot_roc_auc_by_age
+from psycop_model_evaluation.binary.subgroups.sex import plot_roc_auc_by_sex
+from psycop_model_evaluation.binary.time.absolute_plots import (
+    plot_metric_by_absolute_time,
     plot_prob_over_time,
+    plot_recall_by_absolute_time,
 )
-from psycop_model_evaluation.base_artifacts.plots.roc_auc import (
-    plot_auc_roc,
+from psycop_model_evaluation.binary.time.periodic_plots import (
+    plot_roc_auc_by_periodic_time,
 )
-from psycop_model_evaluation.base_artifacts.plots.sens_over_time import (
+from psycop_model_evaluation.binary.time.timedelta_data import (
     create_sensitivity_by_time_to_outcome_df,
 )
-from psycop_model_evaluation.base_artifacts.plots.time_from_first_positive_to_event import (
+from psycop_model_evaluation.binary.time.timedelta_plots import (
+    plot_roc_auc_by_time_from_first_visit,
+    plot_sensitivity_by_time_until_diagnosis,
     plot_time_from_first_positive_to_event,
 )
-from psycop_model_evaluation.utils.utils import TEST_PLOT_PATH
+from psycop_model_evaluation.feature_importance.sklearn.feature_importance import (
+    plot_feature_importances,
+)
+from psycop_model_evaluation.utils import TEST_PLOT_PATH
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
@@ -107,7 +101,7 @@ def test_plot_performance_by_calendar_time(
     synth_eval_dataset: EvalDataset,
     bin_period: Literal["M", "Q", "Y"],
 ):
-    plot_metric_by_calendar_time(
+    plot_metric_by_absolute_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
         save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",  # type: ignore
@@ -117,7 +111,7 @@ def test_plot_performance_by_calendar_time(
 def test_plot_recall_by_calendar_time(
     synth_eval_dataset: EvalDataset,
 ):
-    plot_recall_by_calendar_time(
+    plot_recall_by_absolute_time(
         eval_dataset=synth_eval_dataset,
         positive_rates=[0.4, 0.6, 0.8],
         bins=list(range(0, 1460, 180)),
@@ -134,7 +128,7 @@ def test_plot_performance_by_cyclic_time(
     synth_eval_dataset: EvalDataset,
     bin_period: str,
 ):
-    plot_roc_auc_by_cyclic_time(
+    plot_roc_auc_by_periodic_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
     )

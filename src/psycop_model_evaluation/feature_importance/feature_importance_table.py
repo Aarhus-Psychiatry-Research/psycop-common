@@ -1,23 +1,10 @@
-"""Tables for description and evaluation of models and patient population."""
 from typing import Union
 
 import pandas as pd
 import wandb
-
-
-def output_table(
-    output_format: str,
-    df: pd.DataFrame,
-) -> Union[pd.DataFrame, wandb.Table, str]:
-    """Output table in specified format."""
-    if output_format == "html":
-        return df.reset_index(drop=True).to_html()
-    if output_format == "df":
-        return df.reset_index(drop=True)
-    if output_format == "wandb_table":
-        return wandb.Table(dataframe=df)
-
-    raise ValueError("Output format does not match anything that is allowed")
+from psycop_model_evaluation.utils import (
+    output_table,
+)
 
 
 def generate_feature_importances_table(
@@ -25,11 +12,9 @@ def generate_feature_importances_table(
     output_format: str = "wandb_table",
 ) -> Union[pd.DataFrame, wandb.Table, str]:
     """Generate table with feature importances.
-
     Args:
         feature_importance_dict (dict[str, float]): Dictionary with feature importances
         output_format (str, optional): The output format. Takes one of "html", "df", "wandb_table". Defaults to "wandb_table".
-
     Returns:
         Union[pd.DataFrame, wandb.Table]: The table with feature importances
     """
@@ -50,7 +35,6 @@ def generate_selected_features_table(
     removed_first: bool = True,
 ) -> Union[pd.DataFrame, wandb.Table, str]:
     """Get table with feature selection results.
-
     Args:
         selected_features_dict (dict[str, bool]): Dictionary with feature selection results
         output_format (str, optional): The output format. Takes one of "html", "df", "wandb_table". Defaults to "wandb_table".

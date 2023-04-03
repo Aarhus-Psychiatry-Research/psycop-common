@@ -1,0 +1,23 @@
+on:
+  push:
+    branches: [main]
+
+jobs:
+  repo_fingerprint:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "${{ github.workflow }} @ ${{ github.ref }}"
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.PAT }}
+
+      - name: Update diagram
+        uses: githubocto/repo-visualizer@0.7.1
+        with:
+          root_path: "src/"
+          output_file: "fingerprint.svg"
+          excluded_paths: "dist,node_modules"
