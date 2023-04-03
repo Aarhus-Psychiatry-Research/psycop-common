@@ -2,21 +2,48 @@
 
 # PSYCOP model evaluation
 
-[![PyPI](https://img.shields.io/pypi/v/psycop-model-evaluation.svg)][pypi status]
-[![Python Version](https://img.shields.io/pypi/pyversions/psycop-model-evaluation)][pypi status]
-[![documentation](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation]
+<!-- [![PyPI](https://img.shields.io/pypi/v/psycop-model-evaluation.svg)][pypi status] -->
+<!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-model-evaluation)][pypi status] -->
+<!-- [![documentation](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation] -->
 [![Tests](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/tests/badge.svg)][tests]
-
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 
-[pypi status]: https://pypi.org/project/psycop-model-evaluation/
-[documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/
+<!-- [pypi status]: https://pypi.org/project/psycop-model-evaluation/ -->
+<!-- [documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/ -->
 [tests]: https://github.com/MartinBernstorff/psycop-model-evaluation/actions?workflow=Tests
 [black]: https://github.com/psf/black
 
-How about changes to this readme?
+Collection of model evaluations for the PSYCOP project.
 
-TODO: Add a short description of the project.
+The repository is structured like:
+```
+src/psycop_model_evaluation
+├── base_charts.py                            # General charts, e.g. a generic "scatter" chart.
+├── binary                                    # Evaluations of binary classification
+│   ├── global_performance                    # Performance across subgroups and thresholds
+│   │   ├── precision_recall.py
+│   │   └── roc_auc.py
+│   ├── performance_by_true_positive_rate.py  # Performance for given thresholds
+│   ├── subgroups                             # Subgroups analyses
+│   │   ├── age.py
+│   │   ├── base.py
+│   │   └── sex.py
+│   ├── time                                  # Time analyses
+│   │   ├── absolute_data.py                  # Absolute time is time as we usually think of it
+│   │   ├── absolute_plots.py
+│   │   ├── periodic_data.py                  # Periodic time is e.g. "day of week" or "week of year"
+│   │   ├── periodic_plots.py
+│   │   ├── timedelta_data.py                 # Timedelta is e.g. time from first visit
+│   │   └── timedelta_plots.py
+│   └── utils.py
+├── descriptive_stats_table.py                # Descriptive statistics, e.g. a "table 1"
+├── feature_importance                        # Feature importance
+│   ├── feature_importance_table.py
+│   └── sklearn
+│       └── feature_importance.py
+├── time_to_event                             # Evaluations for time to event
+└── utils.py
+```
 
 ## Installation
 
@@ -37,7 +64,7 @@ And when adding it to your dependencies in your `pyproject.toml`:
 TODO: Add minimal usage example
 
 To see more examples, see the [documentation].
-
+<!--
 # 📖 Documentation
 
 | Documentation         |                                                  |
@@ -47,7 +74,7 @@ To see more examples, see the [documentation].
 | 👩‍💻 **[Tutorials]**     | Tutorials for using this package                 |
 | 🎛️ **[API Reference]** | API reference for this package                   |
 | 📚 **[FAQ]**           | Frequently asked questions                       |
-
+-->
 
 # 💬 Where to ask questions
 
@@ -59,13 +86,11 @@ To see more examples, see the [documentation].
 | 👩‍💻 **Usage Questions**          | [GitHub Discussions]   |
 | 🗯 **General Discussion**       | [GitHub Discussions]   |
 
-[Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
+<!-- [Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
 [Installation]: https://MartinBernstorff.github.io/psycop-model-evaluation/installation.html
 [Tutorials]: https://MartinBernstorff.github.io/psycop-model-evaluation/tutorials.html
 [API Reference]: https://MartinBernstorff.github.io/psycop-model-evaluation/references.html
 [FAQ]: https://MartinBernstorff.github.io/psycop-model-evaluation/faq.html
 [github issue tracker]: https://github.com/MartinBernstorff/psycop-model-evaluation/issues
 [github discussions]: https://github.com/MartinBernstorff/psycop-model-evaluation/discussions
-
-# Overview of repository structure
-![Visualization of the codebase](docs/img/fingerprint.svg)
+-->
