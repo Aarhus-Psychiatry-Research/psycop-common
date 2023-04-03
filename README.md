@@ -1,11 +1,9 @@
-<a href="https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation"><img src="https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/blob/main/docs/_static/icon.png?raw=true" width="100" align="right"/></a>
-
 # PSYCOP model evaluation
 
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-model-evaluation.svg)][pypi status] -->
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-model-evaluation)][pypi status] -->
 <!-- [![documentation](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation] -->
-[![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/workflows/tests/badge.svg)][tests]
+<!-- [![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/workflows/tests/badge.svg)][tests] -->
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 
 <!-- [pypi status]: https://pypi.org/project/psycop-model-evaluation/ -->
