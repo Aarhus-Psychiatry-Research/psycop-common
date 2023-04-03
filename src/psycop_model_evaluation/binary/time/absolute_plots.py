@@ -10,16 +10,16 @@ import seaborn as sns
 from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary_classification.time.absolute_time_data import (
+from psycop_model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )
-from psycop_model_evaluation.binary_classification.time.timedelta_data import (
+from psycop_model_evaluation.binary.time.timedelta_data import (
     create_sensitivity_by_time_to_outcome_df,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
-def plot_metric_by_linear_time(
+def plot_metric_by_absolute_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
@@ -67,7 +67,7 @@ def plot_metric_by_linear_time(
     )
 
 
-def plot_recall_by_linear_time(
+def plot_recall_by_absolute_time(
     eval_dataset: EvalDataset,
     positive_rates: Union[float, Iterable[float]],
     bins: Sequence[float],

@@ -1,13 +1,13 @@
 from collections.abc import Iterable
 
 import pandas as pd
-from psycop_model_evaluation.binary_classification.utils import (
+from psycop_model_evaluation.binary.utils import (
     calc_performance,
 )
 from sklearn.metrics import roc_auc_score
 
 
-def roc_auc_by_cyclic_time_df(
+def roc_auc_by_periodic_time_df(
     labels: Iterable[int],
     y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],

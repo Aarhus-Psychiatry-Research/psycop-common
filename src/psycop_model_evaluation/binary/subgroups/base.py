@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from typing import Optional
 
 import pandas as pd
-from psycop_model_evaluation.binary_classification.utils import (
+from psycop_model_evaluation.binary.utils import (
     calc_performance,
 )
 from psycop_model_evaluation.utils import bin_continuous_data

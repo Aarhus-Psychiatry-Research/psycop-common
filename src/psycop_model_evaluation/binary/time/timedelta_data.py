@@ -4,7 +4,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 from pandas import Series
-from psycop_model_evaluation.binary_classification.utils import (
+from psycop_model_evaluation.binary.utils import (
     calc_performance,
 )
 from psycop_model_evaluation.utils import (

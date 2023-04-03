@@ -1,5 +1,5 @@
 import pandas as pd
-from psycop_model_evaluation.binary_classification.plots.robustness.time.linear.timedelta.data_by_timedelta import (
+from psycop_model_evaluation.binary.time.timedelta_data import (
     create_performance_by_timedelta,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset

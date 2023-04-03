@@ -4,13 +4,13 @@ from typing import Optional, Union
 from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary_classification.time.periodic_time_data import (
-    roc_auc_by_cyclic_time_df,
+from psycop_model_evaluation.binary.time.periodic_data import (
+    roc_auc_by_periodic_time_df,
 )
 from psycop_model_training.model_eval.dataclasses import EvalDataset
 
 
-def plot_roc_auc_by_cyclic_time(
+def plot_roc_auc_by_periodic_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: str = "Y",
@@ -28,7 +28,7 @@ def plot_roc_auc_by_cyclic_time(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    df = roc_auc_by_cyclic_time_df(
+    df = roc_auc_by_periodic_time_df(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,

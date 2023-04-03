@@ -8,10 +8,10 @@ from pandas import Series
 from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary_classification.time.timedelta_data import (
+from psycop_model_evaluation.binary.time.timedelta_data import (
     create_performance_by_timedelta,
 )
-from psycop_model_evaluation.binary_classification.utils import (
+from psycop_model_evaluation.binary.utils import (
     get_top_fraction,
 )
 from psycop_model_evaluation.utils import bin_continuous_data
