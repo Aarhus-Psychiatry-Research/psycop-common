@@ -21,7 +21,11 @@ src/psycop_model_evaluation
 │   ├── global_performance                    # E.g. precision_recall and roc_auc
 │   ├── performance_by_true_positive_rate.py  # Performance for given thresholds
 │   ├── subgroups                             # Subgroups analyses, e.g. age and sex
-│   ├── time                                  # Time analyses. Absolute (how we usually think of time), periodic (e.g. day of week, week of year) and timedelta (e.g. time from first visit)
+│   └── time                                  # Time analyses. 
+│                                             # Absolute (how we usually think of time) 
+│                                             # Periodic (e.g. day of week, week of year) and 
+│                                             # Timedelta (e.g. time from first visit)
+│ 
 ├── descriptive_stats_table.py                # Descriptive statistics, e.g. a "table 1"
 ├── feature_importance                        # Feature importance
 │   ├── feature_importance_table.py
