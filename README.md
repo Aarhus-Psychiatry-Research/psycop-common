@@ -26,6 +26,12 @@ You can install _PSYCOP model evaluation_ into your `src` directory by:
 pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation#egg=psycop_model_evaluation
 ```
 
+And when adding it to your dependencies in your `pyproject.toml`:
+
+```bash
+  "psycop-model-evaluation @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation#egg=psycop_model_evaluation",
+```
+
 ## Usage
 
 TODO: Add minimal usage example
