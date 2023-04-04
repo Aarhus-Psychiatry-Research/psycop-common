@@ -1,16 +1,15 @@
-<a href="https://github.com/MartinBernstorff/psycop-model-evaluation"><img src="https://github.com/MartinBernstorff/psycop-model-evaluation/blob/main/docs/_static/icon.png?raw=true" width="100" align="right"/></a>
-
 # PSYCOP model evaluation
 
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-model-evaluation.svg)][pypi status] -->
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-model-evaluation)][pypi status] -->
 <!-- [![documentation](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation] -->
 [![Tests](https://github.com/MartinBernstorff/psycop-model-evaluation/actions/workflows/tests.yml/badge.svg)][tests]
+<!-- [![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/workflows/tests/badge.svg)][tests] -->
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 
 <!-- [pypi status]: https://pypi.org/project/psycop-model-evaluation/ -->
-<!-- [documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/ -->
-[tests]: https://github.com/MartinBernstorff/psycop-model-evaluation/actions?workflow=Tests
+<!-- [documentation]: https://Aarhus-Psychiatry-Research.github.io/psycop-model-evaluation/ -->
+[tests]: https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/actions?workflow=Tests
 [black]: https://github.com/psf/black
 
 Collection of model evaluations for the PSYCOP project.
@@ -20,22 +19,14 @@ The repository is structured like:
 src/psycop_model_evaluation
 ├── base_charts.py                            # General charts, e.g. a generic "scatter" chart.
 ├── binary                                    # Evaluations of binary classification
-│   ├── global_performance                    # Performance across subgroups and thresholds
-│   │   ├── precision_recall.py
-│   │   └── roc_auc.py
+│   ├── global_performance                    # E.g. precision_recall and roc_auc
 │   ├── performance_by_true_positive_rate.py  # Performance for given thresholds
-│   ├── subgroups                             # Subgroups analyses
-│   │   ├── age.py
-│   │   ├── base.py
-│   │   └── sex.py
-│   ├── time                                  # Time analyses
-│   │   ├── absolute_data.py                  # Absolute time is time as we usually think of it
-│   │   ├── absolute_plots.py
-│   │   ├── periodic_data.py                  # Periodic time is e.g. "day of week" or "week of year"
-│   │   ├── periodic_plots.py
-│   │   ├── timedelta_data.py                 # Timedelta is e.g. time from first visit
-│   │   └── timedelta_plots.py
-│   └── utils.py
+│   ├── subgroups                             # Subgroups analyses, e.g. age and sex
+│   └── time                                  # Time analyses. 
+│                                             # Absolute (how we usually think of time) 
+│                                             # Periodic (e.g. day of week, week of year) and 
+│                                             # Timedelta (e.g. time from first visit)
+│ 
 ├── descriptive_stats_table.py                # Descriptive statistics, e.g. a "table 1"
 ├── feature_importance                        # Feature importance
 │   ├── feature_importance_table.py
@@ -61,9 +52,8 @@ And when adding it to your dependencies in your `pyproject.toml`:
 
 ## Usage
 
-TODO: Add minimal usage example
+For an example use case, see [t2d-baseline-paper](https://github.com/Aarhus-Psychiatry-Research/t2d-baseline-paper).
 
-To see more examples, see the [documentation].
 <!--
 # 📖 Documentation
 

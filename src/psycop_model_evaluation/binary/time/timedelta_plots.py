@@ -1,3 +1,4 @@
+import typing as t
 from collections.abc import Sequence
 from datetime import timedelta
 from pathlib import Path
@@ -21,7 +22,7 @@ from sklearn.metrics import recall_score, roc_auc_score
 
 def plot_roc_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
-    bins: tuple = (0, 28, 182, 365, 730, 1825),
+    bins: t.Sequence[float] = (0, 28, 182, 365, 730, 1825),
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     y_limits: tuple[float, float] = (0.5, 1.0),
