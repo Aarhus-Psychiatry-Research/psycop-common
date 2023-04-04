@@ -200,22 +200,100 @@ def sync_pr(c: Context):
             c.run("gh pr view --web", pty=True)
 
 
-def create_pr(c: Context):
-    c.run(
-        "gh pr create --web",
+def exit_if_error_in_stdout(result: Result):
+    # Find N remaining using regex
+
+    if "error" in result.stdout:
+        errors_remaining = re.findall(r"\d+(?=( remaining))", result.stdout)[
+            0
+        ]  # testing
+        if errors_remaining != "0":
+            exit(0)
+
+
+def pre_commit(c: Context):
+    """Run pre-commit checks."""
+
+    # Essential to have a clean working directory before pre-commit to avoid committing
+    # heterogenous files under a "style: linting" commit
+    if is_uncommitted_changes(c):
+        print(
+            f"{Emo.WARN} Your git working directory is not clean. Stash or commit before running pre-commit.",
+        )
+        exit(0)
+
+    echo_header(f"{Emo.CLEAN} Running pre-commit checks")
+    pre_commit_cmd = "pre-commit run --all-files"
+    result = c.run(pre_commit_cmd, pty=True, warn=True)
+
+    exit_if_error_in_stdout(result)
+
+    if "fixed" in result.stdout or "reformatted" in result.stdout:
+        _add_commit(c, msg="style: linting")
+
+        print(f"{Emo.DO} Fixed errors, re-running pre-commit checks")
+        second_result = c.run(pre_commit_cmd, pty=True, warn=True)
+        exit_if_error_in_stdout(second_result)
+
+
+def mypy(c: Context):
+    echo_header(f"{Emo.CLEAN} Running mypy")
+    c.run("mypy .", pty=True)
+
+
+@task
+def install(c: Context):
+    echo_header(f"{Emo.DO} Installing project")
+    c.run("pip install -e '.[dev,tests]'")
+
+
+@task
+def setup(c: Context, python_version: str = "3.9"):
+    git_init(c)
+    venv_name = setup_venv(c, python_version=python_version)
+    print(
+        f"{Emo.DO} Activate your virtual environment by running: \n\n\t\t source {venv_name}/bin/activate \n",
+    )
+    print(f"{Emo.DO} Then install the project by running: \n\n\t\t inv install\n")
+
+
+@task
+def update(c: Context):
+    echo_header(f"{Emo.DO} Updating project")
+    c.run("pip install --upgrade -e '.[dev,tests]'")
+
+
+@task
+def test(c: Context):
+    echo_header(f"{Emo.TEST} Running tests")
+    test_result: Result = c.run(
+        "pytest -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q",
+        warn=True,
         pty=True,
     )
 
+    # If "failed" in the pytest results
+    if "failed" in test_result.stdout:
+        print("\n\n\n")
+        echo_header("Failed tests")
 
-def branch_exists_on_remote(c: Context) -> bool:
-    branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
+        # Get lines with "FAILED" in them from the .pytest_results file
+        failed_tests = [
+            line
+            for line in Path("tests/.pytest_results").read_text().splitlines()
+            if line.startswith("FAILED")
+        ]
 
-    branch_exists_result: Result = c.run(
-        f"git ls-remote --heads origin {branch_name}",
-        hide=True,
-    )
+        for line in failed_tests:
+            # Remove from start of line until /test_
+            line_sans_prefix = line[line.find("test_") :]
 
-    return branch_name in branch_exists_result.stdout
+            # Keep only that after ::
+            line_sans_suffix = line_sans_prefix[line_sans_prefix.find("::") + 2 :]
+            print(f"FAILED {Emo.FAIL} #{line_sans_suffix}     ")
+
+    if "failed" in test_result.stdout or "error" in test_result.stdout:
+        exit(0)
 
 
 @task
