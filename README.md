@@ -5,6 +5,7 @@ psycop-model-training
 ==============================
 ![python versions](https://img.shields.io/badge/Python-%3E=3.9-blue)
 [![Code style: black](https://img.shields.io/badge/Code%20Style-Black-black)](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html)
+[![Tests](https://github.com/MartinBernstorff/psycop-model-training/actions/workflows/tests.yml/badge.svg)][tests]
 
 Prediction of type 2 diabetes among patients with visits to psychiatric hospital departments.
 
