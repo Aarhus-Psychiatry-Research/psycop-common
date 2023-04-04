@@ -13,8 +13,7 @@ def load_text_split(
     text_sfi_names=str,
     split_name=Literal["train", "val"],
 ) -> pd.DataFrame:
-
-    """Loads specified text sfi and only keeps data from the specified split"""
+    """Load specified text sfi and only keeps data from the specified split"""
 
     text_df = load_text_sfis(text_sfi_names=text_sfi_names)
 
