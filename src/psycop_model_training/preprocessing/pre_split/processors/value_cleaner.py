@@ -60,7 +60,7 @@ class PreSplitValueCleaner:
         return dataset
 
     def _offset_negative_values(self, dataset: pd.DataFrame) -> pd.DataFrame:
-        """Offset values with min negative value, so all values are positive"""
+        """Offset values with minimum negative value, so all values will be non-negative"""
 
         preds = dataset[infer_predictor_col_name(df=dataset)]
 
