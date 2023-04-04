@@ -51,6 +51,8 @@ def setup_venv(
 
     c.run(f"source {venv_name}/bin/activate")
 
+    return venv_name
+
 
 def _add_commit(c: Context, msg: Optional[str] = None):
     print("🔨 Adding and committing changes")
@@ -185,8 +187,11 @@ def install(c: Context):
 @task
 def setup(c: Context, python_version: str = "3.9"):
     git_init(c)
-    setup_venv(c, python_version=python_version)
-    install(c)
+    venv_name = setup_venv(c, python_version=python_version)
+    print(
+        f"{Emo.DO} Activate your virtual environment by running: \n\n\t\t source {venv_name}/bin/activate \n",
+    )
+    print(f"{Emo.DO} Then install the project by running: \n\n\t\t inv install\n")
 
 
 @task

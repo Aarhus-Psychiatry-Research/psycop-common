@@ -1,0 +1,101 @@
+diff a/tasks.py b/tasks.py	(rejected hunks)
+@@ -1,8 +1,25 @@
++"""
++This project uses Invoke (pyinvoke.org) for task management.
++Install it via:
++
++```
++pip install invoke
++```
++
++And then run:
++
++```
++inv --list
++```
++"""
++
++
++import re
++from dataclasses import dataclass
+ from pathlib import Path
+ from typing import Optional
+ 
+ from invoke import Context, Result, task
+-from dataclasses import dataclass
+ 
+ 
+ def echo_header(msg: str):
+@@ -37,11 +54,13 @@ def git_init(c: Context):
+ def setup_venv(
+     c: Context,
+     python_version: str,
+-):
++) -> str:
+     venv_name = f'.venv{python_version.replace(".", "")}'
+ 
+     if not Path(venv_name).exists():
+-        echo_header(f"{Emo.DO} Creating virtual environment for {Emo.PY}{python_version}")
++        echo_header(
++            f"{Emo.DO} Creating virtual environment for {Emo.PY}{python_version}",
++        )
+         c.run(f"python{python_version} -m venv {venv_name}")
+         print(f"{Emo.GOOD} Virtual environment created")
+     else:
+@@ -140,13 +161,19 @@ def update_pr(c: Context):
+ 
+ 
+ def exit_if_error_in_stdout(result: Result):
++    # Find N remaining using regex
++
+     if "error" in result.stdout:
+-        exit(0)
++        errors_remaining = re.findall(r"\d+(?=( remaining))", result.stdout)[
++            0
++        ]  # testing
++        if errors_remaining != "0":
++            exit(0)
+ 
+ 
+ def pre_commit(c: Context):
+     """Run pre-commit checks."""
+-    
++
+     # Essential to have a clean working directory before pre-commit to avoid committing
+     # heterogenous files under a "style: linting" commit
+     if is_uncommitted_changes(c):
+@@ -154,7 +181,7 @@ def pre_commit(c: Context):
+             f"{Emo.WARN} Your git working directory is not clean. Stash or commit before running pre-commit.",
+         )
+         exit(0)
+-        
++
+     echo_header(f"{Emo.CLEAN} Running pre-commit checks")
+     pre_commit_cmd = "pre-commit run --all-files"
+     result = c.run(pre_commit_cmd, pty=True, warn=True)
+@@ -222,11 +252,24 @@ def test(c: Context):
+             line_sans_suffix = line_sans_prefix[line_sans_prefix.find("::") + 2 :]
+             print(f"FAILED {Emo.FAIL} #{line_sans_suffix}     ")
+ 
+-    if "failed" in test_result.stdout or "error" in test_result.stdout: 
++    if test_result.return_code != 0:
+         exit(0)
+ 
++
++def test_for_rej(c: Context):
++    # Check if any file in current directory, or its subdirectories, has a .rej extension
++    # If so, exit
++    rej_files = c.run("find . -name '*.rej' -type f -print", hide=True)
++
++    if ".rej" in rej_files.stdout:
++        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.")
++        print(f"{rej_files.stdout}")
++        exit(0)
++
++
+ @task
+ def lint(c: Context):
++    test_for_rej(c)
+     pre_commit(c)
+     mypy(c)
+ 
