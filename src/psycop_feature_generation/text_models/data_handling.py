@@ -1,7 +1,6 @@
 from typing import Literal
 
 import pandas as pd
-
 from psycop_feature_generation.application_modules.save_dataset_to_disk import (
     filter_by_split_ids,
     get_split_id_df,
