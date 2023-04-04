@@ -3,7 +3,7 @@
 # PSYCOP utilities for feature generation
 
 [![PyPI version](https://badge.fury.io/py/psycop-feature-generation.svg)](https://pypi.org/project/psycop-feature-generation/)
-![python versions](https://img.shields.io/badge/Python-%3E=3.10-blue)
+![python versions](https://img.shields.io/badge/Python-%3E=3.9-blue)
 [![Code style: black](https://img.shields.io/badge/Code%20Style-Black-black)](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html)
 [![Tests](https://github.com/MartinBernstorff/psycop-feature-generation/actions/workflows/tests.yml/badge.svg)][tests]
 
