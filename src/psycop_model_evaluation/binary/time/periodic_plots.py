@@ -14,7 +14,7 @@ def plot_roc_auc_by_periodic_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: str = "Y",
-    save_path: Optional[str] = None,
+    save_path: Optional[Union[str, Path]] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by cyclic time period of prediction time. Cyclic time
