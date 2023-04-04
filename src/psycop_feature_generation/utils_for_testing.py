@@ -106,13 +106,13 @@ def check_any_item_in_list_has_str(list_of_str: list, str_: str):
     return any(str_ in item for item in list_of_str)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def synth_prediction_times():
     """Load the prediction times."""
     return load_synth_prediction_times()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def synth_outcome():
     """Load the synth outcome times."""
     return load_synth_outcome()

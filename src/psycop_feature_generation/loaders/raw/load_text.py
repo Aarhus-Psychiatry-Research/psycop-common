@@ -1,8 +1,9 @@
 """Load text data from sql warehouse."""
+from __future__ import annotations
 
+from collections.abc import Iterable
 from functools import partial
 from multiprocessing import Pool
-from typing import Iterable, Optional, Union
 
 import pandas as pd
 
@@ -10,14 +11,14 @@ from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
 
 
-def get_all_valid_note_types() -> set[str]:
-    """Returns a set of valid note types. Notice that 'Konklusion' is replaced
+def get_valid_text_sfi_names() -> set[str]:
+    """Returns a set of valid text sfi names. Notice that 'Konklusion' is replaced
     by 'Vurdering/konklusion' in 2020, so make sure to use both. 'Ordination'
     was replaced by 'Ordination, Psykiatry' in 2022, but 'Ordination,
     Psykiatri' is not included in the table. Use with caution.
 
     Returns:
-        Set[str]: Set of valid note types
+        Set[str]: Set of valid text sfi names
     """
     return {
         "Observation af patient, Psykiatri",
@@ -41,17 +42,17 @@ def get_all_valid_note_types() -> set[str]:
     }
 
 
-def _load_notes_for_year(
-    note_types: Union[str, list[str]],
+def _load_text_sfis_for_year(
     year: str,
-    view: Optional[str] = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret",
-    n_rows: Optional[int] = None,
+    text_sfi_names: str | list[str],
+    view: str | None = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret",
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads clinical notes from sql from a specified year and matching
-    specified note types.
+    specified text sfi names.
 
     Args:
-        note_names (Union[str, list[str]]): Which types of notes to load.
+        text_sfi_names (Union[str, list[str]]): Which types of notes to load.
         year (str): Which year to load
         view (str, optional): Which table to load.
             Defaults to "[FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret".
@@ -64,7 +65,7 @@ def _load_notes_for_year(
     sql = (
         "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
         + f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
-        + f" WHERE overskrift IN {note_types}"
+        + f" WHERE overskrift IN {text_sfi_names}"
     )
     return sql_load(
         sql,
@@ -74,15 +75,15 @@ def _load_notes_for_year(
     )
 
 
-def load_notes(
-    note_types: Union[str, Iterable[str]],
-    n_rows: Optional[int] = None,
+def load_text_sfis(
+    text_sfi_names: str | Iterable[str],
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads all clinical notes that match the specified note from all years.
 
     Args:
-        note_types (Union[str, list[str]]): Which note types to load. See
-            `get_all_valid_note_types()` for valid note types.
+        text_sfi_names (Union[str, list[str]]): Which note types to load. See
+            `get_all_valid_text_sfi_names()` for valid note types.
         n_rows (Optional[int], optional): How many rows to load. Defaults to None.
 
     Raises:
@@ -91,23 +92,24 @@ def load_notes(
     Returns:
         pd.DataFrame: Featurized clinical notes
     """
-    if isinstance(note_types, str):
-        note_types = list(note_types)
+    if isinstance(text_sfi_names, str):
+        text_sfi_names = [text_sfi_names]
+
     # check for invalid note types
-    if not set(note_types).issubset(get_all_valid_note_types()):
+    if not set(text_sfi_names).issubset(get_valid_text_sfi_names()):
         raise ValueError(
             "Invalid note type. Valid note types are: "
-            + str(get_all_valid_note_types()),
+            + str(get_valid_text_sfi_names()),
         )
 
-    # convert note_types to sql query
-    note_types = "('" + "', '".join(note_types) + "')"
+    # convert text_sfi_names to sql query
+    text_sfi_names = "('" + "', '".join(text_sfi_names) + "')"
 
     view = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret"
 
     load_and_featurize = partial(
-        _load_notes_for_year,
-        note_types=note_types,
+        _load_text_sfis_for_year,
+        text_sfi_names=text_sfi_names,
         view=view,
         n_rows=n_rows,
     )
@@ -127,7 +129,7 @@ def load_notes(
 
 @data_loaders.register("all_notes")
 def load_all_notes(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Returns all notes from all years.
 
@@ -137,15 +139,15 @@ def load_all_notes(
     Returns:
         pd.DataFrame: (Featurized) notes
     """
-    return load_notes(
-        note_types=get_all_valid_note_types(),
+    return load_text_sfis(
+        text_sfi_names=get_valid_text_sfi_names(),
         n_rows=n_rows,
     )
 
 
 @data_loaders.register("aktuelt_psykisk")
 def load_aktuel_psykisk(
-    n_rows: Optional[int] = None,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Returns 'Aktuelt psykisk' notes from all years.
 
@@ -155,28 +157,28 @@ def load_aktuel_psykisk(
     Returns:
         pd.DataFrame: (Featurized) notes
     """
-    return load_notes(
-        note_types="Aktuelt psykisk",
+    return load_text_sfis(
+        text_sfi_names="Aktuelt psykisk",
         n_rows=n_rows,
     )
 
 
-@data_loaders.register("load_note_types")
+@data_loaders.register("load_text_sfis")
 def load_arbitrary_notes(
-    note_types: Union[str, list[str]],
-    n_rows: Optional[int] = None,
+    text_sfi_names: str | list[str],
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Returns one or multiple note types from all years.
 
     Args:
-        note_types (Union[str, list[str]]): Which note types to load. See
-            `get_all_valid_note_types()` for a list of valid note types.
+        text_sfi_names (Union[str, list[str]]): Which note types to load. See
+            `get_all_valid_text_sfi_names()` for a list of valid note types.
         n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
 
     Returns:
         pd.DataFrame: (Featurized) notes
     """
-    return load_notes(
-        note_types,
+    return load_text_sfis(
+        text_sfi_names,
         n_rows=n_rows,
     )

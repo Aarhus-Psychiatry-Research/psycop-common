@@ -1,14 +1,14 @@
 """Utility functions for SQL loading."""
+from __future__ import annotations
 
 import urllib
 import urllib.parse
 from collections.abc import Generator
-from typing import Optional, Union
+from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import create_engine
 from joblib import Memory
-from pathlib import Path
+from sqlalchemy import create_engine, text
 
 # Create a memory cache with the desired directory to store cached results
 cache_dir = Path("E:/shared_resources/sql_cache/")
@@ -20,10 +20,10 @@ def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
     database: str = "USR_PS_Forsk",
-    chunksize: Optional[int] = None,
-    format_timestamp_cols_to_datetime: Optional[bool] = True,
-    n_rows: Optional[int] = None,
-) -> Union[pd.DataFrame, Generator[pd.DataFrame, None, None]]:
+    chunksize: int | None = None,
+    format_timestamp_cols_to_datetime: bool | None = True,
+    n_rows: int | None = None,
+) -> pd.DataFrame | Generator[pd.DataFrame, None, None]:
     """Function to load a SQL query. If chunksize is None, all data will be
     loaded into memory. Otherwise, will stream the data in chunks of chunksize
     as a generator.
@@ -60,8 +60,7 @@ def sql_load(
         stream_results=True,
         fast_executemany=True,
     )
-
-    df = pd.read_sql(query, conn, chunksize=chunksize)
+    df = pd.read_sql(text(query), conn, chunksize=chunksize)
 
     if format_timestamp_cols_to_datetime:
         datetime_col_names = [

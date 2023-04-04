@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Literal
 
 import wandb
-from timeseriesflattener.feature_spec_objects import (  # pylint: disable=no-name-in-module
+from timeseriesflattener.feature_spec_objects import (
     BaseModel,
 )
 
@@ -21,14 +21,14 @@ class Prefixes(BaseModel):
 
     predictor: str = "pred"
     outcome: str = "outc"
-    eval: str = "eval"
+    eval: str = "eval"  # noqa
 
 
 class ColNames(BaseModel):
     """Column names for feature specs."""
 
     timestamp = "timestamp"
-    id = "dw_ek_borger"
+    id = "dw_ek_borger"  # noqa
 
 
 class ProjectInfo(BaseModel):

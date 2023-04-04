@@ -109,9 +109,8 @@ celerybeat.pid
 
 # Environments
 .env
-.venv
+.*venv*
 env/
-venv/
 ENV/
 env.bak/
 venv.bak/
@@ -164,3 +163,4 @@ poetry.lock
 
 # PyCharm
 /.idea/*
+tests/outputs_from_tests

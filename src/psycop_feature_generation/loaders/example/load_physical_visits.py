@@ -1,5 +1,4 @@
 """Example loader for physical visits."""
-from tracemalloc import start
 
 import psycop_feature_generation.loaders.raw as r
 

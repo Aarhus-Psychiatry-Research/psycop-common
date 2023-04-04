@@ -2,6 +2,31 @@
 
 <!--next-version-placeholder-->
 
+## v0.21.4 (2023-04-04)
+### Fix
+* Remove unreasonably high or low bmi values ([`07f52c2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/07f52c207c2c13fc79dd0ba97e243cef470f9fa0))
+
+## v0.21.3 (2023-04-03)
+### Fix
+* Make sql query executable ([`e006490`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e006490b5eb7a1dc4e2f0e902c17d5dcc5d19db9))
+* Str turned into list of characters instead of list of words ([`0fae478`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/0fae47833085eb6c314ab02e86fde66ddfb82c27))
+
+## v0.21.2 (2023-03-27)
+### Fix
+* Add unpack args to skema 2 wo nutrition ([`95c35c8`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/95c35c81991ae7df4b387f3edccb21c03d1aa8ca))
+
+## v0.21.1 (2023-03-22)
+### Fix
+* Only keep weights above 0.5 kg ([`8a5a104`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/8a5a10401442337efd5bd33ce8bcf899fef4c642))
+* Do not load invalid weights ([`7be4653`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/7be465301d57831a425f28f5eaedda1b783df9b9))
+
+## v0.21.0 (2023-03-22)
+### Feature
+* Support new pipe annotation ([`a1bde17`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/a1bde17e354741a65bd85b8364b2cd45eeaab4d0))
+
+### Fix
+* Correct types ([`5cb0d5d`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/5cb0d5dede2746799a1be4c2950685b16a181b11))
+
 ## v0.20.3 (2023-03-14)
 ### Fix
 * Set unpack_to_intervals to default ([`64391ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/64391cabcfd9e95d915f75f12fa64c4b81ee3365))

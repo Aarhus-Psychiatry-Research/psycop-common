@@ -1,12 +1,12 @@
 """Loader for moves between regions."""
-from typing import Optional
+from __future__ import annotations
 
 import pandas as pd
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 
 
-def load_moves(n_rows: Optional[int] = None) -> pd.DataFrame:
+def load_moves(n_rows: int | None = None) -> pd.DataFrame:
     """Get a dataframe with timestamps for each move into or out from the
     Central Denmark Region."""
     view = "[bopael_i_rm]"
@@ -18,7 +18,7 @@ def load_moves(n_rows: Optional[int] = None) -> pd.DataFrame:
     return df
 
 
-def load_move_into_rm_for_exclusion(n_rows: Optional[int] = None) -> pd.DataFrame:
+def load_move_into_rm_for_exclusion(n_rows: int | None = None) -> pd.DataFrame:
     """Get a dataframe with timestamps for each move into or out from the
     Central Denmark Region."""
     df = load_moves(n_rows=n_rows)
