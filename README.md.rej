@@ -1,0 +1,25 @@
+diff a/README.md b/README.md	(rejected hunks)
+@@ -5,7 +5,7 @@
+ [![PyPI](https://img.shields.io/pypi/v/psycop-feature-generation.svg)][pypi status]
+ [![Python Version](https://img.shields.io/pypi/pyversions/psycop-feature-generation)][pypi status]
+ [![documentation](https://github.com/MartinBernstorff/psycop-feature-generation/workflows/documentation/badge.svg)][documentation]
+-[![Tests](https://github.com/MartinBernstorff/psycop-feature-generation/workflows/tests/badge.svg)][tests]
++[![Tests](https://github.com/MartinBernstorff/psycop-feature-generation/actions/workflows/tests.yml/badge.svg)][tests]
+ 
+ [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+ 
+@@ -14,13 +14,11 @@
+ [tests]: https://github.com/MartinBernstorff/psycop-feature-generation/actions?workflow=Tests
+ [black]: https://github.com/psf/black
+ 
+-How about changes to this readme?
+-
+ TODO: Add a short description of the project.
+ 
+ ## Installation
+ 
+-You can install _Psycop Feature Generation_ via [pip] from [PyPI]:
++You can install `psycop-feature-generation` via [pip] from [PyPI]:
+ 
+ ```bash
+ pip install psycop-feature-generation
