@@ -14,7 +14,7 @@ def load_text_split(
     split_name=Literal["train", "val"],
 ) -> pd.DataFrame:
 
-    "Splits text data into training and validation set based on predefined splits."
+    """Loads specified text sfi and only keeps data from the specified split"""
 
     text_df = load_text_sfis(text_sfi_names=text_sfi_names)
 
