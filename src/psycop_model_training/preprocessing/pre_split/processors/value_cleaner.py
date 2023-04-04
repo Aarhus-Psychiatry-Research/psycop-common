@@ -59,6 +59,36 @@ class PreSplitValueCleaner:
 
         return dataset
 
+    def _offset_negative_values(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Offset values with min negative value, so all values are positive"""
+
+        preds = dataset[infer_predictor_col_name(df=dataset)]
+
+        # Get all columns with negative values
+        cols_with_numerical_values = preds.select_dtypes(include=["number"]).columns
+
+        numerical_columns_with_negative_values = [
+            c for c in cols_with_numerical_values if preds[c].min() < 0
+        ]
+
+        df_to_replace = dataset[numerical_columns_with_negative_values].copy()
+
+        # Get minimum value in each column
+        col_min_values = [df_to_replace[c].min() for c in df_to_replace]
+
+        # Offset values with abs min, so min becomes 0
+        df_to_replace = pd.concat(
+            [
+                df_to_replace[c] + abs(col_min_value)
+                for c, col_min_value in zip(df_to_replace, col_min_values)
+            ],
+            axis=1,
+        )
+
+        dataset[numerical_columns_with_negative_values] = df_to_replace
+
+        return dataset
+
     def clean(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Apply the cleaning functions to the dataset."""
         # Super hacky transformation of negative weights (?!) for chi-square.
@@ -67,6 +97,10 @@ class PreSplitValueCleaner:
         # 1b. Always use z-score normalisation?
         if self.pre_split_cfg.negative_values_to_nan:
             dataset = self._negative_values_to_nan(dataset=dataset)
+
+        if self.pre_split_cfg.offset_negative_values:
+            dataset = self._offset_negative_values(dataset=dataset)
+
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
         return dataset
