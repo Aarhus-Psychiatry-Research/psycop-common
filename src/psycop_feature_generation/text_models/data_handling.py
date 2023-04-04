@@ -19,7 +19,9 @@ def load_text_split(
     split_id_df = get_split_id_df(split_name=split_name)
 
     text_split_df = filter_by_split_ids(
-        df_to_split=text_df, split_id_df=split_id_df, split_name=split_name,
+        df_to_split=text_df,
+        split_id_df=split_id_df,
+        split_name=split_name,
     )
 
     return text_split_df
