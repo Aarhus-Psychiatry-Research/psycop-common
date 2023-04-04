@@ -157,9 +157,13 @@ def weight_in_kg(n_rows: int | None = None) -> pd.DataFrame:
 
 @data_loaders.register("bmi")
 def bmi(n_rows: int | None = None) -> pd.DataFrame:
-    return sfi_loader(
+    df = sfi_loader(
         aktivitetstypenavn="Bestemmelse af Body Mass Index (BMI)",
         elementledetekst="BMI",
         n_rows=n_rows,
         value_col="numelementvaerdi",
     )
+
+    df = df[(df["value"] > 10.0) & (df["value"] < 70.0)]
+
+    return df

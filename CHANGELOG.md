@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.21.4 (2023-04-04)
+### Fix
+* Remove unreasonably high or low bmi values ([`07f52c2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/07f52c207c2c13fc79dd0ba97e243cef470f9fa0))
+
 ## v0.21.3 (2023-04-03)
 ### Fix
 * Make sql query executable ([`e006490`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e006490b5eb7a1dc4e2f0e902c17d5dcc5d19db9))
