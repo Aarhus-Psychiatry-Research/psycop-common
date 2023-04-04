@@ -267,9 +267,9 @@ def test_for_rej():
 
 @task
 def lint(c: Context):
+    test_for_rej()
     pre_commit(c)
     mypy(c)
-    test_for_rej()
 
 
 @task
