@@ -5,7 +5,7 @@
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-model-evaluation.svg)][pypi status] -->
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-model-evaluation)][pypi status] -->
 <!-- [![documentation](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation] -->
-[![Tests](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/tests/badge.svg)][tests]
+[![Tests](https://github.com/MartinBernstorff/psycop-model-evaluation/actions/workflows/tests.yml/badge.svg)][tests]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 
 <!-- [pypi status]: https://pypi.org/project/psycop-model-evaluation/ -->

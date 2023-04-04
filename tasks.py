@@ -1,3 +1,20 @@
+"""
+This project uses Invoke (pyinvoke.org) for task management.
+Install it via:
+
+```
+pip install invoke
+```
+
+And then run:
+
+```
+inv --list
+```
+"""
+
+
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -11,35 +28,27 @@ def echo_header(msg: str):
 
 @dataclass
 class Emo:
-    APPLY = "🤖"
-    SUCCESS = "✅"
-    FAILURE = "🚨"
-    WARNING = "🚧"
+    DO = "🤖"
+    GOOD = "✅"
+    FAIL = "🚨"
+    WARN = "🚧"
     SYNC = "🚂"
-    STARTING = "🔨"
-    PYTHON = "🐍"
+    PY = "🐍"
     CLEAN = "🧹"
     TEST = "🧪"
     COMMUNICATE = "📣"
 
 
-@task
-def setup(c: Context, python_version: str = "3.9"):
-    git_init(c)
-    setup_venv(c, python_version=python_version)
-    install(c)
-
-
 def git_init(c: Context):
     # If no .git directory exits
     if not Path(".git").exists():
-        echo_header(f"{Emo.STARTING} Initializing Git repository")
+        echo_header(f"{Emo.DO} Initializing Git repository")
         c.run("git init")
         c.run("git add .")
         c.run("git commit -m 'Initial commit'")
-        print(f"{Emo.SUCCESS} Git repository initialized")
+        print(f"{Emo.GOOD} Git repository initialized")
     else:
-        print(f"{Emo.SUCCESS} Git repository already initialized")
+        print(f"{Emo.GOOD} Git repository already initialized")
 
 
 def setup_venv(
@@ -73,27 +82,6 @@ def _add_commit(c: Context, msg: Optional[str] = None):
     print("\n🤖 Changes added and committed\n")
 
 
-def add_and_commit(c: Context, msg: Optional[str] = None):
-    """Add and commit all changes."""
-    if is_uncommitted_changes(c):
-        uncommitted_changes_descr = c.run(
-            "git status --porcelain",
-            pty=True,
-            hide=True,
-        ).stdout
-
-        echo_header(
-            f"{Emo.WARNING} Uncommitted changes detected",
-        )
-
-        input("Press enter to add and commit the changes...")
-
-        for line in uncommitted_changes_descr.splitlines():
-            print(f"    {line.strip()}")
-        print("\n")
-        _add_commit(c, msg=msg)
-
-
 def is_uncommitted_changes(c: Context) -> bool:
     git_status_result: Result = c.run(
         "git status --porcelain",
@@ -105,16 +93,37 @@ def is_uncommitted_changes(c: Context) -> bool:
     return uncommitted_changes
 
 
-@task
-def pr(c: Context):
-    add_and_commit(c)
-    lint(c)
-    test(c, min_latency=False)
-    sync_with_git_remote(c)
-    sync_pr(c)
+def add_and_commit(c: Context, msg: Optional[str] = None):
+    """Add and commit all changes."""
+    if is_uncommitted_changes(c):
+        uncommitted_changes_descr = c.run(
+            "git status --porcelain",
+            pty=True,
+            hide=True,
+        ).stdout
+
+        echo_header(
+            f"{Emo.WARN} Uncommitted changes detected",
+        )
+
+        for line in uncommitted_changes_descr.splitlines():
+            print(f"    {line.strip()}")
+        print("\n")
+        _add_commit(c, msg=msg)
 
 
-def sync_with_git_remote(c: Context):
+def branch_exists_on_remote(c: Context) -> bool:
+    branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
+
+    branch_exists_result: Result = c.run(
+        f"git ls-remote --heads origin {branch_name}",
+        hide=True,
+    )
+
+    return branch_name in branch_exists_result.stdout
+
+
+def update_branch(c: Context):
     echo_header(f"{Emo.SYNC} Syncing branch with remote")
 
     if not branch_exists_on_remote(c):
@@ -126,7 +135,14 @@ def sync_with_git_remote(c: Context):
         c.run("git push")
 
 
-def sync_pr(c: Context):
+def create_pr(c: Context):
+    c.run(
+        "gh pr create --web",
+        pty=True,
+    )
+
+
+def update_pr(c: Context):
     echo_header(f"{Emo.COMMUNICATE} Syncing PR")
     # Get current branch name
     branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
@@ -145,8 +161,14 @@ def sync_pr(c: Context):
 
 
 def exit_if_error_in_stdout(result: Result):
+    # Find N remaining using regex
+
     if "error" in result.stdout:
-        exit(0)
+        errors_remaining = re.findall(r"\d+(?=( remaining))", result.stdout)[
+            0
+        ]  # testing
+        if errors_remaining != "0":
+            exit(0)
 
 
 def pre_commit(c: Context):
