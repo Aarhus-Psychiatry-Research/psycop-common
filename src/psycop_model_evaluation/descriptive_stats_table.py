@@ -5,7 +5,7 @@ from typing import Optional, Union
 
 import pandas as pd
 import wandb
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 from psycop_model_evaluation.utils import (
     bin_continuous_data,

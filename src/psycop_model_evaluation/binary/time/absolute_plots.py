@@ -16,7 +16,7 @@ from psycop_model_evaluation.binary.time.absolute_data import (
 from psycop_model_evaluation.binary.time.timedelta_data import (
     create_sensitivity_by_time_to_outcome_df,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 
 def plot_metric_by_absolute_time(

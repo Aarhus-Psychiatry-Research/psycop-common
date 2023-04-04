@@ -32,7 +32,8 @@ Feel free to delete or ignore this markdown file.
     * Require status checks to pass before merging
       * Require branches to be up to date before merging
       * Status checks that are required:
-        * mypy
-        * pre-commit
-        * pytest
+        * mypy (type hinting)
+        * pre-commit (formatting)
+        * pytest (tests)
+        * check_for_rej (check for residual cruft updates)
     * Require conversation resolution before merging

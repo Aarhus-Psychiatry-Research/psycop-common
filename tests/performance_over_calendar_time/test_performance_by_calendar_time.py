@@ -2,7 +2,7 @@ import pandas as pd
 from psycop_model_evaluation.binary.time.timedelta_data import (
     create_performance_by_timedelta,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score
 
 

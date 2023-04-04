@@ -7,7 +7,7 @@ from psycop_model_evaluation.base_charts import (
 from psycop_model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 
 def plot_roc_auc_by_periodic_time(

@@ -9,7 +9,7 @@ from psycop_model_evaluation.binary.performance_by_true_positive_rate import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):

@@ -1,3 +1,20 @@
+"""
+This project uses Invoke (pyinvoke.org) for task management.
+Install it via:
+
+```
+pip install invoke
+```
+
+And then run:
+
+```
+inv --list
+```
+"""
+
+
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -144,8 +161,14 @@ def update_pr(c: Context):
 
 
 def exit_if_error_in_stdout(result: Result):
+    # Find N remaining using regex
+
     if "error" in result.stdout:
-        exit(0)
+        errors_remaining = re.findall(r"\d+(?=( remaining))", result.stdout)[
+            0
+        ]  # testing
+        if errors_remaining != "0":
+            exit(0)
 
 
 def pre_commit(c: Context):

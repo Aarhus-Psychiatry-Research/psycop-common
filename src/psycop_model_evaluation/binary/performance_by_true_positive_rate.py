@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import wandb
 from git import Sequence
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import confusion_matrix
 
 
