@@ -38,7 +38,7 @@ from psycop_model_evaluation.feature_importance.sklearn.feature_importance impor
     plot_feature_importances,
 )
 from psycop_model_evaluation.utils import TEST_PLOT_PATH
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 
 def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):

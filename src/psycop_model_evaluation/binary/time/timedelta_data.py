@@ -11,7 +11,7 @@ from psycop_model_evaluation.utils import (
     bin_continuous_data,
     round_floats_to_edge,
 )
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 
 
 def create_performance_by_timedelta(

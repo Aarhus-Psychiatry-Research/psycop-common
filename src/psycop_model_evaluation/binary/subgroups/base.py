@@ -6,7 +6,7 @@ from psycop_model_evaluation.binary.utils import (
     calc_performance,
 )
 from psycop_model_evaluation.utils import bin_continuous_data
-from psycop_model_training.model_eval.dataclasses import EvalDataset
+from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import roc_auc_score
 
 
