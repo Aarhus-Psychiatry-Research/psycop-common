@@ -7,6 +7,8 @@
 [![Code style: black](https://img.shields.io/badge/Code%20Style-Black-black)](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html)
 [![Tests](https://github.com/MartinBernstorff/psycop-feature-generation/actions/workflows/tests.yml/badge.svg)][tests]
 
+[tests]: https://github.com/{{cookiecutter.github_user}}/{{cookiecutter.project_name}}/actions?workflow=Tests
+
 ## 🔧 Installation
 To get started using psycop-feature-generation simply install it using pip by running the following line in your terminal:
 
