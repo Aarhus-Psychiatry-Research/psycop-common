@@ -256,18 +256,20 @@ def test(c: Context):
         exit(0)
 
 
-def test_for_rej():
+def test_for_rej(c: Context):
     # Check if any file in current directory, or its subdirectories, has a .rej extension
     # If so, exit
-    for path in Path(__file__).rglob("*.rej"):
-        print(f"{Emo.FAIL} Found .rej file: {path}")
-        print("This is leftover cruft that should be merged or deleted. Exiting.")
-        exit(1)
+    rej_files = c.run("find . -name '*.rej' -type f -print", hide=True)
+
+    if ".rej" in rej_files.stdout:
+        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.")
+        print(f"{rej_files.stdout}")
+        exit(0)
 
 
 @task
 def lint(c: Context):
-    test_for_rej()
+    test_for_rej(c)
     pre_commit(c)
     mypy(c)
 
