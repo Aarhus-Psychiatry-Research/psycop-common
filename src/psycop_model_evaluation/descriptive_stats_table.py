@@ -1,7 +1,8 @@
 """Code for generating a descriptive stats table."""
+import typing as t
 import warnings
 from pathlib import Path
-from typing import Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import wandb
@@ -19,8 +20,16 @@ class DescriptiveStatsTable:
     def __init__(
         self,
         eval_dataset: EvalDataset,
+        additional_columns_df: t.Union[pd.DataFrame, None] = None,
     ) -> None:
+        """Class for generating a descriptive stats table of your dataset.
+
+        Args:
+            eval_dataset (EvalDataset): EvalDataset object with the base stats for your table.
+            additional_columns_df (pd.DataFrame, optional): Dataframe with additional columns to include in the table, e.g. predictors you would like to add. Defaults to None.
+        """
         self.eval_dataset = eval_dataset
+        self.additional_columns_df = additional_columns_df
 
     def _get_column_header_df(self) -> pd.DataFrame:
         """Create empty dataframe with default columns headers.
@@ -114,21 +123,24 @@ class DescriptiveStatsTable:
 
         df = self._get_column_header_df()
 
-        if (
+        if self.additional_columns_df is None and (
             not hasattr(self.eval_dataset, "custom_columns")
             or self.eval_dataset.custom_columns is None
         ):
             return df
 
-        eval_cols: list[dict[str, pd.Series]] = [
-            {name: values}
-            for name, values in self.eval_dataset.custom_columns.items()
-            if name.startswith("eval_")
+        eval_cols = [
+            self.eval_dataset.custom_columns[c]
+            for c in self.eval_dataset.custom_columns
+            if c.startswith("eval_")
         ]
+        eval_df = pd.concat(eval_cols, axis=1)
 
-        for col in eval_cols:
-            col_name = next(iter(col))
-            col_values = col[col_name]
+        if self.additional_columns_df is not None:
+            eval_df = pd.concat([eval_df, self.additional_columns_df], axis=1)
+
+        for col_name in eval_df.columns:
+            col_values = eval_df[col_name]
 
             if len(col_values.unique()) == 2:
                 # Binary variable stats:
@@ -136,13 +148,13 @@ class DescriptiveStatsTable:
                 col_percentage = col_count / len(col_values) * 100
 
                 if col_count[0] < 5 or col_count[1] < 5:
-                    warnings.warn(
-                        f"WARNING: One of categories in {col} has less than 5 individuals. This category will be excluded from the table.",
+                    warnings.warn(  # noqa: B028
+                        f"WARNING: One of categories in {col_name} has less than 5 individuals. This category will be excluded from the table.",
                     )
                 else:
                     df = df.append(  # type: ignore
                         {
-                            "category": f"(visit level) {col_name} ",
+                            "category": f"(visit level) {col_name}",
                             "stat_1": int(col_count[1]),
                             "stat_1_unit": "patients",
                             "stat_2": col_percentage[1],
@@ -167,7 +179,7 @@ class DescriptiveStatsTable:
                 )
 
             else:
-                warnings.warn(
+                warnings.warn(  # noqa: B028
                     f"WARNING: {col_name} has only one value. This column will be excluded from the table.",
                 )
 
