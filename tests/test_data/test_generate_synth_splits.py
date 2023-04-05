@@ -12,11 +12,11 @@ from tests.test_data.model_eval.generate_synthetic_dataset_for_eval import (
 
 def test_synth_data_generator():
     """Test synth data generator."""
-    override_dataset_on_test_run = True
+    override_dataset_on_test_run = False
 
     column_specifications = [
         {"citizen_ids": {"column_type": "uniform_int", "min": 0, "max": 1_200_001}},
-        {"timestamp": {"column_type": "datetime_uniform", "min": 0, "max": 7 * 365}},
+        {"timestamp": {"column_type": "datetime_uniform", "min": 0, "max": 3 * 365}},
         {
             "timestamp_exclusion": {
                 "column_type": "datetime_uniform",
