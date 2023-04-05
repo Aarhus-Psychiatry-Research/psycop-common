@@ -129,6 +129,7 @@ def plot_basic_chart(
     plt.tight_layout()
 
     if save_path is not None:
+        print(f"Saving to {save_path}")
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
 

@@ -21,7 +21,6 @@ from psycop_model_evaluation.binary.subgroups.sex import plot_roc_auc_by_sex
 from psycop_model_evaluation.binary.time.absolute_plots import (
     plot_metric_by_absolute_time,
     plot_prob_over_time,
-    plot_recall_by_absolute_time,
 )
 from psycop_model_evaluation.binary.time.periodic_plots import (
     plot_roc_auc_by_periodic_time,
@@ -31,6 +30,7 @@ from psycop_model_evaluation.binary.time.timedelta_data import (
 )
 from psycop_model_evaluation.binary.time.timedelta_plots import (
     plot_roc_auc_by_time_from_first_visit,
+    plot_sensitivity_by_time_to_event,
     plot_sensitivity_by_time_until_diagnosis,
     plot_time_from_first_positive_to_event,
 )
@@ -108,15 +108,15 @@ def test_plot_performance_by_calendar_time(
     )
 
 
-def test_plot_recall_by_calendar_time(
+def test_sensitivity_by_time_to_event(
     synth_eval_dataset: EvalDataset,
 ):
-    plot_recall_by_absolute_time(
+    plot_sensitivity_by_time_to_event(
         eval_dataset=synth_eval_dataset,
         positive_rates=[0.4, 0.6, 0.8],
         bins=list(range(0, 1460, 180)),
         y_limits=(0, 1),
-        save_path=TEST_PLOT_PATH / "test_recall_by_calendar_time.png",
+        save_path=TEST_PLOT_PATH / "sensitivity_by_time_to_event.png",
     )
 
 
@@ -138,6 +138,7 @@ def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
         y_title="Sensitivity (recall)",
+        save_path=TEST_PLOT_PATH / "sensitivity_by_time_until_diagnosis.png",
     )
 
 
@@ -167,13 +168,13 @@ def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
     plot_auc_roc(eval_dataset=synth_eval_dataset)
 
 
-@pytest.mark.skip(reason="Breaking on ubuntu only, don't have time to debug right now")
+# @pytest.mark.skip(reason="Breaking on ubuntu only, don't have time to debug right now")
 def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset):
     plot_time_from_first_positive_to_event(
         eval_dataset=synth_eval_dataset,
         bins=list(range(0, 60, 3)),
         min_n_in_bin=1,
-        save_path=TEST_PLOT_PATH / "test_plot_time_from_first_positive_to_event.png",
+        save_path=TEST_PLOT_PATH / "time_from_first_positive_to_event.png",
     )
 
 
@@ -181,7 +182,7 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
     plot_precision_recall(
         eval_dataset=synth_eval_dataset,
         save_path=Path(
-            TEST_PLOT_PATH / "tests" / "test_plots" / "precision_recall.png",
+            TEST_PLOT_PATH / "precision_recall.png",
         ),
     )
 
