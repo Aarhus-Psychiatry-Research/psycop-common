@@ -14,6 +14,7 @@ class EvalDataset(BaseModel):
     """
 
     ids: pd.Series
+    pred_time_uuids: pd.Series
     pred_timestamps: pd.Series
     outcome_timestamps: pd.Series
     y: pd.Series

@@ -31,6 +31,7 @@ def create_eval_dataset(
 
     eval_dataset = EvalDataset(
         ids=df[col_names.id],
+        pred_time_uuids=df[col_names.pred_time_uuid],
         y=df[outcome_col_name],
         y_hat_probs=df["y_hat_prob"],
         pred_timestamps=df[col_names.pred_timestamp],
