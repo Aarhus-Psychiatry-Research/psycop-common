@@ -8,15 +8,17 @@ import pandas as pd
 from wasabi import Printer
 
 
-def add_age_is_female(df: pd.DataFrame) -> pd.DataFrame:
+def add_age_is_female(
+    df: pd.DataFrame, id_column_name: str = "dw_ek_borger"
+) -> pd.DataFrame:
     """Add age and gender columns to dataframe.
 
     Args:
         df (pd.DataFrame): The dataframe to add age
     """
-    ids = pd.DataFrame({"dw_ek_borger": df["dw_ek_borger"].unique()})
+    ids = pd.DataFrame({id_column_name: df[id_column_name].unique()})
     ids["age"] = np.random.randint(18, 95, len(ids))
-    ids["is_female"] = np.where(ids["dw_ek_borger"] > 30_000, 1, 0)
+    ids["is_female"] = np.where(ids[id_column_name] > 30_000, 1, 0)
 
     return df.merge(ids)
 

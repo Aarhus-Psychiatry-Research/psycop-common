@@ -5,10 +5,14 @@ from psycop_ml_utils.synth_data_generator.synth_prediction_times_generator impor
 )
 from psycop_model_training.utils.utils import PROJECT_ROOT
 
+from tests.test_data.model_eval.generate_synthetic_dataset_for_eval import (
+    add_age_is_female,
+)
+
 
 def test_synth_data_generator():
     """Test synth data generator."""
-    override_dataset_on_test_run = True
+    override_dataset_on_test_run = False
 
     column_specifications = [
         {"citizen_ids": {"column_type": "uniform_int", "min": 0, "max": 1_200_001}},
@@ -99,6 +103,8 @@ def test_synth_data_generator():
             "-%Y-%m-%d-%H-%M-%S",
         )
 
+        synth_df = add_age_is_female(synth_df, id_column_name="citizen_ids")
+
         if override_dataset_on_test_run:
             # Save to csv
             synth_df.to_csv(
@@ -112,4 +118,4 @@ def test_synth_data_generator():
 
         synth_df.describe()
 
-        assert synth_df.shape == (n_samples, len(column_specifications) + 2)
+        assert synth_df.shape == (n_samples, len(column_specifications) + 4)
