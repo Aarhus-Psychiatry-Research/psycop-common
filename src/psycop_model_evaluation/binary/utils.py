@@ -1,19 +1,30 @@
 from collections.abc import Callable
+from typing import Optional
 
 import numpy as np
 import pandas as pd
+from scipy.stats import bootstrap
 from sklearn.metrics import roc_auc_score
 
 
-def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
+def calc_performance(
+    df: pd.DataFrame,
+    metric: Callable,
+    confidence_interval: Optional[float] = None,
+    **kwargs,
+) -> pd.Series:
     """Calculates performance metrics of a df with 'y' and 'input_to_fn' columns.
 
     Args:
-        df (pd.DataFrame): dataframe
-        metric (Callable): which metric to calculate
+        df: dataframe
+        metric: which metric to calculate
+        confidence_interval: confidence interval for calculating. Defaults to None,
+            in which case the no confidence interval is calculated.
+        **kwargs: additional arguments to pass to the bootstrap function for calculating
+            the confidence interval.
 
     Returns:
-        float: performance
+        performance
     """
     if df.empty:
         return pd.Series({"metric": np.nan, "n_in_bin": np.nan})
@@ -30,6 +41,31 @@ def calc_performance(df: pd.DataFrame, metric: Callable) -> pd.Series:
     # If any value in n_in_bin is smaller than 5, write NaN
     n_in_bin = np.nan if len(df) < 5 else len(df)
 
+    if confidence_interval:
+        # reasonably fast and accurate defaults
+        _kwargs = {
+            "method": "basic",
+            "n_resamples": 1000,
+        }
+        _kwargs.update(kwargs)
+
+        # Calculate the confidence interval
+        def metric_wrapper(true, pred, **kwargs):
+            # bootstrap function requires the metric function to
+            # be able to additional arguments (notably the length of the array)
+            return metric(true, pred)
+
+        boot = bootstrap(
+            (df["y"], df["y_hat"]),
+            statistic=metric_wrapper,
+            confidence_level=confidence_interval,
+            paired=True,
+            **_kwargs,
+        )
+        low, high = boot.confidence_interval.low, boot.confidence_interval.high
+        return pd.Series(
+            {"metric": perf_metric, "n_in_bin": n_in_bin, "ci": (low, high)}
+        )
     return pd.Series({"metric": perf_metric, "n_in_bin": n_in_bin})
 
 
