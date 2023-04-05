@@ -16,6 +16,7 @@ def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
 
     additional_columns_df = pd.DataFrame(
         {
+            "dw_ek_borger": synth_eval_dataset.ids,
             col_name: [randint(0, 1) for _ in range(len(synth_eval_dataset.y))],
         },
     )

@@ -134,10 +134,15 @@ class DescriptiveStatsTable:
             for c in self.eval_dataset.custom_columns
             if c.startswith("eval_")
         ]
-        eval_df = pd.concat(eval_cols, axis=1)
+
+        # Check that indeces match on all eval_cols
+        eval_df = pd.concat([self.eval_dataset.ids, *eval_cols], axis=1)
 
         if self.additional_columns_df is not None:
-            eval_df = pd.concat([eval_df, self.additional_columns_df], axis=1)
+            eval_df = eval_df.merge(
+                self.additional_columns_df,
+                on="dw_ek_borger",
+            )
 
         for col_name in eval_df.columns:
             col_values = eval_df[col_name]
@@ -148,7 +153,7 @@ class DescriptiveStatsTable:
                 col_percentage = col_count / len(col_values) * 100
 
                 if col_count[0] < 5 or col_count[1] < 5:
-                    warnings.warn(
+                    warnings.warn(  # noqa: B028
                         f"WARNING: One of categories in {col_name} has less than 5 individuals. This category will be excluded from the table.",
                     )
                 else:
@@ -179,7 +184,7 @@ class DescriptiveStatsTable:
                 )
 
             else:
-                warnings.warn(
+                warnings.warn(  # noqa: B028
                     f"WARNING: {col_name} has only one value. This column will be excluded from the table.",
                 )
 
