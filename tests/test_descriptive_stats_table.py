@@ -17,7 +17,7 @@ def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
     additional_columns_df = pd.DataFrame(
         {
             col_name: [randint(0, 1) for _ in range(len(synth_eval_dataset.y))],
-        }
+        },
     )
 
     table1 = DescriptiveStatsTable(

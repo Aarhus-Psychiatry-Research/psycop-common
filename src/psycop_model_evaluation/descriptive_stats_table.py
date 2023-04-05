@@ -2,7 +2,7 @@
 import typing as t
 import warnings
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
 import wandb
@@ -148,7 +148,7 @@ class DescriptiveStatsTable:
                 col_percentage = col_count / len(col_values) * 100
 
                 if col_count[0] < 5 or col_count[1] < 5:
-                    warnings.warn(  # noqa: B028
+                    warnings.warn(
                         f"WARNING: One of categories in {col_name} has less than 5 individuals. This category will be excluded from the table.",
                     )
                 else:
@@ -179,7 +179,7 @@ class DescriptiveStatsTable:
                 )
 
             else:
-                warnings.warn(  # noqa: B028
+                warnings.warn(
                     f"WARNING: {col_name} has only one value. This column will be excluded from the table.",
                 )
 
