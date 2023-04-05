@@ -8,7 +8,7 @@ from psycop_model_training.utils.utils import PROJECT_ROOT
 
 def test_synth_data_generator():
     """Test synth data generator."""
-    override_dataset_on_test_run = False
+    override_dataset_on_test_run = True
 
     column_specifications = [
         {"citizen_ids": {"column_type": "uniform_int", "min": 0, "max": 1_200_001}},
@@ -93,6 +93,12 @@ def test_synth_data_generator():
             na_ignore_cols=[outcome_col_name],
         )
 
+        synth_df["pred_time_uuid"] = synth_df["citizen_ids"].astype(str) + synth_df[
+            "timestamp"
+        ].dt.strftime(
+            "-%Y-%m-%d-%H-%M-%S",
+        )
+
         if override_dataset_on_test_run:
             # Save to csv
             synth_df.to_csv(
@@ -106,4 +112,4 @@ def test_synth_data_generator():
 
         synth_df.describe()
 
-        assert synth_df.shape == (n_samples, len(column_specifications) + 1)
+        assert synth_df.shape == (n_samples, len(column_specifications) + 2)
