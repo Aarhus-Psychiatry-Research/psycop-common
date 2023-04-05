@@ -9,12 +9,14 @@ from wasabi import Printer
 
 
 def add_age_is_female(
-    df: pd.DataFrame, id_column_name: str = "dw_ek_borger"
+    df: pd.DataFrame,
+    id_column_name: str = "dw_ek_borger",
 ) -> pd.DataFrame:
     """Add age and gender columns to dataframe.
 
     Args:
         df (pd.DataFrame): The dataframe to add age
+        id_column_name (str, optional): The column name of the id column. Defaults to "dw_ek_borger".
     """
     ids = pd.DataFrame({id_column_name: df[id_column_name].unique()})
     ids["age"] = np.random.randint(18, 95, len(ids))
