@@ -1,12 +1,13 @@
 """Base charts."""
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Optional, Union
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from pandas import Series
-import numpy as np
+
 
 def plot_basic_chart(
     x_values: Series,
@@ -17,7 +18,7 @@ def plot_basic_chart(
     labels: Optional[list[str]] = None,
     sort_x: Optional[Sequence[int]] = None,
     sort_y: Optional[Sequence[int]] = None,
-    confidence_interval: Optional[Sequence[Tuple[float, float]]] = None,
+    confidence_interval: Optional[Sequence[tuple[float, float]]] = None,
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
     bar_count_values: Optional[pd.Series] = None,

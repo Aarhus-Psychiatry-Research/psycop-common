@@ -42,7 +42,7 @@ def create_roc_auc_by_input(
 
     # bin data and calculate metric per bin
     calc_perf = partial(
-        calc_performance, metric=roc_auc_score, confidence_interval=confidence_interval
+        calc_performance, metric=roc_auc_score, confidence_interval=confidence_interval,
     )
     if bin_continuous_input:
         df[f"{input_name}_binned"], _ = bin_continuous_data(df[input_name], bins=bins)

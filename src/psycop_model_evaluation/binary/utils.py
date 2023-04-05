@@ -64,7 +64,7 @@ def calc_performance(
         )
         low, high = boot.confidence_interval.low, boot.confidence_interval.high
         return pd.Series(
-            {"metric": perf_metric, "n_in_bin": n_in_bin, "ci": (low, high)}
+            {"metric": perf_metric, "n_in_bin": n_in_bin, "ci": (low, high)},
         )
     return pd.Series({"metric": perf_metric, "n_in_bin": n_in_bin})
 
