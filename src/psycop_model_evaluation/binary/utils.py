@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -11,7 +11,7 @@ def calc_performance(
     df: pd.DataFrame,
     metric: Callable,
     confidence_interval: Optional[float] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> pd.Series:
     """Calculates performance metrics of a df with 'y' and 'input_to_fn' columns.
 
@@ -50,7 +50,11 @@ def calc_performance(
         _kwargs.update(kwargs)
 
         # Calculate the confidence interval
-        def metric_wrapper(true, pred, **kwargs):
+        def metric_wrapper(
+            true: np.ndarray,
+            pred: np.ndarray,
+            **kwargs: Any,  # noqa: ARG001
+        ) -> float:
             # bootstrap function requires the metric function to
             # be able to additional arguments (notably the length of the array)
             return metric(true, pred)
