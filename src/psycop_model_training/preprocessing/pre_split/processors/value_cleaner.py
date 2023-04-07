@@ -59,7 +59,8 @@ class PreSplitValueCleaner:
 
         return dataset
 
-    def _offset_negative_values(self, dataset: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def _offset_values_so_no_negative_values(dataset: pd.DataFrame) -> pd.DataFrame:
         """Offset values with minimum negative value, so all values will be non-negative"""
 
         preds = dataset[infer_predictor_col_name(df=dataset)]
@@ -74,17 +75,17 @@ class PreSplitValueCleaner:
         df_to_replace = dataset[numerical_columns_with_negative_values].copy()
 
         # Get minimum value in each column
-        col_min_values = [df_to_replace[c].min() for c in df_to_replace]
+        col_min_values = {c: df_to_replace[c].min() for c in df_to_replace}
 
         # Offset values with abs min, so min becomes 0
         df_to_replace = pd.concat(
             [
-                df_to_replace[c] + abs(col_min_value)
-                for c, col_min_value in zip(df_to_replace, col_min_values)
+                df_to_replace[c_df] + abs(c)
+                for c_df, c in zip(df_to_replace, col_min_values)
             ],
             axis=1,
         )
-
+        [col_min_values[c] for c in col_min_values]
         dataset[numerical_columns_with_negative_values] = df_to_replace
 
         return dataset
@@ -98,8 +99,8 @@ class PreSplitValueCleaner:
         if self.pre_split_cfg.negative_values_to_nan:
             dataset = self._negative_values_to_nan(dataset=dataset)
 
-        if self.pre_split_cfg.offset_negative_values:
-            dataset = self._offset_negative_values(dataset=dataset)
+        if self.pre_split_cfg.offset_values_so_no_negative_values:
+            dataset = self._offset_values_so_no_negative_values(dataset=dataset)
 
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
