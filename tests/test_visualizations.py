@@ -94,17 +94,17 @@ def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
 
 
 @pytest.mark.parametrize(
-    "bin_unit",
+    "bin_period",
     ["M", "Q", "Y"],
 )
 def test_plot_performance_by_calendar_time(
     synth_eval_dataset: EvalDataset,
-    bin_unit: Literal["M", "Q", "Y"],
+    bin_period: Literal["M", "Q", "Y"],
 ):
     plot_metric_by_absolute_time(
         eval_dataset=synth_eval_dataset,
-        bin_unit=bin_unit,
-        save_path=TEST_PLOT_PATH / f"test_{bin_unit}.png",  # type: ignore
+        bin_period=bin_period,
+        save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",  # type: ignore
     )
 
 

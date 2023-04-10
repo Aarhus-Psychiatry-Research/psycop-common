@@ -39,7 +39,7 @@ def plot_metric_by_absolute_time(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
-        bin_period=bin_unit,
+        bin_period=bin_period,
     )
     sort_order = list(range(len(df)))
 
@@ -55,7 +55,7 @@ def plot_metric_by_absolute_time(
     return plot_basic_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
-        x_title=x_titles[bin_unit],
+        x_title=x_titles[bin_period],
         y_title=y_title,
         sort_x=sort_order,
         y_limits=y_limits,
