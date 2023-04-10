@@ -22,7 +22,7 @@ def create_performance_by_timedelta(
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
-    bin_unit: Literal["H", "D", "M", "Q", "Y"],
+    bin_unit: Literal["h", "D", "M", "Q", "Y"],
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
@@ -38,7 +38,7 @@ def create_performance_by_timedelta(
         direction (str): Which direction to calculate time difference.
         Can either be 't2-t1' or 't1-t2'.
         bins (Iterable[float]): Bins to group by.
-        bin_unit (Literal["H", "D", "M", "Q", "Y"]): Unit of time to use for bins.
+        bin_unit (Literal["h", "D", "M", "Q", "Y"]): Unit of time to use for bins.
         bin_continuous_input (bool, ): Whether to bin input. Defaults to True.
         drop_na_events (bool, ): Whether to drop rows where the event is NA. Defaults to True.
         min_n_in_bin (int, ): Minimum number of rows in a bin to include in output. Defaults to 10.
@@ -105,7 +105,7 @@ def create_sensitivity_by_time_to_outcome_df(
     outcome_timestamps: Series,
     prediction_timestamps: Series,
     bins: Sequence[float] = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
-    bin_delta: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
+    bin_delta: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
     Args:
