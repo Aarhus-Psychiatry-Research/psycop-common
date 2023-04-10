@@ -20,6 +20,7 @@ def plot_metric_by_absolute_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
+    pred_type: Optional[str] = "visits",
     save_path: Optional[Union[str, Path]] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
@@ -28,6 +29,7 @@ def plot_metric_by_absolute_time(
         eval_dataset (EvalDataset): EvalDataset object
         y_title (str): Title of y-axis. Defaults to "AUC".
         bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
+        pred_type (str, optional): What description of prediction type to use for plotting, e.g. "number of visits".
         save_path (str, optional): Path to save figure. Defaults to None.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
     Returns:
@@ -58,7 +60,7 @@ def plot_metric_by_absolute_time(
         sort_x=sort_order,
         y_limits=y_limits,
         bar_count_values=df["n_in_bin"],
-        bar_count_y_axis_title="Number of visits",
+        bar_count_y_axis_title=f"Number of {pred_type}",
         plot_type=["line", "scatter"],
         save_path=save_path,
     )
