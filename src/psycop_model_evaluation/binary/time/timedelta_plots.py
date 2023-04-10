@@ -24,7 +24,7 @@ from sklearn.metrics import recall_score, roc_auc_score
 def plot_roc_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: t.Sequence[float] = (0, 28, 182, 365, 730, 1825),
-    bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
+    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     y_limits: tuple[float, float] = (0.5, 1.0),
     save_path: Optional[Path] = None,
@@ -33,7 +33,7 @@ def plot_roc_auc_by_time_from_first_visit(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
-        bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+        bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
         save_path (Path, optional): Path to save figure. Defaults to None.
@@ -60,7 +60,7 @@ def plot_roc_auc_by_time_from_first_visit(
     )
 
     bin_unit2str = {
-        "H": "Hours",
+        "h": "Hours",
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",
@@ -92,7 +92,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         -28,
         -0,
     ),
-    bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
+    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     positive_rate: float = 0.5,
     y_title: str = "Sensitivity (recall)",
@@ -105,7 +105,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Negative values indicate days after
-        bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+        bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
@@ -133,7 +133,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     sort_order = list(range(len(df)))
 
     bin_unit2str = {
-        "H": "Hours",
+        "h": "Hours",
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",
@@ -235,7 +235,7 @@ def plot_sensitivity_by_time_to_event(
     eval_dataset: EvalDataset,
     positive_rates: Union[float, Iterable[float]],
     bins: Sequence[float],
-    bin_unit: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
+    bin_unit: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -245,7 +245,7 @@ def plot_sensitivity_by_time_to_event(
         eval_dataset (EvalDataset): EvalDataset object
         positive_rates (Union[float, Iterable[float]]): Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
         bins (Iterable[float], optional): Bins to use for time to outcome.
-        bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+        bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         y_title (str): Title of y-axis. Defaults to "AUC".
         save_path (str, optional): Path to save figure. Defaults to None.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
@@ -269,7 +269,7 @@ def plot_sensitivity_by_time_to_event(
     ]
 
     bin_delta_to_str = {
-        "H": "Hour",
+        "h": "Hour",
         "D": "Day",
         "W": "Week",
         "M": "Month",
