@@ -1,10 +1,9 @@
 import typing as t
 from collections.abc import Iterable, Sequence
-from datetime import timedelta
 from pathlib import Path
 from typing import Literal, Optional, Union
-import numpy as np
 
+import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop_model_evaluation.base_charts import (
