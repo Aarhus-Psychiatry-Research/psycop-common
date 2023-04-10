@@ -42,11 +42,14 @@ def plot_roc_auc_by_time_from_first_visit(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    if custom_id_to_plot_by: 
+    if custom_id_to_plot_by:
         eval_df = pd.DataFrame(
-        {"ids": eval_dataset.custom_columns[custom_id_to_plot_by], "pred_timestamps": eval_dataset.pred_timestamps},
-    )
-    else: 
+            {
+                "ids": eval_dataset.custom_columns[custom_id_to_plot_by],
+                "pred_timestamps": eval_dataset.pred_timestamps,
+            },
+        )
+    else:
         eval_df = pd.DataFrame(
             {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
         )
@@ -140,7 +143,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     sort_order = list(range(len(df)))
 
     bin_unit2str = {
-    "h": "Hours",
+        "h": "Hours",
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",
