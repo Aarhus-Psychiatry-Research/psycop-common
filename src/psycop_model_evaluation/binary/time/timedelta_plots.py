@@ -168,6 +168,7 @@ def plot_time_from_first_positive_to_event(
         eval_dataset: EvalDataset object
         min_n_in_bin (int): Minimum number of patients in each bin. If fewer, bin is dropped.
         bins (Sequence[float]): Bins to group by. Defaults to (5, 25, 35, 50, 70).
+        bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "M".
         fig_size (tuple[int, int]): Figure size. Defaults to (5,5).
         dpi (int): DPI. Defaults to 300.
         pos_rate (float): Desired positive rate for computing which threshold above which a prediction is marked as "positive". Defaults to 0.05.
