@@ -27,6 +27,8 @@ def plot_roc_auc_by_time_from_first_visit(
     bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     y_limits: tuple[float, float] = (0.5, 1.0),
+    custom_id_to_plot_by: Optional[str] = None,
+    pred_type_x_label: Optional[str] = "first visit",
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time from first visit.
@@ -40,9 +42,14 @@ def plot_roc_auc_by_time_from_first_visit(
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    eval_df = pd.DataFrame(
-        {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
+    if custom_id_to_plot_by: 
+        eval_df = pd.DataFrame(
+        {"ids": eval_dataset.custom_columns[custom_id_to_plot_by], "pred_timestamps": eval_dataset.pred_timestamps},
     )
+    else: 
+        eval_df = pd.DataFrame(
+            {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
+        )
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
@@ -71,7 +78,7 @@ def plot_roc_auc_by_time_from_first_visit(
     return plot_basic_chart(
         x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
-        x_title=f"{bin_unit2str[bin_unit]} from first visit",
+        x_title=f"{bin_unit2str[bin_unit]} from {pred_type_x_label}",
         y_title="AUC",
         sort_x=sort_order,  # type: ignore
         y_limits=y_limits,
