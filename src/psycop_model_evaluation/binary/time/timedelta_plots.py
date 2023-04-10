@@ -38,6 +38,8 @@ def plot_roc_auc_by_time_from_first_visit(
         bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+        custom_id_to_plot_by (str, optional). Custom id frome eval_dataset to plot by. If not set, it will plot by 'ids' from eval_dataset. Defaults to None.
+        pred_type_x_label (str, optional). Set x label by the prediction type. Defaults to "first visit".
         save_path (Path, optional): Path to save figure. Defaults to None.
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
