@@ -133,7 +133,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     sort_order = list(range(len(df)))
 
     bin_unit2str = {
-    "h": "Hours",
+        "h": "Hours",
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",
