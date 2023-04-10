@@ -68,7 +68,7 @@ def plot_basic_chart(
     fig = plt.figure(figsize=fig_size, dpi=dpi)
     axs = fig.subplots()
 
-    y_sequences: list[Series] = [y_values] if not isinstance(y_values[0], pd.Series) else y_values  # type: ignore
+    y_sequences: list[Series] = [y_values] if not isinstance(y_values.reset_index(drop=True)[0], pd.Series) else y_values  # type: ignore
 
     plot_functions = {
         "bar": axs.bar,  # type: ignore

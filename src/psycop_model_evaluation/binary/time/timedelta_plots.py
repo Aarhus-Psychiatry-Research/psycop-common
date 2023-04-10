@@ -3,6 +3,7 @@ from collections.abc import Iterable, Sequence
 from datetime import timedelta
 from pathlib import Path
 from typing import Literal, Optional, Union
+import numpy as np
 
 import pandas as pd
 from pandas import Series
@@ -157,6 +158,7 @@ def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
     min_n_in_bin: int = 0,
     bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
+    bin_unit: Literal["H", "D", "M", "Q", "Y"] = "M",
     fig_size: tuple[int, int] = (5, 5),
     dpi: int = 300,
     pos_rate: float = 0.05,
@@ -196,10 +198,12 @@ def plot_time_from_first_positive_to_event(
     df_true_pos = df_true_pos.groupby("patient_id").first().reset_index()
 
     # Convert to int months
-    df_true_pos["time_from_pred_to_event"] = (
-        df_true_pos["time_from_pred_to_event"] / timedelta(days=1)  # type: ignore
-    ).astype(int) / 30
-
+    df_true_pos["time_from_pred_to_event"] = df_true_pos[
+        "time_from_pred_to_event"
+    ] / np.timedelta64(
+        1,
+        bin_unit,
+    )
     df_true_pos["time_from_first_positive_to_event_binned"], _ = bin_continuous_data(
         df_true_pos["time_from_pred_to_event"],
         bins=bins,
@@ -216,10 +220,18 @@ def plot_time_from_first_positive_to_event(
     x_labels = list(counts["time_from_first_positive_to_event_binned"])
     y_values = counts[0].to_list()
 
+    bin_unit2str = {
+        "H": "Hours",
+        "D": "Days",
+        "M": "Months",
+        "Q": "Quarters",
+        "Y": "Years",
+    }
+
     plot = plot_basic_chart(
         x_values=x_labels,  # type: ignore
         y_values=Series(y_values),
-        x_title="Months from first positive to event",
+        x_title=f"{bin_unit2str[bin_unit]} from first positive to event",
         y_title="Count",
         plot_type="bar",
         save_path=save_path,

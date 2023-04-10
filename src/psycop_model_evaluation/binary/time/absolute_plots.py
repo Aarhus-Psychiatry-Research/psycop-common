@@ -19,7 +19,7 @@ from psycop_model_training.training_output.dataclasses import EvalDataset
 def plot_metric_by_absolute_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
-    bin_period: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
+    bin_unit: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
     save_path: Optional[Union[str, Path]] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
@@ -27,7 +27,7 @@ def plot_metric_by_absolute_time(
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         y_title (str): Title of y-axis. Defaults to "AUC".
-        bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
+        bin_unit(str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
         save_path (str, optional): Path to save figure. Defaults to None.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
     Returns:
@@ -37,7 +37,7 @@ def plot_metric_by_absolute_time(
         labels=eval_dataset.y,
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
-        bin_period=bin_period,
+        bin_period=bin_unit,
     )
     sort_order = list(range(len(df)))
 
@@ -53,7 +53,7 @@ def plot_metric_by_absolute_time(
     return plot_basic_chart(
         x_values=df["time_bin"],
         y_values=df["metric"],
-        x_title=x_titles[bin_period],
+        x_title=x_titles[bin_unit],
         y_title=y_title,
         sort_x=sort_order,
         y_limits=y_limits,
