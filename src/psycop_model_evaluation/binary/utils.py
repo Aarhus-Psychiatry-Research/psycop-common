@@ -56,7 +56,7 @@ def calc_performance(
             **kwargs: Any,  # noqa: ARG001
         ) -> float:
             # bootstrap function requires the metric function to
-            # be able to additional arguments (notably the length of the array)
+            # be able to take additional arguments (notably the length of the array)
             return metric(true, pred)
 
         boot = bootstrap(
