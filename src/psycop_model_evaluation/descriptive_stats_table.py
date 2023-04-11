@@ -21,7 +21,8 @@ class VariableSpec(BaseModel):
 class BinaryVariableSpec(VariableSpec):
     _name: str = "Binary"
     positive_class: Union[
-        float, str,
+        float,
+        str,
     ]  # Value of the class to generate results for (e.g. 1 for a binary variable)
 
 
