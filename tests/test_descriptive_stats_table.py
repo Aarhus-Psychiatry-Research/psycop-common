@@ -1,6 +1,8 @@
 """Test that the descriptive stats table is generated correctly."""
 
 
+from typing import Type
+
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -10,6 +12,7 @@ from psycop_model_evaluation.descriptive_stats_table import (
     ContinuousRowSpec,
     ContinuousRowSpecToCategorical,
     DatasetSpec,
+    GroupedDatasetSpec,
     RowSpec,
     VariableGroupSpec,
     _get_col_value_for_binary_row,
@@ -25,15 +28,18 @@ def dataset_spec_test_split(synth_eval_df: pd.DataFrame) -> DatasetSpec:
     return DatasetSpec(name="Train", df=synth_eval_df)
 
 
-def test_get_results_for_total_row(dataset_spec_test_split: DatasetSpec):
+@pytest.fixture()
+def grouped_dataset_spec_test(synth_eval_df: pd.DataFrame) -> GroupedDatasetSpec:
+    return GroupedDatasetSpec(name="Train", df=synth_eval_df)
+
+
+def test_get_results_for_total_row(grouped_dataset_spec_test: GroupedDatasetSpec):
     variable_group_spec = VariableGroupSpec(
-        title="Patients",
-        group_column_name="dw_ek_borger",
-        add_total_row=True,
+        title="Patients", group_column_name="dw_ek_borger", row_specs=["Total"]
     )
 
     outcome_df = _get_col_value_for_total_row(
-        dataset=dataset_spec_test_split,
+        dataset=grouped_dataset_spec_test,
         variable_group_spec=variable_group_spec,
     )
 
@@ -52,7 +58,7 @@ Total patients,60000,
     )
 
 
-def test_get_results_for_binary_row(dataset_spec_test_split: DatasetSpec):
+def test_get_results_for_binary_row(grouped_dataset_spec_test: GroupedDatasetSpec):
     row_spec = BinaryRowSpec(
         row_title="Female",
         row_df_col_name="is_female",
@@ -61,7 +67,7 @@ def test_get_results_for_binary_row(dataset_spec_test_split: DatasetSpec):
     )
 
     outcome_df = _get_col_value_for_binary_row(
-        dataset=dataset_spec_test_split,
+        dataset=grouped_dataset_spec_test,
         row_spec=row_spec,
     )
 
@@ -80,7 +86,7 @@ Female,70%,
     )
 
 
-def test_get_results_for_continuous_row(dataset_spec_test_split: DatasetSpec):
+def test_get_results_for_continuous_row(grouped_dataset_spec_test: GroupedDatasetSpec):
     row_spec = ContinuousRowSpec(
         row_title="Age",
         row_df_col_name="age",
@@ -90,7 +96,7 @@ def test_get_results_for_continuous_row(dataset_spec_test_split: DatasetSpec):
     )
 
     outcome_df = _get_col_value_for_continuous_row(
-        dataset=dataset_spec_test_split,
+        dataset=grouped_dataset_spec_test,
         row_spec=row_spec,
     )
 
@@ -110,7 +116,7 @@ Age (mean ± SD),55 ± 22,
 
 
 def test_get_col_value_for_continous_to_categorical_row(
-    dataset_spec_test_split: DatasetSpec,
+    grouped_dataset_spec_test: GroupedDatasetSpec,
 ):
     row_spec = ContinuousRowSpecToCategorical(
         row_title="Age",
@@ -121,7 +127,7 @@ def test_get_col_value_for_continous_to_categorical_row(
     )
 
     outcome_df = _get_col_value_transform_continous_to_categorical(
-        dataset=dataset_spec_test_split,
+        dataset=grouped_dataset_spec_test,
         row_spec=row_spec,
     )
 
@@ -146,7 +152,7 @@ Age,,
 
 def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
     """Test descriptive stats table."""
-    row_specs: list[RowSpec] = [
+    row_specs = [
         BinaryRowSpec(  # The binary case
             row_title="Female",
             row_df_col_name="is_female",

@@ -1,6 +1,6 @@
 """Code for generating a descriptive stats table."""
 import typing as t
-from typing import Optional, TypeVar, Union
+from typing import Literal, Optional, Type, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -12,25 +12,30 @@ from psycop_model_evaluation.utils import (
 
 
 class RowSpec(BaseModel):
+    _name: str = "Base"
     row_title: str
     row_df_col_name: str
     n_decimals: Union[int, None] = 2
 
 
 class BinaryRowSpec(RowSpec):
+    _name: str = "Binary"
     positive_class: Union[float, str]
 
 
 class CategoricalRowSpec(RowSpec):
+    _name: str = "Categorical"
     categories: Optional[list[str]] = None
 
 
 class ContinuousRowSpec(RowSpec):
+    _name: str = "Continuous"
     aggregation_measure: t.Literal["mean"] = "mean"
     variance_measure: t.Literal["std"] = "std"
 
 
 class ContinuousRowSpecToCategorical(RowSpec):
+    _name: str = "ContinuousToCategorical"
     bins: list[float]
     bin_decimals: Optional[int] = None
 
@@ -39,7 +44,7 @@ class VariableGroupSpec(BaseModel):
     title: str
     group_column_name: Optional[str]
     add_total_row: bool = True
-    row_specs: Optional[list[RowSpec]] = None
+    row_specs: list[Union[RowSpec, t.Literal["Total"]]]
 
 
 class DatasetSpec(BaseModel):
@@ -52,7 +57,9 @@ class GroupedDatasetSpec(BaseModel):
     df: pd.DataFrame
 
 
-def _create_row_df(row_title: str, col_title: str, cell_value: str) -> pd.DataFrame:
+def _create_row_df(
+    row_title: str, col_title: str, cell_value: Union[float, str]
+) -> pd.DataFrame:
     return pd.DataFrame(
         {
             "Title": row_title,
@@ -63,13 +70,23 @@ def _create_row_df(row_title: str, col_title: str, cell_value: str) -> pd.DataFr
 
 
 def _get_col_value_for_total_row(
-    dataset: GroupedDatasetSpec,
-    variable_group_spec: VariableGroupSpec,
+    dataset: GroupedDatasetSpec, variable_group_spec: Optional[VariableGroupSpec] = None
 ) -> pd.DataFrame:
+    if variable_group_spec is None:
+        cell_value = dataset.df.shape[0]
+        variable_title = ""
+    else:
+        cell_value = (
+            dataset.df[variable_group_spec.group_column_name].nunique()
+            if (variable_group_spec.group_column_name is not None)
+            else dataset.df.shape[0]
+        )
+        variable_title = variable_group_spec.title.lower()
+
     return _create_row_df(
-        row_title=f"Total {variable_group_spec.title.lower()}",
+        row_title=f"Total {variable_title}",
         col_title=dataset.name,
-        cell_value=dataset.df[variable_group_spec.group_column_name].nunique(),
+        cell_value=cell_value,
     )
 
 
@@ -181,18 +198,16 @@ def _get_col_value_transform_continous_to_categorical(
     return grouped_df[["Title", dataset.name]]
 
 
-RowSpecSubClass = TypeVar("T", bound=RowSpec)
-
-
 def _process_row(
-    row_spec: type[RowSpecSubClass],
+    row_spec: Union[RowSpec, Literal["Total"]],
     dataset: DatasetSpec,
-    group_col_name: str,
+    group_col_name: Union[str, None],
 ) -> pd.DataFrame:
     spec_to_func = {
-        BinaryRowSpec: _get_col_value_for_binary_row,
-        ContinuousRowSpec: _get_col_value_for_continuous_row,
-        ContinuousRowSpecToCategorical: _get_col_value_transform_continous_to_categorical,
+        "Binary": _get_col_value_for_binary_row,
+        "Continuous": _get_col_value_for_continuous_row,
+        "ContinuousToCategorical": _get_col_value_transform_continous_to_categorical,
+        "Total": _get_col_value_for_total_row,
     }
 
     if group_col_name is not None:
@@ -204,30 +219,37 @@ def _process_row(
             df=dataset.df,
         )
 
-    for spec in spec_to_func:
-        if isinstance(row_spec, spec):
-            return spec_to_func[spec](
-                dataset=grouped_dataset_spec,
-                row_spec=row_spec,
-            )
+    if row_spec == "Total":
+        return _get_col_value_for_total_row(
+            dataset=grouped_dataset_spec,
+        )
 
-    raise ValueError(f"Row spec type {type(row_spec)} not supported")
+    return spec_to_func[row_spec._name](
+        dataset=grouped_dataset_spec,
+        row_spec=row_spec,
+    )
 
 
 def _process_group(
-    group: VariableGroupSpec,
+    group_spec: VariableGroupSpec,
     datasets: t.Sequence[DatasetSpec],
 ) -> pd.DataFrame:
     rows = []
 
-    for row in group.row_specs:
+    if group_spec.add_total_row:
+        group_spec.row_specs.append(
+            "Total",
+        )
+
+    for row_spec in group_spec.row_specs:
         dataset_row_vals = []
+
         for dataset in datasets:
             dataset_row_vals.append(
                 _process_row(
-                    row_spec=row,
+                    row_spec=row_spec,
                     dataset=dataset,
-                    group_col_name=group.group_column_name,
+                    group_col_name=group_spec.group_column_name,
                 ),
             )
 
@@ -239,7 +261,7 @@ def _process_group(
         rows.append(row)
 
     group_header = pd.DataFrame(
-        {datasets[0].name: [f"[{group.title}]"]},
+        {datasets[0].name: [f"[{group_spec.title}]"]},
         columns=["Title"] + [dataset.name for dataset in datasets],
     )
 
@@ -247,13 +269,13 @@ def _process_group(
 
 
 def create_descriptive_stats_table(
-    variable_group_specs: VariableGroupSpec,
+    variable_group_specs: t.Sequence[VariableGroupSpec],
     datasets: t.Sequence[DatasetSpec],
 ) -> pd.DataFrame:
     groups = []
 
-    for group in variable_group_specs:
-        groups.append(_process_group(group=group, datasets=datasets))
+    for group_spec in variable_group_specs:
+        groups.append(_process_group(group_spec=group_spec, datasets=datasets))
 
     all_groups = pd.concat(groups)
 
