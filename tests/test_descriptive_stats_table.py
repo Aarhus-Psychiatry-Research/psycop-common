@@ -6,9 +6,9 @@ import pytest
 from pandas.testing import assert_frame_equal
 from psycop_ml_utils.utils_for_testing import str_to_df
 from psycop_model_evaluation.descriptive_stats_table import (
-    BinaryRowSpec,
-    ContinuousRowSpec,
-    ContinuousRowSpecToCategorical,
+    BinaryVariableSpec,
+    ContinuousVariableSpec,
+    ContinuousVariableToCategorical,
     DatasetSpec,
     GroupedDatasetSpec,
     VariableGroupSpec,
@@ -27,7 +27,7 @@ def dataset_spec_test_split(synth_eval_df: pd.DataFrame) -> DatasetSpec:
 
 @pytest.fixture()
 def grouped_dataset_spec_test(synth_eval_df: pd.DataFrame) -> GroupedDatasetSpec:
-    return GroupedDatasetSpec(name="Train", df=synth_eval_df)
+    return GroupedDatasetSpec(name="Train", grouped_df=synth_eval_df)
 
 
 def test_get_results_for_total_row(grouped_dataset_spec_test: GroupedDatasetSpec):
@@ -58,7 +58,7 @@ Total patients,60000,
 
 
 def test_get_results_for_binary_row(grouped_dataset_spec_test: GroupedDatasetSpec):
-    row_spec = BinaryRowSpec(
+    row_spec = BinaryVariableSpec(
         row_title="Female",
         row_df_col_name="is_female",
         positive_class=1,
@@ -86,7 +86,7 @@ Female,70%,
 
 
 def test_get_results_for_continuous_row(grouped_dataset_spec_test: GroupedDatasetSpec):
-    row_spec = ContinuousRowSpec(
+    row_spec = ContinuousVariableSpec(
         row_title="Age",
         row_df_col_name="age",
         aggregation_measure="mean",
@@ -117,7 +117,7 @@ Age (mean ± SD),55 ± 22,
 def test_get_col_value_for_continous_to_categorical_row(
     grouped_dataset_spec_test: GroupedDatasetSpec,
 ):
-    row_spec = ContinuousRowSpecToCategorical(
+    row_spec = ContinuousVariableToCategorical(
         row_title="Age",
         row_df_col_name="age",
         n_decimals=None,
@@ -152,18 +152,18 @@ Age,,
 def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
     """Test descriptive stats table."""
     row_specs = [
-        BinaryRowSpec(  # The binary case
+        BinaryVariableSpec(  # The binary case
             row_title="Female",
             row_df_col_name="is_female",
             positive_class=1,
         ),
-        ContinuousRowSpec(  # The categorical case
+        ContinuousVariableSpec(  # The categorical case
             row_title="Age",
             row_df_col_name="age",
             aggregation_measure="mean",
             variance_measure="std",
         ),
-        ContinuousRowSpecToCategorical(  # The continuous case
+        ContinuousVariableToCategorical(  # The continuous case
             row_title="Age",
             row_df_col_name="age",
             bins=[18, 35, 40, 45],

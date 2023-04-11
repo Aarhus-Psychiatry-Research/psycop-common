@@ -11,50 +11,54 @@ from psycop_model_evaluation.utils import (
 )
 
 
-class RowSpec(BaseModel):
+class VariableSpec(BaseModel):
     _name: str = "Base"
-    row_title: str
-    row_df_col_name: str
-    n_decimals: Union[int, None] = 2
+    row_title: str  # Title for the created row in the table
+    row_df_col_name: str  # Source column name in the dataset df
+    n_decimals: Union[int, None] = 2  # Number of decimals to round the results to
 
 
-class BinaryRowSpec(RowSpec):
+class BinaryVariableSpec(VariableSpec):
     _name: str = "Binary"
-    positive_class: Union[float, str]
+    positive_class: Union[
+        float, str
+    ]  # Value of the class to generate results for (e.g. 1 for a binary variable)
 
 
-class CategoricalRowSpec(RowSpec):
+class CategoricalVariableSpec(VariableSpec):
     _name: str = "Categorical"
-    categories: Optional[list[str]] = None
+    categories: Optional[list[str]] = None  # List of categories to include in the table
 
 
-class ContinuousRowSpec(RowSpec):
+class ContinuousVariableSpec(VariableSpec):
     _name: str = "Continuous"
     aggregation_measure: t.Literal["mean"] = "mean"
     variance_measure: t.Literal["std"] = "std"
 
 
-class ContinuousRowSpecToCategorical(RowSpec):
+class ContinuousVariableToCategorical(VariableSpec):
     _name: str = "ContinuousToCategorical"
-    bins: list[float]
-    bin_decimals: Optional[int] = None
+    bins: list[float]  # List of bin edges
+    bin_decimals: Optional[int] = None  # Number of decimals to round the bin edges to
 
 
 class VariableGroupSpec(BaseModel):
-    title: str
-    group_column_name: Optional[str]
-    add_total_row: bool = True
-    row_specs: list[Union[RowSpec, t.Literal["Total"]]]
+    title: str  # Title to add to the table
+    group_column_name: Optional[str]  # Column name to group by
+    add_total_row: bool = True  # Whether to add a total row, e.g. "100_000 patients"
+    row_specs: list[
+        Union[VariableSpec, t.Literal["Total"]]
+    ]  # List of row specs to include in the table
 
 
 class DatasetSpec(BaseModel):
-    name: str
+    name: str  # Name of the dataset, used as a column name in the table
     df: pd.DataFrame
 
 
 class GroupedDatasetSpec(BaseModel):
-    name: str
-    df: pd.DataFrame
+    name: str  # Name of the dataset, used as a column name in the table
+    grouped_df: pd.DataFrame
 
 
 def _create_row_df(
@@ -76,13 +80,13 @@ def _get_col_value_for_total_row(
     variable_group_spec: Optional[VariableGroupSpec] = None,
 ) -> pd.DataFrame:
     if variable_group_spec is None:
-        cell_value = dataset.df.shape[0]
+        cell_value = dataset.grouped_df.shape[0]
         variable_title = ""
     else:
         cell_value = (
-            dataset.df[variable_group_spec.group_column_name].nunique()
+            dataset.grouped_df[variable_group_spec.group_column_name].nunique()
             if (variable_group_spec.group_column_name is not None)
-            else dataset.df.shape[0]
+            else dataset.grouped_df.shape[0]
         )
         variable_title = variable_group_spec.title.lower()
 
@@ -95,11 +99,11 @@ def _get_col_value_for_total_row(
 
 def _get_col_value_for_binary_row(
     dataset: GroupedDatasetSpec,
-    row_spec: BinaryRowSpec,
+    row_spec: BinaryVariableSpec,
 ) -> pd.DataFrame:
     # Get proportion with the positive class
     positive_class_prop = (
-        dataset.df[row_spec.row_df_col_name] == row_spec.positive_class
+        dataset.grouped_df[row_spec.row_df_col_name] == row_spec.positive_class
     ).mean()
     prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
 
@@ -112,12 +116,12 @@ def _get_col_value_for_binary_row(
 
 def _get_col_value_for_continuous_row(
     dataset: GroupedDatasetSpec,
-    row_spec: ContinuousRowSpec,
+    row_spec: ContinuousVariableSpec,
 ) -> pd.DataFrame:
     # Aggregation
     agg_results = {
-        "mean": dataset.df[row_spec.row_df_col_name].mean(),
-        "median": dataset.df[row_spec.row_df_col_name].median(),
+        "mean": dataset.grouped_df[row_spec.row_df_col_name].mean(),
+        "median": dataset.grouped_df[row_spec.row_df_col_name].median(),
     }
     agg_result = agg_results[row_spec.aggregation_measure]
     agg_rounded = round(agg_result, row_spec.n_decimals)
@@ -125,9 +129,9 @@ def _get_col_value_for_continuous_row(
 
     # Variance
     variance_results = {
-        "std": dataset.df[row_spec.row_df_col_name].std(),
-        "iqr": dataset.df[row_spec.row_df_col_name].quantile(0.75)
-        - dataset.df[row_spec.row_df_col_name].quantile(0.25),
+        "std": dataset.grouped_df[row_spec.row_df_col_name].std(),
+        "iqr": dataset.grouped_df[row_spec.row_df_col_name].quantile(0.75)
+        - dataset.grouped_df[row_spec.row_df_col_name].quantile(0.25),
     }
     variance_rounded = round(
         variance_results[row_spec.variance_measure],
@@ -158,10 +162,10 @@ def _get_col_value_for_categorical_row():
 
 def _get_col_value_transform_continous_to_categorical(
     dataset: GroupedDatasetSpec,
-    row_spec: ContinuousRowSpecToCategorical,
+    row_spec: ContinuousVariableToCategorical,
 ) -> pd.DataFrame:
     values = bin_continuous_data(
-        series=dataset.df[row_spec.row_df_col_name],
+        series=dataset.grouped_df[row_spec.row_df_col_name],
         bins=row_spec.bins,
         bin_decimals=row_spec.bin_decimals,
     )
@@ -202,7 +206,7 @@ def _get_col_value_transform_continous_to_categorical(
 
 
 def _process_row(
-    row_spec: Union[RowSpec, Literal["Total"]],
+    row_spec: Union[VariableSpec, Literal["Total"]],
     dataset: DatasetSpec,
     group_col_name: Union[str, None],
 ) -> pd.DataFrame:
@@ -215,11 +219,11 @@ def _process_row(
 
     if group_col_name is not None:
         agg_df = dataset.df.groupby(group_col_name).agg(np.mean)
-        grouped_dataset_spec = GroupedDatasetSpec(name=dataset.name, df=agg_df)
+        grouped_dataset_spec = GroupedDatasetSpec(name=dataset.name, grouped_df=agg_df)
     else:
         grouped_dataset_spec = GroupedDatasetSpec(
             name=dataset.name,
-            df=dataset.df,
+            grouped_df=dataset.df,
         )
 
     if row_spec == "Total":
@@ -240,7 +244,9 @@ def _process_group(
     rows = []
 
     if group_spec.add_total_row:
-        group_spec.row_specs.append(
+        # Add total to the front of the row specs
+        group_spec.row_specs.insert(
+            0,
             "Total",
         )
 
