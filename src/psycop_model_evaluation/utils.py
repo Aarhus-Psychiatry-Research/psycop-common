@@ -153,6 +153,7 @@ def bin_continuous_data(
         bins (list[int]): Desired bins. Last value creates a bin from the last value to infinity.
         min_n_in_bin (int, optional): Minimum number of observations in a bin. If fewer than this, the bin is dropped. Defaults to 5.
         use_min_as_label (bool, optional): If True, the minimum value in the bin is used as the label. If False, the maximum value is used. Defaults to False.
+        bin_decimals: Number of decimals to round bins to. Defaults to None, in which case all decimals are removed.
 
     Returns:
         Two ungrouped series, e.g. a row for each observation in the original dataset, each containing:
