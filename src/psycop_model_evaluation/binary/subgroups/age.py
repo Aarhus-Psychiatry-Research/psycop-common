@@ -27,7 +27,7 @@ def plot_roc_auc_by_age(
         bin_continuous_input: Whether to bin input. Defaults to True.
         save_path: Path to save figure. Defaults to None.
         y_limits: y-axis limits. Defaults to (0.5, 1.0).
-        confidence_interval: Confidence interval for calculating. Defaults to 0.95.
+        confidence_interval: Confidence interval  width for the performance metric. Defaults to 0.95.
             by default the confidence interval is calculated by bootstrapping using
             1000 samples.
 

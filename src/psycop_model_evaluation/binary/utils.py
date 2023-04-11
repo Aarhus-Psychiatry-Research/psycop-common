@@ -18,7 +18,7 @@ def calc_performance(
     Args:
         df: dataframe
         metric: which metric to calculate
-        confidence_interval: confidence interval for calculating. Defaults to None,
+        confidence_interval: Confidence interval width for the performance metric. Defaults to None,
             in which case the no confidence interval is calculated.
         **kwargs: additional arguments to pass to the bootstrap function for calculating
             the confidence interval.
