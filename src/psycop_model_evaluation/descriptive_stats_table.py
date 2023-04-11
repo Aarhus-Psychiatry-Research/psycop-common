@@ -1,20 +1,13 @@
 """Code for generating a descriptive stats table."""
 import typing as t
-import warnings
-from pathlib import Path
-from typing import Optional, Type, TypeVar, Union
+from typing import Optional, TypeVar, Union
 
 import numpy as np
 import pandas as pd
-import wandb
-from attr import dataclass
-from click import group
-from psycop_model_training.training_output.dataclasses import EvalDataset
 
 from psycop_model_evaluation.utils import (
     BaseModel,
     bin_continuous_data,
-    output_table,
 )
 
 
@@ -29,7 +22,7 @@ class BinaryRowSpec(RowSpec):
 
 
 class CategoricalRowSpec(RowSpec):
-    categories: Optional[t.List[str]] = None
+    categories: Optional[list[str]] = None
 
 
 class ContinuousRowSpec(RowSpec):
@@ -38,7 +31,7 @@ class ContinuousRowSpec(RowSpec):
 
 
 class ContinuousRowSpecToCategorical(RowSpec):
-    bins: t.List[float]
+    bins: list[float]
     bin_decimals: Optional[int] = None
 
 
@@ -46,7 +39,7 @@ class VariableGroupSpec(BaseModel):
     title: str
     group_column_name: Optional[str]
     add_total_row: bool = True
-    row_specs: Optional[t.List[RowSpec]] = None
+    row_specs: Optional[list[RowSpec]] = None
 
 
 class DatasetSpec(BaseModel):
@@ -70,7 +63,8 @@ def _create_row_df(row_title: str, col_title: str, cell_value: str) -> pd.DataFr
 
 
 def _get_col_value_for_total_row(
-    dataset: GroupedDatasetSpec, variable_group_spec: VariableGroupSpec
+    dataset: GroupedDatasetSpec,
+    variable_group_spec: VariableGroupSpec,
 ) -> pd.DataFrame:
     return _create_row_df(
         row_title=f"Total {variable_group_spec.title.lower()}",
@@ -80,7 +74,8 @@ def _get_col_value_for_total_row(
 
 
 def _get_col_value_for_binary_row(
-    dataset: GroupedDatasetSpec, row_spec: BinaryRowSpec
+    dataset: GroupedDatasetSpec,
+    row_spec: BinaryRowSpec,
 ) -> pd.DataFrame:
     # Get proportion with the positive class
     positive_class_prop = (
@@ -96,8 +91,9 @@ def _get_col_value_for_binary_row(
 
 
 def _get_col_value_for_continuous_row(
-    dataset: GroupedDatasetSpec, row_spec: ContinuousRowSpec
-):
+    dataset: GroupedDatasetSpec,
+    row_spec: ContinuousRowSpec,
+) -> pd.DataFrame:
     # Aggregation
     agg_results = {
         "mean": dataset.df[row_spec.row_df_col_name].mean(),
@@ -114,7 +110,8 @@ def _get_col_value_for_continuous_row(
         - dataset.df[row_spec.row_df_col_name].quantile(0.25),
     }
     variance_rounded = round(
-        variance_results[row_spec.variance_measure], row_spec.n_decimals
+        variance_results[row_spec.variance_measure],
+        row_spec.n_decimals,
     )
 
     # Variance title
@@ -140,8 +137,9 @@ def _get_col_value_for_categorical_row():
 
 
 def _get_col_value_transform_continous_to_categorical(
-    dataset: GroupedDatasetSpec, row_spec: ContinuousRowSpecToCategorical
-):
+    dataset: GroupedDatasetSpec,
+    row_spec: ContinuousRowSpecToCategorical,
+) -> pd.DataFrame:
     values = bin_continuous_data(
         series=dataset.df[row_spec.row_df_col_name],
         bins=row_spec.bins,
@@ -173,10 +171,11 @@ def _get_col_value_transform_continous_to_categorical(
     grouped_df = pd.concat(
         [
             pd.DataFrame(
-                {"Title": row_spec.row_title, dataset.name: np.nan}, index=[0]
+                {"Title": row_spec.row_title, dataset.name: np.nan},
+                index=[0],
             ),
             grouped_df,
-        ]
+        ],
     )
 
     return grouped_df[["Title", dataset.name]]
@@ -186,7 +185,9 @@ RowSpecSubClass = TypeVar("T", bound=RowSpec)
 
 
 def _process_row(
-    row_spec: Type[RowSpecSubClass], dataset: DatasetSpec, group_col_name: str
+    row_spec: type[RowSpecSubClass],
+    dataset: DatasetSpec,
+    group_col_name: str,
 ) -> pd.DataFrame:
     spec_to_func = {
         BinaryRowSpec: _get_col_value_for_binary_row,
@@ -214,7 +215,8 @@ def _process_row(
 
 
 def _process_group(
-    group: VariableGroupSpec, datasets: t.Sequence[DatasetSpec]
+    group: VariableGroupSpec,
+    datasets: t.Sequence[DatasetSpec],
 ) -> pd.DataFrame:
     rows = []
 
@@ -226,7 +228,7 @@ def _process_group(
                     row_spec=row,
                     dataset=dataset,
                     group_col_name=group.group_column_name,
-                )
+                ),
             )
 
         row: pd.DataFrame = dataset_row_vals[0]  # noqa: PLW2901
@@ -245,7 +247,8 @@ def _process_group(
 
 
 def create_descriptive_stats_table(
-    variable_group_specs: VariableGroupSpec, datasets: t.Sequence[DatasetSpec]
+    variable_group_specs: VariableGroupSpec,
+    datasets: t.Sequence[DatasetSpec],
 ) -> pd.DataFrame:
     groups = []
 
