@@ -60,7 +60,7 @@ class PreSplitValueCleaner:
         return dataset
 
     @staticmethod
-    def _offset_values_so_no_negative_values(dataset: pd.DataFrame) -> pd.DataFrame:
+    def _offset_so_no_negative_values(dataset: pd.DataFrame) -> pd.DataFrame:
         """Offset values with minimum negative value, so all values will be non-negative"""
 
         preds = dataset[infer_predictor_col_name(df=dataset)]
@@ -80,12 +80,12 @@ class PreSplitValueCleaner:
         # Offset values with abs min, so min becomes 0
         df_to_replace = pd.concat(
             [
-                df_to_replace[c_df] + abs(c)
+                df_to_replace[c_df] + abs(col_min_values[c])
                 for c_df, c in zip(df_to_replace, col_min_values)
             ],
             axis=1,
         )
-        [col_min_values[c] for c in col_min_values]
+
         dataset[numerical_columns_with_negative_values] = df_to_replace
 
         return dataset
@@ -96,11 +96,12 @@ class PreSplitValueCleaner:
         # In the future, we want to:
         # 1a. See if there's a way of using feature selection that permits negative values, or
         # 1b. Always use z-score normalisation?
+
         if self.pre_split_cfg.negative_values_to_nan:
             dataset = self._negative_values_to_nan(dataset=dataset)
 
         if self.pre_split_cfg.offset_values_so_no_negative_values:
-            dataset = self._offset_values_so_no_negative_values(dataset=dataset)
+            dataset = self._offset_so_no_negative_values(dataset=dataset)
 
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
 
