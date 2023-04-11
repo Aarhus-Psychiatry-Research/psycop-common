@@ -23,7 +23,7 @@ def load_txt_data(n_rows: int = None) -> list[str]:
 
 def fit_bow(
     corpus: Sequence[str],
-    stop_words: list[str] = None,
+    stop_words: List[str] = None,
     ngram_range: tuple = (1, 1),
     max_df: float = 0.95,
     min_df: int = 2,
@@ -67,7 +67,7 @@ def fit_bow(
 
 def fit_tfidf(
     corpus: Sequence[str],
-    stop_words: list[str] = None,
+    stop_words: List[str] = None,
     ngram_range: tuple = (1, 1),
     max_df: float = 0.95,
     min_df: int = 2,
@@ -111,7 +111,7 @@ def fit_tfidf(
 
 def fit_lda(
     corpus: Sequence[str],
-    stop_words: list[str] = None,
+    stop_words: List[str] = None,
     ngram_range: tuple = (1, 1),
     max_df: float = 0.95,
     min_df: int = 2,
@@ -207,12 +207,14 @@ def save_text_model_to_dir(
     """
     filepath = Path("E:/") / "shared_resources" / "text_models" / filename
 
+    print("Text model saved at this path:", filepath)
+
     with Path(filepath).open("wb") as f:
         pkl.dump(model, f)
 
 
-if __name__ == "__main__":
-    corpus = load_txt_data(n_rows=10000)
-    fit_bow(corpus)
-    fit_tfidf(corpus)
-    fit_lda(corpus)
+# if __name__ == "__main__":
+#     corpus = load_txt_data(n_rows=10000)
+#     fit_bow(corpus)
+#     fit_tfidf(corpus)
+#     fit_lda(corpus)
