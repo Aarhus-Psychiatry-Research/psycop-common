@@ -157,7 +157,7 @@ def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
     min_n_in_bin: int = 0,
     bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
-    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "M",
+    bin_unit: bin_unit_literals = "M",
     fig_size: tuple[int, int] = (5, 5),
     dpi: int = 300,
     pos_rate: float = 0.05,
