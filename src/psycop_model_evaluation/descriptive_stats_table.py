@@ -10,38 +10,39 @@ from attr import dataclass
 from psycop_model_training.training_output.dataclasses import EvalDataset
 
 from psycop_model_evaluation.utils import (
+    BaseModel,
     bin_continuous_data,
     output_table,
 )
 
 
-@dataclass
-class RowSpec:
+class RowSpec(BaseModel):
     row_title: str
     row_df_col_name: str
+    n_decimals: Union[int, None] = 2
 
 
-@dataclass
 class BinaryRowSpec(RowSpec):
-    positive_class: Union[str, float]
-    n_decimals: int = 2
+    positive_class: Union[float, str]
 
 
-@dataclass
 class CategoricalRowSpec(RowSpec):
     categories: Optional[t.List[str]] = None
 
 
-@dataclass
-class VariableGroupSpec:
+class ContinuousRowSpec(RowSpec):
+    aggregation_measure: t.Literal["mean"] = "mean"
+    variance_measure: t.Literal["std"] = "std"
+
+
+class VariableGroupSpec(BaseModel):
     title: str
     group_column_name: str
     add_total_row: bool = True
     row_specs: Optional[t.List[RowSpec]] = None
 
 
-@dataclass
-class DatasetSpec:
+class DatasetSpec(BaseModel):
     name: str
     df: pd.DataFrame
 
@@ -75,9 +76,6 @@ def _get_col_value_for_binary_row(
     ).mean()
     prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
 
-    if row_spec.n_decimals == 0:
-        prop_rounded = int(prop_rounded)
-
     return _create_row_df(
         row_title=row_spec.row_title,
         col_title=dataset.name,
@@ -85,8 +83,44 @@ def _get_col_value_for_binary_row(
     )
 
 
-def _get_col_value_for_continuous_row():
-    pass
+def _get_col_value_for_continuous_row(
+    dataset: DatasetSpec, row_spec: ContinuousRowSpec
+):
+    # Aggregation
+    agg_results = {
+        "mean": dataset.df[row_spec.row_df_col_name].mean(),
+        "median": dataset.df[row_spec.row_df_col_name].median(),
+    }
+    agg_result = agg_results[row_spec.aggregation_measure]
+    agg_rounded = round(agg_result, row_spec.n_decimals)
+    agg_cell_string = f"{agg_rounded}"
+
+    # Variance
+    variance_results = {
+        "std": dataset.df[row_spec.row_df_col_name].std(),
+        "iqr": dataset.df[row_spec.row_df_col_name].quantile(0.75)
+        - dataset.df[row_spec.row_df_col_name].quantile(0.25),
+    }
+    variance_rounded = round(
+        variance_results[row_spec.variance_measure], row_spec.n_decimals
+    )
+
+    # Variance title
+    variance_title_strings = {"std": "± SD", "iqr": "[IQR]"}
+    variance_title_string = variance_title_strings[row_spec.variance_measure]
+
+    # Variance cell
+    variance_cell_strings = {
+        "std": f"± {variance_rounded}",
+        "iqr": f"[{agg_result - variance_rounded}, {agg_result + variance_rounded}]",
+    }
+    variance_cell_string = variance_cell_strings[row_spec.variance_measure]
+
+    return _create_row_df(
+        row_title=f"{row_spec.row_title} ({row_spec.aggregation_measure} {variance_title_string})",
+        col_title=dataset.name,
+        cell_value=f"{agg_cell_string} {variance_cell_string}",
+    )
 
 
 def _get_col_value_for_categorical_row():

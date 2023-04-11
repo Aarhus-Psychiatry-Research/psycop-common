@@ -14,6 +14,8 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 import wandb
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import Extra
 from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -25,6 +27,18 @@ MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 TEST_PLOT_PATH = PROJECT_ROOT / "tests" / "plots_from_tests"
+
+
+class BaseModel(PydanticBaseModel):
+    """."""
+
+    class Config:
+        """An pydantic basemodel, which doesn't allow attributes that are not
+        defined in the class."""
+
+        allow_mutation = False
+        arbitrary_types_allowed = True
+        extra = Extra.forbid
 
 
 def format_dict_for_printing(d: dict) -> str:
