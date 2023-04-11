@@ -10,11 +10,13 @@ from psycop_ml_utils.utils_for_testing import str_to_df
 from psycop_model_evaluation.descriptive_stats_table import (
     BinaryRowSpec,
     ContinuousRowSpec,
+    ContinuousRowSpecToCategorical,
     DatasetSpec,
     VariableGroupSpec,
     _get_col_value_for_binary_row,
     _get_col_value_for_continuous_row,
     _get_col_value_for_total_row,
+    _get_col_value_transform_continous_to_categorical,
 )
 from psycop_model_training.training_output.dataclasses import EvalDataset
 
@@ -86,6 +88,37 @@ def test_get_results_for_continuous_row(dataset_spec_test_split: DatasetSpec):
     expected_df = str_to_df(
         """Title,Train,
 Age (mean ± SD),55 ± 22,
+"""
+    )
+
+    assert_frame_equal(
+        outcome_df, expected_df, check_dtype=False, check_exact=False, atol=2
+    )
+
+
+def test_get_col_value_for_continous_to_categorical_row(
+    dataset_spec_test_split: DatasetSpec,
+):
+    row_spec = ContinuousRowSpecToCategorical(
+        row_title="Age",
+        row_df_col_name="age",
+        n_decimals=None,
+        bins=[18, 35, 40, 45],
+        bin_decimals=None,
+    )
+
+    outcome_df = _get_col_value_transform_continous_to_categorical(
+        dataset=dataset_spec_test_split,
+        row_spec=row_spec,
+    )
+
+    expected_df = str_to_df(
+        """Title,Train,
+Age,,
+18-35,23%,
+36-40,6%,
+41-45,6%,
+46+,63%,     
 """
     )
 

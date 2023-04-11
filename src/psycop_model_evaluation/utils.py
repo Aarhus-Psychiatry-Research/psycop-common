@@ -8,7 +8,7 @@ import tempfile
 from collections.abc import Iterable, MutableMapping, Sequence
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import dill as pkl
 import numpy as np
@@ -144,6 +144,7 @@ def bin_continuous_data(
     bins: Sequence[float],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
+    bin_decimals: Optional[int] = None,
 ) -> tuple[pd.Series, pd.Series]:
     """For prettier formatting of continuous binned data such as age.
 
@@ -169,6 +170,9 @@ def bin_continuous_data(
         # Round max value up
         max_value_rounded = math.ceil(series.max())
         bins.append(max_value_rounded)
+
+    # Round bins to specified number of decimals
+    bins = [round(b, bin_decimals) for b in bins]
 
     # Create bin labels
     for i, bin_v in enumerate(bins):

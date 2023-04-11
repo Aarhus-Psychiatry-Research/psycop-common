@@ -4,6 +4,7 @@ import warnings
 from pathlib import Path
 from typing import Optional, Union
 
+import numpy as np
 import pandas as pd
 import wandb
 from attr import dataclass
@@ -33,6 +34,11 @@ class CategoricalRowSpec(RowSpec):
 class ContinuousRowSpec(RowSpec):
     aggregation_measure: t.Literal["mean"] = "mean"
     variance_measure: t.Literal["std"] = "std"
+
+
+class ContinuousRowSpecToCategorical(RowSpec):
+    bins: t.List[float]
+    bin_decimals: Optional[int] = None
 
 
 class VariableGroupSpec(BaseModel):
@@ -125,6 +131,49 @@ def _get_col_value_for_continuous_row(
 
 def _get_col_value_for_categorical_row():
     pass
+
+
+def _get_col_value_transform_continous_to_categorical(
+    dataset: DatasetSpec, row_spec: ContinuousRowSpecToCategorical
+):
+    values = bin_continuous_data(
+        series=dataset.df[row_spec.row_df_col_name],
+        bins=row_spec.bins,
+        bin_decimals=row_spec.bin_decimals,
+    )
+
+    result_df = pd.DataFrame({"Title": values[0], "n_in_category": values[1]})
+
+    # Get col percentage for each category within group
+    grouped_df = result_df.groupby("Title").mean()
+    grouped_df = grouped_df.reset_index()
+
+    grouped_df[dataset.name] = (
+        grouped_df["n_in_category"] / grouped_df["n_in_category"].sum() * 100
+    )
+
+    if row_spec.n_decimals is not None:
+        grouped_df[dataset.name] = round(
+            grouped_df[dataset.name],
+            row_spec.n_decimals,
+        )
+    else:
+        grouped_df[dataset.name] = grouped_df[dataset.name].astype(int)
+
+    # Add % symbol
+    grouped_df[dataset.name] = grouped_df[dataset.name].astype(str) + "%"
+
+    # Add "Age", "" as first row
+    grouped_df = pd.concat(
+        [
+            pd.DataFrame(
+                {"Title": row_spec.row_title, dataset.name: np.nan}, index=[0]
+            ),
+            grouped_df,
+        ]
+    )
+
+    return grouped_df[["Title", dataset.name]]
 
 
 def _process_row():
