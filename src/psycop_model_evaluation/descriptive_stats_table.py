@@ -73,15 +73,15 @@ def _get_col_value_for_binary_row(
     positive_class_prop = (
         dataset.df[row_spec.row_df_col_name] == row_spec.positive_class
     ).mean()
-    percent_value = round(positive_class_prop * 100, row_spec.n_decimals)
+    prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
 
     if row_spec.n_decimals == 0:
-        percent_value = int(percent_value)
+        prop_rounded = int(prop_rounded)
 
     return _create_row_df(
         row_title=row_spec.row_title,
         col_title=dataset.name,
-        cell_value=f"{percent_value}%",
+        cell_value=f"{prop_rounded}%",
     )
 
 
