@@ -18,7 +18,17 @@ from psycop_model_evaluation.utils import (
 @dataclass
 class RowSpec:
     row_title: str
-    row_column_name: str
+    row_df_col_name: str
+
+
+@dataclass
+class BinaryRowSpec(RowSpec):
+    positive_class: Union[str, float]
+    n_decimals: int = 2
+
+
+@dataclass
+class CategoricalRowSpec(RowSpec):
     categories: Optional[t.List[str]] = None
 
 
@@ -36,24 +46,43 @@ class DatasetSpec:
     df: pd.DataFrame
 
 
-def _get_col_value_for_total_row(
-    dataset: DatasetSpec, variable_group_spec: VariableGroupSpec
-) -> pd.DataFrame:
-    df = pd.DataFrame(
+def _create_row_df(row_title: str, col_title: str, cell_value: str) -> pd.DataFrame:
+    return pd.DataFrame(
         {
-            "Title": f"Total {variable_group_spec.title.lower()}",
-            f"{dataset.name}": dataset.df[
-                variable_group_spec.group_column_name
-            ].nunique(),
+            "Title": row_title,
+            col_title: cell_value,
         },
         index=[0],
     )
 
-    return df
+
+def _get_col_value_for_total_row(
+    dataset: DatasetSpec, variable_group_spec: VariableGroupSpec
+) -> pd.DataFrame:
+    return _create_row_df(
+        row_title=f"Total {variable_group_spec.title.lower()}",
+        col_title=dataset.name,
+        cell_value=dataset.df[variable_group_spec.group_column_name].nunique(),
+    )
 
 
-def _get_col_value_for_binary_row():
-    pass
+def _get_col_value_for_binary_row(
+    dataset: DatasetSpec, row_spec: BinaryRowSpec
+) -> pd.DataFrame:
+    # Get proportion with the positive class
+    positive_class_prop = (
+        dataset.df[row_spec.row_df_col_name] == row_spec.positive_class
+    ).mean()
+    percent_value = round(positive_class_prop * 100, row_spec.n_decimals)
+
+    if row_spec.n_decimals == 0:
+        percent_value = int(percent_value)
+
+    return _create_row_df(
+        row_title=row_spec.row_title,
+        col_title=dataset.name,
+        cell_value=f"{percent_value}%",
+    )
 
 
 def _get_col_value_for_continuous_row():
