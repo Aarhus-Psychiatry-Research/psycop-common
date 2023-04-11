@@ -27,7 +27,9 @@ def dataset_spec_test_split(synth_eval_df: pd.DataFrame) -> DatasetSpec:
 
 def test_get_results_for_total_row(dataset_spec_test_split: DatasetSpec):
     variable_group_spec = VariableGroupSpec(
-        title="Patients", group_column_name="dw_ek_borger", add_total_row=True,
+        title="Patients",
+        group_column_name="dw_ek_borger",
+        add_total_row=True,
     )
 
     outcome_df = _get_col_value_for_total_row(
@@ -42,7 +44,11 @@ Total patients,60000,
     )
 
     assert_frame_equal(
-        outcome_df, expected_df, check_dtype=False, check_exact=False, atol=10000,
+        outcome_df,
+        expected_df,
+        check_dtype=False,
+        check_exact=False,
+        atol=10000,
     )
 
 
@@ -66,7 +72,11 @@ Female,70%,
     )
 
     assert_frame_equal(
-        outcome_df, expected_df, check_dtype=False, check_exact=False, atol=2,
+        outcome_df,
+        expected_df,
+        check_dtype=False,
+        check_exact=False,
+        atol=2,
     )
 
 
@@ -91,7 +101,11 @@ Age (mean ± SD),55 ± 22,
     )
 
     assert_frame_equal(
-        outcome_df, expected_df, check_dtype=False, check_exact=False, atol=2,
+        outcome_df,
+        expected_df,
+        check_dtype=False,
+        check_exact=False,
+        atol=2,
     )
 
 
@@ -122,7 +136,11 @@ Age,,
     )
 
     assert_frame_equal(
-        outcome_df, expected_df, check_dtype=False, check_exact=False, atol=2,
+        outcome_df,
+        expected_df,
+        check_dtype=False,
+        check_exact=False,
+        atol=2,
     )
 
 
@@ -169,7 +187,8 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
     ]
 
     descriptive_table = create_descriptive_stats_table(
-        variable_group_specs=variable_group_specs, datasets=datasets,
+        variable_group_specs=variable_group_specs,
+        datasets=datasets,
     )
 
     print(descriptive_table)

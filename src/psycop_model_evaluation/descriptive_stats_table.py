@@ -164,7 +164,7 @@ def _get_col_value_transform_continous_to_categorical(
     else:
         grouped_df[dataset.name] = grouped_df[dataset.name].astype(int)
 
-    # Add % symbol
+    # Add a % symbol
     grouped_df[dataset.name] = grouped_df[dataset.name].astype(str) + "%"
 
     # Add "Age", "" as first row
