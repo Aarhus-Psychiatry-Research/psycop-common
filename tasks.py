@@ -1,3 +1,20 @@
+"""
+This project uses Invoke (pyinvoke.org) for task management.
+Install it via:
+
+```
+pip install invoke
+```
+
+And then run:
+
+```
+inv --list
+```
+"""
+
+
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -37,7 +54,7 @@ def git_init(c: Context):
 def setup_venv(
     c: Context,
     python_version: str,
-):
+) -> str:
     venv_name = f'.venv{python_version.replace(".", "")}'
 
     if not Path(venv_name).exists():
@@ -50,6 +67,8 @@ def setup_venv(
         print(f"{Emo.GOOD} Virtual environment already exists")
 
     c.run(f"source {venv_name}/bin/activate")
+
+    return venv_name
 
 
 def _add_commit(c: Context, msg: Optional[str] = None):
@@ -142,8 +161,14 @@ def update_pr(c: Context):
 
 
 def exit_if_error_in_stdout(result: Result):
+    # Find N remaining using regex
+
     if "error" in result.stdout:
-        exit(0)
+        errors_remaining = re.findall(r"\d+(?=( remaining))", result.stdout)[
+            0
+        ]  # testing
+        if errors_remaining != "0":
+            exit(0)
 
 
 def pre_commit(c: Context):
@@ -185,8 +210,11 @@ def install(c: Context):
 @task
 def setup(c: Context, python_version: str = "3.9"):
     git_init(c)
-    setup_venv(c, python_version=python_version)
-    install(c)
+    venv_name = setup_venv(c, python_version=python_version)
+    print(
+        f"{Emo.DO} Activate your virtual environment by running: \n\n\t\t source {venv_name}/bin/activate \n",
+    )
+    print(f"{Emo.DO} Then install the project by running: \n\n\t\t inv install\n")
 
 
 @task
@@ -224,12 +252,24 @@ def test(c: Context):
             line_sans_suffix = line_sans_prefix[line_sans_prefix.find("::") + 2 :]
             print(f"FAILED {Emo.FAIL} #{line_sans_suffix}     ")
 
-    if "failed" in test_result.stdout or "error" in test_result.stdout:
+    if test_result.return_code != 0:
+        exit(0)
+
+
+def test_for_rej(c: Context):
+    # Check if any file in current directory, or its subdirectories, has a .rej extension
+    # If so, exit
+    rej_files = c.run("find . -name '*.rej' -type f -print", hide=True)
+
+    if ".rej" in rej_files.stdout:
+        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.")
+        print(f"{rej_files.stdout}")
         exit(0)
 
 
 @task
 def lint(c: Context):
+    test_for_rej(c)
     pre_commit(c)
     mypy(c)
 
