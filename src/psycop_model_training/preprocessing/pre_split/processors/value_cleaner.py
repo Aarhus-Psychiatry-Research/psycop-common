@@ -100,7 +100,7 @@ class PreSplitValueCleaner:
         if self.pre_split_cfg.negative_values_to_nan:
             dataset = self._negative_values_to_nan(dataset=dataset)
 
-        if self.pre_split_cfg.offset_values_so_no_negative_values:
+        if self.pre_split_cfg.offset_so_no_negative_values:
             dataset = self._offset_so_no_negative_values(dataset=dataset)
 
         dataset = self.convert_timestamp_dtype_and_nat(dataset=dataset)
