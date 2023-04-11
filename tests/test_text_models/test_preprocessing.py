@@ -1,8 +1,8 @@
+import pandas as pd
 from psycop_feature_generation.text_models.preprocessing import (
     remove_stop_words_from_series,
     remove_symbols_from_series,
 )
-import pandas as pd
 
 
 def test_remove_symbols_from_series():

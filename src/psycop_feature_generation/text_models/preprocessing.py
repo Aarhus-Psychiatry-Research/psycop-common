@@ -1,8 +1,7 @@
-import numpy as np
-import pandas as pd
-from typing import Literal
 import re
+from typing import Literal
 
+import pandas as pd
 from psycop_feature_generation.text_models.data_handling import load_text_split
 from psycop_feature_generation.text_models.utils import stop_words
 
