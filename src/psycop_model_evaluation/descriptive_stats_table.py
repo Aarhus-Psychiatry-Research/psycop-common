@@ -58,7 +58,9 @@ class GroupedDatasetSpec(BaseModel):
 
 
 def _create_row_df(
-    row_title: str, col_title: str, cell_value: Union[float, str],
+    row_title: str,
+    col_title: str,
+    cell_value: Union[float, str],
 ) -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -70,7 +72,8 @@ def _create_row_df(
 
 
 def _get_col_value_for_total_row(
-    dataset: GroupedDatasetSpec, variable_group_spec: Optional[VariableGroupSpec] = None,
+    dataset: GroupedDatasetSpec,
+    variable_group_spec: Optional[VariableGroupSpec] = None,
 ) -> pd.DataFrame:
     if variable_group_spec is None:
         cell_value = dataset.df.shape[0]

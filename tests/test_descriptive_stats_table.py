@@ -1,7 +1,6 @@
 """Test that the descriptive stats table is generated correctly."""
 
 
-
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -33,7 +32,9 @@ def grouped_dataset_spec_test(synth_eval_df: pd.DataFrame) -> GroupedDatasetSpec
 
 def test_get_results_for_total_row(grouped_dataset_spec_test: GroupedDatasetSpec):
     variable_group_spec = VariableGroupSpec(
-        title="Patients", group_column_name="dw_ek_borger", row_specs=["Total"],
+        title="Patients",
+        group_column_name="dw_ek_borger",
+        row_specs=["Total"],
     )
 
     outcome_df = _get_col_value_for_total_row(
