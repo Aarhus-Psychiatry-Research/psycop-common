@@ -1,6 +1,6 @@
 """Code for generating a descriptive stats table."""
 import typing as t
-from typing import Literal, Optional, Type, TypeVar, Union
+from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -58,7 +58,7 @@ class GroupedDatasetSpec(BaseModel):
 
 
 def _create_row_df(
-    row_title: str, col_title: str, cell_value: Union[float, str]
+    row_title: str, col_title: str, cell_value: Union[float, str],
 ) -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -70,7 +70,7 @@ def _create_row_df(
 
 
 def _get_col_value_for_total_row(
-    dataset: GroupedDatasetSpec, variable_group_spec: Optional[VariableGroupSpec] = None
+    dataset: GroupedDatasetSpec, variable_group_spec: Optional[VariableGroupSpec] = None,
 ) -> pd.DataFrame:
     if variable_group_spec is None:
         cell_value = dataset.df.shape[0]
@@ -253,10 +253,10 @@ def _process_group(
                 ),
             )
 
-        row: pd.DataFrame = dataset_row_vals[0]  # noqa: PLW2901
+        row: pd.DataFrame = dataset_row_vals[0]
 
         for col_df in dataset_row_vals[1:]:
-            row = row.merge(col_df, on="Title", how="outer")  # noqa: PLW2901
+            row = row.merge(col_df, on="Title", how="outer")
 
         rows.append(row)
 
