@@ -227,7 +227,7 @@ def _process_row(
             dataset=grouped_dataset_spec,
         )
 
-    return spec_to_func[row_spec._name](
+    return spec_to_func[row_spec._name](  # type: ignore
         dataset=grouped_dataset_spec,
         row_spec=row_spec,
     )

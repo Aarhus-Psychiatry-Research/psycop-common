@@ -176,13 +176,13 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
             title="Visits",
             group_column_name=None,
             add_total_row=True,
-            row_specs=row_specs,
+            row_specs=row_specs,  # type: ignore
         ),
         VariableGroupSpec(
             title="Patients",
             group_column_name="dw_ek_borger",
             add_total_row=True,
-            row_specs=row_specs,
+            row_specs=row_specs,  # type: ignore
         ),
     ]
 
