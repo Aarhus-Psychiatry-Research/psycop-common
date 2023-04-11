@@ -1,5 +1,6 @@
 """Test that the descriptive stats table is generated correctly."""
 
+import typing as t
 from random import randint
 
 import pandas as pd
@@ -12,11 +13,13 @@ from psycop_model_evaluation.descriptive_stats_table import (
     ContinuousRowSpec,
     ContinuousRowSpecToCategorical,
     DatasetSpec,
+    RowSpec,
     VariableGroupSpec,
     _get_col_value_for_binary_row,
     _get_col_value_for_continuous_row,
     _get_col_value_for_total_row,
     _get_col_value_transform_continous_to_categorical,
+    create_descriptive_stats_table,
 )
 from psycop_model_training.training_output.dataclasses import EvalDataset
 
@@ -127,40 +130,50 @@ Age,,
     )
 
 
-# def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
-#     """Test descriptive stats table."""
-#     variable_group_specs = [
-#         VariableGroup(
-#             group_title="Patients",
-#             group_column_str="dw_ek_borger",
-#             add_total_row=True,
-#             row_specs=[
-#                 RowSpec( # The binary case
-#                     row_title="Female",
-#                     row_column_name="is_female",
-#                 ),
-#                 RowSpec( # The categorical case
-#                     row_title="Female",
-#                     row_column_name="is_female",
-#                     categories = [0, 1],
-#                 )
-#                 Rowspec( # The continuous case
-#                     row_title="citizen_id",
-#                     row_column_name="dw_ek_borger",
-#                 )
-#             ],
-#         )
-#     ]
+def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
+    """Test descriptive stats table."""
+    row_specs: t.List[RowSpec] = [
+        BinaryRowSpec(  # The binary case
+            row_title="Female",
+            row_df_col_name="is_female",
+            positive_class=1,
+        ),
+        ContinuousRowSpec(  # The categorical case
+            row_title="Age",
+            row_df_col_name="age",
+            aggregation_measure="mean",
+            variance_measure="std",
+        ),
+        ContinuousRowSpecToCategorical(  # The continuous case
+            row_title="Age",
+            row_df_col_name="age",
+            bins=[18, 35, 40, 45],
+            bin_decimals=None,
+        ),
+    ]
 
-#     datasets = [
-#         DatasetSpec(name="Train", dataset=train_df),
-#         DatasetSpec(name="Test", dataset=test_df),
-#     ]
+    variable_group_specs = [
+        VariableGroupSpec(
+            title="Visits",
+            group_column_name=None,
+            add_total_row=True,
+            row_specs=row_specs,
+        ),
+        VariableGroupSpec(
+            title="Patients",
+            group_column_name="dw_ek_borger",
+            add_total_row=True,
+            row_specs=row_specs,
+        ),
+    ]
 
-#     descriptive_table = create_descriptive_stats_table(
-#         variable_group_specs=variable_group_specs, datasets=datasets
-#     )
+    datasets = [
+        DatasetSpec(name="Train", df=synth_eval_df),
+        DatasetSpec(name="Test", df=synth_eval_df),
+    ]
 
-#     print(descriptive_table)
+    descriptive_table = create_descriptive_stats_table(
+        variable_group_specs=variable_group_specs, datasets=datasets
+    )
 
-#     pass
+    print(descriptive_table)
