@@ -10,16 +10,6 @@ from sklearn.decomposition import LatentDirichletAllocation
 from psycop_feature_generation.loaders.raw.load_text import load_all_notes
 
 
-# def load_txt_data(n_rows: int = None) -> list[str]:
-#     """
-#     Loads text data.
-#     (just to get some text for testing --> we should only use text from train and val splits)
-#     """
-#     all_notes = load_all_notes(n_rows=n_rows)
-
-#     return all_notes["text"].dropna().tolist()
-
-
 def fit_bow(
     corpus: Sequence[str],
     ngram_range: tuple = (1, 1),
@@ -49,7 +39,7 @@ def fit_bow(
     )
 
     # Fit to corpus
-    bow = bow.fit(corpus)  # fit vs fit_transform here?
+    bow = bow.fit(corpus)
 
     return bow
 
@@ -84,17 +74,9 @@ def fit_tfidf(
     )
 
     # Fit to corpus
-    tfidf = tfidf.fit(corpus)  # fit_transform vs. fit here?
+    tfidf = tfidf.fit(corpus)
 
     return tfidf
-    # # Save to dir
-    # max_df = str(max_df).replace(".", "")
-    # ngram_range = "".join(c for c in str(ngram_range) if c.isdigit())
-    # dt = datetime.now().strftime("%d%m%Y_%H%M")
-
-    # filename = f"tfidf_ngram_range_{ngram_range}_max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_{dt}.pkl"
-
-    # save_text_model_to_dir(tfidf, filename)
 
 
 def fit_lda(
@@ -187,10 +169,3 @@ def save_text_model_to_dir(
 
     with Path(filepath).open("wb") as f:
         pkl.dump(model, f)
-
-
-# if __name__ == "__main__":
-#     corpus = load_txt_data(n_rows=10000)
-#     bow = fit_bow(corpus)
-#     tfidf = fit_tfidf(corpus)
-#     fit_lda(corpus)
