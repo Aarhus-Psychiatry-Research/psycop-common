@@ -19,6 +19,7 @@ from psycop_model_evaluation.binary.utils import (
 from psycop_model_evaluation.utils import bin_continuous_data
 from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score, roc_auc_score
+import numpy as np
 
 
 def plot_roc_auc_by_time_from_first_visit(
@@ -95,6 +96,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     positive_rate: float = 0.5,
+    confidence_interval: Optional[float] = None,
     y_title: str = "Sensitivity (recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
@@ -103,15 +105,16 @@ def plot_sensitivity_by_time_until_diagnosis(
     until diagnosis. Rows with no date of diagnosis (i.e. no outcome) are
     removed.
     Args:
-        eval_dataset (EvalDataset): EvalDataset object
-        bins (list, optional): Bins to group by. Negative values indicate days after
-        bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+        eval_dataset: EvalDataset object
+        bins: Bins to group by. Negative values indicate days after
+        bin_unit: Unit of time to bin by. Defaults to "D".
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
-        bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
-        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
-        y_title (str): Title for y-axis (metric name)
-        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
-        save_path (Path, optional): Path to save figure. Defaults to None.
+        bin_continuous_input: Whether to bin input. Defaults to True.
+        positive_rate: Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+        confidence_interval: Confidence interval for the bin. Defaults to None.
+        y_title: Title for y-axis (metric name)
+        y_limits: Limits of y-axis. Defaults to None.
+        save_path: Path to save figure. Defaults to None.
     Returns:
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
@@ -127,6 +130,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         bins=bins,
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
+        confidence_interval=confidence_interval,
         min_n_in_bin=5,
         drop_na_events=True,
     )
@@ -140,6 +144,9 @@ def plot_sensitivity_by_time_until_diagnosis(
         "Y": "Years",
     }
 
+    # add error bars
+    ci = df["ci"].tolist() if confidence_interval else None
+
     return plot_basic_chart(
         x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
@@ -149,6 +156,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         bar_count_values=df["n_in_bin"],
         y_limits=y_limits,
         plot_type=["scatter", "line"],
+        confidence_interval=ci,
         save_path=save_path,
     )
 
@@ -242,13 +250,13 @@ def plot_sensitivity_by_time_to_event(
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
     Args:
-        eval_dataset (EvalDataset): EvalDataset object
-        positive_rates (Union[float, Iterable[float]]): Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
-        bins (Iterable[float], optional): Bins to use for time to outcome.
-        bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
-        y_title (str): Title of y-axis. Defaults to "AUC".
-        save_path (str, optional): Path to save figure. Defaults to None.
-        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+        eval_dataset: EvalDataset object
+        positive_rates: Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
+        bins: Bins to use for time to outcome.
+        bin_unit: Unit of time to bin by. Defaults to "D".
+        y_title: Title of y-axis. Defaults to "AUC".
+        save_path: Path to save figure. Defaults to None.
+        y_limits: Limits of y-axis. Defaults to (0.5, 1.0).
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
