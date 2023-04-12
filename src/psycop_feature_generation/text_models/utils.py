@@ -1,5 +1,31 @@
 """ Utils for text_models  """
 
+import pickle as pkl
+from pathlib import Path
+from typing import Any
+
+
+def save_text_model_to_dir(
+    model: Any,
+    filename: str,
+    save_path: str = "E:/shared_resources/text_models",
+):
+    """
+    Saves the model to a pickle file
+
+    Args:
+        model (Any): The model to save
+        filename (str): The filename to save the model as
+        save_path (str): The path where the model will be saved
+
+    """
+
+    filepath = Path(save_path) / filename
+
+    with Path(filepath).open("wb") as f:
+        pkl.dump(model, f)
+
+
 """ stop_words list from: Torp, Bertel. “Dansk Stopords Liste / Danish Stopwords.” Github, 6 Mar. 2020,
 https://gist.github.com/berteltorp/0cf8a0c7afea7f25ed754f24cfc2467b. """
 
