@@ -1,342 +1,311 @@
 """Code for generating a descriptive stats table."""
 import typing as t
-import warnings
-from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
+import numpy as np
 import pandas as pd
-import wandb
-from psycop_model_training.training_output.dataclasses import EvalDataset
 
 from psycop_model_evaluation.utils import (
+    BaseModel,
     bin_continuous_data,
-    output_table,
 )
 
 
-class DescriptiveStatsTable:
-    """Class for generating a descriptive stats table."""
+class VariableSpec(BaseModel):
+    _name: str = "Base"
+    variable_title: str  # Title for the created row in the table
+    variable_df_col_name: str  # Source column name in the dataset df.
+    n_decimals: Union[int, None] = 2  # Number of decimals to round the results to
 
-    def __init__(
-        self,
-        eval_dataset: EvalDataset,
-        additional_columns_df: t.Union[pd.DataFrame, None] = None,
-    ) -> None:
-        """Class for generating a descriptive stats table of your dataset.
 
-        Args:
-            eval_dataset (EvalDataset): EvalDataset object with the base stats for your table.
-            additional_columns_df (pd.DataFrame, optional): Dataframe with additional columns to include in the table, e.g. predictors you would like to add. Defaults to None.
-        """
-        self.eval_dataset = eval_dataset
-        self.additional_columns_df = additional_columns_df
+class TotalSpec(VariableSpec):
+    _name: str = "Total"
+    variable_title: str = "Total"
+    variable_df_col_name: str = "Total"
+    n_decimals: Union[int, None] = None
 
-    def _get_column_header_df(self) -> pd.DataFrame:
-        """Create empty dataframe with default columns headers.
 
-        Returns:
-            pd.DataFrame: Empty dataframe with default columns headers. Includes columns for category, two statistics and there units.
-        """
-        return pd.DataFrame(
-            columns=["category", "stat_1", "stat_1_unit", "stat_2", "stat_2_unit"],
+class BinaryVariableSpec(VariableSpec):
+    _name: str = "Binary"
+    positive_class: Union[
+        float,
+        str,
+    ]  # Value of the class to generate results for (e.g. 1 for a binary variable)
+
+
+class CategoricalVariableSpec(VariableSpec):
+    _name: str = "Categorical"
+    categories: Optional[list[str]] = None  # List of categories to include in the table
+
+
+class ContinuousVariableSpec(VariableSpec):
+    _name: str = "Continuous"
+    aggregation_measure: t.Literal["mean"] = "mean"
+    variance_measure: t.Literal["std"] = "std"
+
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+        self.set_variable_title()
+
+    def set_variable_title(self):
+        variance_title_strings = {"std": "± SD", "iqr": "[IQR]"}
+        variance_title_string = variance_title_strings[self.variance_measure]
+
+        self.Config.allow_mutation = True
+        self.variable_title = f"{self.variable_title} ({self.aggregation_measure} {variance_title_string})"
+        self.Config.allow_mutation = False
+
+
+class ContinuousVariableToCategorical(VariableSpec):
+    _name: str = "ContinuousToCategorical"
+    bins: list[float]  # List of bin edges
+    bin_decimals: Optional[int] = None  # Number of decimals to round the bin edges to
+
+
+class VariableGroupSpec(BaseModel):
+    title: str  # Title to add to the table
+    group_column_name: Optional[str]  # Column name to group by
+    add_total_row: bool = True  # Whether to add a total row, e.g. "100_000 patients"
+    variable_specs: list[VariableSpec]  # List of row specs to include in the table
+
+
+class DatasetSpec(BaseModel):
+    title: str  # Name of the dataset, used as a column name in the table
+    df: pd.DataFrame
+
+
+class GroupedDatasetSpec(BaseModel):
+    name: str  # Name of the dataset, used as a column name in the table
+    grouped_df: pd.DataFrame
+
+
+def _create_row_df(
+    dataset_title: str,
+    value_title: str,
+    cell_value: Union[float, str],
+) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "Dataset": dataset_title,
+            "Title": value_title,
+            "Value": cell_value,
+        },
+        index=[0],
+    )
+
+
+def _get_col_value_for_total_row(
+    dataset: GroupedDatasetSpec,
+    row_spec: TotalSpec,  # noqa: ARG001, reason: row_spec is not used, but required to maintain consistent function signatures for application from dict
+) -> pd.DataFrame:
+    # Get number of rows in grouped df
+    n_rows_by_group = dataset.grouped_df.shape[0]
+
+    return _create_row_df(
+        value_title="Total",
+        dataset_title=dataset.name,
+        cell_value=n_rows_by_group,
+    )
+
+
+def _get_col_value_for_binary_row(
+    dataset: GroupedDatasetSpec,
+    row_spec: BinaryVariableSpec,
+) -> pd.DataFrame:
+    # Get proportion with the positive class
+    positive_class_prop = (
+        dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
+    ).mean()
+    prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
+
+    return _create_row_df(
+        value_title=row_spec.variable_title,
+        dataset_title=dataset.name,
+        cell_value=f"{prop_rounded}%",
+    )
+
+
+def _get_col_value_for_continuous_row(
+    dataset: GroupedDatasetSpec,
+    row_spec: ContinuousVariableSpec,
+) -> pd.DataFrame:
+    # Aggregation
+    agg_results = {
+        "mean": dataset.grouped_df[row_spec.variable_df_col_name].mean(),
+        "median": dataset.grouped_df[row_spec.variable_df_col_name].median(),
+    }
+    agg_result = agg_results[row_spec.aggregation_measure]
+    agg_rounded = round(agg_result, row_spec.n_decimals)
+    agg_cell_string = f"{agg_rounded}"
+
+    # Variance
+    variance_results = {
+        "std": dataset.grouped_df[row_spec.variable_df_col_name].std(),
+        "iqr": dataset.grouped_df[row_spec.variable_df_col_name].quantile(0.75)
+        - dataset.grouped_df[row_spec.variable_df_col_name].quantile(0.25),
+    }
+    variance_rounded = round(
+        variance_results[row_spec.variance_measure],
+        row_spec.n_decimals,
+    )
+
+    # Variance cell
+    variance_cell_strings = {
+        "std": f"± {variance_rounded}",
+        "iqr": f"[{agg_result - variance_rounded}, {agg_result + variance_rounded}]",
+    }
+    variance_cell_string = variance_cell_strings[row_spec.variance_measure]
+
+    return _create_row_df(
+        value_title=row_spec.variable_title,
+        dataset_title=dataset.name,
+        cell_value=f"{agg_cell_string} {variance_cell_string}",
+    )
+
+
+def _get_col_value_for_categorical_row():
+    pass
+
+
+def _get_col_value_transform_continous_to_categorical(
+    dataset: GroupedDatasetSpec,
+    row_spec: ContinuousVariableToCategorical,
+) -> pd.DataFrame:
+    values = bin_continuous_data(
+        series=dataset.grouped_df[row_spec.variable_df_col_name],
+        bins=row_spec.bins,
+        bin_decimals=row_spec.bin_decimals,
+    )
+
+    result_df = pd.DataFrame({"Subgroup": values[0], "n_in_category": values[1]})
+
+    # Get col percentage for each category within group
+    grouped_df = result_df.groupby("Subgroup").mean()
+    grouped_df["Dataset"] = dataset.name
+    grouped_df["Title"] = row_spec.variable_title
+
+    grouped_df = grouped_df.reset_index()
+
+    grouped_df["Value"] = (
+        grouped_df["n_in_category"] / grouped_df["n_in_category"].sum() * 100
+    )
+
+    if row_spec.n_decimals is not None:
+        grouped_df["Value"] = round(
+            grouped_df["Value"],
+            row_spec.n_decimals,
+        )
+    else:
+        grouped_df["Value"] = grouped_df["Value"].astype(int)
+
+    # Add a % symbol
+    grouped_df["Value"] = grouped_df["Value"].astype(str) + "%"
+
+    return grouped_df[["Dataset", "Title", "Subgroup", "Value"]]
+
+
+def _process_row(
+    row_spec: VariableSpec,
+    dataset: DatasetSpec,
+    group_col_name: Union[str, None],
+) -> pd.DataFrame:
+    spec_to_func = {
+        "Binary": _get_col_value_for_binary_row,
+        "Continuous": _get_col_value_for_continuous_row,
+        "ContinuousToCategorical": _get_col_value_transform_continous_to_categorical,
+        "Total": _get_col_value_for_total_row,
+    }
+
+    if group_col_name is not None:
+        agg_df = dataset.df.groupby(group_col_name).agg(np.mean)
+        grouped_dataset_spec = GroupedDatasetSpec(name=dataset.title, grouped_df=agg_df)
+    else:
+        grouped_dataset_spec = GroupedDatasetSpec(
+            name=dataset.title,
+            grouped_df=dataset.df,
         )
 
-    def _generate_age_stats(
-        self,
-    ) -> pd.DataFrame:
-        """Add age stats to table 1."""
+    return spec_to_func[row_spec._name](  # type: ignore
+        dataset=grouped_dataset_spec,
+        row_spec=row_spec,
+    )
 
-        df = self._get_column_header_df()
 
-        age_mean = round(self.eval_dataset.age.mean(), 1)
-        age_span = f"{self.eval_dataset.age.quantile(0.25)} - {self.eval_dataset.age.quantile(0.75)}"
+def _create_title_row(
+    group_spec: VariableGroupSpec,
+    dataset: DatasetSpec,
+) -> pd.DataFrame:
+    return _create_row_df(
+        value_title="Observation unit",
+        dataset_title=dataset.title,
+        cell_value=f"[{group_spec.title}]",
+    )
 
-        df = df.append(  # type: ignore
-            {
-                "category": "(visit_level) age (mean / 25-75 quartile interval)",
-                "stat_1": age_mean,
-                "stat_1_unit": "years",
-                "stat_2": age_span,
-                "stat_2_unit": "years",
-            },
-            ignore_index=True,
+
+def _process_group(
+    group_spec: VariableGroupSpec,
+    datasets: t.Sequence[DatasetSpec],
+) -> pd.DataFrame:
+    rows = [_create_title_row(group_spec, dataset) for dataset in datasets]
+
+    if group_spec.add_total_row:
+        # Add total to the front of the row specs
+        group_spec.variable_specs.insert(
+            0,
+            TotalSpec(),
         )
 
-        age_counts = bin_continuous_data(
-            self.eval_dataset.age,  # type: ignore
-            bins=[0, 17, *range(24, 75, 10)],
-        )[0].value_counts()
-
-        age_percentages = round(age_counts / len(self.eval_dataset.age) * 100, 1)  # type: ignore
-
-        for i, _ in enumerate(age_counts):
-            df = df.append(  # type: ignore
-                {
-                    "category": f"(visit level) age {age_counts.index[i]}",
-                    "stat_1": int(age_counts.iloc[i]),
-                    "stat_1_unit": "patients",
-                    "stat_2": age_percentages.iloc[i],
-                    "stat_2_unit": "%",
-                },
-                ignore_index=True,
+    for dataset in datasets:
+        for row_spec in group_spec.variable_specs:
+            rows.append(
+                _process_row(
+                    row_spec=row_spec,
+                    dataset=dataset,
+                    group_col_name=group_spec.group_column_name,
+                ),
             )
 
-        return df
+    # Pivot into the right shape
+    dataset_rows = pd.concat(rows).reset_index(drop=True)
+    table = dataset_rows.pivot(
+        index=["Title", "Subgroup"],
+        columns="Dataset",
+        values="Value",
+    )
 
-    def _generate_sex_stats(
-        self,
-    ) -> pd.DataFrame:
-        """Add sex stats to table 1."""
+    # Re-order to match spec order in input
+    title_order = [
+        variable_spec.variable_title for variable_spec in group_spec.variable_specs
+    ]
+    title_order.insert(0, "Observation unit")
+    table = table.reindex(title_order, level=0)
 
-        df = self._get_column_header_df()
+    return table
 
-        sex_counts = self.eval_dataset.is_female.value_counts()
-        sex_percentages = sex_counts / len(self.eval_dataset.is_female) * 100  # type: ignore
 
-        for i, n in enumerate(sex_counts):
-            if n < 5:
-                warnings.warn(
-                    "WARNING: One of the sex categories has less than 5 individuals. This category will be excluded from the table.",
-                )
-                return df
+def create_descriptive_stats_table(
+    variable_group_specs: t.Sequence[VariableGroupSpec],
+    datasets: t.Sequence[DatasetSpec],
+) -> pd.DataFrame:
+    groups = []
 
-            df = df.append(  # type: ignore
-                {
-                    "category": f"(visit level) {sex_counts.index[i]}",
-                    "stat_1": int(sex_counts[i]),
-                    "stat_1_unit": "patients",
-                    "stat_2": sex_percentages[i],
-                    "stat_2_unit": "%",
-                },
-                ignore_index=True,
-            )
+    for group_spec in variable_group_specs:
+        groups.append(_process_group(group_spec=group_spec, datasets=datasets))
 
-        return df
+    all_groups = pd.concat(groups)
 
-    def _generate_eval_col_stats(self) -> pd.DataFrame:
-        """Generate stats for all eval_ columns to table 1.
+    # Fill in missing values (np.Nan and all other values) with an empty string
+    with_index = all_groups.reset_index()
+    with_index["Subgroup"] = with_index["Subgroup"].astype(str).replace("nan", "")
 
-        Finds all columns starting with 'eval_' and adds visit level
-        stats for these columns. Checks if the column is binary or
-        continuous and adds stats accordingly.
-        """
+    # If "Title" is repeating, only keep the first occurence
+    with_index["Title"] = with_index["Title"].where(
+        with_index["Title"].shift() != with_index["Title"],
+        "",
+    )
+    with_index["Title"] = with_index["Title"].where(
+        with_index["Title"] != "Observation unit",
+        "",
+    )
 
-        df = self._get_column_header_df()
-
-        if self.additional_columns_df is None and (
-            not hasattr(self.eval_dataset, "custom_columns")
-            or self.eval_dataset.custom_columns is None
-        ):
-            return df
-
-        if self.eval_dataset.custom_columns is not None:
-            eval_cols = [
-                self.eval_dataset.custom_columns[c]
-                for c in self.eval_dataset.custom_columns
-                if c.startswith("eval_")
-            ]
-
-            # Check that indeces match on all eval_cols
-            eval_df = pd.concat([self.eval_dataset.ids, *eval_cols], axis=1)
-
-        if self.additional_columns_df is not None:
-            eval_df = eval_df.merge(
-                self.additional_columns_df,
-                on="dw_ek_borger",
-            )
-
-        for col_name in eval_df.columns:
-            col_values = eval_df[col_name]
-
-            if len(col_values.unique()) == 2:
-                # Binary variable stats:
-                col_count = col_values.value_counts()
-                col_percentage = col_count / len(col_values) * 100
-
-                if col_count[0] < 5 or col_count[1] < 5:
-                    warnings.warn(
-                        f"WARNING: One of categories in {col_name} has less than 5 individuals. This category will be excluded from the table.",
-                    )
-                else:
-                    df = df.append(  # type: ignore
-                        {
-                            "category": f"(visit level) {col_name}",
-                            "stat_1": int(col_count[1]),
-                            "stat_1_unit": "patients",
-                            "stat_2": col_percentage[1],
-                            "stat_2_unit": "%",
-                        },
-                        ignore_index=True,
-                    )
-
-            elif len(col_values.unique()) > 2:
-                # Continuous variable stats:
-                col_mean = round(col_values.mean(), 2)
-                col_std = round(col_values.std(), 2)
-                df = df.append(  # type: ignore
-                    {
-                        "category": f"(visit level) {col_name}",
-                        "stat_1": col_mean,
-                        "stat_1_unit": "mean",
-                        "stat_2": col_std,
-                        "stat_2_unit": "std",
-                    },
-                    ignore_index=True,
-                )
-
-            else:
-                warnings.warn(
-                    f"WARNING: {col_name} has only one value. This column will be excluded from the table.",
-                )
-
-        return df
-
-    def _generate_visit_level_stats(
-        self,
-    ) -> pd.DataFrame:
-        """Generate all visit level stats to table 1."""
-
-        # Stats for eval_ cols
-        df = self._generate_eval_col_stats()
-
-        # General stats
-        visits_followed_by_positive_outcome = self.eval_dataset.y.sum()
-
-        visits_followed_by_positive_outcome_percentage = round(
-            (visits_followed_by_positive_outcome / len(self.eval_dataset.ids) * 100),
-            2,
-        )
-
-        df = df.append(  # type: ignore
-            {
-                "category": "(visit_level) visits followed by positive outcome",
-                "stat_1": visits_followed_by_positive_outcome,
-                "stat_1_unit": "visits",
-                "stat_2": visits_followed_by_positive_outcome_percentage,
-                "stat_2_unit": "%",
-            },
-            ignore_index=True,
-        )
-
-        return df
-
-    def _calc_time_to_first_positive_outcome_stats(
-        self,
-        patients_with_positive_outcome_data: pd.DataFrame,
-    ) -> tuple[float, float]:
-        """Calculate mean time to first positive outcome (currently very
-        slow)."""
-
-        grouped_data = patients_with_positive_outcome_data.groupby("ids")
-
-        time_to_first_positive_outcome = grouped_data.apply(
-            lambda x: x["outcome_timestamps"].min() - x["pred_timestamps"].min(),  # type: ignore
-        )
-
-        # Convert to days (float)
-        time_to_first_positive_outcome = (
-            time_to_first_positive_outcome.dt.total_seconds() / (24 * 60 * 60)
-        )  # Not using timedelta.days to keep higher temporal precision
-
-        return round(time_to_first_positive_outcome.mean(), 2), round(
-            time_to_first_positive_outcome.std(),
-            2,
-        )
-
-    def _generate_patient_level_stats(
-        self,
-    ) -> pd.DataFrame:
-        """Add patient level stats to table 1."""
-
-        df = self._get_column_header_df()
-
-        eval_df = pd.DataFrame(
-            {
-                "ids": self.eval_dataset.ids,
-                "y": self.eval_dataset.y,
-                "outcome_timestamps": self.eval_dataset.outcome_timestamps,
-                "pred_timestamps": self.eval_dataset.pred_timestamps,
-            },
-        )
-
-        # General stats
-        patients_with_positive_outcome = eval_df[eval_df["y"] == 1]["ids"].unique()
-        n_patients_with_positive_outcome = len(patients_with_positive_outcome)
-        patients_with_positive_outcome_percentage = round(
-            (n_patients_with_positive_outcome / len(eval_df["ids"].unique()) * 100),
-            2,
-        )
-
-        df = df.append(  # type: ignore
-            {
-                "category": "(patient_level) patients_with_positive_outcome",
-                "stat_1": n_patients_with_positive_outcome,
-                "stat_1_unit": "visits",
-                "stat_2": patients_with_positive_outcome_percentage,
-                "stat_2_unit": "%",
-            },
-            ignore_index=True,
-        )
-
-        patients_with_positive_outcome_data = eval_df[
-            eval_df["ids"].isin(patients_with_positive_outcome)
-        ]
-
-        (
-            mean_time_to_first_positive_outcome,
-            std_time_to_first_positive_outomce,
-        ) = self._calc_time_to_first_positive_outcome_stats(
-            patients_with_positive_outcome_data,
-        )
-
-        df = df.append(  # type: ignore
-            {
-                "category": "(patient level) time_to_first_positive_outcome",
-                "stat_1": mean_time_to_first_positive_outcome,
-                "stat_1_unit": "mean",
-                "stat_2": std_time_to_first_positive_outomce,
-                "stat_2_unit": "std",
-            },
-            ignore_index=True,
-        )
-
-        return df
-
-    def generate_descriptive_stats_table(
-        self,
-        output_format: str = "df",
-        save_path: Optional[Path] = None,
-    ) -> Union[pd.DataFrame, wandb.Table]:
-        """Generate descriptive stats table. Calculates relevant statistics
-        from the evaluation dataset and returns a pandas dataframe or wandb
-        table. If save_path is provided, the table is saved as a csv file.
-
-        Args:
-            output_format (str, optional): Output format. Defaults to "df".
-            save_path (Optional[Path], optional): Path to save the table as a csv file. Defaults to None.
-
-        Returns:
-            Union[pd.DataFrame, wandb.Table]: Table 1.
-        """
-        if save_path is not None:
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-
-        if self.eval_dataset.age is not None:
-            age_stats = self._generate_age_stats()
-
-        if self.eval_dataset.is_female is not None:
-            sex_stats = self._generate_sex_stats()
-
-        visit_level_stats = self._generate_visit_level_stats()
-
-        patient_level_stats = self._generate_patient_level_stats()
-
-        table_1_df_list = [age_stats, sex_stats, visit_level_stats, patient_level_stats]
-        table_1 = pd.concat(table_1_df_list, ignore_index=True)
-
-        if save_path is not None:
-            output_table(output_format="df", df=table_1)
-
-            table_1.to_csv(save_path, index=False)
-
-        return output_table(output_format=output_format, df=table_1)  # type: ignore
+    return with_index

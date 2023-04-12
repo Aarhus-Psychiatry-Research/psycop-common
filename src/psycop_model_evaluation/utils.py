@@ -8,12 +8,14 @@ import tempfile
 from collections.abc import Iterable, MutableMapping, Sequence
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import dill as pkl
 import numpy as np
 import pandas as pd
 import wandb
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import Extra
 from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -25,6 +27,18 @@ MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 TEST_PLOT_PATH = PROJECT_ROOT / "tests" / "plots_from_tests"
+
+
+class BaseModel(PydanticBaseModel):
+    """."""
+
+    class Config:
+        """An pydantic basemodel, which doesn't allow attributes that are not
+        defined in the class."""
+
+        allow_mutation = False
+        arbitrary_types_allowed = True
+        extra = Extra.forbid
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -130,6 +144,7 @@ def bin_continuous_data(
     bins: Sequence[float],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
+    bin_decimals: Optional[int] = None,
 ) -> tuple[pd.Series, pd.Series]:
     """For prettier formatting of continuous binned data such as age.
 
@@ -138,6 +153,7 @@ def bin_continuous_data(
         bins (list[int]): Desired bins. Last value creates a bin from the last value to infinity.
         min_n_in_bin (int, optional): Minimum number of observations in a bin. If fewer than this, the bin is dropped. Defaults to 5.
         use_min_as_label (bool, optional): If True, the minimum value in the bin is used as the label. If False, the maximum value is used. Defaults to False.
+        bin_decimals: Number of decimals to round bins to. Defaults to None, in which case all decimals are removed.
 
     Returns:
         Two ungrouped series, e.g. a row for each observation in the original dataset, each containing:
@@ -155,6 +171,9 @@ def bin_continuous_data(
         # Round max value up
         max_value_rounded = math.ceil(series.max())
         bins.append(max_value_rounded)
+
+    # Round bins to specified number of decimals
+    bins = [round(b, bin_decimals) for b in bins]
 
     # Create bin labels
     for i, bin_v in enumerate(bins):
