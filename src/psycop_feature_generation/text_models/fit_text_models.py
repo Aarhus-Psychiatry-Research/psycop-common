@@ -84,7 +84,7 @@ def fit_tfidf(
     )
 
     # Fit to corpus
-    tfidf = tfidf.fit_transform(corpus)  # fit_transform vs. fit here?
+    tfidf = tfidf.fit(corpus)  # fit_transform vs. fit here?
 
     return tfidf
     # # Save to dir
