@@ -268,13 +268,9 @@ def _process_group(
     # Pivot into the right shape
     dataset_rows = pd.concat(rows).reset_index(drop=True)
     table = dataset_rows.pivot(
-<<<<<<< HEAD
         index=["Title", "Subgroup"],
         columns="Dataset",
         values="Value",
-=======
-        index=["Title", "Subgroup"], columns="Dataset", values="Value",
->>>>>>> 3b233fa5a96d5f0cdb3fe20c1529c7c69dffa9af
     )
 
     # Re-order to match spec order in input
@@ -304,19 +300,12 @@ def create_descriptive_stats_table(
 
     # If "Title" is repeating, only keep the first occurence
     with_index["Title"] = with_index["Title"].where(
-<<<<<<< HEAD
         with_index["Title"].shift() != with_index["Title"],
         "",
     )
     with_index["Title"] = with_index["Title"].where(
         with_index["Title"] != "Observation unit",
         "",
-=======
-        with_index["Title"].shift() != with_index["Title"], "",
-    )
-    with_index["Title"] = with_index["Title"].where(
-        with_index["Title"] != "Observation unit", "",
->>>>>>> 3b233fa5a96d5f0cdb3fe20c1529c7c69dffa9af
     )
 
     return with_index
