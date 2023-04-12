@@ -63,3 +63,4 @@ jobs:
           body: "🌲 Cruft updates"
           token: ${{ secrets.PAT }}
           commit-message: "ci: update cruft"
+          labels: "dependencies" # This makes the PR exempt from the stale bot
