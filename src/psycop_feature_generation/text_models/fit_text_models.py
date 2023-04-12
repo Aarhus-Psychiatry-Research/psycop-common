@@ -23,21 +23,19 @@ def load_txt_data(n_rows: int = None) -> list[str]:
 
 def fit_bow(
     corpus: Sequence[str],
-    stop_words: List[str] = None,
     ngram_range: tuple = (1, 1),
     max_df: float = 0.95,
     min_df: int = 2,
-    max_features: int = 1000,
+    max_features: int = 500,
 ) -> CountVectorizer:
     """Fits a bag-of words model on a corpus
 
     Args:
         corpus (Sequence[str]): The corpus to fit on
-        stop_words (list[str] | None, optional): List containing stop words, all of which will be removed from the resulting tokens. Defaults to None.
         ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 1).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
         min_df (int, optional): Remove words occuring in less than min_df documents. Defaults to 2.
-        max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 1000.
+        max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 500.
 
     Returns:
         CountVectorizer: Fitted bow model
@@ -45,7 +43,6 @@ def fit_bow(
 
     # Define vectorizer
     bow = CountVectorizer(
-        stop_words=stop_words,
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
@@ -53,25 +50,25 @@ def fit_bow(
     )
 
     # Fit to corpus
-    bow.fit(corpus)
+    bow = bow.fit(corpus) # fit vs fit_transform here? 
 
-    # Save to dir
-    max_df = str(max_df).replace(".", "")
-    ngram_range = "".join(c for c in str(ngram_range) if c.isdigit())
-    dt = datetime.now().strftime("%d%m%Y_%H%M")
+    return bow
+    # # Save to dir
+    # max_df = str(max_df).replace(".", "")
+    # ngram_range = "".join(c for c in str(ngram_range) if c.isdigit())
+    # dt = datetime.now().strftime("%d%m%Y_%H%M")
 
-    filename = f"bow_ngram_range_{ngram_range}_max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_{dt}.pkl"
+    # filename = f"bow_ngram_range_{ngram_range}_max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_{dt}.pkl"
 
-    save_text_model_to_dir(bow, filename)
+    # save_text_model_to_dir(bow, filename)
 
 
 def fit_tfidf(
     corpus: Sequence[str],
-    stop_words: List[str] = None,
     ngram_range: tuple = (1, 1),
     max_df: float = 0.95,
     min_df: int = 2,
-    max_features: int = 1000,
+    max_features: int = 500,
 ) -> TfidfVectorizer:
     """Fits a term frequency-inverse document frequency (tf-idf) model on a corpus
 
@@ -81,7 +78,7 @@ def fit_tfidf(
         ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 1).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
         min_df (int, optional): Remove words occuring in less than min_df documents. Defaults to 2.
-        max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 1000.
+        max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 500.
 
     Returns:
         TfidfVectorizer: Fitted tfidf model
@@ -89,7 +86,6 @@ def fit_tfidf(
 
     # Define vectorizer
     tfidf = TfidfVectorizer(
-        stop_words=stop_words,
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
@@ -97,25 +93,25 @@ def fit_tfidf(
     )
 
     # Fit to corpus
-    tfidf.fit_transform(corpus)  # fit_transform vs. fit here?
+    tfidf = tfidf.fit_transform(corpus)  # fit_transform vs. fit here?
 
-    # Save to dir
-    max_df = str(max_df).replace(".", "")
-    ngram_range = "".join(c for c in str(ngram_range) if c.isdigit())
-    dt = datetime.now().strftime("%d%m%Y_%H%M")
+    return tfidf
+    # # Save to dir
+    # max_df = str(max_df).replace(".", "")
+    # ngram_range = "".join(c for c in str(ngram_range) if c.isdigit())
+    # dt = datetime.now().strftime("%d%m%Y_%H%M")
 
-    filename = f"tfidf_ngram_range_{ngram_range}_max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_{dt}.pkl"
+    # filename = f"tfidf_ngram_range_{ngram_range}_max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_{dt}.pkl"
 
-    save_text_model_to_dir(tfidf, filename)
+    # save_text_model_to_dir(tfidf, filename)
 
 
 def fit_lda(
     corpus: Sequence[str],
-    stop_words: List[str] = None,
     ngram_range: tuple = (1, 1),
     max_df: float = 0.95,
     min_df: int = 2,
-    max_features: int = 1000,
+    max_features: int = 500,
     n_components: int = 20,
     n_top_words: int = 10,
     path: Path = Path("E:/") / "shared_resources" / "text_models",
@@ -124,11 +120,10 @@ def fit_lda(
 
     Args:
         corpus (Sequence[str]): The corpus to fit on
-        stop_words (list[str] | None, optional): List containing stop words, all of which will be removed from the resulting tokens. Defaults to None.
         ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 1).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
         min_df (int, optional): Remove words occuring in less than min_df documents. Defaults to 2.
-        max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 1000.
+        max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 500.
         n_components (int, optional): Number of topics/components. Defaults to 20.
         n_top_words (int | None, optional): The number of top words be extracted per topic. Only used when get_model_topics = True. Defaults to None.
 
@@ -139,7 +134,6 @@ def fit_lda(
 
     # Define vectorizer
     tf_vectorizer = CountVectorizer(
-        stop_words=stop_words,
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
@@ -157,15 +151,16 @@ def fit_lda(
     # Get model topics
     model_topics = get_model_topics(lda, tf_vectorizer, n_top_words)
 
+    return lda, model_topics
     # Save to dir
-    max_df = str(max_df).replace(".", "")
-    ngram_range = "_".join(c for c in str(ngram_range) if c.isdigit())
-    dt = datetime.now().strftime("%d%m%Y_%H%M")
+    # max_df = str(max_df).replace(".", "")
+    # ngram_range = "_".join(c for c in str(ngram_range) if c.isdigit())
+    # dt = datetime.now().strftime("%d%m%Y_%H%M")
 
-    filename = f"lda_ngram_range_{ngram_range}__max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_n_components_{n_components}_n_top_words_{n_top_words}_{dt}"
+    # filename = f"lda_ngram_range_{ngram_range}__max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_n_components_{n_components}_n_top_words_{n_top_words}_{dt}"
 
-    save_text_model_to_dir(lda, filename + ".pkl")
-    model_topics.to_csv(path / (filename + ".csv"), index=False)
+    # save_text_model_to_dir(lda, filename + ".pkl")
+    # model_topics.to_csv(path / (filename + ".csv"), index=False)
 
 
 def get_model_topics(
@@ -197,7 +192,7 @@ def get_model_topics(
 def save_text_model_to_dir(
     model: Any,
     filename: str,
-):  # pylint: disable=missing-type-doc
+):
     """
     Saves the model to a pickle file
 
@@ -215,6 +210,6 @@ def save_text_model_to_dir(
 
 # if __name__ == "__main__":
 #     corpus = load_txt_data(n_rows=10000)
-#     fit_bow(corpus)
-#     fit_tfidf(corpus)
+#     bow = fit_bow(corpus)
+#     tfidf = fit_tfidf(corpus)
 #     fit_lda(corpus)
