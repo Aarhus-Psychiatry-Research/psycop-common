@@ -192,5 +192,5 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame, tmp_path:
         variable_group_specs=variable_group_specs,
         datasets=datasets,
     )
-    
+
     descriptive_table.to_excel(tmp_path / "Test.xlsx")
