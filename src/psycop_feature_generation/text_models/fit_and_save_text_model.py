@@ -1,5 +1,5 @@
 """Fit and save a model"""
-from text_models.text_models_pipeline import (
+from psycop_feature_generation.text_models.text_models_pipeline import (
     bow_model_pipeline,
     tfidf_model_pipeline,
     lda_model_pipeline,

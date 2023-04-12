@@ -72,7 +72,9 @@ def bow_model_pipeline(
     # save model to dir
     save_text_model_to_dir(model=bow, save_path=save_path, filename=filename)
 
-    return f"Bow model fit and saved at {save_path}/{filename}"
+    return log.info(
+        f" {datetime.now().strftime('%H:%M:%S')}: Bow model fit and saved at {save_path}/{filename}"
+    )
 
 
 def tfidf_model_pipeline(
@@ -131,7 +133,9 @@ def tfidf_model_pipeline(
     # save model to dir
     save_text_model_to_dir(model=tfidf, save_path=save_path, filename=filename)
 
-    return f"Tfidf model fit and saved at {save_path}/{filename}"
+    return log.info(
+        f" {datetime.now().strftime('%H:%M:%S')}: Tfidf model fit and saved at {save_path}/{filename}"
+    )
 
 
 def lda_model_pipeline(
@@ -175,7 +179,7 @@ def lda_model_pipeline(
     corpus = sql_load(query=f"SELECT * FROM fct.{view}", n_rows=n_rows)
 
     log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting lda model to corpus"
+        f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting lda model to corpus",
     )
 
     # fit model
@@ -197,4 +201,6 @@ def lda_model_pipeline(
     # save model topics to dir
     model_topics.to_csv(save_path + "/topics_" + filename + ".csv", index=False)
 
-    return f"Lda model fit and model and model topics saved at {save_path}/{filename}"
+    return log.info(
+        f" {datetime.now().strftime('%H:%M:%S')}: Lda model fit and model and model topics saved at {save_path}/{filename}"
+    )
