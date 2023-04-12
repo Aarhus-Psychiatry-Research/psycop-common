@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.53.0 (2023-04-12)
+### Feature
+* Save config as json ([#483](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/483)) ([`0be42a7`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0be42a7cddaee8564e5dd66ed8bd688b8c522b6e))
+* Save config to json ([`e1d1a59`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e1d1a59c798073c5bef6880e419b31ecfa9dd0c7))
+
 ## v0.52.0 (2023-03-31)
 ### Feature
 * Whether to change negative values to nan optional ([#468](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/468)) ([`5c941d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5c941d3e5d8fefbfd6d0213e0409ab3e558d3b73))
