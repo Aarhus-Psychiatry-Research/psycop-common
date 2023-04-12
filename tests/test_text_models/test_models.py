@@ -56,7 +56,8 @@ def test_fit_tfidf_model():
     df["text"] = remove_stop_words_from_series(df["text"])
 
     tfidf = fit_tfidf(df["text"])
-    transformed = tfidf.toarray()
+    transformed = tfidf.transform(df["text"])
+    transformed = transformed.toarray()
 
     assert (np.array([[1], [0], [1], [0]]) == transformed).any()
 
