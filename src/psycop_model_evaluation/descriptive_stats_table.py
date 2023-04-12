@@ -232,7 +232,8 @@ def _process_row(
 
 
 def _create_title_row(
-    group_spec: VariableGroupSpec, dataset: DatasetSpec,
+    group_spec: VariableGroupSpec,
+    dataset: DatasetSpec,
 ) -> pd.DataFrame:
     return _create_row_df(
         value_title="Observation unit",
@@ -267,7 +268,9 @@ def _process_group(
     # Pivot into the right shape
     dataset_rows = pd.concat(rows).reset_index(drop=True)
     table = dataset_rows.pivot(
-        index=["Title", "Subgroup"], columns="Dataset", values="Value",
+        index=["Title", "Subgroup"],
+        columns="Dataset",
+        values="Value",
     )
 
     # Re-order to match spec order in input
@@ -297,10 +300,12 @@ def create_descriptive_stats_table(
 
     # If "Title" is repeating, only keep the first occurence
     with_index["Title"] = with_index["Title"].where(
-        with_index["Title"].shift() != with_index["Title"], "",
+        with_index["Title"].shift() != with_index["Title"],
+        "",
     )
     with_index["Title"] = with_index["Title"].where(
-        with_index["Title"] != "Observation unit", "",
+        with_index["Title"] != "Observation unit",
+        "",
     )
 
     return with_index
