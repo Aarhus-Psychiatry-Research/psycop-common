@@ -14,7 +14,7 @@ def main():
 
     write_df_to_sql(
         df,
-        table_name="psycop_all_sfis_all_years_lowercase_stopwords_and_symbols_removed",
+        table_name="psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed",
         if_exists="replace",
         rows_per_chunk=5000,
     )
