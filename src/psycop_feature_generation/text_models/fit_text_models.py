@@ -6,19 +6,18 @@ from pathlib import Path
 from typing import Any, List, Sequence
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
-from datetime import datetime
 
 from psycop_feature_generation.loaders.raw.load_text import load_all_notes
 
 
-def load_txt_data(n_rows: int = None) -> list[str]:
-    """
-    Loads text data.
-    (just to get some text for testing --> we should only use text from train and val splits)
-    """
-    all_notes = load_all_notes(n_rows=n_rows)
+# def load_txt_data(n_rows: int = None) -> list[str]:
+#     """
+#     Loads text data.
+#     (just to get some text for testing --> we should only use text from train and val splits)
+#     """
+#     all_notes = load_all_notes(n_rows=n_rows)
 
-    return all_notes["text"].dropna().tolist()
+#     return all_notes["text"].dropna().tolist()
 
 
 def fit_bow(
@@ -50,17 +49,9 @@ def fit_bow(
     )
 
     # Fit to corpus
-    bow = bow.fit(corpus) # fit vs fit_transform here? 
+    bow = bow.fit(corpus)  # fit vs fit_transform here?
 
     return bow
-    # # Save to dir
-    # max_df = str(max_df).replace(".", "")
-    # ngram_range = "".join(c for c in str(ngram_range) if c.isdigit())
-    # dt = datetime.now().strftime("%d%m%Y_%H%M")
-
-    # filename = f"bow_ngram_range_{ngram_range}_max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_{dt}.pkl"
-
-    # save_text_model_to_dir(bow, filename)
 
 
 def fit_tfidf(
@@ -114,7 +105,6 @@ def fit_lda(
     max_features: int = 500,
     n_components: int = 20,
     n_top_words: int = 10,
-    path: Path = Path("E:/") / "shared_resources" / "text_models",
 ) -> LatentDirichletAllocation:
     """Fits a latent dirichlet allocation (LDA) topic model on text data.
 
@@ -152,15 +142,6 @@ def fit_lda(
     model_topics = get_model_topics(lda, tf_vectorizer, n_top_words)
 
     return lda, model_topics
-    # Save to dir
-    # max_df = str(max_df).replace(".", "")
-    # ngram_range = "_".join(c for c in str(ngram_range) if c.isdigit())
-    # dt = datetime.now().strftime("%d%m%Y_%H%M")
-
-    # filename = f"lda_ngram_range_{ngram_range}__max_df_{max_df}_min_df_{min_df}_max_features_{max_features}_n_components_{n_components}_n_top_words_{n_top_words}_{dt}"
-
-    # save_text_model_to_dir(lda, filename + ".pkl")
-    # model_topics.to_csv(path / (filename + ".csv"), index=False)
 
 
 def get_model_topics(
