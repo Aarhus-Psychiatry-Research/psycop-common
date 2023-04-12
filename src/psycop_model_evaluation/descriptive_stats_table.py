@@ -1,6 +1,6 @@
 """Code for generating a descriptive stats table."""
 import typing as t
-from typing import Any, Literal, Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -17,11 +17,13 @@ class VariableSpec(BaseModel):
     variable_df_col_name: str  # Source column name in the dataset df.
     n_decimals: Union[int, None] = 2  # Number of decimals to round the results to
 
+
 class TotalSpec(VariableSpec):
     _name: str = "Total"
     variable_title: str = "Total"
     variable_df_col_name: str = "Total"
     n_decimals: Union[int, None] = None
+
 
 class BinaryVariableSpec(VariableSpec):
     _name: str = "Binary"
@@ -40,18 +42,19 @@ class ContinuousVariableSpec(VariableSpec):
     _name: str = "Continuous"
     aggregation_measure: t.Literal["mean"] = "mean"
     variance_measure: t.Literal["std"] = "std"
-    
+
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.set_variable_title()
-    
+
     def set_variable_title(self):
         variance_title_strings = {"std": "± SD", "iqr": "[IQR]"}
         variance_title_string = variance_title_strings[self.variance_measure]
-        
+
         self.Config.allow_mutation = True
         self.variable_title = f"{self.variable_title} ({self.aggregation_measure} {variance_title_string})"
         self.Config.allow_mutation = False
+
 
 class ContinuousVariableToCategorical(VariableSpec):
     _name: str = "ContinuousToCategorical"
@@ -63,9 +66,7 @@ class VariableGroupSpec(BaseModel):
     title: str  # Title to add to the table
     group_column_name: Optional[str]  # Column name to group by
     add_total_row: bool = True  # Whether to add a total row, e.g. "100_000 patients"
-    variable_specs: list[
-        VariableSpec
-    ]  # List of row specs to include in the table
+    variable_specs: list[VariableSpec]  # List of row specs to include in the table
 
 
 class DatasetSpec(BaseModel):
@@ -95,7 +96,7 @@ def _create_row_df(
 
 def _get_col_value_for_total_row(
     dataset: GroupedDatasetSpec,
-    row_spec: TotalSpec,   # noqa: ARG001, reason: row_spec is not used, but required to maintain consistent function signatures for application from dict
+    row_spec: TotalSpec,  # noqa: ARG001, reason: row_spec is not used, but required to maintain consistent function signatures for application from dict
 ) -> pd.DataFrame:
     # Get number of rows in grouped df
     n_rows_by_group = dataset.grouped_df.shape[0]
@@ -182,7 +183,7 @@ def _get_col_value_transform_continous_to_categorical(
     grouped_df = result_df.groupby("Subgroup").mean()
     grouped_df["Dataset"] = dataset.name
     grouped_df["Title"] = row_spec.variable_title
-    
+
     grouped_df = grouped_df.reset_index()
 
     grouped_df["Value"] = (
@@ -229,8 +230,16 @@ def _process_row(
         row_spec=row_spec,
     )
 
-def _create_title_row(group_spec: VariableGroupSpec, dataset: DatasetSpec) -> pd.DataFrame:
-    return _create_row_df(value_title="Observation unit", dataset_title=dataset.title, cell_value=f"[{group_spec.title}]")
+
+def _create_title_row(
+    group_spec: VariableGroupSpec, dataset: DatasetSpec,
+) -> pd.DataFrame:
+    return _create_row_df(
+        value_title="Observation unit",
+        dataset_title=dataset.title,
+        cell_value=f"[{group_spec.title}]",
+    )
+
 
 def _process_group(
     group_spec: VariableGroupSpec,
@@ -257,10 +266,14 @@ def _process_group(
 
     # Pivot into the right shape
     dataset_rows = pd.concat(rows).reset_index(drop=True)
-    table = dataset_rows.pivot(index=["Title", "Subgroup"], columns="Dataset", values="Value")
-    
+    table = dataset_rows.pivot(
+        index=["Title", "Subgroup"], columns="Dataset", values="Value",
+    )
+
     # Re-order to match spec order in input
-    title_order = [variable_spec.variable_title for variable_spec in group_spec.variable_specs]
+    title_order = [
+        variable_spec.variable_title for variable_spec in group_spec.variable_specs
+    ]
     title_order.insert(0, "Observation unit")
     table = table.reindex(title_order, level=0)
 
@@ -281,9 +294,13 @@ def create_descriptive_stats_table(
     # Fill in missing values (np.Nan and all other values) with an empty string
     with_index = all_groups.reset_index()
     with_index["Subgroup"] = with_index["Subgroup"].astype(str).replace("nan", "")
-    
+
     # If "Title" is repeating, only keep the first occurence
-    with_index["Title"] = with_index["Title"].where(with_index["Title"].shift() != with_index["Title"], "")
-    with_index["Title"] = with_index["Title"].where(with_index["Title"] != "Observation unit", "")
+    with_index["Title"] = with_index["Title"].where(
+        with_index["Title"].shift() != with_index["Title"], "",
+    )
+    with_index["Title"] = with_index["Title"].where(
+        with_index["Title"] != "Observation unit", "",
+    )
 
     return with_index
