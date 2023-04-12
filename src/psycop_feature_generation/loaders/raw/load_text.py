@@ -45,6 +45,7 @@ def get_valid_text_sfi_names() -> set[str]:
 def _load_text_sfis_for_year(
     year: str,
     text_sfi_names: str | list[str],
+    include_sfi_name: bool = False,
     view: str | None = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret",
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -52,21 +53,32 @@ def _load_text_sfis_for_year(
     specified text sfi names.
 
     Args:
-        text_sfi_names (Union[str, list[str]]): Which types of notes to load.
         year (str): Which year to load
+        text_sfi_names (Union[str, list[str]]): Which types of notes to load.
+        include_sfi_name (bool): Whether to include sfi_name columns ("overskrift). Defaults to False.
         view (str, optional): Which table to load.
             Defaults to "[FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret".
         n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
+
 
     Returns:
         pd.DataFrame: Dataframe with clinical notes
     """
 
-    sql = (
-        "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
-        + f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
-        + f" WHERE overskrift IN {text_sfi_names}"
-    )
+    if include_sfi_name:
+        sql = (
+            "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst, overskrift"
+            + f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
+            + f" WHERE overskrift IN {text_sfi_names}"
+        )
+
+    else:
+        sql = (
+            "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
+            + f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
+            + f" WHERE overskrift IN {text_sfi_names}"
+        )
+
     return sql_load(
         sql,
         database="USR_PS_FORSK",
@@ -77,6 +89,7 @@ def _load_text_sfis_for_year(
 
 def load_text_sfis(
     text_sfi_names: str | Iterable[str],
+    include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads all clinical notes that match the specified note from all years.
@@ -110,6 +123,7 @@ def load_text_sfis(
     load_and_featurize = partial(
         _load_text_sfis_for_year,
         text_sfi_names=text_sfi_names,
+        include_sfi_name=include_sfi_name,
         view=view,
         n_rows=n_rows,
     )
