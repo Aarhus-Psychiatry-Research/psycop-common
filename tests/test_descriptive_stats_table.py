@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from pandas.api.types import is_datetime64_any_dtype
 from pandas.testing import assert_frame_equal
 from psycop_ml_utils.utils_for_testing import str_to_df
 from psycop_model_evaluation.descriptive_stats_table import (
@@ -21,7 +20,6 @@ from psycop_model_evaluation.descriptive_stats_table import (
     _get_col_value_for_total_row,
     _get_col_value_transform_continous_to_categorical,
     _process_row,
-    _process_top_level_group,
     create_descriptive_stats_table,
 )
 

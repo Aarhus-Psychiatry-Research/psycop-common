@@ -325,7 +325,7 @@ def create_descriptive_stats_table(
 
     for group_spec in variable_group_specs:
         groups.append(
-            _process_top_level_group(group_spec=group_spec, datasets=datasets)
+            _process_top_level_group(group_spec=group_spec, datasets=datasets),
         )
 
     all_groups = pd.concat(groups)
