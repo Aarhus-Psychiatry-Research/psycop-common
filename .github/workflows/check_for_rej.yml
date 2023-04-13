@@ -1,3 +1,5 @@
+# .rej files occur when cruft update could not merge two files.
+# They need to be handled, but are easy to miss if there's no CI 
 name: Check for .rej files
 
 on:
