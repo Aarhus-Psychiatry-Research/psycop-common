@@ -114,7 +114,7 @@ Train,Age (median [IQR]),56 [17; 95],
 
 
 @pytest.mark.parametrize(
-    ("row_spec", "expected_df"), [test_continuos_mean_sd, test_median_iqr]
+    ("row_spec", "expected_df"), [test_continuos_mean_sd, test_median_iqr],
 )
 def test_get_results_for_continuous_row(
     grouped_dataset_spec_test: GroupedDatasetSpec,
