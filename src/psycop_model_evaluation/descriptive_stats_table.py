@@ -1,6 +1,6 @@
 """Code for generating a descriptive stats table."""
 import typing as t
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -24,6 +24,9 @@ class TotalSpec(VariableSpec):
     variable_title: str = "Total"
     variable_df_col_name: str = "Total"
     n_decimals: Union[int, None] = None
+    within_group_aggregation: Literal[
+        "mean"
+    ] = "mean"  # An implementation detail, but this is required to make the type checker happy
 
 
 class BinaryVariableSpec(VariableSpec):
@@ -234,6 +237,11 @@ def _process_row(
             "min": np.min,
             "median": np.median,
         }
+
+        if row_spec.within_group_aggregation is None:
+            raise ValueError(
+                "You must specify a within_group_aggregation when you have specified a group_column_name in the VariableGroupSpec"
+            )
 
         ds = DatasetSpec(
             title=ds.title,

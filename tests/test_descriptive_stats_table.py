@@ -213,28 +213,24 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame, tmp_path:
             variable_title="Female",
             variable_df_col_name="is_female",
             positive_class=1,
+            within_group_aggregation="max",
         ),
         ContinuousVariableSpec(  # The categorical case
-            variable_title="Age",
+            variable_title="Age at first visit",
             variable_df_col_name="age",
-            aggregation_measure="mean",
             variance_measure="std",
+            within_group_aggregation="min",
         ),
         ContinuousVariableToCategorical(  # The continuous case
-            variable_title="Age",
+            variable_title="Age at first visit",
             variable_df_col_name="age",
             bins=[18, 35, 40, 45],
             bin_decimals=None,
+            within_group_aggregation="min",
         ),
     ]
 
     variable_group_specs = [
-        VariableGroupSpec(
-            title="Visits",
-            group_column_name=None,
-            add_total_row=True,
-            variable_specs=row_specs,  # type: ignore
-        ),
         VariableGroupSpec(
             title="Patients",
             group_column_name="dw_ek_borger",
