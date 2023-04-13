@@ -75,7 +75,7 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
         x_title="Days to outcome",
         y_title="Sensitivity",
         plot_type="bar",
-        save_path=TEST_PLOT_PATH / "12345.png",
+        save_path=TEST_PLOT_PATH / "test_plot_basic_chart.png",
     )
 
 
@@ -104,6 +104,7 @@ def test_plot_performance_by_calendar_time(
     plot_metric_by_absolute_time(
         eval_dataset=synth_eval_dataset,
         bin_period=bin_period,
+        confidence_interval=0.95,
         save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",  # type: ignore
     )
 
@@ -138,6 +139,7 @@ def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
         y_title="Sensitivity (recall)",
+        confidence_interval=0.95,
         save_path=TEST_PLOT_PATH / "sensitivity_by_time_until_diagnosis.png",
     )
 
@@ -191,5 +193,6 @@ def test_overlay_barplot(synth_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=synth_eval_dataset,
         y_title="Sensitivity",
+        confidence_interval=0.95,
         save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
     )

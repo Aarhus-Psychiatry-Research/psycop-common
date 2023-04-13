@@ -20,18 +20,21 @@ def plot_metric_by_absolute_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
+    confidence_interval: Optional[float] = 0.95,
     pred_type: Optional[str] = "visits",
     save_path: Optional[Union[str, Path]] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
     Args:
-        eval_dataset (EvalDataset): EvalDataset object
-        y_title (str): Title of y-axis. Defaults to "AUC".
-        bin_period (str): Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
-        pred_type (str, optional): What description of prediction type to use for plotting, e.g. "number of visits".
-        save_path (str, optional): Path to save figure. Defaults to None.
-        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+        eval_dataset: EvalDataset object
+        y_title: Title of y-axis. Defaults to "AUC".
+        bin_period: Which time period to bin on. Takes "M" for month, "Q" for quarter or "Y" for year
+        pred_type: What description of prediction type to use for plotting, e.g. "number of visits".
+        save_path: Path to save figure. Defaults to None.
+        confidence_interval: Confidence interval  width for the performance metric. Defaults to 0.95.
+        y_limits: Limits of y-axis. Defaults to (0.5, 1.0).
+
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
@@ -40,6 +43,7 @@ def plot_metric_by_absolute_time(
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
         bin_period=bin_period,
+        confidence_interval=confidence_interval,
     )
     sort_order = list(range(len(df)))
 
@@ -51,6 +55,7 @@ def plot_metric_by_absolute_time(
         "Q": "Quarter",
         "Y": "Year",
     }
+    ci = df["ci"].tolist() if confidence_interval else None
 
     return plot_basic_chart(
         x_values=df["time_bin"],
@@ -59,6 +64,7 @@ def plot_metric_by_absolute_time(
         y_title=y_title,
         sort_x=sort_order,
         y_limits=y_limits,
+        confidence_interval=ci,
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title=f"Number of {pred_type}",
         plot_type=["line", "scatter"],

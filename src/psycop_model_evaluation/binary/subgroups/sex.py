@@ -14,16 +14,20 @@ def plot_roc_auc_by_sex(
     eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
+    confidence_interval: Optional[float] = 0.95,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by sex at time of prediction.
 
     Args:
         eval_dataset: EvalDataset object
-        save_path (Path, optional): Path to save figure. Defaults to None.
-        y_limits (tuple[float, float], optional): y-axis limits. Defaults to (0.0, 1.0).
+        save_path: Path to save figure. Defaults to None.
+        y_limits: y-axis limits. Defaults to (0.0, 1.0).
+        confidence_interval: Confidence interval  width for the performance metric. Defaults to 0.95.
+            by default the confidence interval is calculated by bootstrapping using
+            1000 samples.
 
     Returns:
-        Union[None, Path]: Path to saved figure or None if not saved.
+        Path to saved figure or None if not saved.
     """
 
     df = create_roc_auc_by_input(
@@ -32,7 +36,10 @@ def plot_roc_auc_by_sex(
         input_name="sex",
         bins=[0, 1],
         bin_continuous_input=False,
+        confidence_interval=confidence_interval,
     )
+
+    ci = df["ci"].tolist() if confidence_interval else None
 
     df.sex = df.sex.replace({1: "female", 0: "male"})
 
@@ -44,4 +51,5 @@ def plot_roc_auc_by_sex(
         y_limits=y_limits,
         plot_type=["bar"],
         save_path=save_path,
+        confidence_interval=ci,
     )
