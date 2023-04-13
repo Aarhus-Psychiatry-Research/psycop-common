@@ -69,7 +69,7 @@ def test_get_results_for_binary_row(grouped_dataset_spec_test: GroupedDatasetSpe
 
     expected_df = str_to_df(
         """Dataset,Title,Value,
-Train,Female,70%,
+Train,Female,100000 (70%),
 """,
     )
 

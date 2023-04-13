@@ -117,11 +117,12 @@ def _get_col_value_for_binary_row(
         dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
     ).mean()
     prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
+    n_rows = dataset.grouped_df.shape[0]
 
     return _create_row_df(
         value_title=row_spec.variable_title,
         dataset_title=dataset.name,
-        cell_value=f"{prop_rounded}%",
+        cell_value=f"{n_rows} ({prop_rounded}%)",
     )
 
 
