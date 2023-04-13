@@ -131,7 +131,7 @@ class PreSplitRowFilter:
         return dataset[~rows_to_drop]
 
     @print_df_dimensions_diff
-    def _drop_rows_before_min_date(self, dataset):
+    def _drop_rows_before_min_date(self, dataset: pd.DataFrame) -> pd.DataFrame:
         return dataset[
             dataset[self.data_cfg.col_name.pred_timestamp]
             > self.pre_split_cfg.min_prediction_time_date
