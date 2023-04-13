@@ -40,8 +40,8 @@ class CategoricalVariableSpec(VariableSpec):
 
 class ContinuousVariableSpec(VariableSpec):
     _name: str = "Continuous"
-    aggregation_measure: t.Literal["mean"] = "mean"
-    variance_measure: t.Literal["std"] = "std"
+    aggregation_measure: t.Literal["mean", "median"] = "mean"
+    variance_measure: t.Literal["std", "iqr"] = "std"
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
@@ -155,7 +155,7 @@ def _get_col_value_for_continuous_row(
     # Variance cell
     variance_cell_strings = {
         "std": f"± {variance_rounded}",
-        "iqr": f"[{agg_result - variance_rounded}, {agg_result + variance_rounded}]",
+        "iqr": f"[{round_support_no_decimals(agg_result - variance_rounded, n_decimals=row_spec.n_decimals)}; {round_support_no_decimals(agg_result + variance_rounded, n_decimals=row_spec.n_decimals)}]",
     }
     variance_cell_string = variance_cell_strings[row_spec.variance_measure]
 
@@ -164,6 +164,12 @@ def _get_col_value_for_continuous_row(
         dataset_title=dataset.name,
         cell_value=f"{agg_cell_string} {variance_cell_string}",
     )
+
+
+def round_support_no_decimals(x: float, n_decimals: Optional[int]) -> Union[int, float]:
+    if n_decimals is None:
+        return int(x)
+    return round(x, n_decimals)
 
 
 def _get_col_value_for_categorical_row():

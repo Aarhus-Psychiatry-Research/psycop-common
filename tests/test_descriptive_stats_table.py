@@ -82,24 +82,48 @@ Train,Female,69827 (70%),
     )
 
 
-def test_get_results_for_continuous_row(grouped_dataset_spec_test: GroupedDatasetSpec):
-    row_spec = ContinuousVariableSpec(
+test_continuos_mean_sd = (
+    ContinuousVariableSpec(
         variable_title="Age",
         variable_df_col_name="age",
         aggregation_measure="mean",
         variance_measure="std",
         n_decimals=None,
-    )
-
-    outcome_df = _get_col_value_for_continuous_row(
-        dataset=grouped_dataset_spec_test,
-        row_spec=row_spec,
-    )
-
-    expected_df = str_to_df(
+    ),
+    str_to_df(
         """Dataset,Title,Value
 Train,Age (mean ± SD),55 ± 22,
 """,
+    ),
+)
+
+test_median_iqr = (
+    ContinuousVariableSpec(
+        variable_title="Age",
+        variable_df_col_name="age",
+        aggregation_measure="median",
+        variance_measure="iqr",
+        n_decimals=None,
+    ),
+    str_to_df(
+        """Dataset,Title,Value
+Train,Age (median [IQR]),56 [17; 95],
+""",
+    ),
+)
+
+
+@pytest.mark.parametrize(
+    ("row_spec", "expected_df"), [test_continuos_mean_sd, test_median_iqr]
+)
+def test_get_results_for_continuous_row(
+    grouped_dataset_spec_test: GroupedDatasetSpec,
+    row_spec: ContinuousVariableSpec,
+    expected_df: pd.DataFrame,
+):
+    outcome_df = _get_col_value_for_continuous_row(
+        dataset=grouped_dataset_spec_test,
+        row_spec=row_spec,
     )
 
     assert_frame_equal(
