@@ -117,7 +117,9 @@ def _get_col_value_for_binary_row(
         dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
     ).mean()
     prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
-    n_rows = (dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class).sum()
+    n_rows = (
+        dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
+    ).sum()
 
     return _create_row_df(
         value_title=row_spec.variable_title,
@@ -192,19 +194,26 @@ def _get_col_value_transform_continous_to_categorical(
     percent_in_category = (
         grouped_df["n_in_category"] / grouped_df["n_in_category"].sum() * 100
     )
-    
-    percent_in_category_str = round_series(percent_in_category, decimals=row_spec.n_decimals).astype(str) + "%"
-    n_in_category_str = round_series(grouped_df["n_in_category"], decimals=None).astype(str)
+
+    percent_in_category_str = (
+        round_series(percent_in_category, decimals=row_spec.n_decimals).astype(str)
+        + "%"
+    )
+    n_in_category_str = round_series(grouped_df["n_in_category"], decimals=None).astype(
+        str,
+    )
 
     # Convert to a nice string
     grouped_df["Value"] = n_in_category_str + " (" + percent_in_category_str + ")"
 
     return grouped_df[["Dataset", "Title", "Subgroup", "Value"]]
 
+
 def round_series(series: pd.Series, decimals: Optional[int]) -> pd.Series:
     if decimals is None:
         return series.astype(int)
     return series.round(decimals=decimals)
+
 
 def _process_row(
     row_spec: VariableSpec,
