@@ -267,10 +267,10 @@ def _process_group(
 
     # Pivot into the right shape
     dataset_rows = pd.concat(rows).reset_index(drop=True)
-    
+
     if "Subgroup" not in dataset_rows.columns:
         dataset_rows["Subgroup"] = ""
-    
+
     table = dataset_rows.pivot(
         index=["Title", "Subgroup"],
         columns="Dataset",
