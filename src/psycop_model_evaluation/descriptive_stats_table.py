@@ -15,7 +15,7 @@ class VariableSpec(BaseModel):
     _name: str = "Base"
     variable_title: str  # Title for the created row in the table
     variable_df_col_name: str  # Source column name in the dataset df.
-    n_decimals: Union[int, None] = 2  # Number of decimals to round the results to
+    n_decimals: Union[int, None] = 1  # Number of decimals to round the results to
 
 
 class TotalSpec(VariableSpec):
@@ -40,8 +40,8 @@ class CategoricalVariableSpec(VariableSpec):
 
 class ContinuousVariableSpec(VariableSpec):
     _name: str = "Continuous"
-    aggregation_measure: t.Literal["mean"] = "mean"
-    variance_measure: t.Literal["std"] = "std"
+    aggregation_measure: t.Literal["mean", "median"] = "mean"
+    variance_measure: t.Literal["std", "iqr"] = "std"
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
@@ -117,11 +117,14 @@ def _get_col_value_for_binary_row(
         dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
     ).mean()
     prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
+    n_rows = (
+        dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
+    ).sum()
 
     return _create_row_df(
         value_title=row_spec.variable_title,
         dataset_title=dataset.name,
-        cell_value=f"{prop_rounded}%",
+        cell_value=f"{n_rows} ({prop_rounded}%)",
     )
 
 
@@ -152,7 +155,7 @@ def _get_col_value_for_continuous_row(
     # Variance cell
     variance_cell_strings = {
         "std": f"± {variance_rounded}",
-        "iqr": f"[{agg_result - variance_rounded}, {agg_result + variance_rounded}]",
+        "iqr": f"[{round_support_no_decimals(agg_result - variance_rounded, n_decimals=row_spec.n_decimals)}; {round_support_no_decimals(agg_result + variance_rounded, n_decimals=row_spec.n_decimals)}]",
     }
     variance_cell_string = variance_cell_strings[row_spec.variance_measure]
 
@@ -163,7 +166,15 @@ def _get_col_value_for_continuous_row(
     )
 
 
+def round_support_no_decimals(x: float, n_decimals: Optional[int]) -> Union[int, float]:
+    if n_decimals is None:
+        return int(x)
+    return round(x, n_decimals)
+
+
 def _get_col_value_for_categorical_row():
+    # Refactor from _get_col_value_transform_continous_to_categorical, since it basically handles
+    # a categorical column
     pass
 
 
@@ -186,22 +197,28 @@ def _get_col_value_transform_continous_to_categorical(
 
     grouped_df = grouped_df.reset_index()
 
-    grouped_df["Value"] = (
+    percent_in_category = (
         grouped_df["n_in_category"] / grouped_df["n_in_category"].sum() * 100
     )
 
-    if row_spec.n_decimals is not None:
-        grouped_df["Value"] = round(
-            grouped_df["Value"],
-            row_spec.n_decimals,
-        )
-    else:
-        grouped_df["Value"] = grouped_df["Value"].astype(int)
+    percent_in_category_str = (
+        round_series(percent_in_category, decimals=row_spec.n_decimals).astype(str)
+        + "%"
+    )
+    n_in_category_str = round_series(grouped_df["n_in_category"], decimals=None).astype(
+        str,
+    )
 
-    # Add a % symbol
-    grouped_df["Value"] = grouped_df["Value"].astype(str) + "%"
+    # Convert to a nice string
+    grouped_df["Value"] = n_in_category_str + " (" + percent_in_category_str + ")"
 
     return grouped_df[["Dataset", "Title", "Subgroup", "Value"]]
+
+
+def round_series(series: pd.Series, decimals: Optional[int]) -> pd.Series:
+    if decimals is None:
+        return series.astype(int)
+    return series.round(decimals=decimals)
 
 
 def _process_row(
