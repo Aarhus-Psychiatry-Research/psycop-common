@@ -83,7 +83,7 @@ class PreSplitRowFilter:
         dataset: pd.DataFrame,
     ) -> pd.DataFrame:
         """Drop patients that have an exclusion event within the washin
-        period."""]
+        period."""
         outcome_before_date = (
             dataset[self.data_cfg.col_name.exclusion_timestamp]
             < self.pre_split_cfg.drop_patient_if_exclusion_before_date
@@ -92,7 +92,7 @@ class PreSplitRowFilter:
         patients_to_drop = set(
             dataset[self.data_cfg.col_name.id][outcome_before_date].unique(),
         )
-        
+
         dataset = dataset[~dataset[self.data_cfg.col_name.id].isin(patients_to_drop)]
 
         return dataset
@@ -133,9 +133,9 @@ class PreSplitRowFilter:
     @print_df_dimensions_diff
     def _drop_rows_before_min_date(self, dataset):
         return dataset[
-                dataset[self.data_cfg.col_name.pred_timestamp]
-                > self.pre_split_cfg.min_prediction_time_date
-            ]
+            dataset[self.data_cfg.col_name.pred_timestamp]
+            > self.pre_split_cfg.min_prediction_time_date
+        ]
 
     def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Run filters based on config."""
