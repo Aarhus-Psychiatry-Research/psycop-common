@@ -15,7 +15,7 @@ class VariableSpec(BaseModel):
     _name: str = "Base"
     variable_title: str  # Title for the created row in the table
     variable_df_col_name: str  # Source column name in the dataset df.
-    n_decimals: Union[int, None] = 2  # Number of decimals to round the results to
+    n_decimals: Union[int, None] = 1  # Number of decimals to round the results to
 
 
 class TotalSpec(VariableSpec):
@@ -117,7 +117,7 @@ def _get_col_value_for_binary_row(
         dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
     ).mean()
     prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
-    n_rows = dataset.grouped_df.shape[0]
+    n_rows = (dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class).sum()
 
     return _create_row_df(
         value_title=row_spec.variable_title,
@@ -165,6 +165,8 @@ def _get_col_value_for_continuous_row(
 
 
 def _get_col_value_for_categorical_row():
+    # Refactor from _get_col_value_transform_continous_to_categorical, since it basically handles
+    # a categorical column
     pass
 
 
