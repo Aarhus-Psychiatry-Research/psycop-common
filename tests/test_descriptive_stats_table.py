@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from pandas.api.types import is_datetime64_any_dtype
 from pandas.testing import assert_frame_equal
 from psycop_ml_utils.utils_for_testing import str_to_df
 from psycop_model_evaluation.descriptive_stats_table import (
@@ -19,6 +20,8 @@ from psycop_model_evaluation.descriptive_stats_table import (
     _get_col_value_for_continuous_row,
     _get_col_value_for_total_row,
     _get_col_value_transform_continous_to_categorical,
+    _process_row,
+    _process_top_level_group,
     create_descriptive_stats_table,
 )
 
@@ -29,13 +32,13 @@ def dataset_spec_test_split(synth_eval_df: pd.DataFrame) -> DatasetSpec:
 
 
 @pytest.fixture()
-def grouped_dataset_spec_test(synth_eval_df: pd.DataFrame) -> GroupedDatasetSpec:
-    return GroupedDatasetSpec(name="Train", grouped_df=synth_eval_df)
+def dataset_spec(synth_eval_df: pd.DataFrame) -> DatasetSpec:
+    return DatasetSpec(title="Train", df=synth_eval_df)
 
 
-def test_get_results_for_total_row(grouped_dataset_spec_test: GroupedDatasetSpec):
+def test_get_results_for_total_row(dataset_spec: DatasetSpec):
     outcome_df = _get_col_value_for_total_row(
-        dataset=grouped_dataset_spec_test,
+        dataset=dataset_spec,
         row_spec=TotalSpec(),
     )
 
@@ -54,7 +57,7 @@ Train,Total,100000,
     )
 
 
-def test_get_results_for_binary_row(grouped_dataset_spec_test: GroupedDatasetSpec):
+def test_get_results_for_binary_row(dataset_spec: DatasetSpec):
     row_spec = BinaryVariableSpec(
         variable_title="Female",
         variable_df_col_name="is_female",
@@ -63,7 +66,7 @@ def test_get_results_for_binary_row(grouped_dataset_spec_test: GroupedDatasetSpe
     )
 
     outcome_df = _get_col_value_for_binary_row(
-        dataset=grouped_dataset_spec_test,
+        dataset=dataset_spec,
         row_spec=row_spec,
     )
 
@@ -82,11 +85,45 @@ Train,Female,69827 (70%),
     )
 
 
+def test_get_results_for_binary_row_within_group(
+    synth_eval_df: pd.DataFrame,
+):
+    # True if the value in "timestamp_t2d_diag" is a timestamp, else false
+    df = synth_eval_df
+
+    df["any_t2d"] = df["timestamp_t2d_diag"].notna().astype(int)
+
+    row_spec = BinaryVariableSpec(
+        variable_title="Incident type 2 diabetes",
+        within_group_aggregation="max",
+        variable_df_col_name="any_t2d",
+        positive_class=1,
+    )
+
+    expected_df = str_to_df(
+        """Dataset,Title,Value
+Train,Incident type 2 diabetes,9321 (14.8%),
+""",
+    )
+
+    outcome_df = _process_row(
+        row_spec=row_spec,
+        ds=GroupedDatasetSpec(title="Train", grouped_df=df.groupby("dw_ek_borger")),
+    )
+
+    assert_frame_equal(
+        outcome_df,
+        expected_df,
+        check_dtype=False,
+        check_exact=False,
+    )
+
+
 test_continuos_mean_sd = (
     ContinuousVariableSpec(
         variable_title="Age",
         variable_df_col_name="age",
-        aggregation_measure="mean",
+        aggregation_function="mean",
         variance_measure="std",
         n_decimals=None,
     ),
@@ -101,7 +138,7 @@ test_median_iqr = (
     ContinuousVariableSpec(
         variable_title="Age",
         variable_df_col_name="age",
-        aggregation_measure="median",
+        aggregation_function="median",
         variance_measure="iqr",
         n_decimals=None,
     ),
@@ -118,12 +155,12 @@ Train,Age (median [IQR]),56 [17; 95],
     [test_continuos_mean_sd, test_median_iqr],
 )
 def test_get_results_for_continuous_row(
-    grouped_dataset_spec_test: GroupedDatasetSpec,
+    dataset_spec: DatasetSpec,
     row_spec: ContinuousVariableSpec,
     expected_df: pd.DataFrame,
 ):
     outcome_df = _get_col_value_for_continuous_row(
-        dataset=grouped_dataset_spec_test,
+        dataset=dataset_spec,
         row_spec=row_spec,
     )
 
@@ -137,7 +174,7 @@ def test_get_results_for_continuous_row(
 
 
 def test_get_col_value_for_continous_to_categorical_row(
-    grouped_dataset_spec_test: GroupedDatasetSpec,
+    dataset_spec: DatasetSpec,
 ):
     row_spec = ContinuousVariableToCategorical(
         variable_title="Age",
@@ -148,7 +185,7 @@ def test_get_col_value_for_continous_to_categorical_row(
     )
 
     outcome_df = _get_col_value_transform_continous_to_categorical(
-        dataset=grouped_dataset_spec_test,
+        dataset=dataset_spec,
         row_spec=row_spec,
     )
 

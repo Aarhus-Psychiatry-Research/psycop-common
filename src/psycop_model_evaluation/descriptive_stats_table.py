@@ -16,6 +16,7 @@ class VariableSpec(BaseModel):
     variable_title: str  # Title for the created row in the table
     variable_df_col_name: str  # Source column name in the dataset df.
     n_decimals: Union[int, None] = 1  # Number of decimals to round the results to
+    within_group_aggregation: Optional[t.Literal["mean", "median", "max", "min"]] = None
 
 
 class TotalSpec(VariableSpec):
@@ -40,7 +41,7 @@ class CategoricalVariableSpec(VariableSpec):
 
 class ContinuousVariableSpec(VariableSpec):
     _name: str = "Continuous"
-    aggregation_measure: t.Literal["mean", "median"] = "mean"
+    aggregation_function: t.Literal["mean", "median"] = "mean"
     variance_measure: t.Literal["std", "iqr"] = "std"
 
     def __init__(self, **kwargs: Any):
@@ -52,7 +53,7 @@ class ContinuousVariableSpec(VariableSpec):
         variance_title_string = variance_title_strings[self.variance_measure]
 
         self.Config.allow_mutation = True
-        self.variable_title = f"{self.variable_title} ({self.aggregation_measure} {variance_title_string})"
+        self.variable_title = f"{self.variable_title} ({self.aggregation_function} {variance_title_string})"
         self.Config.allow_mutation = False
 
 
@@ -75,8 +76,8 @@ class DatasetSpec(BaseModel):
 
 
 class GroupedDatasetSpec(BaseModel):
-    name: str  # Name of the dataset, used as a column name in the table
-    grouped_df: pd.DataFrame
+    title: str  # Name of the dataset, used as a column name in the table
+    grouped_df: pd.core.groupby.DataFrameGroupBy  # type: ignore
 
 
 def _create_row_df(
@@ -95,57 +96,57 @@ def _create_row_df(
 
 
 def _get_col_value_for_total_row(
-    dataset: GroupedDatasetSpec,
+    dataset: DatasetSpec,
     row_spec: TotalSpec,  # noqa: ARG001, reason: row_spec is not used, but required to maintain consistent function signatures for application from dict
 ) -> pd.DataFrame:
     # Get number of rows in grouped df
-    n_rows_by_group = dataset.grouped_df.shape[0]
+    n_rows_by_group = dataset.df.shape[0]
 
     return _create_row_df(
         value_title="Total",
-        dataset_title=dataset.name,
+        dataset_title=dataset.title,
         cell_value=n_rows_by_group,
     )
 
 
 def _get_col_value_for_binary_row(
-    dataset: GroupedDatasetSpec,
+    dataset: DatasetSpec,
     row_spec: BinaryVariableSpec,
 ) -> pd.DataFrame:
     # Get proportion with the positive class
     positive_class_prop = (
-        dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
+        dataset.df[row_spec.variable_df_col_name] == row_spec.positive_class
     ).mean()
     prop_rounded = round(positive_class_prop * 100, row_spec.n_decimals)
     n_rows = (
-        dataset.grouped_df[row_spec.variable_df_col_name] == row_spec.positive_class
+        dataset.df[row_spec.variable_df_col_name] == row_spec.positive_class
     ).sum()
 
     return _create_row_df(
         value_title=row_spec.variable_title,
-        dataset_title=dataset.name,
+        dataset_title=dataset.title,
         cell_value=f"{n_rows} ({prop_rounded}%)",
     )
 
 
 def _get_col_value_for_continuous_row(
-    dataset: GroupedDatasetSpec,
+    dataset: DatasetSpec,
     row_spec: ContinuousVariableSpec,
 ) -> pd.DataFrame:
     # Aggregation
     agg_results = {
-        "mean": dataset.grouped_df[row_spec.variable_df_col_name].mean(),
-        "median": dataset.grouped_df[row_spec.variable_df_col_name].median(),
+        "mean": dataset.df[row_spec.variable_df_col_name].mean(),
+        "median": dataset.df[row_spec.variable_df_col_name].median(),
     }
-    agg_result = agg_results[row_spec.aggregation_measure]
+    agg_result = agg_results[row_spec.aggregation_function]
     agg_rounded = round(agg_result, row_spec.n_decimals)
     agg_cell_string = f"{agg_rounded}"
 
     # Variance
     variance_results = {
-        "std": dataset.grouped_df[row_spec.variable_df_col_name].std(),
-        "iqr": dataset.grouped_df[row_spec.variable_df_col_name].quantile(0.75)
-        - dataset.grouped_df[row_spec.variable_df_col_name].quantile(0.25),
+        "std": dataset.df[row_spec.variable_df_col_name].std(),
+        "iqr": dataset.df[row_spec.variable_df_col_name].quantile(0.75)
+        - dataset.df[row_spec.variable_df_col_name].quantile(0.25),
     }
     variance_rounded = round(
         variance_results[row_spec.variance_measure],
@@ -161,7 +162,7 @@ def _get_col_value_for_continuous_row(
 
     return _create_row_df(
         value_title=row_spec.variable_title,
-        dataset_title=dataset.name,
+        dataset_title=dataset.title,
         cell_value=f"{agg_cell_string} {variance_cell_string}",
     )
 
@@ -179,11 +180,11 @@ def _get_col_value_for_categorical_row():
 
 
 def _get_col_value_transform_continous_to_categorical(
-    dataset: GroupedDatasetSpec,
+    dataset: DatasetSpec,
     row_spec: ContinuousVariableToCategorical,
 ) -> pd.DataFrame:
     values = bin_continuous_data(
-        series=dataset.grouped_df[row_spec.variable_df_col_name],
+        series=dataset.df[row_spec.variable_df_col_name],
         bins=row_spec.bins,
         bin_decimals=row_spec.bin_decimals,
     )
@@ -191,28 +192,28 @@ def _get_col_value_transform_continous_to_categorical(
     result_df = pd.DataFrame({"Subgroup": values[0], "n_in_category": values[1]})
 
     # Get col percentage for each category within group
-    grouped_df = result_df.groupby("Subgroup").mean()
-    grouped_df["Dataset"] = dataset.name
-    grouped_df["Title"] = row_spec.variable_title
+    binned_df = result_df.groupby("Subgroup").mean()
+    binned_df["Dataset"] = dataset.title
+    binned_df["Title"] = row_spec.variable_title
 
-    grouped_df = grouped_df.reset_index()
+    binned_df = binned_df.reset_index()
 
     percent_in_category = (
-        grouped_df["n_in_category"] / grouped_df["n_in_category"].sum() * 100
+        binned_df["n_in_category"] / binned_df["n_in_category"].sum() * 100
     )
 
     percent_in_category_str = (
         round_series(percent_in_category, decimals=row_spec.n_decimals).astype(str)
         + "%"
     )
-    n_in_category_str = round_series(grouped_df["n_in_category"], decimals=None).astype(
+    n_in_category_str = round_series(binned_df["n_in_category"], decimals=None).astype(
         str,
     )
 
     # Convert to a nice string
-    grouped_df["Value"] = n_in_category_str + " (" + percent_in_category_str + ")"
+    binned_df["Value"] = n_in_category_str + " (" + percent_in_category_str + ")"
 
-    return grouped_df[["Dataset", "Title", "Subgroup", "Value"]]
+    return binned_df[["Dataset", "Title", "Subgroup", "Value"]]
 
 
 def round_series(series: pd.Series, decimals: Optional[int]) -> pd.Series:
@@ -223,9 +224,22 @@ def round_series(series: pd.Series, decimals: Optional[int]) -> pd.Series:
 
 def _process_row(
     row_spec: VariableSpec,
-    dataset: DatasetSpec,
-    group_col_name: Union[str, None],
+    ds: Union[GroupedDatasetSpec, DatasetSpec],
 ) -> pd.DataFrame:
+    # Handle aggregation of grouped dfs
+    if isinstance(ds, GroupedDatasetSpec):
+        agg_str2fn = {
+            "mean": np.mean,
+            "max": np.max,
+            "min": np.min,
+            "median": np.median,
+        }
+
+        ds = DatasetSpec(
+            title=ds.title,
+            df=ds.grouped_df.agg(agg_str2fn[row_spec.within_group_aggregation]),  # type: ignore
+        )
+
     spec_to_func = {
         "Binary": _get_col_value_for_binary_row,
         "Continuous": _get_col_value_for_continuous_row,
@@ -233,17 +247,8 @@ def _process_row(
         "Total": _get_col_value_for_total_row,
     }
 
-    if group_col_name is not None:
-        agg_df = dataset.df.groupby(group_col_name).agg(np.mean)
-        grouped_dataset_spec = GroupedDatasetSpec(name=dataset.title, grouped_df=agg_df)
-    else:
-        grouped_dataset_spec = GroupedDatasetSpec(
-            name=dataset.title,
-            grouped_df=dataset.df,
-        )
-
     return spec_to_func[row_spec._name](  # type: ignore
-        dataset=grouped_dataset_spec,
+        dataset=ds,
         row_spec=row_spec,
     )
 
@@ -259,7 +264,7 @@ def _create_title_row(
     )
 
 
-def _process_group(
+def _process_top_level_group(
     group_spec: VariableGroupSpec,
     datasets: t.Sequence[DatasetSpec],
 ) -> pd.DataFrame:
@@ -272,13 +277,21 @@ def _process_group(
             TotalSpec(),
         )
 
-    for dataset in datasets:
+    group_col_name = group_spec.group_column_name
+
+    for ds in datasets:
+        # Handle grouping if relevant
+        if group_col_name is not None:
+            df = ds.df.groupby(group_col_name)
+            ds_spec = GroupedDatasetSpec(title=ds.title, grouped_df=df)
+        else:
+            ds_spec = DatasetSpec(title=ds.title, df=ds.df)
+
         for row_spec in group_spec.variable_specs:
             rows.append(
                 _process_row(
                     row_spec=row_spec,
-                    dataset=dataset,
-                    group_col_name=group_spec.group_column_name,
+                    ds=ds_spec,
                 ),
             )
 
@@ -311,7 +324,9 @@ def create_descriptive_stats_table(
     groups = []
 
     for group_spec in variable_group_specs:
-        groups.append(_process_group(group_spec=group_spec, datasets=datasets))
+        groups.append(
+            _process_top_level_group(group_spec=group_spec, datasets=datasets)
+        )
 
     all_groups = pd.concat(groups)
 

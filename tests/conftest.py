@@ -23,6 +23,11 @@ def synth_eval_df() -> pd.DataFrame:
     """Load synthetic data."""
     csv_path = Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
+
+    # Convert all timestamp cols to datetime
+    for col in [col for col in df.columns if "timestamp" in col]:
+        df[col] = pd.to_datetime(df[col])
+
     return df
 
 
@@ -30,10 +35,6 @@ def synth_eval_df() -> pd.DataFrame:
 def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
     """Load synthetic data."""
     df = synth_eval_df
-
-    # Convert all timestamp cols to datetime
-    for col in [col for col in df.columns if "timestamp" in col]:
-        df[col] = pd.to_datetime(df[col])
 
     df = add_eval_column(df)
 
