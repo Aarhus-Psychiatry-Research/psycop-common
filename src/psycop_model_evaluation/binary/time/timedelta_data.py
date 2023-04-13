@@ -23,7 +23,7 @@ def create_performance_by_timedelta(
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
-    bin_unit: Literal["H", "D", "M", "Q", "Y"],
+    bin_unit: Literal["h", "D", "M", "Q", "Y"],
     confidence_interval: Optional[float] = None,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
