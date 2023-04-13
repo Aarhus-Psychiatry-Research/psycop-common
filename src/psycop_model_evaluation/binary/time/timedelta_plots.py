@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Literal, Optional, Union
 
+import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop_model_evaluation.base_charts import (
@@ -19,31 +20,42 @@ from psycop_model_evaluation.binary.utils import (
 from psycop_model_evaluation.utils import bin_continuous_data
 from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score, roc_auc_score
-import numpy as np
 
 
 def plot_roc_auc_by_time_from_first_visit(
     eval_dataset: EvalDataset,
     bins: t.Sequence[float] = (0, 28, 182, 365, 730, 1825),
-    bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
+    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     y_limits: tuple[float, float] = (0.5, 1.0),
+    custom_id_to_plot_by: Optional[str] = None,
+    pred_type_x_label: Optional[str] = "first visit",
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time from first visit.
     Args:
         eval_dataset (EvalDataset): EvalDataset object
         bins (list, optional): Bins to group by. Defaults to [0, 28, 182, 365, 730, 1825].
-        bin_unit (Literal["H", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+        bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+        custom_id_to_plot_by (str, optional): Custom id frome eval_dataset to plot by. If not set, it will plot by 'ids' from eval_dataset. Defaults to None.
+        pred_type_x_label (str, optional): Set x label by the prediction type. Defaults to "first visit".
         save_path (Path, optional): Path to save figure. Defaults to None.
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    eval_df = pd.DataFrame(
-        {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
-    )
+    if custom_id_to_plot_by:
+        eval_df = pd.DataFrame(
+            {
+                "ids": eval_dataset.custom_columns[custom_id_to_plot_by],
+                "pred_timestamps": eval_dataset.pred_timestamps,
+            },
+        )
+    else:
+        eval_df = pd.DataFrame(
+            {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
+        )
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
@@ -61,7 +73,7 @@ def plot_roc_auc_by_time_from_first_visit(
     )
 
     bin_unit2str = {
-        "H": "Hours",
+        "h": "Hours",
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",
@@ -72,7 +84,7 @@ def plot_roc_auc_by_time_from_first_visit(
     return plot_basic_chart(
         x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
-        x_title=f"{bin_unit2str[bin_unit]} from first visit",
+        x_title=f"{bin_unit2str[bin_unit]} from {pred_type_x_label}",
         y_title="AUC",
         sort_x=sort_order,  # type: ignore
         y_limits=y_limits,
@@ -93,7 +105,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         -28,
         -0,
     ),
-    bin_unit: Literal["H", "D", "M", "Q", "Y"] = "D",
+    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     positive_rate: float = 0.5,
     confidence_interval: Optional[float] = None,
@@ -137,7 +149,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     sort_order = list(range(len(df)))
 
     bin_unit2str = {
-        "H": "Hours",
+        "h": "Hours",
         "D": "Days",
         "M": "Months",
         "Q": "Quarters",
@@ -243,7 +255,7 @@ def plot_sensitivity_by_time_to_event(
     eval_dataset: EvalDataset,
     positive_rates: Union[float, Iterable[float]],
     bins: Sequence[float],
-    bin_unit: Literal["H", "D", "W", "M", "Q", "Y"] = "D",
+    bin_unit: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -277,7 +289,7 @@ def plot_sensitivity_by_time_to_event(
     ]
 
     bin_delta_to_str = {
-        "H": "Hour",
+        "h": "Hour",
         "D": "Day",
         "W": "Week",
         "M": "Month",

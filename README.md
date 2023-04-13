@@ -64,7 +64,6 @@ For an example use case, see [t2d-baseline-paper](https://github.com/Aarhus-Psyc
 | 👩‍💻 **[Tutorials]**     | Tutorials for using this package                 |
 | 🎛️ **[API Reference]** | API reference for this package                   |
 | 📚 **[FAQ]**           | Frequently asked questions                       |
--->
 
 # 💬 Where to ask questions
 
@@ -76,7 +75,7 @@ For an example use case, see [t2d-baseline-paper](https://github.com/Aarhus-Psyc
 | 👩‍💻 **Usage Questions**          | [GitHub Discussions]   |
 | 🗯 **General Discussion**       | [GitHub Discussions]   |
 
-<!-- [Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
+[Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
 [Installation]: https://MartinBernstorff.github.io/psycop-model-evaluation/installation.html
 [Tutorials]: https://MartinBernstorff.github.io/psycop-model-evaluation/tutorials.html
 [API Reference]: https://MartinBernstorff.github.io/psycop-model-evaluation/references.html
