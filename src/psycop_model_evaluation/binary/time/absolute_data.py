@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from functools import partial
 from typing import Optional
 
 import pandas as pd
@@ -6,7 +7,6 @@ from psycop_model_evaluation.binary.utils import (
     calc_performance,
 )
 from sklearn.metrics import roc_auc_score
-from functools import partial
 
 
 def create_roc_auc_by_absolute_time_df(
@@ -31,7 +31,9 @@ def create_roc_auc_by_absolute_time_df(
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
     _calc_performance = partial(
-        calc_performance, metric=roc_auc_score, confidence_interval=confidence_interval, 
+        calc_performance,
+        metric=roc_auc_score,
+        confidence_interval=confidence_interval,
     )
 
     output_df = df.groupby("time_bin").apply(_calc_performance)

@@ -97,11 +97,11 @@ def create_performance_by_timedelta(
         )
 
     _calc_performance = partial(
-        calc_performance, metric=metric_fn, confidence_interval=confidence_interval
+        calc_performance, metric=metric_fn, confidence_interval=confidence_interval,
     )
 
     return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        _calc_performance
+        _calc_performance,
     )
 
 
