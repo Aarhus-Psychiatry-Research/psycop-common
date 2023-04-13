@@ -240,7 +240,7 @@ def _process_row(
 
         if row_spec.within_group_aggregation is None:
             raise ValueError(
-                "You must specify a within_group_aggregation when you have specified a group_column_name in the VariableGroupSpec"
+                "You must specify a within_group_aggregation when you have specified a group_column_name in the VariableGroupSpec",
             )
 
         ds = DatasetSpec(
