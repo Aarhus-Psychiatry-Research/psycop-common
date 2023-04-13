@@ -187,23 +187,22 @@ def _get_col_value_transform_continous_to_categorical(
 
     grouped_df = grouped_df.reset_index()
 
-    grouped_df["Value"] = (
+    percent_in_category = (
         grouped_df["n_in_category"] / grouped_df["n_in_category"].sum() * 100
     )
+    
+    percent_in_category_str = round_series(percent_in_category, decimals=row_spec.n_decimals).astype(str) + "%"
+    n_in_category_str = round_series(grouped_df["n_in_category"], decimals=None).astype(str)
 
-    if row_spec.n_decimals is not None:
-        grouped_df["Value"] = round(
-            grouped_df["Value"],
-            row_spec.n_decimals,
-        )
-    else:
-        grouped_df["Value"] = grouped_df["Value"].astype(int)
-
-    # Add a % symbol
-    grouped_df["Value"] = grouped_df["Value"].astype(str) + "%"
+    # Convert to a nice string
+    grouped_df["Value"] = n_in_category_str + " (" + percent_in_category_str + ")"
 
     return grouped_df[["Dataset", "Title", "Subgroup", "Value"]]
 
+def round_series(series: pd.Series, decimals: Optional[int]) -> pd.Series:
+    if decimals is None:
+        return series.astype(int)
+    return series.round(decimals=decimals)
 
 def _process_row(
     row_spec: VariableSpec,

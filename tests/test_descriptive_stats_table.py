@@ -129,10 +129,10 @@ def test_get_col_value_for_continous_to_categorical_row(
 
     expected_df = str_to_df(
         """Dataset,Title,Subgroup,Value
-Train,Age,18-35,23%,
-Train,Age,36-40,6%,
-Train,Age,41-45,6%,
-Train,Age,46+,63%,
+Train,Age,18-35,23058 (23%),
+Train,Age,36-40,6554 (6%),
+Train,Age,41-45,6388 (6%),
+Train,Age,46+,62792 (63%),
 """,
     )
 
