@@ -285,7 +285,7 @@ def _process_top_level_group(
             df = ds.df.groupby(group_col_name)
             ds_spec = GroupedDatasetSpec(title=ds.title, grouped_df=df)
         else:
-            ds_spec = DatasetSpec(title=ds.title, df=ds.df)
+            ds_spec = DatasetSpec(title=ds.title, df=ds.df)  # type: ignore
 
         for row_spec in group_spec.variable_specs:
             rows.append(
