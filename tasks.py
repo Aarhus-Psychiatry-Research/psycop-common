@@ -268,19 +268,21 @@ def test(c: Context):
 
 
 def test_for_rej(c: Context):
-    # Check if any file in current directory, or its subdirectories, has a .rej extension
-    # If so, exit
-    rej_files = c.run("find . -name '*.rej' -type f -print", hide=True)
+    # Get all paths in current directory or subdirectories that end in .rej
+    rej_files = list(Path(".").rglob("*.rej"))
 
-    if ".rej" in rej_files.stdout:
-        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.")
-        print(f"{rej_files.stdout}")
-        exit(0)
+    if len(rej_files) > 0:
+        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.\n")
+        for file in rej_files:
+            print(f"    /{file}")
+        print("\nResolve the conflicts and try again. \n")
+        exit(1)
 
 
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project using the pre-commit hooks and mypy."""
+    test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
     mypy(c)
 
