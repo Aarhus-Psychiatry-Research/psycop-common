@@ -267,7 +267,7 @@ def test(c: Context):
         exit(0)
 
 
-def test_for_rej(c: Context):
+def test_for_rej():
     # Get all paths in current directory or subdirectories that end in .rej
     rej_files = list(Path(".").rglob("*.rej"))
 
@@ -282,7 +282,7 @@ def test_for_rej(c: Context):
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project using the pre-commit hooks and mypy."""
-    test_for_rej(c)
+    test_for_rej()
     pre_commit(c=c, auto_fix=auto_fix)
     mypy(c)
 
