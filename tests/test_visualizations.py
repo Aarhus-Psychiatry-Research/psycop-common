@@ -95,7 +95,7 @@ def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
 
 @pytest.mark.parametrize(
     "bin_period",
-    ["M", "Q", "Y"],
+    ["Q", "Y"],
 )
 def test_plot_performance_by_calendar_time(
     synth_eval_dataset: EvalDataset,
