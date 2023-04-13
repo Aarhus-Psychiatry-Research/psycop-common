@@ -157,9 +157,12 @@ def _get_col_value_for_continuous_row(
     )
 
     # Variance cell
+    lower_iqr = round_support_no_decimals(agg_result - variance_rounded, n_decimals=row_spec.n_decimals)  # type: ignore
+    upper_iqr = round_support_no_decimals(agg_result + variance_rounded, n_decimals=row_spec.n_decimals)  # type: ignore
+
     variance_cell_strings = {
         "std": f"± {variance_rounded}",
-        "iqr": f"[{round_support_no_decimals(agg_result - variance_rounded, n_decimals=row_spec.n_decimals)}; {round_support_no_decimals(agg_result + variance_rounded, n_decimals=row_spec.n_decimals)}]",  # type: ignore
+        "iqr": f"[{lower_iqr}; {upper_iqr}]",
     }
     variance_cell_string = variance_cell_strings[row_spec.variance_measure]
 
