@@ -18,10 +18,14 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
 
     # Assign 85% to train and 15% to test
     df["split"] = np.random.choice(
-        ["1. train", "2. test", "3. val"], size=len(df), p=[0.85, 0.10, 0.05],
+        ["1. train", "2. test", "3. val"],
+        size=len(df),
+        p=[0.85, 0.10, 0.05],
     )
     df["age_grouped"] = bin_continuous_data(
-        series=df["age"], bins=[18, 35, 40, 45], bin_decimals=None,
+        series=df["age"],
+        bins=[18, 35, 40, 45],
+        bin_decimals=None,
     )[0]
     df = df.drop(columns=["age"])
 
