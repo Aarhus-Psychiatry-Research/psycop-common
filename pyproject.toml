@@ -24,6 +24,7 @@ dependencies = [
   "matplotlib",
   "psycop-model-training @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-training#egg=psycop-model-training",
   "openpyxl",
+  "tableone",
 ]
 
 [project.license]
