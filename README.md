@@ -27,7 +27,6 @@ src/psycop_model_evaluation
 │                                             # Periodic (e.g. day of week, week of year) and 
 │                                             # Timedelta (e.g. time from first visit)
 │ 
-├── descriptive_stats_table.py                # Descriptive statistics, e.g. a "table 1"
 ├── feature_importance                        # Feature importance
 │   ├── feature_importance_table.py
 │   └── sklearn
