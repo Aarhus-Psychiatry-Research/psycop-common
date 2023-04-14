@@ -1,8 +1,10 @@
 """Test that the descriptive stats table is generated correctly."""
 
 
+import time
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -22,231 +24,58 @@ from psycop_model_evaluation.descriptive_stats_table import (
     _process_row,
     create_descriptive_stats_table,
 )
+from psycop_model_evaluation.utils import bin_continuous_data
+from tableone import TableOne
 
 
-@pytest.fixture()
-def dataset_spec_test_split(synth_eval_df: pd.DataFrame) -> DatasetSpec:
-    return DatasetSpec(title="Train", df=synth_eval_df)
-
-
-@pytest.fixture()
-def dataset_spec(synth_eval_df: pd.DataFrame) -> DatasetSpec:
-    return DatasetSpec(title="Train", df=synth_eval_df)
-
-
-def test_get_results_for_total_row(dataset_spec: DatasetSpec):
-    outcome_df = _get_col_value_for_total_row(
-        dataset=dataset_spec,
-        row_spec=TotalSpec(),
-    )
-
-    expected_df = str_to_df(
-        """Dataset,Title,Value
-Train,Total,100000,
-""",
-    )
-
-    assert_frame_equal(
-        outcome_df,
-        expected_df,
-        check_dtype=False,
-        check_exact=False,
-        atol=10000,
-    )
-
-
-def test_get_results_for_binary_row(dataset_spec: DatasetSpec):
-    row_spec = BinaryVariableSpec(
-        variable_title="Female",
-        variable_df_col_name="is_female",
-        positive_class=1,
-        n_decimals=None,
-    )
-
-    outcome_df = _get_col_value_for_binary_row(
-        dataset=dataset_spec,
-        row_spec=row_spec,
-    )
-
-    expected_df = str_to_df(
-        """Dataset,Title,Value,
-Train,Female,69827 (70%),
-""",
-    )
-
-    assert_frame_equal(
-        outcome_df,
-        expected_df,
-        check_dtype=False,
-        check_exact=False,
-        atol=2,
-    )
-
-
-def test_get_results_for_binary_row_within_group(
-    synth_eval_df: pd.DataFrame,
-):
-    # True if the value in "timestamp_t2d_diag" is a timestamp, else false
+def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
+    """Test descriptive stats table."""
     df = synth_eval_df
 
-    df["any_t2d"] = df["timestamp_t2d_diag"].notna().astype(int)
+    # Multiply the dataset by 10 to benchmark the performance
+    df = pd.concat([df] * 10, ignore_index=True)
 
-    row_spec = BinaryVariableSpec(
-        variable_title="Incident type 2 diabetes",
-        within_group_aggregation="max",
-        variable_df_col_name="any_t2d",
-        positive_class=1,
+    # Assign 85% to train and 15% to test
+    df["split"] = np.random.choice(
+        ["1. train", "2. test", "3. val"], size=len(df), p=[0.85, 0.10, 0.05]
     )
+    df["age_grouped"] = bin_continuous_data(
+        series=df["age"], bins=[18, 35, 40, 45], bin_decimals=None
+    )[0]
+    df = df.drop(columns=["age"])
 
-    expected_df = str_to_df(
-        """Dataset,Title,Value
-Train,Incident type 2 diabetes,9321 (14.8%),
-""",
-    )
+    labels = {"is_female": "Female", "age_grouped": "Age group"}
+    categorical = ["age_grouped", "is_female"]
 
-    outcome_df = _process_row(
-        row_spec=row_spec,
-        ds=GroupedDatasetSpec(title="Train", grouped_df=df.groupby("dw_ek_borger")),
-    )
+    start_time = time.time()
+    visits_table_df = TableOne(
+        data=df,
+        columns=list(labels),
+        labels=labels,
+        categorical=categorical,
+        groupby="split",
+        pval=True,
+    ).tableone
 
-    assert_frame_equal(
-        outcome_df,
-        expected_df,
-        check_dtype=False,
-        check_exact=False,
-    )
+    # Grouped
+    df["dw_ek_borger"] = synth_eval_df["dw_ek_borger"]
+    df["age"] = synth_eval_df["age"]
+    grouped_df = df.groupby("dw_ek_borger").agg({"is_female": "max"})
+    grouped_df["split"] = grouped_df.merge(df, how="left", on="dw_ek_borger")[["split"]]
 
+    grouped_labels = {"is_female": "Female"}
+    grouped_categorical_columns = ["is_female"]
 
-test_continuos_mean_sd = (
-    ContinuousVariableSpec(
-        variable_title="Age",
-        variable_df_col_name="age",
-        aggregation_function="mean",
-        variance_measure="std",
-        n_decimals=None,
-    ),
-    str_to_df(
-        """Dataset,Title,Value
-Train,Age (mean ± SD),55 ± 22,
-""",
-    ),
-)
+    patients_table_df = TableOne(
+        data=grouped_df,
+        columns=list(grouped_labels),
+        labels=grouped_labels,
+        categorical=grouped_categorical_columns,
+        groupby="split",
+        pval=True,
+    ).tableone
+    end_time = time.time()
 
-test_median_iqr = (
-    ContinuousVariableSpec(
-        variable_title="Age",
-        variable_df_col_name="age",
-        aggregation_function="median",
-        variance_measure="iqr",
-        n_decimals=None,
-    ),
-    str_to_df(
-        """Dataset,Title,Value
-Train,Age (median [IQR]),56 [17; 95],
-""",
-    ),
-)
+    duration = round(end_time - start_time)
 
-
-@pytest.mark.parametrize(
-    ("row_spec", "expected_df"),
-    [test_continuos_mean_sd, test_median_iqr],
-)
-def test_get_results_for_continuous_row(
-    dataset_spec: DatasetSpec,
-    row_spec: ContinuousVariableSpec,
-    expected_df: pd.DataFrame,
-):
-    outcome_df = _get_col_value_for_continuous_row(
-        dataset=dataset_spec,
-        row_spec=row_spec,
-    )
-
-    assert_frame_equal(
-        outcome_df,
-        expected_df,
-        check_dtype=False,
-        check_exact=False,
-        atol=2,
-    )
-
-
-def test_get_col_value_for_continous_to_categorical_row(
-    dataset_spec: DatasetSpec,
-):
-    row_spec = ContinuousVariableToCategorical(
-        variable_title="Age",
-        variable_df_col_name="age",
-        n_decimals=None,
-        bins=[18, 35, 40, 45],
-        bin_decimals=None,
-    )
-
-    outcome_df = _get_col_value_transform_continous_to_categorical(
-        dataset=dataset_spec,
-        row_spec=row_spec,
-    )
-
-    expected_df = str_to_df(
-        """Dataset,Title,Subgroup,Value
-Train,Age,18-35,23058 (23%),
-Train,Age,36-40,6554 (6%),
-Train,Age,41-45,6388 (6%),
-Train,Age,46+,62792 (63%),
-""",
-    )
-
-    assert_frame_equal(
-        outcome_df,
-        expected_df,
-        check_categorical=False,
-        check_dtype=False,
-        check_exact=False,
-        atol=2,
-    )
-
-
-def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame, tmp_path: Path):
-    """Test descriptive stats table."""
-    row_specs = [
-        BinaryVariableSpec(  # The binary case
-            variable_title="Female",
-            variable_df_col_name="is_female",
-            positive_class=1,
-            within_group_aggregation="max",
-        ),
-        ContinuousVariableSpec(  # The categorical case
-            variable_title="Age at first visit",
-            variable_df_col_name="age",
-            variance_measure="std",
-            within_group_aggregation="min",
-        ),
-        ContinuousVariableToCategorical(  # The continuous case
-            variable_title="Age at first visit",
-            variable_df_col_name="age",
-            bins=[18, 35, 40, 45],
-            bin_decimals=None,
-            within_group_aggregation="min",
-        ),
-    ]
-
-    variable_group_specs = [
-        VariableGroupSpec(
-            title="Patients",
-            group_column_name="dw_ek_borger",
-            add_total_row=True,
-            variable_specs=row_specs,  # type: ignore
-        ),
-    ]
-
-    datasets = [
-        DatasetSpec(title="Train", df=synth_eval_df),
-        DatasetSpec(title="Test", df=synth_eval_df),
-    ]
-
-    descriptive_table = create_descriptive_stats_table(
-        variable_group_specs=variable_group_specs,
-        datasets=datasets,
-    )
-
-    descriptive_table.to_excel(tmp_path / "Test.xlsx")
+    combined = pd.concat([visits_table_df, patients_table_df], axis=0)
