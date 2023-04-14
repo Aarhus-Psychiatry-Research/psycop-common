@@ -10,6 +10,7 @@ class ColumnNamesSchema(BaseModel):
     pred_timestamp: str = "timestamp"  # Column name for prediction times
     outcome_timestamp: str = "outc_timestamp"  # Column name for outcome timestamps
     id: str = "dw_ek_borger"  # Citizen colnames # noqa
+    pred_time_uuid: str = "pred_time_uuid"  # Unique identifier for each prediction, useful if you later want to join the predictions with the original data.
     age: str = "pred_age_in_years"  # Name of the age column
     is_female: str = "pred_sex_female"  # Name of the sex column
     exclusion_timestamp: Optional[
