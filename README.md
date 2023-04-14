@@ -12,6 +12,11 @@ Prediction of type 2 diabetes among patients with visits to psychiatric hospital
 # Using the package
 This is a set of modules used for some of the projects' model training. You need project-specific code to use these modules. To get started with that, see [template-model-training](https://github.com/Aarhus-Psychiatry-Research/template-model-training).
 
+# Installing to src
+```bash
+pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-model-training#egg=psycop_model_training
+```
+
 ## Developing new evaluations
 In general, model evaluations are added as their own file in 
 
