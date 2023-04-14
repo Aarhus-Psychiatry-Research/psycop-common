@@ -2,28 +2,9 @@
 
 
 import time
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
-from pandas.testing import assert_frame_equal
-from psycop_ml_utils.utils_for_testing import str_to_df
-from psycop_model_evaluation.descriptive_stats_table import (
-    BinaryVariableSpec,
-    ContinuousVariableSpec,
-    ContinuousVariableToCategorical,
-    DatasetSpec,
-    GroupedDatasetSpec,
-    TotalSpec,
-    VariableGroupSpec,
-    _get_col_value_for_binary_row,
-    _get_col_value_for_continuous_row,
-    _get_col_value_for_total_row,
-    _get_col_value_transform_continous_to_categorical,
-    _process_row,
-    create_descriptive_stats_table,
-)
 from psycop_model_evaluation.utils import bin_continuous_data
 from tableone import TableOne
 
@@ -37,10 +18,10 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
 
     # Assign 85% to train and 15% to test
     df["split"] = np.random.choice(
-        ["1. train", "2. test", "3. val"], size=len(df), p=[0.85, 0.10, 0.05]
+        ["1. train", "2. test", "3. val"], size=len(df), p=[0.85, 0.10, 0.05],
     )
     df["age_grouped"] = bin_continuous_data(
-        series=df["age"], bins=[18, 35, 40, 45], bin_decimals=None
+        series=df["age"], bins=[18, 35, 40, 45], bin_decimals=None,
     )[0]
     df = df.drop(columns=["age"])
 
@@ -76,6 +57,6 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
     ).tableone
     end_time = time.time()
 
-    duration = round(end_time - start_time)
+    round(end_time - start_time)
 
-    combined = pd.concat([visits_table_df, patients_table_df], axis=0)
+    pd.concat([visits_table_df, patients_table_df], axis=0)
