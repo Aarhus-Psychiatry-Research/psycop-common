@@ -1,13 +1,14 @@
 """Pipeline for fitting text models"""
+import logging
 import os.path
 from datetime import datetime
-import logging
 from typing import Iterable
+
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.text_models.fit_text_models import (
     fit_bow,
-    fit_tfidf,
     fit_lda,
+    fit_tfidf,
 )
 from psycop_feature_generation.text_models.utils import save_text_model_to_dir
 
