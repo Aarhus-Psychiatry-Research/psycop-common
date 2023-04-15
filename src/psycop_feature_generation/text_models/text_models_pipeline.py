@@ -144,7 +144,7 @@ def tfidf_model_pipeline(
                 query += f",'{sfi}'"
             query += ")"
 
-    corpus = sql_load(query=f"SELECT * FROM fct.{view}", n_rows=n_rows)
+    corpus = sql_load(query=query, n_rows=n_rows)
 
     log.info(
         f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting tfidf model to corpus"
@@ -224,7 +224,7 @@ def lda_model_pipeline(
                 query += f",'{sfi}'"
             query += ")"
 
-    corpus = sql_load(query=f"SELECT * FROM fct.{view}", n_rows=n_rows)
+    corpus = sql_load(query=query, n_rows=n_rows)
 
     log.info(
         f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting lda model to corpus",
