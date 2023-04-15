@@ -19,7 +19,7 @@ def fit_bow(
 
     Args:
         corpus (Sequence[str]): The corpus to fit on
-        ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 2).
+        ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 1).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
         min_df (int, optional): Remove words occuring in less than min_df documents. Defaults to 2.
         max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 500.
@@ -54,7 +54,7 @@ def fit_tfidf(
     Args:
         corpus (Sequence[str]): The corpus to fit on
         stop_words (list[str] | None, optional): List containing stop words, all of which will be removed from the resulting tokens. Defaults to None.
-        ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 2).
+        ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 1).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
         min_df (int, optional): Remove words occuring in less than min_df documents. Defaults to 2.
         max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 500.
@@ -64,7 +64,7 @@ def fit_tfidf(
     """
 
     # Define vectorizer
-    tfidf_vec = TfidfVectorizer(
+    tfidf = TfidfVectorizer(
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
@@ -72,7 +72,7 @@ def fit_tfidf(
     )
 
     # Fit to corpus
-    tfidf = tfidf_vec.fit(corpus)
+    tfidf = tfidf.fit(corpus)
 
     return tfidf
 
@@ -90,7 +90,7 @@ def fit_lda(
 
     Args:
         corpus (Sequence[str]): The corpus to fit on
-        ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 2).
+        ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 1).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
         min_df (int, optional): Remove words occuring in less than min_df documents. Defaults to 2.
         max_features (int | None, optional): If not None, build a vocabulary that only consider the top max_features ordered by term frequency across the corpus. Otherwise, all features are used. Defaults to 500.
