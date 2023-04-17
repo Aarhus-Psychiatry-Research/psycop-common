@@ -1,9 +1,10 @@
 """Pipeline for fitting text models"""
 import logging
-import os.path
 from collections.abc import Iterable
 from datetime import datetime
+
 from typing import Literal, Optional, Sequence
+from pathlib import Path
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.text_models.fit_text_models import fit_text_model
@@ -48,7 +49,7 @@ def text_model_pipeline(
     filename = f"bow_{view}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
 
     # if model already exists:
-    if os.path.isfile("E:/shared_resources/text_models/" + filename):
+    if Path.isfile("E:/shared_resources/text_models/" + filename):
         return log.warning(
             f"Text model with the chosen params already exists in dir: E:/shared_resources/text_models/{filename}. Stopping.",
         )

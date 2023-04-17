@@ -55,7 +55,7 @@ def _load_text_sfis_for_year(
     Args:
         year (str): Which year to load
         text_sfi_names (Union[str, list[str]]): Which types of notes to load.
-        include_sfi_name (bool): Whether to include sfi_name columns ("overskrift). Defaults to False.
+        include_sfi_name (bool): Whether to include sfi_name column ("overskrift). Defaults to False.
         view (str, optional): Which table to load.
             Defaults to "[FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret".
         n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
@@ -93,6 +93,7 @@ def load_text_sfis(
     Args:
         text_sfi_names (Union[str, list[str]]): Which note types to load. See
             `get_all_valid_text_sfi_names()` for valid note types.
+        include_sfi_name (bool): Whether to include sfi_name column ("overskrift). Defaults to False.
         n_rows (Optional[int], optional): How many rows to load. Defaults to None.
 
     Raises:
