@@ -2,7 +2,8 @@
 
 import pickle as pkl
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
 def save_text_model_to_dir(
@@ -24,6 +25,24 @@ def save_text_model_to_dir(
 
     with Path(filepath).open("wb") as f:
         pkl.dump(model, f)
+
+
+def load_text_model(
+    filename: str,
+    path_str: str = "E:/shared_resources/text_models",
+) -> Union[CountVectorizer, TfidfVectorizer]:
+    """
+    Loads a text model from a pickle file
+
+    Args:
+        filename: filename name of the model
+        path_str: path of model location
+    """
+
+    filepath = Path(path_str) / filename
+
+    with Path(filepath).open("rb") as f:
+        return pkl.load(f)
 
 
 """ stop_words list from: Torp, Bertel. “Dansk Stopords Liste / Danish Stopwords.” Github, 6 Mar. 2020,
