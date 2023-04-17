@@ -1,11 +1,9 @@
 """Script for fitting text models"""
 
-import pandas as pd
-import pickle as pkl
-from pathlib import Path
-from typing import Any, List, Sequence
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from collections.abc import Sequence
 from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+import pandas as pd
 
 
 def fit_bow(
@@ -29,7 +27,7 @@ def fit_bow(
     """
 
     # Define vectorizer
-    count_vec = CountVectorizer(
+    bow_vec = CountVectorizer(
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
@@ -37,9 +35,9 @@ def fit_bow(
     )
 
     # Fit to corpus
-    bow = count_vec.fit(corpus)
+    bow_matrix = bow_vec.fit_transform(corpus)
 
-    return bow
+    return bow_vec, bow_matrix
 
 
 def fit_tfidf(
@@ -64,7 +62,7 @@ def fit_tfidf(
     """
 
     # Define vectorizer
-    tfidf = TfidfVectorizer(
+    tfidf_vec = TfidfVectorizer(
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
@@ -72,9 +70,9 @@ def fit_tfidf(
     )
 
     # Fit to corpus
-    tfidf = tfidf.fit(corpus)
+    tfidf_matrix = tfidf_vec.fit_transform(corpus)
 
-    return tfidf
+    return tfidf_vec, tfidf_matrix
 
 
 def fit_lda(
@@ -148,22 +146,3 @@ def get_model_topics(
         word_dict[topics[topic_idx]] = top_features
 
     return pd.DataFrame(word_dict)
-
-
-def save_text_model_to_dir(
-    model: Any,
-    filename: str,
-):
-    """
-    Saves the model to a pickle file
-
-    Args:
-        model: The model to save
-        filename: The filename to save the model to
-    """
-    filepath = Path("E:/") / "shared_resources" / "text_models" / filename
-
-    print("Text model saved at this path:", filepath)
-
-    with Path(filepath).open("wb") as f:
-        pkl.dump(model, f)

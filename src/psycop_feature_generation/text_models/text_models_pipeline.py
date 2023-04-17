@@ -75,7 +75,7 @@ def bow_model_pipeline(
     )
 
     # fit model
-    bow = fit_bow(
+    bow_vec, _ = fit_bow(
         corpus=corpus["text"].tolist(),
         ngram_range=ngram_range,
         max_df=max_df,
@@ -86,7 +86,7 @@ def bow_model_pipeline(
     log.info(f" {datetime.now().strftime('%H:%M:%S')}: Bow model fitted")
 
     # save model to dir
-    save_text_model_to_dir(model=bow, save_path=save_path, filename=filename)
+    save_text_model_to_dir(model=bow_vec, save_path=save_path, filename=filename)
 
     return log.info(
         f" {datetime.now().strftime('%H:%M:%S')}: Bow model fit and saved at {save_path}/{filename}"
@@ -152,7 +152,7 @@ def tfidf_model_pipeline(
     )
 
     # fit model
-    tfidf = fit_tfidf(
+    tfidf_vec, _ = fit_tfidf(
         corpus=corpus["text"].tolist(),
         ngram_range=ngram_range,
         max_df=max_df,
@@ -163,7 +163,7 @@ def tfidf_model_pipeline(
     log.info("Tfidf model fitted")
 
     # save model to dir
-    save_text_model_to_dir(model=tfidf, save_path=save_path, filename=filename)
+    save_text_model_to_dir(model=tfidf_vec, save_path=save_path, filename=filename)
 
     return log.info(
         f" {datetime.now().strftime('%H:%M:%S')}: Tfidf model fit and saved at {save_path}/{filename}"
