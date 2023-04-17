@@ -24,10 +24,10 @@ def load_text_split(
 
     # if multiple splits load and concat
     if isinstance(split_name, list) and len(split_name) > 1:
-        split_id_df = pd.DataFrame()
-        for split in split_name:
-            split_df = get_split_id_df(split_name=split)
-            split_id_df = pd.concat([split_id_df, split_df])
+        split_id_df = pd.concat(
+            [get_split_id_df(split_name=split) for split in split_name]
+        )
+
     else:
         split_id_df = get_split_id_df(split_name=split_name)
 

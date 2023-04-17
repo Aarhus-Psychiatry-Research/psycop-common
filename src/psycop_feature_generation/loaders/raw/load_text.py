@@ -65,19 +65,15 @@ def _load_text_sfis_for_year(
         pd.DataFrame: Dataframe with clinical notes
     """
 
-    if include_sfi_name:
-        sql = (
-            "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst, overskrift"
-            + f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
-            + f" WHERE overskrift IN {text_sfi_names}"
-        )
+    sql = "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien"
 
-    else:
-        sql = (
-            "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
-            + f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
-            + f" WHERE overskrift IN {text_sfi_names}"
-        )
+    if include_sfi_name:
+        sql += ", overskrift"
+
+    sql += (
+        f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
+        + f" WHERE overskrift IN {text_sfi_names}"
+    )
 
     return sql_load(
         sql,
