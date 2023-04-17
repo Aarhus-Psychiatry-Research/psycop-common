@@ -1,10 +1,9 @@
 """Pipeline for fitting text models"""
 import logging
-from collections.abc import Iterable
+from collections.abc import Sequence
 from datetime import datetime
-
-from typing import Literal, Optional, Sequence
 from pathlib import Path
+from typing import Literal, Optional
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.text_models.fit_text_models import fit_text_model
