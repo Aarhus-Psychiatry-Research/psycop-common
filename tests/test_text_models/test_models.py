@@ -23,7 +23,7 @@ def test_fit_bow_model():
                 "pt fortæller om smerte i fod",
                 "der er ingen der har spist morgenmad",
             ],
-        }
+        },
     )
 
     df["text"] = convert_series_to_lower_case(df["text"])
@@ -48,7 +48,7 @@ def test_fit_tfidf_model():
                 "pt fortæller om smerte i fod",
                 "der er ingen der har spist morgenmad",
             ],
-        }
+        },
     )
 
     df["text"] = convert_series_to_lower_case(df["text"])
@@ -73,7 +73,7 @@ def test_fit_lda_model():
                 "pt fortæller om smerte i fod torsdag",
                 "der er ingen der har spist morgenmad",
             ],
-        }
+        },
     )
 
     df["text"] = convert_series_to_lower_case(df["text"])
@@ -83,5 +83,5 @@ def test_fit_lda_model():
     _, topics = fit_lda(df["text"], n_components=2)
 
     pd.testing.assert_series_equal(
-        topics.iloc[0, :], pd.Series(["pt", "torsdag"], name=0)
+        topics.iloc[0, :], pd.Series(["pt", "torsdag"], name=0),
     )

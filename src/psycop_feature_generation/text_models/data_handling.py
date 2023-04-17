@@ -17,7 +17,7 @@ def load_text_split(
     """Loads specified text sfi and only keeps data from the specified split"""
 
     text_df = load_text_sfis(
-        text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=n_rows
+        text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=n_rows,
     )
 
     # if multiple splits load and concat

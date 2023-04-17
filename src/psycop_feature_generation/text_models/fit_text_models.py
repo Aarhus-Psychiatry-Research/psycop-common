@@ -1,9 +1,10 @@
 """Script for fitting text models"""
 
 from collections.abc import Sequence
+
+import pandas as pd
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-import pandas as pd
 
 
 def fit_bow(
@@ -123,7 +124,7 @@ def fit_lda(
 
 
 def get_model_topics(
-    model: LatentDirichletAllocation, vectorizer: CountVectorizer, n_top_words: int = 10
+    model: LatentDirichletAllocation, vectorizer: CountVectorizer, n_top_words: int = 10,
 ) -> pd.DataFrame:
     """Get topics of LDA model
 

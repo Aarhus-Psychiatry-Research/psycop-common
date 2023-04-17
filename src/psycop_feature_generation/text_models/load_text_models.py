@@ -1,7 +1,8 @@
 """Functions for loading fitted text models"""
 
-from pathlib import Path
 import pickle as pkl
+from pathlib import Path
+
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 

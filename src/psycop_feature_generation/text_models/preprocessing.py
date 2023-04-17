@@ -45,7 +45,6 @@ def text_preprocessing(
         split_name=split_name,
     )
 
-
     df["text"] = convert_series_to_lower_case(df["text"])
     df["text"] = remove_symbols_from_series(df["text"])
     df["text"] = remove_stop_words_from_series(df["text"])

@@ -1,8 +1,8 @@
 """Pipeline for fitting text models"""
 import logging
 import os.path
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.text_models.fit_text_models import (
@@ -71,7 +71,7 @@ def bow_model_pipeline(
     corpus = sql_load(query=query, n_rows=n_rows)
 
     log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting bow model to corpus"
+        f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting bow model to corpus",
     )
 
     # fit model
@@ -89,7 +89,7 @@ def bow_model_pipeline(
     save_text_model_to_dir(model=bow_vec, save_path=save_path, filename=filename)
 
     return log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Bow model fit and saved at {save_path}/{filename}"
+        f" {datetime.now().strftime('%H:%M:%S')}: Bow model fit and saved at {save_path}/{filename}",
     )
 
 
@@ -148,7 +148,7 @@ def tfidf_model_pipeline(
     corpus = sql_load(query=query, n_rows=n_rows)
 
     log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting tfidf model to corpus"
+        f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting tfidf model to corpus",
     )
 
     # fit model
@@ -166,7 +166,7 @@ def tfidf_model_pipeline(
     save_text_model_to_dir(model=tfidf_vec, save_path=save_path, filename=filename)
 
     return log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Tfidf model fit and saved at {save_path}/{filename}"
+        f" {datetime.now().strftime('%H:%M:%S')}: Tfidf model fit and saved at {save_path}/{filename}",
     )
 
 
@@ -251,5 +251,5 @@ def lda_model_pipeline(
     model_topics.to_csv(save_path + "/topics_" + filename + ".csv", index=False)
 
     return log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Lda model fit and model and model topics saved at {save_path}/{filename}"
+        f" {datetime.now().strftime('%H:%M:%S')}: Lda model fit and model and model topics saved at {save_path}/{filename}",
     )
