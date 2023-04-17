@@ -1,5 +1,5 @@
 import re
-from typing import Literal
+from typing import Literal, Optional
 
 import pandas as pd
 from psycop_feature_generation.text_models.data_handling import load_text_split
@@ -35,7 +35,7 @@ def remove_stop_words_from_series(text_series: pd.Series) -> pd.Series:
 def text_preprocessing(
     text_sfi_names=str,
     include_sfi_name: bool = False,
-    n_rows: int = None,
+    n_rows: Optional[int] = None,
     split_name=Literal["train", "val"],
 ) -> pd.DataFrame:
     df = load_text_split(

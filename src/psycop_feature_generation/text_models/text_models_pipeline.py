@@ -3,7 +3,7 @@ import logging
 import os.path
 from collections.abc import Iterable
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Optional, Sequence
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.text_models.fit_text_models import fit_text_model
@@ -17,8 +17,8 @@ log.setLevel(logging.INFO)
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
     view: str = "psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed",
-    sfi_type: Iterable[str] = ["All_sfis"],
-    n_rows: int = None,
+    sfi_type: Sequence[str] = ("All_sfis",),
+    n_rows: Optional[int] = None,
     ngram_range: tuple = (1, 2),
     max_df: float = 0.95,
     min_df: int = 2,
@@ -30,7 +30,7 @@ def text_model_pipeline(
     Args:
         model (Literal[str]): Which model to use. Takes either "bow" or "tfidf".
         view (str, optional): SQL table with text data to fit model on. Defaults to "psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed".
-        sfi_type (Iterable[str], optional): Which sfi types to include. Defaults to ["All_sfis"].
+        sfi_type (Sequence[str], optional): Which sfi types to include. Defaults to ("All_sfis",).
         n_rows (int, optional): How many rows to include in the loaded data. If None, all are included. Defaults to None.
         ngram_range (tuple, optional): The lower and upper boundary of the range of n-values for different word n-grams or char n-grams to be extracted. All values of n such such that min_n <= n <= max_n will be used. For example an ngram_range of (1, 1) means only unigrams, (1, 2) means unigrams and bigrams. Defaults to (1, 2).
         max_df (float, optional): The proportion of documents the words should appear in to be included. Defaults to 0.95.
@@ -58,7 +58,7 @@ def text_model_pipeline(
 
     query = f"SELECT * FROM fct.{view}"
 
-    if sfi_type != ["All_sfis"]:
+    if sfi_type != ("All_sfis",):
         if len(sfi_type) == 1:
             query += f" WHERE overskrift in ('{sfi_type[0]}')"
         else:

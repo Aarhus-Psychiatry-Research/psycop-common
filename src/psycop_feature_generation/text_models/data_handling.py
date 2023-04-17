@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 import pandas as pd
 from psycop_feature_generation.application_modules.save_dataset_to_disk import (
@@ -11,7 +11,7 @@ from psycop_feature_generation.loaders.raw.load_text import load_text_sfis
 def load_text_split(
     text_sfi_names=str,
     include_sfi_name: bool = False,
-    n_rows: int = None,
+    n_rows: Optional[int] = None,
     split_name=Literal["train", "val"],
 ) -> pd.DataFrame:
     """Loads specified text sfi and only keeps data from the specified split"""
