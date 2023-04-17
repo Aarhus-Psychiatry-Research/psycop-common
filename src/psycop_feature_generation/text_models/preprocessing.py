@@ -13,8 +13,8 @@ def convert_series_to_lower_case(text_series: pd.Series) -> pd.Series:
 
 def remove_symbols_from_series(text_series=pd.Series) -> pd.Series:
     res = []
-    for text in text_series:
-        text = re.sub("[^ÆØÅæøåA-Za-z0-9 ]+", "", text)
+    for row in text_series:
+        text = re.sub("[^ÆØÅæøåA-Za-z0-9 ]+", "", row)
         res.append(text)
 
     return pd.Series(res)
@@ -23,8 +23,8 @@ def remove_symbols_from_series(text_series=pd.Series) -> pd.Series:
 def remove_stop_words_from_series(text_series: pd.Series) -> pd.Series:
     regex_stop_words = re.compile(r"\b%s\b" % r"\b|\b".join(map(re.escape, stop_words)))
     res = []
-    for text in text_series:
-        text = re.sub(regex_stop_words, "", text)
+    for row in text_series:
+        text = re.sub(regex_stop_words, "", row)
         text = re.sub(" +", " ", text)
         res.append(text)
 
