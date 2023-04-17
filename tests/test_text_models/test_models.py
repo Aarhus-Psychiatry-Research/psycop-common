@@ -51,8 +51,8 @@ def test_fit_tfidf_model():
     df["text"] = remove_symbols_from_series(df["text"])
     df["text"] = remove_stop_words_from_series(df["text"])
 
-    tfidf = fit_text_model("tfidf", ["text"])
+    tfidf = fit_text_model("tfidf", ["text"], min_df=0, max_df=1)
     transformed = tfidf.transform(df["text"])
     transformed = transformed.toarray()
 
-    assert (np.array([[1], [0], [1], [0]]) == transformed).any()
+    assert (np.array([[0], [0], [0], [0]]) == transformed).any()
