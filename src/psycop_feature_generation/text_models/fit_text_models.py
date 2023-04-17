@@ -124,7 +124,9 @@ def fit_lda(
 
 
 def get_model_topics(
-    model: LatentDirichletAllocation, vectorizer: CountVectorizer, n_top_words: int = 10,
+    model: LatentDirichletAllocation,
+    vectorizer: CountVectorizer,
+    n_top_words: int = 10,
 ) -> pd.DataFrame:
     """Get topics of LDA model
 

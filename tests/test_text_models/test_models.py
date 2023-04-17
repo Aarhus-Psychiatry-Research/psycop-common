@@ -83,5 +83,6 @@ def test_fit_lda_model():
     _, topics = fit_lda(df["text"], n_components=2)
 
     pd.testing.assert_series_equal(
-        topics.iloc[0, :], pd.Series(["pt", "torsdag"], name=0),
+        topics.iloc[0, :],
+        pd.Series(["pt", "torsdag"], name=0),
     )
