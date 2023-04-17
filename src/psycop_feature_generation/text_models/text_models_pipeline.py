@@ -43,7 +43,7 @@ def text_model_pipeline(
     max_df_str = str(max_df).replace(".", "")
     ngram_range_str = "".join(c for c in str(ngram_range) if c.isdigit())
     sfi_type_str = "".join(sfi_type).replace(" ", "")
-    filename = f"bow_{view}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
+    filename = f"{model}_{view}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
 
     # if model already exists:
     if Path("E:/shared_resources/text_models/" + filename).is_file():
