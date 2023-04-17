@@ -3,8 +3,6 @@
 from collections.abc import Sequence
 from typing import Literal, Union
 
-import pandas as pd
-from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 

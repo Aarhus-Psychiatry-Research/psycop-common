@@ -25,7 +25,7 @@ def load_text_split(
     # if multiple splits load and concat
     if isinstance(split_name, list) and len(split_name) > 1:
         split_id_df = pd.concat(
-            [get_split_id_df(split_name=split) for split in split_name]
+            [get_split_id_df(split_name=split) for split in split_name],
         )
 
     else:
