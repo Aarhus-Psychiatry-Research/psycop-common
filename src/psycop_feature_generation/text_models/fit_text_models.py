@@ -1,14 +1,14 @@
 """Script for fitting text models"""
 
-from collections.abc import Sequence
 from typing import Literal, Union
 
+import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
 def fit_text_model(
     model: Literal["bow", "tfidf"],
-    corpus: Sequence[str],
+    corpus: pd.Series,
     ngram_range: tuple = (1, 2),
     max_df: float = 0.95,
     min_df: int = 2,

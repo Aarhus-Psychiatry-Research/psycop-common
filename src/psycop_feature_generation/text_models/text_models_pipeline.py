@@ -1,16 +1,14 @@
 """Pipeline for fitting text models"""
 import logging
 from collections.abc import Sequence
-from datetime import datetime
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.text_models.fit_text_models import fit_text_model
 from psycop_feature_generation.text_models.utils import save_text_model_to_dir
 
-logging.basicConfig()
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
@@ -24,7 +22,7 @@ def text_model_pipeline(
     min_df: int = 2,
     max_features: int = 500,
     save_path: str = "E:/shared_resources/text_models",
-) -> str:
+) -> Any:
     """Pipeline for fitting and saving a bag-of-words or tfidf model
 
     Args:
@@ -48,13 +46,11 @@ def text_model_pipeline(
     filename = f"bow_{view}_sfi_type_{sfi_type_str}_ngram_range_{ngram_range_str}_max_df_{max_df_str}_min_df_{min_df}_max_features_{max_features}.pkl"
 
     # if model already exists:
-    if Path.isfile("E:/shared_resources/text_models/" + filename):
+    if Path("E:/shared_resources/text_models/" + filename).is_file():
         return log.warning(
-            f"Text model with the chosen params already exists in dir: E:/shared_resources/text_models/{filename}. Stopping.",
+            "Text model with the chosen params already exists in dir: E:/shared_resources/text_models/%s. Stopping.",
+            filename,
         )
-
-    # load preprocessed data from sql
-    log.info(f" {datetime.now().strftime('%H:%M:%S')}. Starting to load corpus")
 
     query = f"SELECT * FROM fct.{view}"
 
@@ -69,25 +65,17 @@ def text_model_pipeline(
 
     corpus = sql_load(query=query, n_rows=n_rows)
 
-    log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Corpus loaded. Starting fitting text model to corpus",
-    )
-
     # fit model
     vec = fit_text_model(
         model=model,
-        corpus=corpus["text"].tolist(),
+        corpus=corpus["text"],
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
         max_features=max_features,
     )
 
-    log.info(f" {datetime.now().strftime('%H:%M:%S')}: Text model fitted")
-
     # save model to dir
     save_text_model_to_dir(model=vec, save_path=save_path, filename=filename)
 
-    return log.info(
-        f" {datetime.now().strftime('%H:%M:%S')}: Text model fit and saved at {save_path}/{filename}",
-    )
+    return None
