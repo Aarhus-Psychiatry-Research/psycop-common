@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
+import re
 
 import numpy as np
 import pandas as pd
@@ -16,6 +17,7 @@ from timeseriesflattener.feature_spec_objects import (
     StaticSpec,
     TemporalSpec,
     _AnySpec,
+    TextPredictorSpec,
 )
 from wasabi import Printer
 
@@ -92,10 +94,11 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
 def generate_temporal_feature_description(
     series: pd.Series,
     predictor_spec: TemporalSpec,
+    feature_name: str,
 ):
     """Generate a row with feature description for a temporal predictor."""
     d = {
-        "Predictor df": predictor_spec.feature_name,
+        "Predictor df": feature_name,
         "Lookbehind days": predictor_spec.interval_days,
         "Resolve multiple": predictor_spec.resolve_multiple_fn.__name__,
         "N unique": series.nunique(),
@@ -134,12 +137,14 @@ def generate_static_feature_description(series: pd.Series, predictor_spec: Stati
 def generate_feature_description_row(
     series: pd.Series,
     predictor_spec: _AnySpec,
+    feature_name: str,
 ) -> dict:
     """Generate a row with feature description.
 
     Args:
         series (pd.Series): Series with data to describe.
         predictor_spec (PredictorSpec): Predictor specification.
+        feature_name (str): Name of the feature.
 
     Returns:
         dict: dictionary with feature description.
@@ -148,7 +153,9 @@ def generate_feature_description_row(
     if isinstance(predictor_spec, StaticSpec):
         d = generate_static_feature_description(series, predictor_spec)
     elif isinstance(predictor_spec, TemporalSpec):
-        d = generate_temporal_feature_description(series, predictor_spec)
+        d = generate_temporal_feature_description(
+            series, predictor_spec, feature_name=feature_name
+        )
 
     return d
 
@@ -172,12 +179,34 @@ def generate_feature_description_df(
     for spec in predictor_specs:
         column_name = spec.get_col_str()
 
-        rows.append(
-            generate_feature_description_row(
-                series=df[column_name],
-                predictor_spec=spec,
-            ),
-        )
+        if isinstance(spec, TextPredictorSpec):
+            last_part = column_name.split(f"{spec.prefix}_{spec.feature_name}")[1]
+            first_part = column_name.split(last_part)[0]
+            string_match = f"{first_part}[\dA-Za-z\-]+{last_part}"
+
+            column_names = [
+                re.match(string_match, column)[0]
+                for column in df.columns
+                if re.match(string_match, column) is not None
+            ]
+
+            for column_name in column_names:
+                rows.append(
+                    generate_feature_description_row(
+                        series=df[column_name],
+                        predictor_spec=spec,
+                        feature_name=column_name,
+                    ),
+                )
+
+        else:
+            rows.append(
+                generate_feature_description_row(
+                    series=df[column_name],
+                    predictor_spec=spec,
+                    feature_name=spec.feature_name,
+                ),
+            )
 
     # Convert to dataframe
     feature_description_df = pd.DataFrame(rows)
