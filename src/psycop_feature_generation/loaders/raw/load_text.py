@@ -132,7 +132,7 @@ def load_text_sfis(
 
     df = pd.concat(dfs)
     df = df.rename(
-        {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "text"},
+        {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"},
         axis=1,
     )
     return df
