@@ -6,10 +6,6 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
-import re
-from typing import Optional
-
-
 import numpy as np
 import pandas as pd
 from psycop_feature_generation.data_checks.utils import save_df_to_pretty_html_table
@@ -98,7 +94,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
 def generate_temporal_feature_description(
     series: pd.Series,
     predictor_spec: TemporalSpec,
-    feature_name: Optional[str] = None,
+    feature_name: str | None = None,
 ):
     """Generate a row with feature description for a temporal predictor."""
     if feature_name is not None:
@@ -146,7 +142,7 @@ def generate_static_feature_description(series: pd.Series, predictor_spec: Stati
 def generate_feature_description_row(
     series: pd.Series,
     predictor_spec: _AnySpec,
-    feature_name: Optional[str] = None,
+    feature_name: str | None = None,
 ) -> dict:
     """Generate a row with feature description.
 
