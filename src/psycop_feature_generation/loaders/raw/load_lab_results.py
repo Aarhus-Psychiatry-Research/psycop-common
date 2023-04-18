@@ -123,7 +123,7 @@ def load_cancelled(
     else:
         npu_where = f"npukode = '{blood_sample_id}'"
 
-    sql = f"SELECT {cols} FROM [fct].{view} {npu_where} AND datotid_sidstesvar IS NOT NULL AND Svar == 'Aflyst' AND (left(Svar,1) == '>' OR left(Svar, 1) == '<')"
+    sql = f"SELECT {cols} FROM [fct].{view} WHERE {npu_where} AND datotid_sidstesvar IS NOT NULL AND Svar = 'Aflyst'"
 
     df = sql_load(
         sql,
@@ -750,6 +750,49 @@ def p_ethanol(
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id="NPU01992",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
+@data_loaders.register("cancelled_standard_lab_results")
+def cancelled_standard_lab_results(
+    n_rows: int | None = None,
+    values_to_load: str = "cancelled",
+) -> pd.DataFrame:
+    """Cancelled lab results for some standard lab results: HbA1c, triglycerides, HDL, LDL, ALAT, ASAT,
+    lymphocytes, leukocytes, crp, creatinine, egfr, albumine-creatinine-ratio, hæmoglobin, natrium, kalium,
+    calcium, trombocytter, d-vitamin, tsh, b12"""
+    return blood_sample(
+        blood_sample_id=[
+            "NPU27300",
+            "AAB00093",
+            "NPU04094",
+            "NPU01567",
+            "NPU01568",
+            "AAB00101",
+            "NPU19651",
+            "NPU19654",
+            "NPU02636",
+            "NPU02593",
+            "NPU19748",
+            "NPU18016",
+            "ASS00355",
+            "ASS00354",
+            "DNK35302",
+            "DNK35131",
+            "AAB00345",
+            "AAB00343",
+            "NPU19661",
+            "NPU02319",
+            "NPU03429",
+            "NPU03230",
+            "NPU01443",
+            "NPU03568",
+            "NPU10267",
+            "NPU03577",
+            "NPU01700",
+        ],
         n_rows=n_rows,
         values_to_load=values_to_load,
     )
