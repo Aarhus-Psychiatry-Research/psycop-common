@@ -154,7 +154,9 @@ def generate_feature_description_row(
         d = generate_static_feature_description(series, predictor_spec)
     elif isinstance(predictor_spec, TemporalSpec):
         d = generate_temporal_feature_description(
-            series, predictor_spec, feature_name=feature_name,
+            series,
+            predictor_spec,
+            feature_name=feature_name,
         )
 
     return d
