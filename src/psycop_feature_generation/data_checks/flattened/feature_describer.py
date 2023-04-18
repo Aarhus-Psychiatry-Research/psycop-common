@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
 import re
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -94,9 +95,14 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
 def generate_temporal_feature_description(
     series: pd.Series,
     predictor_spec: TemporalSpec,
-    feature_name: str,
+    feature_name: Optional[str] = None,
 ):
     """Generate a row with feature description for a temporal predictor."""
+    if feature_name is not None:
+        feature_name = feature_name
+    else:
+        feature_name = predictor_spec.feature_name
+
     d = {
         "Predictor df": feature_name,
         "Lookbehind days": predictor_spec.interval_days,
@@ -137,14 +143,14 @@ def generate_static_feature_description(series: pd.Series, predictor_spec: Stati
 def generate_feature_description_row(
     series: pd.Series,
     predictor_spec: _AnySpec,
-    feature_name: str,
+    feature_name: Optional[str] = None,
 ) -> dict:
     """Generate a row with feature description.
 
     Args:
         series (pd.Series): Series with data to describe.
         predictor_spec (PredictorSpec): Predictor specification.
-        feature_name (str): Name of the feature.
+        feature_name (str, optional): Name of the feature. Defaults to None.
 
     Returns:
         dict: dictionary with feature description.
@@ -156,7 +162,6 @@ def generate_feature_description_row(
         d = generate_temporal_feature_description(
             series, predictor_spec, feature_name=feature_name
         )
-
     return d
 
 
@@ -204,7 +209,6 @@ def generate_feature_description_df(
                 generate_feature_description_row(
                     series=df[column_name],
                     predictor_spec=spec,
-                    feature_name=spec.feature_name,
                 ),
             )
 
