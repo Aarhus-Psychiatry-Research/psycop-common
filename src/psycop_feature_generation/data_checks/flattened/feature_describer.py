@@ -2,9 +2,9 @@
 df."""
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from pathlib import Path
-import re
 
 import numpy as np
 import pandas as pd
@@ -16,8 +16,8 @@ from timeseriesflattener.feature_spec_objects import (
     PredictorSpec,
     StaticSpec,
     TemporalSpec,
-    _AnySpec,
     TextPredictorSpec,
+    _AnySpec,
 )
 from wasabi import Printer
 
@@ -154,7 +154,7 @@ def generate_feature_description_row(
         d = generate_static_feature_description(series, predictor_spec)
     elif isinstance(predictor_spec, TemporalSpec):
         d = generate_temporal_feature_description(
-            series, predictor_spec, feature_name=feature_name
+            series, predictor_spec, feature_name=feature_name,
         )
 
     return d
@@ -182,7 +182,7 @@ def generate_feature_description_df(
         if isinstance(spec, TextPredictorSpec):
             last_part = column_name.split(f"{spec.prefix}_{spec.feature_name}")[1]
             first_part = column_name.split(last_part)[0]
-            string_match = f"{first_part}[\dA-Za-z\-]+{last_part}"
+            string_match = f"{first_part}[\\dA-Za-z\\-]+{last_part}"
 
             column_names = [
                 re.match(string_match, column)[0]
