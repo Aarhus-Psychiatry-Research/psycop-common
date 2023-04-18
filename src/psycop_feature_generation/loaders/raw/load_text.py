@@ -65,7 +65,7 @@ def _load_text_sfis_for_year(
         pd.DataFrame: Dataframe with clinical notes
     """
 
-    sql = "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien"
+    sql = "SELECT dw_ek_borger, datotid_senest_aendret_i_sfien, fritekst"
 
     if include_sfi_name:
         sql += ", overskrift"
