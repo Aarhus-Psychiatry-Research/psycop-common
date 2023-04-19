@@ -1,8 +1,8 @@
 import re
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 import pandas as pd
-from psycop_feature_generation.text_models.data_handling import load_text_split
+from psycop_feature_generation.loaders.raw.load_text import load_text_split
 from psycop_feature_generation.text_models.utils import stop_words
 
 
@@ -29,6 +29,7 @@ def remove_symbols_from_series(text_series: pd.Series) -> pd.Series:
         pd.Series: Series containing texts with symbols removed
     """
     res = []
+    # text_series = text_series.replace()
     for row in text_series:
         text = re.sub("[^ÆØÅæøåA-Za-z0-9 ]+", "", row)
         res.append(text)
@@ -46,18 +47,14 @@ def remove_stop_words_from_series(text_series: pd.Series) -> pd.Series:
         pd.Series: Series containing texts with stop words removed
     """
     regex_stop_words = re.compile(r"\b%s\b" % r"\b|\b".join(map(re.escape, stop_words)))
-    res = []
-    for row in text_series:
-        text = re.sub(regex_stop_words, "", row)
-        text = re.sub(" +", " ", text)
-        res.append(text)
+    text_series = text_series.replace(regex_stop_words, value="", regex=True)
 
-    return pd.Series(res)
+    return pd.Series(text_series)
 
 
 ### preprocessing for specific models for text
 def text_preprocessing(
-    text_sfi_names=str,
+    text_sfi_names=Union[str, list[str]],
     include_sfi_name: bool = False,
     n_rows: Optional[int] = None,
     split_name=Literal["train", "val"],
@@ -65,7 +62,7 @@ def text_preprocessing(
     """Preprocess texts by lower casing, removing
 
     Args:
-        text_sfi_names: Names of sfi's to include. Defaults to str.
+        text_sfi_names (Union[str, list[str]]): Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
         include_sfi_name (bool, optional): Whether to include the "overskrift" column, which includes sfi names. Defaults to False.
         n_rows (Optional[int], optional): Number of rows to include. If None, all rows are included. Defaults to None.
         split_name (_type_, optional): Splits to include. Defaults to Literal["train", "val"].
@@ -80,8 +77,8 @@ def text_preprocessing(
         split_name=split_name,
     )
 
-    df["text"] = convert_series_to_lower_case(df["text"])
-    df["text"] = remove_symbols_from_series(df["text"])
-    df["text"] = remove_stop_words_from_series(df["text"])
+    df["value"] = convert_series_to_lower_case(df["value"])
+    df["value"] = remove_symbols_from_series(df["value"])
+    df["value"] = remove_stop_words_from_series(df["value"])
 
     return df

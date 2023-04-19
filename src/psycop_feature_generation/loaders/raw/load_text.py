@@ -4,9 +4,14 @@ from __future__ import annotations
 from collections.abc import Iterable
 from functools import partial
 from multiprocessing import Pool
+from typing import Literal
 
 import pandas as pd
 
+from psycop_feature_generation.application_modules.save_dataset_to_disk import (
+    filter_by_split_ids,
+    get_split_id_df,
+)
 from psycop_feature_generation.loaders.raw.sql_load import sql_load
 from psycop_feature_generation.utils import data_loaders
 
@@ -55,7 +60,7 @@ def _load_text_sfis_for_year(
     Args:
         year (str): Which year to load
         text_sfi_names (Union[str, list[str]]): Which types of notes to load.
-        include_sfi_name (bool): Whether to include sfi_name column ("overskrift). Defaults to False.
+        include_sfi_name (bool): Whether to include column with sfi name ("overskrift"). Defaults to False.
         view (str, optional): Which table to load.
             Defaults to "[FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret".
         n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
@@ -91,10 +96,10 @@ def load_text_sfis(
     """Loads all clinical notes that match the specified note from all years.
 
     Args:
-        text_sfi_names (Union[str, list[str]]): Which note types to load. See
-            `get_all_valid_text_sfi_names()` for valid note types.
-        include_sfi_name (bool): Whether to include sfi_name column ("overskrift). Defaults to False.
-        n_rows (Optional[int], optional): How many rows to load. Defaults to None.
+        text_sfi_names (Union[str, list[str]]): Which sfi types to load. See
+            `get_all_valid_text_sfi_names()` for valid sfi types.
+        include_sfi_name (bool): Whether to include column with sfi name ("overskrift"). Defaults to False.
+        n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
 
     Raises:
         ValueError: If given invalid note type
@@ -117,7 +122,7 @@ def load_text_sfis(
 
     view = "FOR_SFI_fritekst_resultat_udfoert_i_psykiatrien_aendret"
 
-    load_and_featurize = partial(
+    text_sfi_year_loader = partial(
         _load_text_sfis_for_year,
         text_sfi_names=text_sfi_names,
         include_sfi_name=include_sfi_name,
@@ -128,7 +133,7 @@ def load_text_sfis(
     years = list(range(2011, 2022))
 
     with Pool(processes=len(years)) as p:
-        dfs = p.map(load_and_featurize, [str(y) for y in years])
+        dfs = p.map(text_sfi_year_loader, [str(y) for y in years])
 
     df = pd.concat(dfs)
     df = df.rename(
@@ -136,6 +141,48 @@ def load_text_sfis(
         axis=1,
     )
     return df
+
+
+def load_text_split(
+    text_sfi_names: str | list[str],
+    include_sfi_name: bool = False,
+    n_rows: int | None = None,
+    split_name=Literal["train", "val"],
+) -> pd.DataFrame:
+    """Loads specified text sfi and only keeps data from the specified split
+
+    Args:
+        text_sfi_names (Union[str, list[str]]): Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
+        include_sfi_name (bool, optional): Whether to include column with sfi name ("overskrift"). Defaults to False.
+        n_rows (Optional[int, None], optional): Number of rows to load. Defaults to None.
+        split_name (Literal["train", "val"], optional): Which splis to include. Defaults to Literal["train", "val"].
+
+    Returns:
+        pd.DataFrame: Chosen sfis from chosen splits
+    """
+
+    text_df = load_text_sfis(
+        text_sfi_names=text_sfi_names,
+        include_sfi_name=include_sfi_name,
+        n_rows=n_rows,
+    )
+
+    # if multiple splits load and concat
+    if isinstance(split_name, list) and len(split_name) > 1:
+        split_id_df = pd.concat(
+            [get_split_id_df(split_name=split) for split in split_name],
+        )
+
+    else:
+        split_id_df = get_split_id_df(split_name=split_name)
+
+    text_split_df = filter_by_split_ids(
+        df_to_split=text_df,
+        split_id_df=split_id_df,
+        split_name=split_name,
+    )
+
+    return text_split_df
 
 
 @data_loaders.register("all_notes")

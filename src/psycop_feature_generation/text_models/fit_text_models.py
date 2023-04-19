@@ -1,6 +1,6 @@
 """Script for fitting text models"""
 
-from typing import Literal, Union
+from typing import Literal, Optional, Union
 
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -9,10 +9,10 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 def fit_text_model(
     model: Literal["bow", "tfidf"],
     corpus: pd.Series,
-    ngram_range: tuple = (1, 2),
-    max_df: float = 0.95,
-    min_df: int = 2,
-    max_features: int = 500,
+    ngram_range: tuple = (1, 1),
+    max_df: float = 1.0,
+    min_df: int = 1,
+    max_features: Optional[int] = 100,
 ) -> Union[CountVectorizer, TfidfVectorizer]:
     """Fits a bag-of words model on a corpus
 
@@ -30,6 +30,11 @@ def fit_text_model(
 
     vec_type = {"bow": CountVectorizer, "tfidf": TfidfVectorizer}
 
+    if model not in vec_type.keys():
+        raise ValueError(
+            f"model name '{model}' not in vec_type. Available choices are 'bow' or 'tfidf'",
+        )
+
     # Define vectorizer
     vec = vec_type[model](
         ngram_range=ngram_range,
@@ -39,6 +44,6 @@ def fit_text_model(
     )
 
     # Fit to corpus
-    vec.fit_transform(corpus)
+    vec.fit(corpus)
 
     return vec
