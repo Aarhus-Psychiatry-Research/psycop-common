@@ -1,8 +1,8 @@
 """Dataset loader."""
 import logging
-from collections.abc import Iterable
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Callable, Optional, Sequence, Union
+from typing import Callable, Optional, Union
 
 import pandas as pd
 from psycop_model_training.config_schemas.data import DataSchema
