@@ -88,7 +88,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
         [UNICODE_HIST[_find_nearest(key_vector, val)] for val in hist],
     )
 
-    return ucode_to_print
+    return pd.Series(ucode_to_print)
 
 
 def generate_temporal_feature_description(
