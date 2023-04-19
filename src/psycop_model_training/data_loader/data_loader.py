@@ -2,7 +2,7 @@
 import logging
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Sequence, Union
 
 import pandas as pd
 from psycop_model_training.config_schemas.data import DataSchema
@@ -75,9 +75,9 @@ class DataLoader:
                     "nrows is not supported for parquet files. Please use csv files.",
                 )
 
-            df = pd.read_parquet(path)
+            df: pd.DataFrame = pd.read_parquet(path)
         elif "csv" in self.file_suffix:
-            df = pd.read_csv(filepath_or_buffer=path, nrows=nrows)
+            df: pd.DataFrame = pd.read_csv(filepath_or_buffer=path, nrows=nrows)
 
         if self.column_name_checker:
             self._check_column_names(df=df)
@@ -86,22 +86,22 @@ class DataLoader:
 
     def load_dataset_from_dir(
         self,
-        split_names: Union[Iterable[str], str],
+        split_names: Union[Sequence[str], str],
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
         """Load dataset. Can load multiple splits at once, e.g. concatenate
         train and val for crossvalidation.
 
         Args:
-            split_names (Union[Iterable[str], str]): Name of split, allowed are ["train", "test", "val"]
+            split_names (Union[Sequence[str], str]): Name of split, allowed are ["train", "test", "val"]
             nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
 
         Returns:
             pd.DataFrame: The filtered dataset
         """
         # Concat splits if multiple are given
-        if isinstance(split_names, (list, tuple)):
-            if isinstance(split_names, Iterable):
+        if isinstance(split_names, Sequence):
+            if isinstance(split_names, Sequence):
                 split_names = tuple(split_names)
 
             if nrows is not None:
@@ -117,7 +117,5 @@ class DataLoader:
                 ignore_index=True,
             )
 
-        if isinstance(split_names, str):
-            dataset = self._load_dataset_file(split_name=split_names, nrows=nrows)
-
-        return dataset
+        # Otherwise, just return the single split
+        return self._load_dataset_file(split_name=split_names, nrows=nrows)

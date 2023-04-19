@@ -103,11 +103,11 @@ def load_train_raw(
             df = pd.read_parquet(file_name)
         elif file_suffix == ".csv":
             df = pd.read_csv(file_name)
+        else:
+            raise ValueError(f"File suffix {file_suffix} not supported")
 
         # Helpful during tests to convert columns with matching names to datetime
         if convert_timestamp_types_and_nans:
-            df = PreSplitValueCleaner.convert_timestamp_dtype_and_nat(dataset=df)
-
-        return df
+            return PreSplitValueCleaner.convert_timestamp_dtype_and_nat(dataset=df)
 
     raise ValueError(f"Returned {len(file_names)} files")

@@ -26,7 +26,7 @@ class PreSplitRowFilter:
     @print_df_dimensions_diff
     def _drop_rows_if_datasets_ends_within_days(
         self,
-        n_days: Union[float, timedelta],
+        n_days: Union[float, timedelta],  # type: ignore
         dataset: pd.DataFrame,
         direction: str,
     ) -> pd.DataFrame:
@@ -42,7 +42,7 @@ class PreSplitRowFilter:
             pd.DataFrame: Dataset with dropped rows.
         """
         if not isinstance(n_days, timedelta):
-            n_days_timedelt: timedelta = timedelta(days=n_days)
+            n_days: timedelta = timedelta(days=n_days)
 
         if direction not in ("ahead", "behind"):
             raise ValueError(f"Direction {direction} not supported.")
@@ -50,17 +50,13 @@ class PreSplitRowFilter:
         n_rows_before_modification = dataset.shape[0]
 
         if direction == "ahead":
-            max_datetime = (
-                dataset[self.data_cfg.col_name.pred_timestamp].max() - n_days_timedelt
-            )
+            max_datetime = dataset[self.data_cfg.col_name.pred_timestamp].max() - n_days
             before_max_dt = (
                 dataset[self.data_cfg.col_name.pred_timestamp] < max_datetime
             )
             dataset = dataset[before_max_dt]
         elif direction == "behind":
-            min_datetime = (
-                dataset[self.data_cfg.col_name.pred_timestamp].min() + n_days_timedelt
-            )
+            min_datetime = dataset[self.data_cfg.col_name.pred_timestamp].min() + n_days
             after_min_dt = dataset[self.data_cfg.col_name.pred_timestamp] > min_datetime
             dataset = dataset[after_min_dt]
 
@@ -159,6 +155,8 @@ class PreSplitRowFilter:
                     n_days = min(self.pre_split_cfg.lookbehind_combination)
                 else:
                     n_days = None
+            else:
+                raise ValueError(f"Direction {direction} not supported.")
 
             if n_days is not None:
                 dataset = self._drop_rows_if_datasets_ends_within_days(

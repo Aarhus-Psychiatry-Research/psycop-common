@@ -32,6 +32,8 @@ def print_df_dimensions_diff(func):  # noqa
 
         df = potential_dfs[0]
 
+        diff_msg = ""
+
         for dim in ("rows", "columns"):
             dim_int = 0 if dim == "rows" else 1
 
@@ -41,7 +43,6 @@ def print_df_dimensions_diff(func):  # noqa
 
             diff = n_in_dim_before_func - result.shape[dim_int]
 
-            diff_msg = ""
             if diff != 0:
                 percent_diff = round(
                     (diff) / n_in_dim_before_func * 100,
@@ -55,7 +56,7 @@ def print_df_dimensions_diff(func):  # noqa
 
         msg.info(f"{duration_str} | {base_msg} | {diff_msg}")
 
-        return result
+        return result  # type: ignore
 
     return wrapper
 

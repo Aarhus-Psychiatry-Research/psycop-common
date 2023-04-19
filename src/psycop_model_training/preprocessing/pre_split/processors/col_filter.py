@@ -210,6 +210,8 @@ class PresSplitColFilter:
                     n_days = max(self.pre_split_cfg.lookbehind_combination)
                 else:
                     n_days = self.pre_split_cfg.lookbehind_combination
+            else:
+                raise ValueError(f"Unknown direction {direction}")
 
             if n_days is not None:
                 dataset = self._drop_cols_if_exceeds_look_direction_threshold(
