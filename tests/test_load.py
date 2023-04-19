@@ -59,6 +59,7 @@ def test_check_columns_exist_in_dataset():
     df = pd.DataFrame(
         {
             "pred_timestamp": [1, 2, 3],
+            "pred_time_uuid": [1, 2, 3],
             "outcome_timestmamp": [4, 5, 6],
             "id": [7, 8, 9],
             "age": [10, 11, 12],

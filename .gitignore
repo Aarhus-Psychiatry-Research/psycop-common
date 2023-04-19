@@ -130,3 +130,4 @@ package.json
 
 evaluation_results
 *.pqt
+tests/test_eval_results

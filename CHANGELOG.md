@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v0.54.0 (2023-04-14)
+### Feature
+* Add pred time uuids to eval dataset ([#475](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/475)) ([`8e27751`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8e2775193074c8d48c92167b0cae94f02a5507fe))
+* Add pred_time_uuid to eval_dataset ([`7b942a0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/7b942a00da5e62be8174c6bd599fb5e76f98f21b))
+
+### Fix
+* Exclude pred_time_uuid from model training ([`2ead608`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/2ead608282ea685d5a70c8e806a086c9cceded53))
+
+### Documentation
+* Missing args ([`19b0851`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/19b0851e2202a3698028d1f86ba2cee29f0d1e09))
+
+## v0.53.0 (2023-04-12)
+### Feature
+* Save config as json ([#483](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/483)) ([`0be42a7`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/0be42a7cddaee8564e5dd66ed8bd688b8c522b6e))
+* Save config to json ([`e1d1a59`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e1d1a59c798073c5bef6880e419b31ecfa9dd0c7))
+
 ## v0.52.0 (2023-03-31)
 ### Feature
 * Whether to change negative values to nan optional ([#468](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/468)) ([`5c941d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5c941d3e5d8fefbfd6d0213e0409ab3e558d3b73))

@@ -9,6 +9,7 @@ data:
   col_name:
     pred_timestamp: timestamp
     outcome_timestamp: timestamp_outcome
+    pred_time_uuid: pred_time_uuid
     id: citizen_ids
     age: pred_age
     is_female: is_female

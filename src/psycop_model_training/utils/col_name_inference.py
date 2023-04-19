@@ -37,7 +37,9 @@ def get_col_names(
     outcome_col_name = potential_outcome_col_names[0]
 
     train_col_names = [  # pylint: disable=invalid-name
-        c for c in dataset.columns if c.startswith(cfg.data.pred_prefix)
+        c
+        for c in dataset.columns
+        if c.startswith(cfg.data.pred_prefix) and "uuid" not in c
     ]
 
     return outcome_col_name, train_col_names

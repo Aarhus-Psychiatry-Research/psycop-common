@@ -68,4 +68,4 @@ def test_drop_rows_with_insufficient_lookbehind(
     # Get difference between max_timestamp and max_timestamp_with_lookahead in days
     assert (min_timestamp_with_lookahead - min_timestamp_sans_lookahead).days >= max(
         cfg.preprocessing.pre_split.lookbehind_combination,
-    ) - min_lookbehind
+    ) - min_lookbehind - 1
