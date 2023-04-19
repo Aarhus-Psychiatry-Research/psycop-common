@@ -123,7 +123,7 @@ def load_cancelled(
     else:
         npu_where = f"npukode = '{blood_sample_id}'"
 
-    sql = f"SELECT {cols} FROM [fct].{view} {npu_where} AND datotid_sidstesvar IS NOT NULL AND Svar == 'Aflyst' AND (left(Svar,1) == '>' OR left(Svar, 1) == '<')"
+    sql = f"SELECT {cols} FROM [fct].{view} WHERE {npu_where} AND datotid_sidstesvar IS NOT NULL AND Svar = 'Aflyst'"
 
     df = sql_load(
         sql,
@@ -750,6 +750,49 @@ def p_ethanol(
 ) -> pd.DataFrame:
     return blood_sample(
         blood_sample_id="NPU01992",
+        n_rows=n_rows,
+        values_to_load=values_to_load,
+    )
+
+
+@data_loaders.register("cancelled_standard_lab_results")
+def cancelled_standard_lab_results(
+    n_rows: int | None = None,
+    values_to_load: str = "cancelled",
+) -> pd.DataFrame:
+    """Cancelled lab results for some standard lab results: HbA1c, triglycerides, HDL, LDL, ALAT, ASAT,
+    lymphocytes, leukocytes, crp, creatinine, egfr, albumine-creatinine-ratio, haemoglobin, natrium, kalium,
+    calcium, trombocytes, d-vitamin, tsh, b12-vitamin"""
+    return blood_sample(
+        blood_sample_id=[
+            "NPU27300",  # hba1c
+            "AAB00093",  # hba1c
+            "NPU04094",  # triglycerides
+            "NPU01567",  # hdl
+            "NPU01568",  # ldl
+            "AAB00101",  # ldl
+            "NPU19651",  # alat
+            "NPU19654",  # asat
+            "NPU02636",  # lymphocytes
+            "NPU02593",  # leukocytes
+            "NPU19748",  # crp
+            "NPU18016",  # creatinine
+            "ASS00355",  # creatinine
+            "ASS00354",  # creatinine
+            "DNK35302",  # egfr
+            "DNK35131",  # egfr
+            "AAB00345",  # egfr
+            "AAB00343",  # egfr
+            "NPU19661",  # albumine_creatinine_ratio
+            "NPU02319",  # haemoglobin
+            "NPU03429",  # natrium
+            "NPU03230",  # kalium
+            "NPU01443",  # calcium
+            "NPU03568",  # trombocytes
+            "NPU10267",  # d-vitamin
+            "NPU03577",  # tsh
+            "NPU01700",  # b12-vitamin
+        ],
         n_rows=n_rows,
         values_to_load=values_to_load,
     )
