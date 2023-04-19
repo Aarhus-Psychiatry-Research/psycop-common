@@ -87,7 +87,7 @@ exclude_lines = [
 ]
 
 [tool.pyright]
-exclude = [".*venv*"]
+exclude = [".*venv*", ".*/"]
 
 [tool.pytest.ini_options]
 markers = [
