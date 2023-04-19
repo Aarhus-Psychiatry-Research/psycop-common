@@ -761,37 +761,37 @@ def cancelled_standard_lab_results(
     values_to_load: str = "cancelled",
 ) -> pd.DataFrame:
     """Cancelled lab results for some standard lab results: HbA1c, triglycerides, HDL, LDL, ALAT, ASAT,
-    lymphocytes, leukocytes, crp, creatinine, egfr, albumine-creatinine-ratio, hæmoglobin, natrium, kalium,
-    calcium, trombocytter, d-vitamin, tsh, b12"""
+    lymphocytes, leukocytes, crp, creatinine, egfr, albumine-creatinine-ratio, haemoglobin, natrium, kalium,
+    calcium, trombocytes, d-vitamin, tsh, b12-vitamin"""
     return blood_sample(
         blood_sample_id=[
-            "NPU27300",
-            "AAB00093",
-            "NPU04094",
-            "NPU01567",
-            "NPU01568",
-            "AAB00101",
-            "NPU19651",
-            "NPU19654",
-            "NPU02636",
-            "NPU02593",
-            "NPU19748",
-            "NPU18016",
-            "ASS00355",
-            "ASS00354",
-            "DNK35302",
-            "DNK35131",
-            "AAB00345",
-            "AAB00343",
-            "NPU19661",
-            "NPU02319",
-            "NPU03429",
-            "NPU03230",
-            "NPU01443",
-            "NPU03568",
-            "NPU10267",
-            "NPU03577",
-            "NPU01700",
+            "NPU27300",  # hba1c
+            "AAB00093",  # hba1c
+            "NPU04094",  # triglycerides
+            "NPU01567",  # hdl
+            "NPU01568",  # ldl
+            "AAB00101",  # ldl
+            "NPU19651",  # alat
+            "NPU19654",  # asat
+            "NPU02636",  # lymphocytes
+            "NPU02593",  # leukocytes
+            "NPU19748",  # crp
+            "NPU18016",  # creatinine
+            "ASS00355",  # creatinine
+            "ASS00354",  # creatinine
+            "DNK35302",  # egfr
+            "DNK35131",  # egfr
+            "AAB00345",  # egfr
+            "AAB00343",  # egfr
+            "NPU19661",  # albumine_creatinine_ratio
+            "NPU02319",  # haemoglobin
+            "NPU03429",  # natrium
+            "NPU03230",  # kalium
+            "NPU01443",  # calcium
+            "NPU03568",  # trombocytes
+            "NPU10267",  # d-vitamin
+            "NPU03577",  # tsh
+            "NPU01700",  # b12-vitamin
         ],
         n_rows=n_rows,
         values_to_load=values_to_load,
