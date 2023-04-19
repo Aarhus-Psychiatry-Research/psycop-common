@@ -1,6 +1,5 @@
 """Dataset loader."""
 import logging
-from collections.abc import Sequence
 from pathlib import Path
 from typing import Callable, Optional, Union
 
