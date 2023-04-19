@@ -92,6 +92,7 @@ exclude = [
   ".*/",
   ".git",
 ]
+pythonPlatform = "Linux"
 
 [tool.pytest.ini_options]
 markers = [
