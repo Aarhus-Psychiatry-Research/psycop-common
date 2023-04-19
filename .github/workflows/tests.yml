@@ -19,8 +19,8 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        os: [ubuntu-latest] #, macos-latest]
-        python-version: ["3.9"] # , "3.8"]
+        os: [ubuntu-latest] #, macos-latest, windows-latest]
+        python-version: ["3.9"] # , "3.10"]
 
     # This allows a subsequently queued workflow run to interrupt previous runs
     concurrency:
@@ -49,7 +49,12 @@ jobs:
         shell: bash
         run: |
           python -m venv .venv
-          source .venv/bin/activate
+          python3 -m venv .venv
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            source .venv/Scripts/activate
+          else
+            source .venv/bin/activate
+          fi
           python -m pip install --upgrade pip
           pip install -e .[tests]
 
@@ -57,13 +62,18 @@ jobs:
         id: run_pytest
         shell: bash
         run: |
-          source .venv/bin/activate
+          # activate venv dependent on the os
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            source .venv/Scripts/activate
+          else
+            source .venv/bin/activate
+          fi
           pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/
 
       - name: Test report on failures
         uses: EnricoMi/publish-unit-test-result-action@v2
         id: test_report_with_annotations
-        if: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' &&  github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
         with:
           comment_mode: "failures"
           files: |
@@ -72,9 +82,9 @@ jobs:
       - name: Pytest coverage comment
         id: coverage-comment
         uses: MishaKav/pytest-coverage-comment@main
-        if: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' &&  github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }}
         with:
           create-new-comment: false
-          report-only-changed-files: true
+          report-only-changed-files: false
           pytest-coverage-path: pytest-coverage.txt
           junitxml-path: ./pytest.xml

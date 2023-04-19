@@ -11,9 +11,12 @@ And then run:
 ```
 inv --list
 ```
+
+If you do not wish to use invoke you can simply delete this file.
 """
 
 
+import platform
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,13 +40,15 @@ class Emo:
     CLEAN = "🧹"
     TEST = "🧪"
     COMMUNICATE = "📣"
+    EXAMINE = "🔍"
 
 
-def git_init(c: Context):
+def git_init(c: Context, branch: str = "main"):
+    """Initialize a git repository if it does not exist yet."""
     # If no .git directory exits
     if not Path(".git").exists():
         echo_header(f"{Emo.DO} Initializing Git repository")
-        c.run("git init")
+        c.run(f"git init -b {branch}")
         c.run("git add .")
         c.run("git commit -m 'Initial commit'")
         print(f"{Emo.GOOD} Git repository initialized")
@@ -59,7 +64,7 @@ def setup_venv(
 
     if not Path(venv_name).exists():
         echo_header(
-            f"{Emo.DO} Creating virtual environment for {Emo.PY}{python_version}",
+            f"{Emo.DO} Creating virtual environment for {python_version}{Emo.PY}",
         )
         c.run(f"python{python_version} -m venv {venv_name}")
         print(f"{Emo.GOOD} Virtual environment created")
@@ -171,7 +176,7 @@ def exit_if_error_in_stdout(result: Result):
             exit(0)
 
 
-def pre_commit(c: Context):
+def pre_commit(c: Context, auto_fix: bool):
     """Run pre-commit checks."""
 
     # Essential to have a clean working directory before pre-commit to avoid committing
@@ -180,7 +185,7 @@ def pre_commit(c: Context):
         print(
             f"{Emo.WARN} Your git working directory is not clean. Stash or commit before running pre-commit.",
         )
-        exit(0)
+        exit(1)
 
     echo_header(f"{Emo.CLEAN} Running pre-commit checks")
     pre_commit_cmd = "pre-commit run --all-files"
@@ -188,27 +193,33 @@ def pre_commit(c: Context):
 
     exit_if_error_in_stdout(result)
 
-    if "fixed" in result.stdout or "reformatted" in result.stdout:
-        _add_commit(c, msg="style: linting")
+    if ("fixed" in result.stdout or "reformatted" in result.stdout) and auto_fix:
+        _add_commit(c, msg="style: Auto-fixes from pre-commit")
 
         print(f"{Emo.DO} Fixed errors, re-running pre-commit checks")
         second_result = c.run(pre_commit_cmd, pty=True, warn=True)
         exit_if_error_in_stdout(second_result)
+    else:
+        if result.return_code != 0:
+            print(f"{Emo.FAIL} Pre-commit checks failed")
+            exit(1)
 
 
-def mypy(c: Context):
-    echo_header(f"{Emo.CLEAN} Running mypy")
-    c.run("mypy .", pty=True)
+def static_type_checks(c: Context):
+    echo_header(f"{Emo.CLEAN} Running static type checks")
+    c.run("pyright .", pty=True)
 
 
 @task
 def install(c: Context):
+    """Install the project in editable mode using pip install"""
     echo_header(f"{Emo.DO} Installing project")
-    c.run("pip install -e '.[dev,tests]'")
+    c.run("pip install -e '.[dev,tests,docs]'")
 
 
 @task
 def setup(c: Context, python_version: str = "3.9"):
+    """Confirm that a git repo exists and setup a virtual environment."""
     git_init(c)
     venv_name = setup_venv(c, python_version=python_version)
     print(
@@ -219,15 +230,17 @@ def setup(c: Context, python_version: str = "3.9"):
 
 @task
 def update(c: Context):
+    """Update dependencies."""
     echo_header(f"{Emo.DO} Updating project")
-    c.run("pip install --upgrade -e '.[dev,tests]'")
+    c.run("pip install --upgrade -e '.[dev,tests,docs]'")
 
 
 @task
 def test(c: Context):
+    """Run tests"""
     echo_header(f"{Emo.TEST} Running tests")
     test_result: Result = c.run(
-        "pytest -n auto -rfE --failed-first -p no:typeguard -p no:cov --disable-warnings -q",
+        "pytest -n auto -rfE --failed-first -p no:cov --disable-warnings -q",
         warn=True,
         pty=True,
     )
@@ -239,9 +252,7 @@ def test(c: Context):
 
         # Get lines with "FAILED" in them from the .pytest_results file
         failed_tests = [
-            line
-            for line in Path("tests/.pytest_results").read_text().splitlines()
-            if line.startswith("FAILED")
+            line for line in test_result.stdout if line.startswith("FAILED")
         ]
 
         for line in failed_tests:
@@ -252,32 +263,52 @@ def test(c: Context):
             line_sans_suffix = line_sans_prefix[line_sans_prefix.find("::") + 2 :]
             print(f"FAILED {Emo.FAIL} #{line_sans_suffix}     ")
 
-    if "failed" in test_result.stdout or "error" in test_result.stdout:
+    if test_result.return_code != 0:
         exit(0)
 
 
-def test_for_rej(c: Context):
-    # Check if any file in current directory, or its subdirectories, has a .rej extension
-    # If so, exit
-    rej_files = c.run("find . -name '*.rej' -type f -print", hide=True)
+def test_for_rej():
+    # Get all paths in current directory or subdirectories that end in .rej
+    rej_files = list(Path(".").rglob("*.rej"))
 
-    if ".rej" in rej_files.stdout:
-        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.")
-        print(f"{rej_files.stdout}")
-        exit(0)
-
-
-@task
-def lint(c: Context):
-    test_for_rej(c)
-    pre_commit(c)
-    mypy(c)
+    if len(rej_files) > 0:
+        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.\n")
+        for file in rej_files:
+            print(f"    /{file}")
+        print("\nResolve the conflicts and try again. \n")
+        exit(1)
 
 
 @task
-def pr(c: Context):
+def lint(c: Context, auto_fix: bool = False):
+    """Lint the project using the pre-commit hooks and mypy."""
+    test_for_rej()
+    pre_commit(c=c, auto_fix=auto_fix)
+    static_type_checks(c)
+
+
+@task
+def pr(c: Context, auto_fix: bool = False):
+    """Run all checks and update the PR."""
     add_and_commit(c)
-    lint(c)
+    lint(c, auto_fix=auto_fix)
     test(c)
     update_branch(c)
     update_pr(c)
+
+
+@task
+def docs(c: Context, view: bool = False, view_only: bool = False):
+    """
+    Build and view docs. If neither build or view are specified, both are run.
+    """
+    if not view_only:
+        echo_header(f"{Emo.DO} Building docs")
+        c.run("sphinx-build -b html docs docs/_build/html")
+    if view or view_only:
+        echo_header(f"{Emo.EXAMINE} open docs in browser")
+        # check the OS and open the docs in the browser
+        if platform.system() == "Windows":
+            c.run("start docs/_build/html/index.html")
+        else:
+            c.run("open docs/_build/html/index.html")

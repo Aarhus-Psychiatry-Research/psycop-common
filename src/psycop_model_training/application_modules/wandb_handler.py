@@ -43,7 +43,7 @@ class WandbHandler:
             cfg_as_dict = self._unpack_pydantic_objects_in_dict(d=cfg_copy)
 
         flattened_dict = flatten_nested_dict(
-            d=cfg_as_dict,
+            d=cfg_as_dict,  # type: ignore
             sep=".",
         )
 

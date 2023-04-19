@@ -44,19 +44,26 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "mypy",
+  "pyright",
   "pre-commit>=2.19.0,<3.2.3",
   "setuptools>=65.3.0,<67.6.0",
   "ruff==0.0.261", # important that these match the pre-commit hooks
   "black==22.8.0", # important that these match the pre-commit hooks
   "pandas-stubs",
-  "pydantic"
+  "pydantic",
+  "invoke",
 ]
 tests = [
   "pytest>=7.1.2,<7.3.2",
   "pytest-cov>=3.0.0,<4.0.1",
   "pytest-xdist>=3.0.0,<3.2.0",
-  "pytest-instafail>=0.4.2,<0.6.0",
+  "pytest-sugar>=0.9.4,<0.10.0",
+]
+
+tutorials = [
+  "sphinx_togglebutton>=0.2.3,<0.4.0",
+  "myst-nb>=0.6.0,<1.17.0",  # for rendering notebooks
+  "jupyter>=1.0.0,<1.1.0",  # for tutorials
 ]
 
 [tool.coverage.run]
@@ -79,15 +86,13 @@ exclude_lines = [
   "if __name__ == .__main__.:"
 ]
 
-[tool.mypy]
-ignore_missing_imports = true
-no_implicit_optional = true
-warn_unreachable = true
-plugins = "pydantic.mypy"
-
-[tool.pydantic-mypy]
-init_typed = true
-warn_untyped_fields = true
+[tool.pyright]
+exclude = [
+  ".*venv*", 
+  ".*/",
+  ".git",
+]
+pythonPlatform = "Darwin"
 
 [tool.pytest.ini_options]
 markers = [
@@ -147,7 +152,6 @@ exclude = [
   ".eggs",
   ".git",
   ".hg",
-  ".mypy_cache",
   ".nox",
   ".pants.d",
   ".pytype",
@@ -162,7 +166,8 @@ exclude = [
   "dist",
   "node_modules",
   "venv",
-  "__init__.py"
+  "__init__.py",
+  "docs/conf.py",
 ]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
