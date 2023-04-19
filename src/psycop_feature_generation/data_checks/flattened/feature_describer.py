@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
@@ -141,7 +142,7 @@ def generate_static_feature_description(series: pd.Series, predictor_spec: Stati
 
 def generate_feature_description_row(
     series: pd.Series,
-    predictor_spec: _AnySpec,
+    predictor_spec: Union[StaticSpec, TemporalSpec],
     feature_name: str | None = None,
 ) -> dict:
     """Generate a row with feature description.
@@ -168,13 +169,13 @@ def generate_feature_description_row(
 
 def generate_feature_description_df(
     df: pd.DataFrame,
-    predictor_specs: list[PredictorSpec],
+    predictor_specs: list[Union[PredictorSpec, StaticSpec, TemporalSpec]],
 ) -> pd.DataFrame:
     """Generate a data frame with feature descriptions.
 
     Args:
         df (pd.DataFrame): Data frame with data to describe.
-        predictor_specs (PredictorSpec): Predictor specifications.
+        predictor_specs (Union[PredictorSpec, StaticSpec, TemporalSpec]): Predictor specifications.
 
     Returns:
         pd.DataFrame: Data frame with feature descriptions.
@@ -269,7 +270,7 @@ def save_feature_descriptive_stats_from_dir(
         )
         # Writing html table as well
         save_df_to_pretty_html_table(
+            df=feature_descriptive_stats,
             path=out_dir / f"{split}_feature_descriptive_stats.html",
             title="Feature descriptive stats",
-            df=feature_descriptive_stats,
         )
