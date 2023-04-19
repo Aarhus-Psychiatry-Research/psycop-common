@@ -5,7 +5,6 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
@@ -18,7 +17,6 @@ from timeseriesflattener.feature_spec_objects import (
     StaticSpec,
     TemporalSpec,
     TextPredictorSpec,
-    _AnySpec,
 )
 from wasabi import Printer
 
@@ -142,7 +140,7 @@ def generate_static_feature_description(series: pd.Series, predictor_spec: Stati
 
 def generate_feature_description_row(
     series: pd.Series,
-    predictor_spec: Union[StaticSpec, TemporalSpec],
+    predictor_spec: StaticSpec | TemporalSpec,
     feature_name: str | None = None,
 ) -> dict:
     """Generate a row with feature description.
@@ -169,7 +167,7 @@ def generate_feature_description_row(
 
 def generate_feature_description_df(
     df: pd.DataFrame,
-    predictor_specs: list[Union[PredictorSpec, StaticSpec, TemporalSpec]],
+    predictor_specs: list[PredictorSpec | StaticSpec | TemporalSpec],
 ) -> pd.DataFrame:
     """Generate a data frame with feature descriptions.
 
