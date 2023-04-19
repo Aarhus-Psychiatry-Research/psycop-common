@@ -85,7 +85,7 @@ def _load_text_sfis_for_year(
         database="USR_PS_FORSK",
         chunksize=None,
         n_rows=n_rows,
-    )
+    )  # type: ignore
 
 
 def load_text_sfis(
@@ -145,17 +145,17 @@ def load_text_sfis(
 
 def load_text_split(
     text_sfi_names: str | list[str],
+    split_name: list[Literal["train", "val"]],
     include_sfi_name: bool = False,
     n_rows: int | None = None,
-    split_name=Literal["train", "val"],
 ) -> pd.DataFrame:
     """Loads specified text sfi and only keeps data from the specified split
 
     Args:
         text_sfi_names (Union[str, list[str]]): Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
+        split_name (Literal["train", "val"], optional): Which splis to include. Defaults to Literal["train", "val"].
         include_sfi_name (bool, optional): Whether to include column with sfi name ("overskrift"). Defaults to False.
         n_rows (Optional[int, None], optional): Number of rows to load. Defaults to None.
-        split_name (Literal["train", "val"], optional): Which splis to include. Defaults to Literal["train", "val"].
 
     Returns:
         pd.DataFrame: Chosen sfis from chosen splits
@@ -174,7 +174,7 @@ def load_text_split(
         )
 
     else:
-        split_id_df = get_split_id_df(split_name=split_name)
+        split_id_df = get_split_id_df(split_name=split_name)  # type: ignore
 
     text_split_df = filter_by_split_ids(
         df_to_split=text_df,

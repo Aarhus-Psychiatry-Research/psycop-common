@@ -1,6 +1,6 @@
 """Utilities for saving a dataset to disk."""
 import logging
-from typing import Literal
+from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
@@ -37,7 +37,7 @@ def save_split_to_disk(
 def filter_by_split_ids(
     df_to_split: pd.DataFrame,
     split_id_df: pd.DataFrame,
-    split_name: str,
+    split_name: Union[list[str], str],
 ):
     """Filter dataframe by split ids."""
     # Find IDs which are in split_ids, but not in flattened_df
