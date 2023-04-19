@@ -1,11 +1,7 @@
 import numpy as np
 import pandas as pd
 from psycop_feature_generation.text_models.fit_text_models import fit_text_model
-from psycop_feature_generation.text_models.preprocessing import (
-    convert_series_to_lower_case,
-    remove_stop_words_from_series,
-    remove_symbols_from_series,
-)
+from psycop_feature_generation.text_models.preprocessing import text_preprocessing
 
 
 def test_fit_bow_model():
@@ -22,9 +18,7 @@ def test_fit_bow_model():
         },
     )
 
-    df["text"] = convert_series_to_lower_case(df["text"])
-    df["text"] = remove_symbols_from_series(df["text"])
-    df["text"] = remove_stop_words_from_series(df["text"])
+    df = text_preprocessing(df, text_column_name="text")
 
     bow = fit_text_model("bow", df["text"])
     transformed = bow.transform(df["text"])
@@ -47,11 +41,9 @@ def test_fit_tfidf_model():
         },
     )
 
-    df["text"] = convert_series_to_lower_case(df["text"])
-    df["text"] = remove_symbols_from_series(df["text"])
-    df["text"] = remove_stop_words_from_series(df["text"])
+    df = text_preprocessing(df, text_column_name="text")
 
-    tfidf = fit_text_model("tfidf", ["text"], min_df=0, max_df=1)
+    tfidf = fit_text_model("tfidf", df["text"], min_df=0, max_df=1)
     transformed = tfidf.transform(df["text"])
     transformed = transformed.toarray()
 
