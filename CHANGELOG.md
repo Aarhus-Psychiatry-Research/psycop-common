@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.54.1 (2023-04-19)
+### Fix
+* Misc. ([`331f57f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/331f57fd178fc50eadb81a8777aed5c5cb3f4bf4))
+
 ## v0.54.0 (2023-04-14)
 ### Feature
 * Add pred time uuids to eval dataset ([#475](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/475)) ([`8e27751`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8e2775193074c8d48c92167b0cae94f02a5507fe))
