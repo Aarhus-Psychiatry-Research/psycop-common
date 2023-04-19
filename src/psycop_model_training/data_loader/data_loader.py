@@ -88,7 +88,7 @@ class DataLoader:
 
     def load_dataset_from_dir(
         self,
-        split_names: Union[Sequence[str], str],
+        split_names: Union[list[str], tuple[str], str],
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
         """Load dataset. Can load multiple splits at once, e.g. concatenate
@@ -102,8 +102,8 @@ class DataLoader:
             pd.DataFrame: The filtered dataset
         """
         # Concat splits if multiple are given
-        if isinstance(split_names, Sequence):
-            if isinstance(split_names, Sequence):
+        if isinstance(split_names, (list, tuple)):
+            if isinstance(split_names, list):
                 split_names = tuple(split_names)
 
             if nrows is not None:
