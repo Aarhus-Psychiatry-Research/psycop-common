@@ -78,6 +78,8 @@ class DataLoader:
             df: pd.DataFrame = pd.read_parquet(path)
         elif "csv" in self.file_suffix:
             df: pd.DataFrame = pd.read_csv(filepath_or_buffer=path, nrows=nrows)
+        else:
+            raise ValueError(f"File suffix {self.file_suffix} not supported.")
 
         if self.column_name_checker:
             self._check_column_names(df=df)
