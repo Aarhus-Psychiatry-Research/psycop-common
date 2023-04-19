@@ -1,8 +1,6 @@
 import re
-from typing import Literal, Optional, Union
 
 import pandas as pd
-from psycop_feature_generation.loaders.raw.load_text import load_text_split
 from psycop_feature_generation.text_models.utils import stop_words
 
 
@@ -21,7 +19,7 @@ def text_preprocessing(
     """
 
     regex_stop_words = re.compile(
-        r"[^ÆØÅæøåA-Za-z0-9 ]+ \b%s\b" % r"\b|\b".join(map(re.escape, stop_words))
+        r"[^ÆØÅæøåA-Za-z0-9 ]+ \b%s\b" % r"\b|\b".join(map(re.escape, stop_words)),
     )
 
     df["value"] = (
