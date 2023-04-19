@@ -26,7 +26,7 @@ class DataLoader:
         data_cfg: DataSchema,
         column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,
     ):
-        self.data_cfg: FullConfigSchema = data_cfg
+        self.data_cfg = data_cfg
 
         # File handling
         self.dir_path = Path(data_cfg.dir)

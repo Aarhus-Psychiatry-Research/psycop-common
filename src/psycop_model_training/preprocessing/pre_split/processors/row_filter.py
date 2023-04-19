@@ -84,6 +84,11 @@ class PreSplitRowFilter:
     ) -> pd.DataFrame:
         """Drop patients that have an exclusion event within the washin
         period."""
+        if self.data_cfg.col_name.exclusion_timestamp is None:
+            raise ValueError(
+                "Exclusion timestamp column not specified in config. Cannot drop patients based on exclusion date.",
+            )
+
         outcome_before_date = (
             dataset[self.data_cfg.col_name.exclusion_timestamp]
             < self.pre_split_cfg.drop_patient_if_exclusion_before_date
@@ -112,6 +117,10 @@ class PreSplitRowFilter:
     ) -> pd.DataFrame:
         """Drop all rows where exclusion timestamp is before the prediction
         time."""
+        if self.data_cfg.col_name.exclusion_timestamp is None:
+            raise ValueError(
+                "Exclusion timestamp column not specified in config. Cannot drop patients based on exclusion date.",
+            )
 
         rows_to_drop = (
             dataset[self.data_cfg.col_name.pred_timestamp]

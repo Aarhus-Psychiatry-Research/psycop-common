@@ -23,7 +23,7 @@ def get_feature_selection_steps(cfg: FullConfigSchema) -> list:
                     "feature_selection",
                     SelectPercentile(
                         f_classif,
-                        percentile=cfg.preprocessing.post_split.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
                             "percentile"
                         ],
                     ),
@@ -35,7 +35,7 @@ def get_feature_selection_steps(cfg: FullConfigSchema) -> list:
                     "feature_selection",
                     SelectPercentile(
                         chi2,
-                        percentile=cfg.preprocessing.post_split.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
                             "percentile"
                         ],
                     ),
@@ -49,7 +49,7 @@ def get_feature_selection_steps(cfg: FullConfigSchema) -> list:
                     "feature_selection",
                     SelectPercentile(
                         mutual_info_classif,
-                        percentile=cfg.preprocessing.post_split.feature_selection.params[
+                        percentile=cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
                             "percentile"
                         ],
                     ),

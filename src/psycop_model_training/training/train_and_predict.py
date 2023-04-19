@@ -24,7 +24,7 @@ log = Printer(timestamp=True)
 def create_model(cfg: FullConfigSchema) -> Any:
     """Instantiate and return a model object based on settings in the config
     file."""
-    model_dict = MODELS.get(cfg.model.name)
+    model_dict: dict[str, Any] = MODELS.get(cfg.model.name)  # type: ignore
 
     model_args = model_dict["static_hyperparameters"]
 
@@ -203,7 +203,7 @@ def train_and_predict(
     # output
     log.good("Training model")
     if cfg.model.name in ("ebm", "xgboost"):
-        pipe["model"].feature_names = train_col_names
+        pipe["model"].feature_names = train_col_names  # type: ignore
 
     if n_splits is None:  # train on pre-defined splits
         eval_dataset = train_val_predict(
