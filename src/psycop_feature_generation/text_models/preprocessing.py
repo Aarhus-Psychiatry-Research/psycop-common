@@ -22,8 +22,8 @@ def text_preprocessing(
         r"[^ÆØÅæøåA-Za-z0-9 ]+ \b%s\b" % r"\b|\b".join(map(re.escape, stop_words)),
     )
 
-    df["value"] = (
-        df["value"]
+    df[text_column_name] = (
+        df[text_column_name]
         .replace(regex_stop_words, value="", regex=True)  # type: ignore
         .str.lower()
     )
