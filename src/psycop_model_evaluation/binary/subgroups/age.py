@@ -58,6 +58,6 @@ def plot_roc_auc_by_age(
         plot_type=["scatter", "line"],
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title="Number of visits",
-        confidence_interval=ci,
+        confidence_intervals=ci,
         save_path=save_path,
     )

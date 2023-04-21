@@ -51,5 +51,5 @@ def plot_roc_auc_by_sex(
         y_limits=y_limits,
         plot_type=["bar"],
         save_path=save_path,
-        confidence_interval=ci,
+        confidence_intervals=ci,
     )

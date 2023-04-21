@@ -18,7 +18,7 @@ def plot_basic_chart(
     labels: Optional[list[str]] = None,
     sort_x: Optional[Sequence[int]] = None,
     sort_y: Optional[Sequence[int]] = None,
-    confidence_interval: Optional[Sequence[tuple[float, float]]] = None,
+    confidence_intervals: Optional[Sequence[Sequence[tuple[float, float]]]] = None,
     flip_x_axis: bool = False,
     flip_y_axis: bool = False,
     bar_count_values: Optional[pd.Series] = None,
@@ -41,7 +41,7 @@ def plot_basic_chart(
         labels: Optional labels to add to the plot(s).
         sort_x: order of values on the x-axis. Defaults to None.
         sort_y: order of values on the y-axis. Defaults to None.
-        confidence_interval: Confidence interval for plotting. Defaults to None. If None, no confidence interval is plotted.
+        confidence_intervals: Confidence interval for plotting. Defaults to None. If None, no confidence interval is plotted.
             If you supple a sequence of series for the y_values, it will only plot the confidence interval for the last series.
         save_path: path to save figure. Defaults to None.
         flip_x_axis: Whether to flip the x axis. Defaults to False.
@@ -85,7 +85,7 @@ def plot_basic_chart(
     legend_plot = plot_type[0]
 
     label_plots = []
-    for y_series in y_sequences:
+    for i, y_series in enumerate(y_sequences):
         for p_type in plot_type:
             plot_function: Callable = plot_functions.get(p_type)  # type: ignore
 
@@ -98,13 +98,24 @@ def plot_basic_chart(
             if p_type == "hbar":
                 plt.yticks(fontsize=7)
 
-    # # add error bars
-    if confidence_interval is not None:
-        ci_matrix = np.array(confidence_interval)
-        # convert lower and upper bound to relative difference
-        # as matplotlib errorbar interpret yerr as an offset
-        ci_matrix = np.abs(ci_matrix - y_series.to_numpy().reshape(-1, 1))
-        plt.errorbar(x=df["x"], y=y_series, yerr=ci_matrix.T, fmt="none", capsize=5)
+        # add error bars
+        if confidence_intervals is not None:
+            series_cis = confidence_intervals[i]
+
+            # Replace any Nans with (0, 0)
+            series_cis = [ci if isinstance(ci, tuple) else (0, 0) for ci in series_cis]
+
+            ci_matrix = np.array(series_cis)
+            # convert lower and upper bound to relative difference
+            # as matplotlib errorbar interpret yerr as an offset
+            ci_matrix = np.abs(ci_matrix - y_series.to_numpy().reshape(-1, 1))
+            plt.errorbar(
+                x=df["x"],
+                y=y_series,
+                yerr=ci_matrix.T,
+                fmt="none",
+                capsize=5,
+            )
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)
