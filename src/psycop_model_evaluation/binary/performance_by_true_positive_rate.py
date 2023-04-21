@@ -1,10 +1,9 @@
 """Get performance by which threshold is used to classify positive."""
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 import wandb
-from git import Sequence
 from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import confusion_matrix
 
