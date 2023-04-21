@@ -167,7 +167,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         bar_count_values=df["n_in_bin"],
         y_limits=y_limits,
         plot_type=["scatter", "line"],
-        confidence_intervals=ci,
+        confidence_interval=ci,
         save_path=save_path,
     )
 

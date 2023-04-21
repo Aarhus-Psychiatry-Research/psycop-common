@@ -64,7 +64,7 @@ def plot_metric_by_absolute_time(
         y_title=y_title,
         sort_x=sort_order,
         y_limits=y_limits,
-        confidence_intervals=ci,
+        confidence_interval=ci,
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title=f"Number of {pred_type}",
         plot_type=["line", "scatter"],
