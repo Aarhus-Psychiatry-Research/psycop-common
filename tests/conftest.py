@@ -47,4 +47,5 @@ def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
         age=df["age"],
         is_female=df["is_female"],
         custom_columns={"eval_n_hbac1_count": df["eval_n_hbac1_count"]},
+        pred_time_uuids=df["dw_ek_borger"].astype(str) + df["timestamp"].astype(str),
     )
