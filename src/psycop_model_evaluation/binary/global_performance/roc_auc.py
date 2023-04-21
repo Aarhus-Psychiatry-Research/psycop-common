@@ -61,9 +61,9 @@ def plot_auc_roc(
         auc_boot = roc_auc_score(y_resampled, y_hat_probs_resampled)
         aucs_bootstrapped.append(auc_boot)
 
-    tprs_bootstrapped = np.array(tprs_bootstrapped)
-    mean_tprs = tprs_bootstrapped.mean(axis=0)
-    se_tprs = tprs_bootstrapped.std(axis=0) / np.sqrt(n_bootstraps)
+    tprs_bootstrapped = np.array(tprs_bootstrapped)  # type: ignore
+    mean_tprs = tprs_bootstrapped.mean(axis=0)  # type: ignore
+    se_tprs = tprs_bootstrapped.std(axis=0) / np.sqrt(n_bootstraps)  # type: ignore
 
     # Calculate confidence interval for TPR over all FPRs
     tprs_upper = mean_tprs + se_tprs
