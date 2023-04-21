@@ -298,14 +298,60 @@ def plot_sensitivity_by_time_to_event(
 
     x_title_unit = bin_delta_to_str[bin_unit]
 
-    return plot_basic_chart(
-        x_values=dfs[0]["days_to_outcome_binned"],
-        y_values=[df["sens"] for df in dfs],
-        x_title=f"{x_title_unit}s to event",
-        labels=[df["actual_positive_rate"][0] for df in dfs],
-        y_title=y_title,
-        y_limits=y_limits,
-        flip_x_axis=True,
-        plot_type=["line", "scatter"],
-        save_path=save_path,
+    df = pd.concat(dfs, axis=0)
+
+    from plotnine import (
+        aes,
+        element_text,
+        geom_errorbar,
+        geom_line,
+        geom_point,
+        ggplot,
+        labs,
+        scale_color_brewer,
+        theme,
+        theme_classic,
+        ylim,
     )
+
+    df["sens"] = df["sens"].astype(float)
+    df["sens_lower"] = df["ci"].apply(lambda x: x[0])
+    df["sens_upper"] = df["ci"].apply(lambda x: x[1])
+
+    # Reverse order of the x axis
+    df["days_to_outcome_binned"] = df["days_to_outcome_binned"].cat.reorder_categories(
+        df["days_to_outcome_binned"].cat.categories[::-1],
+        ordered=True,
+    )
+
+    df["actual_positive_rate"] = df["actual_positive_rate"].astype(str)
+
+    # Set y limits
+
+    p = (
+        ggplot(
+            df,
+            aes(
+                x="days_to_outcome_binned",
+                y="sens",
+                ymin="sens_lower",
+                ymax="sens_upper",
+                color="actual_positive_rate",
+            ),
+        )
+        + geom_point()
+        + geom_line()
+        + geom_errorbar(width=0.2, size=0.5)
+        + labs(x=f"{x_title_unit} to outcome", y=y_title)
+        + ylim(y_limits)
+        + theme_classic()
+        + theme(axis_text_x=element_text(rotation=45, hjust=1))
+        + theme(legend_position=(0.92, 0.5), legend_direction="vertical")
+        + scale_color_brewer(type="qual", palette=2)
+        + labs(color="Predicted \npositive rate")
+    )
+
+    if save_path is not None:
+        p.save(save_path)
+        return Path(save_path)
+    return None
