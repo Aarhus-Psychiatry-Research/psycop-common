@@ -174,7 +174,9 @@ def create_sensitivity_by_time_to_outcome_df(
     )
 
     output_df = df_with_metric.pivot(
-        index="days_to_outcome_binned", columns="level_1", values=0,
+        index="days_to_outcome_binned",
+        columns="level_1",
+        values=0,
     )
 
     # Get proportion of y_hat == 1, which is equal to the actual positive rate in the data.
