@@ -1,11 +1,9 @@
 """AUC ROC curve."""
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy
-import seaborn as sns
 from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.utils import resample
@@ -14,7 +12,7 @@ from sklearn.utils import resample
 def plot_auc_roc(
     eval_dataset: EvalDataset,
     title: str = "ROC-curve",
-    fig_size: Optional[Tuple[int, int]] = (5, 5),
+    fig_size: Optional[tuple[int, int]] = (5, 5),
     dpi: int = 160,
     save_path: Optional[Path] = None,
     n_bootstraps: int = 1000,
@@ -37,7 +35,7 @@ def plot_auc_roc(
 
     # Compute original ROC curve and AUC
     fpr, tpr, _ = roc_curve(y, y_hat_probs)
-    auc_original = roc_auc_score(y, y_hat_probs)
+    roc_auc_score(y, y_hat_probs)
 
     # We need a custom bootstrap implementation, because using scipy.bootstrap
     # on the roc_curve method will yield different fpr values for each resample,
