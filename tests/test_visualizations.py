@@ -4,13 +4,11 @@ Mainly tests that they run without errors.
 """
 
 
-import re
 from pathlib import Path
 from typing import Literal
 
 import numpy as np
 import pytest
-from pandas import CategoricalDtype
 from psycop_model_evaluation.base_charts import (
     plot_basic_chart,
 )
@@ -56,7 +54,7 @@ def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
 
 
 def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
-    df = create_sensitivity_by_time_to_outcome_df(
+    create_sensitivity_by_time_to_outcome_df(
         eval_dataset=synth_eval_dataset,
         outcome_timestamps=synth_eval_dataset.outcome_timestamps,
         prediction_timestamps=synth_eval_dataset.pred_timestamps,
