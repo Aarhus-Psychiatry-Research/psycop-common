@@ -61,8 +61,6 @@ def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
         desired_positive_rate=0.5,
     )
 
-    pass
-
 
 def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
     plot_df = create_sensitivity_by_time_to_outcome_df(
