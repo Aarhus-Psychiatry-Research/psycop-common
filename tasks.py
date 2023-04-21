@@ -343,7 +343,7 @@ def test(c: Context):
 
             # Keep only that after ::
             line_sans_suffix = line_sans_prefix[line_sans_prefix.find("::") + 2 :]
-            print(f"FAILED {Emo.FAIL} #{line_sans_suffix}     ")
+            print(f"FAILED {msg_type.FAIL} #{line_sans_suffix}     ")
 
     if test_result.return_code != 0:
         exit(0)
@@ -354,7 +354,7 @@ def test_for_rej():
     rej_files = list(Path(".").rglob("*.rej"))
 
     if len(rej_files) > 0:
-        print(f"\n{Emo.FAIL} Found .rej files leftover from cruft update.\n")
+        print(f"\n{msg_type.FAIL} Found .rej files leftover from cruft update.\n")
         for file in rej_files:
             print(f"    /{file}")
         print("\nResolve the conflicts and try again. \n")
@@ -363,10 +363,10 @@ def test_for_rej():
 
 @task
 def lint(c: Context, auto_fix: bool = False):
-    """Lint the project using the pre-commit hooks and mypy."""
+    """Lint the project."""
     test_for_rej()
     pre_commit(c=c, auto_fix=auto_fix)
-    mypy(c)
+    static_type_checks(c)
 
 
 @task
