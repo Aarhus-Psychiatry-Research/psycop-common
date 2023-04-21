@@ -167,7 +167,11 @@ def test_plot_feature_importances():
 
 
 def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
-    plot_auc_roc(eval_dataset=synth_eval_dataset)
+    plot_auc_roc(
+        eval_dataset=synth_eval_dataset,
+        save_path=TEST_PLOT_PATH / "roc_auc.png",
+        n_bootstraps=10,
+    )
 
 
 # @pytest.mark.skip(reason="Breaking on ubuntu only, don't have time to debug right now")
