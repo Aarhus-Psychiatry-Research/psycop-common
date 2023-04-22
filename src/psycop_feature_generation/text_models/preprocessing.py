@@ -28,7 +28,7 @@ def text_preprocessing(
         .str.lower()
         .replace(regex_stop_words, value="", regex=True)  # type: ignore
         .replace(regex_symbols, value="", regex=True)
-        .replace(r"\s+", " ", regex=True) # remove multiple whitespaces
+        .replace(r"\s+", " ", regex=True)  # remove multiple whitespaces
     )
 
     return df
