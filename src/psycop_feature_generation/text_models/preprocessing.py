@@ -19,13 +19,16 @@ def text_preprocessing(
     """
 
     regex_stop_words = re.compile(
-        r"[^ÆØÅæøåA-Za-z0-9 ]+ \b%s\b" % r"\b|\b".join(map(re.escape, stop_words)),
+        r"\b%s\b" % r"\b|\b".join(map(re.escape, stop_words)),
     )
+    regex_symbols = r"[^ÆØÅæøåA-Za-z0-9 ]+"
 
     df[text_column_name] = (
         df[text_column_name]
-        .replace(regex_stop_words, value="", regex=True)  # type: ignore
         .str.lower()
+        .replace(regex_stop_words, value="", regex=True)  # type: ignore
+        .replace(regex_symbols, value="", regex=True)
+        .replace(r"\s+", " ", regex=True) # remove multiple whitespaces
     )
 
     return df

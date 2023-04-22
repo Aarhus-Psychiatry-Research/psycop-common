@@ -3,9 +3,15 @@ from psycop_feature_generation.text_models.preprocessing import text_preprocessi
 
 
 def test_text_preprocessing():
-    df = pd.DataFrame({"value": ["Jeg er paf!", "Jeg hedder Erik, og er 97 år?"]})
+    df = pd.DataFrame({"value": ["Jeg er paf!!", "Jeg hedder Erik, og er 97 år?"]})
     preprocessed_df = text_preprocessing(df=df)
 
-    expected = pd.Series([" paf", " hedder erik"])
+    expected_df = pd.DataFrame({"value": [" paf", " hedder erik 97 "]})
 
-    assert pd.testing.assert_series_equal(preprocessed_df["value"], expected) is None
+    assert (
+        pd.testing.assert_series_equal(
+            preprocessed_df["value"],
+            expected_df["value"],
+        )
+        is None
+    )
