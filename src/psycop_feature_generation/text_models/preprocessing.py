@@ -17,18 +17,14 @@ def text_preprocessing(
     Returns:
         pd.DataFrame: _description_
     """
-
-    regex_stop_words = re.compile(
-        r"\b%s\b" % r"\b|\b".join(map(re.escape, stop_words)),
+    regex_symbol_removal_and_stop_words = re.compile(
+        r"[^ÆØÅæøåA-Za-z0-9 ]+|\b%s\b" % r"\b|\b".join(map(re.escape, stop_words)),
     )
-    regex_symbols = r"[^ÆØÅæøåA-Za-z0-9 ]+"
 
     df[text_column_name] = (
         df[text_column_name]
         .str.lower()
-        .replace(regex_stop_words, value="", regex=True)  # type: ignore
-        .replace(regex_symbols, value="", regex=True)
-        .replace(r"\s+", " ", regex=True)  # remove multiple whitespaces
+        .replace(regex_symbol_removal_and_stop_words, value="", regex=True)  # type: ignore
     )
 
     return df
