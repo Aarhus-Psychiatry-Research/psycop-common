@@ -87,7 +87,7 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
 def crossval_train_and_predict(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
-    val: pd.DataFrame,
+    val: Optional[pd.DataFrame],
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
@@ -96,26 +96,27 @@ def crossval_train_and_predict(
     """Train model on cross validation folds and return evaluation dataset.
 
     Args:
-        cfg (DictConfig): Config object
+        cfg: Config object
         train: Training dataset
-        val: Validation dataset
+        val: Optional validation dataset for concatenation
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
-        n_splits: Number of folds for cross validation.
+        n_splits: Number of folds for cross validation
 
     Returns:
         Evaluation dataset
     """
     msg = Printer(timestamp=True)
 
-    msg.info("Concatenating train and val for crossvalidation")
-    train_val = pd.concat([train, val], ignore_index=True)
+    if val is not None:
+        msg.info("Concatenating train and val for crossvalidation")
+        train = pd.concat([train, val], ignore_index=True)
 
     df = stratified_cross_validation(
         cfg=cfg,
         pipe=pipe,
-        train_df=train_val,
+        train_df=train,
         train_col_names=train_col_names,
         outcome_col_name=outcome_col_name,
         n_splits=n_splits,
@@ -179,7 +180,7 @@ def train_val_predict(
 def train_and_predict(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
-    val: pd.DataFrame,
+    val: Optional[pd.DataFrame],
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
@@ -188,13 +189,13 @@ def train_and_predict(
     """Train model and return evaluation dataset.
 
     Args:
-        cfg (FullConfigSchema): Config object
+        cfg: Config object
         train: Training dataset
-        val: Validation dataset
+        val: Optional validation dataset. Must be supplied if n_splits is None.
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
-        n_splits: Number of folds for cross validation. If None, no cross validation is performed.
+        n_splits: Number of folds for cross validation. If None, no cross validation is performed
 
     Returns:
         Evaluation dataset
@@ -205,7 +206,7 @@ def train_and_predict(
     if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names  # type: ignore
 
-    if n_splits is None:  # train on pre-defined splits
+    if n_splits is None and val is not None:  # train on pre-defined splits
         eval_dataset = train_val_predict(
             cfg=cfg,
             train=train,
@@ -214,7 +215,7 @@ def train_and_predict(
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,
         )
-    else:
+    elif n_splits:
         eval_dataset = crossval_train_and_predict(
             cfg=cfg,
             train=train,
@@ -225,4 +226,4 @@ def train_and_predict(
             n_splits=n_splits,
         )
 
-    return eval_dataset
+    return eval_dataset  # type: ignore
