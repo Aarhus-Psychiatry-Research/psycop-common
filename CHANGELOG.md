@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.55.0 (2023-04-24)
+### Feature
+* Parallel training to disk ([#492](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/492)) ([`d7d1a66`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d7d1a668af9d020e0a353817363179039854a6b3))
+* Save run performance to a shared parquet ([`87242c0`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/87242c008f12f63598d994be08fd948eae71b43a))
+* Allow offline training ([`5fde7bf`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5fde7bf5ac0055e00b8cbd111acf814ef926aed2))
+
 ## v0.54.1 (2023-04-19)
 ### Fix
 * Misc. ([`331f57f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/331f57fd178fc50eadb81a8777aed5c5cb3f4bf4))
