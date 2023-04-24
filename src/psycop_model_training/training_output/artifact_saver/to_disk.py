@@ -67,20 +67,26 @@ class ArtifactsToDiskSaver:
         write_df_to_file(df=df, file_path=file_path)
 
     def save_run_performance_to_group_parquet(
-        self, roc_auc: float, cfg: FullConfigSchema,
+        self,
+        roc_auc: float,
+        cfg: FullConfigSchema,
     ):
         # Get run performance row
+        lookahead_days = cfg.preprocessing.pre_split.min_lookahead_days
+
         row = {
             "run_name": wandb.run.name,
             "roc_auc": roc_auc,
             "timestamp": pd.Timestamp.now(),
-            "lookahead_days": cfg.preprocessing.pre_split.min_lookahead_days,
+            "lookahead_days": lookahead_days,
             "model_name": cfg.model.name,
         }
 
         # Append row to parquet file in group dir
         run_group_path = self.dir_path.parent
-        run_performance_path = run_group_path / "run_performance.parquet"
+        run_performance_path = (
+            run_group_path / f"{cfg.model.name}_{lookahead_days}.parquet"
+        )
 
         if run_performance_path.exists():
             df = pd.read_parquet(run_performance_path)
