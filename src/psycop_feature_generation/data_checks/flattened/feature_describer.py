@@ -190,7 +190,7 @@ def generate_feature_description_df(
             string_match = f"{first_part}[\\dA-Za-z\\-]+{last_part}"
 
             column_names = [
-                re.match(string_match, column)[0]
+                re.match(string_match, column)[0] # type: ignore
                 for column in df.columns
                 if re.match(string_match, column) is not None
             ]
