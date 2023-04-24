@@ -51,13 +51,17 @@ def post_wandb_setup_train_model(
 
     train_datasets = [
         load_and_filter_split_from_cfg(
-            data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split, split=split,
+            data_cfg=cfg.data,
+            pre_split_cfg=cfg.preprocessing.pre_split,
+            split=split,
         )
         for split in cfg.data.splits_for_training
     ]
     eval_datasets = [
         load_and_filter_split_from_cfg(
-            data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split, split=split,
+            data_cfg=cfg.data,
+            pre_split_cfg=cfg.preprocessing.pre_split,
+            split=split,
         )
         for split in cfg.data.splits_for_evaluation
     ]
