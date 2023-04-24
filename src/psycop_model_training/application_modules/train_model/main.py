@@ -27,8 +27,8 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
         SHARED_RESOURCES_PATH
         / cfg.project.name
         / "model_eval"
-        / wandb.run.group
-        / wandb.run.name
+        / wandb.run.group  # type: ignore
+        / wandb.run.name  # type: ignore
     )
 
     if cfg.project.wandb.group == "integration_testing":
