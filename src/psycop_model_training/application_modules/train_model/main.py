@@ -63,7 +63,7 @@ def post_wandb_setup_train_model(
             load_and_filter_split_from_cfg(
                 data_cfg=cfg.data,
                 pre_split_cfg=cfg.preprocessing.pre_split,
-                split=split,
+                split=split,  # type: ignore
             )
             for split in cfg.data.splits_for_evaluation
         ]
