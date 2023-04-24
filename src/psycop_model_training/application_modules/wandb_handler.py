@@ -52,6 +52,12 @@ class WandbHandler:
 
     def setup_wandb(self):
         """Setup wandb for the current run."""
+        run_name = (
+            None
+            if self.cfg.project.wandb.mode != "offline"
+            else RandomWords().get_random_word()
+        )
+
         wandb.init(
             project=f"{self.cfg.project.name}-baseline-model-training",
             reinit=True,
@@ -59,9 +65,5 @@ class WandbHandler:
             group=self.cfg.project.wandb.group,
             config=self._get_cfg_as_dict(),
             entity=self.cfg.project.wandb.entity,
-            name=None
-            if self.cfg.project.wandb.mode != "offline"
-            else RandomWords().get_random_word(),
+            name=run_name,
         )
-
-        pass
