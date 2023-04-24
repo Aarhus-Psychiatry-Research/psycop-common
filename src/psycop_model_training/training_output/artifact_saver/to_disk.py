@@ -67,7 +67,7 @@ class ArtifactsToDiskSaver:
         write_df_to_file(df=df, file_path=file_path)
 
     def save_run_performance_to_group_parquet(
-        self, roc_auc: float, cfg: FullConfigSchema
+        self, roc_auc: float, cfg: FullConfigSchema,
     ):
         # Get run performance row
         row = {

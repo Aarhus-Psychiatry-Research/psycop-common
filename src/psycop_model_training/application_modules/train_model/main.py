@@ -43,7 +43,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
 
 @wandb_alert_on_exception_return_terrible_auc
 def post_wandb_setup_train_model(
-    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None
+    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None,
 ) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
@@ -76,7 +76,7 @@ def post_wandb_setup_train_model(
 
 
 def train_model(
-    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None
+    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None,
 ) -> float:
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()

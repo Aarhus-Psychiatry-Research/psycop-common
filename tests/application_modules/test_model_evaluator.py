@@ -6,7 +6,7 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 
 
 def test_saving_results_to_parquet(
-    muteable_test_config: FullConfigSchema, tmp_path: Path
+    muteable_test_config: FullConfigSchema, tmp_path: Path,
 ):
     """Test that model performance is saved to a parquet file for querying."""
     cfg = muteable_test_config
