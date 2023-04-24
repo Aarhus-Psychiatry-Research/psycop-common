@@ -1,9 +1,7 @@
 import logging
 from pathlib import Path
-from typing import Sequence
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
-import pandas as pd
 import wandb
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.training_output.artifact_saver.to_disk import (
@@ -13,7 +11,6 @@ from psycop_model_training.training_output.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
