@@ -29,13 +29,13 @@ class ModelEvaluator:
     def _get_pipeline_metadata(self) -> PipeMetadata:
         pipe_metadata = PipeMetadata()
 
-        if hasattr(self.pipe["model"], "feature_importances_"):
+        if hasattr(self.pipe["model"], "feature_importances_"):  # type: ignore
             pipe_metadata.feature_importances = get_feature_importance_dict(
                 pipe=self.pipe,
             )
 
         if "preprocessing" in self.pipe and hasattr(
-            self.pipe["preprocessing"].named_steps,
+            self.pipe["preprocessing"].named_steps,  # type: ignore
             "feature_selection",
         ):
             pipe_metadata.selected_features = get_selected_features_dict(
@@ -77,16 +77,17 @@ class ModelEvaluator:
 
     def evaluate_and_save_eval_data(self) -> float:
         """Evaluate the model and save artifacts."""
+        roc_auc: float = roc_auc_score(  # type: ignore
+            self.eval_ds.y,
+            self.eval_ds.y_hat_probs,
+        )
+
         self.disk_saver.save(
             cfg=self.cfg,
             eval_dataset=self.eval_ds,
             pipe=self.pipe,
             pipe_metadata=self.pipeline_metadata,
-        )
-
-        roc_auc: float = roc_auc_score(  # type: ignore
-            self.eval_ds.y,
-            self.eval_ds.y_hat_probs,
+            roc_auc=roc_auc,
         )
 
         wandb.log(
@@ -99,7 +100,7 @@ class ModelEvaluator:
             },
         )
 
-        logging.info(  # pylint: disable=logging-not-lazy,logging-fstring-interpolation
+        logging.info(
             f"ROC AUC: {roc_auc}",
         )
 

@@ -5,6 +5,7 @@ from typing import Any, Optional, Union
 
 import dill as pkl
 import pandas as pd
+import wandb
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.training_output.dataclasses import EvalDataset, PipeMetadata
 from psycop_model_training.utils.utils import write_df_to_file
@@ -65,10 +66,41 @@ class ArtifactsToDiskSaver:
 
         write_df_to_file(df=df, file_path=file_path)
 
+    def save_run_performance_to_group_parquet(
+        self,
+        roc_auc: float,
+        cfg: FullConfigSchema,
+    ):
+        # Get run performance row
+        lookahead_days = cfg.preprocessing.pre_split.min_lookahead_days
+
+        row = {
+            "run_name": wandb.run.name,  # type: ignore
+            "roc_auc": roc_auc,
+            "timestamp": pd.Timestamp.now(),
+            "lookahead_days": lookahead_days,
+            "model_name": cfg.model.name,
+        }
+
+        # Append row to parquet file in group dir
+        run_group_path = self.dir_path.parent
+        run_performance_path = (
+            run_group_path / f"{cfg.model.name}_{lookahead_days}.parquet"
+        )
+
+        if run_performance_path.exists():
+            df = pd.read_parquet(run_performance_path)
+            df = df.append(row, ignore_index=True)  # type: ignore
+        else:
+            df = pd.DataFrame([row])
+
+        df.to_parquet(run_performance_path, index=False)
+
     def save(
         self,
-        cfg: Optional[FullConfigSchema],
-        eval_dataset: Optional[EvalDataset],
+        roc_auc: float,
+        cfg: FullConfigSchema,
+        eval_dataset: EvalDataset,
         pipe_metadata: Optional[PipeMetadata],
         pipe: Optional[Pipeline],
     ) -> None:
@@ -92,6 +124,8 @@ class ArtifactsToDiskSaver:
 
         if pipe is not None:
             dump_to_pickle(pipe, self.dir_path / "pipe.pkl")
+
+        self.save_run_performance_to_group_parquet(roc_auc=roc_auc, cfg=cfg)
 
         log.info(  # pylint: disable=logging-fstring-interpolation
             f"Saved evaluation dataset, cfg and pipe metadata to {self.dir_path}",

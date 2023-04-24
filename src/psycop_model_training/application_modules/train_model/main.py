@@ -1,5 +1,6 @@
 """Train a single model and evaluate it."""
 from pathlib import Path
+from typing import Optional
 
 import wandb
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
@@ -21,16 +22,19 @@ from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PAT
 
 def get_eval_dir(cfg: FullConfigSchema) -> Path:
     """Get the directory to save evaluation results to."""
-    if wandb.run is not None and cfg.project.wandb.mode != "offline":
-        eval_dir_path = (
-            SHARED_RESOURCES_PATH
-            / cfg.project.name
-            / "model_eval"
-            / wandb.run.group
-            / wandb.run.name
-        )
-    else:
+    # If online
+    ovartaci_path = (
+        SHARED_RESOURCES_PATH
+        / cfg.project.name
+        / "model_eval"
+        / wandb.run.group  # type: ignore
+        / wandb.run.name  # type: ignore
+    )
+
+    if cfg.project.wandb.group == "integration_testing":
         eval_dir_path = PROJECT_ROOT / "tests" / "test_eval_results"
+    else:
+        eval_dir_path = ovartaci_path
 
     eval_dir_path.mkdir(parents=True, exist_ok=True)
 
@@ -40,6 +44,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
 @wandb_alert_on_exception_return_terrible_auc
 def post_wandb_setup_train_model(
     cfg: FullConfigSchema,
+    override_output_dir: Optional[Path] = None,
 ) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
@@ -58,8 +63,10 @@ def post_wandb_setup_train_model(
         n_splits=cfg.train.n_splits,
     )
 
+    eval_dir = eval_dir_path if override_output_dir is None else override_output_dir
+
     roc_auc = ModelEvaluator(
-        eval_dir_path=eval_dir_path,
+        eval_dir_path=eval_dir,
         cfg=cfg,
         pipe=pipe,
         eval_ds=eval_dataset,
@@ -71,6 +78,7 @@ def post_wandb_setup_train_model(
 
 def train_model(
     cfg: FullConfigSchema,
+    override_output_dir: Optional[Path] = None,
 ) -> float:
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
@@ -78,6 +86,6 @@ def train_model(
     # Try except block ensures process doesn't die in the case of an exception,
     # but rather logs to wandb and starts another run with a new combination of
     # hyperparameters
-    roc_auc = post_wandb_setup_train_model(cfg)
+    roc_auc = post_wandb_setup_train_model(cfg, override_output_dir=override_output_dir)
 
     return roc_auc
