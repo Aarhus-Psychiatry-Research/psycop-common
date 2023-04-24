@@ -77,7 +77,7 @@ def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSche
     cfg.preprocessing.post_split.feature_selection.name = "mutual_info_classif"
 
     # Train without the wrapper
-    with pytest.raises(ValueError, match=r".*Input X contains NaN.*"):
+    with pytest.raises(ValueError, match=r".*Input X contains NaN.*"):  # noqa
         WandbHandler(cfg=cfg).setup_wandb()
         post_wandb_setup_train_model.__wrapped__(cfg)
 
