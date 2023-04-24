@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.22.0 (2023-04-24)
+### Feature
+* Add feature descriptions for text features ([`84c696a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/84c696a138ab0f589b2698f67c3097cb32d68200))
+
+### Documentation
+* Add readme link ([`217e550`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/217e5506d4e0b947355158c19854153fd2a48546))
+
 ## v0.21.4 (2023-04-04)
 ### Fix
 * Remove unreasonably high or low bmi values ([`07f52c2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/07f52c207c2c13fc79dd0ba97e243cef470f9fa0))
