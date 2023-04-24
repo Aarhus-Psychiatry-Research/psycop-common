@@ -21,16 +21,19 @@ from psycop_model_training.utils.utils import PROJECT_ROOT, SHARED_RESOURCES_PAT
 
 def get_eval_dir(cfg: FullConfigSchema) -> Path:
     """Get the directory to save evaluation results to."""
-    if cfg.project.wandb.mode != "offline":
-        eval_dir_path = (
-            SHARED_RESOURCES_PATH
-            / cfg.project.name
-            / "model_eval"
-            / wandb.run.group
-            / wandb.run.name
-        )
-    else:
+    # If online
+    ovartaci_path = (
+        SHARED_RESOURCES_PATH
+        / cfg.project.name
+        / "model_eval"
+        / wandb.run.group
+        / wandb.run.name
+    )
+
+    if cfg.project.wandb.group == "integration_testing":
         eval_dir_path = PROJECT_ROOT / "tests" / "test_eval_results"
+    else:
+        eval_dir_path = ovartaci_path
 
     eval_dir_path.mkdir(parents=True, exist_ok=True)
 

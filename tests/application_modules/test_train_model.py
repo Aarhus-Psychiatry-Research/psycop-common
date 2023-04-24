@@ -6,6 +6,7 @@ from psycop_model_training.application_modules.train_model.main import (
     post_wandb_setup_train_model,
     train_model,
 )
+from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.conf_utils import (
     load_test_cfg_as_pydantic,
 )
@@ -77,6 +78,7 @@ def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSche
 
     # Train without the wrapper
     with pytest.raises(ValueError, match=r".*Input X contains NaN.*"):
+        WandbHandler(cfg=cfg).setup_wandb()
         post_wandb_setup_train_model.__wrapped__(cfg)
 
     # Train with the wrapper

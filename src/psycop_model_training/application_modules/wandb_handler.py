@@ -6,6 +6,7 @@ from omegaconf import DictConfig, OmegaConf
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import create_wandb_folders, flatten_nested_dict
+from random_word import RandomWords
 
 
 class WandbHandler:
@@ -58,4 +59,9 @@ class WandbHandler:
             group=self.cfg.project.wandb.group,
             config=self._get_cfg_as_dict(),
             entity=self.cfg.project.wandb.entity,
+            name=None
+            if self.cfg.project.wandb.mode != "offline"
+            else RandomWords().get_random_word(),
         )
+
+        pass
