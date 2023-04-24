@@ -1,6 +1,7 @@
 """Training script for training a single model."""
 import os
-from typing import Any, Optional, Sequence
+from collections.abc import Sequence
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
