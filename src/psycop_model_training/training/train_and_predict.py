@@ -1,6 +1,6 @@
 """Training script for training a single model."""
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -87,7 +87,6 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
 def crossval_train_and_predict(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
-    val: Optional[pd.DataFrame],
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
@@ -98,7 +97,6 @@ def crossval_train_and_predict(
     Args:
         cfg: Config object
         train: Training dataset
-        val: Optional validation dataset for concatenation
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
@@ -107,11 +105,6 @@ def crossval_train_and_predict(
     Returns:
         Evaluation dataset
     """
-    msg = Printer(timestamp=True)
-
-    if val is not None:
-        msg.info("Concatenating train and val for crossvalidation")
-        train = pd.concat([train, val], ignore_index=True)
 
     df = stratified_cross_validation(
         cfg=cfg,
@@ -179,8 +172,8 @@ def train_val_predict(
 
 def train_and_predict(
     cfg: FullConfigSchema,
-    train: pd.DataFrame,
-    val: Optional[pd.DataFrame],
+    train_datasets: Sequence[pd.DataFrame],
+    val_datasets: Sequence[pd.DataFrame],
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
@@ -190,8 +183,8 @@ def train_and_predict(
 
     Args:
         cfg: Config object
-        train: Training dataset
-        val: Optional validation dataset. Must be supplied if n_splits is None.
+        train_datasets: Training datasets
+        val_datasets: Validation datasets
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
@@ -206,7 +199,10 @@ def train_and_predict(
     if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names  # type: ignore
 
-    if n_splits is None and val is not None:  # train on pre-defined splits
+    train = pd.concat(train_datasets, ignore_index=True)
+    val = pd.concat(val_datasets, ignore_index=True)
+
+    if n_splits is None:  # train on pre-defined splits
         eval_dataset = train_val_predict(
             cfg=cfg,
             train=train,
@@ -215,11 +211,10 @@ def train_and_predict(
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,
         )
-    elif n_splits:
+    else:
         eval_dataset = crossval_train_and_predict(
             cfg=cfg,
             train=train,
-            val=val,
             pipe=pipe,
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,
