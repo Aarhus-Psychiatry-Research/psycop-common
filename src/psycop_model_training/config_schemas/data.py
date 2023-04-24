@@ -27,13 +27,13 @@ class DataSchema(BaseModel):
     dir: Union[Path, str]  # Location of the dataset # noqa
     suffix: str = "parquet"  # File suffix to load.
 
-    splits_for_training: Sequence[Literal["train", "val"]] = (
+    splits_for_training: Sequence[Literal["train", "val"]] = [
         "train",
         "val",
-    )  # splits to use for training
-    splits_for_evaluation: Optional[
-        Sequence[Literal["val", "test"]]
-    ] = None  # splits to use for evaluation
+    ]  # splits to use for training
+    splits_for_evaluation: Optional[Sequence[Literal["val", "test", None]]] = [
+        None,
+    ]  # splits to use for evaluation
 
     # Feature specs
     col_name: ColumnNamesSchema = ColumnNamesSchema()

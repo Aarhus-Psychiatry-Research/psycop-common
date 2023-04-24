@@ -40,7 +40,20 @@ def test_integration_test(muteable_test_config: FullConfigSchema):
 def test_crossvalidation(muteable_test_config: FullConfigSchema):
     """Test crossvalidation."""
     cfg = muteable_test_config
-    cfg.train.n_splits = 2
+    train_model(cfg)
+
+
+def test_crossvalidation_train_only(muteable_test_config: FullConfigSchema):
+    """Test crossvalidation on only training data."""
+    cfg = muteable_test_config
+    cfg.data.splits_for_training = ["train"]
+    train_model(cfg)
+
+
+def test_train_val_predict(muteable_test_config: FullConfigSchema):
+    """Test train without crossvalidation."""
+    cfg = muteable_test_config
+    cfg.data.splits_for_evaluation = ["test"]
     train_model(cfg)
 
 
