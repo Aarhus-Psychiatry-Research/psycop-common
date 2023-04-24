@@ -55,12 +55,19 @@ def post_wandb_setup_train_model(
         )
         for split in cfg.data.splits_for_training
     ]
-    eval_datasets = [
-        load_and_filter_split_from_cfg(
-            data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split, split=split
-        )
-        for split in cfg.data.splits_for_evaluation
-    ]
+
+    if cfg.data.splits_for_evaluation is not None:
+        eval_datasets = [
+            load_and_filter_split_from_cfg(
+                data_cfg=cfg.data,
+                pre_split_cfg=cfg.preprocessing.pre_split,
+                split=split,
+            )
+            for split in cfg.data.splits_for_evaluation
+        ]
+    else:
+        eval_datasets = None
+
     pipe = create_post_split_pipeline(cfg)
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets[0])
 
@@ -71,7 +78,6 @@ def post_wandb_setup_train_model(
         pipe=pipe,
         outcome_col_name=outcome_col_name,
         train_col_names=train_col_names,
-        n_splits=cfg.train.n_splits,
     )
 
     eval_dir = eval_dir_path if override_output_dir is None else override_output_dir

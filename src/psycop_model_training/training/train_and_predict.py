@@ -40,7 +40,6 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     train_df: pd.DataFrame,
     train_col_names: list[str],
     outcome_col_name: str,
-    n_splits: int,
 ) -> pd.DataFrame:
     """Performs stratified and grouped cross validation using the pipeline."""
     msg = Printer(timestamp=True)
@@ -52,7 +51,7 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     msg.info("Creating folds")
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
 
-    folds = StratifiedGroupKFold(n_splits=n_splits).split(
+    folds = StratifiedGroupKFold(n_splits=5).split(
         X=X,
         y=y,
         groups=train_df[cfg.data.col_name.id],
@@ -90,7 +89,6 @@ def crossval_train_and_predict(
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-    n_splits: int,
 ) -> EvalDataset:
     """Train model on cross validation folds and return evaluation dataset.
 
@@ -100,7 +98,6 @@ def crossval_train_and_predict(
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
-        n_splits: Number of folds for cross validation
 
     Returns:
         Evaluation dataset
@@ -112,7 +109,6 @@ def crossval_train_and_predict(
         train_df=train,
         train_col_names=train_col_names,
         outcome_col_name=outcome_col_name,
-        n_splits=n_splits,
     )
 
     df = df.rename(columns={"oof_y_hat": "y_hat_prob"})
@@ -173,11 +169,10 @@ def train_val_predict(
 def train_and_predict(
     cfg: FullConfigSchema,
     train_datasets: Sequence[pd.DataFrame],
-    val_datasets: Sequence[pd.DataFrame],
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-    n_splits: Optional[int],
+    val_datasets: Optional[Sequence[pd.DataFrame]] = None,
 ) -> EvalDataset:
     """Train model and return evaluation dataset.
 
@@ -188,7 +183,6 @@ def train_and_predict(
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
-        n_splits: Number of folds for cross validation. If None, no cross validation is performed
 
     Returns:
         Evaluation dataset
@@ -200,9 +194,9 @@ def train_and_predict(
         pipe["model"].feature_names = train_col_names  # type: ignore
 
     train = pd.concat(train_datasets, ignore_index=True)
-    val = pd.concat(val_datasets, ignore_index=True)
 
-    if n_splits is None:  # train on pre-defined splits
+    if val_datasets is not None:  # train on pre-defined splits
+        val = pd.concat(val_datasets, ignore_index=True)
         eval_dataset = train_val_predict(
             cfg=cfg,
             train=train,
@@ -218,7 +212,6 @@ def train_and_predict(
             pipe=pipe,
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,
-            n_splits=n_splits,
         )
 
-    return eval_dataset  # type: ignore
+    return eval_dataset
