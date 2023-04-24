@@ -15,7 +15,6 @@ classifiers = [
   "Operating System :: POSIX :: Linux",
   "Operating System :: MacOS :: MacOS X",
   "Operating System :: Microsoft :: Windows",
-  "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10"
 ]
@@ -45,6 +44,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pyright",
+  "pyright-polite",
   "pre-commit>=2.19.0,<3.2.3",
   "setuptools>=65.3.0,<67.6.0",
   "ruff==0.0.261", # important that these match the pre-commit hooks
@@ -52,6 +52,7 @@ dev = [
   "pandas-stubs",
   "pydantic",
   "invoke",
+  "tox",
 ]
 tests = [
   "pytest>=7.1.2,<7.3.2",
@@ -91,6 +92,7 @@ exclude = [
   ".*venv*", 
   ".*/",
   ".git",
+  ".tox",
 ]
 pythonPlatform = "Darwin"
 
@@ -192,3 +194,32 @@ version_variable = [
 upload_to_pypi = false
 upload_to_release = true
 build_command = "python -m pip install build; python -m build"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{39,310}
+
+[testenv]
+description: run unit tests
+extras = tests
+use_develop = true
+commands =
+  pytest -n auto
+
+[testenv:type]
+description: run type checks
+extras = test, dev
+basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
+use_develop = true
+commands =
+  pyright .
+
+[testenv:docs]
+description: build docs
+extras = docs
+basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
+use_develop = true
+commands =
+  sphinx-build -b html docs docs/_build/html
+"""

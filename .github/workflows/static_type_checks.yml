@@ -1,4 +1,4 @@
-# We do not include mypy as a pre-commit hook because pre-commit hooks
+# We do not include static_type_checks as a pre-commit hook because pre-commit hooks
 # are installed in their own virtual environment, so static_type_checks cannot
 # use stubs from imports
 name: static_type_checks
@@ -17,39 +17,37 @@ jobs:
     concurrency:
       group: "${{ github.workflow }} @ ${{ github.ref }}"
       cancel-in-progress: true
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache venv
+      - name: Cache tox
         uses: actions/cache@v3.2.6
-        id: cache_venv
+        id: cache_tox
         with:
           path: |
-            .venv
-          key: ${{ runner.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+            .tox
+          key: ${{ runner.os }}-${{ matrix.python-version }}-static-type-checks
 
       - name: Set up Python
         uses: actions/setup-python@v4
         id: setup_python
-        if: steps.cache_venv.outputs.cache-hit != 'true'
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         shell: bash
-        if: steps.cache_venv.outputs.cache-hit != 'true'
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -e .[dev]
+          pip install invoke tox
 
       - name: Run static type checker
         id: pyright
         continue-on-error: true
         run: |
-          source .venv/bin/activate
-          if pyright .; then
+          if inv static-type-checks; then
             echo "pyright check passed"
             echo "pyright_failed=0" >> $GITHUB_OUTPUT
           else
@@ -73,10 +71,15 @@ jobs:
         with:
           message: |
             ✨ Looks like pyright failed ✨
-
+          
             If you want to fix this, we recommend doing it locally by either:
-              a) Enabling pyright in VSCode and going through the errors in the problems tab (VSCode settings > Python > Analysis: Type checking mode > "basic")
+            
+              a) Enabling pyright in VSCode and going through the errors in the problems tab 
+            
+            `VSCode settings > Python > Analysis: Type checking mode > "basic"`
+            
               b) Debugging via the command line
+            
                 1. Installing pyright, which is included in the dev dependencies: `pip install -e ".[dev]"`
                 2. Diagnosing the errors by running `pyright .`
 
@@ -91,5 +94,4 @@ jobs:
         id: fail_run
         if: ${{steps.pyright.outputs.pyright_failed == 1}}
         run: |
-          source .venv/bin/activate
-          pyright . # Rerunning pyright isn't optimal computationally, but typically takes no more than a couple of seconds, and this ensures that the errors are in the failing step
+          inv static-type-checks # Rerunning pyright isn't optimal computationally, but typically takes no more than a couple of seconds, and this ensures that the errors are in the failing step
