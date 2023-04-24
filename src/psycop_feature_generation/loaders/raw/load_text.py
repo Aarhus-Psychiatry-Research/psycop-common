@@ -85,7 +85,7 @@ def _load_text_sfis_for_year(
         database="USR_PS_FORSK",
         chunksize=None,
         n_rows=n_rows,
-    )  # type: ignore
+    ) 
 
 
 def load_text_sfis(
@@ -179,7 +179,6 @@ def load_text_split(
     text_split_df = filter_by_split_ids(
         df_to_split=text_df,
         split_id_df=split_id_df,
-        split_name=split_name,
     )
 
     return text_split_df

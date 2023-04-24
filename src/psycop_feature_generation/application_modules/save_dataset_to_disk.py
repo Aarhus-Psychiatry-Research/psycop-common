@@ -37,7 +37,6 @@ def save_split_to_disk(
 def filter_by_split_ids(
     df_to_split: pd.DataFrame,
     split_id_df: pd.DataFrame,
-    split_name: Union[list[str], str],
 ):
     """Filter dataframe by split ids."""
     # Find IDs which are in split_ids, but not in flattened_df
@@ -49,7 +48,7 @@ def filter_by_split_ids(
     ]
 
     log.warning(
-        f"{split_name}: There are {len(ids_in_split_but_not_in_flattened_df)} ({round(len(ids_in_split_but_not_in_flattened_df) / len(split_ids) * 100, 2)}%) ids which are in {split_name}_ids but not in flattened_df_ids, will get dropped during merge. If examining patients based on physical visits, see 'OBS: Patients without physical visits' on the wiki for more info.",
+        f"There are {len(ids_in_split_but_not_in_flattened_df)} ({round(len(ids_in_split_but_not_in_flattened_df) / len(split_ids) * 100, 2)}%) ids which are in ids but not in flattened_df_ids, will get dropped during merge. If examining patients based on physical visits, see 'OBS: Patients without physical visits' on the wiki for more info.",
     )
 
     split_df = pd.merge(df_to_split, split_id_df, how="inner", validate="m:1")
@@ -81,7 +80,6 @@ def split_and_save_dataset_to_disk(
 
         split_df = filter_by_split_ids(
             df_to_split=flattened_df,
-            split_name=split_name,
             split_id_df=split_id_df,
         )
 
