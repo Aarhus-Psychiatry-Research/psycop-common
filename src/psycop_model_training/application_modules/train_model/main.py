@@ -1,5 +1,6 @@
 """Train a single model and evaluate it."""
 from pathlib import Path
+from typing import Optional
 
 import wandb
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
@@ -42,7 +43,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
 
 @wandb_alert_on_exception_return_terrible_auc
 def post_wandb_setup_train_model(
-    cfg: FullConfigSchema,
+    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None
 ) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
@@ -61,8 +62,10 @@ def post_wandb_setup_train_model(
         n_splits=cfg.train.n_splits,
     )
 
+    eval_dir = eval_dir_path if override_output_dir is None else override_output_dir
+
     roc_auc = ModelEvaluator(
-        eval_dir_path=eval_dir_path,
+        eval_dir_path=eval_dir,
         cfg=cfg,
         pipe=pipe,
         eval_ds=eval_dataset,
@@ -73,7 +76,7 @@ def post_wandb_setup_train_model(
 
 
 def train_model(
-    cfg: FullConfigSchema,
+    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None
 ) -> float:
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
@@ -81,6 +84,6 @@ def train_model(
     # Try except block ensures process doesn't die in the case of an exception,
     # but rather logs to wandb and starts another run with a new combination of
     # hyperparameters
-    roc_auc = post_wandb_setup_train_model(cfg)
+    roc_auc = post_wandb_setup_train_model(cfg, override_output_dir=override_output_dir)
 
     return roc_auc
