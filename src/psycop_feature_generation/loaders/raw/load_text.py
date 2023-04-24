@@ -85,7 +85,7 @@ def _load_text_sfis_for_year(
         database="USR_PS_FORSK",
         chunksize=None,
         n_rows=n_rows,
-    ) 
+    )
 
 
 def load_text_sfis(

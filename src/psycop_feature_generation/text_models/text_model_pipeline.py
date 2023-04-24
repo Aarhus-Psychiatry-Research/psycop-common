@@ -100,7 +100,7 @@ def text_model_pipeline(
     # fit model
     vec = fit_text_model(
         model=model,
-        corpus=corpus["text"],  
+        corpus=corpus["text"],
         ngram_range=ngram_range,
         max_df=max_df,
         min_df=min_df,
