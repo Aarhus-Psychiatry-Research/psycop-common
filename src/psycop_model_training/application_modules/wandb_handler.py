@@ -55,7 +55,7 @@ class WandbHandler:
         run_name = (
             None
             if self.cfg.project.wandb.mode != "offline"
-            else RandomWords().get_random_word()
+            else RandomWords().get_random_word() + RandomWords().get_random_word()
         )
 
         wandb.init(
