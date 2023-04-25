@@ -22,7 +22,7 @@ def load(
     exclude_atc_codes: list[str] | None = None,
     administration_route: str | None = None,
     administration_method: str | None = None,
-    fixed_doses: tuple(int) | None = None,
+    fixed_doses: tuple[int] | None = None,
 ) -> pd.DataFrame:
     """Load medications. Aggregates prescribed/administered if both true. If
     wildcard_atc_code, match from atc_code*. Aggregates all that match. Beware
@@ -283,12 +283,12 @@ def olanzapine_depot(
         n_rows=n_rows,
         administration_route="IM",
         administration_method=administration_method,
-        fixed_doses=(
+        fixed_doses=(  # doses are found on pro.medicin.dk
             150000,
             210000,
             300000,
             405000,
-        ),  # doses are found on pro.medicin.dk
+        ),
     )
 
 
@@ -307,11 +307,11 @@ def aripiprazole_depot(
         n_rows=n_rows,
         administration_route="IM",
         administration_method=administration_method,
-        fixed_doses=(
+        fixed_doses=(  # doses are found on pro.medicin.dk
             200000,
             300000,
             400000,
-        ),  # doses are found on pro.medicin.dk
+        ),
     )
 
 
@@ -330,11 +330,11 @@ def risperidone_depot(
         n_rows=n_rows,
         administration_route="IM",
         administration_method=administration_method,
-        fixed_doses=(
+        fixed_doses=(  # doses are found on pro.medicin.dk
             25000,
             37500,
             50000,
-        ),  # doses are found on pro.medicin.dk
+        ),
     )
 
 
@@ -353,7 +353,7 @@ def paliperidone_depot(
         n_rows=n_rows,
         administration_route="IM",
         administration_method=administration_method,
-        fixed_doses=(
+        fixed_doses=(  # doses are found on pro.medicin.dk
             25000,
             50000,
             75000,
@@ -363,7 +363,7 @@ def paliperidone_depot(
             263000,
             350000,
             525000,
-        ),  # doses are found on pro.medicin.dk
+        ),
     )
 
 
@@ -382,14 +382,14 @@ def haloperidol_depot(
         n_rows=n_rows,
         administration_route="IM",
         administration_method=administration_method,
-        fixed_doses=(
+        fixed_doses=(  # doses are found on pro.medicin.dk
             50000,
             100000,
             150000,
             200000,
             250000,
             300000,
-        ),  # doses are found on pro.medicin.dk
+        ),
     )
 
 
@@ -408,12 +408,12 @@ def perphenazine_depot(
         n_rows=n_rows,
         administration_route="IM",
         administration_method=administration_method,
-        fixed_doses=(
+        fixed_doses=(  # doses are found on pro.medicin.dk
             54000,
             108000,
             162000,
             216000,
-        ),  # doses are found on pro.medicin.dk
+        ),
     )
 
 
@@ -432,13 +432,13 @@ def zuclopenthixol_depot(
         n_rows=n_rows,
         administration_route="IM",
         administration_method=administration_method,
-        fixed_doses=(
+        fixed_doses=(  # doses are found on pro.medicin.dk
             100000,
             200000,
             300000,
             400000,
             500000,
-        ),  # doses are found on pro.medicin.dk
+        ),
     )
 
 
@@ -458,31 +458,6 @@ def olanzapine(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
-    )
-
-
-@data_loaders.register("olanzapine_depot")
-def olanzapine_depot(
-    n_rows: int | None = None,
-    load_prescribed: bool = False,
-    load_administered: bool = True,
-    administration_route: str | None = None,
-    administration_method: str | None = None,
-) -> pd.DataFrame:
-    return load(
-        atc_code="N05AH03",
-        load_prescribed=load_prescribed,
-        load_administered=load_administered,
-        wildcard_code=False,
-        n_rows=n_rows,
-        administration_route="IM",
-        administration_method=administration_method,
-        fixed_doses=(
-            150000,
-            210000,
-            300000,
-            405000,
-        ),  # doses are found on pro.medicin.dk
     )
 
 
