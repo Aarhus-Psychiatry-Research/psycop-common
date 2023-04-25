@@ -179,7 +179,7 @@ def load_text_split(
     text_split_df = filter_by_split_ids(
         df_to_split=text_df,
         split_id_df=split_id_df,
-        split_name=split_name,
+        split_name=split_name, # type: ignore
     )
 
     return text_split_df
