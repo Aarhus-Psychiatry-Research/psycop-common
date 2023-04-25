@@ -81,10 +81,7 @@ def test_synth_data_generator():
     ]
 
     for split in ("train", "val"):
-        if split == "train":
-            n_samples = 70_000
-        elif split == "val":
-            n_samples = 30_000
+        n_samples = 70000 if split == "train" else 30000
 
         outcome_col_name = "outc_dichotomous_t2d_within_30_days_max_fallback_0"
 

@@ -6,6 +6,7 @@ from psycop_model_training.application_modules.train_model.main import (
     post_wandb_setup_train_model,
     train_model,
 )
+from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.conf_utils import (
     load_test_cfg_as_pydantic,
 )
@@ -55,8 +56,8 @@ def test_feature_selection(muteable_test_config: FullConfigSchema):
     cfg = muteable_test_config
     cfg.preprocessing.post_split.feature_selection.Config.allow_mutation = True
     cfg.preprocessing.post_split.feature_selection.name = "mutual_info_classif"
-    cfg.preprocessing.post_split.feature_selection.params[
-        "percentile"  # Type: ignore
+    cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
+        "percentile"
     ] = 10
     train_model(cfg)
 
@@ -70,13 +71,14 @@ def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSche
     """
     cfg = muteable_test_config
     cfg.preprocessing.post_split.imputation_method = None
-    cfg.preprocessing.post_split.feature_selection.params[  # Type: ignore
+    cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
         "percentile"
     ] = 10
     cfg.preprocessing.post_split.feature_selection.name = "mutual_info_classif"
 
     # Train without the wrapper
-    with pytest.raises(ValueError, match=r".*Input X contains NaN.*"):
+    with pytest.raises(ValueError, match=r".*Input X contains NaN.*"):  # noqa
+        WandbHandler(cfg=cfg).setup_wandb()
         post_wandb_setup_train_model.__wrapped__(cfg)
 
     # Train with the wrapper

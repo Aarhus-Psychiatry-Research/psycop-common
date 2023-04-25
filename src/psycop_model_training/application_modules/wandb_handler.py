@@ -6,6 +6,7 @@ from omegaconf import DictConfig, OmegaConf
 from psycop_model_training.config_schemas.basemodel import BaseModel
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.utils.utils import create_wandb_folders, flatten_nested_dict
+from random_word import RandomWords
 
 
 class WandbHandler:
@@ -43,7 +44,7 @@ class WandbHandler:
             cfg_as_dict = self._unpack_pydantic_objects_in_dict(d=cfg_copy)
 
         flattened_dict = flatten_nested_dict(
-            d=cfg_as_dict,
+            d=cfg_as_dict,  # type: ignore
             sep=".",
         )
 
@@ -51,6 +52,12 @@ class WandbHandler:
 
     def setup_wandb(self):
         """Setup wandb for the current run."""
+        run_name = (
+            None
+            if self.cfg.project.wandb.mode != "offline"
+            else RandomWords().get_random_word() + RandomWords().get_random_word()
+        )
+
         wandb.init(
             project=f"{self.cfg.project.name}-baseline-model-training",
             reinit=True,
@@ -58,4 +65,5 @@ class WandbHandler:
             group=self.cfg.project.wandb.group,
             config=self._get_cfg_as_dict(),
             entity=self.cfg.project.wandb.entity,
+            name=run_name,
         )

@@ -19,8 +19,8 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        os: [ubuntu-latest] #, macos-latest]
-        python-version: ["3.9"] # , "3.8"]
+        os: [ubuntu-latest] #, macos-latest, windows-latest]
+        python-version: ["3.9"] # , "3.10"]
 
     # This allows a subsequently queued workflow run to interrupt previous runs
     concurrency:
@@ -30,40 +30,35 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache venv
+      - name: Cache tox
         uses: actions/cache@v3.2.6
-        id: cache_venv
+        id: cache_tox
         with:
           path: |
-            .venv
-          key: ${{ runner.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+            .tox
+          key: ${{ runner.os }}-${{ matrix.python-version }}-tests
 
       - name: Set up Python
         uses: actions/setup-python@v4
-        id: setup_python
-        if: steps.cache_venv.outputs.cache-hit != 'true'
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         shell: bash
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -e .[tests]
+          pip install invoke tox
 
       - name: Run and write pytest
         id: run_pytest
         shell: bash
         run: |
-          source .venv/bin/activate
-          pytest --durations=0 -n 2 -x --junitxml=pytest.xml --cov-report=term-missing --cov=src/ tests/
+            # Specifying two sets of "--pytest-args" is required for invoke to parse it as a list
+            inv test --pytest-args="--durations=0" --pytest-args="--junitxml=pytest.xml --cov-report=term-missing --cov=src/"
 
       - name: Test report on failures
         uses: EnricoMi/publish-unit-test-result-action@v2
         id: test_report_with_annotations
-        if: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' &&  github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
         with:
           comment_mode: "failures"
           files: |
@@ -72,9 +67,9 @@ jobs:
       - name: Pytest coverage comment
         id: coverage-comment
         uses: MishaKav/pytest-coverage-comment@main
-        if: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' &&  github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }}
         with:
           create-new-comment: false
-          report-only-changed-files: true
+          report-only-changed-files: false
           pytest-coverage-path: pytest-coverage.txt
           junitxml-path: ./pytest.xml
