@@ -22,6 +22,7 @@ def load(
     exclude_atc_codes: list[str] | None = None,
     administration_route: str | None = None,
     administration_method: str | None = None,
+    fixed_doses: tuple | None = None,
 ) -> pd.DataFrame:
     """Load medications. Aggregates prescribed/administered if both true. If
     wildcard_atc_code, match from atc_code*. Aggregates all that match. Beware
@@ -43,6 +44,7 @@ def load(
         exclude_atc_codes (list[str], optional): Drop rows if atc_code is a direct match to any of these. Defaults to None.
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Only applicable for administered medication, not prescribed. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Only applicable for administered medication, not prescribed. Defaults to None.
+        fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
 
     Returns:
         pd.DataFrame: Cols: dw_ek_borger, timestamp, {atc_code_prefix}_value = 1
@@ -77,6 +79,7 @@ def load(
             load_diagnoses=False,
             administration_route=administration_route,
             administration_method=administration_method,
+            fixed_doses=fixed_doses,
         )
 
         df = pd.concat([df, df_medication_prescribed])
@@ -94,6 +97,7 @@ def load(
             load_diagnoses=False,
             administration_route=administration_route,
             administration_method=administration_method,
+            fixed_doses=fixed_doses,
         )
         df = pd.concat([df, df_medication_administered])
 
@@ -261,6 +265,180 @@ def top_10_weight_gaining_antipsychotics(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
+    )
+
+
+@data_loaders.register("olanzapine_depot")
+def olanzapine_depot(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05AH03",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route="IM",
+        administration_method=administration_method,
+        fixed_doses=(  # doses are found on pro.medicin.dk
+            150000,
+            210000,
+            300000,
+            405000,
+        ),
+    )
+
+
+@data_loaders.register("aripiprazole_depot")
+def aripiprazole_depot(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05AX12",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route="IM",
+        administration_method=administration_method,
+        fixed_doses=(  # doses are found on pro.medicin.dk
+            200000,
+            300000,
+            400000,
+        ),
+    )
+
+
+@data_loaders.register("risperidone_depot")
+def risperidone_depot(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05AX08",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route="IM",
+        administration_method=administration_method,
+        fixed_doses=(  # doses are found on pro.medicin.dk
+            25000,
+            37500,
+            50000,
+        ),
+    )
+
+
+@data_loaders.register("paliperidone_depot")
+def paliperidone_depot(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05AX13",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route="IM",
+        administration_method=administration_method,
+        fixed_doses=(  # doses are found on pro.medicin.dk
+            25000,
+            50000,
+            75000,
+            100000,
+            150000,
+            175000,
+            263000,
+            350000,
+            525000,
+        ),
+    )
+
+
+@data_loaders.register("haloperidol_depot")
+def haloperidol_depot(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05AD01",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route="IM",
+        administration_method=administration_method,
+        fixed_doses=(  # doses are found on pro.medicin.dk
+            50000,
+            100000,
+            150000,
+            200000,
+            250000,
+            300000,
+        ),
+    )
+
+
+@data_loaders.register("perphenazine_depot")
+def perphenazine_depot(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05AB03",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route="IM",
+        administration_method=administration_method,
+        fixed_doses=(  # doses are found on pro.medicin.dk
+            54000,
+            108000,
+            162000,
+            216000,
+        ),
+    )
+
+
+@data_loaders.register("zuclopenthixol_depot")
+def zuclopenthixol_depot(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05AF05",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route="IM",
+        administration_method=administration_method,
+        fixed_doses=(  # doses are found on pro.medicin.dk
+            100000,
+            200000,
+            300000,
+            400000,
+            500000,
+        ),
     )
 
 
