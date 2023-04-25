@@ -44,7 +44,7 @@ def load(
         exclude_atc_codes (list[str], optional): Drop rows if atc_code is a direct match to any of these. Defaults to None.
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Only applicable for administered medication, not prescribed. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Only applicable for administered medication, not prescribed. Defaults to None.
-        fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Defaults to None.
+        fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
 
     Returns:
         pd.DataFrame: Cols: dw_ek_borger, timestamp, {atc_code_prefix}_value = 1

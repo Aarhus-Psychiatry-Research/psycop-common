@@ -120,7 +120,7 @@ def load_from_codes(
         exclude_codes (list[str], optional): Drop rows if their code is in this list. Defaults to None.
         administration_route (str, optional): Whether to subset by a specific administration route, e.g. 'OR', 'IM' or 'IV'. Defaults to None.
         administration_method (str, optional): Whether to subset by method of administration, e.g. 'PN' or 'Fast'. Defaults to None.
-        fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Defaults to None.
+        fixed_doses ( tuple(int), optional): Whether to subset by specific doses. Doses are set as micrograms (e.g., 100 mg = 100000). Defaults to None which return all doses. Find standard dosage for medications on pro.medicin.dk.
         shak_location_col (str, optional): Name of column containing shak code. Defaults to None. Combine with shak_code and shak_sql_operator.
         shak_code (int, optional): Shak code indicating where to keep/not keep visits from (e.g. 6600). Defaults to None.
         keep_code_col (bool, optional): Whether to keep the code column. Defaults to False.
