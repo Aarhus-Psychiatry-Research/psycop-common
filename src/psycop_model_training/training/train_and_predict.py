@@ -1,6 +1,5 @@
 """Training script for training a single model."""
 import os
-from collections.abc import Sequence
 from typing import Any, Optional
 
 import numpy as np
@@ -84,7 +83,7 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     return train_df
 
 
-def crossval_train_and_predict(
+def crossvalidate(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
     pipe: Pipeline,
@@ -121,7 +120,7 @@ def crossval_train_and_predict(
     )
 
 
-def train_val_predict(
+def train_validate(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
@@ -169,11 +168,11 @@ def train_val_predict(
 
 def train_and_predict(
     cfg: FullConfigSchema,
-    train_datasets: Sequence[pd.DataFrame],
+    train_datasets: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-    val_datasets: Optional[Sequence[pd.DataFrame]] = None,
+    val_datasets: Optional[pd.DataFrame] = None,
 ) -> EvalDataset:
     """Train model and return evaluation dataset.
 
@@ -194,22 +193,19 @@ def train_and_predict(
     if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names  # type: ignore
 
-    train = pd.concat(train_datasets, ignore_index=True)
-
     if val_datasets is not None:  # train on pre-defined splits
-        val = pd.concat(val_datasets, ignore_index=True)
-        eval_dataset = train_val_predict(
+        eval_dataset = train_validate(
             cfg=cfg,
-            train=train,
-            val=val,
+            train=train_datasets,
+            val=val_datasets,
             pipe=pipe,
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,
         )
     else:
-        eval_dataset = crossval_train_and_predict(
+        eval_dataset = crossvalidate(
             cfg=cfg,
-            train=train,
+            train=train_datasets,
             pipe=pipe,
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,

@@ -33,7 +33,7 @@ class DataSchema(BaseModel):
     ]  # splits to use for training
     splits_for_evaluation: Optional[Sequence[Literal["val", "test", None]]] = [
         None,
-    ]  # splits to use for evaluation
+    ]  # splits to use for evaluation. If None, crossvalidation is done on splits_for_training split(s).
 
     # Feature specs
     col_name: ColumnNamesSchema = ColumnNamesSchema()

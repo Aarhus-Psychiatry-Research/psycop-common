@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Optional
 
+import pandas as pd
 import wandb
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -49,29 +50,35 @@ def post_wandb_setup_train_model(
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
 
-    train_datasets = [
-        load_and_filter_split_from_cfg(
-            data_cfg=cfg.data,
-            pre_split_cfg=cfg.preprocessing.pre_split,
-            split=split,
-        )
-        for split in cfg.data.splits_for_training
-    ]
-
-    if cfg.data.splits_for_evaluation is not None:
-        eval_datasets = [
+    train_datasets = pd.concat(
+        [
             load_and_filter_split_from_cfg(
                 data_cfg=cfg.data,
                 pre_split_cfg=cfg.preprocessing.pre_split,
-                split=split,  # type: ignore
+                split=split,
             )
-            for split in cfg.data.splits_for_evaluation
-        ]
+            for split in cfg.data.splits_for_training
+        ],
+        ignore_index=True,
+    )
+
+    if cfg.data.splits_for_evaluation is not None:
+        eval_datasets = pd.concat(
+            [
+                load_and_filter_split_from_cfg(
+                    data_cfg=cfg.data,
+                    pre_split_cfg=cfg.preprocessing.pre_split,
+                    split=split,  # type: ignore
+                )
+                for split in cfg.data.splits_for_evaluation
+            ],
+            ignore_index=True,
+        )
     else:
         eval_datasets = None
 
     pipe = create_post_split_pipeline(cfg)
-    outcome_col_name, train_col_names = get_col_names(cfg, train_datasets[0])
+    outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
     eval_dataset = train_and_predict(
         cfg=cfg,

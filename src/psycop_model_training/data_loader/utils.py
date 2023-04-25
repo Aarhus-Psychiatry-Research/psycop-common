@@ -8,7 +8,6 @@ from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.config_schemas.preprocessing import (
     PreSplitPreprocessingConfigSchema,
 )
-from psycop_model_training.data_loader.data_classes import SplitDataset
 from psycop_model_training.data_loader.data_loader import DataLoader
 from psycop_model_training.preprocessing.pre_split.full_processor import (
     pre_split_process_full_dataset,
@@ -69,22 +68,6 @@ def load_and_filter_train_from_cfg(
         data_cfg=cfg.data,
         split="train",
         cache_dir=cache_dir,
-    )
-
-
-def load_and_filter_train_and_val_from_cfg(cfg: FullConfigSchema) -> SplitDataset:
-    """Load train and validation data from file."""
-    return SplitDataset(
-        train=load_and_filter_split_from_cfg(
-            pre_split_cfg=cfg.preprocessing.pre_split,
-            data_cfg=cfg.data,
-            split="train",
-        ),
-        val=load_and_filter_split_from_cfg(
-            pre_split_cfg=cfg.preprocessing.pre_split,
-            data_cfg=cfg.data,
-            split="val",
-        ),
     )
 
 
