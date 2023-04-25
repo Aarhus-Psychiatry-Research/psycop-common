@@ -176,7 +176,7 @@ def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
     min_n_in_bin: int = 0,
     bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
-    bin_unit: bin_unit_literals = "M",
+    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "M",
     fig_size: tuple[int, int] = (5, 5),
     dpi: int = 300,
     pos_rate: float = 0.05,
@@ -222,7 +222,7 @@ def plot_time_from_first_positive_to_event(
     ] / np.timedelta64(
         1,
         bin_unit,
-    )
+    )  # type: ignore
     df_true_pos["time_from_first_positive_to_event_binned"], _ = bin_continuous_data(
         df_true_pos["time_from_pred_to_event"],
         bins=bins,
