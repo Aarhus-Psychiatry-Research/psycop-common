@@ -1,5 +1,6 @@
 from collections.abc import Callable, Iterable, Sequence
-from typing import Literal
+from functools import partial
+from typing import Literal, Optional
 
 import numpy as np
 import pandas as pd
@@ -12,6 +13,7 @@ from psycop_model_evaluation.utils import (
     round_floats_to_edge,
 )
 from psycop_model_training.training_output.dataclasses import EvalDataset
+from sklearn.metrics import recall_score
 
 
 def create_performance_by_timedelta(
@@ -23,6 +25,7 @@ def create_performance_by_timedelta(
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
     bin_unit: Literal["h", "D", "M", "Q", "Y"],
+    confidence_interval: Optional[float] = None,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
@@ -30,18 +33,19 @@ def create_performance_by_timedelta(
     """Create dataframe for plotting performance metric from time to or from
     some event (e.g. time of diagnosis, time from first visit).
     Args:
-        y (Iterable[int]): True labels
-        y_to_fn (Iterable[float]): The input to the function
-        metric_fn (Callable): Function to calculate metric
-        time_one (Iterable[pd.Timestamp]): Timestamps for time one (e.g. first visit).
-        time_two (Iterable[pd.Timestamp]): Timestamps for time two.
-        direction (str): Which direction to calculate time difference.
+        y: True labels
+        y_to_fn: The input to the function
+        metric_fn: Function to calculate metric
+        time_one: Timestamps for time one (e.g. first visit).
+        time_two: Timestamps for time two.
+        direction: Which direction to calculate time difference.
         Can either be 't2-t1' or 't1-t2'.
-        bins (Iterable[float]): Bins to group by.
-        bin_unit (Literal["h", "D", "M", "Q", "Y"]): Unit of time to use for bins.
-        bin_continuous_input (bool, ): Whether to bin input. Defaults to True.
-        drop_na_events (bool, ): Whether to drop rows where the event is NA. Defaults to True.
-        min_n_in_bin (int, ): Minimum number of rows in a bin to include in output. Defaults to 10.
+        bins: Bins to group by.
+        confidence_interval: Confidence interval to use for
+        bin_unit: Unit of time to use for bins.
+        bin_continuous_input: Whether to bin input. Defaults to True.
+        drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
+        min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
@@ -93,9 +97,14 @@ def create_performance_by_timedelta(
             bins=bins,
         )
 
-    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        calc_performance,  # type: ignore
+    _calc_performance = partial(
+        calc_performance,
         metric=metric_fn,
+        confidence_interval=confidence_interval,
+    )
+
+    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
+        _calc_performance,
     )
 
 
@@ -132,12 +141,6 @@ def create_sensitivity_by_time_to_outcome_df(
         },
     )
 
-    # Get proportion of y_hat == 1, which is equal to the actual positive rate in the data.
-    threshold_percentile = round(
-        actual_positive_rate * 100,
-        2,
-    )
-
     df = df[df["y"] == 1]
 
     # Calculate difference in days between columns
@@ -156,17 +159,33 @@ def create_sensitivity_by_time_to_outcome_df(
         bins=bins,
     )
 
-    output_df = (
-        df[["days_to_outcome_binned", "true_positive", "false_negative"]]
-        .groupby("days_to_outcome_binned")
-        .sum()
+    _calc_performance = partial(
+        calc_performance,
+        metric=recall_score,
+        confidence_interval=0.95,
     )
 
-    output_df["sens"] = round(
-        output_df["true_positive"]
-        / (output_df["true_positive"] + output_df["false_negative"]),
+    df_with_metric = (
+        df.groupby("days_to_outcome_binned")
+        .apply(
+            _calc_performance,
+        )
+        .reset_index()
+    )
+
+    output_df = df_with_metric.pivot(
+        index="days_to_outcome_binned",
+        columns="level_1",
+        values=0,
+    )
+
+    # Get proportion of y_hat == 1, which is equal to the actual positive rate in the data.
+    threshold_percentile = round(
+        actual_positive_rate * 100,
         2,
     )
+    output_df["sens"] = output_df["metric"]
+    output_df = output_df.drop("metric", axis=1)
 
     # Prep for plotting
     ## Save the threshold for each bin
@@ -174,11 +193,14 @@ def create_sensitivity_by_time_to_outcome_df(
     output_df["threshold_percentile"] = threshold_percentile
     output_df["actual_positive_rate"] = round(actual_positive_rate, 2)
 
+    output_df = output_df.dropna(subset=["n_in_bin"])
+
     output_df = output_df.reset_index()
 
-    # Convert days_to_outcome_binned to string for plotting
-    output_df["days_to_outcome_binned"] = output_df["days_to_outcome_binned"].astype(
-        str,
+    df["days_to_outcome_binned"] = pd.Categorical(
+        df["days_to_outcome_binned"],
+        categories=df["days_to_outcome_binned"].index.tolist(),
+        ordered=True,
     )
 
     return output_df

@@ -1,51 +1,66 @@
 """Test that the descriptive stats table is generated correctly."""
 
-from random import randint
 
+import time
+
+import numpy as np
 import pandas as pd
-from psycop_model_evaluation.descriptive_stats_table import (
-    DescriptiveStatsTable,
-)
-from psycop_model_training.training_output.dataclasses import EvalDataset
+from psycop_model_evaluation.utils import bin_continuous_data
+from tableone import TableOne
 
 
-def test_generate_descriptive_stats_table(synth_eval_dataset: EvalDataset):
-    """Test that table is generated correctly."""
+def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
+    """Test descriptive stats table."""
+    df = synth_eval_df
 
-    col_name = "pred_f_20_max"
+    # Multiply the dataset by 10 to benchmark the performance
+    df = pd.concat([df] * 10, ignore_index=True)
 
-    additional_columns_df = pd.DataFrame(
-        {
-            "dw_ek_borger": synth_eval_dataset.ids,
-            col_name: [randint(0, 1) for _ in range(len(synth_eval_dataset.y))],
-        },
+    # Assign 85% to train and 15% to test
+    df["split"] = np.random.choice(
+        ["1. train", "2. test", "3. val"],
+        size=len(df),
+        p=[0.85, 0.10, 0.05],
     )
+    df["age_grouped"] = bin_continuous_data(
+        series=df["age"],
+        bins=[18, 35, 40, 45],
+        bin_decimals=None,
+    )[0]
+    df = df.drop(columns=["age"])
 
-    table1 = DescriptiveStatsTable(
-        eval_dataset=synth_eval_dataset,
-        additional_columns_df=additional_columns_df,
-    )
+    labels = {"is_female": "Female", "age_grouped": "Age group"}
+    categorical = ["age_grouped", "is_female"]
 
-    output_table: pd.DataFrame = table1.generate_descriptive_stats_table(  # type: ignore
-        output_format="df",
-    )
+    start_time = time.time()
+    visits_table_df = TableOne(
+        data=df,
+        columns=list(labels),
+        labels=labels,
+        categorical=categorical,
+        groupby="split",
+        pval=True,
+    ).tableone
 
-    # Assert that there are no NaN values in the table
-    assert not output_table.isnull().values.any()
+    # Grouped
+    df["dw_ek_borger"] = synth_eval_df["dw_ek_borger"]
+    df["age"] = synth_eval_df["age"]
+    grouped_df = df.groupby("dw_ek_borger").agg({"is_female": "max"})
+    grouped_df["split"] = grouped_df.merge(df, how="left", on="dw_ek_borger")[["split"]]
 
-    # Assert that all generic statistics are present
-    assert (
-        output_table["category"]
-        .isin(
-            [
-                "(visit_level) age (mean / interval)",
-                "(visit_level) visits followed by positive outcome",
-                "(patient_level) patients_with_positive_outcome",
-                "(patient level) time_to_first_positive_outcome",
-            ],
-        )
-        .any()
-    )
+    grouped_labels = {"is_female": "Female"}
+    grouped_categorical_columns = ["is_female"]
 
-    # Assert that all additional columns are present
-    assert f"(visit level) {col_name}" in output_table["category"].values
+    patients_table_df = TableOne(
+        data=grouped_df,
+        columns=list(grouped_labels),
+        labels=grouped_labels,
+        categorical=grouped_categorical_columns,
+        groupby="split",
+        pval=True,
+    ).tableone
+    end_time = time.time()
+
+    round(end_time - start_time)
+
+    pd.concat([visits_table_df, patients_table_df], axis=0)

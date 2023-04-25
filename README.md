@@ -3,9 +3,9 @@
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-model-evaluation.svg)][pypi status] -->
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-model-evaluation)][pypi status] -->
 <!-- [![documentation](https://github.com/MartinBernstorff/psycop-model-evaluation/workflows/documentation/badge.svg)][documentation] -->
-[![Tests](https://github.com/MartinBernstorff/psycop-model-evaluation/actions/workflows/tests.yml/badge.svg)][tests]
-<!-- [![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/workflows/tests/badge.svg)][tests] -->
+[![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/actions/workflows/tests.yml/badge.svg)][tests]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+
 
 <!-- [pypi status]: https://pypi.org/project/psycop-model-evaluation/ -->
 <!-- [documentation]: https://Aarhus-Psychiatry-Research.github.io/psycop-model-evaluation/ -->
@@ -27,7 +27,6 @@ src/psycop_model_evaluation
 │                                             # Periodic (e.g. day of week, week of year) and 
 │                                             # Timedelta (e.g. time from first visit)
 │ 
-├── descriptive_stats_table.py                # Descriptive statistics, e.g. a "table 1"
 ├── feature_importance                        # Feature importance
 │   ├── feature_importance_table.py
 │   └── sklearn
@@ -64,7 +63,6 @@ For an example use case, see [t2d-baseline-paper](https://github.com/Aarhus-Psyc
 | 👩‍💻 **[Tutorials]**     | Tutorials for using this package                 |
 | 🎛️ **[API Reference]** | API reference for this package                   |
 | 📚 **[FAQ]**           | Frequently asked questions                       |
--->
 
 # 💬 Where to ask questions
 
@@ -76,7 +74,7 @@ For an example use case, see [t2d-baseline-paper](https://github.com/Aarhus-Psyc
 | 👩‍💻 **Usage Questions**          | [GitHub Discussions]   |
 | 🗯 **General Discussion**       | [GitHub Discussions]   |
 
-<!-- [Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
+[Documentation]: https://MartinBernstorff.github.io/psycop-model-evaluation/index.html
 [Installation]: https://MartinBernstorff.github.io/psycop-model-evaluation/installation.html
 [Tutorials]: https://MartinBernstorff.github.io/psycop-model-evaluation/tutorials.html
 [API Reference]: https://MartinBernstorff.github.io/psycop-model-evaluation/references.html

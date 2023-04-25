@@ -27,6 +27,8 @@ def plot_roc_auc_by_time_from_first_visit(
     bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     y_limits: tuple[float, float] = (0.5, 1.0),
+    custom_id_to_plot_by: Optional[str] = None,
+    pred_type_x_label: Optional[str] = "first visit",
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC as a function of time from first visit.
@@ -36,13 +38,23 @@ def plot_roc_auc_by_time_from_first_visit(
         bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
         bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
         y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+        custom_id_to_plot_by (str, optional): Custom id frome eval_dataset to plot by. If not set, it will plot by 'ids' from eval_dataset. Defaults to None.
+        pred_type_x_label (str, optional): Set x label by the prediction type. Defaults to "first visit".
         save_path (Path, optional): Path to save figure. Defaults to None.
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
-    eval_df = pd.DataFrame(
-        {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
-    )
+    if custom_id_to_plot_by:
+        eval_df = pd.DataFrame(
+            {
+                "ids": eval_dataset.custom_columns[custom_id_to_plot_by],
+                "pred_timestamps": eval_dataset.pred_timestamps,
+            },
+        )
+    else:
+        eval_df = pd.DataFrame(
+            {"ids": eval_dataset.ids, "pred_timestamps": eval_dataset.pred_timestamps},
+        )
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
@@ -71,7 +83,7 @@ def plot_roc_auc_by_time_from_first_visit(
     return plot_basic_chart(
         x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
-        x_title=f"{bin_unit2str[bin_unit]} from first visit",
+        x_title=f"{bin_unit2str[bin_unit]} from {pred_type_x_label}",
         y_title="AUC",
         sort_x=sort_order,  # type: ignore
         y_limits=y_limits,
@@ -95,6 +107,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     positive_rate: float = 0.5,
+    confidence_interval: Optional[float] = None,
     y_title: str = "Sensitivity (recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
@@ -103,15 +116,16 @@ def plot_sensitivity_by_time_until_diagnosis(
     until diagnosis. Rows with no date of diagnosis (i.e. no outcome) are
     removed.
     Args:
-        eval_dataset (EvalDataset): EvalDataset object
-        bins (list, optional): Bins to group by. Negative values indicate days after
-        bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
+        eval_dataset: EvalDataset object
+        bins: Bins to group by. Negative values indicate days after
+        bin_unit: Unit of time to bin by. Defaults to "D".
         diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
-        bin_continuous_input (bool, optional): Whether to bin input. Defaults to True.
-        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
-        y_title (str): Title for y-axis (metric name)
-        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to None.
-        save_path (Path, optional): Path to save figure. Defaults to None.
+        bin_continuous_input: Whether to bin input. Defaults to True.
+        positive_rate: Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
+        confidence_interval: Confidence interval for the bin. Defaults to None.
+        y_title: Title for y-axis (metric name)
+        y_limits: Limits of y-axis. Defaults to None.
+        save_path: Path to save figure. Defaults to None.
     Returns:
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
@@ -127,6 +141,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         bins=bins,
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
+        confidence_interval=confidence_interval,
         min_n_in_bin=5,
         drop_na_events=True,
     )
@@ -140,6 +155,9 @@ def plot_sensitivity_by_time_until_diagnosis(
         "Y": "Years",
     }
 
+    # add error bars
+    ci = df["ci"].tolist() if confidence_interval else None
+
     return plot_basic_chart(
         x_values=df["unit_from_event_binned"],
         y_values=df["metric"],
@@ -149,6 +167,7 @@ def plot_sensitivity_by_time_until_diagnosis(
         bar_count_values=df["n_in_bin"],
         y_limits=y_limits,
         plot_type=["scatter", "line"],
+        confidence_interval=ci,
         save_path=save_path,
     )
 
@@ -254,13 +273,13 @@ def plot_sensitivity_by_time_to_event(
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
     Args:
-        eval_dataset (EvalDataset): EvalDataset object
-        positive_rates (Union[float, Iterable[float]]): Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
-        bins (Iterable[float], optional): Bins to use for time to outcome.
-        bin_unit (Literal["h", "D", "M", "Q", "Y"], optional): Unit of time to bin by. Defaults to "D".
-        y_title (str): Title of y-axis. Defaults to "AUC".
-        save_path (str, optional): Path to save figure. Defaults to None.
-        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+        eval_dataset: EvalDataset object
+        positive_rates: Positive rates to plot. Takes the top X% of predicted probabilities and discretises them into binary predictions.
+        bins: Bins to use for time to outcome.
+        bin_unit: Unit of time to bin by. Defaults to "D".
+        y_title: Title of y-axis. Defaults to "AUC".
+        save_path: Path to save figure. Defaults to None.
+        y_limits: Limits of y-axis. Defaults to (0.5, 1.0).
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
@@ -291,14 +310,60 @@ def plot_sensitivity_by_time_to_event(
 
     x_title_unit = bin_delta_to_str[bin_unit]
 
-    return plot_basic_chart(
-        x_values=dfs[0]["days_to_outcome_binned"],
-        y_values=[df["sens"] for df in dfs],
-        x_title=f"{x_title_unit}s to event",
-        labels=[df["actual_positive_rate"][0] for df in dfs],
-        y_title=y_title,
-        y_limits=y_limits,
-        flip_x_axis=True,
-        plot_type=["line", "scatter"],
-        save_path=save_path,
+    df = pd.concat(dfs, axis=0)
+
+    from plotnine import (
+        aes,
+        element_text,
+        geom_errorbar,
+        geom_line,
+        geom_point,
+        ggplot,
+        labs,
+        scale_color_brewer,
+        theme,
+        theme_classic,
+        ylim,
     )
+
+    df["sens"] = df["sens"].astype(float)
+    df["sens_lower"] = df["ci"].apply(lambda x: x[0])
+    df["sens_upper"] = df["ci"].apply(lambda x: x[1])
+
+    # Reverse order of the x axis
+    df["days_to_outcome_binned"] = df["days_to_outcome_binned"].cat.reorder_categories(
+        df["days_to_outcome_binned"].cat.categories[::-1],
+        ordered=True,
+    )
+
+    df["actual_positive_rate"] = df["actual_positive_rate"].astype(str)
+
+    # Set y limits
+
+    p = (
+        ggplot(
+            df,
+            aes(
+                x="days_to_outcome_binned",
+                y="sens",
+                ymin="sens_lower",
+                ymax="sens_upper",
+                color="actual_positive_rate",
+            ),
+        )
+        + geom_point()
+        + geom_line()
+        + geom_errorbar(width=0.2, size=0.5)
+        + labs(x=f"{x_title_unit} to outcome", y=y_title)
+        + ylim(y_limits)
+        + theme_classic()
+        + theme(axis_text_x=element_text(rotation=45, hjust=1))
+        + theme(legend_position=(0.92, 0.5), legend_direction="vertical")
+        + scale_color_brewer(type="qual", palette=2)
+        + labs(color="Predicted \npositive rate")
+    )
+
+    if save_path is not None:
+        p.save(save_path)
+        return Path(save_path)
+    return None
