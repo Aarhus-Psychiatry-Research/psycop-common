@@ -11,7 +11,7 @@ from sklearn.utils import resample
 
 
 def bootstrap_roc(
-    n_bootstraps: int, y: pd.Series, y_hat_probs: pd.Series
+    n_bootstraps: int, y: pd.Series, y_hat_probs: pd.Series,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     tprs_bootstrapped = []
     aucs_bootstrapped = []
@@ -65,7 +65,7 @@ def plot_auc_roc(
 
     # Initialize lists for bootstrapped TPRs and FPRs
     tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_roc(
-        n_bootstraps, y, y_hat_probs
+        n_bootstraps, y, y_hat_probs,
     )
 
     mean_tprs = tprs_bootstrapped.mean(axis=0)
