@@ -2,6 +2,41 @@
 
 <!--next-version-placeholder-->
 
+## v0.23.0 (2023-04-26)
+### Feature
+* Add logging and choose sfi types ([`d5f8e23`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/d5f8e23cfc2bdbc3ae9ff47ab89d409be454ea38))
+* Create example scripts ([`76e063a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/76e063a44ed88e18a23618ae45c887c26160c9fa))
+* Initial text model pipelines ([`1934db0`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/1934db0d4fa615d7790920d1086fa18c6fa952b5))
+* Add tests ([`d7a8bab`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/d7a8bab22e978b8db06e4bc13e561f989535c602))
+* Initial simple preprocessing pipeline for all sfis ([`f941a4d`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f941a4d3d69ad37b2901734fcd0b6d686621e9ce))
+* Add include_sfi_name in load_text_split ([`4605c88`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/4605c88480254746ddf93e75c1ed13e6afc1d618))
+* Include_sfi_name arg ([`58baf9a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/58baf9aa7d732aee33ad47275fdbe57fc32ad7c8))
+* Fit and load tfidf, bow, and lda models ([`3d33d9b`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3d33d9b2a74f02afb375af71e287f2e01b8af19d))
+
+### Fix
+* Preprocess to one regex ([`c716653`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c7166537bf596e05fd6c80b9ef32307c1f0a7f11))
+* Remove symbols again ([`1210b7e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/1210b7e4458ba0e83c4627fce2ef875d893b5bf6))
+* Based on HLasses comments ([`32da48f`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/32da48f2b4f4a8ce8798489bfd9dff438e50ae8d))
+* Insert model type in filename ([`1457387`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/1457387ded62189d256160f4d56f24f59ed96c11))
+* Add doc strings to preprocessing functions ([`4e27650`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/4e27650fba042f154cfe219e9c1ded9a00cf34d7))
+* Remove log.info and small fixes ([`84f3cc3`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/84f3cc34a48613fab60e98b1c7dc8ab70a09ba63))
+* Ruff fixes ([`ea9c564`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/ea9c5643ef1e10e868e982d65f58081f60f94cfc))
+* Return vectorizer and matrix + clean-up ([`e1c48a0`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/e1c48a089c42066444967f8808cfdbc4b26a1391))
+* Query string ([`cb7424c`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/cb7424c576f9a0cbe7aa89c281fb3113e7c830e5))
+* Naming and doc string update ([`141e52a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/141e52a5c8b71c9e766c027cbe0c3e88380c86b5))
+* General clean-up and change corpus in fit functions to list ([`22b6a9e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/22b6a9e317436859ff2fad9f149345a9b19d673e))
+* Change ngram default and clean-up ([`387f845`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/387f8452bc6d2646f24722e9582c9c323619f7f5))
+* Small fixes to logging ([`c3a3f53`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c3a3f53bd1c35a37c84cf3dcdd08a2d19cd0df7d))
+* Remove old comments ([`4b88514`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/4b8851479a5d4b865cf7fc314a94320374aaea71))
+* Change view name ([`a9bb0fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/a9bb0fc919454a3927e127c9d3bb7cddaf579699))
+* Move save_text_model_to_dir to utils ([`469df3b`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/469df3b71299d6ec6e72dd08e406053ba242872d))
+* Move save_text_model_to_dir to utils ([`26a80d2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/26a80d2e961818eafa89611bb127a34083aba08a))
+* Renaming in preprocessing ([`c381768`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c38176857e0dd294b618763b14d69d4e3d05d35d))
+* Remove stop_words arg and return models ([`3d29012`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/3d290123ad6d409e5444a90391786245b9d74cff))
+* Change arg path to path_str ([`f781a74`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/f781a744c44aad1636ba6603ee50c82a2c551957))
+* Enable multiple splits when loading data + add n_rows arg ([`8ae2d2e`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/8ae2d2ea166763973551d9b7733131b974c892c9))
+* Remove Path from arg ([`29b442b`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/29b442b39be78071614b584f420d6cdde0fa80d7))
+
 ## v0.22.0 (2023-04-24)
 ### Feature
 * Add feature descriptions for text features ([`84c696a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/84c696a138ab0f589b2698f67c3097cb32d68200))
