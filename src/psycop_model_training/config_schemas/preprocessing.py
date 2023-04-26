@@ -31,7 +31,10 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     # Whether to convert columns containing booleans to int
 
     negative_values_to_nan: bool = True
-    # Whether to change negative values to NaN. Defaults to True since Chi2 cannot handle negative values. Can only be set to True if Chi2 is not used for feature selection.
+    # Whether to change negative values to NaN. Defaults to True since Chi2 cannot handle negative values. Can only be set to False if Chi2 is not used for feature selection.
+
+    offset_so_no_negative_values: bool = False
+    # Whether to offset values by the min value, so all values become non-negative. Defaults to False.
 
     drop_datetime_predictor_columns: bool = False
     # Whether to drop datetime columns prefixed with data.pred_prefix.
