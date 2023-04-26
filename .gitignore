@@ -1,5 +1,4 @@
 # Python
-.mypy_cache/
 /.python-version
 /.pytype/
 /dist/

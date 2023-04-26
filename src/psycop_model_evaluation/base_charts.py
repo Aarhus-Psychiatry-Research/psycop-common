@@ -103,8 +103,8 @@ def plot_basic_chart(
         ci_matrix = np.array(confidence_interval)
         # convert lower and upper bound to relative difference
         # as matplotlib errorbar interpret yerr as an offset
-        ci_matrix = np.abs(ci_matrix - y_series.to_numpy().reshape(-1, 1))
-        plt.errorbar(x=df["x"], y=y_series, yerr=ci_matrix.T, fmt="none", capsize=5)
+        ci_matrix = np.abs(ci_matrix - y_series.to_numpy().reshape(-1, 1))  # type: ignore
+        plt.errorbar(x=df["x"], y=y_series, yerr=ci_matrix.T, fmt="none", capsize=5)  # type: ignore
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)
