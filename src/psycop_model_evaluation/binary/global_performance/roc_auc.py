@@ -4,9 +4,34 @@ from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.utils import resample
+
+
+def bootstrap_roc(
+    n_bootstraps: int, y: pd.Series, y_hat_probs: pd.Series
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    tprs_bootstrapped = []
+    aucs_bootstrapped = []
+
+    # Instead, we specify a base fpr array, and interpolate the tpr values onto it.
+    base_fpr = np.linspace(0, 1, 101)
+
+    # Bootstrap TPRs
+    for _ in range(n_bootstraps):
+        y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs)
+        fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)
+
+        tpr_bootstrapped = np.interp(base_fpr, fpr_resampled, tpr_resampled)
+        tpr_bootstrapped[0] = 0.0
+        tprs_bootstrapped.append(tpr_bootstrapped)
+
+        auc_boot = roc_auc_score(y_resampled, y_hat_probs_resampled)
+        aucs_bootstrapped.append(auc_boot)
+
+    return np.array(tprs_bootstrapped), np.array(aucs_bootstrapped), base_fpr
 
 
 def plot_auc_roc(
@@ -33,37 +58,18 @@ def plot_auc_roc(
     y = eval_dataset.y
     y_hat_probs = eval_dataset.y_hat_probs
 
-    # Compute original ROC curve and AUC
-    fpr, tpr, _ = roc_curve(y, y_hat_probs)
-    roc_auc_score(y, y_hat_probs)
-
     # We need a custom bootstrap implementation, because using scipy.bootstrap
     # on the roc_curve method will yield different fpr values for each resample,
     # and thus the tpr values will be interpolated on different fpr values. This
     # will result in arrays of different dimensions, which will cause an error.
 
     # Initialize lists for bootstrapped TPRs and FPRs
-    tprs_bootstrapped = []
-    aucs_bootstrapped = []
+    tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_roc(
+        n_bootstraps, y, y_hat_probs
+    )
 
-    # Instead, we specify a base fpr array, and interpolate the tpr values onto it.
-    base_fpr = np.linspace(0, 1, 101)
-
-    # Bootstrap TPRs
-    for _ in range(n_bootstraps):
-        y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs)
-        fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)
-
-        tpr_bootstrapped = np.interp(base_fpr, fpr_resampled, tpr_resampled)
-        tpr_bootstrapped[0] = 0.0
-        tprs_bootstrapped.append(tpr_bootstrapped)
-
-        auc_boot = roc_auc_score(y_resampled, y_hat_probs_resampled)
-        aucs_bootstrapped.append(auc_boot)
-
-    tprs_bootstrapped = np.array(tprs_bootstrapped)  # type: ignore
-    mean_tprs = tprs_bootstrapped.mean(axis=0)  # type: ignore
-    se_tprs = tprs_bootstrapped.std(axis=0) / np.sqrt(n_bootstraps)  # type: ignore
+    mean_tprs = tprs_bootstrapped.mean(axis=0)
+    se_tprs = tprs_bootstrapped.std(axis=0) / np.sqrt(n_bootstraps)
 
     # Calculate confidence interval for TPR over all FPRs
     tprs_upper = mean_tprs + se_tprs
