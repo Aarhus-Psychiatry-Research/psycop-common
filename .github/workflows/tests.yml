@@ -83,6 +83,6 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' &&  github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }}
         with:
           create-new-comment: false
-          report-only-changed-files: true
+          report-only-changed-files: false
           pytest-coverage-path: pytest-coverage.txt
           junitxml-path: ./pytest.xml

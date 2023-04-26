@@ -1,9 +1,9 @@
 import typing as t
 from collections.abc import Iterable, Sequence
-from datetime import timedelta
 from pathlib import Path
 from typing import Literal, Optional, Union
 
+import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop_model_evaluation.base_charts import (
@@ -176,6 +176,7 @@ def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
     min_n_in_bin: int = 0,
     bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
+    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "M",
     fig_size: tuple[int, int] = (5, 5),
     dpi: int = 300,
     pos_rate: float = 0.05,
@@ -186,6 +187,7 @@ def plot_time_from_first_positive_to_event(
         eval_dataset: EvalDataset object
         min_n_in_bin (int): Minimum number of patients in each bin. If fewer, bin is dropped.
         bins (Sequence[float]): Bins to group by. Defaults to (5, 25, 35, 50, 70).
+        bin_unit (Literal["h", "D", "M", "Q", "Y"]): Unit of time to bin by. Defaults to "M".
         fig_size (tuple[int, int]): Figure size. Defaults to (5,5).
         dpi (int): DPI. Defaults to 300.
         pos_rate (float): Desired positive rate for computing which threshold above which a prediction is marked as "positive". Defaults to 0.05.
@@ -215,10 +217,12 @@ def plot_time_from_first_positive_to_event(
     df_true_pos = df_true_pos.groupby("patient_id").first().reset_index()
 
     # Convert to int months
-    df_true_pos["time_from_pred_to_event"] = (
-        df_true_pos["time_from_pred_to_event"] / timedelta(days=1)  # type: ignore
-    ).astype(int) / 30
-
+    df_true_pos["time_from_pred_to_event"] = df_true_pos[
+        "time_from_pred_to_event"
+    ] / np.timedelta64(
+        1,
+        bin_unit,
+    )  # type: ignore
     df_true_pos["time_from_first_positive_to_event_binned"], _ = bin_continuous_data(
         df_true_pos["time_from_pred_to_event"],
         bins=bins,
@@ -235,10 +239,18 @@ def plot_time_from_first_positive_to_event(
     x_labels = list(counts["time_from_first_positive_to_event_binned"])
     y_values = counts[0].to_list()
 
+    bin_unit2str = {
+        "h": "Hours",
+        "D": "Days",
+        "M": "Months",
+        "Q": "Quarters",
+        "Y": "Years",
+    }
+
     plot = plot_basic_chart(
         x_values=x_labels,  # type: ignore
         y_values=Series(y_values),
-        x_title="Months from first positive to event",
+        x_title=f"{bin_unit2str[bin_unit]} from first positive to event",
         y_title="Count",
         plot_type="bar",
         save_path=save_path,
@@ -298,14 +310,60 @@ def plot_sensitivity_by_time_to_event(
 
     x_title_unit = bin_delta_to_str[bin_unit]
 
-    return plot_basic_chart(
-        x_values=dfs[0]["days_to_outcome_binned"],
-        y_values=[df["sens"] for df in dfs],
-        x_title=f"{x_title_unit}s to event",
-        labels=[df["actual_positive_rate"][0] for df in dfs],
-        y_title=y_title,
-        y_limits=y_limits,
-        flip_x_axis=True,
-        plot_type=["line", "scatter"],
-        save_path=save_path,
+    df = pd.concat(dfs, axis=0)
+
+    from plotnine import (
+        aes,
+        element_text,
+        geom_errorbar,
+        geom_line,
+        geom_point,
+        ggplot,
+        labs,
+        scale_color_brewer,
+        theme,
+        theme_classic,
+        ylim,
     )
+
+    df["sens"] = df["sens"].astype(float)
+    df["sens_lower"] = df["ci"].apply(lambda x: x[0])
+    df["sens_upper"] = df["ci"].apply(lambda x: x[1])
+
+    # Reverse order of the x axis
+    df["days_to_outcome_binned"] = df["days_to_outcome_binned"].cat.reorder_categories(
+        df["days_to_outcome_binned"].cat.categories[::-1],
+        ordered=True,
+    )
+
+    df["actual_positive_rate"] = df["actual_positive_rate"].astype(str)
+
+    # Set y limits
+
+    p = (
+        ggplot(
+            df,
+            aes(
+                x="days_to_outcome_binned",
+                y="sens",
+                ymin="sens_lower",
+                ymax="sens_upper",
+                color="actual_positive_rate",
+            ),
+        )
+        + geom_point()
+        + geom_line()
+        + geom_errorbar(width=0.2, size=0.5)
+        + labs(x=f"{x_title_unit} to outcome", y=y_title)
+        + ylim(y_limits)
+        + theme_classic()
+        + theme(axis_text_x=element_text(rotation=45, hjust=1))
+        + theme(legend_position=(0.92, 0.5), legend_direction="vertical")
+        + scale_color_brewer(type="qual", palette=2)
+        + labs(color="Predicted \npositive rate")
+    )
+
+    if save_path is not None:
+        p.save(save_path)
+        return Path(save_path)
+    return None
