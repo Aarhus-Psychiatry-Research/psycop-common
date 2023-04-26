@@ -2,11 +2,12 @@
 from pathlib import Path
 from typing import Optional
 
+import pandas as pd
 import wandb
 from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.utils import (
-    load_and_filter_train_and_val_from_cfg,
+    load_and_filter_split_from_cfg,
 )
 from psycop_model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
@@ -49,18 +50,43 @@ def post_wandb_setup_train_model(
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
 
-    dataset = load_and_filter_train_and_val_from_cfg(cfg)
+    train_datasets = pd.concat(
+        [
+            load_and_filter_split_from_cfg(
+                data_cfg=cfg.data,
+                pre_split_cfg=cfg.preprocessing.pre_split,
+                split=split,
+            )
+            for split in cfg.data.splits_for_training
+        ],
+        ignore_index=True,
+    )
+
+    if cfg.data.splits_for_evaluation is not None:
+        eval_datasets = pd.concat(
+            [
+                load_and_filter_split_from_cfg(
+                    data_cfg=cfg.data,
+                    pre_split_cfg=cfg.preprocessing.pre_split,
+                    split=split,  # type: ignore
+                )
+                for split in cfg.data.splits_for_evaluation
+            ],
+            ignore_index=True,
+        )
+    else:
+        eval_datasets = None
+
     pipe = create_post_split_pipeline(cfg)
-    outcome_col_name, train_col_names = get_col_names(cfg, dataset.train)
+    outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
     eval_dataset = train_and_predict(
         cfg=cfg,
-        train=dataset.train,
-        val=dataset.val,
+        train_datasets=train_datasets,
+        val_datasets=eval_datasets,
         pipe=pipe,
         outcome_col_name=outcome_col_name,
         train_col_names=train_col_names,
-        n_splits=cfg.train.n_splits,
     )
 
     eval_dir = eval_dir_path if override_output_dir is None else override_output_dir
@@ -70,7 +96,8 @@ def post_wandb_setup_train_model(
         cfg=cfg,
         pipe=pipe,
         eval_ds=eval_dataset,
-        raw_train_set=dataset.train,
+        outcome_col_name=outcome_col_name,
+        train_col_names=train_col_names,
     ).evaluate_and_save_eval_data()
 
     return roc_auc

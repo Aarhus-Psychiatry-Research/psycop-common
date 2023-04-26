@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 from psycop_model_training.config_schemas.basemodel import BaseModel
 
@@ -25,6 +26,14 @@ class DataSchema(BaseModel):
 
     dir: Union[Path, str]  # Location of the dataset # noqa
     suffix: str = "parquet"  # File suffix to load.
+
+    splits_for_training: Sequence[Literal["train", "val"]] = [
+        "train",
+        "val",
+    ]  # splits to use for training
+    splits_for_evaluation: Optional[Sequence[Literal["val", "test", None]]] = [
+        None,
+    ]  # splits to use for evaluation. If None, crossvalidation is done on splits_for_training split(s).
 
     # Feature specs
     col_name: ColumnNamesSchema = ColumnNamesSchema()

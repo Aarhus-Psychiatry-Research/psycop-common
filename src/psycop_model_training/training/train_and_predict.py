@@ -40,7 +40,6 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     train_df: pd.DataFrame,
     train_col_names: list[str],
     outcome_col_name: str,
-    n_splits: int,
 ) -> pd.DataFrame:
     """Performs stratified and grouped cross validation using the pipeline."""
     msg = Printer(timestamp=True)
@@ -52,7 +51,7 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     msg.info("Creating folds")
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
 
-    folds = StratifiedGroupKFold(n_splits=n_splits).split(
+    folds = StratifiedGroupKFold(n_splits=5).split(
         X=X,
         y=y,
         groups=train_df[cfg.data.col_name.id],
@@ -84,41 +83,32 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     return train_df
 
 
-def crossval_train_and_predict(
+def crossvalidate(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
-    val: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-    n_splits: int,
 ) -> EvalDataset:
     """Train model on cross validation folds and return evaluation dataset.
 
     Args:
-        cfg (DictConfig): Config object
+        cfg: Config object
         train: Training dataset
-        val: Validation dataset
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
-        n_splits: Number of folds for cross validation.
 
     Returns:
         Evaluation dataset
     """
-    msg = Printer(timestamp=True)
-
-    msg.info("Concatenating train and val for crossvalidation")
-    train_val = pd.concat([train, val], ignore_index=True)
 
     df = stratified_cross_validation(
         cfg=cfg,
         pipe=pipe,
-        train_df=train_val,
+        train_df=train,
         train_col_names=train_col_names,
         outcome_col_name=outcome_col_name,
-        n_splits=n_splits,
     )
 
     df = df.rename(columns={"oof_y_hat": "y_hat_prob"})
@@ -130,7 +120,7 @@ def crossval_train_and_predict(
     )
 
 
-def train_val_predict(
+def train_validate(
     cfg: FullConfigSchema,
     train: pd.DataFrame,
     val: pd.DataFrame,
@@ -178,23 +168,21 @@ def train_val_predict(
 
 def train_and_predict(
     cfg: FullConfigSchema,
-    train: pd.DataFrame,
-    val: pd.DataFrame,
+    train_datasets: pd.DataFrame,
     pipe: Pipeline,
     outcome_col_name: str,
     train_col_names: list[str],
-    n_splits: Optional[int],
+    val_datasets: Optional[pd.DataFrame] = None,
 ) -> EvalDataset:
     """Train model and return evaluation dataset.
 
     Args:
-        cfg (FullConfigSchema): Config object
-        train: Training dataset
-        val: Validation dataset
+        cfg: Config object
+        train_datasets: Training datasets
+        val_datasets: Validation datasets
         pipe: Pipeline
         outcome_col_name: Name of the outcome column
         train_col_names: Names of the columns to use for training
-        n_splits: Number of folds for cross validation. If None, no cross validation is performed.
 
     Returns:
         Evaluation dataset
@@ -205,24 +193,22 @@ def train_and_predict(
     if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names  # type: ignore
 
-    if n_splits is None:  # train on pre-defined splits
-        eval_dataset = train_val_predict(
+    if val_datasets is not None:  # train on pre-defined splits
+        eval_dataset = train_validate(
             cfg=cfg,
-            train=train,
-            val=val,
+            train=train_datasets,
+            val=val_datasets,
             pipe=pipe,
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,
         )
     else:
-        eval_dataset = crossval_train_and_predict(
+        eval_dataset = crossvalidate(
             cfg=cfg,
-            train=train,
-            val=val,
+            train=train_datasets,
             pipe=pipe,
             outcome_col_name=outcome_col_name,
             train_col_names=train_col_names,
-            n_splits=n_splits,
         )
 
     return eval_dataset

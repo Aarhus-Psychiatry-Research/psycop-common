@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psycop_model_training"
-version = "0.55.0"
+version = "0.56.0"
 description = "PSYCOP model training utilities"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"},
@@ -205,7 +205,7 @@ description: run unit tests
 extras = tests
 use_develop = true
 commands =
-  pytest -n auto
+  pytest -n auto {posargs:test}
 
 [testenv:type]
 description: run type checks

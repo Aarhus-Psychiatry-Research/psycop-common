@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.56.0 (2023-04-25)
+### Feature
+* Either compare across splits or crossvalidate ([#500](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/500)) ([`62eb4fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/62eb4fc9c6f801f5b88dbfcc88810321168a9d5b))
+* Concatenating train and val for training optional ([`5117a70`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/5117a704f3aca3aca0d6a2f078bf44c611e9a906))
+
+### Fix
+* Parse args to pytest when calling toml ([`53b29d1`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/53b29d1f6072eae2f2185181b9ec768bc990e13e))
+
 ## v0.55.0 (2023-04-24)
 ### Feature
 * Parallel training to disk ([#492](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/492)) ([`d7d1a66`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d7d1a668af9d020e0a353817363179039854a6b3))

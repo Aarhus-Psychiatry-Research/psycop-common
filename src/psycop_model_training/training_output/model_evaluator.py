@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
-import pandas as pd
 import wandb
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.training_output.artifact_saver.to_disk import (
@@ -12,7 +11,6 @@ from psycop_model_training.training_output.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
-from psycop_model_training.utils.col_name_inference import get_col_names
 from psycop_model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
@@ -49,7 +47,8 @@ class ModelEvaluator:
         self,
         cfg: FullConfigSchema,
         eval_dir_path: Path,
-        raw_train_set: pd.DataFrame,
+        outcome_col_name: str,
+        train_col_names: list[str],
         pipe: Pipeline,
         eval_ds: EvalDataset,
     ):
@@ -58,8 +57,8 @@ class ModelEvaluator:
         Args:
             eval_dir_path (Path): Path to directory where artifacts will be saved.
             cfg (FullConfigSchema): Full config object.
-            artifacts (Sequence[ArtifactContainer]): List of artifacts to save.
-            raw_train_set (pd.DataFrame): Training set before feature selection.
+            outcome_col_name: Name of the outcome column
+            train_col_names: Names of the columns to use for training
             pipe (Pipeline): Pipeline object.
             eval_ds (EvalDataset): EvalDataset object.
             upload_to_wandb (bool, optional): Whether to upload artifacts to wandb. Defaults to True.
@@ -67,10 +66,8 @@ class ModelEvaluator:
         self.cfg = cfg
         self.pipe = pipe
         self.eval_ds = eval_ds
-        self.outcome_col_name, self.train_col_names = get_col_names(
-            cfg,
-            dataset=raw_train_set,
-        )
+        self.outcome_col_name = outcome_col_name
+        self.train_col_names = train_col_names
 
         self.pipeline_metadata = self._get_pipeline_metadata()
         self.disk_saver = ArtifactsToDiskSaver(dir_path=eval_dir_path)
