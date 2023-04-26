@@ -67,9 +67,9 @@ def plot_auc_roc(
 
     # Initialize lists for bootstrapped TPRs and FPRs
     tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_roc(
-        n_bootstraps,
-        y,
-        y_hat_probs,
+        n_bootstraps=n_bootstraps,
+        y=y,
+        y_hat_probs=y_hat_probs,
     )
 
     mean_tprs = tprs_bootstrapped.mean(axis=0)
