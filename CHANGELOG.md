@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.57.0 (2023-04-26)
+### Feature
+* Update offset_so_no_negative_values ([`6ae4acd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6ae4acdcdeff6ce1c00280105f4041b5ee4e25b6))
+* Add offset_negative_values ([`e1b27fb`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/e1b27fb2a9a4a5f58b1d403f995348b7f8e89b22))
+
+### Fix
+* Update test ([`1b1f257`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1b1f2571f364e7495381af6449ef8cfbf8184e67))
+* Naming error ([`9ea2a58`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/9ea2a58ad811bd25b4162a12ff54b13cf54e4937))
+* Add offset_so_no_negative_values to PreSplitProcessingConfigSchema ([`3ba7c02`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/3ba7c02afb47782c714e750faa8d8ac60d01a06c))
+* Rename, change list comprehension to dict and create tests ([`c9ad716`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/c9ad71655e36f84690d39c401afb5e1030ff0737))
+
 ## v0.56.0 (2023-04-25)
 ### Feature
 * Either compare across splits or crossvalidate ([#500](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/500)) ([`62eb4fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/62eb4fc9c6f801f5b88dbfcc88810321168a9d5b))
