@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.59.0 (2023-04-27)
+### Feature
+* Allow differential filepath ([#504](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/504)) ([`d5ec3df`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d5ec3df85bbb7f643badab95f9e06da830f091df))
+* Allow differential filepath ([`37a7beb`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/37a7beb862e9b84dd0ed609ca27ff564fb5f078f))
+
 ## v0.58.1 (2023-04-27)
 ### Fix
 * Set default pred_time_uuid_col_name ([#503](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/503)) ([`a65ad6f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a65ad6f7fe754cba3fdf5bedac12ce33da0211c0))
