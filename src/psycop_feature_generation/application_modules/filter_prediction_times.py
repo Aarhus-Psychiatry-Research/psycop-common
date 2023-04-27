@@ -128,7 +128,7 @@ class PredictionTimeFilterer:
         """Run filters based on the provided parameters."""
         df = self.prediction_times_df
 
-        if self.quarantine_df is not None or self.quarantine_days is not None:
+        if self.quarantine_df is not None and self.quarantine_days is not None:
             df = self._filter_prediction_times_by_quarantine_period()
 
         if self.added_pred_time_uuid_col:
