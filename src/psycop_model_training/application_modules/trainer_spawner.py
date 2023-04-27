@@ -2,6 +2,8 @@
 trian_model.py."""
 import subprocess
 import time
+from pathlib import Path
+from typing import Union
 
 from psycop_model_training.application_modules.get_search_space import TrainerSpec
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -14,6 +16,7 @@ def start_trainer(
     lookahead_days: int,
     wandb_group_override: str,
     model_name: str,
+    dataset_dir: Union[Path, str],
 ) -> subprocess.Popen:
     """Start a trainer."""
     msg = Printer(timestamp=True)
@@ -23,6 +26,7 @@ def start_trainer(
         "application/train_model_from_application_module.py",
         f"project.wandb.group='{wandb_group_override}'",
         f"project.wandb.mode={cfg.project.wandb.mode}",
+        f"data.dir={dataset_dir}",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",
         f"hydra.sweeper.n_jobs={cfg.train.n_jobs_per_trainer}",
         f"model={model_name}",
@@ -82,6 +86,7 @@ def spawn_trainers(
                 lookahead_days=trainer_spec.lookahead_days,
                 wandb_group_override=wandb_group,
                 model_name=trainer_spec.model_name,
+                dataset_dir=cfg.data.dir,
             ),
         )
 
