@@ -20,36 +20,6 @@ from psycop_feature_generation.loaders.raw.load_demographic import birthdays
 log = logging.getLogger(__name__)
 
 
-def filter_prediction_times(
-    prediction_times_df: pd.DataFrame,
-    project_info: ProjectInfo,
-    quarantine_df: pd.DataFrame | None = None,
-    quarantine_days: int | None = None,
-) -> pd.DataFrame:
-    """Filter prediction times.
-
-    Args:
-        prediction_times_df (pd.DataFrame): Prediction times dataframe.
-            Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.
-        project_info (ProjectInfo): Project info.
-        quarantine_df (pd.DataFrame, optional): Quarantine dataframe with "timestamp" and "project_info.col_names.id" columns.
-        quarantine_days (int, optional): Number of days to quarantine.
-
-    Returns:
-        pd.DataFrame: Filtered prediction times dataframe.
-    """
-    log.info("Filtering prediction times...")
-
-    filterer = PredictionTimeFilterer(
-        prediction_times_df=prediction_times_df,
-        entity_id_col_name=project_info.col_names.id,
-        quarantine_timestamps_df=quarantine_df,
-        quarantine_interval_days=quarantine_days,
-    )
-
-    return filterer.run_filter()
-
-
 @wandb_alert_on_exception
 def create_flattened_dataset(
     feature_specs: list[_AnySpec],
@@ -75,12 +45,12 @@ def create_flattened_dataset(
         FlattenedDataset: Flattened dataset.
     """
 
-    filtered_prediction_times_df = filter_prediction_times(
+    filtered_prediction_times_df = PredictionTimeFilterer(
         prediction_times_df=prediction_times_df,
-        project_info=project_info,
-        quarantine_df=quarantine_df,
-        quarantine_days=quarantine_days,
-    )
+        entity_id_col_name=project_info.col_names.id,
+        quarantine_timestamps_df=quarantine_df,
+        quarantine_interval_days=quarantine_days,
+    ).run_filter()
 
     flattened_dataset = TimeseriesFlattener(
         prediction_times_df=filtered_prediction_times_df,
