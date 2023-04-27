@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.58.1 (2023-04-27)
+### Fix
+* Set default pred_time_uuid_col_name ([#503](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/503)) ([`a65ad6f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/a65ad6f7fe754cba3fdf5bedac12ce33da0211c0))
+* Set default pred_time_uuid_col_name ([`1c612e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/1c612e53b2e587a27eab8655de33ac29f6f65c12))
+
 ## v0.58.0 (2023-04-27)
 ### Feature
 * Support overriding dataset dir in conf ([#502](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/502)) ([`b4a6585`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b4a658579b7fe3435614064c5699d9ece1719a5c))
