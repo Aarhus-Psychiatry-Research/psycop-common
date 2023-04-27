@@ -17,13 +17,19 @@ def start_trainer(
     wandb_group_override: str,
     model_name: str,
     dataset_dir: Optional[Union[Path, str]] = None,
+    train_single_model_file_path: Optional[Path] = None,
 ) -> subprocess.Popen:
     """Start a trainer."""
     msg = Printer(timestamp=True)
 
+    if train_single_model_file_path is None:
+        train_single_model_file_path = Path(
+            "application/train_model_from_application_module.py"
+        )
+
     subprocess_args: list[str] = [
         "python",
-        "application/train_model_from_application_module.py",
+        str(train_single_model_file_path),
         f"project.wandb.group='{wandb_group_override}'",
         f"project.wandb.mode={cfg.project.wandb.mode}",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",
@@ -56,6 +62,7 @@ def spawn_trainers(
     config_file_name: str,
     wandb_prefix: str,
     trainer_specs: list[TrainerSpec],
+    train_single_model_file_path: Path,
 ):
     """Train a model for each cell in the grid of possible look distances."""
     active_trainers: list[subprocess.Popen] = []
@@ -90,6 +97,7 @@ def spawn_trainers(
                 wandb_group_override=wandb_group,
                 model_name=trainer_spec.model_name,
                 dataset_dir=cfg.data.dir,
+                train_single_model_file_path=train_single_model_file_path,
             ),
         )
 
