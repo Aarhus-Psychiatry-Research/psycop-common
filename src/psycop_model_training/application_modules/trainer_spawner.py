@@ -3,7 +3,7 @@ trian_model.py."""
 import subprocess
 import time
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 from psycop_model_training.application_modules.get_search_space import TrainerSpec
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
@@ -16,7 +16,7 @@ def start_trainer(
     lookahead_days: int,
     wandb_group_override: str,
     model_name: str,
-    dataset_dir: Union[Path, str],
+    dataset_dir: Optional[Union[Path, str]] = None,
 ) -> subprocess.Popen:
     """Start a trainer."""
     msg = Printer(timestamp=True)
@@ -26,7 +26,6 @@ def start_trainer(
         "application/train_model_from_application_module.py",
         f"project.wandb.group='{wandb_group_override}'",
         f"project.wandb.mode={cfg.project.wandb.mode}",
-        f"data.dir={dataset_dir}",
         f"hydra.sweeper.n_trials={cfg.train.n_trials_per_lookahead}",
         f"hydra.sweeper.n_jobs={cfg.train.n_jobs_per_trainer}",
         f"model={model_name}",
@@ -35,11 +34,15 @@ def start_trainer(
         f"{config_file_name}",
     ]
 
+    # We have to insert to avoid coming after the config name or before the python executable in the args list
     if cfg.train.n_trials_per_lookahead > 1:
         subprocess_args.insert(2, "--multirun")
 
     if model_name == "xgboost":
         subprocess_args.insert(3, "++model.args.tree_method='gpu_hist'")
+
+    if dataset_dir is not None:
+        subprocess_args.insert(4, f"data.dir={dataset_dir}")
 
     msg.info(f'{" ".join(subprocess_args)}')
 
