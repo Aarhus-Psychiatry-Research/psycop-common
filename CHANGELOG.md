@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.58.0 (2023-04-27)
+### Feature
+* Support overriding dataset dir in conf ([#502](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/502)) ([`b4a6585`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b4a658579b7fe3435614064c5699d9ece1719a5c))
+* Support overriding dataset dir in conf ([`8af8376`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/8af837665fcc27372f034d025106f49217aca5a0))
+
+### Fix
+* Support not passing the dataset_dir ([`b90774f`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/b90774f4bf539ab94728f622c2e4ab97ffe72a69))
+
 ## v0.57.0 (2023-04-26)
 ### Feature
 * Update offset_so_no_negative_values ([`6ae4acd`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/6ae4acdcdeff6ce1c00280105f4041b5ee4e25b6))
