@@ -155,15 +155,14 @@ def generate_feature_description_row(
     """
 
     if isinstance(predictor_spec, StaticSpec):
-        d = generate_static_feature_description(series, predictor_spec)
-    elif isinstance(predictor_spec, TemporalSpec):
-        d = generate_temporal_feature_description(
+        return generate_static_feature_description(series, predictor_spec)
+    if isinstance(predictor_spec, TemporalSpec):
+        return generate_temporal_feature_description(
             series,
             predictor_spec,
             feature_name=feature_name,
         )
-    return d
-
+    raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
 
 def generate_feature_description_df(
     df: pd.DataFrame,
