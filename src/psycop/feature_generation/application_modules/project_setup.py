@@ -7,11 +7,10 @@ from pathlib import Path
 from typing import Literal
 
 import wandb
+from psycop.feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
 )
-
-from psycop.feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
 
 log = logging.getLogger(__name__)
 

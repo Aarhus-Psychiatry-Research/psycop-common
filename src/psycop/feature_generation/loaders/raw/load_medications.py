@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 
 import pandas as pd
-
 from psycop.feature_generation.loaders.raw.utils import load_from_codes
 from psycop.feature_generation.utils import data_loaders
 

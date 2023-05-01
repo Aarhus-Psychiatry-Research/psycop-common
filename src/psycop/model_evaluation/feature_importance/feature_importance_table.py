@@ -2,7 +2,7 @@ from typing import Union
 
 import pandas as pd
 import wandb
-from psycop_model_evaluation.utils import (
+from model_evaluation.utils import (
     output_table,
 )
 

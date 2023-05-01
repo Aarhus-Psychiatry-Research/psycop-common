@@ -4,7 +4,6 @@ from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
-
 from psycop.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,

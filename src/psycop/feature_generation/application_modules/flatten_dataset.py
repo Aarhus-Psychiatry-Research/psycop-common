@@ -5,9 +5,6 @@ import logging
 
 import pandas as pd
 import psutil
-from timeseriesflattener.feature_spec_objects import _AnySpec
-from timeseriesflattener.flattened_dataset import TimeseriesFlattener
-
 from psycop.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -16,6 +13,8 @@ from psycop.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop.feature_generation.loaders.raw.load_demographic import birthdays
+from timeseriesflattener.feature_spec_objects import _AnySpec
+from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 log = logging.getLogger(__name__)
 

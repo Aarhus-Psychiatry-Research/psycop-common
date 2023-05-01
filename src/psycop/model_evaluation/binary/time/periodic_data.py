@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 
 import pandas as pd
-from psycop_model_evaluation.binary.utils import (
+from model_evaluation.binary.utils import (
     calc_performance,
 )
 from sklearn.metrics import roc_auc_score

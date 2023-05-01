@@ -5,7 +5,7 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 
 
 import pandas as pd
-from psycop_model_evaluation.binary.performance_by_true_positive_rate import (
+from model_evaluation.binary.performance_by_true_positive_rate import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_positive_rate_table,
 )

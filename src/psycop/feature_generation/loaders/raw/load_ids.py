@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pandas as pd
-
 from psycop.feature_generation.loaders.raw.sql_load import sql_load
 
 

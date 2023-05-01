@@ -1,5 +1,5 @@
 import pandas as pd
-from psycop_model_evaluation.binary.time.timedelta_data import (
+from model_evaluation.binary.time.timedelta_data import (
     create_performance_by_timedelta,
 )
 from psycop_model_training.training_output.dataclasses import EvalDataset

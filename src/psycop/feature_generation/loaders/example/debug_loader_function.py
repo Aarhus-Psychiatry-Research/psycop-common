@@ -8,7 +8,6 @@ Two primary purposes:
 from typing import Any, Union
 
 import pandas as pd
-
 import psycop.feature_generation.loaders.raw as raw_loaders
 from psycop.feature_generation.data_checks.raw.check_predictor_lists import check_raw_df
 

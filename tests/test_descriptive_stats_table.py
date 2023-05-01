@@ -5,7 +5,7 @@ import time
 
 import numpy as np
 import pandas as pd
-from psycop_model_evaluation.utils import bin_continuous_data
+from model_evaluation.utils import bin_continuous_data
 from tableone import TableOne
 
 
