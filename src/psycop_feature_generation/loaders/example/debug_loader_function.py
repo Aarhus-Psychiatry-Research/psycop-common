@@ -5,7 +5,7 @@ Two primary purposes:
 2. Check that the dataframe conforms to the required format.
 """
 
-from typing import Any
+from typing import Any, Union
 
 import pandas as pd
 
@@ -29,7 +29,9 @@ def will_it_float(value: Any) -> bool:
         return False
 
 
-def get_prop_of_each_unique_value_for_non_floats(series: pd.Series) -> pd.Series:
+def get_prop_of_each_unique_value_for_non_floats(
+    series: pd.Series,
+) -> Union[pd.Series, None]:
     """Get the proportion of each unique value in a series, but only for value
     which cannot be converted to floats.
 
@@ -41,7 +43,8 @@ def get_prop_of_each_unique_value_for_non_floats(series: pd.Series) -> pd.Series
         original series.
     """
     if series.dtype in ["float64", "int64"]:
-        return "All values in series can be converted to floats."
+        print("All values in series can be converted to floats.")
+        return None
 
     # Find all strings that start with a number
     starts_with_number_idx = series.str.match(r"^\d+").fillna(False)
@@ -81,7 +84,6 @@ def get_prop_of_each_unique_value_for_non_floats(series: pd.Series) -> pd.Series
 
 if __name__ == "__main__":
     df = raw_loaders.load_lab_results.ldl(
-        n=1_000,
         values_to_load="numerical_and_coerce",
     )
 

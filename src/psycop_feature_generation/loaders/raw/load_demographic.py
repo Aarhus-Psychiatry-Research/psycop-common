@@ -14,7 +14,7 @@ def birthdays(n_rows: int | None = None) -> pd.DataFrame:
 
     sql = f"SELECT dw_ek_borger, foedselsdato FROM [fct].{view}"
 
-    df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     # Typically handled by sql_load, but because foedselsdato doesn't contain "datotid" in its name,
     # We must handle it manually here
@@ -31,7 +31,7 @@ def sex_female(n_rows: int | None = None) -> pd.DataFrame:
 
     sql = f"SELECT dw_ek_borger, koennavn FROM [fct].{view}"
 
-    df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     df.loc[df["koennavn"] == "Mand", "koennavn"] = False
     df.loc[df["koennavn"] == "Kvinde", "koennavn"] = True

@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "psycop_feature_generation"
+name = "psycop-feature-generation"
 version = "0.23.0"
 description = ""
 authors = [
@@ -13,8 +13,6 @@ classifiers = [
   "Operating System :: POSIX :: Linux",
   "Operating System :: MacOS :: MacOS X",
   "Operating System :: Microsoft :: Windows",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10"
 ]
@@ -36,9 +34,9 @@ dependencies = [
   "numpy>=1.23.3,<1.24.4",
   "transformers>=4.22.2, <5.0.0",
   "pyarrow>=9.0.0,<11.1.0",
-  "psycopmlutils>=0.2.4,<0.12.0",
+  "psycopmlutils>=0.2.4",
   "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
-  "frozendict>=2.3.4"
+  "frozendict>=2.3.4",
 ]
 
 [project.optional-dependencies]
@@ -49,28 +47,23 @@ dev = [
   "black>=22.8.0,<23.1.1",
   "docformatter>=1.5.0, <1.6.4",
   "pre-commit==3.2.2",
-  "mypy==1.2.0",
-  "pydantic"
+  "pydantic",
+  "pyright",
+  "pyright-polite",
+  "invoke",
 ]
 tests = [
   "pytest>=7.1.3,<7.3.2",
   "pytest-cov>=3.0.0,<4.0.1",
   "pytest-xdist>=2.4.0,<3.2.1",
+  "pytest-sugar",
+  "tox",
   "timeseriesflattener>=0.21.0"
 ]
 
-[tool.mypy]
-ignore_missing_imports = true
-no_implicit_optional = true
-warn_unused_ignores = true
-warn_unreachable = true
-
-[tool.pylint]
-load-plugins = "pylint.extensions.docparams,pylint.extensions.code_style,pylint.extensions.for_any_all,pylint.extensions.typing"
-good-names = "df,p,f,d,e,n,k,i,v"
-disable = "too-many-lines,line-too-long,missing-raises-doc,no-self-argument,unused-wildcard-import,wildcard-import,no-else-return,too-many-arguments,redefined-outer-name,c-extension-no-member,wrong-import-order,logging-fstring-interpolation,deprecated-typing-alias,logging-format-interpolation,logging-not-lazy"
-
-[tool.pyright] # Added because of weird pylance error, issue here: https://github.com/microsoft/pylance-release/issues/3366
+[tool.pyright]
+exclude = [".*venv*", ".tox"]
+pythonPlatform = "Darwin"
 
 [tool.pytest]
 n = 0
@@ -123,7 +116,6 @@ exclude = [
   ".eggs",
   ".git",
   ".hg",
-  ".mypy_cache",
   ".nox",
   ".pants.d",
   ".pytype",
@@ -138,7 +130,8 @@ exclude = [
   "dist",
   "node_modules",
   "venv",
-  "__init__.py"
+  "__init__.py",
+  "docs/conf.py",
 ]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
@@ -166,3 +159,33 @@ build_command = "python -m pip install build; python -m build"
 
 [tool.setuptools]
 include-package-data = true
+
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{39,310}
+
+[testenv]
+description: run unit tests
+extras = tests
+use_develop = true
+commands =
+  pytest -n auto {posargs:test}
+
+[testenv:type]
+description: run type checks
+extras = tests, dev
+basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
+use_develop = true
+commands =
+  pyright .
+
+[testenv:docs]
+description: build docs
+extras = docs
+basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
+use_develop = true
+commands =
+  sphinx-build -b html docs docs/_build/html
+"""

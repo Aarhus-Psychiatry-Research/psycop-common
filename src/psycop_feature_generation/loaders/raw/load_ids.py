@@ -21,6 +21,6 @@ def load_ids(split: str, n_rows: int | None = None) -> pd.DataFrame:
 
     sql = f"SELECT * FROM [fct].{view}"
 
-    df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     return df.reset_index(drop=True)

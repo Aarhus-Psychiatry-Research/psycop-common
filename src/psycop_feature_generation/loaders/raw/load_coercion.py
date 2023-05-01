@@ -47,7 +47,7 @@ def coercion_duration(
 
         sql += f" AND typetekst_sei = '{coercion_type}' AND begrundtekst_sei = '{reason_for_coercion}'"
 
-    df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     # add end time as start time for acute sedation
     df.loc[df.typetekst_sei == "Beroligende medicin", "datotid_slut_sei"] = df[
@@ -82,7 +82,7 @@ def _concatenate_coercion(
     coercion_types_list: list[dict[str, str]],
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     """Aggregate multiple types of coercion with multiple reasons into one
     column.
@@ -125,7 +125,7 @@ def _concatenate_coercion(
 def farlighed(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     coercion_types_list = [
         {
@@ -149,7 +149,7 @@ def farlighed(
 def paa_grund_af_farlighed(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         reason_for_coercion="På grund af farlighed",
@@ -164,7 +164,7 @@ def paa_grund_af_farlighed(
 def af_helbredsmaessige_grunde(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         reason_for_coercion="Af helbredsmæssige grunde",
@@ -178,7 +178,7 @@ def af_helbredsmaessige_grunde(
 def urolig_tilstand(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         reason_for_coercion="Urolig tilstand",
@@ -192,7 +192,7 @@ def urolig_tilstand(
 def anden_begrundelse(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         reason_for_coercion="Anden begrundelse",
@@ -206,7 +206,7 @@ def anden_begrundelse(
 def naerliggende_fare(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         reason_for_coercion="Nærliggende_eller_væsentlig_fare_for_patienten_eller_andre",
@@ -222,7 +222,7 @@ def naerliggende_fare(
 def skema_1(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     coercion_types_list = [
         {
@@ -246,7 +246,7 @@ def skema_1(
 def skema_2(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     coercion_types_list = [
         {
@@ -275,7 +275,7 @@ def skema_2(
 def skema_2_without_nutrition(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     coercion_types_list = [
         {
@@ -302,7 +302,7 @@ def skema_2_without_nutrition(
 def skema_3(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     coercion_types_list = [
         {
@@ -340,7 +340,7 @@ def skema_3(
 def baelte(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Bælte",
@@ -354,7 +354,7 @@ def baelte(
 def remme(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Remme",
@@ -368,7 +368,7 @@ def remme(
 def fastholden(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Fastholden",
@@ -382,7 +382,7 @@ def fastholden(
 def beroligende_medicin(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Beroligende medicin",
@@ -396,7 +396,7 @@ def beroligende_medicin(
 def handsker(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Handsker",
@@ -410,7 +410,7 @@ def handsker(
 def tvangsindlaeggelse(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Tvangsindlæggelse",
@@ -424,7 +424,7 @@ def tvangsindlaeggelse(
 def tvangstilbageholdelse(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Tvangstilbageholdelse",
@@ -438,7 +438,7 @@ def tvangstilbageholdelse(
 def medicinering(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Medicinering",
@@ -452,7 +452,7 @@ def medicinering(
 def ect(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="ECT",
@@ -466,7 +466,7 @@ def ect(
 def ernaering(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Ernæring",
@@ -480,7 +480,7 @@ def ernaering(
 def af_legemlig_lidelse(
     n_rows: int | None = None,
     unpack_to_intervals: bool | None = False,
-    unpack_freq: str | None = "D",
+    unpack_freq: str = "D",
 ) -> pd.DataFrame:
     return coercion_duration(
         coercion_type="Af legemlig lidelse",

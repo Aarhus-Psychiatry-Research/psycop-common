@@ -104,7 +104,7 @@ def generate_temporal_feature_description(
     d = {
         "Predictor df": feature_name,
         "Lookbehind days": predictor_spec.interval_days,
-        "Resolve multiple": predictor_spec.resolve_multiple_fn.__name__,
+        "Resolve multiple": predictor_spec.resolve_multiple_fn.__name__,  # type: ignore
         "N unique": series.nunique(),
         "Fallback strategy": str(predictor_spec.fallback),
         "Proportion missing": series.isna().mean(),
@@ -155,14 +155,14 @@ def generate_feature_description_row(
     """
 
     if isinstance(predictor_spec, StaticSpec):
-        d = generate_static_feature_description(series, predictor_spec)
-    elif isinstance(predictor_spec, TemporalSpec):
-        d = generate_temporal_feature_description(
+        return generate_static_feature_description(series, predictor_spec)
+    if isinstance(predictor_spec, TemporalSpec):
+        return generate_temporal_feature_description(
             series,
             predictor_spec,
             feature_name=feature_name,
         )
-    return d
+    raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
 
 
 def generate_feature_description_df(

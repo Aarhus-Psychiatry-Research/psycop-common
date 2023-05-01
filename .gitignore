@@ -164,3 +164,7 @@ poetry.lock
 # PyCharm
 /.idea/*
 tests/outputs_from_tests
+
+# Tox
+_build/
+.tox/

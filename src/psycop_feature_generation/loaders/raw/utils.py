@@ -263,7 +263,7 @@ def load_from_codes(
     if fixed_doses:
         sql += f" AND styrke_numerisk IN {fixed_doses}"
 
-    df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     if exclude_codes:
         # Drop all rows whose code_col_name is in exclude_codes

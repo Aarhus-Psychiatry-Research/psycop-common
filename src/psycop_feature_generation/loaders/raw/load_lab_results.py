@@ -44,7 +44,6 @@ def load_non_numerical_values_and_coerce_inequalities(
     df = sql_load(
         sql,
         database="USR_PS_FORSK",
-        chunksize=None,
         n_rows=n_rows,
     )
 
@@ -86,7 +85,6 @@ def load_numerical_values(
     df = sql_load(
         sql,
         database="USR_PS_FORSK",
-        chunksize=None,
         n_rows=n_rows,
     )
 
@@ -128,7 +126,6 @@ def load_cancelled(
     df = sql_load(
         sql,
         database="USR_PS_FORSK",
-        chunksize=None,
         n_rows=n_rows,
     )
 
@@ -173,7 +170,6 @@ def load_all_values(
     df = sql_load(
         sql,
         database="USR_PS_FORSK",
-        chunksize=None,
         n_rows=n_rows,
     )
 

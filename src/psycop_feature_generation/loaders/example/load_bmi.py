@@ -12,7 +12,6 @@ if __name__ == "__main__":
     df = sql_load(
         query="SELECT * FROM [fct].[FOR_SFI_vaegt_hoejde_BMI_psyk_somatik_inkl_2021]",
         database="USR_PS_FORSK",
-        chunksize=None,
         n_rows=1_000,
     )[["aktivitetstypenavn", "elementledetekst", "numelementvaerdi", "elementvaerdi"]]
 

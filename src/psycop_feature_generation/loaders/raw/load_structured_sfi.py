@@ -34,7 +34,7 @@ def sfi_loader(
     if elementledetekst:
         sql += f" AND elementledetekst = '{elementledetekst}'"
 
-    df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
+    df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     # Drop duplicate rows
     df = df.drop_duplicates(keep="first")

@@ -128,7 +128,7 @@ def physical_visits(
         if where_clause is not None:
             sql += f" {where_separator} {where_clause}"
 
-        df = sql_load(sql, database="USR_PS_FORSK", chunksize=None, n_rows=n_rows)
+        df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
         df = df.rename(
             columns={
                 schema.end_datetime_col_name: "timestamp_end",

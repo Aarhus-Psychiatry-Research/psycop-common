@@ -13,7 +13,6 @@ def t2d(n_rows: int | None = None) -> pd.DataFrame:
     df = sql_load(
         "SELECT dw_ek_borger, timestamp FROM [fct].[psycop_t2d_first_diabetes_t2d] WHERE timestamp IS NOT NULL",
         database="USR_PS_FORSK",
-        chunksize=None,
         format_timestamp_cols_to_datetime=True,
         n_rows=n_rows,
     )
@@ -30,7 +29,6 @@ def any_diabetes(n_rows: int | None = None):
     df = sql_load(
         "SELECT * FROM [fct].[psycop_t2d_first_diabetes_any] WHERE timestamp IS NOT NULL",
         database="USR_PS_FORSK",
-        chunksize=None,
         n_rows=n_rows,
     )
 
