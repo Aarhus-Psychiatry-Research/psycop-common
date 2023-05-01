@@ -26,8 +26,11 @@ pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psy
 
 ## Migrating from the polyrepos
 Replace:
+
 `psycop_feature_generation.` -> `psycop.feature_generation.`
+
 `psycop_model_training.` -> `psycop.model_training.`
+
 `psycop_model_evaluation.` -> `psycop.model_evaluation.`
 
 <!--
