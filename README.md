@@ -1,5 +1,3 @@
-<a href="https://github.com/Aarhus-Psychiatry-Research/psycop-common"><img src="https://github.com/Aarhus-Psychiatry-Research/psycop-common/blob/main/docs/_static/icon.png?raw=true" width="100" align="right"/></a>
-
 # PSYCOP
 
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-common.svg)][pypi status] -->
@@ -20,7 +18,7 @@ The shared code across the PSYCOP projects.
 
 ## Installation
 
-We recommend installing straight into your source folder:
+We recommend installing straight into your `src` folder, so you can make modifications to the libraries when required:
 
 ```bash
 pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-common#egg=psycop
