@@ -178,7 +178,7 @@ commands =
 
 [testenv:type]
 description: run type checks
-extras = test, dev
+extras = tests, dev
 basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
 use_develop = true
 commands =
