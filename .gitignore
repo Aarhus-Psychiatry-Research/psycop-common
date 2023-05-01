@@ -177,7 +177,9 @@ _build/
 
 # Data tables
 *.parquet
-*.excel
+*.json
+*.pkl
+*.xlsx
 
 # Test
 src/psycop/tests/test_eval_results/*

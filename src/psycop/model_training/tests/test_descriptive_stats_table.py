@@ -9,9 +9,9 @@ from psycop.model_evaluation.utils import bin_continuous_data
 from tableone import TableOne
 
 
-def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
+def test_generate_descriptive_stats_table(subsampled_synth_eval_df: pd.DataFrame):
     """Test descriptive stats table."""
-    df = synth_eval_df
+    df = subsampled_synth_eval_df
 
     # Multiply the dataset by 10 to benchmark the performance
     df = pd.concat([df] * 10, ignore_index=True)
@@ -43,8 +43,8 @@ def test_generate_descriptive_stats_table(synth_eval_df: pd.DataFrame):
     ).tableone
 
     # Grouped
-    df["dw_ek_borger"] = synth_eval_df["dw_ek_borger"]
-    df["age"] = synth_eval_df["age"]
+    df["dw_ek_borger"] = subsampled_synth_eval_df["dw_ek_borger"]
+    df["age"] = subsampled_synth_eval_df["age"]
     grouped_df = df.groupby("dw_ek_borger").agg({"is_female": "max"})
     grouped_df["split"] = grouped_df.merge(df, how="left", on="dw_ek_borger")[["split"]]
 

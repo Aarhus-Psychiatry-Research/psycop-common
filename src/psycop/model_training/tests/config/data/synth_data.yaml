@@ -1,6 +1,6 @@
 # @package _global_
 data:
-  dir: src/psycop/model_training/tests/test_data/synth_splits/
+  dir: src/psycop/model_training/tests/test_data/synth_splits_subsampled/
   suffix: csv
   splits_for_training: ["train", "val"]
   splits_for_evaluation: null
