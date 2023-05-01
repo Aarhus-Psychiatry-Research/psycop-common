@@ -17,12 +17,12 @@ from psycop.model_training.training_output.dataclasses import ModelEvalData
 from psycop.utils import PSYCOP_PKG_ROOT
 from sklearn.pipeline import Pipeline
 
-SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
-FEATURE_SETS_PATH = SHARED_RESOURCES_PATH / "feature_sets"
-OUTCOME_DATA_PATH = SHARED_RESOURCES_PATH / "outcome_data"
-RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
-FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
-MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
+OVARTACI_SHARED_DIR = Path(r"E:\shared_resources")
+FEATURE_SETS_PATH = OVARTACI_SHARED_DIR / "feature_sets"
+OUTCOME_DATA_PATH = OVARTACI_SHARED_DIR / "outcome_data"
+RAW_DATA_VALIDATION_PATH = OVARTACI_SHARED_DIR / "raw_data_validation"
+FEATURIZERS_PATH = OVARTACI_SHARED_DIR / "featurizers"
+MODEL_PREDICTIONS_PATH = OVARTACI_SHARED_DIR / "model_predictions"
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "tests" / "plots_from_tests"
 

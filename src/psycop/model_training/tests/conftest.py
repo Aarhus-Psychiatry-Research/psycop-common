@@ -1,5 +1,4 @@
 """Define fixtures for tests."""
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -51,13 +50,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
 @pytest.fixture()
 def synth_eval_df() -> pd.DataFrame:
     """Load synthetic data."""
-    csv_path = (
-        PSYCOP_PKG_ROOT
-        / Path("tests")
-        / "meta_tests"
-        / "model_eval"
-        / "synth_eval_data.csv"
-    )
+    csv_path = PSYCOP_PKG_ROOT / "test_utils" / "model_eval" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
 
     # Convert all timestamp cols to datetime
@@ -83,6 +76,10 @@ def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
         age=df["age"],
         is_female=df["is_female"],
         custom_columns={"eval_n_hbac1_count": df["eval_n_hbac1_count"]},
+        pred_time_uuids=df["dw_ek_borger"].astype(str)
+        + df["timestamp"].dt.strftime(
+            "-%Y-%m-%d-%H-%M-%S",
+        ),
     )
 
 

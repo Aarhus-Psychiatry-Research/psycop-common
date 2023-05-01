@@ -197,6 +197,11 @@ build_command = "python -m pip install build; python -m build"
 [tool.setuptools]
 include-package-data = true
 
+[tool.pytest.ini_options]
+markers = [
+  "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds."
+]
+testpaths = ["src/psycop"]
 
 [tool.tox]
 legacy_tox_ini = """

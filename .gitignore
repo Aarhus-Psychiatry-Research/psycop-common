@@ -168,3 +168,14 @@ tests/outputs_from_tests
 # Tox
 _build/
 .tox/
+
+# Outputs
+# Images
+*.png
+*.jpg
+*.tiff
+
+# Data tables
+*.csv
+*.parquet
+*.excel

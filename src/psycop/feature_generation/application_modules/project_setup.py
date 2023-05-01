@@ -7,8 +7,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import wandb
-from psycop.feature_generation.utils import SHARED_RESOURCES_PATH
-from psycop.utils import PSYCOP_PKG_ROOT
+from psycop.utils import OVARTACI_SHARED_DIR, PSYCOP_PKG_ROOT
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
 )
@@ -85,7 +84,7 @@ def get_project_info(
         tuple[Path, str]: Tuple of project path, and feature_set_id
     """
     log.info("Setting up project")
-    proj_path = SHARED_RESOURCES_PATH / project_name
+    proj_path = OVARTACI_SHARED_DIR / project_name
 
     current_user = Path().home().name
     feature_set_id = f"psycop_{project_name}_{current_user}_features_{time.strftime('%Y_%m_%d_%H_%M')}"

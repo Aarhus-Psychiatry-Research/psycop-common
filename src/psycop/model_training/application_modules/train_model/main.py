@@ -18,7 +18,7 @@ from psycop.model_training.utils.col_name_inference import get_col_names
 from psycop.model_training.utils.decorators import (
     wandb_alert_on_exception_return_terrible_auc,
 )
-from psycop.model_training.utils.utils import SHARED_RESOURCES_PATH
+from psycop.model_training.utils.utils import OVARTACI_SHARED_DIR
 from psycop.utils import PSYCOP_PKG_ROOT
 
 
@@ -26,7 +26,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
     """Get the directory to save evaluation results to."""
     # If online
     ovartaci_path = (
-        SHARED_RESOURCES_PATH
+        OVARTACI_SHARED_DIR
         / cfg.project.name
         / "model_eval"
         / wandb.run.group  # type: ignore

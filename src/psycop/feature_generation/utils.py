@@ -15,8 +15,6 @@ import pandas as pd
 
 data_loaders = catalogue.create("timeseriesflattener", "data_loaders")
 
-SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
-
 
 def format_dict_for_printing(d: dict) -> str:
     """Format a dictionary for printing. Removes extra apostrophes, formats
