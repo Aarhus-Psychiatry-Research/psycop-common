@@ -42,7 +42,7 @@ def filter_by_split_ids(
     """Filter dataframe by split ids."""
     # Find IDs which are in split_ids, but not in flattened_df
     flattened_df_ids = df_to_split["dw_ek_borger"].unique()
-    split_ids: pd.Series = split_id_df["dw_ek_borger"].unique() # type: ignore
+    split_ids: pd.Series = split_id_df["dw_ek_borger"].unique()  # type: ignore
 
     ids_in_split_but_not_in_flattened_df = split_ids[
         ~np.isin(split_ids, flattened_df_ids)
