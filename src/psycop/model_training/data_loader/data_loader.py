@@ -41,11 +41,11 @@ class DataLoader:
         else:
             log.debug("No column name checker specified. Skipping column name check.")
 
-    def _load_dataset_file(  # pylint: disable=inconsistent-return-statements
+    def _load_dataset_file(
         self,
         split_name: str,
         nrows: Optional[int] = None,
-    ) -> pd.DataFrame:  # pylint: disable=inconsistent-return-statements
+    ) -> pd.DataFrame:
         """Load dataset from directory. Finds any file with the matching file
         suffix with the split name in its filename.
 

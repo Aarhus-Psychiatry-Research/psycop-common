@@ -52,7 +52,7 @@ def start_trainer(
 
     msg.info(f'{" ".join(subprocess_args)}')
 
-    return subprocess.Popen(  # pylint: disable=consider-using-with
+    return subprocess.Popen(
         args=subprocess_args,
     )
 

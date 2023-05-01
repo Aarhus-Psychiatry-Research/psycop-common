@@ -34,7 +34,7 @@ def create_model(cfg: FullConfigSchema) -> Any:
     return model_dict["model"](**model_args)
 
 
-def stratified_cross_validation(  # pylint: disable=too-many-locals
+def stratified_cross_validation(
     cfg: FullConfigSchema,
     pipe: Pipeline,
     train_df: pd.DataFrame,
@@ -44,8 +44,8 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
     """Performs stratified and grouped cross validation using the pipeline."""
     msg = Printer(timestamp=True)
 
-    X = train_df[train_col_names]  # pylint: disable=invalid-name
-    y = train_df[outcome_col_name]  # pylint: disable=invalid-name
+    X = train_df[train_col_names]
+    y = train_df[outcome_col_name]
 
     # Create folds
     msg.info("Creating folds")
@@ -65,10 +65,10 @@ def stratified_cross_validation(  # pylint: disable=too-many-locals
 
         msg.info(f"{msg_prefix}: Training fold")
 
-        X_train, y_train = (  # pylint: disable=invalid-name
+        X_train, y_train = (
             X.loc[train_idxs],
             y.loc[train_idxs],
-        )  # pylint: disable=invalid-name
+        )
         pipe.fit(X_train, y_train)
 
         y_pred = pipe.predict_proba(X_train)[:, 1]
@@ -143,9 +143,9 @@ def train_validate(
         Evaluation dataset
     """
 
-    X_train = train[train_col_names]  # pylint: disable=invalid-name
+    X_train = train[train_col_names]
     y_train = train[outcome_col_name]
-    X_val = val[train_col_names]  # pylint: disable=invalid-name
+    X_val = val[train_col_names]
 
     pipe.fit(X_train, y_train)
 

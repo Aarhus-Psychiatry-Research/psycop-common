@@ -127,6 +127,6 @@ class ArtifactsToDiskSaver:
 
         self.save_run_performance_to_group_parquet(roc_auc=roc_auc, cfg=cfg)
 
-        log.info(  # pylint: disable=logging-fstring-interpolation
+        log.info(
             f"Saved evaluation dataset, cfg and pipe metadata to {self.dir_path}",
         )

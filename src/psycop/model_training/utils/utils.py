@@ -86,7 +86,7 @@ def flatten_nested_dict(
     return dict(items)  # type: ignore
 
 
-def drop_records_if_datediff_days_smaller_than(  # pylint: disable=inconsistent-return-statements
+def drop_records_if_datediff_days_smaller_than(
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
@@ -120,10 +120,7 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
         A numpy ndarray with the borders.
     """
     _, edges = pd.cut(series, bins=bins, retbins=True, duplicates="drop")
-    labels = [  # pylint: disable=unsubscriptable-object
-        f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]"  # pylint: disable=unsubscriptable-object
-        for i in range(len(bins) - 1)
-    ]
+    labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
 
     return pd.cut(series, bins=bins, labels=labels)
 

@@ -68,7 +68,7 @@ def wandb_alert_on_exception_return_terrible_auc(func):  # noqa
     def wrapper(*args, **kwargs):  # noqa
         try:
             return func(*args, **kwargs)
-        except Exception:  # pylint: disable=broad-except, unused-variable
+        except Exception:
             if wandb.run is not None:
                 wandb.alert(title="Run crashed", text=traceback.format_exc())
             return 0.5
