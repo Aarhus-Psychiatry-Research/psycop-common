@@ -7,13 +7,18 @@ from pathlib import Path
 
 import pandas as pd
 from joblib import Memory
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from sqlalchemy import create_engine, text
 
 # Create a memory cache with the desired directory to store cached results
 # Only if on Windows
 if Path("E:/").exists():
     cache_dir = Path("E:/shared_resources/sql_cache/")
-    memory = Memory(location=cache_dir, verbose=1)
+else:
+    cache_dir = PSYCOP_PKG_ROOT / "src" / "psycop" / "test_utils" / "sql_cache"
+
+cache_dir.mkdir(parents=True, exist_ok=True)
+memory = Memory(location=cache_dir, verbose=1)
 
 
 @memory.cache  # type: ignore
