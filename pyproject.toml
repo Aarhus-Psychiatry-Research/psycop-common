@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "psycop_feature_generation"
+name = "psycop-feature-generation"
 version = "0.23.0"
 description = ""
 authors = [
@@ -36,10 +36,9 @@ dependencies = [
   "numpy>=1.23.3,<1.24.4",
   "transformers>=4.22.2, <5.0.0",
   "pyarrow>=9.0.0,<11.1.0",
-  "psycopmlutils>=0.2.4,<0.12.0",
+  "psycopmlutils>=0.2.4",
   "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
   "frozendict>=2.3.4",
-  "psycopmlutils",
 ]
 
 [project.optional-dependencies]
