@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import urllib
 import urllib.parse
-from collections.abc import Generator
 from pathlib import Path
 
 import pandas as pd
@@ -13,6 +12,7 @@ from sqlalchemy import create_engine, text
 # Create a memory cache with the desired directory to store cached results
 cache_dir = Path("E:/shared_resources/sql_cache/")
 memory = Memory(location=cache_dir, verbose=1)
+
 
 @memory.cache
 def sql_load(
