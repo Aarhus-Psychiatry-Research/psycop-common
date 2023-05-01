@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import wandb
-from psycop.utils import OVARTACI_SHARED_DIR, PSYCOP_PKG_ROOT
+from psycop.global_utils import OVARTACI_SHARED_DIR, PSYCOP_PKG_ROOT
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
 )

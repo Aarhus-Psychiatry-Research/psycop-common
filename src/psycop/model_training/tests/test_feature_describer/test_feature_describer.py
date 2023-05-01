@@ -9,7 +9,7 @@ from psycop.feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_row,
     save_feature_descriptive_stats_from_dir,
 )
-from psycop.utils import PSYCOP_PKG_ROOT
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from timeseriesflattener.feature_spec_objects import (
     OutcomeSpec,
     PredictorSpec,
@@ -62,7 +62,11 @@ def df() -> pd.DataFrame:
     """Load the synthetic flattened data set."""
     return pd.read_csv(
         PSYCOP_PKG_ROOT
-        / "tests/test_data/flattened/generated_with_outcome/synth_flattened_with_outcome.csv",
+        / "test_utils"
+        / "test_data"
+        / "flattened"
+        / "generated_with_outcome"
+        / "synth_flattened_with_outcome.csv",
     )
 
 

@@ -14,7 +14,7 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 import wandb
-from psycop.utils import PSYCOP_PKG_ROOT
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline
@@ -26,7 +26,7 @@ RAW_DATA_VALIDATION_PATH = OVARTACI_SHARED_DIR / "raw_data_validation"
 FEATURIZERS_PATH = OVARTACI_SHARED_DIR / "featurizers"
 MODEL_PREDICTIONS_PATH = OVARTACI_SHARED_DIR / "model_predictions"
 
-TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "tests" / "plots_from_tests"
+TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "plots_from_tests"
 
 
 class BaseModel(PydanticBaseModel):

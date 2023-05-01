@@ -176,6 +176,8 @@ _build/
 *.tiff
 
 # Data tables
-*.csv
 *.parquet
 *.excel
+
+# Test
+src/psycop/tests/test_eval_results/*

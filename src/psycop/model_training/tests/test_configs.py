@@ -2,10 +2,10 @@
 
 import pytest
 from hydra import compose, initialize
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from psycop.model_training.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
 )
-from psycop.utils import PSYCOP_PKG_ROOT
 
 CONFIG_DIR_PATH_TEST_ABS = PSYCOP_PKG_ROOT / "tests" / "config"
 CONFIG_DIR_PATH_TEST_REL = "../tests/config"

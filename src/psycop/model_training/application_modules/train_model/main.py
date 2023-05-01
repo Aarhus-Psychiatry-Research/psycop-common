@@ -4,6 +4,7 @@ from typing import Optional
 
 import pandas as pd
 import wandb
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from psycop.model_training.application_modules.wandb_handler import WandbHandler
 from psycop.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.model_training.data_loader.utils import (
@@ -19,7 +20,6 @@ from psycop.model_training.utils.decorators import (
     wandb_alert_on_exception_return_terrible_auc,
 )
 from psycop.model_training.utils.utils import OVARTACI_SHARED_DIR
-from psycop.utils import PSYCOP_PKG_ROOT
 
 
 def get_eval_dir(cfg: FullConfigSchema) -> Path:

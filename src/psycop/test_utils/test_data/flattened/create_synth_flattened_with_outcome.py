@@ -31,7 +31,7 @@ if __name__ == "__main__":
     }
 
     synth_df = generate_synth_data(
-        predictors=column_specifications,
+        predictors=column_specifications,  # type: ignore
         outcome_column_name="outc_t2d_within_30_days_max_fallback_0_dichotomous",
         n_samples=10_000,
         logistic_outcome_model="1*pred_hba1c_within_100_days_max_fallback_nan+1*pred_hdl_within_100_days_max_fallback_nan",
@@ -40,5 +40,4 @@ if __name__ == "__main__":
 
     synth_df.describe()
 
-    save_path = Path(__file__).parent.parent.parent.parent
-    synth_df.to_csv(save_path / "tests" / "test_data" / "synth_prediction_data.csv")
+    synth_df.to_csv(Path(__file__).parent / "synth_prediction_data.csv")

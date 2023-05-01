@@ -336,7 +336,7 @@ def plot_sensitivity_by_time_to_event(
         ordered=True,
     )
 
-    df["actual_positive_rate"] = df["actual_positive_rate"].astype(str)
+    df["actual_positive_rate"] = df["actual_positive_rate"]
 
     # Set y limits
 

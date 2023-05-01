@@ -4,11 +4,11 @@ from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from psycop.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.model_training.training.model_specs import MODELS
 from psycop.model_training.training.utils import create_eval_dataset
 from psycop.model_training.training_output.dataclasses import EvalDataset
-from psycop.utils import PSYCOP_PKG_ROOT
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline

@@ -57,7 +57,7 @@ def calc_performance(
         ) -> float:
             # bootstrap function requires the metric function to
             # be able to take additional arguments (notably the length of the array)
-            return metric(true, pred)
+            return metric(true, pred, average=None)
 
         boot = bootstrap(
             (df["y"], df["y_hat"]),

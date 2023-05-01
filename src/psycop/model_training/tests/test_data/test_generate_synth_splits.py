@@ -1,9 +1,9 @@
 """Generate synth data with outcome."""
 import numpy as np
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from psycop.test_utils.model_eval.generate_synthetic_dataset_for_eval import (
     add_age_is_female,
 )
-from psycop.utils import PSYCOP_PKG_ROOT
 from psycop_ml_utils.synth_data_generator.synth_prediction_times_generator import (
     generate_synth_data,
 )
