@@ -2,16 +2,16 @@
 
 
 import pytest
-from psycop_model_training.application_modules.train_model.main import (
+from psycop.model_training.application_modules.train_model.main import (
     post_wandb_setup_train_model,
     train_model,
 )
-from psycop_model_training.application_modules.wandb_handler import WandbHandler
-from psycop_model_training.config_schemas.conf_utils import (
+from psycop.model_training.application_modules.wandb_handler import WandbHandler
+from psycop.model_training.config_schemas.conf_utils import (
     load_test_cfg_as_pydantic,
 )
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.training.model_specs import MODELS
+from psycop.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.model_training.training.model_specs import MODELS
 
 INTEGRATION_TEST_FILE_NAME = "default_config.yaml"
 

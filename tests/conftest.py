@@ -22,17 +22,19 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "slow" in item.keywords:
             item.add_marker(skip_slow)
+
+
 """Define fixtures for tests."""
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
-from psycop_model_training.config_schemas.conf_utils import (
+from psycop.model_training.config_schemas.conf_utils import (
     FullConfigSchema,
     load_test_cfg_as_pydantic,
 )
-from psycop_model_training.training_output.dataclasses import EvalDataset
+from psycop.model_training.training_output.dataclasses import EvalDataset
 
 CONFIG_DIR_PATH_REL = "../application/config"
 

@@ -3,7 +3,7 @@
 
 import numpy as np
 import pandas as pd
-from psycop_model_training.utils.utils import (
+from psycop.model_training.utils.utils import (
     bin_continuous_data,
     drop_records_if_datediff_days_smaller_than,
     flatten_nested_dict,

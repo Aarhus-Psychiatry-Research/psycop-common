@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import pandas as pd
-from psycop_model_training.application_modules.train_model.main import train_model
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
+from psycop.model_training.application_modules.train_model.main import train_model
+from psycop.model_training.config_schemas.full_config import FullConfigSchema
 
 
 def test_saving_results_to_parquet(

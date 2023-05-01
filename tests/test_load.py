@@ -3,12 +3,12 @@
 
 import pandas as pd
 import pytest
-from psycop_model_training.config_schemas.data import ColumnNamesSchema
-from psycop_model_training.config_schemas.full_config import FullConfigSchema
-from psycop_model_training.data_loader.col_name_checker import (
+from psycop.model_training.config_schemas.data import ColumnNamesSchema
+from psycop.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.model_training.data_loader.col_name_checker import (
     check_columns_exist_in_dataset,
 )
-from psycop_model_training.data_loader.utils import load_and_filter_train_from_cfg
+from psycop.model_training.data_loader.utils import load_and_filter_train_from_cfg
 
 
 def test_load_lookbehind_exceeds_lookbehind_threshold(
