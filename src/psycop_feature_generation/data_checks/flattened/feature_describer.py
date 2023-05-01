@@ -164,6 +164,7 @@ def generate_feature_description_row(
         )
     raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
 
+
 def generate_feature_description_df(
     df: pd.DataFrame,
     predictor_specs: list[PredictorSpec | StaticSpec | TemporalSpec],
