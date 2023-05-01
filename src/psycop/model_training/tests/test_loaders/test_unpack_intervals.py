@@ -4,7 +4,7 @@ import pandas as pd
 from psycop.feature_generation.loaders.raw.utils import (
     unpack_intervals,
 )
-from psycop.feature_generation.utils_for_testing import (
+from psycop.test_utils.str_to_df import (
     str_to_df,
 )
 

@@ -9,6 +9,7 @@ from psycop.model_training.config_schemas.conf_utils import (
     load_test_cfg_as_pydantic,
 )
 from psycop.model_training.training_output.dataclasses import EvalDataset
+from psycop.utils import PSYCOP_PKG_ROOT
 
 CONFIG_DIR_PATH_REL = "../application/config"
 
@@ -50,7 +51,13 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
 @pytest.fixture()
 def synth_eval_df() -> pd.DataFrame:
     """Load synthetic data."""
-    csv_path = Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv"
+    csv_path = (
+        PSYCOP_PKG_ROOT
+        / Path("tests")
+        / "meta_tests"
+        / "model_eval"
+        / "synth_eval_data.csv"
+    )
     df = pd.read_csv(csv_path)
 
     # Convert all timestamp cols to datetime

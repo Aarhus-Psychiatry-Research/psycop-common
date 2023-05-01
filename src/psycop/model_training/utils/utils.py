@@ -14,6 +14,7 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 from psycop.model_training.training_output.dataclasses import ModelEvalData
+from psycop.utils import PSYCOP_PKG_ROOT
 from sklearn.pipeline import Pipeline
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
@@ -23,8 +24,7 @@ RAW_DATA_VALIDATION_PATH = SHARED_RESOURCES_PATH / "raw_data_validation"
 FEATURIZERS_PATH = SHARED_RESOURCES_PATH / "featurizers"
 MODEL_PREDICTIONS_PATH = SHARED_RESOURCES_PATH / "model_predictions"
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-TEST_PLOT_PATH = PROJECT_ROOT / "tests" / "plots_from_tests"
+TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "tests" / "plots_from_tests"
 
 
 def format_dict_for_printing(d: dict) -> str:
@@ -304,7 +304,10 @@ def create_wandb_folders():
             exist_ok=True,
             parents=True,
         )
-        (PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
+        (PSYCOP_PKG_ROOT / "wandb" / "debug-cli.onerm").mkdir(
+            exist_ok=True,
+            parents=True,
+        )
 
 
 def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:

@@ -16,7 +16,6 @@ import pandas as pd
 data_loaders = catalogue.create("timeseriesflattener", "data_loaders")
 
 SHARED_RESOURCES_PATH = Path(r"E:\shared_resources")
-RELATIVE_PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def format_dict_for_printing(d: dict) -> str:

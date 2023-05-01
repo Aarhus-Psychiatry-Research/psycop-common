@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Any, Literal
 
 import wandb
-from psycop.feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
+from psycop.feature_generation.utils import SHARED_RESOURCES_PATH
+from psycop.utils import PSYCOP_PKG_ROOT
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
 )
@@ -124,7 +125,7 @@ def init_wandb(
             exist_ok=True,
             parents=True,
         )
-        (RELATIVE_PROJECT_ROOT / "wandb" / "debug-cli.onerm").mkdir(
+        (PSYCOP_PKG_ROOT / "wandb" / "debug-cli.onerm").mkdir(
             exist_ok=True,
             parents=True,
         )

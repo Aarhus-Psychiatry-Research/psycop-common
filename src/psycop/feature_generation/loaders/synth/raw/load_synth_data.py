@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import pandas as pd
-from psycop.feature_generation.utils import RELATIVE_PROJECT_ROOT, data_loaders
+from psycop.feature_generation.utils import data_loaders
+from psycop.utils import PSYCOP_PKG_ROOT
 
 
 def load_raw_test_csv(filename: str, n_rows: int | None = None) -> pd.DataFrame:
@@ -14,7 +15,7 @@ def load_raw_test_csv(filename: str, n_rows: int | None = None) -> pd.DataFrame:
         n_rows (int, optional): Number of rows to load. Defaults to None.
     """
     df = pd.read_csv(
-        RELATIVE_PROJECT_ROOT / "tests" / "test_data" / "raw" / filename,
+        PSYCOP_PKG_ROOT / "tests" / "test_data" / "raw" / filename,
         nrows=n_rows,
     )
 

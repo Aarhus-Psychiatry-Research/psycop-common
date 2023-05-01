@@ -4,7 +4,7 @@ import pandas as pd
 from psycop.feature_generation.loaders.non_numerical_coercer import (
     multiply_inequalities_in_df,
 )
-from psycop.feature_generation.utils_for_testing import (
+from psycop.test_utils.str_to_df import (
     str_to_df,
 )
 

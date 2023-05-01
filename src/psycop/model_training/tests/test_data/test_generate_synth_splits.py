@@ -1,12 +1,11 @@
 """Generate synth data with outcome."""
 import numpy as np
-from psycop.model_training.utils.utils import PROJECT_ROOT
+from psycop.test_utils.model_eval.generate_synthetic_dataset_for_eval import (
+    add_age_is_female,
+)
+from psycop.utils import PSYCOP_PKG_ROOT
 from psycop_ml_utils.synth_data_generator.synth_prediction_times_generator import (
     generate_synth_data,
-)
-
-from tests.test_data.model_eval.generate_synthetic_dataset_for_eval import (
-    add_age_is_female,
 )
 
 
@@ -105,7 +104,7 @@ def test_synth_data_generator():
         if override_dataset_on_test_run:
             # Save to csv
             synth_df.to_csv(
-                PROJECT_ROOT
+                PSYCOP_PKG_ROOT
                 / "tests"
                 / "test_data"
                 / "synth_splits"

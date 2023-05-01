@@ -1,6 +1,6 @@
 """Generate raw float dataframe."""
 
-from psycop.feature_generation.utils import RELATIVE_PROJECT_ROOT
+from psycop.utils import PSYCOP_PKG_ROOT
 from psycop_ml_utils.synth_data_generator.synth_col_generators import (
     generate_data_columns,
 )
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         )
 
         df.to_csv(
-            RELATIVE_PROJECT_ROOT
+            PSYCOP_PKG_ROOT
             / "tests"
             / "test_data"
             / "raw"

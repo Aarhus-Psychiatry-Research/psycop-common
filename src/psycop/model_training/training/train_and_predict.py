@@ -8,13 +8,13 @@ from psycop.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.model_training.training.model_specs import MODELS
 from psycop.model_training.training.utils import create_eval_dataset
 from psycop.model_training.training_output.dataclasses import EvalDataset
-from psycop.model_training.utils.utils import PROJECT_ROOT
+from psycop.utils import PSYCOP_PKG_ROOT
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
-CONFIG_PATH = PROJECT_ROOT / "application" / "config"
+CONFIG_PATH = PSYCOP_PKG_ROOT / "application" / "config"
 
 # Handle wandb not playing nice with joblib
 os.environ["WANDB_START_METHOD"] = "thread"
