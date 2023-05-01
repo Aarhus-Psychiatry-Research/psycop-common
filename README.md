@@ -24,7 +24,11 @@ We recommend installing straight into your `src` folder, so you can make modific
 pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-common#egg=psycop
 ```
 
-## Usage
+## Migrating from the polyrepos
+Replace:
+`psycop_feature_generation.` -> `psycop.feature_generation.`
+`psycop_model_training.` -> `psycop.model_training.`
+`psycop_model_evaluation.` -> `psycop.model_evaluation.`
 
 <!--
 To see more examples, see the [documentation].
