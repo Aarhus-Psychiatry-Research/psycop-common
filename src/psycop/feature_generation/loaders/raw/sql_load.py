@@ -10,8 +10,10 @@ from joblib import Memory
 from sqlalchemy import create_engine, text
 
 # Create a memory cache with the desired directory to store cached results
-cache_dir = Path("E:/shared_resources/sql_cache/")
-memory = Memory(location=cache_dir, verbose=1)
+# Only if on Windows
+if Path("E:/").exists():
+    cache_dir = Path("E:/shared_resources/sql_cache/")
+    memory = Memory(location=cache_dir, verbose=1)
 
 
 @memory.cache
