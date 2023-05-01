@@ -181,3 +181,6 @@ _build/
 
 # Test
 src/psycop/tests/test_eval_results/*
+
+# Ruff
+.ruff_cache

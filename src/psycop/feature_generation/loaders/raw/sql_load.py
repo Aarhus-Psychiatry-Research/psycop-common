@@ -16,7 +16,7 @@ if Path("E:/").exists():
     memory = Memory(location=cache_dir, verbose=1)
 
 
-@memory.cache
+@memory.cache  # type: ignore
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
