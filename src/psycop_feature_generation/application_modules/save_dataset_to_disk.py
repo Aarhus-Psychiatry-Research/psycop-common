@@ -5,11 +5,11 @@ from typing import Literal, Union
 import numpy as np
 import pandas as pd
 
-import psycop_feature_generation.loaders
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from psycop_feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
+from psycop_feature_generation.loaders.raw.load_ids import load_ids
 from psycop_feature_generation.utils import write_df_to_file
 
 log = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ def filter_by_split_ids(
 
 def get_split_id_df(split_name: Literal["train", "val", "test"]) -> pd.DataFrame:
     """Get a dataframe with the splits ids."""
-    split_id_df = psycop_feature_generation.loaders.raw.load_ids(
+    split_id_df = load_ids(
         split=split_name,
     )
 
