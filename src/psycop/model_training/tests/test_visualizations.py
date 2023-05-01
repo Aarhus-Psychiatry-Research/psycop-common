@@ -41,13 +41,13 @@ from psycop.model_evaluation.utils import TEST_PLOT_PATH
 from psycop.model_training.training_output.dataclasses import EvalDataset
 
 
-def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):
+def test_prob_over_time(subsampled_eval_dataset: EvalDataset, tmp_path: str):
     plot_prob_over_time(
-        patient_id=synth_eval_dataset.ids,
-        timestamp=synth_eval_dataset.pred_timestamps,
-        pred_prob=synth_eval_dataset.y_hat_probs,
-        outcome_timestamp=synth_eval_dataset.outcome_timestamps,
-        label=synth_eval_dataset.y,
+        patient_id=subsampled_eval_dataset.ids,
+        timestamp=subsampled_eval_dataset.pred_timestamps,
+        pred_prob=subsampled_eval_dataset.y_hat_probs,
+        outcome_timestamp=subsampled_eval_dataset.outcome_timestamps,
+        label=subsampled_eval_dataset.y,
         look_behind_distance=500,
         save_path=Path(tmp_path),
     )
@@ -79,16 +79,16 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
     )
 
 
-def test_plot_performance_by_age(synth_eval_dataset: EvalDataset):
+def test_plot_performance_by_age(subsampled_eval_dataset: EvalDataset):
     plot_roc_auc_by_age(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         save_path=TEST_PLOT_PATH / "test_performance_plot_by_age.png",
     )
 
 
-def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
+def test_plot_performance_by_sex(subsampled_eval_dataset: EvalDataset):
     plot_roc_auc_by_sex(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         save_path=TEST_PLOT_PATH / "test_performance_plot_by_sex.png",
     )
 
@@ -98,11 +98,11 @@ def test_plot_performance_by_sex(synth_eval_dataset: EvalDataset):
     ["Q", "Y"],
 )
 def test_plot_performance_by_calendar_time(
-    synth_eval_dataset: EvalDataset,
+    subsampled_eval_dataset: EvalDataset,
     bin_period: Literal["M", "Q", "Y"],
 ):
     plot_metric_by_absolute_time(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         bin_period=bin_period,
         confidence_interval=0.95,
         save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",  # type: ignore
@@ -111,11 +111,11 @@ def test_plot_performance_by_calendar_time(
 
 @pytest.mark.xfail()
 def test_sensitivity_by_time_to_event(
-    synth_eval_dataset: EvalDataset,
+    subsampled_eval_dataset: EvalDataset,
 ):
     # TODO: Another one that is currently failing, the next person who uses it should debug it
     plot_sensitivity_by_time_to_event(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         positive_rates=[0.4, 0.6, 0.8],
         bins=list(range(0, 1460, 180)),
         y_limits=(0, 1),
@@ -128,20 +128,20 @@ def test_sensitivity_by_time_to_event(
     ["H", "D", "M"],
 )
 def test_plot_performance_by_cyclic_time(
-    synth_eval_dataset: EvalDataset,
+    subsampled_eval_dataset: EvalDataset,
     bin_period: str,
 ):
     plot_roc_auc_by_periodic_time(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         bin_period=bin_period,
     )
 
 
 @pytest.mark.xfail()
-def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
+def test_plot_metric_until_diagnosis(subsampled_eval_dataset: EvalDataset):
     # TODO: Another one that is currently failing, the next person who uses it should debug it
     plot_sensitivity_by_time_until_diagnosis(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         y_title="Sensitivity (recall)",
         confidence_interval=0.95,
         save_path=TEST_PLOT_PATH / "sensitivity_by_time_until_diagnosis.png",
@@ -150,9 +150,9 @@ def test_plot_metric_until_diagnosis(synth_eval_dataset: EvalDataset):
     # TODO: This is failing for no known reason. The next person who needs it should debug it.
 
 
-def test_plot_auc_time_from_first_visit(synth_eval_dataset: EvalDataset):
+def test_plot_auc_time_from_first_visit(subsampled_eval_dataset: EvalDataset):
     plot_roc_auc_by_time_from_first_visit(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
     )
 
 
@@ -172,27 +172,27 @@ def test_plot_feature_importances():
     )
 
 
-def test_plot_roc_auc(synth_eval_dataset: EvalDataset):
+def test_plot_roc_auc(subsampled_eval_dataset: EvalDataset):
     plot_auc_roc(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         save_path=TEST_PLOT_PATH / "roc_auc.png",
         n_bootstraps=10,
     )
 
 
 # @pytest.mark.skip(reason="Breaking on ubuntu only, don't have time to debug right now")
-def test_plot_time_from_first_positive_to_event(synth_eval_dataset: EvalDataset):
+def test_plot_time_from_first_positive_to_event(subsampled_eval_dataset: EvalDataset):
     plot_time_from_first_positive_to_event(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         bins=list(range(0, 60, 3)),
         min_n_in_bin=1,
         save_path=TEST_PLOT_PATH / "time_from_first_positive_to_event.png",
     )
 
 
-def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
+def test_plot_precision_recall(subsampled_eval_dataset: EvalDataset):
     plot_precision_recall(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         save_path=Path(
             TEST_PLOT_PATH / "precision_recall.png",
         ),
@@ -200,9 +200,9 @@ def test_plot_precision_recall(synth_eval_dataset: EvalDataset):
 
 
 @pytest.mark.xfail()
-def test_overlay_barplot(synth_eval_dataset: EvalDataset):
+def test_overlay_barplot(subsampled_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         y_title="Sensitivity",
         confidence_interval=0.95,
         save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
