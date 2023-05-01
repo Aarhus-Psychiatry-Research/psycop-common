@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.59.1 (2023-05-01)
+### Fix
+* Incorre ([`dc54a8e`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/dc54a8e8a307d159cf89aff8a24e4846ebd7c413))
+
 ## v0.59.0 (2023-04-27)
 ### Feature
 * Allow differential filepath ([#504](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/issues/504)) ([`d5ec3df`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-training/commit/d5ec3df85bbb7f643badab95f9e06da830f091df))
