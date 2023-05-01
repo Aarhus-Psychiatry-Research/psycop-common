@@ -24,7 +24,7 @@ def t2d(n_rows: int | None = None) -> pd.DataFrame:
 
 
 @data_loaders.register("any_diabetes")
-def any_diabetes(n_rows: int | None = None):
+def any_diabetes(n_rows: int | None = None) -> pd.DataFrame:
     df = sql_load(
         "SELECT * FROM [fct].[psycop_t2d_first_diabetes_any] WHERE timestamp IS NOT NULL",
         database="USR_PS_FORSK",

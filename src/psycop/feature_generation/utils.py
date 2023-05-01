@@ -101,7 +101,7 @@ def load_most_recent_file_matching_pattern_as_df(
     return load_dataset_from_file(file_path=most_recent_file)
 
 
-def df_contains_duplicates(df: pd.DataFrame, col_subset: list[str]):
+def df_contains_duplicates(df: pd.DataFrame, col_subset: list[str]) -> bool:
     """Check if a dataframe contains duplicates.
 
     Args:

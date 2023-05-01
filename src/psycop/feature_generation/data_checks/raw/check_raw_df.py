@@ -11,7 +11,7 @@ import pandas as pd
 def check_for_duplicates(
     df: pd.DataFrame,
     subset_duplicates_columns: Sequence[str] | str,
-) -> tuple[pd.DataFrame, list[str]]:
+) -> tuple[pd.DataFrame | None, list[str]]:
     """Check for duplicates in the dataframe.
 
     Args:

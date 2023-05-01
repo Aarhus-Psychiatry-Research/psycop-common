@@ -28,7 +28,7 @@ def median_absolute_deviation(series: pd.Series) -> float:
         np.array: Median absolute deviation of the series.
     """
     med = np.median(series)
-    return np.median(np.abs(series - med))
+    return np.median(np.abs(series - med))  # type: ignore
 
 
 def generate_column_description(series: pd.Series) -> dict:
@@ -60,7 +60,7 @@ def generate_column_description(series: pd.Series) -> dict:
     return d
 
 
-def get_na_prob(series: pd.Series) -> pd.Series:
+def get_na_prob(series: pd.Series) -> float:
     """Calculates the propotion of rows that are NaT.
 
     Args:
@@ -183,11 +183,11 @@ def validate_raw_data(
     data_description.to_csv(save_path / "data_description.csv", index=False)  # type: ignore
     # Highlight rows with large deviations from the baseline
     data_description = data_description.style.apply(  # type: ignore
-        func=highlight_large_deviation,
+        func=highlight_large_deviation,  # type: ignore
         threshold=deviation_threshold_ratio,
         baseline_column=deviation_baseline_column,
         variation_column=deviation_variation_column,
-        axis=1,
+        axis=1,  # type: ignore
     )
 
     save_df_to_pretty_html_table(

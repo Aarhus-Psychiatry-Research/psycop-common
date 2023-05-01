@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -35,14 +36,14 @@ UNICODE_HIST = {
 HIST_BINS = 8
 
 
-def get_value_proportion(series, value):
+def get_value_proportion(series: pd.Series, value: Any) -> float:
     """Get proportion of series that is equal to the value argument."""
     if np.isnan(value):
-        return round(series.isna().mean(), 2)
-    return round(series.eq(value).mean(), 2)
+        return round(series.isna().mean(), 2)  # type: ignore
+    return round(series.eq(value).mean(), 2)  # type: ignore
 
 
-def _find_nearest(array, value):
+def _find_nearest(array: np.ndarray, value: Any) -> np.ndarray:
     """Find the nearest numerical match to value in an array.
 
     Args:
@@ -75,7 +76,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
     series = series.dropna()
 
     if series.dtype == "bool":
-        series = series.astype("int")
+        series = series.astype("int")  # type: ignore
 
     hist, _ = np.histogram(series, density=True, bins=HIST_BINS)
     hist = hist / hist.max()
@@ -94,7 +95,7 @@ def generate_temporal_feature_description(
     series: pd.Series,
     predictor_spec: TemporalSpec,
     feature_name: str | None = None,
-):
+) -> dict[str, Any]:
     """Generate a row with feature description for a temporal predictor."""
     if feature_name is not None:
         feature_name = feature_name
@@ -123,7 +124,10 @@ def generate_temporal_feature_description(
     return d
 
 
-def generate_static_feature_description(series: pd.Series, predictor_spec: StaticSpec):
+def generate_static_feature_description(
+    series: pd.Series,
+    predictor_spec: StaticSpec,
+) -> dict[str, Any]:
     """Generate a row with feature description for a static predictor."""
     return {
         "Predictor df": predictor_spec.feature_name,

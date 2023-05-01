@@ -9,36 +9,36 @@ from typing import Literal
 
 import numpy as np
 import pytest
-from model_evaluation.base_charts import (
+from psycop.model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from model_evaluation.binary.global_performance.precision_recall import (
+from psycop.model_evaluation.binary.global_performance.precision_recall import (
     plot_precision_recall,
 )
-from model_evaluation.binary.global_performance.roc_auc import plot_auc_roc
-from model_evaluation.binary.subgroups.age import plot_roc_auc_by_age
-from model_evaluation.binary.subgroups.sex import plot_roc_auc_by_sex
-from model_evaluation.binary.time.absolute_plots import (
+from psycop.model_evaluation.binary.global_performance.roc_auc import plot_auc_roc
+from psycop.model_evaluation.binary.subgroups.age import plot_roc_auc_by_age
+from psycop.model_evaluation.binary.subgroups.sex import plot_roc_auc_by_sex
+from psycop.model_evaluation.binary.time.absolute_plots import (
     plot_metric_by_absolute_time,
     plot_prob_over_time,
 )
-from model_evaluation.binary.time.periodic_plots import (
+from psycop.model_evaluation.binary.time.periodic_plots import (
     plot_roc_auc_by_periodic_time,
 )
-from model_evaluation.binary.time.timedelta_data import (
+from psycop.model_evaluation.binary.time.timedelta_data import (
     create_sensitivity_by_time_to_outcome_df,
 )
-from model_evaluation.binary.time.timedelta_plots import (
+from psycop.model_evaluation.binary.time.timedelta_plots import (
     plot_roc_auc_by_time_from_first_visit,
     plot_sensitivity_by_time_to_event,
     plot_sensitivity_by_time_until_diagnosis,
     plot_time_from_first_positive_to_event,
 )
-from model_evaluation.feature_importance.sklearn.feature_importance import (
+from psycop.model_evaluation.feature_importance.sklearn.feature_importance import (
     plot_feature_importances,
 )
-from model_evaluation.utils import TEST_PLOT_PATH
-from psycop_model_training.training_output.dataclasses import EvalDataset
+from psycop.model_evaluation.utils import TEST_PLOT_PATH
+from psycop.model_training.training_output.dataclasses import EvalDataset
 
 
 def test_prob_over_time(synth_eval_dataset: EvalDataset, tmp_path: str):

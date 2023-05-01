@@ -20,7 +20,7 @@ def create_model_filename(
     max_df: float,
     min_df: int,
     max_features: Optional[int],
-):
+) -> str:
     """Create model filename including all relevant informaiton about the model.
 
     Args:

@@ -32,7 +32,7 @@ from psycop.feature_generation.loaders.flattened import (
 from wasabi import Printer
 
 
-def pruned_data_integrity_checks(**kwargs) -> Suite:
+def pruned_data_integrity_checks(**kwargs: Any) -> Suite:
     """Deepchecks data integrity suite with only wanted checks.
     Disables: SpecialCharacters, StringMismatch, ConflictingLabels.
 
@@ -78,7 +78,7 @@ def label_integrity_checks() -> Suite:
     )
 
 
-def custom_train_test_validation(**kwargs) -> Suite:
+def custom_train_test_validation(**kwargs: Any) -> Suite:
     """Deepchecks train/test validation suite for train/test checks which slow
     checks disabled.
 
@@ -137,7 +137,7 @@ def check_train_data_integrity(
     train_outcomes_df: pd.DataFrame,
     outcome_checks_dir: Path,
     n_rows: int | None = None,
-):
+) -> dict[Any, Any]:
     """Runs Deepcheck data integrity checks for the train split.
 
     Args:

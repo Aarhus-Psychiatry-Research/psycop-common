@@ -18,7 +18,7 @@ from timeseriesflattener.feature_spec_objects import (
 
 
 @pytest.fixture()
-def predictor_specs():
+def predictor_specs() -> list[PredictorSpec]:
     return [
         PredictorSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
@@ -32,7 +32,7 @@ def predictor_specs():
 
 
 @pytest.fixture()
-def static_specs():
+def static_specs() -> list[StaticSpec]:
     return [
         StaticSpec(
             values_df=pd.DataFrame({"value": [0]}),
@@ -43,7 +43,7 @@ def static_specs():
 
 
 @pytest.fixture()
-def outcome_specs():
+def outcome_specs() -> list[OutcomeSpec]:
     return [
         OutcomeSpec(
             values_df=pd.DataFrame({"value": [0]}),
@@ -58,7 +58,7 @@ def outcome_specs():
 
 
 @pytest.fixture()
-def df():
+def df() -> pd.DataFrame:
     """Load the synthetic flattened data set."""
     return pd.read_csv(
         RELATIVE_PROJECT_ROOT
@@ -79,7 +79,7 @@ def test_save_feature_descriptive_stats_from_dir(
 
     save_feature_descriptive_stats_from_dir(
         feature_set_dir=tmp_path,
-        feature_specs=specs,
+        feature_specs=specs,  # type: ignore
         file_suffix="parquet",
         splits=("train",),
         out_dir=RELATIVE_PROJECT_ROOT
@@ -89,7 +89,7 @@ def test_save_feature_descriptive_stats_from_dir(
     )
 
 
-def test_load_dataset(df):
+def test_load_dataset(df: pd.DataFrame) -> None:
     """Check loading of synthetic dataset."""
     assert df.shape[0] == 10_000
 
@@ -115,7 +115,7 @@ def test_generate_feature_description_row_for_temporal_spec(
     assert isinstance(row["Mean"], Number)
     assert isinstance(row["Proportion using fallback"], Number)
 
-    generate_feature_description_df(df=df, predictor_specs=predictor_specs)
+    generate_feature_description_df(df=df, predictor_specs=predictor_specs)  # type: ignore
 
 
 def test_generate_feature_description_row_for_static_spec(

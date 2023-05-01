@@ -82,7 +82,7 @@ def str_to_df(
 
 
 @data_loaders.register("load_event_times")
-def load_event_times():
+def load_event_times() -> pd.DataFrame:
     """Load event times."""
     event_times_str = """dw_ek_borger,timestamp,value,
                     1,2021-12-30 00:00:01, 1
@@ -92,7 +92,7 @@ def load_event_times():
     return str_to_df(event_times_str)
 
 
-def check_any_item_in_list_has_str(list_of_str: list, str_: str):
+def check_any_item_in_list_has_str(list_of_str: list, str_: str) -> bool:
     """Check if any item in a list contains a string.
 
     Args:
@@ -106,12 +106,12 @@ def check_any_item_in_list_has_str(list_of_str: list, str_: str):
 
 
 @pytest.fixture()
-def synth_prediction_times():
+def synth_prediction_times() -> pd.DataFrame:
     """Load the prediction times."""
     return load_synth_prediction_times()
 
 
 @pytest.fixture()
-def synth_outcome():
+def synth_outcome() -> pd.DataFrame:
     """Load the synth outcome times."""
     return load_synth_outcome()

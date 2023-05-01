@@ -37,7 +37,7 @@ def filter_by_split_ids(
     df_to_split: pd.DataFrame,
     split_id_df: pd.DataFrame,
     split_name: Union[list[str], str],
-):
+) -> pd.DataFrame:
     """Filter dataframe by split ids."""
     # Find IDs which are in split_ids, but not in flattened_df
     flattened_df_ids = df_to_split["dw_ek_borger"].unique()

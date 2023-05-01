@@ -1,29 +1,3 @@
-import pytest
-
-
-def pytest_addoption(parser):
-    parser.addoption(
-        "--runslow",
-        action="store_true",
-        default=False,
-        help="run slow tests",
-    )
-
-
-def pytest_configure(config):
-    config.addinivalue_line("markers", "slow: mark test as slow to run")
-
-
-def pytest_collection_modifyitems(config, items):
-    if config.getoption("--runslow"):
-        # --runslow given in cli: do not skip slow tests
-        return
-    skip_slow = pytest.mark.skip(reason="need --runslow option to run")
-    for item in items:
-        if "slow" in item.keywords:
-            item.add_marker(skip_slow)
-
-
 """Define fixtures for tests."""
 from pathlib import Path
 
@@ -37,7 +11,29 @@ from psycop.model_training.config_schemas.conf_utils import (
 from psycop.model_training.training_output.dataclasses import EvalDataset
 
 CONFIG_DIR_PATH_REL = "../application/config"
-from psycop.model_training.training_output.dataclasses import EvalDataset
+
+
+def pytest_addoption(parser: pytest.Parser):
+    parser.addoption(
+        "--runslow",
+        action="store_true",
+        default=False,
+        help="run slow tests",
+    )
+
+
+def pytest_configure(config: pytest.Config):
+    config.addinivalue_line("markers", "slow: mark test as slow to run")
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]):
+    if config.getoption("--runslow"):
+        # --runslow given in cli: do not skip slow tests
+        return
+    skip_slow = pytest.mark.skip(reason="need --runslow option to run")
+    for item in items:
+        if "slow" in item.keywords:
+            item.add_marker(skip_slow)
 
 
 def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
@@ -97,5 +93,4 @@ def muteable_test_config() -> FullConfigSchema:
     return load_test_cfg_as_pydantic(
         config_file_name="default_config.yaml",
         allow_mutation=True,
-        pred_time_uuids=df["dw_ek_borger"].astype(str) + df["timestamp"].astype(str),
     )

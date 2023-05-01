@@ -21,7 +21,7 @@ def check_df_conforms_to_feature_spec(
     required_columns: Sequence[str] = ("dw_ek_borger", "timestamp", "value"),
     subset_duplicates_columns: Sequence[str] = ("dw_ek_borger", "timestamp", "value"),
     expected_val_dtypes: Sequence[str] = ("float64", "int64"),
-):
+) -> dict[Any, list[str]] | None:
     """Check that a loaded df conforms to to a given feature specification.
     Useful when creating loaders.
 
@@ -87,7 +87,7 @@ def get_predictor_df_with_loader_fn(d: dict, n_rows: int) -> pd.DataFrame:
 def get_unique_predictor_dfs(
     predictor_dict_list: Sequence[dict],
     required_keys: list[str],
-):
+) -> list[Any]:
     """Get unique predictor_dfs from predictor_dict_list.
 
     Args:

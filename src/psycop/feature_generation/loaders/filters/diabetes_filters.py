@@ -7,7 +7,7 @@ def keep_rows_where_col_name_matches_pattern(
     df: pd.DataFrame,
     col_name: str,
     regex_pattern: str,
-):
+) -> pd.DataFrame:
     return df[df[col_name].str.contains(regex_pattern)]
 
 

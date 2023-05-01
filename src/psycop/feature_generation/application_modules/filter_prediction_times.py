@@ -70,10 +70,15 @@ class PredictionTimeFilterer:
                 "-%Y-%m-%d-%H-%M-%S",
             )
 
-    def _filter_prediction_times_by_quarantine_period(self):
+    def _filter_prediction_times_by_quarantine_period(self) -> pd.DataFrame:
         # We need to check if ANY quarantine date hits each prediction time.
         # Create combinations
         n_before = len(self.prediction_times_df)
+
+        if self.quarantine_df is None:
+            raise ValueError(
+                "quarantine_df must be provided to filter by quarantine period.",
+            )
 
         df = self.prediction_times_df.merge(
             self.quarantine_df,
@@ -124,7 +129,7 @@ class PredictionTimeFilterer:
 
         return df
 
-    def run_filter(self):
+    def run_filter(self) -> pd.DataFrame:
         """Run filters based on the provided parameters."""
         df = self.prediction_times_df
 

@@ -42,7 +42,7 @@ def list_to_sql_logic(
     code_sql_col_name: str,
     load_diagnoses: bool,
     match_with_wildcard: bool,
-):
+) -> str:
     """Generate SQL match logic from a list of strings.
 
     Args:

@@ -6,15 +6,15 @@ from collections.abc import Callable
 import pandas as pd
 
 
-def print_df_dimensions_diff(
+def print_df_dimensions_diff(  # noqa: ANN201
     func: Callable,
     print_when_starting: bool = False,
-    print_when_no_diff=False,
+    print_when_no_diff: bool = False,
 ):
     """Print the difference in rows between the input and output dataframes."""
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa
         log = logging.getLogger(__name__)
 
         if print_when_starting:

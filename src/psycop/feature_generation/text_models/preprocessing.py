@@ -24,7 +24,7 @@ def text_preprocessing(
     df[text_column_name] = (
         df[text_column_name]
         .str.lower()
-        .replace(regex_symbol_removal_and_stop_words, value="", regex=True)
+        .replace(regex_symbol_removal_and_stop_words, value="", regex=True)  # type: ignore
     )
 
     return df

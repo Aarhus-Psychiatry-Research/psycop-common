@@ -4,7 +4,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import wandb
 from psycop.feature_generation.utils import RELATIVE_PROJECT_ROOT, SHARED_RESOURCES_PATH
@@ -41,7 +41,7 @@ class ProjectInfo(BaseModel):
     prefix: Prefixes = Prefixes()
     col_names: ColNames = ColNames()
 
-    def __init__(self, **data):
+    def __init__(self, **data: Any):
         super().__init__(**data)
 
         # Iterate over each attribute. If the attribute is a Path, create it if it does not exist.

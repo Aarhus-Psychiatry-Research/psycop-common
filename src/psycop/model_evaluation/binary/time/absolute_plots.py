@@ -7,13 +7,13 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from model_evaluation.base_charts import (
+from psycop.model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from model_evaluation.binary.time.absolute_data import (
+from psycop.model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )
-from psycop_model_training.training_output.dataclasses import EvalDataset
+from psycop.model_training.training_output.dataclasses import EvalDataset
 
 
 def plot_metric_by_absolute_time(

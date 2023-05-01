@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from model_evaluation.base_charts import (
+from psycop.model_evaluation.base_charts import (
     plot_basic_chart,
 )
 
