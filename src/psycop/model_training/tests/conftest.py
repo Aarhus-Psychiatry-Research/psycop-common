@@ -3,12 +3,12 @@
 import numpy as np
 import pandas as pd
 import pytest
+from psycop.global_utils import PSYCOP_PKG_ROOT
 from psycop.model_training.config_schemas.conf_utils import (
     FullConfigSchema,
     load_test_cfg_as_pydantic,
 )
 from psycop.model_training.training_output.dataclasses import EvalDataset
-from psycop.global_utils import PSYCOP_PKG_ROOT
 
 CONFIG_DIR_PATH_REL = "../application/config"
 

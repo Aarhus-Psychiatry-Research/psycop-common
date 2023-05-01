@@ -65,7 +65,6 @@ def df() -> pd.DataFrame:
         / "test_utils"
         / "test_data"
         / "flattened"
-        / "generated_with_outcome"
         / "synth_flattened_with_outcome.csv",
     )
 
