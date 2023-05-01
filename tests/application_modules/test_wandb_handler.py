@@ -1,8 +1,7 @@
 from pathlib import Path
 
+from psycop_model_training.application_modules.wandb_handler import WandbHandler
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
-
-from src.psycop_model_training.application_modules.wandb_handler import WandbHandler
 
 
 def test_wandb_handler_fullconfig_parsing(
