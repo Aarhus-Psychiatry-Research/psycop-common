@@ -104,7 +104,7 @@ def generate_temporal_feature_description(
     d = {
         "Predictor df": feature_name,
         "Lookbehind days": predictor_spec.interval_days,
-        "Resolve multiple": predictor_spec.resolve_multiple_fn.__name__,
+        "Resolve multiple": predictor_spec.resolve_multiple_fn.__name__, # type: ignore
         "N unique": series.nunique(),
         "Fallback strategy": str(predictor_spec.fallback),
         "Proportion missing": series.isna().mean(),
