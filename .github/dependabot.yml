@@ -14,3 +14,5 @@ updates:
     commit-message:
       prefix: "deps:"
       include: "scope"
+    ignore:
+      - dependency-name: "protobuf"
