@@ -1,5 +1,5 @@
 import pandas as pd
-from psycop_feature_generation.text_models.preprocessing import text_preprocessing
+from psycop.feature_generation.text_models.preprocessing import text_preprocessing
 
 
 def test_text_preprocessing():

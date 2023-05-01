@@ -1,8 +1,8 @@
 """Tests of check_raw_df."""
 
 import pytest
-from psycop_feature_generation.data_checks.raw.check_raw_df import check_raw_df
-from psycop_feature_generation.utils_for_testing import (
+from psycop.feature_generation.data_checks.raw.check_raw_df import check_raw_df
+from psycop.feature_generation.utils_for_testing import (
     str_to_df,
 )
 

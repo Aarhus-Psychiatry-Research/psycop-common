@@ -1,9 +1,9 @@
 """Tests of the filter_prediction_times module."""
 import pandas as pd
-from psycop_feature_generation.application_modules.filter_prediction_times import (
+from psycop.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
-from psycop_feature_generation.utils_for_testing import str_to_df
+from psycop.feature_generation.utils_for_testing import str_to_df
 
 
 def test_filter_by_quarantine_period():

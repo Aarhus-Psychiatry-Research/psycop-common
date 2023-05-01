@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from psycop_feature_generation.text_models.fit_text_models import fit_text_model
-from psycop_feature_generation.text_models.preprocessing import text_preprocessing
+from psycop.feature_generation.text_models.fit_text_models import fit_text_model
+from psycop.feature_generation.text_models.preprocessing import text_preprocessing
 
 
 def test_fit_bow_model():

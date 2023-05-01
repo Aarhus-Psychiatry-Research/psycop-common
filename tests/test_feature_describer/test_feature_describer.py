@@ -4,12 +4,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from psycop_feature_generation.data_checks.flattened.feature_describer import (
+from psycop.feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_df,
     generate_feature_description_row,
     save_feature_descriptive_stats_from_dir,
 )
-from psycop_feature_generation.utils import RELATIVE_PROJECT_ROOT
+from psycop.feature_generation.utils import RELATIVE_PROJECT_ROOT
 from timeseriesflattener.feature_spec_objects import (
     OutcomeSpec,
     PredictorSpec,

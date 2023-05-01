@@ -1,10 +1,10 @@
 """Tests of coercion from strings to numerical."""
 
 import pandas as pd
-from psycop_feature_generation.loaders.non_numerical_coercer import (
+from psycop.feature_generation.loaders.non_numerical_coercer import (
     multiply_inequalities_in_df,
 )
-from psycop_feature_generation.utils_for_testing import (
+from psycop.feature_generation.utils_for_testing import (
     str_to_df,
 )
 
