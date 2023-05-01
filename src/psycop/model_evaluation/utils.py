@@ -26,7 +26,7 @@ RAW_DATA_VALIDATION_PATH = OVARTACI_SHARED_DIR / "raw_data_validation"
 FEATURIZERS_PATH = OVARTACI_SHARED_DIR / "featurizers"
 MODEL_PREDICTIONS_PATH = OVARTACI_SHARED_DIR / "model_predictions"
 
-TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "plots_from_tests"
+TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 
 
 class BaseModel(PydanticBaseModel):

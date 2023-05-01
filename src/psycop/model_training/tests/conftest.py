@@ -50,7 +50,13 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
 @pytest.fixture()
 def synth_eval_df() -> pd.DataFrame:
     """Load synthetic data."""
-    csv_path = PSYCOP_PKG_ROOT / "test_utils" / "model_eval" / "synth_eval_data.csv"
+    csv_path = (
+        PSYCOP_PKG_ROOT
+        / "test_utils"
+        / "test_data"
+        / "model_eval"
+        / "synth_eval_data.csv"
+    )
     df = pd.read_csv(csv_path)
 
     # Convert all timestamp cols to datetime

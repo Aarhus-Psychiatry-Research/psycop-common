@@ -15,7 +15,7 @@ from sqlalchemy import create_engine, text
 if Path("E:/").exists():
     cache_dir = Path("E:/shared_resources/sql_cache/")
 else:
-    cache_dir = PSYCOP_PKG_ROOT / "test_utils" / "sql_cache"
+    cache_dir = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "sql_cache"
 
 cache_dir.mkdir(parents=True, exist_ok=True)
 memory = Memory(location=cache_dir, verbose=1)
