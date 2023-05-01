@@ -85,7 +85,7 @@ def test_save_feature_descriptive_stats_from_dir(
         feature_specs=specs,  # type: ignore
         file_suffix="parquet",
         splits=("train",),
-        out_dir=PSYCOP_PKG_ROOT / "tests" / "outputs_from_tests" / "feature_describer",
+        out_dir=tmp_path,
     )
 
 
