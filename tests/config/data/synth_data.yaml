@@ -1,0 +1,18 @@
+# @package _global_
+data:
+  dir: tests/test_data/synth_splits
+  suffix: csv
+  splits_for_training: ["train", "val"]
+  splits_for_evaluation: null
+  n_training_samples: null
+  pred_prefix: pred_
+  outc_prefix: outc_
+
+  col_name:
+    pred_timestamp: timestamp
+    outcome_timestamp: timestamp_outcome
+    pred_time_uuid: pred_time_uuid
+    id: citizen_ids
+    age: pred_age
+    is_female: is_female
+    exclusion_timestamp: timestamp_exclusion

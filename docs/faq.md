@@ -11,7 +11,7 @@ and test utilities defined in the extras_require section of the :code:`pyproject
 
 ```bash
 # clone the repository
-git clone https://github.com/MartinBernstorff/psycop-common
+git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common
 
 # install package and test dependencies
 pip install -e ".[tests]"
@@ -55,6 +55,10 @@ sphinx-build -b html docs docs/_build/html
 This project was generated from the [Swift Python Cookiecutter] template.
 
 [swift python cookiecutter]: https://github.com/MartinBernstorff/swift-python-cookiecutter
+<<<<<<< HEAD
 [file an issue]: https://github.com/MartinBernstorff/psycop-common/issues
+=======
+[file an issue]: https://github.com/MartinBernstorff/psycop-model-training/issues
+>>>>>>> psycop-model-training-main
 [sphinx]: https://www.sphinx-doc.org/en/master/index.html
 [Furo]: https://github.com/pradyunsg/furo

@@ -1,0 +1,9 @@
+name: psycop-model-training-integration-testing
+seed: 42
+
+wandb:
+  mode: "offline" # Which mode to run WanDB in. Takes "run", "dryrun", and "disabled"
+  group: integration_testing
+  entity: psycop # Which entity to run WanDB in.
+
+gpu: false
