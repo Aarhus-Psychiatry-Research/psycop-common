@@ -26,7 +26,7 @@ pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psy
 
 ## Migrating from the polyrepos
 * Install into your environment using the command above
-* Fix imports by replacing:
+* Fix imports. Use `cmd+shift+f` to replace:
 
 `psycop_feature_generation.` -> `psycop.feature_generation.`
 
