@@ -29,7 +29,9 @@ def will_it_float(value: Any) -> bool:
         return False
 
 
-def get_prop_of_each_unique_value_for_non_floats(series: pd.Series) -> Union[pd.Series, None]:
+def get_prop_of_each_unique_value_for_non_floats(
+    series: pd.Series,
+) -> Union[pd.Series, None]:
     """Get the proportion of each unique value in a series, but only for value
     which cannot be converted to floats.
 

@@ -83,7 +83,6 @@ def _load_text_sfis_for_year(
     return sql_load(
         sql,
         database="USR_PS_FORSK",
-        
         n_rows=n_rows,
     )
 
