@@ -58,9 +58,9 @@ file = "README.md"
 content-type = "text/markdown"
 
 [project.urls]
-homepage = "https://github.com/MartinBernstorff/psycop-common"
-repository = "https://github.com/MartinBernstorff/psycop-common"
-documentation = "https://MartinBernstorff.github.io/psycop-common/"
+homepage = "https://github.com/Aarhus-Psychiatry-Research/psycop-common"
+repository = "https://github.com/Aarhus-Psychiatry-Research/psycop-common"
+documentation = "https://Aarhus-Psychiatry-Research.github.io/psycop-common/"
 
 [tool.pyright]
 exclude = [".*venv*", ".tox"]

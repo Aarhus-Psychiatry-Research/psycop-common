@@ -56,12 +56,12 @@ To see more examples, see the [documentation].
 | 👩‍💻 **Usage Questions**          | [GitHub Discussions]   |
 | 🗯 **General Discussion**       | [GitHub Discussions]   |
 
-[Documentation]: https://MartinBernstorff.github.io/psycop-common/index.html
-[Installation]: https://MartinBernstorff.github.io/psycop-common/installation.html
-[Tutorials]: https://MartinBernstorff.github.io/psycop-common/tutorials.html
-[API Reference]: https://MartinBernstorff.github.io/psycop-common/references.html
-[FAQ]: https://MartinBernstorff.github.io/psycop-common/faq.html
-[github issue tracker]: https://github.com/MartinBernstorff/psycop-common/issues
-[github discussions]: https://github.com/MartinBernstorff/psycop-common/discussions
+[Documentation]: https://Aarhus-Psychiatry-Research.github.io/psycop-common/index.html
+[Installation]: https://Aarhus-Psychiatry-Research.github.io/psycop-common/installation.html
+[Tutorials]: https://Aarhus-Psychiatry-Research.github.io/psycop-common/tutorials.html
+[API Reference]: https://Aarhus-Psychiatry-Research.github.io/psycop-common/references.html
+[FAQ]: https://Aarhus-Psychiatry-Research.github.io/psycop-common/faq.html
+[github issue tracker]: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues
+[github discussions]: https://github.com/Aarhus-Psychiatry-Research/psycop-common/discussions
 
 

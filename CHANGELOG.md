@@ -471,3 +471,8 @@
 * Linting ([`5cdfcfa`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/5cdfcfa75a866919364bd5bbf264db4fcaa8fdda))
 * Pre code-split import statements need to be updated ([`a9e0639`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/a9e06390aba1fa5cdcb7d0e9918bc158dbdcaf26))
 * Misspecified python version in action ([`fdde2d2`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/fdde2d2e2bc7f115a313809789833bcd8c845d6d))
+## v0.0.1 (2023-03-30)
+### Fix
+* Typo ([`9197a4e`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/commit/9197a4e6bf5d538ebaa8f7b9fad5d248f39a8c3a))
+* Erroneous imports ([`a6569b5`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/commit/a6569b57d4e63bf0fd39e5dfa6c6814e1fe9d5d4))
+* Erroneous imoprt ([`d246fcf`](https://github.com/Aarhus-Psychiatry-Research/psycop-model-evaluation/commit/d246fcfdfc58a2b6b351705d0ea02e6946575f49))

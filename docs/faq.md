@@ -56,9 +56,13 @@ This project was generated from the [Swift Python Cookiecutter] template.
 
 [swift python cookiecutter]: https://github.com/MartinBernstorff/swift-python-cookiecutter
 <<<<<<< HEAD
+<<<<<<< HEAD
 [file an issue]: https://github.com/MartinBernstorff/psycop-common/issues
 =======
 [file an issue]: https://github.com/MartinBernstorff/psycop-model-training/issues
 >>>>>>> psycop-model-training-main
+=======
+[file an issue]: https://github.com/MartinBernstorff/psycop-model-evaluation/issues
+>>>>>>> psycop-model-evaluation-main
 [sphinx]: https://www.sphinx-doc.org/en/master/index.html
 [Furo]: https://github.com/pradyunsg/furo

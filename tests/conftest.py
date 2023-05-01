@@ -37,6 +37,7 @@ from psycop.model_training.config_schemas.conf_utils import (
 from psycop.model_training.training_output.dataclasses import EvalDataset
 
 CONFIG_DIR_PATH_REL = "../application/config"
+from psycop.model_training.training_output.dataclasses import EvalDataset
 
 
 def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
@@ -51,7 +52,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
 
 
 @pytest.fixture()
-def synth_eval_dataset() -> EvalDataset:
+def synth_eval_df() -> pd.DataFrame:
     """Load synthetic data."""
     csv_path = Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
@@ -59,6 +60,14 @@ def synth_eval_dataset() -> EvalDataset:
     # Convert all timestamp cols to datetime
     for col in [col for col in df.columns if "timestamp" in col]:
         df[col] = pd.to_datetime(df[col])
+
+    return df
+
+
+@pytest.fixture()
+def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
+    """Load synthetic data."""
+    df = synth_eval_df
 
     df = add_eval_column(df)
 
@@ -88,4 +97,5 @@ def muteable_test_config() -> FullConfigSchema:
     return load_test_cfg_as_pydantic(
         config_file_name="default_config.yaml",
         allow_mutation=True,
+        pred_time_uuids=df["dw_ek_borger"].astype(str) + df["timestamp"].astype(str),
     )
