@@ -7,10 +7,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from psycop_model_evaluation.base_charts import (
+from model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary.time.absolute_data import (
+from model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )
 from psycop_model_training.training_output.dataclasses import EvalDataset

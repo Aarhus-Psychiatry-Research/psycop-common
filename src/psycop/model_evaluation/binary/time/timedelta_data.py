@@ -4,14 +4,14 @@ from typing import Literal, Optional
 
 import numpy as np
 import pandas as pd
-from pandas import Series
-from psycop_model_evaluation.binary.utils import (
+from model_evaluation.binary.utils import (
     calc_performance,
 )
-from psycop_model_evaluation.utils import (
+from model_evaluation.utils import (
     bin_continuous_data,
     round_floats_to_edge,
 )
+from pandas import Series
 from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score
 

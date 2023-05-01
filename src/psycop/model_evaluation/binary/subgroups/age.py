@@ -4,10 +4,10 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional, Union
 
-from psycop_model_evaluation.base_charts import (
+from model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary.subgroups.base import create_roc_auc_by_input
+from model_evaluation.binary.subgroups.base import create_roc_auc_by_input
 from psycop_model_training.training_output.dataclasses import EvalDataset
 
 

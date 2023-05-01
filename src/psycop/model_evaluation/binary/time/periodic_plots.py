@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import Optional, Union
 
-from psycop_model_evaluation.base_charts import (
+from model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary.time.periodic_data import (
+from model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )
 from psycop_model_training.training_output.dataclasses import EvalDataset

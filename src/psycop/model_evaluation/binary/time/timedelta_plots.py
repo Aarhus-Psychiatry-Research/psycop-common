@@ -5,18 +5,18 @@ from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
-from pandas import Series
-from psycop_model_evaluation.base_charts import (
+from model_evaluation.base_charts import (
     plot_basic_chart,
 )
-from psycop_model_evaluation.binary.time.timedelta_data import (
+from model_evaluation.binary.time.timedelta_data import (
     create_performance_by_timedelta,
     create_sensitivity_by_time_to_outcome_df,
 )
-from psycop_model_evaluation.binary.utils import (
+from model_evaluation.binary.utils import (
     get_top_fraction,
 )
-from psycop_model_evaluation.utils import bin_continuous_data
+from model_evaluation.utils import bin_continuous_data
+from pandas import Series
 from psycop_model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score, roc_auc_score
 
