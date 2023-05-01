@@ -339,6 +339,8 @@ def test(
 
     python_version_strings = [f"py{v.replace('.', '')}" for v in python_versions]
     python_version_arg_string = ",".join(python_version_strings)
+    
+    print(python_versions[0])
 
     if not pytest_args:
         pytest_args = [
