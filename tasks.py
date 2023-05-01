@@ -346,7 +346,7 @@ def test(
 
     if not pytest_args:
         pytest_args = [
-            "tests",
+            "src/psycop",
             "-n auto",
             "-rfE",
             "--failed-first",
