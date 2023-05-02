@@ -384,7 +384,8 @@ def test(
         exit(test_result.return_code)
 
 
-def test_for_rej():
+@task
+def test_for_rej(c: Context):  # noqa: ARG001
     # Get all paths in current directory or subdirectories that end in .rej
     rej_files = list(Path(".").rglob("*.rej"))
 
