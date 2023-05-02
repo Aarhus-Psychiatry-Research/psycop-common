@@ -115,6 +115,7 @@ def create_sensitivity_by_time_to_outcome_df(
     prediction_timestamps: Series,
     bins: Sequence[float] = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
     bin_delta: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
+    n_bootstraps: int = 1000,
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
     Args:
@@ -124,6 +125,7 @@ def create_sensitivity_by_time_to_outcome_df(
         prediction_timestamps (Iterable[pd.Timestamp]): Timestamp of the prediction.
         bins (list, optional): Default bins for time to outcome. Defaults to [0, 1, 7, 14, 28, 182, 365, 730, 1825].
         bin_delta (str, optional): The unit of time for the bins. Defaults to "D".
+        n_bootstraps (int, optional): Number of bootstraps to use for confidence intervals. Defaults to 1000.
     Returns:
         pd.DataFrame
     """
@@ -163,6 +165,7 @@ def create_sensitivity_by_time_to_outcome_df(
         calc_performance,
         metric=recall_score,
         confidence_interval=0.95,
+        n_bootstraps=n_bootstraps,
     )
 
     df_with_metric = (

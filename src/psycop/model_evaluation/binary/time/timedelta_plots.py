@@ -267,6 +267,7 @@ def plot_sensitivity_by_time_to_event(
     positive_rates: Union[float, Iterable[float]],
     bins: Sequence[float],
     bin_unit: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
+    n_bootstraps: int = 1000,
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -280,6 +281,7 @@ def plot_sensitivity_by_time_to_event(
         y_title: Title of y-axis. Defaults to "AUC".
         save_path: Path to save figure. Defaults to None.
         y_limits: Limits of y-axis. Defaults to (0.5, 1.0).
+        n_bootstraps (int, optional): Number of bootstraps to use for confidence intervals. Defaults to 1000.
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """
@@ -295,6 +297,7 @@ def plot_sensitivity_by_time_to_event(
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
             bin_delta=bin_unit,
+            n_bootstraps=n_bootstraps,
         )
         for positive_rate in positive_rates
     ]
@@ -336,7 +339,7 @@ def plot_sensitivity_by_time_to_event(
         ordered=True,
     )
 
-    df["actual_positive_rate"] = df["actual_positive_rate"]
+    df["actual_positive_rate"] = df["actual_positive_rate"].astype(str)
 
     # Set y limits
 

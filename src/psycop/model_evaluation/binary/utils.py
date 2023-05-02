@@ -11,6 +11,7 @@ def calc_performance(
     df: pd.DataFrame,
     metric: Callable,
     confidence_interval: Optional[float] = None,
+    n_bootstraps: int = 1000,
     **kwargs: Any,
 ) -> pd.Series:
     """Calculates performance metrics of a df with 'y' and 'input_to_fn' columns.
@@ -20,6 +21,7 @@ def calc_performance(
         metric: which metric to calculate
         confidence_interval: Confidence interval width for the performance metric. Defaults to None,
             in which case the no confidence interval is calculated.
+        n_bootstraps: Number of bootstraps to use for calculating the confidence interval.
         **kwargs: additional arguments to pass to the bootstrap function for calculating
             the confidence interval.
 
@@ -45,7 +47,7 @@ def calc_performance(
         # reasonably fast and accurate defaults
         _kwargs = {
             "method": "basic",
-            "n_resamples": 1000,
+            "n_resamples": n_bootstraps,
         }
         _kwargs.update(kwargs)
 
@@ -66,7 +68,7 @@ def calc_performance(
             paired=True,
             **_kwargs,
         )
-        low, high = boot.confidence_interval.low, boot.confidence_interval.high
+        low, high = boot.confidence_interval.low[1], boot.confidence_interval.high[1]
         return pd.Series(
             {"metric": perf_metric, "n_in_bin": n_in_bin, "ci": (low, high)},
         )
