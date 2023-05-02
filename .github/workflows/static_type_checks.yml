@@ -21,7 +21,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.9"]
-        cache_version: ["1.0.0"]
     steps:
       - uses: actions/checkout@v2
 
@@ -31,7 +30,7 @@ jobs:
         with:
           path: |
             .tox
-          key: ${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.cache_version }}-static-type-checks
+          key: ${{ runner.os }}-${{ matrix.python-version }}-cache-1.0.0-static-type-checks
 
       - name: Set up Python
         uses: actions/setup-python@v4
