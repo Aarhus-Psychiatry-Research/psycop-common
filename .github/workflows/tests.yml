@@ -6,6 +6,8 @@ name: Tests
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md' # Ignore changes to Markdown files
   pull_request:
     branches: [main]
 
