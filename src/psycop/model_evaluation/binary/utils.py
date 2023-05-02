@@ -59,7 +59,7 @@ def calc_performance(
         ) -> float:
             # bootstrap function requires the metric function to
             # be able to take additional arguments (notably the length of the array)
-            return metric(true, pred, average=None)
+            return metric(true, pred)
 
         boot = bootstrap(
             (df["y"], df["y_hat"]),
@@ -68,7 +68,7 @@ def calc_performance(
             paired=True,
             **_kwargs,
         )
-        low, high = boot.confidence_interval.low[1], boot.confidence_interval.high[1]
+        low, high = boot.confidence_interval.low, boot.confidence_interval.high
         return pd.Series(
             {"metric": perf_metric, "n_in_bin": n_in_bin, "ci": (low, high)},
         )
