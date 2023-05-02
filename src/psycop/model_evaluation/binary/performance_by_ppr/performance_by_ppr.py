@@ -1,10 +1,13 @@
-"""Get performance by which threshold is used to classify positive."""
+"""Get performance by which threshold is used to classify positive. PPR means predicted positive rate, i.e. the proportion of the population that is predicted to be positive."""
 from collections.abc import Sequence
 from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
 import wandb
+from psycop.model_evaluation.binary.performance_by_ppr.prop_of_all_events_hit_by_true_positive import (
+    get_percentage_of_events_captured_from_eval_dataset,
+)
 from psycop.model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import confusion_matrix
 
@@ -43,7 +46,7 @@ def get_true_positives(
     return df[df["true_positive"]]
 
 
-def performance_by_positive_rate(
+def performance_by_ppr(
     eval_dataset: EvalDataset,
     positive_rate: float,
     round_to: int = 2,
@@ -183,7 +186,7 @@ def prop_with_at_least_one_true_positve(
     return round(df["id"].nunique() / len(set(eval_dataset.ids)), 4)
 
 
-def generate_performance_by_positive_rate_table(
+def generate_performance_by_ppr_table(
     eval_dataset: EvalDataset,
     positive_rates: Sequence[float],
     output_format: Optional[str] = "df",
@@ -204,7 +207,7 @@ def generate_performance_by_positive_rate_table(
 
     # For each percentile, calculate relevant performance metrics
     for positive_rate in positive_rates:
-        threshold_metrics = performance_by_positive_rate(
+        threshold_metrics = performance_by_ppr(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
         )
@@ -227,6 +230,13 @@ def generate_performance_by_positive_rate_table(
         threshold_metrics[
             "prop_with_at_least_one_true_positive"
         ] = prop_with_at_least_one_true_positve(
+            eval_dataset=eval_dataset,
+            positive_rate=positive_rate,
+        )
+
+        threshold_metrics[
+            "% of all events captured"
+        ] = get_percentage_of_events_captured_from_eval_dataset(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
         )

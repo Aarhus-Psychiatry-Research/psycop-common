@@ -5,9 +5,9 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 
 
 import pandas as pd
-from psycop.model_evaluation.binary.performance_by_true_positive_rate import (
+from psycop.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     days_from_first_positive_to_diagnosis,
-    generate_performance_by_positive_rate_table,
+    generate_performance_by_ppr_table,
 )
 from psycop.model_training.training_output.dataclasses import EvalDataset
 
@@ -15,7 +15,7 @@ from psycop.model_training.training_output.dataclasses import EvalDataset
 def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
     positive_rates = [0.9, 0.5, 0.1]
 
-    output_table: pd.DataFrame = generate_performance_by_positive_rate_table(  # type: ignore
+    output_table: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=synth_eval_dataset,
         positive_rates=positive_rates,
         output_format="df",

@@ -94,7 +94,7 @@ repository = "https://github.com/Aarhus-Psychiatry-Research/psycop-common"
 documentation = "https://Aarhus-Psychiatry-Research.github.io/psycop-common/"
 
 [tool.pyright]
-exclude = [".*venv*", ".tox"]
+include = ["src/psycop"]
 pythonPlatform = "Darwin"
 
 [tool.ruff]
