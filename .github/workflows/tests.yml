@@ -6,6 +6,9 @@ name: Tests
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.json'
   pull_request:
     branches: [main]
 
@@ -36,7 +39,7 @@ jobs:
         with:
           path: |
             .tox
-          key: ${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.os }}-tests
+          key: ${{ runner.os }}-${{ matrix.python-version }}-cache-1.0.0-tests
 
       - name: Set up Python
         uses: actions/setup-python@v4

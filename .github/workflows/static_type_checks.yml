@@ -6,6 +6,9 @@ name: static_type_checks
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.json'
   push:
     branches: [main]
 
@@ -30,7 +33,7 @@ jobs:
         with:
           path: |
             .tox
-          key: ${{ runner.os }}-${{ matrix.python-version }}-static-type-checks
+          key: ${{ runner.os }}-${{ matrix.python-version }}-cache-1.0.0-static-type-checks
 
       - name: Set up Python
         uses: actions/setup-python@v4
