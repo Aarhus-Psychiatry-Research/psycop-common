@@ -384,8 +384,10 @@ def test(
         exit(test_result.return_code)
 
 
-def test_for_rej():
+@task
+def test_for_rej(c: Context):
     # Get all paths in current directory or subdirectories that end in .rej
+    c = c
     rej_files = list(Path(".").rglob("*.rej"))
 
     if len(rej_files) > 0:
@@ -399,7 +401,7 @@ def test_for_rej():
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project."""
-    test_for_rej()
+    test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
     static_type_checks(c)
 

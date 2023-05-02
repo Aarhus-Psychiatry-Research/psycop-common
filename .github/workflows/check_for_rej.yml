@@ -11,17 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install dependencies
+        shell: bash
+        run: |
+          pip install invoke tox
+
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Check for .rej files
         run: |
-          files=`find . -type f -name "*.rej"`
-          count=`echo $files | grep -o "\.rej" | wc -l`
-          if [[ $count != 0 ]]; then
-            echo "Found .rej files in the repository."
-            echo $files | 
-            exit 1
-          else
-            echo "No .rej files found in the repository."
-          fi
+          inv test-for-rej
