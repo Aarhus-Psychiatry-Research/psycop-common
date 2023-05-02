@@ -7,7 +7,8 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - '**/*.md' # Ignore changes to Markdown files
+      - '**/*.md'
+      - '**/*.json'
   pull_request:
     branches: [main]
 
