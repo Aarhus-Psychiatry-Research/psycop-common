@@ -98,11 +98,6 @@ def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
 
 
 @pytest.fixture()
-def subsampled_eval_dataset(subsampled_synth_eval_df: pd.DataFrame) -> EvalDataset:
-    return df_to_synth_eval_dataset(subsampled_synth_eval_df)
-
-
-@pytest.fixture()
 def immuteable_test_config() -> FullConfigSchema:
     """Get an immutable config for testing."""
     return load_test_cfg_as_pydantic(
@@ -117,3 +112,8 @@ def muteable_test_config() -> FullConfigSchema:
         config_file_name="default_config.yaml",
         allow_mutation=True,
     )
+
+
+@pytest.fixture()
+def subsampled_eval_dataset(subsampled_synth_eval_df: pd.DataFrame) -> EvalDataset:
+    return df_to_synth_eval_dataset(subsampled_synth_eval_df)
