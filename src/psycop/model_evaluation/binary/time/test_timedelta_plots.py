@@ -1,3 +1,6 @@
+from psycop.model_evaluation.binary.time.timedelta_data import (
+    create_sensitivity_by_time_to_outcome_df,
+)
 from psycop.model_evaluation.binary.time.timedelta_plots import (
     plot_roc_auc_by_time_from_first_visit,
     plot_sensitivity_by_time_to_event,
@@ -44,4 +47,13 @@ def test_plot_time_from_first_positive_to_event(subsampled_eval_dataset: EvalDat
         bins=list(range(0, 60, 3)),
         min_n_in_bin=1,
         save_path=TEST_PLOT_PATH / "time_from_first_positive_to_event.png",
+    )
+
+
+def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
+    create_sensitivity_by_time_to_outcome_df(
+        eval_dataset=synth_eval_dataset,
+        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
+        prediction_timestamps=synth_eval_dataset.pred_timestamps,
+        desired_positive_rate=0.5,
     )

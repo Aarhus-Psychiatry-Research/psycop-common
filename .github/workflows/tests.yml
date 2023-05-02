@@ -36,7 +36,7 @@ jobs:
         with:
           path: |
             .tox
-          key: ${{ runner.os }}-${{ matrix.python-version }}-tests
+          key: ${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.os }}-tests
 
       - name: Set up Python
         uses: actions/setup-python@v4
