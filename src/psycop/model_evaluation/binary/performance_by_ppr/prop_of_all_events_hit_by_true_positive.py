@@ -30,4 +30,4 @@ def get_percentage_of_events_captured(df: pd.DataFrame) -> float:
         lambda x: x["pred"].sum() > 0,
     )
 
-    return len(df_events_captured) / len(df_patients_with_events)
+    return len(df_events_captured) / len(df_patients_with_events) * 100
