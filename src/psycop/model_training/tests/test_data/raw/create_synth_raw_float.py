@@ -1,6 +1,6 @@
 """Generate raw float dataframe."""
 
-from psycop.global_utils import PSYCOP_PKG_ROOT
+from psycop.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop_ml_utils.synth_data_generator.synth_col_generators import (
     generate_data_columns,
 )

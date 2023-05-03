@@ -13,7 +13,7 @@ from typing import Any, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-from psycop.global_utils import PSYCOP_PKG_ROOT
+from psycop.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.model_training.training_output.dataclasses import ModelEvalData
 from sklearn.pipeline import Pipeline
 
