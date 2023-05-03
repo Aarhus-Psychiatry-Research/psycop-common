@@ -232,7 +232,7 @@ def pre_commit(c: Context, auto_fix: bool):
 
     # Essential to have a clean working directory before pre-commit to avoid committing
     # heterogenous files under a "style: linting" commit
-    if is_uncommitted_changes(c):
+    if auto_fix and is_uncommitted_changes(c):
         print(
             f"{msg_type.WARN} Your git working directory is not clean. Stash or commit before running pre-commit.",
         )
@@ -385,10 +385,43 @@ def test(
 
 
 @task
+def create_pr_from_staged_changes(c: Context):
+    start_branch_name = c.run(
+        "git rev-parse --abbrev-ref HEAD",
+        hide=True,
+    ).stdout.strip()
+
+    pr_title = input("Enter PR title: ")
+    branch_title = re.sub(r"[\-\s\:\,]", "_", pr_title).lower()
+    c.run(f"git checkout -b {branch_title}")
+    c.run(f"git commit -m '{pr_title}'")
+    update_branch(c)
+    update_pr(c)
+
+    checkout_previous_branch = input("Checkout previous branch? [y/n]: ")
+    if checkout_previous_branch.lower() == "y":
+        c.run(f"git checkout {start_branch_name}")
+
+
+@task
+def test_for_venv(c: Context):
+    """Test if the user is in a virtual environment."""
+    if NOT_WINDOWS:
+        python_path = c.run("which python", pty=NOT_WINDOWS, hide=True).stdout
+
+        if python_path is None or "venv" not in python_path:
+            print(f"\n{msg_type.FAIL} Not in a virtual environment.\n")
+            print("Activate your virtual environment and try again. \n")
+            exit(1)
+    else:
+        print("Running on Windows, not checking for virtual environment.")
+
+
+@task
 def test_for_rej(c: Context):
     # Get all paths in current directory or subdirectories that end in .rej
     c = c
-    rej_files = list(Path(".").rglob("*.rej"))
+    rej_files = list(Path("src").rglob("*.rej"))
 
     if len(rej_files) > 0:
         print(f"\n{msg_type.FAIL} Found .rej files leftover from cruft update.\n")
@@ -401,6 +434,7 @@ def test_for_rej(c: Context):
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project."""
+    test_for_venv(c)
     test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
     static_type_checks(c)

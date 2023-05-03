@@ -14,7 +14,7 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 import wandb
-from psycop.global_utils import PSYCOP_PKG_ROOT
+from psycop.global_utils.paths import PSYCOP_PKG_ROOT
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline

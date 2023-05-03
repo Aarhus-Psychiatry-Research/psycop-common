@@ -4,7 +4,7 @@ from typing import Optional
 
 import pandas as pd
 import wandb
-from psycop.global_utils import PSYCOP_PKG_ROOT
+from psycop.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.model_training.application_modules.wandb_handler import WandbHandler
 from psycop.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.model_training.data_loader.utils import (

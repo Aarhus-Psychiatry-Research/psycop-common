@@ -1,7 +1,7 @@
 """Load text data from sql warehouse."""
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from functools import partial
 from multiprocessing import Pool
 from typing import Literal
@@ -142,8 +142,8 @@ def load_text_sfis(
 
 
 def load_text_split(
-    text_sfi_names: str | list[str],
-    split_name: list[Literal["train", "val"]],
+    text_sfi_names: str | Iterable[str],
+    split_name: Sequence[Literal["train", "val"]],
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -165,14 +165,9 @@ def load_text_split(
         n_rows=n_rows,
     )
 
-    # if multiple splits load and concat
-    if isinstance(split_name, list) and len(split_name) > 1:
-        split_id_df = pd.concat(
-            [get_split_id_df(split_name=split) for split in split_name],
-        )
-
-    else:
-        split_id_df = get_split_id_df(split_name=split_name)  # type: ignore
+    split_id_df = pd.concat(
+        [get_split_id_df(split_name=split) for split in split_name],
+    )
 
     text_split_df = filter_by_split_ids(
         df_to_split=text_df,
@@ -238,3 +233,37 @@ def load_arbitrary_notes(
         text_sfi_names,
         n_rows=n_rows,
     )
+
+
+@data_loaders.register("preprocessed_sfis")
+def load_preprocessed_sfis(
+    text_sfi_names: set[str] | None = None,
+    corpus_name: str = "psycop.train_val_all_sfis_preprocessed",
+) -> pd.DataFrame:
+    """Returns preprocessed sfis from preprocessed view/SQL table that includes the "overskrift" column.
+    Preprocessed views are created using the function text_preprocessing_pipeline under text_models/preprocessing.
+
+    Args:
+        text_sfi_names (str | list[str] | set[str] | None): Sfis to include.  Defaults to None, which includes all sfis.
+        corpus_name (str, optional): Name of parquet with preprocessed sfis. Defaults to "psycop.train_val_all_sfis_preprocessed".
+        n_rows (int | None, optional): Number of rows to include. Defaults to None, which includes all rows.
+
+    Returns:
+        pd.DataFrame: Preprocessed sfis from preprocessed view/SQL table.
+    """
+
+    # load corpus
+    # if not text_sfi_names, include all sfis
+    if not text_sfi_names:
+        corpus = pd.read_parquet(
+            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet",
+        )
+    # if text_sfi_names, include only chosen sfis
+    else:
+        filter_list = [[("overskrift", "=", f"{sfi}")] for sfi in text_sfi_names]
+        corpus = pd.read_parquet(
+            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet",
+            filters=filter_list,
+        )
+
+    return corpus

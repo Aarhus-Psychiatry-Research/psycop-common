@@ -2,7 +2,7 @@
 from pathlib import Path
 
 import numpy as np
-from psycop.global_utils import RANDOM_SEED
+from psycop.global_utils.paths import RANDOM_SEED
 from psycop.test_utils.test_data.model_eval.generate_synthetic_dataset_for_eval import (
     add_age_is_female,
 )
