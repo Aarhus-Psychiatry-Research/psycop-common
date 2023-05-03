@@ -35,6 +35,6 @@ def test_get_percentage_of_events_captured():
 
 
 def test_get_true_positives(synth_eval_dataset: EvalDataset):
-    df = get_true_positives(eval_dataset=synth_eval_dataset, positive_rate=0.02)
+    get_true_positives(eval_dataset=synth_eval_dataset, positive_rate=0.02)
 
     pass

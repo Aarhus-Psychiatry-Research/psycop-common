@@ -11,11 +11,11 @@ def test_get_predictions_for_positive_rate(desired_positive_rate: float):
     df = pd.DataFrame(
         {
             "y_hat_probs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-        }
+        },
     )
 
     df["y_hat"] = get_predictions_for_positive_rate(
-        desired_positive_rate=desired_positive_rate, y_hat_probs=df["y_hat_probs"]
+        desired_positive_rate=desired_positive_rate, y_hat_probs=df["y_hat_probs"],
     )[0]
 
     assert df["y_hat"].mean() == desired_positive_rate

@@ -55,7 +55,7 @@ class EvalDataset(BaseModel):
         Note that this won't always match the desired positive rate exactly for e.g tree-based models, where predicted probabilities are binned, but it'll get as close as possible.
         """
         return get_predictions_for_positive_rate(
-            desired_positive_rate=desired_positive_rate, y_hat_probs=self.y_hat_probs
+            desired_positive_rate=desired_positive_rate, y_hat_probs=self.y_hat_probs,
         )
 
 
