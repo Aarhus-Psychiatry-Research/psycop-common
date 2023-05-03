@@ -7,6 +7,22 @@ from psycop.model_training.config_schemas.basemodel import BaseModel
 from psycop.model_training.config_schemas.full_config import FullConfigSchema
 
 
+def get_predictions_for_positive_rate(
+    desired_positive_rate: float,
+    y_hat_probs: pd.Series,
+) -> tuple[pd.Series, Union[float, float64]]:
+    positive_threshold = y_hat_probs.quantile(1 - desired_positive_rate)
+
+    # Remap y_hat_probs to 0/1 based on positive rate threshold
+    y_hat_int = pd.Series(
+        (y_hat_probs >= positive_threshold).astype(int),
+    )
+
+    actual_positive_rate = y_hat_int.mean()
+
+    return y_hat_int, actual_positive_rate
+
+
 class EvalDataset(BaseModel):
     """Evaluation dataset.
 
@@ -38,16 +54,9 @@ class EvalDataset(BaseModel):
 
         Note that this won't always match the desired positive rate exactly for e.g tree-based models, where predicted probabilities are binned, but it'll get as close as possible.
         """
-        positive_threshold = self.y_hat_probs.quantile(desired_positive_rate)
-
-        # Remap y_hat_probs to 0/1 based on positive rate threshold
-        y_hat_int = pd.Series(
-            (self.y_hat_probs <= positive_threshold).astype(int),
+        return get_predictions_for_positive_rate(
+            desired_positive_rate=desired_positive_rate, y_hat_probs=self.y_hat_probs
         )
-
-        actual_positive_rate = y_hat_int.mean()
-
-        return y_hat_int, actual_positive_rate
 
 
 class PipeMetadata(BaseModel):
