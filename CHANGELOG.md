@@ -2,6 +2,23 @@
 
 <!--next-version-placeholder-->
 
+## v0.60.0 (2023-05-03)
+### Feature
+* Preprocess text ([`b01cf35`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b01cf355fab86cf29b9161fbce68c0509931289d))
+* Performance_by_ppr ([`c7916fd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c7916fd3500a83008a442071f9c13a83973d16f8))
+* Make n_bootstraps configurable ([`2af345e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2af345e0a98f5892714064d11567f2dd812d7a31))
+
+### Fix
+* Do not support multiclass in calc_performance ([`781692b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/781692b8fec29ea8f650e50fd70afc7d6fb1990f))
+* Assign sql cache if on local ([`2365b65`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2365b6525a534143e29d5a0379af09158fc0cac8))
+* Assign sql cache if on local ([`d57c9fd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d57c9fda77f2b3ba5a37f98f1b4b924109cc84c6))
+
+### Documentation
+* Add readme for evaluations ([`285f65d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/285f65dea147c092599604ae989a44c0745f53e3))
+* Add ([`bd0faff`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bd0fafffb72c53a48a6f2f75fe5a3039cf2b9c0f))
+* Update readme ([`7f3bbce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7f3bbce59af603cf32aa1e06375b5437374fa438))
+* Update readme ([`2aa9b40`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2aa9b4007388ba8012cababf4beab4b0d11d3ab6))
+
 ## v0.23.0 (2023-04-26)
 ### Feature
 * Add logging and choose sfi types ([`d5f8e23`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/d5f8e23cfc2bdbc3ae9ff47ab89d409be454ea38))
