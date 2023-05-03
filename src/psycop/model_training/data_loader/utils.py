@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Optional
 
 import pandas as pd
 from psycop.model_training.config_schemas.data import DataSchema
@@ -25,7 +25,7 @@ def get_latest_dataset_dir(path: Path) -> Path:
 def load_and_filter_split_from_cfg(
     data_cfg: DataSchema,
     pre_split_cfg: PreSplitPreprocessingConfigSchema,
-    split: Literal["train", "test", "val"],
+    split: str,
     cache_dir: Optional[Path] = None,
 ) -> pd.DataFrame:
     """Load train dataset from config.
@@ -33,7 +33,7 @@ def load_and_filter_split_from_cfg(
     Args:
         data_cfg (DataSchema): Data config
         pre_split_cfg (PreSplitPreprocessingConfigSchema): Pre-split config
-        split (Literal["train", "test", "val"]): Split to load
+        split (str): Split to load
         cache_dir (Optional[Path], optional): Directory. Defaults to None, in which case no caching is used.
 
     Returns:
