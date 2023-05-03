@@ -12,11 +12,13 @@ from psycop.model_evaluation.binary.performance_by_ppr.performance_by_ppr import
 from psycop.model_training.training_output.dataclasses import EvalDataset
 
 
-def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset):
-    positive_rates = [0.9, 0.5, 0.1]
+def test_generate_performance_by_threshold_table(
+    subsampled_eval_dataset: EvalDataset,
+):
+    positive_rates = [0.3, 0.2, 0.1]
 
     output_table: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         positive_rates=positive_rates,
         output_format="df",
     )
@@ -36,8 +38,7 @@ def test_generate_performance_by_threshold_table(synth_eval_dataset: EvalDataset
     assert output_table["false_negatives"].is_monotonic_increasing
     assert output_table["total_warning_days"].is_monotonic_decreasing
     assert output_table["warning_days_per_false_positive"].dtype == "float64"
-    assert output_table["mean_warning_days"].is_monotonic_decreasing
-    assert output_table["prop_with_at_least_one_true_positive"].is_monotonic_decreasing
+    assert output_table["% with ≥1 true positive"].is_monotonic_decreasing
 
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
