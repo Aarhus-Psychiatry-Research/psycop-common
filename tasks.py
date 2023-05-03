@@ -385,6 +385,25 @@ def test(
 
 
 @task
+def create_pr_from_staged_changes(c: Context):
+    start_branch_name = c.run(
+        "git rev-parse --abbrev-ref HEAD",
+        hide=True,
+    ).stdout.strip()
+
+    pr_title = input("Enter PR title: ")
+    branch_title = re.sub(r"[\-\s\:\,]", "_", pr_title).lower()
+    c.run(f"git checkout -b {branch_title}")
+    c.run(f"git commit -m '{pr_title}'")
+    update_branch(c)
+    update_pr(c)
+
+    checkout_previous_branch = input("Checkout previous branch? [y/n]: ")
+    if checkout_previous_branch.lower() == "y":
+        c.run(f"git checkout {start_branch_name}")
+
+
+@task
 def test_for_venv(c: Context):
     """Test if the user is in a virtual environment."""
     if NOT_WINDOWS:
