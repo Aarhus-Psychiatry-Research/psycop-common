@@ -9,7 +9,7 @@ from psycop.feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_row,
     save_feature_descriptive_stats_from_dir,
 )
-from psycop.global_utils import PSYCOP_PKG_ROOT
+from psycop.global_utils.paths import PSYCOP_PKG_ROOT
 from timeseriesflattener.feature_spec_objects import (
     OutcomeSpec,
     PredictorSpec,

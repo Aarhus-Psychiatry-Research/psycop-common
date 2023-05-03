@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 from joblib import Memory
-from psycop.global_utils import PSYCOP_PKG_ROOT
+from psycop.global_utils.paths import PSYCOP_PKG_ROOT
 from sqlalchemy import create_engine, text
 
 # Create a memory cache with the desired directory to store cached results

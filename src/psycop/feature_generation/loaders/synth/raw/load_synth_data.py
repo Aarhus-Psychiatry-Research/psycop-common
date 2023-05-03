@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 from psycop.feature_generation.utils import data_loaders
-from psycop.global_utils import PSYCOP_PKG_ROOT
+from psycop.global_utils.paths import PSYCOP_PKG_ROOT
 
 
 def load_raw_test_csv(filename: str, n_rows: int | None = None) -> pd.DataFrame:
