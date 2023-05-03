@@ -10,7 +10,7 @@ from psycop.model_training.training_output.dataclasses import (
 def test_get_predictions_for_positive_rate(desired_positive_rate: float):
     df = pd.DataFrame(
         {
-            "y_hat_probs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+            "y_hat_probs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
         },
     )
 
