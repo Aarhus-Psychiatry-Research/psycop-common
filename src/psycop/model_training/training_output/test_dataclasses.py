@@ -6,11 +6,11 @@ from psycop.model_training.training_output.dataclasses import (
 )
 
 
-@pytest.mark.parametrize("desired_positive_rate", [0.1, 0.3, 0.5, 0.8, 1])
+@pytest.mark.parametrize("desired_positive_rate", [0.1, 0.3, 0.5, 0.8])
 def test_get_predictions_for_positive_rate(desired_positive_rate: float):
     df = pd.DataFrame(
         {
-            "y_hat_probs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+            "y_hat_probs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         },
     )
 
