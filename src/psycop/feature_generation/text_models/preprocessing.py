@@ -76,6 +76,9 @@ def text_preprocessing_pipeline(
     # preprocess
     df = text_preprocessing(df)
 
+    # sort
+    df = df.sort_values(by="overskrift")
+    
     # save to parquet
     split_names = "_".join(split_names)  # type: ignore
 
