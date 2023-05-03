@@ -63,9 +63,6 @@ class DataLoader:
         if self.file_suffix not in ("csv", "parquet"):
             raise ValueError(f"File suffix {self.file_suffix} not supported.")
 
-        if split_name not in ("train", "test", "val"):
-            raise ValueError(f"Split name {split_name} not supported.")
-
         path = list(self.dir_path.glob(f"*{split_name}*.{self.file_suffix}"))[0]
 
         if "parquet" in self.file_suffix:

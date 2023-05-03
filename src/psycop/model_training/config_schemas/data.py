@@ -27,7 +27,7 @@ class DataSchema(BaseModel):
     dir: Union[Path, str]  # Location of the dataset # noqa
     suffix: str = "parquet"  # File suffix to load.
 
-    splits_for_training: Sequence[Literal["train", "val"]] = [
+    splits_for_training: list[str] = [
         "train",
         "val",
     ]  # splits to use for training
