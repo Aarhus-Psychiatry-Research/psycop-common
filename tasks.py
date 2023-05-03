@@ -387,7 +387,8 @@ def test(
 @task
 def create_pr_from_staged_changes(c: Context):
     start_branch_name = c.run(
-        "git rev-parse --abbrev-ref HEAD", hide=True,
+        "git rev-parse --abbrev-ref HEAD",
+        hide=True,
     ).stdout.strip()
 
     pr_title = input("Enter PR title: ")
