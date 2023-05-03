@@ -6,16 +6,14 @@
 
 name: Release
 on:
-  workflow_run:
-    workflows: ["tests"]
-    types:
-      - completed
+  push:
+    branches: [main]
 jobs:
   release:
     runs-on: ubuntu-latest
     concurrency: release
 
-    if: ${{ github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success'}}
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       # Checkout action is required for token to persist
       - uses: actions/checkout@v3
@@ -33,5 +31,5 @@ jobs:
           # 1) Set upload_to_pypi to true in  pyproject.toml and
           # 2) Set the pypi_token in the repo
           # 3) Uncomment the two lines below
-          # repository_username: __token__
-          # repository_password: ${{ secrets.PYPI_API_TOKEN }}
+          repository_username: __token__
+          repository_password: ${{ secrets.PYPI_API_TOKEN }}
