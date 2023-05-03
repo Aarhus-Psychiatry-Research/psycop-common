@@ -15,7 +15,8 @@ def test_get_predictions_for_positive_rate(desired_positive_rate: float):
     )
 
     df["y_hat"] = get_predictions_for_positive_rate(
-        desired_positive_rate=desired_positive_rate, y_hat_probs=df["y_hat_probs"],
+        desired_positive_rate=desired_positive_rate,
+        y_hat_probs=df["y_hat_probs"],
     )[0]
 
     assert df["y_hat"].mean() == desired_positive_rate
