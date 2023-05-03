@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.61.0 (2023-05-03)
+### Feature
+* Allow custom splits for training ([`6e0bf71`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6e0bf715c29806d87a1d4664470aa4f6815a2451))
+
 ## v0.60.1 (2023-05-03)
 ### Fix
 * Get correct performance by ppr ([`09fa471`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/09fa471e2f4682be39985523e898453e6d05887f))
