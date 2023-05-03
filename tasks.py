@@ -388,7 +388,7 @@ def test(
 def test_for_rej(c: Context):
     # Get all paths in current directory or subdirectories that end in .rej
     c = c
-    rej_files = list(Path(".").rglob("*.rej"))
+    rej_files = list(Path("src").rglob("*.rej"))
 
     if len(rej_files) > 0:
         print(f"\n{msg_type.FAIL} Found .rej files leftover from cruft update.\n")
