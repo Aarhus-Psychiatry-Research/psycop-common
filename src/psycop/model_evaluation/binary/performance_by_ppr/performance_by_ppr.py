@@ -35,13 +35,14 @@ def get_true_positives(
         {
             "id": eval_dataset.ids,
             "pred": positives_series,
+            "y": eval_dataset.y,
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
         },
     )
 
     # Keep only true positives
-    df["true_positive"] = (df["pred"] == 1) & (df["outcome_timestamps"].notnull())
+    df["true_positive"] = (df["pred"] == 1) & (df["y"] == 1)
 
     return df[df["true_positive"]]
 
@@ -163,11 +164,11 @@ def days_from_first_positive_to_diagnosis(
     return df["warning_days"].agg(aggregation_method)
 
 
-def prop_with_at_least_one_true_positve(
+def get_percent_with_at_least_one_true_positve(
     eval_dataset: EvalDataset,
     positive_rate: float = 0.5,
 ) -> float:
-    """Get proportion of patients with at least one true positive prediction.
+    """Get proportion of ids with at least one true positive prediction.
 
     Args:
         eval_dataset (EvalDataset): EvalDataset object.
@@ -182,8 +183,8 @@ def prop_with_at_least_one_true_positve(
         positive_rate=positive_rate,
     )
 
-    # Return number of unique patients with at least one true positive
-    return round(df["id"].nunique() / len(set(eval_dataset.ids)), 4)
+    # Return number of unique ids with at least one true positive
+    return df["id"].nunique() / len(set(eval_dataset.ids)) * 100
 
 
 def generate_performance_by_ppr_table(
@@ -228,8 +229,8 @@ def generate_performance_by_ppr_table(
         )
 
         threshold_metrics[
-            "prop_with_at_least_one_true_positive"
-        ] = prop_with_at_least_one_true_positve(
+            "% with ≥1 true positive"
+        ] = get_percent_with_at_least_one_true_positve(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
         )
