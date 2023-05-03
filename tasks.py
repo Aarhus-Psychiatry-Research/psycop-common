@@ -353,6 +353,7 @@ def test(
             "-p no:cov",
             "--disable-warnings",
             "-q",
+            "--durations=5",
         ]
 
     pytest_arg_str = " ".join(pytest_args)
@@ -393,6 +394,7 @@ def create_pr_from_staged_changes(c: Context):
 
     pr_title = input("Enter PR title: ")
     branch_title = re.sub(r"[\-\s\:\,]", "_", pr_title).lower()
+    c.run("git checkout main")
     c.run(f"git checkout -b {branch_title}")
     c.run(f"git commit -m '{pr_title}'")
     update_branch(c)
