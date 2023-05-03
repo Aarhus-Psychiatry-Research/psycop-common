@@ -387,7 +387,8 @@ def test(
 @task
 def create_pr_from_staged_changes(c: Context):
     start_branch_name = c.run(
-        "git rev-parse --abbrev-ref HEAD", hide=True,
+        "git rev-parse --abbrev-ref HEAD",
+        hide=True,
     ).stdout.strip()
 
     pr_title = input("Enter PR title: ")
@@ -399,7 +400,7 @@ def create_pr_from_staged_changes(c: Context):
 
     checkout_previous_branch = input("Checkout previous branch? [y/n]: ")
     if checkout_previous_branch.lower() == "y":
-        c.run(f"git checkout {start_branch_name}")
+        c.run(f"git checkout {start_branch_name}!!")
 
 
 @task
