@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.60.1 (2023-05-03)
+### Fix
+* Get correct performance by ppr ([`09fa471`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/09fa471e2f4682be39985523e898453e6d05887f))
+* Get correct performance by ppr ([`df468ea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/df468ea98b377e37b67a30dac5c2d2fd1e7f9ca5))
+
 ## v0.60.0 (2023-05-03)
 ### Feature
 * Preprocess text ([`b01cf35`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b01cf355fab86cf29b9161fbce68c0509931289d))
