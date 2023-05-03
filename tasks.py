@@ -353,6 +353,7 @@ def test(
             "-p no:cov",
             "--disable-warnings",
             "-q",
+            "--durations=5",
         ]
 
     pytest_arg_str = " ".join(pytest_args)
