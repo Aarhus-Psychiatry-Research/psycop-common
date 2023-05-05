@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.62.0 (2023-05-05)
+### Feature
+* Allow str_to_pl_df ([`4cd53ac`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4cd53ac0edb4954ec584c9d650c6fd8098389632))
+
 ## v0.61.0 (2023-05-03)
 ### Feature
 * Allow custom splits for training ([`6e0bf71`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6e0bf715c29806d87a1d4664470aa4f6815a2451))
