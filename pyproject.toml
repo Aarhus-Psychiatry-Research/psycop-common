@@ -45,7 +45,8 @@ dependencies = [
   "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
   "plotnine",
   "timeseriesflattener",
-  "scipy==1.10.1"
+  "scipy==1.10.1",
+  "polars",
 ]
 
 [project.license]
