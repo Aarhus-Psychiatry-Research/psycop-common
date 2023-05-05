@@ -2,6 +2,7 @@ from io import StringIO
 
 import numpy as np
 import pandas as pd
+import polars as pl
 from pandas import DataFrame
 
 
@@ -71,3 +72,27 @@ def str_to_df(
 
     # Drop "Unnamed" cols
     return df.loc[:, ~df.columns.str.contains("^Unnamed")]
+
+
+def str_to_pl_df(
+    string: str,
+    convert_timestamp_to_datetime: bool = True,
+    convert_np_nan_to_nan: bool = True,
+    convert_str_to_float: bool = False,
+    add_pred_time_uuid: bool = False,
+    entity_id_colname: str = "entity_id",
+    timestamp_col_name: str = "timestamp",
+) -> pl.DataFrame:
+    pd_df = str_to_df(
+        string=string,
+        convert_timestamp_to_datetime=convert_timestamp_to_datetime,
+        convert_np_nan_to_nan=convert_np_nan_to_nan,
+        convert_str_to_float=convert_str_to_float,
+        add_pred_time_uuid=add_pred_time_uuid,
+        entity_id_colname=entity_id_colname,
+        timestamp_col_name=timestamp_col_name,
+    )
+
+    pl_df = pl.from_pandas(pd_df)
+
+    return pl_df
