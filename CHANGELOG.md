@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.62.1 (2023-05-05)
+### Fix
+* Missing polars requirement ([`8e277e1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8e277e168bcdf02d1a20038f4defb6c26ee445d3))
+
 ## v0.62.0 (2023-05-05)
 ### Feature
 * Allow str_to_pl_df ([`4cd53ac`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4cd53ac0edb4954ec584c9d650c6fd8098389632))
