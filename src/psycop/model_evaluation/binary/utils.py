@@ -62,8 +62,8 @@ def calc_performance(
             try:
                 return metric(true, pred)
             except ValueError as e:
-                 print(repr(e))
-                 return np.nan
+                print(repr(e))
+                return np.nan
 
         boot = bootstrap(
             (df["y"], df["y_hat"]),
