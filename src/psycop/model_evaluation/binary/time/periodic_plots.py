@@ -21,11 +21,12 @@ def plot_roc_auc_by_periodic_time(
     """Plot performance by cyclic time period of prediction time. Cyclic time
     periods include e.g. day of week, hour of day, etc.
     Args:
-        eval_dataset (EvalDataset): EvalDataset object
-        y_title (str): Title for y-axis (metric name). Defaults to "AUC"
-        bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
-        save_path (str, optional): Path to save figure. Defaults to None.
-        y_limits (tuple[float, float], optional): Limits of y-axis. Defaults to (0.5, 1.0).
+        eval_dataset: EvalDataset object
+        y_title: Title for y-axis (metric name). Defaults to "AUC"
+        bin_period: Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
+        save_path: Path to save figure. Defaults to None.
+        y_limits: Limits of y-axis. Defaults to (0.5, 1.0).
+        ci_width: Width of confidence interval. Defaults to 0.95.
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
     """

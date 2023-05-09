@@ -22,6 +22,7 @@ def roc_auc_by_periodic_time_df(
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
+        ci_width: Width of confidence interval. Defaults to None, in which case no confidence interval is added.
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
