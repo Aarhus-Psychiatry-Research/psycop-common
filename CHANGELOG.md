@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.63.0 (2023-05-09)
+### Feature
+* Increase x-axis text size for base plots ([`b5ddf0b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b5ddf0bd48a868068a773bd4045a6a5bc73cbba7))
+
 ## v0.62.1 (2023-05-05)
 ### Fix
 * Missing polars requirement ([`8e277e1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8e277e168bcdf02d1a20038f4defb6c26ee445d3))
