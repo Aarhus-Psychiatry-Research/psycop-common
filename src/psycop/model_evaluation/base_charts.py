@@ -108,7 +108,7 @@ def plot_basic_chart(
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)
-    plt.xticks(fontsize=7)
+    plt.xticks(fontsize=10)
     plt.xticks(rotation=45)
 
     if y_limits is not None:
