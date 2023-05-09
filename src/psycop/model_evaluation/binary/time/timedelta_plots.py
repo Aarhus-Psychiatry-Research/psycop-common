@@ -271,7 +271,7 @@ def plot_sensitivity_by_time_to_event(
     positive_rates: Union[float, Iterable[float]],
     bins: Sequence[float],
     bin_unit: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
-    n_bootstraps: int = 1000,
+    n_bootstraps: int = 100,
     y_title: str = "Sensitivity (Recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
@@ -319,6 +319,7 @@ def plot_sensitivity_by_time_to_event(
 
     df = pd.concat(dfs, axis=0)
 
+    import plotnine as pn
     from plotnine import (
         aes,
         element_text,
@@ -361,16 +362,18 @@ def plot_sensitivity_by_time_to_event(
         + geom_point()
         + geom_line()
         + geom_errorbar(width=0.2, size=0.5)
-        + labs(x=f"{x_title_unit} to outcome", y=y_title)
-        + ylim(y_limits)
-        + theme_classic()
+        + labs(x=f"{x_title_unit}s to outcome", y=y_title)
+        + pn.theme_bw()
         + theme(axis_text_x=element_text(rotation=45, hjust=1))
-        + theme(legend_position=(0.92, 0.5), legend_direction="vertical")
         + scale_color_brewer(type="qual", palette=2)
-        + labs(color="Predicted \npositive rate")
+        + labs(color="PPR")
+        + pn.guides(color=pn.guide_legend(reverse=True))
+        + pn.theme(
+            panel_grid_major=pn.element_blank(), panel_grid_minor=pn.element_blank()
+        )
     )
 
     if save_path is not None:
-        p.save(save_path)
+        p.save(save_path, width=5, height=5, dpi=600)
         return Path(save_path)
     return None
