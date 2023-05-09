@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from typing import Optional
 
 import pandas as pd
 from psycop.model_evaluation.binary.utils import (
@@ -12,6 +13,7 @@ def roc_auc_by_periodic_time_df(
     y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     bin_period: str,
+    ci_width: Optional[float] = None,
 ) -> pd.DataFrame:
     """Calculate performance by cyclic time period of prediction time data
     frame. Cyclic time periods include e.g. day of week, hour of day, etc.
@@ -72,6 +74,7 @@ def roc_auc_by_periodic_time_df(
     output_df = df.groupby("time_bin").apply(
         func=calc_performance,  # type: ignore
         metric=roc_auc_score,
+        confidence_interval=ci_width,
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)

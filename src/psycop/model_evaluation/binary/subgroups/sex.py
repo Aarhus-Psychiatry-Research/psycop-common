@@ -41,7 +41,7 @@ def plot_roc_auc_by_sex(
 
     ci = df["ci"].tolist() if confidence_interval else None
 
-    df.sex = df.sex.replace({1: "female", 0: "male"})
+    df.sex = df.sex.replace({1: "Female", 0: "Male"})
 
     return plot_basic_chart(
         x_values=df["sex"],
@@ -49,7 +49,9 @@ def plot_roc_auc_by_sex(
         x_title="Sex",
         y_title="AUC",
         y_limits=y_limits,
-        plot_type=["bar"],
-        save_path=save_path,
+        plot_type=["scatter", "line"],
+        bar_count_values=df["n_in_bin"],
+        bar_count_y_axis_title="Number of visits",
         confidence_interval=ci,
+        save_path=save_path,
     )

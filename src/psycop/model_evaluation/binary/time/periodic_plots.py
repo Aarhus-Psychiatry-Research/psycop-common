@@ -16,6 +16,7 @@ def plot_roc_auc_by_periodic_time(
     bin_period: str = "Y",
     save_path: Optional[Union[str, Path]] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
+    ci_width: float = 0.95,
 ) -> Union[None, Path]:
     """Plot performance by cyclic time period of prediction time. Cyclic time
     periods include e.g. day of week, hour of day, etc.
@@ -33,7 +34,10 @@ def plot_roc_auc_by_periodic_time(
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
         bin_period=bin_period,
+        ci_width=ci_width,
     )
+
+    ci_estimates = df["ci"].tolist() if ci_width else None
 
     return plot_basic_chart(
         x_values=df["time_bin"],
@@ -48,5 +52,6 @@ def plot_roc_auc_by_periodic_time(
         plot_type=["line", "scatter"],
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title="Number of visits",
+        confidence_interval=ci_estimates,
         save_path=save_path,
     )
