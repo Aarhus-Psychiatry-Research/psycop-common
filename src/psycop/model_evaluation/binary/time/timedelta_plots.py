@@ -273,7 +273,6 @@ def plot_sensitivity_by_time_to_event(
     bin_unit: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
     n_bootstraps: int = 100,
     y_title: str = "Sensitivity (Recall)",
-    y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Union[Path, str]] = None,
 ) -> Union[None, Path]:
     """Plot performance by calendar time of prediciton.
@@ -284,7 +283,6 @@ def plot_sensitivity_by_time_to_event(
         bin_unit: Unit of time to bin by. Defaults to "D".
         y_title: Title of y-axis. Defaults to "AUC".
         save_path: Path to save figure. Defaults to None.
-        y_limits: Limits of y-axis. Defaults to (0.5, 1.0).
         n_bootstraps (int, optional): Number of bootstraps to use for confidence intervals. Defaults to 1000.
     Returns:
         Union[None, Path]: Path to saved figure or None if not saved.
@@ -367,7 +365,8 @@ def plot_sensitivity_by_time_to_event(
         + labs(color="PPR")
         + pn.guides(color=pn.guide_legend(reverse=True))
         + pn.theme(
-            panel_grid_major=pn.element_blank(), panel_grid_minor=pn.element_blank(),
+            panel_grid_major=pn.element_blank(),
+            panel_grid_minor=pn.element_blank(),
         )
     )
 
