@@ -20,7 +20,6 @@ def test_sensitivity_by_time_to_event(
         positive_rates=[0.4, 0.6, 0.8],
         bins=list(range(0, 1460, 180)),
         n_bootstraps=10,
-        y_limits=(0, 1),
         save_path=TEST_PLOT_PATH / "sensitivity_by_time_to_event.png",
     )
 

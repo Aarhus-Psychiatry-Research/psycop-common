@@ -42,7 +42,7 @@ def plot_auc_roc(
     fig_size: Optional[tuple[int, int]] = (5, 5),
     dpi: int = 160,
     save_path: Optional[Path] = None,
-    n_bootstraps: int = 1000,
+    n_bootstraps: int = 100,
 ) -> Union[None, Path]:
     """Plot AUC ROC curve with bootstrapped 95% confidence interval using Seaborn.
 
