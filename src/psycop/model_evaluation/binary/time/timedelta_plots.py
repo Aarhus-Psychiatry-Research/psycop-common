@@ -330,8 +330,6 @@ def plot_sensitivity_by_time_to_event(
         labs,
         scale_color_brewer,
         theme,
-        theme_classic,
-        ylim,
     )
 
     df["sens"] = df["sens"].astype(float)
@@ -369,7 +367,7 @@ def plot_sensitivity_by_time_to_event(
         + labs(color="PPR")
         + pn.guides(color=pn.guide_legend(reverse=True))
         + pn.theme(
-            panel_grid_major=pn.element_blank(), panel_grid_minor=pn.element_blank()
+            panel_grid_major=pn.element_blank(), panel_grid_minor=pn.element_blank(),
         )
     )
 
