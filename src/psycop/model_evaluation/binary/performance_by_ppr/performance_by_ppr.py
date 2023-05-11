@@ -129,10 +129,32 @@ def days_from_first_positive_to_diagnosis(
         float: Total number of days from first positive prediction to outcome.
     """
     # Generate df with only true positives
-    df = get_true_positives(
-        eval_dataset=eval_dataset,
-        positive_rate=positive_rate,
+    df = pd.DataFrame(
+        {
+            "id": eval_dataset.ids,
+            "pred": eval_dataset.get_predictions_for_positive_rate(
+                desired_positive_rate=positive_rate,
+            )[0],
+            "y": eval_dataset.y,
+            "pred_timestamps": eval_dataset.pred_timestamps,
+            "outcome_timestamps": eval_dataset.outcome_timestamps,
+        },
     )
+
+    return get_days_from_first_positive_to_diagnosis_from_df(
+        aggregation_method=aggregation_method,
+        df=df,
+    )
+
+
+def get_days_from_first_positive_to_diagnosis_from_df(
+    aggregation_method: str,
+    df: pd.DataFrame,
+) -> float:
+    """Utility function to get days from first positive to diagnosis from a dataframe. Use the `days_from_first_positive_to_diagnosis` function when you have an eval_dataset."""
+    # Keep only true positives
+    df["true_positive"] = (df["pred"] == 1) & (df["y"] == 1)
+    df = df[df["true_positive"]]
 
     # Find timestamp of first positive prediction
     df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
@@ -161,7 +183,8 @@ def days_from_first_positive_to_diagnosis(
         ]
     ]
 
-    return df["warning_days"].agg(aggregation_method)
+    aggregated = df["warning_days"].agg(aggregation_method)
+    return aggregated
 
 
 def get_percent_with_at_least_one_true_positve(
