@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.66.0 (2023-05-11)
+### Feature
+* Decrease bootstraps ([`2bd6500`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2bd65009c623222ef327afb6d3756c371a9836c9))
+* Add ci to timedelta plots ([`e6b9934`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e6b9934b737d189df2fe88138a4ee67ee150ce40))
+
+### Documentation
+* Better explain utility func ([`46396a1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/46396a1b3ad547d2f89ad59e941166071bcfee90))
+
 ## v0.65.0 (2023-05-11)
 ### Feature
 * Add ci to timedelta plots ([`ce8c63f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ce8c63f52a120576aad61fe0c7274033c3bc5639))
