@@ -11,7 +11,7 @@ def calc_performance(
     df: pd.DataFrame,
     metric: Callable,
     confidence_interval: Optional[float] = None,
-    n_bootstraps: int = 1000,
+    n_bootstraps: int = 100,
     **kwargs: Any,
 ) -> pd.Series:
     """Calculates performance metrics of a df with 'y' and 'input_to_fn' columns.
@@ -59,7 +59,11 @@ def calc_performance(
         ) -> float:
             # bootstrap function requires the metric function to
             # be able to take additional arguments (notably the length of the array)
-            return metric(true, pred)
+            try:
+                return metric(true, pred)
+            except ValueError as e:
+                print(repr(e))
+                return np.nan
 
         boot = bootstrap(
             (df["y"], df["y_hat"]),
