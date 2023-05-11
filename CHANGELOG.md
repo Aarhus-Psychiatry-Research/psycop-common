@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.64.0 (2023-05-11)
+### Feature
+* Handle only one true class ([`5a90247`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5a90247d3c6056ca6525b1697d2c2340039934d1))
+
 ## v0.63.0 (2023-05-09)
 ### Feature
 * Increase x-axis text size for base plots ([`b5ddf0b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b5ddf0bd48a868068a773bd4045a6a5bc73cbba7))
