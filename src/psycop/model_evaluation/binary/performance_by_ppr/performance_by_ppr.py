@@ -151,7 +151,9 @@ def get_days_from_first_positive_to_diagnosis_from_df(
     aggregation_method: str,
     df: pd.DataFrame,
 ) -> float:
-    """Utility function to get days from first positive to diagnosis from a dataframe. Use the `days_from_first_positive_to_diagnosis` function when you have an eval_dataset."""
+    """Get a dataframe. Easily testable.
+    Use the `days_from_first_positive_to_diagnosis` function when you have an eval_dataset.
+    """
     # Keep only true positives
     df["true_positive"] = (df["pred"] == 1) & (df["y"] == 1)
     df = df[df["true_positive"]]
