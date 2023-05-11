@@ -66,11 +66,12 @@ def test_time_from_flag_to_diag_from_df():
         1,1,1,2020-01-02,2020-01-03, # Ignored: Same patient but smaller distance
         2,1,1,2020-01-02,2020-01-03, # 1 day
         2,1,0,2020-01-02,NaN, # Ignored: Not true positive
-        """
+        """,
     )
 
     output = get_days_from_first_positive_to_diagnosis_from_df(
-        df=df, aggregation_method="sum"
+        df=df,
+        aggregation_method="sum",
     )
 
     assert output == 3
