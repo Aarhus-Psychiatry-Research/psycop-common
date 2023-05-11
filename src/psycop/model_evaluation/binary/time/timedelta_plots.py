@@ -69,7 +69,10 @@ def plot_roc_auc_by_time_from_first_visit(
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
         drop_na_events=False,
+        confidence_interval=0.95,
     )
+
+    ci = df["ci"].tolist()
 
     bin_unit2str = {
         "h": "Hours",
@@ -90,6 +93,7 @@ def plot_roc_auc_by_time_from_first_visit(
         plot_type=["line", "scatter"],
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title="Number of visits",
+        confidence_interval=ci,
         save_path=save_path,
     )
 
