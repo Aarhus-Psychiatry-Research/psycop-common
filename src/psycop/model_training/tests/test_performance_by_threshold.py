@@ -8,8 +8,10 @@ import pandas as pd
 from psycop.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     days_from_first_positive_to_diagnosis,
     generate_performance_by_ppr_table,
+    get_days_from_first_positive_to_diagnosis_from_df,
 )
 from psycop.model_training.training_output.dataclasses import EvalDataset
+from psycop.test_utils.str_to_df import str_to_df
 
 
 def test_generate_performance_by_threshold_table(
@@ -55,3 +57,20 @@ def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
     )
 
     assert warning_days_half < warning_days_two_thirds
+
+
+def test_time_from_flag_to_diag_from_df():
+    df = str_to_df(
+        """id,pred,y,pred_timestamps,outcome_timestamps,
+        1,1,1,2020-01-01,2020-01-03, # 2 days
+        1,1,1,2020-01-02,2020-01-03, # Ignored: Same patient but smaller distance
+        2,1,1,2020-01-02,2020-01-03, # 1 day
+        2,1,0,2020-01-02,NaN, # Ignored: Not true positive
+        """
+    )
+
+    output = get_days_from_first_positive_to_diagnosis_from_df(
+        df=df, aggregation_method="sum"
+    )
+
+    assert output == 3
