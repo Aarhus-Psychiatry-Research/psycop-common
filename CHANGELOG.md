@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.65.0 (2023-05-11)
+### Feature
+* Add ci to timedelta plots ([`ce8c63f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ce8c63f52a120576aad61fe0c7274033c3bc5639))
+
 ## v0.64.0 (2023-05-11)
 ### Feature
 * Handle only one true class ([`5a90247`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5a90247d3c6056ca6525b1697d2c2340039934d1))
