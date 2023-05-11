@@ -19,6 +19,7 @@ from psycop.model_evaluation.binary.utils import (
 from psycop.model_evaluation.utils import bin_continuous_data
 from psycop.model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score, roc_auc_score
+from t2d.paper_outputs.config import PN_THEME
 
 
 def plot_roc_auc_by_time_from_first_visit(
@@ -178,7 +179,6 @@ def plot_sensitivity_by_time_until_diagnosis(
 
 def plot_time_from_first_positive_to_event(
     eval_dataset: EvalDataset,
-    min_n_in_bin: int = 0,
     bins: Sequence[float] = tuple(range(0, 36, 1)),  # noqa
     bin_unit: Literal["h", "D", "M", "Q", "Y"] = "M",
     fig_size: tuple[int, int] = (5, 5),
@@ -189,7 +189,6 @@ def plot_time_from_first_positive_to_event(
     """Plot histogram of time from first positive prediction to event.
     Args:
         eval_dataset: EvalDataset object
-        min_n_in_bin (int): Minimum number of patients in each bin. If fewer, bin is dropped.
         bins (Sequence[float]): Bins to group by. Defaults to (5, 25, 35, 50, 70).
         bin_unit (Literal["h", "D", "M", "Q", "Y"]): Unit of time to bin by. Defaults to "M".
         fig_size (tuple[int, int]): Figure size. Defaults to (5,5).
@@ -198,6 +197,37 @@ def plot_time_from_first_positive_to_event(
         save_path (Path, optional): Path to save figure. Defaults to None.
     """
 
+    counts = get_time_from_first_positive_to_event_df(
+        eval_dataset=eval_dataset, bins=bins, bin_unit=bin_unit, pos_rate=pos_rate
+    )
+
+    x_labels = list(counts["time_from_first_positive_to_event_binned"])
+    y_values = counts[0].to_list()
+
+    bin_unit2str = {
+        "h": "Hours",
+        "D": "Days",
+        "M": "Months",
+        "Q": "Quarters",
+        "Y": "Years",
+    }
+
+    plot = plot_basic_chart(
+        x_values=x_labels,  # type: ignore
+        y_values=Series(y_values),
+        x_title=f"{bin_unit2str[bin_unit]} from first positive to event",
+        y_title="Count",
+        plot_type="bar",
+        save_path=save_path,
+        flip_x_axis=True,
+        dpi=dpi,
+        fig_size=fig_size,
+    )
+
+    return plot
+
+
+def get_time_from_first_positive_to_event_df(eval_dataset, bins, bin_unit, pos_rate):
     df = pd.DataFrame(
         {
             "y_hat_probs": eval_dataset.y_hat_probs,
@@ -230,7 +260,7 @@ def plot_time_from_first_positive_to_event(
     df_true_pos["time_from_first_positive_to_event_binned"], _ = bin_continuous_data(
         df_true_pos["time_from_pred_to_event"],
         bins=bins,
-        min_n_in_bin=min_n_in_bin,
+        min_n_in_bin=5,
         use_min_as_label=True,
     )
 
@@ -240,30 +270,7 @@ def plot_time_from_first_positive_to_event(
         .reset_index()
     )
 
-    x_labels = list(counts["time_from_first_positive_to_event_binned"])
-    y_values = counts[0].to_list()
-
-    bin_unit2str = {
-        "h": "Hours",
-        "D": "Days",
-        "M": "Months",
-        "Q": "Quarters",
-        "Y": "Years",
-    }
-
-    plot = plot_basic_chart(
-        x_values=x_labels,  # type: ignore
-        y_values=Series(y_values),
-        x_title=f"{bin_unit2str[bin_unit]} from first positive to event",
-        y_title="Count",
-        plot_type="bar",
-        save_path=save_path,
-        flip_x_axis=True,
-        dpi=dpi,
-        fig_size=fig_size,
-    )
-
-    return plot
+    return counts
 
 
 def plot_sensitivity_by_time_to_event(
@@ -322,7 +329,6 @@ def plot_sensitivity_by_time_to_event(
         aes,
         element_text,
         geom_errorbar,
-        geom_line,
         geom_point,
         ggplot,
         labs,
@@ -344,6 +350,7 @@ def plot_sensitivity_by_time_to_event(
 
     # Set y limits
 
+    dodge = pn.position_dodge(width=1)
     p = (
         ggplot(
             df,
@@ -355,19 +362,16 @@ def plot_sensitivity_by_time_to_event(
                 color="actual_positive_rate",
             ),
         )
-        + geom_point()
-        + geom_line()
-        + geom_errorbar(width=0.2, size=0.5)
+        + geom_point(position=dodge)
+        + pn.geom_linerange(size=0.5, position=dodge)
         + labs(x=f"{x_title_unit}s to outcome", y=y_title)
         + pn.theme_bw()
         + theme(axis_text_x=element_text(rotation=45, hjust=1))
         + scale_color_brewer(type="qual", palette=2)
         + labs(color="PPR")
         + pn.guides(color=pn.guide_legend(reverse=True))
-        + pn.theme(
-            panel_grid_major=pn.element_blank(),
-            panel_grid_minor=pn.element_blank(),
-        )
+        + PN_THEME
+        + pn.theme(axis_text_x=pn.element_text(angle=45, hjust=1))
     )
 
     if save_path is not None:
