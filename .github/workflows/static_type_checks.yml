@@ -27,6 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache tox
+        uses: actions/cache@v3.2.6
+        id: cache_tox
+        with:
+          path: |
+            .tox
+          key: ${{ runner.os }}-${{ matrix.python-version }}-cache-1.0.0-static-type-checks
+
       - name: Set up Python
         uses: actions/setup-python@v4
         id: setup_python
@@ -36,7 +44,7 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pip install invoke tox pyright
+          pip install invoke tox
 
       - name: Run static type checker
         id: pyright
