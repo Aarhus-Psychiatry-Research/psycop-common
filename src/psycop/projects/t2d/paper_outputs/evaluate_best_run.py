@@ -1,9 +1,12 @@
 import datetime
 
-from psycop.common.model_evaluation.binary.subgroups.age import plot_roc_auc_by_age
+import pandas as pd
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.performance.confusion_matrix_pipeline import (
     confusion_matrix_pipeline,
+)
+from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_by_time_until_diagnosis import (
+    incidence_by_time_until_outcome_pipeline,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.performance_by_ppr import (
     output_performance_by_ppr,
@@ -12,7 +15,10 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.roc_auc_pip
     save_auroc_plot_for_t2d,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
-    incidence_by_time_until_outcome_pipeline,
+    sensitivity_by_time_to_event,
+)
+from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
+    roc_auc_by_age,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_cyclic_time import (
     auroc_by_day_of_week,
@@ -28,19 +34,32 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_b
     roc_auc_by_time_from_first_visit,
 )
 from psycop.projects.t2d.utils.best_runs import Run
+from wasabi import Printer
+
+pd.set_option("mode.chained_assignment", None)
 
 
 def evaluate_best_run(run: Run):
+    msg = Printer(timestamp=True)
+    msg.info(f"Evaluating {run.name}")
+
+    for output_str, value in (
+        ("Run group", run.group.name),
+        ("Model_type", run.model_type),
+        ("Lookahead days", run.cfg.preprocessing.pre_split.min_lookahead_days),
+    ):
+        msg.info(f"    {output_str}: {value}")
+
     output_fns = {
         "performance_figures": [
             save_auroc_plot_for_t2d,
             confusion_matrix_pipeline,
             incidence_by_time_until_outcome_pipeline,
-            incidence_by_time_until_outcome_pipeline,
+            sensitivity_by_time_to_event,
         ],
         "robustness": [
             roc_auc_by_sex,
-            plot_roc_auc_by_age,
+            roc_auc_by_age,
             plot_auroc_by_n_hba1c,
             roc_auc_by_time_from_first_visit,
             auroc_by_month_of_year,
@@ -57,12 +76,12 @@ def evaluate_best_run(run: Run):
                 now = datetime.datetime.now()
                 fn(run)
                 finished = datetime.datetime.now()
-                print(f"Finished {fn.__name__} in {round((finished - now).seconds, 0)}")
-            except Exception as e:
-                print(f"Failed to run {fn.__name__} with error: {e}")
-
+                msg.good(
+                    f"{fn.__name__} finished in {round((finished - now).seconds, 0)} seconds"
+                )
+            except Exception:
+                msg.fail(f"{fn.__name__} failed")
         group_finished = datetime.datetime.now()
-        print(f"Finished group in {round((group_finished - group_start).seconds, 0)}")
 
 
 if __name__ == "__main__":
