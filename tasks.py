@@ -342,7 +342,7 @@ def test(
     c.run("pants tailor src/::")
 
     test_result: Result = c.run(
-        "pants test ::",
+        "pants test src/::",
         warn=True,
         pty=NOT_WINDOWS,
     )
