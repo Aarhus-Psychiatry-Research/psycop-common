@@ -1,10 +1,6 @@
 import pandas as pd
 import plotnine as pn
 import polars as pl
-from psycop.model_evaluation.binary.time.timedelta_plots import (
-    get_time_from_first_positive_to_event_df,
-    plot_time_from_first_positive_to_event,
-)
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
 
 

@@ -27,7 +27,6 @@ if __name__ == "__main__":
     shap_figures_path.mkdir(exist_ok=True, parents=True)
 
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.plot_shap import (
-        plot_top_i_shap,
         save_plots_for_top_i_shap_by_mean_abs,
     )
 
