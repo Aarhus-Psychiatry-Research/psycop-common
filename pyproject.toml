@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "psycop"
@@ -200,17 +200,3 @@ include-package-data = true
 markers = [
   "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds."
 ]
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist = py{39,310}
-
-[testenv:{test,type}]
-description: run unit tests
-extras = tests, dev
-use_develop = true
-commands =
-  test: pytest -n auto {posargs:test}
-  type: pyright --stats
-"""
