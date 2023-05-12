@@ -48,7 +48,7 @@ dependencies = [
   "scipy==1.10.1",
   "polars",
   "tableone",
-  
+  "shap",
 ]
 
 [project.license]
