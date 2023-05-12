@@ -24,7 +24,7 @@ def test_fit_bow_model():
 
     bow = fit_text_model("bow", df["text"])
     transformed = bow.transform(df["text"])
-    transformed = transformed.toarray()
+    transformed = transformed.toarray()  # type: ignore
 
     assert (np.array([[2], [0], [1], [0]]) == transformed).any()
 
@@ -47,6 +47,6 @@ def test_fit_tfidf_model():
 
     tfidf = fit_text_model("tfidf", df["text"], min_df=0, max_df=1)
     transformed = tfidf.transform(df["text"])
-    transformed = transformed.toarray()
+    transformed = transformed.toarray()  # type: ignore
 
     assert (np.array([[0], [0], [0], [0]]) == transformed).any()

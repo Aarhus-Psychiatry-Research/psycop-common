@@ -23,7 +23,7 @@ def bootstrap_roc(
 
     # Bootstrap TPRs
     for _ in range(n_bootstraps):
-        y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs)
+        y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs)  # type: ignore
         fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled, y_hat_probs_resampled)
 
         tpr_bootstrapped = np.interp(base_fpr, fpr_resampled, tpr_resampled)
