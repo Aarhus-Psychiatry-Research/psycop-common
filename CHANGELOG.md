@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.67.0 (2023-05-12)
+### Feature
+* Create pipeline and unified interface for evaluating the best run ([`d4fd7f3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d4fd7f3164b6439175147236dc371b5ce9beb2bf))
+
 ## v0.66.0 (2023-05-11)
 ### Feature
 * Decrease bootstraps ([`2bd6500`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2bd65009c623222ef327afb6d3756c371a9836c9))
