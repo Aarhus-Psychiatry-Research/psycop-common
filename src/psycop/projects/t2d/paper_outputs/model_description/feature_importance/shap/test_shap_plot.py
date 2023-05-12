@@ -29,4 +29,4 @@ def test_plot_top_i_shap(shap_long_df: pl.DataFrame, tmp_path: Path):
         save_dir=tmp_path,
     )
 
-    assert len(list(tmp_path.glob("*.png"))) == 3
+    assert len(list(tmp_path.glob("*.jpg"))) == 3
