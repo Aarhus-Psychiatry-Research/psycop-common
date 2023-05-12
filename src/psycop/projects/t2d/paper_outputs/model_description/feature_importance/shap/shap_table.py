@@ -28,5 +28,5 @@ def get_top_i_shap_values_for_printing(
     )
 
     return ranked.with_columns(
-        pl.col("Feature").apply(lambda x: feature_name_to_readable(x)).alias("Feature")  # type: ignore
+        pl.col("Feature").apply(lambda x: feature_name_to_readable(x)).alias("Feature"),  # type: ignore
     )

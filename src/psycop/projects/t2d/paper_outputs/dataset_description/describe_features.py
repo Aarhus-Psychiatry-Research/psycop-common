@@ -5,7 +5,6 @@ import logging
 from psycop.feature_generation.application_modules.project_setup import (
     get_project_info,
 )
-from timeseriesflattener.utils import load_dataset_from_file
 
 log = logging.getLogger()
 

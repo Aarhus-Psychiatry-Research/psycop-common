@@ -8,11 +8,11 @@ def roc_auc_by_cyclic_time():
     print("Plotting AUC by cyclic time")
     eval_ds = EVAL_RUN.get_eval_dataset()
 
-    # plot_roc_auc_by_periodic_time(
-    #     eval_dataset=eval_ds,
-    #     bin_period="H",
-    #     save_path=ROBUSTNESS_PATH / "auc_by_hour_of_day.png",
-    # )
+    plot_roc_auc_by_periodic_time(
+        eval_dataset=eval_ds,
+        bin_period="H",
+        save_path=ROBUSTNESS_PATH / "auc_by_hour_of_day.png",
+    )
 
     plot_roc_auc_by_periodic_time(
         eval_dataset=eval_ds,

@@ -57,7 +57,8 @@ if __name__ == "__main__":
             print(f"AUROC improvement over last hour was {improvement_over_last_hour}")
 
     first_model_timestamp = run_performance_df.sort_values(
-        "timestamp", ascending=True
+        "timestamp",
+        ascending=True,
     ).head(1)["timestamp"][0]
 
     training_minutes = round((now - first_model_timestamp).total_seconds() / 60)  # type: ignore

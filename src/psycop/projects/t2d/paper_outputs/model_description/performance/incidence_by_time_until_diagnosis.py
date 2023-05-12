@@ -1,4 +1,3 @@
-import pandas as pd
 import plotnine as pn
 import polars as pl
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
@@ -10,7 +9,7 @@ def incidence_by_time_until_outcome_pipeline():
     df = pl.DataFrame(
         {
             "y_pred": eval_ds.get_predictions_for_positive_rate(
-                desired_positive_rate=EVAL_RUN.pos_rate
+                desired_positive_rate=EVAL_RUN.pos_rate,
             )[0],
             "y": eval_ds.y,
             "patient_id": eval_ds.ids,
@@ -28,8 +27,8 @@ def incidence_by_time_until_outcome_pipeline():
         .head(1)
         .with_columns(
             (pl.col("time_from_pred_to_event").dt.days() / 365.25).alias(
-                "years_from_pred_to_event"
-            )
+                "years_from_pred_to_event",
+            ),
         )
     ).to_pandas()
 
@@ -41,7 +40,7 @@ def incidence_by_time_until_outcome_pipeline():
         + pn.geom_histogram(binwidth=1, fill="orange")
         + pn.xlab("Years from first positive prediction\n to event")
         + pn.scale_x_reverse(
-            breaks=range(0, int(plot_df["years_from_pred_to_event"].max() + 1))
+            breaks=range(0, int(plot_df["years_from_pred_to_event"].max() + 1)),
         )
         + pn.ylab("n")
         + pn.geom_vline(xintercept=median_years, linetype="dashed", size=1)

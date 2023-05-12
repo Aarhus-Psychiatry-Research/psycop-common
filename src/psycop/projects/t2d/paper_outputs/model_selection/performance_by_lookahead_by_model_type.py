@@ -5,7 +5,6 @@ from psycop.model_evaluation.binary.performance_by_ppr.performance_by_ppr import
 from psycop.projects.t2d.paper_outputs.config import (
     BEST_POS_RATE,
     DEVELOPMENT_GROUP,
-    EVAL_RUN,
 )
 from psycop.projects.t2d.utils.best_runs import Run, RunGroup
 
@@ -30,7 +29,7 @@ def get_performance_for_run(run: Run) -> pl.DataFrame:
         "run_name": run.name,
         "auroc": run.get_auroc(),
         "mean_warning_days": get_mean_days_from_first_positive_to_diagnosis_for_run(
-            run=run
+            run=run,
         ),
     }
 
@@ -45,7 +44,7 @@ def get_mean_days_from_first_positive_to_diagnosis_for_run(run: Run) -> float:
     )
 
 
-def get_publication_ready_performance_for_group(run_group: RunGroup):
+def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataFrame:
     df = get_performance_for_group(group=run_group, pos_rate=BEST_POS_RATE)
 
     auroc_df = df.pivot(
@@ -67,7 +66,7 @@ def get_publication_ready_performance_for_group(run_group: RunGroup):
     ).select(
         pl.col("model_name"),
         pl.lit(
-            f"Mean years from first positive to event at {BEST_POS_RATE} positive rate"
+            f"Mean years from first positive to event at {BEST_POS_RATE} positive rate",
         ).alias("measure"),
         (pl.all().exclude("model_name") / 365.25).round(1),
     )

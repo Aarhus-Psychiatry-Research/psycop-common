@@ -15,7 +15,7 @@ def plot_shap_for_feature(df: pl.DataFrame, feature_name: str) -> pn.ggplot:
 
     if not feature_is_binary:
         df = df.filter(
-            pl.col("feature_value") < pl.col("feature_value").quantile(0.995)
+            pl.col("feature_value") < pl.col("feature_value").quantile(0.995),
         )
 
     if feature_is_binary:
@@ -23,7 +23,7 @@ def plot_shap_for_feature(df: pl.DataFrame, feature_name: str) -> pn.ggplot:
             pl.when(pl.col("feature_value") == 1.0)
             .then(pl.lit("True"))
             .otherwise(pl.lit("False"))
-            .keep_name()
+            .keep_name(),
         )
 
     if feature_is_categorical:

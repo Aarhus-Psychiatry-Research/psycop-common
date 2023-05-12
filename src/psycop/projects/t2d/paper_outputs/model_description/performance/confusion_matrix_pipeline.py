@@ -60,7 +60,7 @@ def confusion_matrix_pipeline():
         {
             "y": eval_ds.y,
             "y_hat": eval_ds.get_predictions_for_positive_rate(EVAL_RUN.pos_rate)[0],
-        }
+        },
     )
 
     conf_matrix, metrics_df = confusion_matrix_metrics(

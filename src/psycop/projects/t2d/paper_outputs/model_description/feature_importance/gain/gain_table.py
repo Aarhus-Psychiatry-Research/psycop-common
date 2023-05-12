@@ -1,5 +1,4 @@
 import polars as pl
-from numpy import indices
 from psycop.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
@@ -10,7 +9,7 @@ if __name__ == "__main__":
     # Get feature importance scores
     feature_importances = pipeline.named_steps["model"].feature_importances_
     feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
-        indices=True
+        indices=True,
     )
 
     split_df = load_and_filter_split_from_cfg(
@@ -24,7 +23,7 @@ if __name__ == "__main__":
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
-        {"Feature Name": selected_feature_names, "Gain": feature_importances}
+        {"Feature Name": selected_feature_names, "Gain": feature_importances},
     )
 
     # Sort the table by gain in descending order
