@@ -69,7 +69,7 @@ def evaluate_best_run(run: Run):
     }
 
     for group in output_fns:
-        group_start = datetime.datetime.now()
+        datetime.datetime.now()
 
         for fn in output_fns[group]:
             try:
@@ -77,11 +77,11 @@ def evaluate_best_run(run: Run):
                 fn(run)
                 finished = datetime.datetime.now()
                 msg.good(
-                    f"{fn.__name__} finished in {round((finished - now).seconds, 0)} seconds"
+                    f"{fn.__name__} finished in {round((finished - now).seconds, 0)} seconds",
                 )
             except Exception:
                 msg.fail(f"{fn.__name__} failed")
-        group_finished = datetime.datetime.now()
+        datetime.datetime.now()
 
 
 if __name__ == "__main__":
