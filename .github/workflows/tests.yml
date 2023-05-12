@@ -6,11 +6,14 @@ name: Tests
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.json'
+    paths:
+      - '**.py'
+      - '**.toml'
   pull_request:
     branches: [main]
+    paths:
+      - '**.py'
+      - '**.toml'
 
 jobs:
   pytest:

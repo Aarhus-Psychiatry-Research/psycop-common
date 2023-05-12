@@ -6,11 +6,14 @@ name: static_type_checks
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.json'
+    paths:
+      - '**.py'
+      - '**.toml'
   push:
     branches: [main]
+    paths:
+      - '**.py'
+      - '**.toml'
 
 jobs:
   static_type_checks:
