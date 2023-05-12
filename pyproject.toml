@@ -46,7 +46,9 @@ dependencies = [
   "plotnine",
   "timeseriesflattener",
   "scipy==1.10.1",
-  "polars"
+  "polars",
+  "tableone",
+  
 ]
 
 [project.license]
