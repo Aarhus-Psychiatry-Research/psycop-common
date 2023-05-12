@@ -1,3 +1,4 @@
 /src/psycop/common @Aarhus-Psychiatry-Research/OGs
+/src/psycop/projects/t2d @MartinBernstorff
 pyproject.toml @Aarhus-Psychiatry-Research/OGs
 tasks.py @Aarhus-Psychiatry-Research/OGs
