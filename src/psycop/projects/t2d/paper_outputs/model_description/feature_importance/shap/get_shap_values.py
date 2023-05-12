@@ -4,8 +4,8 @@ from typing import Optional
 import pandas as pd
 import polars as pl
 import shap
+from psycop.common.global_utils.cache import mem
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
-from psycop.projects.t2d.utils.cache import mem
 from sklearn.pipeline import Pipeline
 
 

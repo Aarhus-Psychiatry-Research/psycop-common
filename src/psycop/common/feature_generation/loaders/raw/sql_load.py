@@ -6,22 +6,11 @@ import urllib.parse
 from pathlib import Path
 
 import pandas as pd
-from joblib import Memory
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
+from psycop.common.global_utils.cache import mem
 from sqlalchemy import create_engine, text
 
-# Create a memory cache with the desired directory to store cached results
-# Only if on Windows
-if Path("E:/").exists():
-    cache_dir = Path("E:/shared_resources/sql_cache/")
-else:
-    cache_dir = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "sql_cache"
 
-cache_dir.mkdir(parents=True, exist_ok=True)
-memory = Memory(location=cache_dir, verbose=1)
-
-
-@memory.cache  # type: ignore
+@mem.cache  # type: ignore
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",

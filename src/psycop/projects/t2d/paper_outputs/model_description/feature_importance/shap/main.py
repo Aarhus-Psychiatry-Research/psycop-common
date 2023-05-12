@@ -17,7 +17,6 @@ if __name__ == "__main__":
         shap_long_df=pl.from_pandas(long_shap_df),
         i=100,
     )
-    table_df
 
     plotting_df = pl.from_pandas(long_shap_df)
 
