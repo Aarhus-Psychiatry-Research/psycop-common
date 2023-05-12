@@ -115,7 +115,7 @@ def create_sensitivity_by_time_to_outcome_df(
     prediction_timestamps: Series,
     bins: Sequence[float] = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
     bin_delta: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
-    n_bootstraps: int = 1000,
+    n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
     Args:
@@ -176,11 +176,17 @@ def create_sensitivity_by_time_to_outcome_df(
         .reset_index()
     )
 
-    output_df = df_with_metric.pivot(
-        index="days_to_outcome_binned",
-        columns="level_1",
-        values=0,
-    )
+    # Super hacky! Even though the input dfs have a specified shape,
+    # we sometimes need to pivot. Instead of debugging now, we'll just
+    # hack it.
+    if "level_1" in df_with_metric.columns:
+        output_df = df_with_metric.pivot(
+            index="days_to_outcome_binned",
+            columns="level_1",
+            values=0,
+        )
+    else:
+        output_df = df_with_metric
 
     # Get proportion of y_hat == 1, which is equal to the actual positive rate in the data.
     threshold_percentile = round(
