@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     # Get feature importance scores
     feature_importances = pipeline.named_steps["model"].feature_importances_
-    feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(
+    feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
         indices=True
     )
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
         split="test",
     )
 
-    feature_names = [c for c in split_df if "pred_" in c]
+    feature_names = [c for c in split_df.columns if "pred_" in c]
     selected_feature_names = [feature_names[i] for i in feature_indices]
 
     # Create a DataFrame to store the feature names and their corresponding gain
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # Get the top 100 features by gain
     top_100_features = feature_table.head(100).with_columns(
         pl.col("Gain").round(3),
-        pl.col("Feature Name").apply(lambda x: feature_name_to_readable(x)),
+        pl.col("Feature Name").apply(lambda x: feature_name_to_readable(x)),  # type: ignore
     )
 
     with (TABLES_PATH / "feature_importance_by_gain.html").open("w") as html_file:
