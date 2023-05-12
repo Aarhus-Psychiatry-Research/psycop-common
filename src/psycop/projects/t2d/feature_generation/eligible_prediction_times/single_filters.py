@@ -1,8 +1,8 @@
 import polars as pl
-from psycop.feature_generation.application_modules.filter_prediction_times import (
+from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
-from psycop.feature_generation.loaders.raw.load_moves import (
+from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.eligible_config import (

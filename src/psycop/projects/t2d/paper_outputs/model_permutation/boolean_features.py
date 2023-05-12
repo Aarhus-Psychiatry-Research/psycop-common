@@ -1,6 +1,8 @@
 import polars as pl
-from psycop.model_training.application_modules.train_model.main import train_model
-from psycop.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.common.model_training.application_modules.train_model.main import (
+    train_model,
+)
+from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.projects.t2d.paper_outputs.config import ESTIMATES_PATH, EVAL_RUN
 
 if __name__ == "__main__":

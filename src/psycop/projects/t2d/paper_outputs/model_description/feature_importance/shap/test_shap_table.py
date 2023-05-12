@@ -1,9 +1,9 @@
 import pandas as pd
 import polars as pl
+from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.shap_table import (
     get_top_i_shap_values_for_printing,
 )
-from psycop.test_utils.str_to_df import str_to_df
 
 
 def test_get_top_2_shap_values_for_output():

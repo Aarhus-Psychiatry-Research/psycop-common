@@ -1,4 +1,4 @@
-from psycop.model_evaluation.binary.time.absolute_plots import (
+from psycop.common.model_evaluation.binary.time.absolute_plots import (
     plot_metric_by_absolute_time,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, ROBUSTNESS_PATH

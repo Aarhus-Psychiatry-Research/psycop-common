@@ -1,5 +1,7 @@
 import polars as pl
-from psycop.model_training.data_loader.utils import load_and_filter_split_from_cfg
+from psycop.common.model_training.data_loader.utils import (
+    load_and_filter_split_from_cfg,
+)
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
 

@@ -3,7 +3,9 @@ import logging
 from typing import Sequence  # noqa
 
 import numpy as np
-from psycop.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.application_modules.project_setup import (
+    ProjectInfo,
+)
 from psycop.projects.t2d.feature_generation.outcome_specification.combined import (  # noqa noqa: RUF100
     get_first_diabetes_indicator,
 )

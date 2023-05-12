@@ -1,4 +1,4 @@
-from psycop.model_evaluation.binary.subgroups.sex import plot_roc_auc_by_sex
+from psycop.common.model_evaluation.binary.subgroups.sex import plot_roc_auc_by_sex
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, ROBUSTNESS_PATH
 
 

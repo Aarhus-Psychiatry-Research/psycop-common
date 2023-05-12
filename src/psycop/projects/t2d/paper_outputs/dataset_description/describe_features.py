@@ -2,7 +2,7 @@
 # %%
 import logging
 
-from psycop.feature_generation.application_modules.project_setup import (
+from psycop.common.feature_generation.application_modules.project_setup import (
     get_project_info,
 )
 
@@ -31,7 +31,7 @@ selected_specs = [
 # %autoreload 2
 
 # %%
-from psycop.feature_generation.data_checks.flattened.feature_describer import (
+from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH

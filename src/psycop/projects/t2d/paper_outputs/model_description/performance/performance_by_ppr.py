@@ -1,5 +1,5 @@
 import pandas as pd
-from psycop.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
+from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH

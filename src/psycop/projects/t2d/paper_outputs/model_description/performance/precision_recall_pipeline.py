@@ -1,4 +1,4 @@
-from psycop.model_evaluation.binary.global_performance.precision_recall import (
+from psycop.common.model_evaluation.binary.global_performance.precision_recall import (
     plot_precision_recall,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH

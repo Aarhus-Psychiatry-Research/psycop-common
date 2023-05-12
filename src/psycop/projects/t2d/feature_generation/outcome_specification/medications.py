@@ -1,5 +1,5 @@
 import pandas as pd
-from psycop.feature_generation.loaders.raw.load_medications import (
+from psycop.common.feature_generation.loaders.raw.load_medications import (
     load as load_medications,
 )
 

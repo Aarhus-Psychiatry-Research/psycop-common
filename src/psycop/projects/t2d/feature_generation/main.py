@@ -3,22 +3,24 @@
 import logging
 from pathlib import Path
 
-from psycop.feature_generation.application_modules.describe_flattened_dataset import (
+from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
-from psycop.feature_generation.application_modules.flatten_dataset import (
+from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
-from psycop.feature_generation.application_modules.loggers import init_root_logger
-from psycop.feature_generation.application_modules.project_setup import (
+from psycop.common.feature_generation.application_modules.loggers import (
+    init_root_logger,
+)
+from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
     get_project_info,
     init_wandb,
 )
-from psycop.feature_generation.application_modules.save_dataset_to_disk import (
+from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop.feature_generation.application_modules.wandb_utils import (
+from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (

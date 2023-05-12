@@ -1,4 +1,4 @@
-from psycop.model_evaluation.binary.time.timedelta_plots import (
+from psycop.common.model_evaluation.binary.time.timedelta_plots import (
     plot_sensitivity_by_time_to_event,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH

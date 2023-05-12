@@ -1,5 +1,5 @@
 import polars as pl
-from psycop.test_utils.str_to_df import str_to_df
+from psycop.common.test_utils.str_to_df import str_to_df
 
 
 def test_polars_to_boolean():

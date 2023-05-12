@@ -1,6 +1,8 @@
 """A script for taking the current best model and running it on the test set."""
 
-from psycop.model_training.application_modules.train_model.main import train_model
+from psycop.common.model_training.application_modules.train_model.main import (
+    train_model,
+)
 from psycop.projects.t2d.paper_outputs.config import BEST_DEV_RUN
 
 if __name__ == "__main__":

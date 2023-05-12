@@ -1,4 +1,4 @@
-from psycop.model_evaluation.binary.time.periodic_plots import (
+from psycop.common.model_evaluation.binary.time.periodic_plots import (
     plot_roc_auc_by_periodic_time,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, ROBUSTNESS_PATH

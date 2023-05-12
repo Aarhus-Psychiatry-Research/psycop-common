@@ -1,5 +1,5 @@
 import pandas as pd
-from psycop.feature_generation.loaders.raw.load_lab_results import (
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     fasting_p_glc,
     hba1c,
     ogtt,

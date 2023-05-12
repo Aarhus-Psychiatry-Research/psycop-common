@@ -1,4 +1,6 @@
-from psycop.model_evaluation.binary.global_performance.roc_auc import plot_auc_roc
+from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
+    plot_auc_roc,
+)
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH
 
 
