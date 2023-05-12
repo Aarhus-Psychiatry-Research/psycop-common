@@ -259,7 +259,7 @@ def pre_commit(c: Context, auto_fix: bool):
 @task
 def static_type_checks(c: Context):
     echo_header(f"{msg_type.CLEAN} Running static type checks")
-    c.run("tox -e type", pty=NOT_WINDOWS)
+    c.run("pyright src/", pty=NOT_WINDOWS)
 
 
 @task
@@ -338,6 +338,8 @@ def test(
     # Invoke requires lists as type hints, but does not support lists as default arguments.
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
+
+    c.run("pants tailor ::")
 
     test_result: Result = c.run(
         "pants test ::",
