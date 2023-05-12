@@ -11,6 +11,7 @@ on:
   push:
     branches: [main]
 
+
 jobs:
   build:
     name: Perform CI Checks
@@ -18,6 +19,9 @@ jobs:
     strategy:
       matrix:
         python-version: [3.9]
+    concurrency:
+      group: "${{ github.workflow }} @ ${{ github.ref }}"
+      cancel-in-progress: true
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
