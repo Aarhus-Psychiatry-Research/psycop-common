@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import urllib
 import urllib.parse
-from pathlib import Path
 
 import pandas as pd
 from psycop.common.global_utils.cache import mem
