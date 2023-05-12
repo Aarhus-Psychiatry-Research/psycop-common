@@ -1,0 +1,5 @@
+[GLOBAL]
+pants_version = "2.15.0"
+
+[anonymous-telemetry]
+enabled = false

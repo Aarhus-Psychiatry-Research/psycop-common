@@ -186,3 +186,9 @@ src/psycop/tests/test_eval_results/*
 # Ruff
 .ruff_cache
 *.csv
+
+# Pants workspace files
+/.pants.d/
+/dist
+/.pids
+/.pants.workdir.file_lock*
