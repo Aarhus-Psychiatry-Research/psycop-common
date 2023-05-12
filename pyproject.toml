@@ -204,26 +204,11 @@ legacy_tox_ini = """
 [tox]
 envlist = py{39,310}
 
-[testenv]
+[testenv:{test,type}]
 description: run unit tests
-extras = tests
+extras = tests, dev
 use_develop = true
 commands =
-  pytest -n auto {posargs:test}
-
-[testenv:type]
-description: run type checks
-extras = test, dev
-basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
-use_develop = true
-commands =
-  pyright --stats
-
-[testenv:docs]
-description: build docs
-extras = docs
-basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
-use_develop = true
-commands =
-  sphinx-build -b html docs docs/_build/html
+  test: pytest -n auto {posargs:test}
+  type: pyright --stats
 """
