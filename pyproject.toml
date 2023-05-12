@@ -197,7 +197,6 @@ include-package-data = true
 markers = [
   "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds."
 ]
-testpaths = ["src/psycop"]
 
 [tool.tox]
 legacy_tox_ini = """
