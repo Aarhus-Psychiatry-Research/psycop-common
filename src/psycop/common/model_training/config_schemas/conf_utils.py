@@ -5,7 +5,7 @@ Very useful when testing.
 from typing import Optional
 
 from hydra import compose, initialize
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig, OmegaConf  # pants: no-infer-dep
 from psycop.common.model_training.config_schemas.basemodel import BaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 

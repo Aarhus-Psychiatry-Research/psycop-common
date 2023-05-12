@@ -36,9 +36,15 @@ search_path = ["<PATH>", "<PYENV>"]
 
 [pytest]
 lockfile = "<none>"
-xdist_enabled = "True"
+args=[
+  "--disable-warnings",
+  "-rfE",
+  "-q",
+]
+xdist_enabled = "False"
 extra_requirements.add = [
   "hydra-optuna-sweeper>=1.2.0",
   "hydra-joblib-launcher>=1.2.0",
+  "pyarrow",
 ]
 

@@ -1,9 +1,12 @@
 """Define fixtures for tests."""
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
+from psycop.common.model_evaluation.utils import TEST_PLOT_PATH
 from psycop.common.model_training.config_schemas.conf_utils import (
     FullConfigSchema,
     load_test_cfg_as_pydantic,
@@ -117,3 +120,16 @@ def muteable_test_config() -> FullConfigSchema:
 @pytest.fixture()
 def subsampled_eval_dataset(subsampled_synth_eval_df: pd.DataFrame) -> EvalDataset:
     return df_to_synth_eval_dataset(subsampled_synth_eval_df)
+
+
+@pytest.fixture()
+def test_plot_path() -> Path:
+    TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
+    return TEST_PLOT_PATH
+
+
+@pytest.fixture()
+def test_path() -> Path:
+    path = TEST_PLOT_PATH.parent
+    path.mkdir(parents=True, exist_ok=True)
+    return path

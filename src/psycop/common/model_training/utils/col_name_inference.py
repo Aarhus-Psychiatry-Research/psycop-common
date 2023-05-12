@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from typing import Union
 
 import pandas as pd
-from omegaconf import DictConfig
+from omegaconf import DictConfig  # pants: no-infer-dep
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 

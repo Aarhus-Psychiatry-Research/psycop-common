@@ -1,7 +1,8 @@
 poetry_requirements(
-    name="poetry0",
-)
-
-python_sources(
-    name="root",
+    name="reqs",
+    module_mapping={
+        "hydra-core": ["hydra"],
+        "psycopmlutils": ["psycop_ml_utils"],
+        "Levenshtein": ["Levenshtein"],
+    },
 )

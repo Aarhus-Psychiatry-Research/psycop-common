@@ -6,22 +6,24 @@ from psycop.common.model_evaluation.binary.global_performance.precision_recall i
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
     plot_auc_roc,
 )
-from psycop.common.model_evaluation.utils import TEST_PLOT_PATH
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
-def test_plot_roc_auc(subsampled_eval_dataset: EvalDataset):
+def test_plot_roc_auc(subsampled_eval_dataset: EvalDataset, test_plot_path: Path):
     plot_auc_roc(
         eval_dataset=subsampled_eval_dataset,
-        save_path=TEST_PLOT_PATH / "roc_auc.png",
+        save_path=test_plot_path / "roc_auc.png",
         n_bootstraps=10,
     )
 
 
-def test_plot_precision_recall(subsampled_eval_dataset: EvalDataset):
+def test_plot_precision_recall(
+    subsampled_eval_dataset: EvalDataset,
+    test_plot_path: Path,
+):
     plot_precision_recall(
         eval_dataset=subsampled_eval_dataset,
         save_path=Path(
-            TEST_PLOT_PATH / "precision_recall.png",
+            test_plot_path / "precision_recall.png",
         ),
     )

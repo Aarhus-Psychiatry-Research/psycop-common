@@ -20,7 +20,7 @@ import platform
 import re
 import shutil
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from invoke import Context, Result, task
 
@@ -333,53 +333,17 @@ def update(c: Context):
 @task(iterable="pytest_args")
 def test(
     c: Context,
-    python_versions: List[str] = (SUPPORTED_PYTHON_VERSIONS[0],),  # noqa # type: ignore
-    pytest_args: List[str] = [],  # noqa
 ):
     """Run tests"""
     # Invoke requires lists as type hints, but does not support lists as default arguments.
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
 
-    python_version_strings = [f"py{v.replace('.', '')}" for v in python_versions]
-    python_version_arg_string = ",".join(python_version_strings)
-
-    if not pytest_args:
-        pytest_args = [
-            "src/psycop",
-            "-n auto",
-            "-rfE",
-            "--failed-first",
-            "-p no:cov",
-            "--disable-warnings",
-            "-q",
-            "--durations=5",
-        ]
-
-    pytest_arg_str = " ".join(pytest_args)
-
     test_result: Result = c.run(
-        f"tox -e {python_version_arg_string} -- {pytest_arg_str}",
+        "pants test ::",
         warn=True,
         pty=NOT_WINDOWS,
     )
-
-    # If "failed" in the pytest results
-    failed_tests = [line for line in test_result.stdout if line.startswith("FAILED")]
-
-    if len(failed_tests) > 0:
-        print("\n\n\n")
-        echo_header("Failed tests")
-        print("\n\n\n")
-        echo_header("Failed tests")
-
-        for line in failed_tests:
-            # Remove from start of line until /test_
-            line_sans_prefix = line[line.find("test_") :]
-
-            # Keep only that after ::
-            line_sans_suffix = line_sans_prefix[line_sans_prefix.find("::") + 2 :]
-            print(f"FAILED {msg_type.FAIL} #{line_sans_suffix}     ")
 
     if test_result.return_code != 0:
         exit(test_result.return_code)
@@ -447,7 +411,7 @@ def pr(c: Context, auto_fix: bool = False):
     """Run all checks and update the PR."""
     add_and_commit(c)
     lint(c, auto_fix=auto_fix)
-    test(c, python_versions=SUPPORTED_PYTHON_VERSIONS)
+    test(c)
     update_branch(c)
     update_pr(c)
 

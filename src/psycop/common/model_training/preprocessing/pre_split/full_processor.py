@@ -23,7 +23,7 @@ from psycop.common.model_training.preprocessing.pre_split.processors.value_trans
 
 log = logging.getLogger(__name__)
 
-from joblib import Memory
+from joblib import Memory  # pants: no-infer-dep
 
 
 class FullProcessor:
