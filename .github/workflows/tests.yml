@@ -33,14 +33,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache tox
-        uses: actions/cache@v3.2.6
-        id: cache_tox
-        with:
-          path: |
-            .tox
-          key: ${{ runner.os }}-${{ matrix.python-version }}-cache-1.0.0-tests
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -55,7 +47,7 @@ jobs:
         shell: bash
         run: |
           # Specifying two sets of "--pytest-args" is required for invoke to parse it as a list
-          inv test --pytest-args="--durations=0" --pytest-args="--junitxml=pytest.xml --cov-report=term-missing --cov=src/"
+          inv test
           
 
       - name: Test report on failures
