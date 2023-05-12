@@ -45,7 +45,7 @@ jobs:
         # Alternatively you change gha-cache-key to ignore old caches.
     - name: Check BUILD files
       run:  |
-        pants tailor --check update-build-files --check ::
+        pants tailor --check update-build-files --check src/::
     - name: Test
       run: |
         pants test src/::
