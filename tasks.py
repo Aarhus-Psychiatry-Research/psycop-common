@@ -339,7 +339,7 @@ def test(
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
 
-    c.run("pants tailor ::")
+    c.run("pants tailor src/::")
 
     test_result: Result = c.run(
         "pants test ::",
