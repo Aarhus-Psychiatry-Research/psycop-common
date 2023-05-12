@@ -1,5 +1,6 @@
 import pandas as pd
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
+from psycop.projects.t2d.paper_outputs.config import TABLES_PATH
+from psycop.projects.t2d.utils.best_runs import Run
 from sklearn.metrics import confusion_matrix
 
 
@@ -53,13 +54,13 @@ def confusion_matrix_metrics(
     return df, metrics_df
 
 
-def confusion_matrix_pipeline():
-    eval_ds = EVAL_RUN.get_eval_dataset()
+def confusion_matrix_pipeline(run: Run):
+    eval_ds = run.get_eval_dataset()
 
     df = pd.DataFrame(
         {
             "y": eval_ds.y,
-            "y_hat": eval_ds.get_predictions_for_positive_rate(EVAL_RUN.pos_rate)[0],
+            "y_hat": eval_ds.get_predictions_for_positive_rate(run.pos_rate)[0],
         },
     )
 
@@ -71,9 +72,6 @@ def confusion_matrix_pipeline():
     TABLES_PATH.mkdir(parents=True, exist_ok=True)
 
     # Save the df to a csv file
+    print(f"Saving confusion matrix to {TABLES_PATH}")
     conf_matrix.to_csv(TABLES_PATH / "confusion_matrix.csv")
     metrics_df.to_csv(TABLES_PATH / "confusion_matrix_metrics.csv")
-
-
-if __name__ == "__main__":
-    confusion_matrix_pipeline()

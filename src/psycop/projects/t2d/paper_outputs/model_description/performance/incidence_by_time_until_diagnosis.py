@@ -1,15 +1,16 @@
 import plotnine as pn
 import polars as pl
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
+from psycop.projects.t2d.utils.best_runs import Run
 
 
-def incidence_by_time_until_outcome_pipeline():
-    eval_ds = EVAL_RUN.get_eval_dataset()
+def incidence_by_time_until_outcome_pipeline(run: Run):
+    eval_ds = run.get_eval_dataset()
 
     df = pl.DataFrame(
         {
             "y_pred": eval_ds.get_predictions_for_positive_rate(
-                desired_positive_rate=EVAL_RUN.pos_rate,
+                desired_positive_rate=run.pos_rate,
             )[0],
             "y": eval_ds.y,
             "patient_id": eval_ds.ids,
@@ -36,7 +37,7 @@ def incidence_by_time_until_outcome_pipeline():
     annotation_text = f"Median: {str(round(median_years, 1))} years"
 
     (
-        pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event"))
+        pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event"))  # type: ignore
         + pn.geom_histogram(binwidth=1, fill="orange")
         + pn.xlab("Years from first positive prediction\n to event")
         + pn.scale_x_reverse(
@@ -56,4 +57,4 @@ def incidence_by_time_until_outcome_pipeline():
 
 
 if __name__ == "__main__":
-    incidence_by_time_until_outcome_pipeline()
+    incidence_by_time_until_outcome_pipeline(run=EVAL_RUN)

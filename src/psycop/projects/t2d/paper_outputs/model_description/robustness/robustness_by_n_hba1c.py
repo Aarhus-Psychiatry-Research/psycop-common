@@ -59,7 +59,7 @@ def plot_performance_by_n_hba1c(
     )
 
 
-def roc_auc_by_n_hba1c():
+def plot_auroc_by_n_hba1c():
     print("Plotting AUC by n HbA1c")
     eval_ds = EVAL_RUN.get_eval_dataset(
         custom_columns=["eval_hba1c_within_9999_days_count_fallback_nan"],
@@ -73,4 +73,4 @@ def roc_auc_by_n_hba1c():
 
 
 if __name__ == "__main__":
-    roc_auc_by_n_hba1c()
+    plot_auroc_by_n_hba1c()
