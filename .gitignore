@@ -95,7 +95,7 @@ ipython_config.py
 #   This is especially recommended for binary packages to ensure reproducibility, and is more
 #   commonly ignored for libraries.
 #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-poetry.lock
+# poetry.lock
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
@@ -158,7 +158,6 @@ pytest-coverage.txt
 #other
 *test_load_data.py
 wandb
-poetry.lock
 *.html
 
 # PyCharm
