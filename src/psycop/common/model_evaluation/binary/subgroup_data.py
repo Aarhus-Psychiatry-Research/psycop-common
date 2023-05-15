@@ -7,9 +7,9 @@ from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
-def create_roc_auc_by_input(
+def get_auroc_by_input_df(
     eval_dataset: EvalDataset,
-    input_values: Sequence[float],
+    input_values: pd.Series,
     input_name: str,
     bins: Sequence[float] = (0, 1, 2, 5, 10),
     bin_continuous_input: Optional[bool] = True,
