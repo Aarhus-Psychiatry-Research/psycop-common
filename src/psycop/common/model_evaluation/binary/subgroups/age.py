@@ -50,7 +50,7 @@ def plot_roc_auc_by_age(
 
     return plot_basic_chart(
         x_values=df["age_binned"],  # type: ignore
-        y_values=df["metric"],  # type: ignore
+        y_values=df["auroc"],  # type: ignore
         x_title="Age",
         y_title="AUC",
         sort_x=sort_order,

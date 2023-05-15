@@ -41,7 +41,7 @@ def plot_roc_auc_by_periodic_time(
 
     return plot_basic_chart(
         x_values=df["time_bin"],
-        y_values=df["metric"],
+        y_values=df["auroc"],
         x_title="Hour of day"
         if bin_period == "H"
         else "Day of week"

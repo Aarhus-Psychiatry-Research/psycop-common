@@ -20,6 +20,7 @@ from psycop.common.model_evaluation.binary.utils import (
 )
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.t2d.paper_outputs.config import PN_THEME
 
 
 def plot_roc_auc_by_time_from_first_visit(
@@ -84,7 +85,7 @@ def plot_roc_auc_by_time_from_first_visit(
     sort_order = list(range(len(df)))
     return plot_basic_chart(
         x_values=df["unit_from_event_binned"],
-        y_values=df["metric"],
+        y_values=df["auroc"],
         x_title=f"{bin_unit2str[bin_unit]} from {pred_type_x_label}",
         y_title="AUC",
         sort_x=sort_order,  # type: ignore
@@ -92,82 +93,6 @@ def plot_roc_auc_by_time_from_first_visit(
         plot_type=["line", "scatter"],
         bar_count_values=df["n_in_bin"],
         bar_count_y_axis_title="Number of visits",
-        confidence_interval=ci,
-        save_path=save_path,
-    )
-
-
-def plot_sensitivity_by_time_until_diagnosis(
-    eval_dataset: EvalDataset,
-    bins: Sequence[int] = (
-        -1825,
-        -730,
-        -365,
-        -182,
-        -28,
-        -0,
-    ),
-    bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
-    bin_continuous_input: bool = True,
-    positive_rate: float = 0.5,
-    confidence_interval: bool = True,
-    y_title: str = "Sensitivity (recall)",
-    y_limits: Optional[tuple[float, float]] = None,
-    save_path: Optional[Path] = None,
-) -> Union[None, Path]:
-    """Plots performance of a specified performance metric in bins of time
-    until diagnosis. Rows with no date of diagnosis (i.e. no outcome) are
-    removed.
-    Args:
-        eval_dataset: EvalDataset object
-        bins: Bins to group by. Negative values indicate days after
-        bin_unit: Unit of time to bin by. Defaults to "D".
-        diagnosis. Defaults to (-1825, -730, -365, -182, -28, -14, -7, -1, 0)
-        bin_continuous_input: Whether to bin input. Defaults to True.
-        positive_rate: Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
-        confidence_interval: Confidence interval for the bin. Defaults to None.
-        y_title: Title for y-axis (metric name)
-        y_limits: Limits of y-axis. Defaults to None.
-        save_path: Path to save figure. Defaults to None.
-    Returns:
-        Union[None, Path]: Path to saved figure if save_path is specified, else None
-    """
-    df = get_sensitivity_by_timedelta_df(
-        y=eval_dataset.y,
-        y_pred=eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
-        time_one=eval_dataset.outcome_timestamps,
-        time_two=eval_dataset.pred_timestamps,
-        direction="t1-t2",
-        bins=list(bins),
-        bin_unit=bin_unit,
-        bin_continuous_input=bin_continuous_input,
-        confidence_interval=confidence_interval,
-        min_n_in_bin=5,
-        drop_na_events=True,
-    )
-
-    sort_order = list(range(len(df)))
-
-    bin_unit2str = {
-        "h": "Hours",
-        "D": "Days",
-        "M": "Months",
-        "Q": "Quarters",
-        "Y": "Years",
-    }
-
-    # add error bars
-    ci = df["ci"].tolist() if confidence_interval else None
-
-    return plot_basic_chart(
-        x_values=df["unit_from_event_binned"],
-        y_values=df["metric"],
-        x_title=f"{bin_unit2str[bin_unit]} to diagnosis",
-        y_title=y_title,
-        sort_x=sort_order,
-        bar_count_values=df["n_in_bin"],
-        y_limits=y_limits,
-        plot_type=["scatter", "line"],
         confidence_interval=ci,
         save_path=save_path,
     )
@@ -326,8 +251,8 @@ def plot_sensitivity_by_time_to_event(
     )
 
     df["sens"] = df["sens"].astype(float)
-    df["sens_lower"] = df["ci"].apply(lambda x: x[0])
-    df["sens_upper"] = df["ci"].apply(lambda x: x[1])
+    df["sens_lower"] = df["ci"].apply(lambda x: x["ci"][0])
+    df["sens_upper"] = df["ci"].apply(lambda x: x["ci"][1])
 
     # Reverse order of the x axis
     df["days_to_outcome_binned"] = df["days_to_outcome_binned"].cat.reorder_categories(

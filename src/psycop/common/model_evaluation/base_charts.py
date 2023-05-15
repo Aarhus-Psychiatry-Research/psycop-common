@@ -56,6 +56,13 @@ def plot_basic_chart(
     Returns:
         Union[None, Path]: None if save_path is None, else path to saved figure
     """
+    from wasabi import msg
+
+    msg.warn(
+        """plot_basic_chart is deprecated due to incredibly high coupling, i.e. if someone needed to change anything about the plot, it modified everyone else's plots as well. 
+        
+Instead, we recommend using the dataframe functions, and implementing your own plot with plotnine (ggplot for python)."""
+    )
     if isinstance(plot_type, str):
         plot_type = [plot_type]
 
@@ -104,7 +111,7 @@ def plot_basic_chart(
         # convert lower and upper bound to relative difference
         # as matplotlib errorbar interpret yerr as an offset
         ci_matrix = np.abs(ci_matrix - y_series.to_numpy().reshape(-1, 1))  # type: ignore
-        plt.errorbar(x=df["x"], y=y_series, yerr=ci_matrix.T, fmt="none", capsize=5)  # type: ignore
+        plt.errorbar(x=df["x"], y=y_series, yerr=ci_matrix, fmt="none", capsize=5)  # type: ignore
 
     plt.xlabel(x_title)
     plt.ylabel(y_title)

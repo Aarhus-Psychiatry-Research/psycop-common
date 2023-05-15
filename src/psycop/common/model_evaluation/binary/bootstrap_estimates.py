@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import bootstrap
 
+np.random.seed(42)
+
 
 def bootstrap_estimates(
     metric: Callable,

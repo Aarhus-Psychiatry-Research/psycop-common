@@ -10,6 +10,7 @@ from psycop.common.model_evaluation.binary.time.absolute_data import (
 def test_create_roc_auc_by_absolute_time_df():
     DF_LENGTH = 100
     np.random.seed(42)
+    random.seed(42)
 
     input_df = pd.DataFrame(
         {

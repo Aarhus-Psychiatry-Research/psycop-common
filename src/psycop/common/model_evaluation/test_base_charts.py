@@ -27,7 +27,7 @@ def test_plot_bar_chart(synth_eval_dataset: EvalDataset):
     )
     plot_basic_chart(
         x_values=plot_df["days_to_outcome_binned"],  # type: ignore
-        y_values=plot_df["sens"],  # type: ignore
+        y_values=plot_df["sensitivity"],  # type: ignore
         x_title="Days to outcome",
         y_title="Sensitivity",
         plot_type="bar",

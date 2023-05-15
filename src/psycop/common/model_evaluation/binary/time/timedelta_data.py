@@ -259,6 +259,8 @@ def create_sensitivity_by_time_to_outcome_df(
         df.groupby("days_to_outcome_binned")
         .apply(
             func=sensitivity_by_group,  # type: ignore
+            y_true=df["y"],
+            y_pred=df["y_hat"],
             confidence_interval=True,
         )
         .reset_index()
@@ -281,8 +283,8 @@ def create_sensitivity_by_time_to_outcome_df(
         actual_positive_rate * 100,
         2,
     )
-    output_df["sens"] = output_df["metric"]
-    output_df = output_df.drop("metric", axis=1)
+    output_df["sens"] = output_df["sensitivity"]
+    output_df = output_df.drop("sensitivity", axis=1)
 
     # Prep for plotting
     ## Save the threshold for each bin

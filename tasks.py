@@ -333,7 +333,6 @@ def update(c: Context):
 @task(iterable="pytest_args")
 def test(
     c: Context,
-    python_versions: List[str] = (SUPPORTED_PYTHON_VERSIONS[0],),  # noqa # type: ignore
     pytest_args: List[str] = [],  # noqa
 ):
     """Run tests"""
@@ -354,7 +353,7 @@ def test(
         ]
 
     pytest_arg_str = " ".join(pytest_args)
-    
+
     tox_command = f"tox -e test -- {pytest_arg_str}"
     test_result: Result = c.run(
         tox_command,
