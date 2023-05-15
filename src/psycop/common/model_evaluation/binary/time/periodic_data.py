@@ -1,11 +1,7 @@
 from collections.abc import Iterable
-from typing import Optional
 
 import pandas as pd
-from psycop.common.model_evaluation.binary.utils import (
-    calc_performance,
-)
-from sklearn.metrics import roc_auc_score
+from psycop.common.model_evaluation.binary.utils import auroc_by_group
 
 
 def roc_auc_by_periodic_time_df(
@@ -13,7 +9,7 @@ def roc_auc_by_periodic_time_df(
     y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     bin_period: str,
-    ci_width: Optional[float] = None,
+    confidence_interval: bool = True,
 ) -> pd.DataFrame:
     """Calculate performance by cyclic time period of prediction time data
     frame. Cyclic time periods include e.g. day of week, hour of day, etc.
@@ -22,7 +18,7 @@ def roc_auc_by_periodic_time_df(
         y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
-        ci_width: Width of confidence interval. Defaults to None, in which case no confidence interval is added.
+        confidence_interval (bool, optional): Whether to create bootstrapped confidence interval. Defaults to True.
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
@@ -73,9 +69,10 @@ def roc_auc_by_periodic_time_df(
         )
 
     output_df = df.groupby("time_bin").apply(
-        func=calc_performance,  # type: ignore
-        metric=roc_auc_score,
-        confidence_interval=ci_width,
+        func=auroc_by_group,  # type: ignore
+        confidence_interval=confidence_interval,
+        y_true=df["y"],
+        y_pred_proba=df["y_hat"],
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)

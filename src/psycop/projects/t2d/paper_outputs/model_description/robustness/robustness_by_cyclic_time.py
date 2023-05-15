@@ -1,37 +1,47 @@
-from psycop.common.model_evaluation.binary.time.periodic_plots import (
-    plot_roc_auc_by_periodic_time,
+from psycop.common.model_evaluation.binary.time.periodic_data import (
+    roc_auc_by_periodic_time_df,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, ROBUSTNESS_PATH
+from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.utils.best_runs import Run
 
 
-def roc_auc_by_hour_of_day(run: Run):
+def auroc_by_hour_of_day(run: Run):
     eval_ds = run.get_eval_dataset()
-    plot_roc_auc_by_periodic_time(
-        eval_dataset=eval_ds,
+
+    roc_auc_by_periodic_time_df(
+        labels=eval_ds.y,
+        y_hat=eval_ds.y_hat_probs,
+        timestamps=eval_ds.pred_timestamps,
         bin_period="H",
-        save_path=ROBUSTNESS_PATH / "auc_by_hour_of_day.png",
     )
+
+    # TODO: Plotting function
 
 
 def auroc_by_day_of_week(run: Run):
     eval_ds = run.get_eval_dataset()
 
-    plot_roc_auc_by_periodic_time(
-        eval_dataset=eval_ds,
-        bin_period="D",
-        save_path=ROBUSTNESS_PATH / "auc_by_day_of_week.png",
+    roc_auc_by_periodic_time_df(
+        labels=eval_ds.y,
+        y_hat=eval_ds.y_hat_probs,
+        timestamps=eval_ds.pred_timestamps,
+        bin_period="H",
     )
+
+    # TODO: Plotting function
 
 
 def auroc_by_month_of_year(run: Run):
     eval_ds = run.get_eval_dataset()
 
-    plot_roc_auc_by_periodic_time(
-        eval_dataset=eval_ds,
-        bin_period="M",
-        save_path=ROBUSTNESS_PATH / "auc_by_month_of_year.png",
+    roc_auc_by_periodic_time_df(
+        labels=eval_ds.y,
+        y_hat=eval_ds.y_hat_probs,
+        timestamps=eval_ds.pred_timestamps,
+        bin_period="H",
     )
+
+    # TODO: Plotting function
 
 
 def roc_auc_by_cyclic_time():

@@ -1,18 +1,22 @@
-from psycop.common.model_evaluation.binary.time.absolute_plots import (
-    plot_metric_by_absolute_time,
+from psycop.common.model_evaluation.binary.time.absolute_data import (
+    create_roc_auc_by_absolute_time_df,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, ROBUSTNESS_PATH
+from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 
 
 def roc_auc_by_calendar_time():
     print("Plotting AUC by calendar time")
     eval_ds = EVAL_RUN.get_eval_dataset()
 
-    plot_metric_by_absolute_time(
-        eval_dataset=eval_ds,
+    create_roc_auc_by_absolute_time_df(
+        labels=eval_ds.y,
+        y_hat=eval_ds.y_hat_probs,
+        timestamps=eval_ds.pred_timestamps,
         bin_period="Q",
-        save_path=ROBUSTNESS_PATH / "auc_by_calendar_time.png",
+        confidence_interval=True,
     )
+
+    # TODO: Create plotting function
 
 
 if __name__ == "__main__":

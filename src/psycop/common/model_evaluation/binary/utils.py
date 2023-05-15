@@ -1,82 +1,68 @@
-from collections.abc import Callable
-from typing import Any, Optional
-
 import numpy as np
 import pandas as pd
-from scipy.stats import bootstrap
-from sklearn.metrics import roc_auc_score
+from psycop.common.model_evaluation.binary.bootstrap_estimates import (
+    bootstrap_estimates,
+)
+from sklearn.metrics import recall_score, roc_auc_score
 
 
-def calc_performance(
+def auroc_by_group(
     df: pd.DataFrame,
-    metric: Callable,
-    confidence_interval: Optional[float] = None,
+    y_true: pd.Series,
+    y_pred_proba: pd.Series,
+    confidence_interval: bool = True,
     n_bootstraps: int = 100,
-    **kwargs: Any,
 ) -> pd.Series:
-    """Calculates performance metrics of a df with 'y' and 'input_to_fn' columns.
-
-    Args:
-        df: dataframe
-        metric: which metric to calculate
-        confidence_interval: Confidence interval width for the performance metric. Defaults to None,
-            in which case the no confidence interval is calculated.
-        n_bootstraps: Number of bootstraps to use for calculating the confidence interval.
-        **kwargs: additional arguments to pass to the bootstrap function for calculating
-            the confidence interval.
-
-    Returns:
-        performance
-    """
-    if df.empty:
-        return pd.Series({"metric": np.nan, "n_in_bin": np.nan})
-
-    if metric is roc_auc_score and len(df["y"].unique()) == 1:
-        # msg.info("Only 1 class present in bin. AUC undefined. Returning np.nan") This was hit almost once per month, making it very hard to read.
+    """Get the auroc within a dataframe."""
+    if df.empty or y_true.nunique() == 1 or len(df) < 5:
         # Many of our models probably try to predict the majority class.
         # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
         # For now, suppressing this message.
-        return pd.Series({"metric": np.nan, "n_in_bin": np.nan})
+        # Also protect against fewer than 5 in bin
+        return pd.Series({"auroc": np.nan, "n_in_bin": np.nan})
 
-    perf_metric = metric(df["y"], df["y_hat"])
-
-    # If any value in n_in_bin is smaller than 5, write NaN
-    n_in_bin = np.nan if len(df) < 5 else len(df)
+    auroc = roc_auc_score(y_true, y_pred_proba)
+    auroc_by_group = {"auroc": auroc, "n_in_bin": len(df)}
 
     if confidence_interval:
-        # reasonably fast and accurate defaults
-        _kwargs = {
-            "method": "basic",
-            "n_resamples": n_bootstraps,
-        }
-        _kwargs.update(kwargs)
-
-        # Calculate the confidence interval
-        def metric_wrapper(
-            true: np.ndarray,
-            pred: np.ndarray,
-            **kwargs: Any,  # noqa: ARG001
-        ) -> float:
-            # bootstrap function requires the metric function to
-            # be able to take additional arguments (notably the length of the array)
-            try:
-                return metric(true, pred)
-            except ValueError as e:
-                print(repr(e))
-                return np.nan
-
-        boot = bootstrap(
-            (df["y"], df["y_hat"]),
-            statistic=metric_wrapper,
-            confidence_level=confidence_interval,
-            paired=True,
-            **_kwargs,
+        ci = bootstrap_estimates(
+            roc_auc_score,
+            n_bootstraps=n_bootstraps,
+            ci_width=0.95,
+            input_1=y_true,
+            input_2=y_pred_proba,
         )
-        low, high = boot.confidence_interval.low, boot.confidence_interval.high
-        return pd.Series(
-            {"metric": perf_metric, "n_in_bin": n_in_bin, "ci": (low, high)},
+        auroc_by_group["ci"] = ci
+
+    return pd.Series(auroc_by_group)
+
+
+def sensitivity_by_group(
+    df: pd.DataFrame,
+    y_true: pd.Series,
+    y_pred: pd.Series,
+    confidence_interval: bool = True,
+    n_bootstraps: int = 100,
+) -> pd.Series:
+    """Get the sensitivity within a dataframe."""
+    if df.empty or len(df) < 5:
+        # Protect against fewer than 5 in bin
+        return pd.Series({"sensitivity": np.nan, "n_in_bin": np.nan})
+
+    sensitivity = recall_score(y_true, y_pred)
+    sensitivity_by_group = {"sensitivity": sensitivity, "n_in_bin": len(df)}
+
+    if confidence_interval:
+        ci = bootstrap_estimates(
+            recall_score,
+            n_bootstraps=n_bootstraps,
+            ci_width=0.95,
+            input_1=y_true,
+            input_2=y_pred,
         )
-    return pd.Series({"metric": perf_metric, "n_in_bin": n_in_bin})
+        sensitivity_by_group["ci"] = ci
+
+    return pd.Series(sensitivity_by_group)
 
 
 def get_top_fraction(df: pd.DataFrame, col_name: str, fraction: float) -> pd.DataFrame:

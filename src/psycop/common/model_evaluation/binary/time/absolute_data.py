@@ -1,12 +1,7 @@
 from collections.abc import Iterable
-from functools import partial
-from typing import Optional
 
 import pandas as pd
-from psycop.common.model_evaluation.binary.utils import (
-    calc_performance,
-)
-from sklearn.metrics import roc_auc_score
+from psycop.common.model_evaluation.binary.utils import auroc_by_group
 
 
 def create_roc_auc_by_absolute_time_df(
@@ -14,7 +9,8 @@ def create_roc_auc_by_absolute_time_df(
     y_hat: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     bin_period: str,
-    confidence_interval: Optional[float] = None,
+    confidence_interval: bool = True,
+    n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Calculate performance by calendar time of prediction.
     Args:
@@ -22,7 +18,8 @@ def create_roc_auc_by_absolute_time_df(
         y_hat: Predicted probabilities or labels depending on metric
         timestamps: Timestamps of predictions
         bin_period: How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
-        confidence_interval: Confidence interval to use for create the bootstrapped confidence intervals
+        confidence_interval: Whether to create bootstrapped confidence interval.
+        n_bootstraps: Number of bootstraps to use for confidence interval.
     Returns:
         Dataframe ready for plotting
     """
@@ -30,12 +27,12 @@ def create_roc_auc_by_absolute_time_df(
 
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
-    _calc_performance = partial(
-        calc_performance,
-        metric=roc_auc_score,
+    output_df = df.groupby("time_bin").apply(
+        func=auroc_by_group,  # type: ignore
+        y_true=df["y"],
+        y_pred_proba=df["y_hat"],
         confidence_interval=confidence_interval,
+        n_bootstraps=n_bootstraps,
     )
-
-    output_df = df.groupby("time_bin").apply(_calc_performance)
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)
