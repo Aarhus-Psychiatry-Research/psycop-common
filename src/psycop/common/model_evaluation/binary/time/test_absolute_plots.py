@@ -19,6 +19,5 @@ def test_plot_performance_by_calendar_time(
     plot_metric_by_absolute_time(
         eval_dataset=subsampled_eval_dataset,
         bin_period=bin_period,
-        confidence_interval=0.95,
         save_path=TEST_PLOT_PATH / f"test_{bin_period}.png",  # type: ignore
     )

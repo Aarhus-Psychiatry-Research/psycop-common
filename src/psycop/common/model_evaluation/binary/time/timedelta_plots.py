@@ -10,16 +10,16 @@ from psycop.common.model_evaluation.base_charts import (
     plot_basic_chart,
 )
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    auroc_by_timedelta,
-    create_performance_by_timedelta,
+    TIMEDELTA_STRINGS,
     create_sensitivity_by_time_to_outcome_df,
+    get_auroc_by_timedelta_df,
+    get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_evaluation.binary.utils import (
     get_top_fraction,
 )
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from sklearn.metrics import recall_score, roc_auc_score
 
 
 def plot_roc_auc_by_time_from_first_visit(
@@ -59,12 +59,9 @@ def plot_roc_auc_by_time_from_first_visit(
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
-    df = auroc_by_timedelta()
-
-    create_performance_by_timedelta(
+    df = get_auroc_by_timedelta_df(
         y=eval_dataset.y,
-        y_to_fn=eval_dataset.y_hat_probs,
-        metric_fn=roc_auc_score,
+        y_pred_proba=eval_dataset.y_hat_probs,
         time_one=first_visit_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t2-t1",
@@ -72,7 +69,6 @@ def plot_roc_auc_by_time_from_first_visit(
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
         drop_na_events=False,
-        confidence_interval=0.95,
     )
 
     ci = df["ci"].tolist()
@@ -114,7 +110,7 @@ def plot_sensitivity_by_time_until_diagnosis(
     bin_unit: Literal["h", "D", "M", "Q", "Y"] = "D",
     bin_continuous_input: bool = True,
     positive_rate: float = 0.5,
-    confidence_interval: Optional[float] = None,
+    confidence_interval: bool = True,
     y_title: str = "Sensitivity (recall)",
     y_limits: Optional[tuple[float, float]] = None,
     save_path: Optional[Path] = None,
@@ -136,22 +132,20 @@ def plot_sensitivity_by_time_until_diagnosis(
     Returns:
         Union[None, Path]: Path to saved figure if save_path is specified, else None
     """
-    df = create_performance_by_timedelta(
+    df = get_sensitivity_by_timedelta_df(
         y=eval_dataset.y,
-        y_to_fn=eval_dataset.get_predictions_for_positive_rate(
-            desired_positive_rate=positive_rate,
-        )[0],
-        metric_fn=recall_score,
+        y_pred=eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
         time_one=eval_dataset.outcome_timestamps,
         time_two=eval_dataset.pred_timestamps,
         direction="t1-t2",
-        bins=bins,
+        bins=list(bins),
         bin_unit=bin_unit,
         bin_continuous_input=bin_continuous_input,
         confidence_interval=confidence_interval,
         min_n_in_bin=5,
         drop_na_events=True,
     )
+
     sort_order = list(range(len(df)))
 
     bin_unit2str = {
@@ -273,8 +267,7 @@ def plot_sensitivity_by_time_to_event(
     eval_dataset: EvalDataset,
     positive_rates: Union[float, Iterable[float]],
     bins: Sequence[float],
-    bin_unit: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
-    n_bootstraps: int = 100,
+    bin_unit: TIMEDELTA_STRINGS = "D",
     y_title: str = "Sensitivity (Recall)",
     save_path: Optional[Union[Path, str]] = None,
 ) -> Union[None, Path]:
@@ -302,7 +295,6 @@ def plot_sensitivity_by_time_to_event(
             prediction_timestamps=eval_dataset.pred_timestamps,
             bins=bins,
             bin_delta=bin_unit,
-            n_bootstraps=n_bootstraps,
         )
         for positive_rate in positive_rates
     ]

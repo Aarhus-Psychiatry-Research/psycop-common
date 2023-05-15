@@ -14,22 +14,19 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 def test_sensitivity_by_time_to_event(
     subsampled_eval_dataset: EvalDataset,
 ):
-    # TODO: Another one that is currently failing, the next person who uses it should debug it
     plot_sensitivity_by_time_to_event(
         eval_dataset=subsampled_eval_dataset,
         positive_rates=[0.4, 0.6, 0.8],
         bins=list(range(0, 1460, 180)),
-        n_bootstraps=10,
         save_path=TEST_PLOT_PATH / "sensitivity_by_time_to_event.png",
     )
 
 
 def test_plot_metric_until_diagnosis(subsampled_eval_dataset: EvalDataset):
-    # TODO: Another one that is currently failing, the next person who uses it should debug it
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=subsampled_eval_dataset,
         y_title="Sensitivity (recall)",
-        confidence_interval=0.95,
+        confidence_interval=False,
         save_path=TEST_PLOT_PATH / "sensitivity_by_time_until_diagnosis.png",
     )
 

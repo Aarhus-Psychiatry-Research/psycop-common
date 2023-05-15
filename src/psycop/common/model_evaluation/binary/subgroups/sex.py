@@ -14,7 +14,7 @@ def plot_roc_auc_by_sex(
     eval_dataset: EvalDataset,
     save_path: Optional[Path] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
-    confidence_interval: Optional[float] = 0.95,
+    confidence_interval: bool = True,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by sex at time of prediction.
 

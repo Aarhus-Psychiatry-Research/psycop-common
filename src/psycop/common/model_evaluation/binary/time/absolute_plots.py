@@ -14,7 +14,6 @@ def plot_metric_by_absolute_time(
     eval_dataset: EvalDataset,
     y_title: str = "AUC",
     bin_period: Literal["H", "D", "W", "M", "Q", "Y"] = "Y",
-    confidence_interval: Optional[float] = 0.95,
     pred_type: Optional[str] = "visits",
     save_path: Optional[Union[str, Path]] = None,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
@@ -37,7 +36,7 @@ def plot_metric_by_absolute_time(
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
         bin_period=bin_period,
-        confidence_interval=confidence_interval,
+        confidence_interval=True,
     )
     sort_order = list(range(len(df)))
 
@@ -49,7 +48,7 @@ def plot_metric_by_absolute_time(
         "Q": "Quarter",
         "Y": "Year",
     }
-    ci = df["ci"].tolist() if confidence_interval else None
+    ci = df["ci"].tolist()
 
     return plot_basic_chart(
         x_values=df["time_bin"],

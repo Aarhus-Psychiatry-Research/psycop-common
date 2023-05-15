@@ -38,7 +38,7 @@ def plot_performance_by_n_hba1c(
         input_name=col_name,
         bins=bins,
         bin_continuous_input=bin_continuous_input,
-        confidence_interval=0.95,
+        confidence_interval=True,
     )
 
     ci = df["ci"].tolist()

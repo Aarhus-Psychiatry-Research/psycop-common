@@ -35,7 +35,6 @@ def plot_roc_auc_by_periodic_time(
         y_hat=eval_dataset.y_hat_probs,
         timestamps=eval_dataset.pred_timestamps,
         bin_period=bin_period,
-        ci_width=ci_width,
     )
 
     ci_estimates = df["ci"].tolist() if ci_width else None

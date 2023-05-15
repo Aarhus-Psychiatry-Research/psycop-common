@@ -13,7 +13,7 @@ def test_overlay_barplot(subsampled_eval_dataset: EvalDataset):
     plot_sensitivity_by_time_until_diagnosis(
         eval_dataset=subsampled_eval_dataset,
         y_title="Sensitivity",
-        confidence_interval=0.95,
+        confidence_interval=True,
         save_path=TEST_PLOT_PATH / "test_overlay_barplot.png",
     )
 

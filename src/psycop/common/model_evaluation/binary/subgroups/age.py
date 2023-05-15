@@ -17,7 +17,7 @@ def plot_roc_auc_by_age(
     bins: Sequence[float] = (18, 25, 35, 50, 70),
     bin_continuous_input: Optional[bool] = True,
     y_limits: Optional[tuple[float, float]] = (0.5, 1.0),
-    confidence_interval: Optional[float] = 0.95,
+    confidence_interval: bool = True,
 ) -> Union[None, Path]:
     """Plot bar plot of performance (default AUC) by age at time of prediction.
 

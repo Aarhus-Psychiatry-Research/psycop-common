@@ -1,6 +1,6 @@
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_sensitivity_by_timedelta_df,
     get_timedelta_series,
-    sensitivity_by_timedelta,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
 
@@ -43,7 +43,7 @@ def test_sensitivity_by_timedelta():
     2020-01-01,2020-01-02,0,0,""",
     )
 
-    sensitivity_df = sensitivity_by_timedelta(
+    sensitivity_df = get_sensitivity_by_timedelta_df(
         y=df["y"],
         y_pred=df["pred"],
         time_one=df["t1_timestamp"],

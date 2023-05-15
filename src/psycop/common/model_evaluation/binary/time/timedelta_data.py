@@ -14,12 +14,12 @@ from psycop.common.model_evaluation.utils import (
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
-timedelta_strings = Literal["h", "D", "M", "Q", "Y"]
+TIMEDELTA_STRINGS = Literal["h", "D", "M", "Q", "Y"]
 
 
 def get_timedelta_series(
     direction: Literal["t1-t2", "t2-t1"],
-    bin_unit: timedelta_strings,
+    bin_unit: TIMEDELTA_STRINGS,
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
@@ -50,7 +50,7 @@ def get_timedelta_df(
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
-    bin_unit: timedelta_strings,
+    bin_unit: TIMEDELTA_STRINGS,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
@@ -94,14 +94,14 @@ def get_timedelta_df(
     return df
 
 
-def auroc_by_timedelta(
+def get_auroc_by_timedelta_df(
     y: Iterable[int],
     y_pred_proba: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
-    bin_unit: timedelta_strings,
+    bin_unit: TIMEDELTA_STRINGS,
     confidence_interval: bool = True,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
@@ -146,14 +146,14 @@ def auroc_by_timedelta(
     )
 
 
-def sensitivity_by_timedelta(
+def get_sensitivity_by_timedelta_df(
     y: Iterable[int],
     y_pred: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
-    bin_unit: timedelta_strings,
+    bin_unit: TIMEDELTA_STRINGS,
     confidence_interval: bool = True,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
@@ -193,7 +193,7 @@ def sensitivity_by_timedelta(
     )
 
     return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        sensitivity_by_group,
+        sensitivity_by_group,  # type: ignore
         y_true=df["y"],
         y_pred=df["y_hat"],
         confidence_interval=confidence_interval,
@@ -206,7 +206,7 @@ def create_sensitivity_by_time_to_outcome_df(
     outcome_timestamps: Series,
     prediction_timestamps: Series,
     bins: Sequence[float] = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
-    bin_delta: timedelta_strings = "D",
+    bin_delta: TIMEDELTA_STRINGS = "D",
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
     Args:
@@ -256,7 +256,7 @@ def create_sensitivity_by_time_to_outcome_df(
     df_with_metric = (
         df.groupby("days_to_outcome_binned")
         .apply(
-            func=sensitivity_by_group,
+            func=sensitivity_by_group,  # type: ignore
             confidence_interval=True,
         )
         .reset_index()
