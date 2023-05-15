@@ -354,7 +354,7 @@ def test(
         ]
 
     pytest_arg_str = " ".join(pytest_args)
-    
+
     tox_command = f"tox -e test -- {pytest_arg_str}"
     test_result: Result = c.run(
         tox_command,
