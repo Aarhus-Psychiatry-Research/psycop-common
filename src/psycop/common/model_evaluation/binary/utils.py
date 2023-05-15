@@ -8,18 +8,20 @@ from sklearn.metrics import recall_score, roc_auc_score
 
 def auroc_by_group(
     df: pd.DataFrame,
+    y_true: pd.Series,
+    y_pred_proba: pd.Series,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
 ) -> pd.Series:
     """Get the auroc within a dataframe."""
-    if df.empty or len(df["y"].unique()) == 1 or len(df) < 5:
+    if df.empty or y_true.nunique() == 1 or len(df) < 5:
         # Many of our models probably try to predict the majority class.
         # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
         # For now, suppressing this message.
         # Also protect against fewer than 5 in bin
         return pd.Series({"auroc": np.nan, "n_in_bin": np.nan})
 
-    auroc = roc_auc_score(df["y"], df["y_hat"])
+    auroc = roc_auc_score(y_true, y_pred_proba)
     auroc_by_group = {"auroc": auroc, "n_in_bin": len(df)}
 
     if confidence_interval:
@@ -27,8 +29,8 @@ def auroc_by_group(
             roc_auc_score,
             n_bootstraps=n_bootstraps,
             ci_width=0.95,
-            input_1=df["y"],
-            input_2=df["y_hat"],
+            input_1=y_true,
+            input_2=y_pred_proba,
         )
         auroc_by_group["ci"] = ci
 
