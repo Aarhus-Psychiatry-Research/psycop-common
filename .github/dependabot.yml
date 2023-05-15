@@ -16,3 +16,4 @@ updates:
       include: "scope"
     ignore:
       - dependency-name: "protobuf"
+      - dependency-name: "plotnine" # Version 0.12.0 does not correctly typehint the ggplot function, leading to errrors with pyright. Ignoring for now.
