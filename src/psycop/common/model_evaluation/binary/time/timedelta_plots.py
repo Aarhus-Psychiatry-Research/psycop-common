@@ -13,14 +13,12 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     TIMEDELTA_STRINGS,
     create_sensitivity_by_time_to_outcome_df,
     get_auroc_by_timedelta_df,
-    get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_evaluation.binary.utils import (
     get_top_fraction,
 )
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.t2d.paper_outputs.config import PN_THEME
 
 
 def plot_roc_auc_by_time_from_first_visit(
