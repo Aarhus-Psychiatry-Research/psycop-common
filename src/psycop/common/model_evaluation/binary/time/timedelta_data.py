@@ -1,4 +1,5 @@
 from collections.abc import Callable, Iterable, Sequence
+from datetime import timedelta
 from functools import partial
 from typing import Literal, Optional
 
@@ -15,6 +16,85 @@ from psycop.common.model_evaluation.utils import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import recall_score
 
+timedelta_strings = Literal["h", "D", "M", "Q", "Y"]
+
+
+def get_timedelta_series(
+    direction: Literal["t1-t2", "t2-t1"],
+    bin_unit: timedelta_strings,
+    df: pd.DataFrame,
+    t2_col_name: str,
+    t1_col_name: str,
+) -> pd.Series:
+    """Caclulate the time difference between two timestamps."""
+    if direction == "t1-t2":
+        df["unit_from_event"] = (df[t1_col_name] - df[t2_col_name]) / np.timedelta64(
+            1,
+            bin_unit,
+        )  # type: ignore
+    elif direction == "t2-t1":
+        df["unit_from_event"] = (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(
+            1,
+            bin_unit,
+        )  # type: ignore
+    else:
+        raise ValueError(
+            f"Direction should be one of ['t1-t2', 't2-t1'], not {direction}",
+        )
+
+    return df["unit_from_event"]
+
+
+def get_timedelta_df(
+    y: Iterable[int],
+    y_hat: Iterable[float],
+    time_one: Iterable[pd.Timestamp],
+    time_two: Iterable[pd.Timestamp],
+    direction: Literal["t1-t2", "t2-t1"],
+    bins: Sequence[float],
+    bin_unit: timedelta_strings,
+    bin_continuous_input: bool = True,
+    drop_na_events: bool = True,
+    min_n_in_bin: int = 5,
+) -> pd.DataFrame:
+    """Get a timedelta dataframe with the time difference between two timestamps."""
+    df = pd.DataFrame(
+        {
+            "y": y,
+            "y_hat": y_hat,
+            "t1_timestamp": time_one,
+            "t2_timestamp": time_two,
+        },
+    )
+    # Drop rows with no events if specified
+    if drop_na_events:
+        df = df.dropna(subset=["t1_timestamp"])
+
+    # Calculate difference in days between prediction and event
+    df["unit_from_event"] = get_timedelta_series(
+        direction=direction,
+        bin_unit=bin_unit,
+        df=df,
+        t2_col_name="t2_timestamp",
+        t1_col_name="t1_timestamp",
+    )
+
+    # bin data
+    if bin_continuous_input:
+        # Convert df["unit_from_event"] to int if possible
+        df["unit_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
+            df["unit_from_event"],
+            bins=bins,
+            min_n_in_bin=min_n_in_bin,
+        )
+    else:
+        df["unit_from_event_binned"] = round_floats_to_edge(
+            df["unit_from_event"],
+            bins=bins,
+        )
+
+    return df
+
 
 def create_performance_by_timedelta(
     y: Iterable[int],
@@ -24,7 +104,7 @@ def create_performance_by_timedelta(
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
-    bin_unit: Literal["h", "D", "M", "Q", "Y"],
+    bin_unit: timedelta_strings,
     confidence_interval: Optional[float] = None,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
@@ -49,53 +129,18 @@ def create_performance_by_timedelta(
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
-    df = pd.DataFrame(
-        {
-            "y": y,
-            "y_hat": y_to_fn,
-            "t1_timestamp": time_one,
-            "t2_timestamp": time_two,
-        },
+    df = get_timedelta_df(
+        y=y,
+        y_hat=y_to_fn,
+        time_one=time_one,
+        time_two=time_two,
+        direction=direction,
+        bins=bins,
+        bin_unit=bin_unit,
+        bin_continuous_input=bin_continuous_input,
+        drop_na_events=drop_na_events,
+        min_n_in_bin=min_n_in_bin,
     )
-    # Drop rows with no events if specified
-    if drop_na_events:
-        df = df.dropna(subset=["t1_timestamp"])
-
-    # Calculate difference in days between prediction and event
-    if direction == "t1-t2":
-        df["unit_from_event"] = (
-            df["t1_timestamp"] - df["t2_timestamp"]
-        ) / np.timedelta64(
-            1,
-            bin_unit,
-        )  # type: ignore
-
-    elif direction == "t2-t1":
-        df["unit_from_event"] = (
-            df["t2_timestamp"] - df["t1_timestamp"]
-        ) / np.timedelta64(
-            1,
-            bin_unit,
-        )  # type: ignore
-
-    else:
-        raise ValueError(
-            f"Direction should be one of ['t1-t2', 't2-t1'], not {direction}",
-        )
-
-    # bin data
-    if bin_continuous_input:
-        # Convert df["unit_from_event"] to int if possible
-        df["unit_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
-            df["unit_from_event"],
-            bins=bins,
-            min_n_in_bin=min_n_in_bin,
-        )
-    else:
-        df["unit_from_event_binned"] = round_floats_to_edge(
-            df["unit_from_event"],
-            bins=bins,
-        )
 
     _calc_performance = partial(
         calc_performance,
