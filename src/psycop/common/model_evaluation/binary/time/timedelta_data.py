@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop.common.model_evaluation.binary.utils import (
-    calc_performance,
+    sensitivity_by_group,
 )
 from psycop.common.model_evaluation.utils import (
     bin_continuous_data,
@@ -143,13 +143,13 @@ def create_performance_by_timedelta(
     )
 
     _calc_performance = partial(
-        calc_performance,
+        None,
         metric=metric_fn,
         confidence_interval=confidence_interval,
     )
 
     return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        _calc_performance,
+        None,
     )
 
 
@@ -159,8 +159,7 @@ def create_sensitivity_by_time_to_outcome_df(
     outcome_timestamps: Series,
     prediction_timestamps: Series,
     bins: Sequence[float] = (0, 1, 7, 14, 28, 182, 365, 730, 1825),
-    bin_delta: Literal["h", "D", "W", "M", "Q", "Y"] = "D",
-    n_bootstraps: int = 100,
+    bin_delta: timedelta_strings = "D",
 ) -> pd.DataFrame:
     """Calculate sensitivity by time to outcome.
     Args:
@@ -190,33 +189,28 @@ def create_sensitivity_by_time_to_outcome_df(
 
     df = df[df["y"] == 1]
 
-    # Calculate difference in days between columns
-    df["days_to_outcome"] = (
-        df["outcome_timestamp"] - df["prediction_timestamp"]
-    ) / np.timedelta64(
-        1,
-        bin_delta,
-    )  # type: ignore
+    df = get_timedelta_df(
+        y=df["y"],
+        y_hat=df["y_hat"],
+        time_one=df["prediction_timestamp"],
+        time_two=df["outcome_timestamp"],
+        direction="t2-t1",
+        bins=bins,
+        bin_unit=bin_delta,
+        bin_continuous_input=True,
+        drop_na_events=True,
+        min_n_in_bin=5,
+    )
+    df = df.rename(columns={"unit_from_event_binned": "days_to_outcome_binned"})
 
     df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
     df["false_negative"] = (df["y"] == 1) & (df["y_hat"] == 0)
 
-    df["days_to_outcome_binned"] = round_floats_to_edge(
-        df["days_to_outcome"],
-        bins=bins,
-    )
-
-    _calc_performance = partial(
-        calc_performance,
-        metric=recall_score,
-        confidence_interval=0.95,
-        n_bootstraps=n_bootstraps,
-    )
-
     df_with_metric = (
         df.groupby("days_to_outcome_binned")
         .apply(
-            _calc_performance,
+            func=sensitivity_by_group,
+            confidence_interval=True,
         )
         .reset_index()
     )
@@ -248,7 +242,6 @@ def create_sensitivity_by_time_to_outcome_df(
     output_df["actual_positive_rate"] = round(actual_positive_rate, 2)
 
     output_df = output_df.dropna(subset=["n_in_bin"])
-
     output_df = output_df.reset_index()
 
     df["days_to_outcome_binned"] = pd.Categorical(
