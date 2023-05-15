@@ -43,7 +43,7 @@ dependencies = [
   "catalogue>=2.0.0",
   "numpy>=1.23.3",
   "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
-  "plotnine==0.10.1",
+  "plotnine==0.12.1",
   "timeseriesflattener",
   "scipy==1.10.1",
   "polars",
