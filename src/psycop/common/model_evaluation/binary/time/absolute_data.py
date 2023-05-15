@@ -1,10 +1,7 @@
 from collections.abc import Iterable
-from functools import partial
-from typing import Optional
 
 import pandas as pd
 from psycop.common.model_evaluation.binary.utils import auroc_by_group
-from sklearn.metrics import roc_auc_score
 
 
 def create_roc_auc_by_absolute_time_df(
@@ -29,7 +26,8 @@ def create_roc_auc_by_absolute_time_df(
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
     output_df = df.groupby("time_bin").apply(
-        func=auroc_by_group, confidence_interval=confidence_interval
+        func=auroc_by_group,
+        confidence_interval=confidence_interval,
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)

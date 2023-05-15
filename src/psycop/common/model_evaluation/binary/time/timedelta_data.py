@@ -1,12 +1,11 @@
-from collections.abc import Callable, Iterable, Sequence
-from datetime import timedelta
-from functools import partial
-from typing import Literal, Optional
+from collections.abc import Iterable, Sequence
+from typing import Literal
 
 import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop.common.model_evaluation.binary.utils import (
+    auroc_by_group,
     sensitivity_by_group,
 )
 from psycop.common.model_evaluation.utils import (
@@ -14,7 +13,6 @@ from psycop.common.model_evaluation.utils import (
     round_floats_to_edge,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from sklearn.metrics import recall_score
 
 timedelta_strings = Literal["h", "D", "M", "Q", "Y"]
 
@@ -96,25 +94,25 @@ def get_timedelta_df(
     return df
 
 
-def create_performance_by_timedelta(
+def auroc_by_timedelta(
     y: Iterable[int],
-    y_to_fn: Iterable[float],
-    metric_fn: Callable,
+    y_pred_proba: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
     bins: Sequence[float],
     bin_unit: timedelta_strings,
-    confidence_interval: Optional[float] = None,
+    confidence_interval: bool = True,
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
     some event (e.g. time of diagnosis, time from first visit).
+
     Args:
         y: True labels
-        y_to_fn: The input to the function
+        y_pred_proba: The predicted probabilities by the function.
         metric_fn: Function to calculate metric
         time_one: Timestamps for time one (e.g. first visit).
         time_two: Timestamps for time two.
@@ -131,7 +129,7 @@ def create_performance_by_timedelta(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat=y_to_fn,
+        y_hat=y_pred_proba,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -142,14 +140,63 @@ def create_performance_by_timedelta(
         min_n_in_bin=min_n_in_bin,
     )
 
-    _calc_performance = partial(
-        None,
-        metric=metric_fn,
+    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
+        auroc_by_group,
         confidence_interval=confidence_interval,
     )
 
+
+def sensitivity_by_timedelta(
+    y: Iterable[int],
+    y_pred: Iterable[float],
+    time_one: Iterable[pd.Timestamp],
+    time_two: Iterable[pd.Timestamp],
+    direction: Literal["t1-t2", "t2-t1"],
+    bins: Sequence[float],
+    bin_unit: timedelta_strings,
+    confidence_interval: bool = True,
+    bin_continuous_input: bool = True,
+    drop_na_events: bool = True,
+    min_n_in_bin: int = 5,
+) -> pd.DataFrame:
+    """Create dataframe for plotting performance metric from time to or from
+    some event (e.g. time of diagnosis, time from first visit).
+
+    Args:
+        y: True labels
+        y_pred: The predicted class.
+        metric_fn: Function to calculate metric
+        time_one: Timestamps for time one (e.g. first visit).
+        time_two: Timestamps for time two.
+        direction: Which direction to calculate time difference.
+        Can either be 't2-t1' or 't1-t2'.
+        bins: Bins to group by.
+        confidence_interval: Confidence interval to use for
+        bin_unit: Unit of time to use for bins.
+        bin_continuous_input: Whether to bin input. Defaults to True.
+        drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
+        min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
+    Returns:
+        pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
+    """
+    df = get_timedelta_df(
+        y=y,
+        y_hat=y_pred,
+        time_one=time_one,
+        time_two=time_two,
+        direction=direction,
+        bins=bins,
+        bin_unit=bin_unit,
+        bin_continuous_input=bin_continuous_input,
+        drop_na_events=drop_na_events,
+        min_n_in_bin=min_n_in_bin,
+    )
+
     return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        None,
+        sensitivity_by_group,
+        y_true=df["y"],
+        y_pred=df["y_hat"],
+        confidence_interval=confidence_interval,
     )
 
 

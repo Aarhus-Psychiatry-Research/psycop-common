@@ -10,6 +10,7 @@ from psycop.common.model_evaluation.base_charts import (
     plot_basic_chart,
 )
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    auroc_by_timedelta,
     create_performance_by_timedelta,
     create_sensitivity_by_time_to_outcome_df,
 )
@@ -58,7 +59,9 @@ def plot_roc_auc_by_time_from_first_visit(
 
     first_visit_timestamps = eval_df.groupby("ids")["pred_timestamps"].transform("min")
 
-    df = create_performance_by_timedelta(
+    df = auroc_by_timedelta()
+
+    create_performance_by_timedelta(
         y=eval_dataset.y,
         y_to_fn=eval_dataset.y_hat_probs,
         metric_fn=roc_auc_score,

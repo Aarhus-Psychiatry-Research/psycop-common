@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from functools import partial
 from typing import Optional
 
 import pandas as pd
@@ -24,6 +23,7 @@ def create_roc_auc_by_input(
         input_name: Name of the input. Used for column name in output.
         bins: Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         bin_continuous_input: Whether to bin input. Defaults to True.
+        confidence_interval: Whether to bootstrap confidence interval. Defaults to True.
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
@@ -34,20 +34,13 @@ def create_roc_auc_by_input(
             input_name: input_values,
         },
     )
-
-    # bin data and calculate metric per bin
-    auroc_fn = partial(auroc_by_group, confidence_interval=confidence_interval)
-
     if bin_continuous_input:
         df[f"{input_name}_binned"], _ = bin_continuous_data(df[input_name], bins=bins)
 
-        output_df = df.groupby(f"{input_name}_binned").apply(
-            func=auroc_fn,
-            confidence_interval=confidence_interval,
-        )
-
-    else:
-        output_df = df.groupby(input_name).apply(auroc_fn)
+    output_df = df.groupby(f"{input_name}_binned").apply(
+        func=auroc_by_group,
+        confidence_interval=confidence_interval,
+    )
 
     final_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return final_df

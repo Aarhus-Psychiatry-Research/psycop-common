@@ -41,6 +41,7 @@ def bootstrap_estimates(
         paired=True,
         **_kwargs,
     )
+
     low, high = boot.confidence_interval.low, boot.confidence_interval.high
 
     return pd.Series(

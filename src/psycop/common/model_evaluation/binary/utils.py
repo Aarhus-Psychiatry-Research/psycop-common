@@ -1,6 +1,3 @@
-from collections.abc import Callable
-from typing import Any, Optional
-
 import numpy as np
 import pandas as pd
 from psycop.common.model_evaluation.binary.bootstrap_estimates import (
@@ -40,15 +37,17 @@ def auroc_by_group(
 
 def sensitivity_by_group(
     df: pd.DataFrame,
+    y_true: pd.Series,
+    y_pred: pd.Series,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
 ) -> pd.Series:
     """Get the sensitivity within a dataframe."""
-    if df.empty or len(df < 5):
+    if df.empty or len(df) < 5:
         # Protect against fewer than 5 in bin
         return pd.Series({"sensitivity": np.nan, "n_in_bin": np.nan})
 
-    sensitivity = recall_score(df["y"], df["y_hat"])
+    sensitivity = recall_score(y_true, y_pred)
     sensitivity_by_group = {"sensitivity": sensitivity, "n_in_bin": len(df)}
 
     if confidence_interval:
@@ -56,8 +55,8 @@ def sensitivity_by_group(
             recall_score,
             n_bootstraps=n_bootstraps,
             ci_width=0.95,
-            input_1=df["y"],
-            input_2=df["y_hat"],
+            input_1=y_true,
+            input_2=y_pred,
         )
         sensitivity_by_group["ci"] = ci
 
