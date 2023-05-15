@@ -10,6 +10,7 @@ def create_roc_auc_by_absolute_time_df(
     timestamps: Iterable[pd.Timestamp],
     bin_period: str,
     confidence_interval: bool = True,
+    n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Calculate performance by calendar time of prediction.
     Args:
@@ -18,6 +19,7 @@ def create_roc_auc_by_absolute_time_df(
         timestamps: Timestamps of predictions
         bin_period: How to bin time. Takes "M" for month, "Q" for quarter or "Y" for year
         confidence_interval: Whether to create bootstrapped confidence interval.
+        n_bootstraps: Number of bootstraps to use for confidence interval.
     Returns:
         Dataframe ready for plotting
     """
@@ -26,8 +28,11 @@ def create_roc_auc_by_absolute_time_df(
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
     output_df = df.groupby("time_bin").apply(
-        func=auroc_by_group,
+        func=auroc_by_group,  # type: ignore
+        y_true=df["y"],
+        y_pred_proba=df["y_hat"],
         confidence_interval=confidence_interval,
+        n_bootstraps=n_bootstraps,
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)

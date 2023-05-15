@@ -38,7 +38,9 @@ def create_roc_auc_by_input(
         df[f"{input_name}_binned"], _ = bin_continuous_data(df[input_name], bins=bins)
 
     output_df = df.groupby(f"{input_name}_binned").apply(
-        func=auroc_by_group,
+        func=auroc_by_group,  # type: ignore
+        y_true=df["y"],
+        y_pred_proba=df["y_hat"],
         confidence_interval=confidence_interval,
     )
 

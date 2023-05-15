@@ -69,8 +69,10 @@ def roc_auc_by_periodic_time_df(
         )
 
     output_df = df.groupby("time_bin").apply(
-        func=auroc_by_group,
+        func=auroc_by_group,  # type: ignore
         confidence_interval=confidence_interval,
+        y_true=df["y"],
+        y_pred_proba=df["y_hat"],
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)

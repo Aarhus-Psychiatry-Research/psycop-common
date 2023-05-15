@@ -141,8 +141,10 @@ def get_auroc_by_timedelta_df(
     )
 
     return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        auroc_by_group,
+        auroc_by_group,  # type: ignore
         confidence_interval=confidence_interval,
+        y_true=df["y"],
+        y_pred_proba=df["y_hat"],
     )
 
 
