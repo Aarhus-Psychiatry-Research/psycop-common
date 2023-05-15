@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.67.1 (2023-05-15)
+### Fix
+* Run tox ([`183dc75`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/183dc75e453af6f6bd2444dbd7a9e605f766b015))
+* Incorrect imports ([`26c08fd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/26c08fdab2b248458c71036542ffcdbae2b182d0))
+
+### Documentation
+* Fix typo ([`5b8e3be`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5b8e3be611f70ccac89840ee11a0fc97642ed491))
+
 ## v0.67.0 (2023-05-12)
 ### Feature
 * Create pipeline and unified interface for evaluating the best run ([`d4fd7f3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d4fd7f3164b6439175147236dc371b5ce9beb2bf))
