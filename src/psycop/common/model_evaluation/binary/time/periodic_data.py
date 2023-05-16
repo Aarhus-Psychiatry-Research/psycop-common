@@ -1,7 +1,10 @@
 from collections.abc import Iterable
 
 import pandas as pd
-from psycop.common.model_evaluation.binary.utils import auroc_within_group
+from psycop.common.model_evaluation.binary.utils import (
+    auroc_by_group,
+    auroc_within_group,
+)
 
 
 def roc_auc_by_periodic_time_df(
@@ -68,11 +71,10 @@ def roc_auc_by_periodic_time_df(
             "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year",
         )
 
-    output_df = df.groupby("time_bin").apply(
-        func=auroc_within_group,  # type: ignore
+    output_df = auroc_by_group(
+        df=df,
+        groupby_col_name="time_bin",
         confidence_interval=confidence_interval,
-        y_true=df["y"],
-        y_pred_proba=df["y_hat"],
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)

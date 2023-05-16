@@ -1,7 +1,10 @@
 from collections.abc import Iterable
 
 import pandas as pd
-from psycop.common.model_evaluation.binary.utils import auroc_within_group
+from psycop.common.model_evaluation.binary.utils import (
+    auroc_by_group,
+    auroc_within_group,
+)
 
 
 def create_roc_auc_by_absolute_time_df(
@@ -27,10 +30,9 @@ def create_roc_auc_by_absolute_time_df(
 
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 
-    output_df = df.groupby("time_bin").apply(
-        func=auroc_within_group,  # type: ignore
-        y_true=df["y"],
-        y_pred_proba=df["y_hat"],
+    output_df = auroc_by_group(
+        df=df,
+        groupby_col_name="time_bin",
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
     )

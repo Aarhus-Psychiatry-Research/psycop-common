@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop.common.model_evaluation.binary.utils import (
+    auroc_by_group,
     auroc_within_group,
     sensitivity_within_group,
 )
@@ -140,11 +141,10 @@ def get_auroc_by_timedelta_df(
         min_n_in_bin=min_n_in_bin,
     )
 
-    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        auroc_within_group,  # type: ignore
+    return auroc_by_group(
+        df=df,
+        groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
-        y_true=df["y"],
-        y_pred_proba=df["y_hat"],
     )
 
 
