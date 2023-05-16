@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 
 import pandas as pd
-from psycop.common.model_evaluation.binary.utils import auroc_by_group
+from psycop.common.model_evaluation.binary.utils import auroc_within_group
 
 
 def roc_auc_by_periodic_time_df(
@@ -69,7 +69,7 @@ def roc_auc_by_periodic_time_df(
         )
 
     output_df = df.groupby("time_bin").apply(
-        func=auroc_by_group,  # type: ignore
+        func=auroc_within_group,  # type: ignore
         confidence_interval=confidence_interval,
         y_true=df["y"],
         y_pred_proba=df["y_hat"],

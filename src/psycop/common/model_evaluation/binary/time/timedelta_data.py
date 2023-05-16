@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop.common.model_evaluation.binary.utils import (
-    auroc_by_group,
-    sensitivity_by_group,
+    auroc_within_group,
+    sensitivity_within_group,
 )
 from psycop.common.model_evaluation.utils import (
     bin_continuous_data,
@@ -141,7 +141,7 @@ def get_auroc_by_timedelta_df(
     )
 
     return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        auroc_by_group,  # type: ignore
+        auroc_within_group,  # type: ignore
         confidence_interval=confidence_interval,
         y_true=df["y"],
         y_pred_proba=df["y_hat"],
@@ -195,7 +195,7 @@ def get_sensitivity_by_timedelta_df(
     )
 
     return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        sensitivity_by_group,  # type: ignore
+        sensitivity_within_group,  # type: ignore
         y_true=df["y"],
         y_pred=df["y_hat"],
         confidence_interval=confidence_interval,
@@ -258,7 +258,7 @@ def create_sensitivity_by_time_to_outcome_df(
     df_with_metric = (
         df.groupby("days_to_outcome_binned")
         .apply(
-            func=sensitivity_by_group,  # type: ignore
+            func=sensitivity_within_group,  # type: ignore
             y_true=df["y"],
             y_pred=df["y_hat"],
             confidence_interval=True,
