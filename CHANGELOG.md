@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.68.0 (2023-05-16)
+### Feature
+* Split ci after bootstrap ([`f3e4f6f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f3e4f6f1a8a0e99cecb9be3ff98a3088c77ac01a))
+
 ## v0.67.1 (2023-05-15)
 ### Fix
 * Run tox ([`183dc75`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/183dc75e453af6f6bd2444dbd7a9e605f766b015))
