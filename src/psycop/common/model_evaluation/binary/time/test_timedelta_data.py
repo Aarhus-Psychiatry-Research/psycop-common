@@ -55,7 +55,7 @@ def test_sensitivity_by_timedelta():
         bin_unit="D",
     )
 
-    ci_lower = sensitivity_df["ci"][0][0][0]
+    ci_lower = sensitivity_df["ci_lower"][0]
     assert ci_lower == 1.0
 
 
