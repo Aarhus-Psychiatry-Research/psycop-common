@@ -45,7 +45,7 @@ def get_timedelta_series(
 
 def get_timedelta_df(
     y: Iterable[int],
-    y_hat: Iterable[float],
+    y_hat_probs: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -59,7 +59,7 @@ def get_timedelta_df(
     df = pd.DataFrame(
         {
             "y": y,
-            "y_hat": y_hat,
+            "y_hat_probs": y_hat_probs,
             "t1_timestamp": time_one,
             "t2_timestamp": time_two,
         },
@@ -129,7 +129,7 @@ def get_auroc_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat=y_pred_proba,
+        y_hat_probs=y_pred_proba,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -182,7 +182,7 @@ def get_sensitivity_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat=y_pred,
+        y_hat_probs=y_pred,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -221,14 +221,17 @@ def create_sensitivity_by_time_to_outcome_df(
         pd.DataFrame
     """
 
-    y_hat_series, actual_positive_rate = eval_dataset.get_predictions_for_positive_rate(
+    (
+        y_hat_probs_series,
+        actual_positive_rate,
+    ) = eval_dataset.get_predictions_for_positive_rate(
         desired_positive_rate=desired_positive_rate,
     )
 
     df = pd.DataFrame(
         {
             "y": eval_dataset.y,
-            "y_hat": y_hat_series,
+            "y_hat_probs": y_hat_probs_series,
             "outcome_timestamp": outcome_timestamps,
             "prediction_timestamp": prediction_timestamps,
         },
@@ -238,7 +241,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     df = get_timedelta_df(
         y=df["y"],
-        y_hat=df["y_hat"],
+        y_hat_probs=df["y_hat_probs"],
         time_one=df["prediction_timestamp"],
         time_two=df["outcome_timestamp"],
         direction="t2-t1",
@@ -250,8 +253,8 @@ def create_sensitivity_by_time_to_outcome_df(
     )
     df = df.rename(columns={"unit_from_event_binned": "days_to_outcome_binned"})
 
-    df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
-    df["false_negative"] = (df["y"] == 1) & (df["y_hat"] == 0)
+    df["true_positive"] = (df["y"] == 1) & (df["y_hat_probs"] == 1)
+    df["false_negative"] = (df["y"] == 1) & (df["y_hat_probs"] == 0)
 
     df_with_metric = sensitivity_by_group(
         df=df,
@@ -270,7 +273,7 @@ def create_sensitivity_by_time_to_outcome_df(
     else:
         output_df = df_with_metric
 
-    # Get proportion of y_hat == 1, which is equal to the actual positive rate in the data.
+    # Get proportion of y_hat_probs == 1, which is equal to the actual positive rate in the data.
     threshold_percentile = round(
         actual_positive_rate * 100,
         2,
