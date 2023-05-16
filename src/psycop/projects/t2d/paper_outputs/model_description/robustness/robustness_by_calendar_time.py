@@ -10,7 +10,7 @@ def roc_auc_by_calendar_time():
 
     create_roc_auc_by_absolute_time_df(
         labels=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs,
+        y_hat_probs=eval_ds.y_hat_probs,
         timestamps=eval_ds.pred_timestamps,
         bin_period="Q",
         confidence_interval=True,

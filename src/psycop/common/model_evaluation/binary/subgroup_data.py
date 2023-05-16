@@ -2,7 +2,9 @@ from collections.abc import Sequence
 from typing import Optional
 
 import pandas as pd
-from psycop.common.model_evaluation.binary.utils import auroc_by_group
+from psycop.common.model_evaluation.binary.utils import (
+    auroc_by_group,
+)
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
@@ -30,17 +32,16 @@ def get_auroc_by_input_df(
     df = pd.DataFrame(
         {
             "y": eval_dataset.y,
-            "y_hat": eval_dataset.y_hat_probs,
+            "y_hat_probs": eval_dataset.y_hat_probs,
             input_name: input_values,
         },
     )
     if bin_continuous_input:
         df[f"{input_name}_binned"], _ = bin_continuous_data(df[input_name], bins=bins)
 
-    output_df = df.groupby(f"{input_name}_binned").apply(
-        func=auroc_by_group,  # type: ignore
-        y_true=df["y"],
-        y_pred_proba=df["y_hat"],
+    output_df = auroc_by_group(
+        df=df,
+        groupby_col_name=f"{input_name}_binned",
         confidence_interval=confidence_interval,
     )
 

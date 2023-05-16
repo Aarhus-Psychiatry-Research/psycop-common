@@ -64,3 +64,14 @@ class OutputMapping:
 OUTPUT_MAPPING = OutputMapping()
 
 PN_THEME = pn.theme_bw() + pn.theme(panel_grid=pn.element_blank())
+
+
+@dataclass
+class Colors:
+    primary = "#0072B2"
+    secondary = "#009E73"
+    tertiary = "#D55E00"
+    background = "lightgray"
+
+
+COLORS = Colors()

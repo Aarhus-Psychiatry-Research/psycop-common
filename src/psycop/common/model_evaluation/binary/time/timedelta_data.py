@@ -140,11 +140,10 @@ def get_auroc_by_timedelta_df(
         min_n_in_bin=min_n_in_bin,
     )
 
-    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        auroc_by_group,  # type: ignore
+    return auroc_by_group(
+        df=df,
+        groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
-        y_true=df["y"],
-        y_pred_proba=df["y_hat"],
     )
 
 
@@ -194,10 +193,9 @@ def get_sensitivity_by_timedelta_df(
         min_n_in_bin=min_n_in_bin,
     )
 
-    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        sensitivity_by_group,  # type: ignore
-        y_true=df["y"],
-        y_pred=df["y_hat"],
+    return sensitivity_by_group(
+        df=df,
+        groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
     )
 
@@ -255,16 +253,10 @@ def create_sensitivity_by_time_to_outcome_df(
     df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
     df["false_negative"] = (df["y"] == 1) & (df["y_hat"] == 0)
 
-    df_with_metric = (
-        df.groupby("days_to_outcome_binned")
-        .apply(
-            func=sensitivity_by_group,  # type: ignore
-            y_true=df["y"],
-            y_pred=df["y_hat"],
-            confidence_interval=True,
-        )
-        .reset_index()
-    )
+    df_with_metric = sensitivity_by_group(
+        df=df,
+        groupby_col_name="days_to_outcome_binned",
+    ).reset_index()
 
     # Super hacky! Even though the input dfs have a specified shape,
     # we sometimes need to pivot. Instead of debugging now, we'll just
