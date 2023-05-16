@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.69.0 (2023-05-16)
+### Feature
+* First robustness plot ([`659d30d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/659d30da095e1cdb6ead2d023a965d4743b8fec8))
+
 ## v0.68.0 (2023-05-16)
 ### Feature
 * Split ci after bootstrap ([`f3e4f6f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f3e4f6f1a8a0e99cecb9be3ff98a3088c77ac01a))
