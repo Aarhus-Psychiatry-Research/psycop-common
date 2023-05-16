@@ -1,7 +1,0 @@
-# Shared code
-/src/psycop/common @Aarhus-Psychiatry-Research/OGs
-pyproject.toml @Aarhus-Psychiatry-Research/OGs
-tasks.py @Aarhus-Psychiatry-Research/OGs
-
-# Projects
-/src/psycop/projects/t2d @MartinBernstorff
