@@ -32,7 +32,8 @@ def auroc_by_group(
             input_1=y_true,
             input_2=y_pred_proba,
         )
-        auroc_by_group["ci"] = ci
+        auroc_by_group["ci_lower"] = ci[0][0]
+        auroc_by_group["ci_upper"] = ci[0][1]
 
     return pd.Series(auroc_by_group)
 
@@ -60,7 +61,8 @@ def sensitivity_by_group(
             input_1=y_true,
             input_2=y_pred,
         )
-        sensitivity_by_group["ci"] = ci
+        sensitivity_by_group["ci_lower"] = ci[0][0]
+        sensitivity_by_group["ci_upper"] = ci[0][1]
 
     return pd.Series(sensitivity_by_group)
 
