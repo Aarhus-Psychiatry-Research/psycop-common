@@ -2,8 +2,8 @@ from collections.abc import Iterable
 
 import pandas as pd
 from psycop.common.model_evaluation.binary.utils import (
+    _auroc_within_group,
     auroc_by_group,
-    auroc_within_group,
 )
 
 

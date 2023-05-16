@@ -5,9 +5,10 @@ import numpy as np
 import pandas as pd
 from pandas import Series
 from psycop.common.model_evaluation.binary.utils import (
+    _auroc_within_group,
+    _sensitivity_within_group,
     auroc_by_group,
-    auroc_within_group,
-    sensitivity_within_group,
+    sensitivity_by_group,
 )
 from psycop.common.model_evaluation.utils import (
     bin_continuous_data,
@@ -194,12 +195,7 @@ def get_sensitivity_by_timedelta_df(
         min_n_in_bin=min_n_in_bin,
     )
 
-    return df.groupby(["unit_from_event_binned"], as_index=False).apply(
-        sensitivity_within_group,  # type: ignore
-        y_true=df["y"],
-        y_pred=df["y_hat"],
-        confidence_interval=confidence_interval,
-    )
+    return sensitivity_by_group(df=df, groupby_col_name="unit_from_event_binned")
 
 
 def create_sensitivity_by_time_to_outcome_df(
@@ -255,15 +251,8 @@ def create_sensitivity_by_time_to_outcome_df(
     df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
     df["false_negative"] = (df["y"] == 1) & (df["y_hat"] == 0)
 
-    df_with_metric = (
-        df.groupby("days_to_outcome_binned")
-        .apply(
-            func=sensitivity_within_group,  # type: ignore
-            y_true=df["y"],
-            y_pred=df["y_hat"],
-            confidence_interval=True,
-        )
-        .reset_index()
+    df_with_metric = sensitivity_by_group(
+        df=df, groupby_col_name="days_to_outcome_binned"
     )
 
     # Super hacky! Even though the input dfs have a specified shape,

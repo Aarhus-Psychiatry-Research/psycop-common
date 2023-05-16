@@ -6,7 +6,7 @@ from psycop.common.model_evaluation.binary.bootstrap_estimates import (
 from sklearn.metrics import recall_score, roc_auc_score
 
 
-def auroc_within_group(
+def _auroc_within_group(
     df: pd.DataFrame,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
@@ -44,13 +44,13 @@ def auroc_by_group(
 ) -> pd.DataFrame:
     """Get the auroc by group within a dataframe."""
     return df.groupby(groupby_col_name).apply(
-        auroc_within_group,
+        _auroc_within_group,
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
     )
 
 
-def sensitivity_within_group(
+def _sensitivity_within_group(
     df: pd.DataFrame,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
@@ -85,7 +85,7 @@ def sensitivity_by_group(
 ) -> pd.DataFrame:
     """Get the sensitivity by group within a dataframe."""
     return df.groupby(groupby_col_name).apply(
-        sensitivity_within_group,
+        _sensitivity_within_group,
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
     )

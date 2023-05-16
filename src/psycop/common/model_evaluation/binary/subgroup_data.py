@@ -3,8 +3,8 @@ from typing import Optional
 
 import pandas as pd
 from psycop.common.model_evaluation.binary.utils import (
+    _auroc_within_group,
     auroc_by_group,
-    auroc_within_group,
 )
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
