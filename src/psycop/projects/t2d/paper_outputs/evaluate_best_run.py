@@ -18,7 +18,7 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity
     sensitivity_by_time_to_event,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
-    roc_auc_by_age,
+    auroc_by_age,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_cyclic_time import (
     auroc_by_day_of_week,
@@ -59,7 +59,7 @@ def evaluate_best_run(run: Run):
         ],
         "robustness": [
             roc_auc_by_sex,
-            roc_auc_by_age,
+            auroc_by_age,
             plot_auroc_by_n_hba1c,
             roc_auc_by_time_from_first_visit,
             auroc_by_month_of_year,

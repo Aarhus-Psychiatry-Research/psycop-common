@@ -3,7 +3,7 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.utils.best_runs import Run
 
 
-def roc_auc_by_age(run: Run):
+def auroc_by_age(run: Run):
     print("Plotting AUC by age")
     eval_ds = run.get_eval_dataset()
 
@@ -20,4 +20,4 @@ def roc_auc_by_age(run: Run):
 
 
 if __name__ == "__main__":
-    roc_auc_by_age(run=EVAL_RUN)
+    auroc_by_age(run=EVAL_RUN)
