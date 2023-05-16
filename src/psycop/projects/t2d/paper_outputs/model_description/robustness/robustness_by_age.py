@@ -14,7 +14,9 @@ def plot_robustness(df: pd.DataFrame) -> pn.ggplot:
             fill=COLORS.background,
         )
         + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"), color=COLORS.primary, size=0.5
+            pn.aes(ymin="ci_lower", ymax="ci_upper"),
+            color=COLORS.primary,
+            size=0.5,
         )
         + pn.geom_path(group=1, color=COLORS.primary, size=1)
         + pn.xlab("Age")
@@ -25,7 +27,7 @@ def plot_robustness(df: pd.DataFrame) -> pn.ggplot:
     return p
 
 
-def auroc_by_age(run: Run):
+def auroc_by_age(run: Run) -> pn.ggplot:
     print("Plotting AUC by age")
     eval_ds = run.get_eval_dataset()
 
