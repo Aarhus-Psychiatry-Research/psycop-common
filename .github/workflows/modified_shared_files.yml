@@ -1,0 +1,27 @@
+# GitHub action to check if pre-commit has been run. Runs from .pre-commit-config.yaml, where the pre-commit actions are.
+
+name: modified-library-files
+
+on:
+  pull_request:
+    paths:
+        - "src/psycop/common/**"
+    branches: [main]
+
+jobs:
+  modified-library-files:
+    permissions:
+      pull-requests: write
+    concurrency:
+      group: "${{ github.workflow }} @ ${{ github.ref }}"
+      cancel-in-progress: true
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mshick/add-pr-comment@v2
+        id: add_comment
+        with:
+          message: |
+            Looks like your PR modifies shared library files in `src/psycop/common/`. 
+            
+            We highly recommend getting your code reviewed by one of the core maintainers to avoid breaking other projects that depend on these files :-)
