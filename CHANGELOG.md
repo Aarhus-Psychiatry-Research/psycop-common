@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.70.0 (2023-05-16)
+### Feature
+* Add action ([`0490672`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/04906728422ed5929c7e903f1b920d34afd1516f))
+
 ## v0.69.0 (2023-05-16)
 ### Feature
 * First robustness plot ([`659d30d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/659d30da095e1cdb6ead2d023a965d4743b8fec8))
