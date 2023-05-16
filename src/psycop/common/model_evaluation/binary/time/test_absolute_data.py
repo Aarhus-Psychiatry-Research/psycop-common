@@ -15,14 +15,14 @@ def test_create_roc_auc_by_absolute_time_df():
     input_df = pd.DataFrame(
         {
             "y": [random.randint(0, 1) for _ in range(DF_LENGTH)],
-            "y_hat": [random.random() for _ in range(DF_LENGTH)],
+            "y_hat_probs": [random.random() for _ in range(DF_LENGTH)],
             "timestamp": [pd.Timestamp("2020-01-01") for _ in range(DF_LENGTH)],
         },
     )
 
     output_df = create_roc_auc_by_absolute_time_df(
         labels=input_df["y"],
-        y_hat=input_df["y_hat"],
+        y_hat_probs=input_df["y_hat_probs"],
         timestamps=input_df["timestamp"],
         bin_period="M",
         confidence_interval=True,

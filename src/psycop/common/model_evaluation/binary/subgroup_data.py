@@ -32,7 +32,7 @@ def get_auroc_by_input_df(
     df = pd.DataFrame(
         {
             "y": eval_dataset.y,
-            "y_hat": eval_dataset.y_hat_probs,
+            "y_hat_probs": eval_dataset.y_hat_probs,
             input_name: input_values,
         },
     )

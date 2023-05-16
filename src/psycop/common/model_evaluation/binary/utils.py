@@ -19,7 +19,7 @@ def _auroc_within_group(
         # Also protect against fewer than 5 in bin
         return pd.Series({"auroc": np.nan, "n_in_bin": np.nan})
 
-    auroc = roc_auc_score(df["y"], df["y_hat_score"])
+    auroc = roc_auc_score(df["y"], df["y_hat_probs"])
     auroc_by_group = {"auroc": auroc, "n_in_bin": len(df)}
 
     if confidence_interval:
@@ -28,7 +28,7 @@ def _auroc_within_group(
             n_bootstraps=n_bootstraps,
             ci_width=0.95,
             input_1=df["y"],
-            input_2=df["y_hat_score"],
+            input_2=df["y_hat_probs"],
         )
         auroc_by_group["ci_lower"] = ci[0][0]
         auroc_by_group["ci_upper"] = ci[0][1]

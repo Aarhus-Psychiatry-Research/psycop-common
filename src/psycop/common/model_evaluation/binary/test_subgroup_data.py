@@ -8,7 +8,7 @@ from psycop.common.test_utils.str_to_df import str_to_df
 
 def test_auroc_by_group():
     input_df = str_to_df(
-        """id,y,y_hat_score,
+        """id,y,y_hat_probs,
         1,1,0.9, # Good prediction
         1,1,0.8, # Good prediction
         1,1,0.7, # Good prediction

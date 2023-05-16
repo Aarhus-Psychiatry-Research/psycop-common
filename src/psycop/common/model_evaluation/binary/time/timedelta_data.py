@@ -256,7 +256,7 @@ def create_sensitivity_by_time_to_outcome_df(
     df_with_metric = sensitivity_by_group(
         df=df,
         groupby_col_name="days_to_outcome_binned",
-    )
+    ).reset_index()
 
     # Super hacky! Even though the input dfs have a specified shape,
     # we sometimes need to pivot. Instead of debugging now, we'll just
