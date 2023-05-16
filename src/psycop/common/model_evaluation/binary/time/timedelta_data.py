@@ -200,9 +200,6 @@ def get_sensitivity_by_timedelta_df(
     )
 
 
-# Test - see if comment is posted
-
-
 def create_sensitivity_by_time_to_outcome_df(
     eval_dataset: EvalDataset,
     desired_positive_rate: float,
