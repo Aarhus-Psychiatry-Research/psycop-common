@@ -33,7 +33,11 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
             panel_grid_minor=pn.element_blank(),
             legend_position=(0.3, 0.78),
         )
+        + pn.geom_path(df[df["actual_positive_rate"] == "A"], group=1)
     )
+
+    for value in df["actual_positive_rate"].unique():
+        p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1)
 
     plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
     p.save(plot_path)
