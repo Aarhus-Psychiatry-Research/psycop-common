@@ -1,5 +1,4 @@
 from datetime import datetime
-from venv import create
 
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
@@ -60,7 +59,9 @@ def create_full_performance_figure(run: ModelRun):
 
     if not any_plot_failed:
         grid = create_patchwork_grid(
-            plots=plots, single_plot_dimensions=(7, 5), n_in_row=2
+            plots=plots,
+            single_plot_dimensions=(7, 5),
+            n_in_row=2,
         )
         grid.savefig(FIGURES_PATH / "full_performance_figure.png")
 
