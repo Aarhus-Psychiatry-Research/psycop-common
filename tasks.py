@@ -247,13 +247,13 @@ def pre_commit(c: Context, auto_fix: bool):
             # Run 3 times to ensure ruff/black interaction is resolved
             # E.g. ruff adding a trailing comma can make black reformat
             # the file again
-            print(f"{msg_type.DOING} Fixed errors, re-running pre-commit checks")
-            final_result = c.run(pre_commit_cmd, pty=NOT_WINDOWS, warn=True)
+            print(f"{msg_type.DOING} Fixed errors, re-running pre-commit checks\n\n")
+            result = c.run(pre_commit_cmd, pty=NOT_WINDOWS, warn=True)
 
             if not ("fixed" in result.stdout or "reformatted" in result.stdout):
                 break
 
-        exit_if_error_in_stdout(final_result)
+        exit_if_error_in_stdout(result)
         _add_commit(c, msg="style: auto-fixes from pre-commit")
     else:
         if result.return_code != 0:
