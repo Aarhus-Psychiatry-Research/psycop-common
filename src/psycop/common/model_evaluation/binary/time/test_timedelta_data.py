@@ -47,7 +47,7 @@ def test_sensitivity_by_timedelta():
 
     sensitivity_df = get_sensitivity_by_timedelta_df(
         y=df["y"],
-        y_hat_probs=df["y_hat_probs"],
+        y_hat=df["y_hat"],
         time_one=df["t1_timestamp"],
         time_two=df["t2_timestamp"],
         direction="t2-t1",
