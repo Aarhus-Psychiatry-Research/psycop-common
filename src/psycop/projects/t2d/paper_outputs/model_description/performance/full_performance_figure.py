@@ -4,15 +4,6 @@ from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH
-from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
-    t2d_auroc_plot,
-)
-from psycop.projects.t2d.paper_outputs.model_description.performance.confusion_matrix_pipeline import (
-    t2d_confusion_matrix_plot,
-)
-from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_by_time_until_diagnosis import (
-    t2d_first_pred_to_event,
-)
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
     t2d_sensitivity_by_time_to_event,
 )
