@@ -3,7 +3,6 @@ from typing import Literal
 
 import numpy as np
 import pandas as pd
-from pandas import Series
 from psycop.common.model_evaluation.binary.utils import (
     auroc_by_group,
     sensitivity_by_group,
@@ -12,7 +11,6 @@ from psycop.common.model_evaluation.utils import (
     bin_continuous_data,
     round_floats_to_edge,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 TIMEDELTA_STRINGS = Literal["h", "D", "M", "Q", "Y"]
 
