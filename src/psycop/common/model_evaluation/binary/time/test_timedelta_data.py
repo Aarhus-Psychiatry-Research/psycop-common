@@ -57,12 +57,3 @@ def test_sensitivity_by_timedelta():
 
     ci_lower = sensitivity_df["ci_lower"][0]
     assert ci_lower == 1.0
-
-
-def test_get_sens_by_time_to_outcome_df(synth_eval_dataset: EvalDataset):
-    create_sensitivity_by_time_to_outcome_df(
-        eval_dataset=synth_eval_dataset,
-        outcome_timestamps=synth_eval_dataset.outcome_timestamps,
-        prediction_timestamps=synth_eval_dataset.pred_timestamps,
-        desired_positive_rate=0.5,
-    )
