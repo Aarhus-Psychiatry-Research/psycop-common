@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psycop"
-version = "0.67.1"
+version = "0.69.0"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"}
 ]
