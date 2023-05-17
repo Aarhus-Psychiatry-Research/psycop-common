@@ -6,7 +6,7 @@ from psycop.projects.t2d.paper_outputs.config import (
     BEST_POS_RATE,
     DEVELOPMENT_GROUP,
 )
-from psycop.projects.t2d.utils.best_runs import Run, RunGroup
+from psycop.projects.t2d.utils.best_runs import ModelRun, RunGroup
 
 
 def get_performance_for_group(group: RunGroup, pos_rate: float) -> pl.DataFrame:
@@ -15,14 +15,14 @@ def get_performance_for_group(group: RunGroup, pos_rate: float) -> pl.DataFrame:
     performance_dfs: list[pl.DataFrame] = []
 
     for run_name in best_runs_by_lookahead["run_name"]:
-        run_object = Run(group=group, name=run_name, pos_rate=pos_rate)
+        run_object = ModelRun(group=group, name=run_name, pos_rate=pos_rate)
 
         performance_dfs.append(get_performance_for_run(run=run_object))
 
     return pl.concat(performance_dfs, how="vertical")
 
 
-def get_performance_for_run(run: Run) -> pl.DataFrame:
+def get_performance_for_run(run: ModelRun) -> pl.DataFrame:
     return_dict = {
         "model_name": run.cfg.model.name,
         "lookahead_days": float(run.cfg.preprocessing.pre_split.min_lookahead_days),
@@ -36,7 +36,7 @@ def get_performance_for_run(run: Run) -> pl.DataFrame:
     return pl.DataFrame(return_dict)
 
 
-def get_mean_days_from_first_positive_to_diagnosis_for_run(run: Run) -> float:
+def get_mean_days_from_first_positive_to_diagnosis_for_run(run: ModelRun) -> float:
     return days_from_first_positive_to_diagnosis(
         eval_dataset=run.get_eval_dataset(),
         positive_rate=run.pos_rate,

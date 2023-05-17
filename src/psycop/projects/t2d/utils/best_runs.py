@@ -58,7 +58,7 @@ SplitNames = Literal["train", "test", "val"]
 
 
 @dataclass
-class Run:
+class ModelRun:
     group: RunGroup
     name: str
     pos_rate: float

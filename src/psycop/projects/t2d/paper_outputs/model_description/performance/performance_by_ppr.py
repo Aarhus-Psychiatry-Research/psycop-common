@@ -3,10 +3,10 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     generate_performance_by_ppr_table,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
-from psycop.projects.t2d.utils.best_runs import Run
+from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def output_performance_by_ppr(run: Run):
+def output_performance_by_ppr(run: ModelRun):
     eval_dataset = run.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore

@@ -11,11 +11,11 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_b
 from psycop.projects.t2d.paper_outputs.model_description.performance.performance_by_ppr import (
     output_performance_by_ppr,
 )
-from psycop.projects.t2d.paper_outputs.model_description.performance.roc_auc_pipeline import (
-    save_auroc_plot_for_t2d,
+from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
+    t2d_auroc_plot,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
-    sensitivity_by_time_to_event,
+    t2d_sensitivity_by_time_to_event,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
     auroc_by_age,
@@ -33,13 +33,13 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_b
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_time_from_first_visit import (
     roc_auc_by_time_from_first_visit,
 )
-from psycop.projects.t2d.utils.best_runs import Run
+from psycop.projects.t2d.utils.best_runs import ModelRun
 from wasabi import Printer
 
 pd.set_option("mode.chained_assignment", None)
 
 
-def evaluate_best_run(run: Run):
+def evaluate_best_run(run: ModelRun):
     msg = Printer(timestamp=True)
     msg.info(f"Evaluating {run.name}")
 
@@ -52,10 +52,10 @@ def evaluate_best_run(run: Run):
 
     output_fns = {
         "performance_figures": [
-            save_auroc_plot_for_t2d,
+            t2d_auroc_plot,
             confusion_matrix_pipeline,
             incidence_by_time_until_outcome_pipeline,
-            sensitivity_by_time_to_event,
+            t2d_sensitivity_by_time_to_event,
         ],
         "robustness": [
             roc_auc_by_sex,

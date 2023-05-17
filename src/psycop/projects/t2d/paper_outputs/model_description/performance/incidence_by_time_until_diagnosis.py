@@ -1,10 +1,10 @@
 import plotnine as pn
 import polars as pl
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
-from psycop.projects.t2d.utils.best_runs import Run
+from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def incidence_by_time_until_outcome_pipeline(run: Run):
+def t2d_first_pred_to_event(run: ModelRun) pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
     df = pl.DataFrame(
@@ -36,7 +36,7 @@ def incidence_by_time_until_outcome_pipeline(run: Run):
     median_years = plot_df["years_from_pred_to_event"].median()
     annotation_text = f"Median: {str(round(median_years, 1))} years"
 
-    (
+    return (
         pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event"))  # type: ignore
         + pn.geom_histogram(binwidth=1, fill="orange")
         + pn.xlab("Years from first positive prediction\n to event")
@@ -53,8 +53,10 @@ def incidence_by_time_until_outcome_pipeline(run: Run):
             size=9,
         )
         + PN_THEME
-    ).save(FIGURES_PATH / "time_from_pred_to_event.png", width=5, height=5, dpi=600)
+    )
 
 
 if __name__ == "__main__":
-    incidence_by_time_until_outcome_pipeline(run=EVAL_RUN)
+    t2d_first_pred_to_event(run=EVAL_RUN).save(
+        FIGURES_PATH / "time_from_pred_to_event.png", width=5, height=5, dpi=600
+    )
