@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.73.0 (2023-05-17)
+### Feature
+* Convert auroc to plotnine ([`80f5cbf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/80f5cbf734367a433687ca87fd026cd9f8ad73f2))
+
+### Fix
+* Incorrect path ([`925c94c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/925c94c28435d7bb06fc017740c0fdef29a28898))
+
 ## v0.72.0 (2023-05-17)
 ### Feature
 * Create plotnine confusion matrix ([`5045b67`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5045b67b6b98e96fe55eedf5e5c12dd62cbf87b1))
