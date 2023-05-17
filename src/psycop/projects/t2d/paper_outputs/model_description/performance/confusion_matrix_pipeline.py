@@ -16,7 +16,7 @@ def t2d_confusion_matrix_plot(run: ModelRun) -> pn.ggplot:
         {
             "true": eval_ds.y,
             "pred": eval_ds.get_predictions_for_positive_rate(run.pos_rate),
-        }
+        },
     )
     confusion_matrix = get_confusion_matrix_cells_from_df(df=df)
 

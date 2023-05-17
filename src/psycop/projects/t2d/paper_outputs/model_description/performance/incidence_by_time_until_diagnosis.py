@@ -4,7 +4,7 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def t2d_first_pred_to_event(run: ModelRun) pn.ggplot:
+def t2d_first_pred_to_event(run: ModelRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
     df = pl.DataFrame(
@@ -58,5 +58,8 @@ def t2d_first_pred_to_event(run: ModelRun) pn.ggplot:
 
 if __name__ == "__main__":
     t2d_first_pred_to_event(run=EVAL_RUN).save(
-        FIGURES_PATH / "time_from_pred_to_event.png", width=5, height=5, dpi=600
+        FIGURES_PATH / "time_from_pred_to_event.png",
+        width=5,
+        height=5,
+        dpi=600,
     )

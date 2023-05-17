@@ -23,6 +23,13 @@ msg = Printer(timestamp=True)
 
 
 def create_full_performance_figure(run: ModelRun):
+    for output_str, value in (
+        ("Run group", run.group.name),
+        ("Model_type", run.model_type),
+        ("Lookahead days", run.cfg.preprocessing.pre_split.min_lookahead_days),
+    ):
+        msg.info(f"    {output_str}: {value}")
+
     plot_fns = [
         t2d_auroc_plot,
         t2d_confusion_matrix_plot,
@@ -32,18 +39,17 @@ def create_full_performance_figure(run: ModelRun):
 
     plots = []
 
-    for group in plot_fns:
-        for fn in plot_fns[group]:
-            try:
-                now = datetime.now()
-                plots.append(fn(run))
-                finished = datetime.now()
-                msg.good(
-                    f"{fn.__name__} finished in {round((finished - now).seconds, 0)} seconds",
-                )
-            except Exception:
-                msg.fail(f"{fn.__name__} failed")
-        datetime.now()
+    for fn in plot_fns:
+        try:
+            now = datetime.now()
+            plots.append(fn(run))
+            finished = datetime.now()
+            msg.good(
+                f"{fn.__name__} finished in {round((finished - now).seconds, 0)} seconds",
+            )
+        except Exception:
+            msg.fail(f"{fn.__name__} failed")
+    datetime.now()
 
     grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(7, 5), n_in_row=2)
 

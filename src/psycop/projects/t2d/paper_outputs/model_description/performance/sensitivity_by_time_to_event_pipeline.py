@@ -2,7 +2,6 @@ import pandas as pd
 import plotnine as pn
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
-    get_timedelta_df,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
 from psycop.projects.t2d.utils.best_runs import ModelRun

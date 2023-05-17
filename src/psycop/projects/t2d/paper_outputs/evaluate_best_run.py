@@ -2,17 +2,11 @@ import datetime
 
 import pandas as pd
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
-from psycop.projects.t2d.paper_outputs.model_description.performance.confusion_matrix_pipeline import (
-    confusion_matrix_pipeline,
-)
-from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_by_time_until_diagnosis import (
-    incidence_by_time_until_outcome_pipeline,
+from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
+    t2d_auroc_plot,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.performance_by_ppr import (
     output_performance_by_ppr,
-)
-from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
-    t2d_auroc_plot,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
     t2d_sensitivity_by_time_to_event,
@@ -43,18 +37,9 @@ def evaluate_best_run(run: ModelRun):
     msg = Printer(timestamp=True)
     msg.info(f"Evaluating {run.name}")
 
-    for output_str, value in (
-        ("Run group", run.group.name),
-        ("Model_type", run.model_type),
-        ("Lookahead days", run.cfg.preprocessing.pre_split.min_lookahead_days),
-    ):
-        msg.info(f"    {output_str}: {value}")
-
     output_fns = {
         "performance_figures": [
             t2d_auroc_plot,
-            confusion_matrix_pipeline,
-            incidence_by_time_until_outcome_pipeline,
             t2d_sensitivity_by_time_to_event,
         ],
         "robustness": [
