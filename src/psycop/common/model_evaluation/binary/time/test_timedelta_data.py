@@ -37,7 +37,7 @@ def test_get_timedelta_series():
 
 def test_sensitivity_by_timedelta():
     df = str_to_df(
-        """t1_timestamp,t2_timestamp,y,pred,
+        """t1_timestamp,t2_timestamp,y,y_hat_probs,
     2020-01-01,2020-01-02,1,1,
     2020-01-01,2020-01-02,1,1,
     2020-01-01,2020-01-02,0,0,
