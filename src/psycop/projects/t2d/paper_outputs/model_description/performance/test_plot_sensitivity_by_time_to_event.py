@@ -14,8 +14,11 @@ def test_plot_sensitivity_by_time_to_event_with_patchwork():
     df = str_to_df(
         """unit_from_event_binned,sensitivity,actual_positive_rate,ci_lower,ci_upper,
         1-3,0.1,A,0.05,0.15,
-        4-6,0.2,B,0.15,0.25,
-        7-10,0.3,C,0.25,0.35,
+        4-6,0.2,A,0.15,0.25,
+        7-10,0.3,A,0.25,0.35,
+        1-3,0.2,B,0.15,0.25,
+        4-6,0.3,B,0.25,0.35,
+        7-10,0.4,B,0.35,0.45,
         """
     )
 
