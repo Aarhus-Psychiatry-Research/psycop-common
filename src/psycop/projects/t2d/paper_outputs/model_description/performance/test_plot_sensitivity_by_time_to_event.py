@@ -18,7 +18,7 @@ def test_plot_sensitivity_by_time_to_event_with_patchwork():
         1-3,0.2,B,0.15,0.25,
         4-6,0.3,B,0.25,0.35,
         7-10,0.4,B,0.35,0.45,
-        """
+        """,
     )
 
     df["unit_from_event_binned"] = pd.Categorical(
