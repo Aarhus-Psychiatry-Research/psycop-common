@@ -86,7 +86,7 @@ def plot_auc_roc(
             "tpr": mean_tprs,
             "tpr_lower": tprs_lower,
             "tpr_upper": tprs_upper,
-        }
+        },
     )
 
     auroc_label = pn.annotate(
