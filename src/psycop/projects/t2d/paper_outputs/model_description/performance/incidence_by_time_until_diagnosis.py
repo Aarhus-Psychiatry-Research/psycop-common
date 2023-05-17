@@ -54,9 +54,9 @@ def t2d_first_pred_to_event(run: ModelRun) -> pn.ggplot:
         )
         + PN_THEME
     )
-    
+
     p.save(FIGURES_PATH / "first_pred_to_event.png")
-    
+
     return p
 
 
