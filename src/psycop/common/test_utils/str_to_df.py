@@ -55,7 +55,7 @@ def str_to_df(
         if "#" in line:
             line = line[: line.rfind("#")]  # noqa
 
-        line_without_ending_space = line.strip()
+        line.strip()
         line_without_ending_comma = line[:-1] if line.endswith(",") else line
         lines.append(line_without_ending_comma)
 

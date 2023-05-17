@@ -79,7 +79,7 @@ def test_get_confusion_matrix_cells_from_long_df():
         1,1,
         1,1,
         1,1
-        """
+        """,
     )
 
     cells = get_confusion_matrix_cells_from_long_df(long_df)
