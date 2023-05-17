@@ -3,6 +3,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
@@ -37,19 +38,17 @@ def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     return p
 
 
-def t2d_sensitivity_by_time_to_event(run: ModelRun) -> pn.ggplot:
-    eval_ds = run.get_eval_dataset()
-
+def sensitivity_by_time_to_event(eval_dataset: EvalDataset):
     dfs = []
 
     for ppr in [0.01, 0.03, 0.05]:
         df = get_sensitivity_by_timedelta_df(
-            y=eval_ds.y,
-            y_pred=eval_ds.get_predictions_for_positive_rate(desired_positive_rate=ppr)[
-                0
-            ],
-            time_one=eval_ds.pred_timestamps,
-            time_two=eval_ds.outcome_timestamps,
+            y=eval_dataset.y,
+            y_pred=eval_dataset.get_predictions_for_positive_rate(
+                desired_positive_rate=ppr
+            )[0],
+            time_one=eval_dataset.pred_timestamps,
+            time_two=eval_dataset.outcome_timestamps,
             direction="t2-t1",
             bins=range(0, 60, 6),
             bin_unit="M",
@@ -68,6 +67,12 @@ def t2d_sensitivity_by_time_to_event(run: ModelRun) -> pn.ggplot:
     p.save(plot_path)
 
     return p
+
+
+def t2d_sensitivity_by_time_to_event(run: ModelRun) -> pn.ggplot:
+    eval_ds = run.get_eval_dataset()
+
+    return sensitivity_by_time_to_event(eval_dataset=eval_ds)
 
 
 if __name__ == "__main__":
