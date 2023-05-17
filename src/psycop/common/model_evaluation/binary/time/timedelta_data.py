@@ -182,7 +182,7 @@ def get_sensitivity_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat_probs=y_hat_probs,
+        y_hat_probs=y_hat,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
