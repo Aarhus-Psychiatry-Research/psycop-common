@@ -165,7 +165,7 @@ def get_sensitivity_by_timedelta_df(
 
     Args:
         y: True labels
-        y_hat_probs: The predicted class.
+        y_hat: The predicted class.
         metric_fn: Function to calculate metric
         time_one: Timestamps for time one (e.g. first visit).
         time_two: Timestamps for time two.
