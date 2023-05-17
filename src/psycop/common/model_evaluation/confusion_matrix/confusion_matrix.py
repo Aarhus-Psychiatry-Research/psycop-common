@@ -27,12 +27,16 @@ class ConfusionMatrix:
         return self.true_negatives / (self.true_negatives + self.false_positives)
 
 
-def get_confusion_matrix_cells_from_long_df(
-    long_df: pd.DataFrame,
+def get_confusion_matrix_cells_from_df(
+    df: pd.DataFrame,
 ) -> ConfusionMatrix:
-    """Get confusion matrix cells from a long dataframe."""
+    """Get confusion matrix cells from a long dataframe.
+
+    Args:
+        df (pd.DataFrame): Rows are observations, columns are "true" and "pred".
+    """
     confusion_matrix_df = (
-        long_df.groupby(["true", "pred"])
+        df.groupby(["true", "pred"])
         .size()
         .reset_index()
         .rename(columns={0: "estimate"})
