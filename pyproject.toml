@@ -198,6 +198,7 @@ include-package-data = true
 markers = [
   "pre_push_test: Tests run on push. Should be as minimal as possible to maintain fast push speeds."
 ]
+norecursedirs = [".venv", "*.egg-info",".git",".tox"]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -208,6 +209,6 @@ description: run unit tests
 extras = tests, dev
 use_develop = true
 commands =
-  test: pytest -n auto {posargs}
+  test: pytest {posargs}
   type: pyright --stats
 """
