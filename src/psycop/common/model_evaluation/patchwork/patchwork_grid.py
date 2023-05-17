@@ -33,7 +33,7 @@ def create_patchwork_grid(
         # Add it to the row
         current_row.append(bricks[i])
 
-        if i % n_in_row != 0:
+        if i % n_in_row != 0 or i == len(bricks) - 1:
             # Rows should consist of two elements
             rows.append(pw.stack(current_row, operator="|"))
             current_row = []
