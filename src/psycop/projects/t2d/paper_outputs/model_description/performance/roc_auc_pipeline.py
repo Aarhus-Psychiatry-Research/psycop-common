@@ -11,8 +11,6 @@ def save_auroc_plot_for_t2d(run: Run):
     auroc_path = FIGURES_PATH / "auc_roc.png"
     plot_auc_roc(
         eval_dataset=eval_ds,
-        dpi=300,
-        save_path=auroc_path,
-    )
+    ).save(auroc_path)
 
     print(f"Saving AUR-ROC plot to {auroc_path}")
