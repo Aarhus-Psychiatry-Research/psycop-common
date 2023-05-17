@@ -18,5 +18,3 @@ def test_plotnine_confusion_matrix():
     plotnine_confusion_matrix(cm, x_title="Diabetes within 5 years").save(
         TEST_PLOT_PATH / "test_plotnine_confusion_matrix.png",
     )
-
-    pass
