@@ -1,5 +1,4 @@
 import pandas as pd
-import plotnine as pn
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_long_df,
 )
@@ -7,7 +6,8 @@ from psycop.common.test_utils.str_to_df import str_to_df
 
 
 def create_long_confusion_matrix_df(
-    y_true: pd.Series, y_pred: pd.Series
+    y_true: pd.Series,
+    y_pred: pd.Series,
 ) -> pd.DataFrame:
     """Create a long confusion matrix dataframe."""
 
@@ -15,7 +15,7 @@ def create_long_confusion_matrix_df(
         {
             "true": y_true,
             "pred": y_pred,
-        }
+        },
     )
 
     cells = get_confusion_matrix_cells_from_long_df(df)
@@ -52,7 +52,7 @@ def test_create_long_confusion_matrix_df():
 0,0,
 0,0,
 0,0,
-"""
+""",
     )
 
     compute_df = pd.concat([input_df for _ in range(10)]).reset_index(drop=True)
@@ -75,11 +75,11 @@ def test_get_confusion_matrix_cells_from_long_df():
 0,1, # 3 false positive
 0,1,
 0,1,
-1,1, # 4 true positive        
-1,1,            
-1,1,            
+1,1, # 4 true positive
 1,1,
-"""
+1,1,
+1,1,
+""",
     )
 
     cells = get_confusion_matrix_cells_from_long_df(long_df)

@@ -17,7 +17,7 @@ Agg,+,"PPV:\n{round(matrix.ppv, 2)}",
 Agg,-,"NPV:\n{round(matrix.npv, 2)}",
 No,Agg,"Spec:\n{round(matrix.specificity, 2)}",
 Yes,Agg,"Sens:\n{round(matrix.sensitivity, 2)}",
-"""
+""",
     )
 
     """Create a confusion matrix and return a plotnine object."""

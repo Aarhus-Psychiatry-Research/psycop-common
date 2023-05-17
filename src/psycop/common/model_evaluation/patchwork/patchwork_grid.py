@@ -1,4 +1,4 @@
-from typing import Sequence
+from collections.abc import Sequence
 
 import patchworklib as pw
 import plotnine as pn
