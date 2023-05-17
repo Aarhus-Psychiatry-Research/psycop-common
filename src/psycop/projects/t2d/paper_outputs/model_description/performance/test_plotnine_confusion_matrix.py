@@ -9,12 +9,14 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.plotnine_co
 
 def test_plotnine_confusion_matrix():
     cm = ConfusionMatrix(
-        true_positives=10,
-        false_negatives=5,
-        false_positives=2,
-        true_negatives=20,
+        true_positives=1_000_000,
+        false_negatives=5000,
+        false_positives=2000,
+        true_negatives=2000,
     )
 
     plotnine_confusion_matrix(cm, x_title="Diabetes within 5 years").save(
         TEST_PLOT_PATH / "test_plotnine_confusion_matrix.png",
     )
+
+    pass
