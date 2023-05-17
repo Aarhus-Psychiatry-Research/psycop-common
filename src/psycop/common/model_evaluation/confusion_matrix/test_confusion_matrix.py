@@ -1,4 +1,3 @@
-import pandas as pd
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
