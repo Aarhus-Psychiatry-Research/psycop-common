@@ -1,9 +1,7 @@
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    create_sensitivity_by_time_to_outcome_df,
     get_sensitivity_by_timedelta_df,
     get_timedelta_series,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
