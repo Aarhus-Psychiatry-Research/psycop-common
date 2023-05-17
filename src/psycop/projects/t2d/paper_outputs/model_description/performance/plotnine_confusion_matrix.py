@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import plotnine as pn
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
