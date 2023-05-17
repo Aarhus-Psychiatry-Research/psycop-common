@@ -96,7 +96,7 @@ def get_timedelta_df(
 
 def get_auroc_by_timedelta_df(
     y: Iterable[int],
-    y_pred_proba: Iterable[float],
+    y_hat_probs: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -112,7 +112,7 @@ def get_auroc_by_timedelta_df(
 
     Args:
         y: True labels
-        y_pred_proba: The predicted probabilities by the function.
+        y_hat_probs: The predicted probabilities by the function.
         metric_fn: Function to calculate metric
         time_one: Timestamps for time one (e.g. first visit).
         time_two: Timestamps for time two.
@@ -129,7 +129,7 @@ def get_auroc_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat_probs=y_pred_proba,
+        y_hat_probs=y_hat_probs,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -149,7 +149,7 @@ def get_auroc_by_timedelta_df(
 
 def get_sensitivity_by_timedelta_df(
     y: Iterable[int],
-    y_pred: Iterable[float],
+    y_hat_probs: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -182,7 +182,7 @@ def get_sensitivity_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat_probs=y_pred,
+        y_hat_probs=y_hat_probs,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
