@@ -9,6 +9,12 @@ from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
 def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
+    categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
+    df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
+        new_categories=categories,
+        ordered=True,  # type: ignore
+    )
+
     p = (
         pn.ggplot(
             df,
@@ -17,28 +23,31 @@ def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
                 y="sensitivity",
                 ymin="ci_lower",
                 ymax="ci_upper",
-                color="actual_positive_rate",
+                # color="actual_positive_rate",
             ),
         )
+        + pn.scale_x_discrete(reverse=True)
         + pn.geom_point()
-        + pn.geom_line()
-        + pn.geom_errorbar(width=0.2, size=0.5)
+        + pn.geom_linerange(size=0.5)
         + pn.labs(x="Months to outcome", y="n patients")
         + PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
         + pn.scale_color_brewer(type="qual", palette=2)
         + pn.labs(color="PPR")
-        + pn.guides(color=pn.guide_legend(reverse=True))
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
+            legend_position=(0.3, 0.78),
         )
     )
+
+    plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
+    p.save(plot_path)
 
     return p
 
 
-def sensitivity_by_time_to_event(eval_dataset: EvalDataset):
+def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     dfs = []
 
     for ppr in [0.01, 0.03, 0.05]:
@@ -63,8 +72,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset):
     plot_df = pd.concat(dfs)
 
     p = plot_sensitivity_by_time_to_event(plot_df)
-    plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
-    p.save(plot_path)
+    p.save(FIGURES_PATH / "sensitivity_by_time_to_event.png")
 
     return p
 

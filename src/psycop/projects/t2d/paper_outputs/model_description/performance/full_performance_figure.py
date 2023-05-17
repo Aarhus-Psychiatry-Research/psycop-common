@@ -30,12 +30,12 @@ def create_full_performance_figure(run: ModelRun):
     ):
         msg.info(f"    {output_str}: {value}")
 
-    plot_fns = [
-        t2d_auroc_plot,
-        t2d_confusion_matrix_plot,
+    plot_fns = (
+        # t2d_auroc_plot,
+        # t2d_confusion_matrix_plot,
         t2d_sensitivity_by_time_to_event,
-        t2d_first_pred_to_event,
-    ]
+        # t2d_first_pred_to_event,
+    )
 
     plots = []
 
@@ -59,7 +59,7 @@ def create_full_performance_figure(run: ModelRun):
 
     if not any_plot_failed:
         grid = create_patchwork_grid(
-            plots=plots,
+            plots=tuple(plots),
             single_plot_dimensions=(7, 5),
             n_in_row=2,
         )

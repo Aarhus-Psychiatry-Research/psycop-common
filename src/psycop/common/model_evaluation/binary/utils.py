@@ -84,7 +84,7 @@ def sensitivity_by_group(
     n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Get the sensitivity by group within a dataframe."""
-    return df.groupby(groupby_col_name).apply(
+    return df.groupby(groupby_col_name, as_index=False).apply(
         _sensitivity_within_group,
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,

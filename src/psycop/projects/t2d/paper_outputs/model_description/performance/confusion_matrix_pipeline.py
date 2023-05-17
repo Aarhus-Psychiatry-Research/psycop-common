@@ -21,15 +21,15 @@ def t2d_confusion_matrix_plot(run: ModelRun) -> pn.ggplot:
     )
     confusion_matrix = get_confusion_matrix_cells_from_df(df=df)
 
-    return plotnine_confusion_matrix(
+    p = plotnine_confusion_matrix(
         matrix=confusion_matrix,
         x_title=f"T2D within {int(run.cfg.preprocessing.pre_split.min_lookahead_days/365)} years",
     )
 
-
-if __name__ == "__main__":
-    p = t2d_confusion_matrix_plot(run=EVAL_RUN)
-
     p.save(FIGURES_PATH / "t2d_confusion_matrix_plot.png")
 
-    pass
+    return p
+
+
+if __name__ == "__main__":
+    t2d_confusion_matrix_plot(run=EVAL_RUN)

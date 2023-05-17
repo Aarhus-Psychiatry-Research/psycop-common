@@ -36,7 +36,7 @@ def t2d_first_pred_to_event(run: ModelRun) -> pn.ggplot:
     median_years = plot_df["years_from_pred_to_event"].median()
     annotation_text = f"Median: {str(round(median_years, 1))} years"
 
-    return (
+    p = (
         pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event"))  # type: ignore
         + pn.geom_histogram(binwidth=1, fill="orange")
         + pn.xlab("Years from first positive prediction\n to event")
@@ -54,6 +54,10 @@ def t2d_first_pred_to_event(run: ModelRun) -> pn.ggplot:
         )
         + PN_THEME
     )
+    
+    p.save(FIGURES_PATH / "first_pred_to_event.png")
+    
+    return p
 
 
 if __name__ == "__main__":
