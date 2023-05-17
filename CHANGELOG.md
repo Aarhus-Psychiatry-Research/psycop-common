@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.71.0 (2023-05-17)
+### Feature
+* Print a4 conversion factor ([`f6cde36`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f6cde36b9f95153b12968175e5ec8531786b8409))
+* Add patchwork grid functionality ([`4041220`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4041220b5137e4d5a2a946a34c3333ac05549e07))
+
+### Fix
+* Autofix when creating pr ([`76470cd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/76470cde6ce8305c66c153bc196dace8750a9cfd))
+
 ## v0.70.0 (2023-05-16)
 ### Feature
 * Add action ([`0490672`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/04906728422ed5929c7e903f1b920d34afd1516f))
