@@ -8,13 +8,7 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
-    categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
-    df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
-        new_categories=categories,
-        ordered=True,  # type: ignore
-    )
-
+def _plot_sensitivity_by_time_to_event(df) -> pn.ggplot:
     p = (
         pn.ggplot(
             df,
@@ -23,7 +17,7 @@ def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
                 y="sensitivity",
                 ymin="ci_lower",
                 ymax="ci_upper",
-                # color="actual_positive_rate",
+                color="actual_positive_rate",
             ),
         )
         + pn.scale_x_discrete(reverse=True)
@@ -43,6 +37,17 @@ def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
 
     plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
     p.save(plot_path)
+    return p
+
+
+def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
+    categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
+    df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
+        new_categories=categories,
+        ordered=True,  # type: ignore
+    )
+
+    p = _plot_sensitivity_by_time_to_event(df)
 
     return p
 
