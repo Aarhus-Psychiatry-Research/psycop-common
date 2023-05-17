@@ -149,7 +149,7 @@ def get_auroc_by_timedelta_df(
 
 def get_sensitivity_by_timedelta_df(
     y: Iterable[int],
-    y_hat_probs: Iterable[float],
+    y_hat: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
