@@ -8,7 +8,7 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def _plot_sensitivity_by_time_to_event(df) -> pn.ggplot:
+def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     p = (
         pn.ggplot(
             df,
@@ -40,7 +40,7 @@ def _plot_sensitivity_by_time_to_event(df) -> pn.ggplot:
     return p
 
 
-def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
+def t2d_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -76,7 +76,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
 
     plot_df = pd.concat(dfs)
 
-    p = plot_sensitivity_by_time_to_event(plot_df)
+    p = t2d_plot_sensitivity_by_time_to_event(plot_df)
     p.save(FIGURES_PATH / "sensitivity_by_time_to_event.png")
 
     return p
