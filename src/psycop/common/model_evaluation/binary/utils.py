@@ -60,7 +60,7 @@ def _sensitivity_within_group(
         # Protect against fewer than 5 in bin
         return pd.Series({"sensitivity": np.nan, "n_in_bin": np.nan})
 
-    sensitivity = recall_score(df["y"], df["y_hat_probs"])
+    sensitivity = recall_score(df["y"], df["y_hat"])
     sensitivity_by_group = {"sensitivity": sensitivity, "n_in_bin": len(df)}
 
     if confidence_interval:
@@ -69,7 +69,7 @@ def _sensitivity_within_group(
             n_bootstraps=n_bootstraps,
             ci_width=0.95,
             input_1=df["y"],
-            input_2=df["y_hat_probs"],
+            input_2=df["y_hat"],
         )
         sensitivity_by_group["ci_lower"] = ci[0][0]
         sensitivity_by_group["ci_upper"] = ci[0][1]
@@ -84,7 +84,7 @@ def sensitivity_by_group(
     n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Get the sensitivity by group within a dataframe."""
-    return df.groupby(groupby_col_name).apply(
+    return df.groupby(groupby_col_name, as_index=False).apply(
         _sensitivity_within_group,
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,

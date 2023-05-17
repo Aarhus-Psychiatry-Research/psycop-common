@@ -45,7 +45,7 @@ def get_timedelta_series(
 
 def get_timedelta_df(
     y: Iterable[int],
-    y_hat_probs: Iterable[float],
+    y_hat: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -59,7 +59,7 @@ def get_timedelta_df(
     df = pd.DataFrame(
         {
             "y": y,
-            "y_hat_probs": y_hat_probs,
+            "y_hat": y_hat,
             "t1_timestamp": time_one,
             "t2_timestamp": time_two,
         },
@@ -129,7 +129,7 @@ def get_auroc_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat_probs=y_hat_probs,
+        y_hat=y_hat_probs,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -182,7 +182,7 @@ def get_sensitivity_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat_probs=y_hat,
+        y_hat=y_hat,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -241,7 +241,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     df = get_timedelta_df(
         y=df["y"],
-        y_hat_probs=df["y_hat_probs"],
+        y_hat=df["y_hat_probs"],
         time_one=df["prediction_timestamp"],
         time_two=df["outcome_timestamp"],
         direction="t2-t1",
