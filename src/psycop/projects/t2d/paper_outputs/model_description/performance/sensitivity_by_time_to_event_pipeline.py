@@ -23,7 +23,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + pn.scale_x_discrete(reverse=True)
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
-        + pn.labs(x="Months to outcome", y="n patients")
+        + pn.labs(x="Months to outcome", y="Sensitivity")
         + PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
         + pn.scale_color_brewer(type="qual", palette=2)
@@ -31,16 +31,15 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
-            legend_position=(0.3, 0.78),
+            legend_position=(0.3, 0.85),
         )
-        + pn.geom_path(df[df["actual_positive_rate"] == "A"], group=1)
     )
 
     for value in df["actual_positive_rate"].unique():
         p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1)
 
     plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
-    p.save(plot_path)
+    p.save(plot_path, width=7, height=7)
     return p
 
 
@@ -81,7 +80,6 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     plot_df = pd.concat(dfs)
 
     p = t2d_plot_sensitivity_by_time_to_event(plot_df)
-    p.save(FIGURES_PATH / "sensitivity_by_time_to_event.png")
 
     return p
 
