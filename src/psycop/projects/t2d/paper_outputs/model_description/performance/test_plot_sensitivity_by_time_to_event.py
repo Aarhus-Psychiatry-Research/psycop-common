@@ -1,5 +1,4 @@
 import pandas as pd
-import patchworklib as pw
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
@@ -23,7 +22,8 @@ def test_plot_sensitivity_by_time_to_event_with_patchwork():
     )
 
     df["unit_from_event_binned"] = pd.Categorical(
-        df["unit_from_event_binned"], ordered=True
+        df["unit_from_event_binned"],
+        ordered=True,
     )
 
     plots = [_plot_sensitivity_by_time_to_event(df) for _ in range(3)]
