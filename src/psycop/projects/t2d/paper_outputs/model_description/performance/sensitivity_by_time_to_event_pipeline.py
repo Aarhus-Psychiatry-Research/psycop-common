@@ -45,7 +45,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset):
         df = get_sensitivity_by_timedelta_df(
             y=eval_dataset.y,
             y_pred=eval_dataset.get_predictions_for_positive_rate(
-                desired_positive_rate=ppr
+                desired_positive_rate=ppr,
             )[0],
             time_one=eval_dataset.pred_timestamps,
             time_two=eval_dataset.outcome_timestamps,
