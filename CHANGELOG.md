@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.72.0 (2023-05-17)
+### Feature
+* Create plotnine confusion matrix ([`5045b67`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5045b67b6b98e96fe55eedf5e5c12dd62cbf87b1))
+
+### Fix
+* Handle trailing commas in str_to_df ([`71331cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/71331cf53a6081a34c8e5da162e5dfde961549e1))
+* Incorrect git import ([`629631d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/629631d2e648b2f20fa0889b91dbab6bb153b35e))
+
+### Documentation
+* Improve docs ([`e6a1230`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e6a123048465d74ee15570a0ec9681248026b816))
+
 ## v0.71.0 (2023-05-17)
 ### Feature
 * Print a4 conversion factor ([`f6cde36`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f6cde36b9f95153b12968175e5ec8531786b8409))
