@@ -9,7 +9,7 @@ from psycop.common.model_evaluation.utils import TEST_PLOT_PATH
 
 def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
     input_df = subsampled_synth_eval_df.rename(
-        columns={"pred": "y", "pred_prob": "y_hat_probs"}
+        columns={"pred": "y", "pred_prob": "y_hat_probs"},
     )
 
     df = auroc_by_group(
@@ -24,7 +24,9 @@ def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
     ]
 
     patchwork = create_patchwork_grid(
-        plots=plots, single_plot_dimensions=(3.5, 2.5), n_in_row=2
+        plots=plots,
+        single_plot_dimensions=(3.5, 2.5),
+        n_in_row=2,
     )
 
     patchwork.savefig(TEST_PLOT_PATH / "patchwork.png")

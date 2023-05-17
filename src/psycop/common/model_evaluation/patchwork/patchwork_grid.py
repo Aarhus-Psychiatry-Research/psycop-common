@@ -52,5 +52,5 @@ def print_a4_ratio(
     print(f"height/width ratio is {total_height/total_width}")
     print(f"Vertical A4 ratio is {a4_ratio}")
     print(
-        f"You could decrease single_plot_height to {new_plot_height_for_a4} for the patchwork to fit A4"
+        f"You could decrease single_plot_height to {new_plot_height_for_a4} for the patchwork to fit A4",
     )
