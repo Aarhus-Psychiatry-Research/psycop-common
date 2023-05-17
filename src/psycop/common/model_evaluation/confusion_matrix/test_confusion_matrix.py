@@ -69,17 +69,17 @@ def test_create_long_confusion_matrix_df():
 def test_get_confusion_matrix_cells_from_long_df():
     long_df = str_to_df(
         """true,pred,
-0,0, # 1 true negative
-1,0, # 2 false negative
-1,0,
-0,1, # 3 false positive
-0,1,
-0,1,
-1,1, # 4 true positive
-1,1,
-1,1,
-1,1,
-""",
+        0,0, # 1 true negative
+        1,0, # 2 false negative
+        1,0,
+        0,1, # 3 false positive
+        0,1,
+        0,1,
+        1,1, # 4 true positive
+        1,1,
+        1,1,
+        1,1
+        """
     )
 
     cells = get_confusion_matrix_cells_from_long_df(long_df)
