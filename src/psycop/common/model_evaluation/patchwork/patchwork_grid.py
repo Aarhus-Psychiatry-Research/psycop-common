@@ -1,6 +1,7 @@
+from collections.abc import Sequence
+
 import patchworklib as pw
 import plotnine as pn
-from git import Sequence
 
 
 def create_patchwork_grid(
