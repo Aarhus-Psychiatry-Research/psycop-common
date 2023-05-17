@@ -1,11 +1,10 @@
 """AUC ROC curve."""
-from pathlib import Path
-from typing import Optional, Union
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotnine as pn
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.t2d.paper_outputs.config import PN_THEME
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.utils import resample
 
@@ -38,12 +37,9 @@ def bootstrap_roc(
 
 def plot_auc_roc(
     eval_dataset: EvalDataset,
-    title: str = "ROC-curve",
-    fig_size: Optional[tuple[int, int]] = (5, 5),
-    dpi: int = 160,
-    save_path: Optional[Path] = None,
+    title: str = "Receiver Operating Characteristic (ROC) Curve",
     n_bootstraps: int = 100,
-) -> Union[None, Path]:
+) -> pn.ggplot:
     """Plot AUC ROC curve with bootstrapped 95% confidence interval using Seaborn.
 
     Args:
@@ -84,21 +80,34 @@ def plot_auc_roc(
     auc_se = np.std(aucs_bootstrapped) / np.sqrt(n_bootstraps)
     auc_ci = [auc_mean - 1.96 * auc_se, auc_mean + 1.96 * auc_se]
 
-    # Plot AUC ROC curve
-    plt.figure(figsize=fig_size, dpi=dpi)
-    plt.plot(
-        base_fpr,
-        mean_tprs,
-        label=f"AUC [95% CI] = {auc_mean:.3f} [{auc_ci[0]:.3f}, {auc_ci[1]:.3f}]",
+    df = pd.DataFrame(
+        {
+            "fpr": base_fpr,
+            "tpr": mean_tprs,
+            "tpr_lower": tprs_lower,
+            "tpr_upper": tprs_upper,
+        }
     )
-    plt.fill_between(base_fpr, tprs_lower, tprs_upper, color="grey", alpha=0.3)
-    plt.legend(loc=4)
-    plt.title(title)
-    plt.xlabel("1 - Specificity")
-    plt.ylabel("Sensitivity")
 
-    if save_path is not None:
-        plt.savefig(save_path)
-    plt.close()
+    auroc_label = pn.annotate(
+        "text",
+        label=f"AUROC (95% CI): {auc_mean:.2f} ({auc_ci[0]:.2f}-{auc_ci[1]:.2f})",
+        x=1,
+        y=0,
+        ha="right",
+        va="bottom",
+        size=10,
+    )
 
-    return save_path
+    # Plot AUC ROC curve
+    return (
+        pn.ggplot(df, pn.aes(x="fpr", y="tpr"))
+        + pn.geom_line(size=1)
+        + pn.geom_line(pn.aes(y="tpr_upper"), linetype="dashed", color="grey")
+        + pn.geom_line(pn.aes(y="tpr_lower"), linetype="dashed", color="grey")
+        + pn.labs(title=title, x="1 - Specificity", y="Sensitivity")
+        + pn.xlim(0, 1)
+        + pn.ylim(0, 1)
+        + PN_THEME
+        + auroc_label
+    )
