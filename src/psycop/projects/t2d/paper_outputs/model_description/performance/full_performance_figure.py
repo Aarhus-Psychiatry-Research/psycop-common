@@ -4,6 +4,15 @@ from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH
+from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
+    t2d_auroc_plot,
+)
+from psycop.projects.t2d.paper_outputs.model_description.performance.confusion_matrix_pipeline import (
+    t2d_confusion_matrix_plot,
+)
+from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_by_time_until_diagnosis import (
+    t2d_first_pred_to_event,
+)
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
     t2d_sensitivity_by_time_to_event,
 )
@@ -22,10 +31,10 @@ def create_full_performance_figure(run: ModelRun):
         msg.info(f"    {output_str}: {value}")
 
     plot_fns = (
-        # t2d_auroc_plot,
-        # t2d_confusion_matrix_plot,
+        t2d_auroc_plot,
+        t2d_confusion_matrix_plot,
         t2d_sensitivity_by_time_to_event,
-        # t2d_first_pred_to_event,
+        t2d_first_pred_to_event,
     )
 
     plots = []
@@ -50,8 +59,8 @@ def create_full_performance_figure(run: ModelRun):
 
     if not any_plot_failed:
         grid = create_patchwork_grid(
-            plots=tuple(plots),
-            single_plot_dimensions=(7, 5),
+            plots=plots,
+            single_plot_dimensions=(5, 5),
             n_in_row=2,
         )
         grid.savefig(FIGURES_PATH / "full_performance_figure.png")
