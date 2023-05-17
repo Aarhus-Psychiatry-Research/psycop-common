@@ -12,10 +12,10 @@ def plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         pn.ggplot(
             df,
             pn.aes(
-                x="days_to_outcome_binned",
+                x="unit_from_event_binned",
                 y="sensitivity",
-                ymin="sens_lower",
-                ymax="sens_upper",
+                ymin="ci_lower",
+                ymax="ci_upper",
                 color="actual_positive_rate",
             ),
         )
@@ -56,16 +56,19 @@ def t2d_sensitivity_by_time_to_event(run: ModelRun) -> pn.ggplot:
             bin_continuous_input=True,
             drop_na_events=True,
         )
-        df["ppr"] = ppr
+
+        # Convert to string to allow distinct scales for color
+        df["actual_positive_rate"] = str(ppr)
         dfs.append(df)
 
     plot_df = pd.concat(dfs)
 
-    return plot_sensitivity_by_time_to_event(plot_df)
+    p = plot_sensitivity_by_time_to_event(plot_df)
+    plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
+    p.save(plot_path)
+
+    return p
 
 
 if __name__ == "__main__":
-    p = t2d_sensitivity_by_time_to_event(run=EVAL_RUN)
-
-    plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
-    p.save(plot_path)
+    t2d_sensitivity_by_time_to_event(run=EVAL_RUN)
