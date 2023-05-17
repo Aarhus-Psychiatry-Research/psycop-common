@@ -50,9 +50,18 @@ def str_to_df(
         DataFrame: A dataframe.
     """
     # Drop comments for each line if any exist inside the str
-    string = string[: string.rfind("#")]
+    lines = []
+    for line in string.split("\n"):
+        if "#" in line:
+            line = line[: line.rfind("#")]  # noqa
 
-    df = pd.read_table(StringIO(string), sep=",", index_col=False)
+        line.strip()
+        line_without_ending_comma = line[:-1] if line.endswith(",") else line
+        lines.append(line_without_ending_comma)
+
+    full_string = "\n".join(list(lines))
+
+    df = pd.read_table(StringIO(full_string), sep=",", index_col=False)
 
     if convert_timestamp_to_datetime:
         df = convert_cols_with_matching_colnames_to_datetime(df, "timestamp")

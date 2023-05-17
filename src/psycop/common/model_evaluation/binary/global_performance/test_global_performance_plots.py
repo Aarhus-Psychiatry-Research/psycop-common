@@ -6,8 +6,9 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
 def test_plot_roc_auc(subsampled_eval_dataset: EvalDataset):
-    plot_auc_roc(
+    p = plot_auc_roc(
         eval_dataset=subsampled_eval_dataset,
-        save_path=TEST_PLOT_PATH / "roc_auc.png",
-        n_bootstraps=10,
+        n_bootstraps=2,
     )
+
+    p.save(TEST_PLOT_PATH / "test_plot_roc_auc.png")

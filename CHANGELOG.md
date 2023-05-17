@@ -2,6 +2,36 @@
 
 <!--next-version-placeholder-->
 
+## v0.73.0 (2023-05-17)
+### Feature
+* Convert auroc to plotnine ([`80f5cbf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/80f5cbf734367a433687ca87fd026cd9f8ad73f2))
+
+### Fix
+* Incorrect path ([`925c94c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/925c94c28435d7bb06fc017740c0fdef29a28898))
+
+## v0.72.0 (2023-05-17)
+### Feature
+* Create plotnine confusion matrix ([`5045b67`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5045b67b6b98e96fe55eedf5e5c12dd62cbf87b1))
+
+### Fix
+* Handle trailing commas in str_to_df ([`71331cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/71331cf53a6081a34c8e5da162e5dfde961549e1))
+* Incorrect git import ([`629631d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/629631d2e648b2f20fa0889b91dbab6bb153b35e))
+
+### Documentation
+* Improve docs ([`e6a1230`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e6a123048465d74ee15570a0ec9681248026b816))
+
+## v0.71.0 (2023-05-17)
+### Feature
+* Print a4 conversion factor ([`f6cde36`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f6cde36b9f95153b12968175e5ec8531786b8409))
+* Add patchwork grid functionality ([`4041220`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4041220b5137e4d5a2a946a34c3333ac05549e07))
+
+### Fix
+* Autofix when creating pr ([`76470cd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/76470cde6ce8305c66c153bc196dace8750a9cfd))
+
+## v0.70.0 (2023-05-16)
+### Feature
+* Add action ([`0490672`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/04906728422ed5929c7e903f1b920d34afd1516f))
+
 ## v0.69.0 (2023-05-16)
 ### Feature
 * First robustness plot ([`659d30d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/659d30da095e1cdb6ead2d023a965d4743b8fec8))

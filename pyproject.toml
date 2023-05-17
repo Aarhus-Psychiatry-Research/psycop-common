@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psycop"
-version = "0.69.0"
+version = "0.73.0"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"}
 ]
@@ -49,6 +49,7 @@ dependencies = [
   "polars",
   "tableone",
   "shap",
+  "patchworklib==0.6.0",
 ]
 
 [project.license]

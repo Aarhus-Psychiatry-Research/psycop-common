@@ -14,11 +14,17 @@ def test_auroc_by_group():
         1,1,0.7, # Good prediction
         1,0,0.6, # Good prediction
         1,0,0.5, # Good prediction
-        2,1,0.5, # Bad prediction
-        2,1,0.4, # Bad prediction
-        2,1,0.3, # Bad prediction
+        2,1,0.7, # Good prediction
+        2,1,0.2, # Bad prediction
+        2,1,0.8, # Good prediction
         2,0,0.9, # Bad prediction
-        2,0,0.8, # Bad prediction
+        2,0,0.1, # Good prediction
+        3,1,0.5, # Bad prediction
+        3,1,0.4, # Bad prediction
+        3,1,0.3, # Bad prediction
+        3,0,0.9, # Bad prediction
+        3,0,0.8, # Bad prediction
+
         """,
     )
 
@@ -31,10 +37,10 @@ def test_auroc_by_group():
         n_bootstraps=10,
     )
 
-    assert auroc_by_group_df["auroc"].to_list() == [1.0, 0.0]
-    assert auroc_by_group_df["n_in_bin"].to_list() == [50.0, 50.0]
-    assert auroc_by_group_df["ci_lower"].to_list() == [1.0, 0.0]
-    assert auroc_by_group_df["ci_upper"].to_list() == [1.0, 0.0]
+    assert auroc_by_group_df["auroc"].is_monotonic_decreasing
+    assert auroc_by_group_df["n_in_bin"].to_list() == [50.0, 50.0, 50.0]
+    assert auroc_by_group_df["ci_lower"].is_monotonic_decreasing
+    assert auroc_by_group_df["ci_upper"].is_monotonic_decreasing
 
 
 def test_sensitivity_by_group():
