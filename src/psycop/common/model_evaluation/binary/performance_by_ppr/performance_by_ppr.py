@@ -215,8 +215,7 @@ def get_percent_with_at_least_one_true_positve(
 def generate_performance_by_ppr_table(
     eval_dataset: EvalDataset,
     positive_rates: Sequence[float],
-    output_format: Optional[str] = "df",
-) -> Union[pd.DataFrame, str, wandb.Table]:
+) -> pd.DataFrame:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
 
@@ -224,7 +223,6 @@ def generate_performance_by_ppr_table(
         eval_dataset (EvalDataset): EvalDataset object.
         positive_rates (Sequence[float]): positive_rates to add to the table, e.g. 0.99, 0.98 etc.
             Calculated so that the Xth percentile of predictions are classified as the positive class.
-        output_format (str, optional): Format to output - either "df" or "wandb_table". Defaults to "df".
 
     Returns:
         pd.DataFrame
@@ -275,11 +273,4 @@ def generate_performance_by_ppr_table(
         df["total_warning_days"] / df["false_positives"]
     ).round(1)
 
-    if output_format == "html":
-        return df.reset_index(drop=True).to_html()
-    if output_format == "df":
-        return df.reset_index(drop=True)
-    if output_format == "wandb_table":
-        return wandb.Table(dataframe=df.reset_index(drop=True))
-
-    raise ValueError("Output format does not match anything that is allowed")
+    return df.reset_index(drop=True)
