@@ -273,4 +273,4 @@ def generate_performance_by_ppr_table(
         df["total_warning_days"] / df["false_positives"]
     ).round(1)
 
-    return df.reset_index(drop=True)
+    return df
