@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.75.0 (2023-05-23)
+### Feature
+* Generate a publication-ready performance_by_ppr table ([`32c20ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/32c20edfa1cfdd855c505e546b6304bbf1ffa2a9))
+
 ## v0.74.0 (2023-05-23)
 ### Feature
 * Add thousand separator to conf matrix ([`fc9b6dc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fc9b6dcc980cbcbc51af0f044fd70b090f6862fb))
