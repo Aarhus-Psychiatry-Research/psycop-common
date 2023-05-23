@@ -45,7 +45,7 @@ def test_auroc_by_group():
 
 def test_sensitivity_by_group():
     input_df = str_to_df(
-        """id,y,y_hat_probs,
+        """id,y,y_hat,
         1,1,1, # Good prediction
         1,1,1, # Good prediction
         1,1,1, # Good prediction
