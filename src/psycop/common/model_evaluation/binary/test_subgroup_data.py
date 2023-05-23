@@ -55,6 +55,9 @@ def test_sensitivity_by_group():
         """,
     )
 
+    # Test using a categorical
+    input_df["id"] = pd.Categorical(input_df["id"], ordered=True)
+
     large_df = pd.concat([input_df for _ in range(10)])
 
     output_df = sensitivity_by_group(

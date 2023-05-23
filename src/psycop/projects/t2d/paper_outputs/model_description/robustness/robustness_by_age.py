@@ -2,7 +2,7 @@ import pandas as pd
 import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.projects.t2d.paper_outputs.config import COLORS, EVAL_RUN, PN_THEME
-from psycop.projects.t2d.utils.best_runs import Run
+from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
 def plot_robustness(df: pd.DataFrame) -> pn.ggplot:
@@ -27,7 +27,7 @@ def plot_robustness(df: pd.DataFrame) -> pn.ggplot:
     return p
 
 
-def auroc_by_age(run: Run) -> pn.ggplot:
+def auroc_by_age(run: ModelRun) -> pn.ggplot:
     print("Plotting AUC by age")
     eval_ds = run.get_eval_dataset()
 

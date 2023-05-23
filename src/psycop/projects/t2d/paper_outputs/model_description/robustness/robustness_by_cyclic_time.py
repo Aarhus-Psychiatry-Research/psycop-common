@@ -2,10 +2,10 @@ from psycop.common.model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
-from psycop.projects.t2d.utils.best_runs import Run
+from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def auroc_by_hour_of_day(run: Run):
+def auroc_by_hour_of_day(run: ModelRun):
     eval_ds = run.get_eval_dataset()
 
     roc_auc_by_periodic_time_df(
@@ -18,7 +18,7 @@ def auroc_by_hour_of_day(run: Run):
     # TODO: Plotting function
 
 
-def auroc_by_day_of_week(run: Run):
+def auroc_by_day_of_week(run: ModelRun):
     eval_ds = run.get_eval_dataset()
 
     roc_auc_by_periodic_time_df(
@@ -31,7 +31,7 @@ def auroc_by_day_of_week(run: Run):
     # TODO: Plotting function
 
 
-def auroc_by_month_of_year(run: Run):
+def auroc_by_month_of_year(run: ModelRun):
     eval_ds = run.get_eval_dataset()
 
     roc_auc_by_periodic_time_df(

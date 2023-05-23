@@ -27,16 +27,6 @@ def test_train_model(model_name: str):
     train_model(cfg)
 
 
-@pytest.mark.pre_push_test()
-def test_integration_test(muteable_test_config: FullConfigSchema):
-    """Test main using the logistic model.
-
-    Used for quickly testing functions before a push.
-    """
-    cfg = muteable_test_config
-    train_model(cfg)
-
-
 def test_crossvalidation(muteable_test_config: FullConfigSchema):
     """Test crossvalidation."""
     cfg = muteable_test_config
