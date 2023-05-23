@@ -22,7 +22,6 @@ def test_generate_performance_by_threshold_table(
     output_table: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=subsampled_eval_dataset,
         positive_rates=positive_rates,
-        output_format="df",
     )
     assert output_table["true_prevalence"].std() == 0
     assert output_table["positive_rate"].is_monotonic_decreasing
