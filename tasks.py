@@ -345,6 +345,8 @@ def test(
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
 
+    test_for_venv(c)
+
     if not pytest_args:
         pytest_args = [
             "src/psycop",
