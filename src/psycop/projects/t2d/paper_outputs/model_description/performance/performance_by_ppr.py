@@ -9,11 +9,11 @@ from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
 def format_with_thousand_separator(num: int) -> str:
-    return "{:,.0f}".format(num)
+    return f"{num:,.0f}"
 
 
 def format_prop_as_percent(num: float) -> str:
-    output = "{:.1%}".format(num)
+    output = f"{num:.1%}"
 
     # If the decimal is a 0, round to the nearest integer
     output = output.replace(".0%", "%")
@@ -63,7 +63,8 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
     renamed_df["Mean years from first positive to T2D"] = round(
-        df["mean_warning_days"] / 365, 0
+        df["mean_warning_days"] / 365,
+        0,
     )
 
     renamed_df["% with ≥1 true positive"] = round(df["% with ≥1 true positive"], 1)

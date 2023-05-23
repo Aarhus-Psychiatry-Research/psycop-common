@@ -1,6 +1,4 @@
 import pandas as pd
-import plotnine as pn
-import polars as pl
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
