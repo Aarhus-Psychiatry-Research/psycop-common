@@ -15,9 +15,6 @@ def format_with_thousand_separator(num: int) -> str:
 def format_prop_as_percent(num: float) -> str:
     output = f"{num:.1%}"
 
-    # If the decimal is a 0, round to the nearest integer
-    output = output.replace(".0%", "%")
-
     return output
 
 
@@ -30,8 +27,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "warning_days_per_false_positive",
             "negative_rate",
             "mean_warning_days",
-            "% with ≥1 true positive",
-            "% of all events captured",
+            "prop with ≥1 true positive",
         ],
         axis=1,
     )
@@ -47,11 +43,10 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "true_negatives": "True negatives",
             "false_positives": "False positives",
             "false_negatives": "False negatives",
+            "prop of all events captured": "% of all events captured",
         },
         axis=1,
     )
-
-    count_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "int64"]
 
     # Handle proportion columns
     prop_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "float64"]
@@ -59,18 +54,13 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
         renamed_df[c] = renamed_df[c].apply(format_prop_as_percent)
 
     # Handle count columns
+    count_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "int64"]
     for col in count_cols:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
     renamed_df["Mean years from first positive to T2D"] = round(
-        df["mean_warning_days"] / 365,
-        0,
+        df["mean_warning_days"] / 365, 1
     )
-
-    renamed_df["% with ≥1 true positive"] = round(df["% with ≥1 true positive"], 1)
-    renamed_df["% of all events captured"] = round(df["% of all events captured"], 1)
-
-    # Fix mean warning days
 
     return renamed_df
 

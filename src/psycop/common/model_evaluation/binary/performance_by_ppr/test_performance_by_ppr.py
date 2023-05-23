@@ -3,7 +3,7 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
 )
 from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events_hit_by_true_positive import (
     get_percentage_of_events_captured,
-    get_percentage_of_events_captured_from_eval_dataset,
+    get_prop_of_events_captured_from_eval_dataset,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.test_utils.str_to_df import str_to_df
@@ -12,7 +12,7 @@ from psycop.common.test_utils.str_to_df import str_to_df
 def test_get_percentage_of_events_captured_from_eval_dataset(
     synth_eval_dataset: EvalDataset,
 ):
-    get_percentage_of_events_captured_from_eval_dataset(
+    get_prop_of_events_captured_from_eval_dataset(
         eval_dataset=synth_eval_dataset,
         positive_rate=0.02,
     )
