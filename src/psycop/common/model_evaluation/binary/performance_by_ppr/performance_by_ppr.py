@@ -4,7 +4,10 @@ from collections.abc import Sequence
 import numpy as np
 import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events_hit_by_true_positive import (
-    get_percentage_of_events_captured_from_eval_dataset,
+    get_prop_of_events_captured_from_eval_dataset,
+)
+from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
+    get_confusion_matrix_cells_from_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import confusion_matrix
@@ -48,7 +51,6 @@ def get_true_positives(
 def performance_by_ppr(
     eval_dataset: EvalDataset,
     positive_rate: float,
-    round_to: int = 2,
 ) -> pd.DataFrame:
     """Generates a row for a performance_by_threshold table.
 
@@ -62,30 +64,32 @@ def performance_by_ppr(
     """
     preds, _ = eval_dataset.get_predictions_for_positive_rate(positive_rate)
 
-    conf_matrix = confusion_matrix(eval_dataset.y, preds)
+    conf_matrix_df = pd.DataFrame({"pred": preds, "true": eval_dataset.y})
 
-    true_neg = conf_matrix[0][0]
-    false_neg = conf_matrix[1][0]
-    true_pos = conf_matrix[1][1]
-    false_pos = conf_matrix[0][1]
+    conf_matrix = get_confusion_matrix_cells_from_df(df=conf_matrix_df)
+
+    true_neg = conf_matrix.true_negatives
+    false_neg = conf_matrix.false_negatives
+    true_pos = conf_matrix.true_positives
+    false_pos = conf_matrix.false_positives
 
     n_total = true_neg + false_neg + true_pos + false_pos
 
-    true_prevalence = round((true_pos + false_neg) / n_total, round_to)
+    true_prevalence = (true_pos + false_neg) / n_total
 
-    positive_rate = round((true_pos + false_pos) / n_total, round_to)
-    negative_rate = round((true_neg + false_neg) / n_total, round_to)
+    positive_rate = (true_pos + false_pos) / n_total
+    negative_rate = (true_neg + false_neg) / n_total
 
-    pos_pred_val = round(true_pos / (true_pos + false_pos), round_to)
-    neg_pred_val = round(true_neg / (true_neg + false_neg), round_to)
+    pos_pred_val = true_pos / (true_pos + false_pos)
+    neg_pred_val = true_neg / (true_neg + false_neg)
 
-    sens = round(true_pos / (true_pos + false_neg), round_to)
-    spec = round(true_neg / (true_neg + false_pos), round_to)
+    sens = true_pos / (true_pos + false_neg)
+    spec = true_neg / (true_neg + false_pos)
 
-    false_pos_rate = round(false_pos / (true_neg + false_pos), round_to)
-    neg_pos_rate = round(false_neg / (true_pos + false_neg), round_to)
+    false_pos_rate = false_pos / (true_neg + false_pos)
+    neg_pos_rate = false_neg / (true_pos + false_neg)
 
-    acc = round((true_pos + true_neg) / n_total, round_to)
+    acc = (true_pos + true_neg) / n_total
 
     # Must return lists as values, otherwise pd.Dataframe requires setting indices
     metrics_matrix = pd.DataFrame(
@@ -187,7 +191,7 @@ def get_days_from_first_positive_to_diagnosis_from_df(
     return aggregated
 
 
-def get_percent_with_at_least_one_true_positve(
+def get_prop_with_at_least_one_true_positve(
     eval_dataset: EvalDataset,
     positive_rate: float = 0.5,
 ) -> float:
@@ -207,7 +211,7 @@ def get_percent_with_at_least_one_true_positve(
     )
 
     # Return number of unique ids with at least one true positive
-    return df["id"].nunique() / len(set(eval_dataset.ids)) * 100
+    return df["id"].nunique() / len(set(eval_dataset.ids))
 
 
 def generate_performance_by_ppr_table(
@@ -240,25 +244,22 @@ def generate_performance_by_ppr_table(
             aggregation_method="sum",
         )
 
-        threshold_metrics["mean_warning_days"] = round(
-            days_from_first_positive_to_diagnosis(
-                eval_dataset=eval_dataset,
-                positive_rate=positive_rate,
-                aggregation_method="mean",
-            ),
-            0,
+        threshold_metrics["mean_warning_days"] = days_from_first_positive_to_diagnosis(
+            eval_dataset=eval_dataset,
+            positive_rate=positive_rate,
+            aggregation_method="mean",
         )
 
         threshold_metrics[
-            "% with ≥1 true positive"
-        ] = get_percent_with_at_least_one_true_positve(
+            "prop with ≥1 true positive"
+        ] = get_prop_with_at_least_one_true_positve(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
         )
 
         threshold_metrics[
-            "% of all events captured"
-        ] = get_percentage_of_events_captured_from_eval_dataset(
+            "prop of all events captured"
+        ] = get_prop_of_events_captured_from_eval_dataset(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
         )
@@ -269,6 +270,6 @@ def generate_performance_by_ppr_table(
 
     df["warning_days_per_false_positive"] = (
         df["total_warning_days"] / df["false_positives"]
-    ).round(1)
+    )
 
     return df
