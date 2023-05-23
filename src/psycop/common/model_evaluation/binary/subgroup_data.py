@@ -36,12 +36,16 @@ def get_auroc_by_input_df(
             input_name: input_values,
         },
     )
+
     if bin_continuous_input:
-        df[f"{input_name}_binned"], _ = bin_continuous_data(df[input_name], bins=bins)
+        groupby_col_name = f"{input_name}_binned"
+        df[groupby_col_name], _ = bin_continuous_data(df[input_name], bins=bins)
+    else:
+        groupby_col_name = input_name
 
     output_df = auroc_by_group(
         df=df,
-        groupby_col_name=f"{input_name}_binned",
+        groupby_col_name=groupby_col_name,
         confidence_interval=confidence_interval,
     )
 

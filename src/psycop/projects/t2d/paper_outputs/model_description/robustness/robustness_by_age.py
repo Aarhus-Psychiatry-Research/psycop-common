@@ -1,14 +1,14 @@
 import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
-    plot_robustness,
+    t2d_plot_robustness,
 )
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
 def auroc_by_age(run: ModelRun) -> pn.ggplot:
-    print("Plotting AUC by age")
+    print("Plotting AUROC by age")
     eval_ds = run.get_eval_dataset()
 
     df = get_auroc_by_input_df(
@@ -20,14 +20,17 @@ def auroc_by_age(run: ModelRun) -> pn.ggplot:
         confidence_interval=True,
     )
 
-    return plot_robustness(
+    p = t2d_plot_robustness(
         df,
         x_column="age_binned",
         line_y_col_name="auroc",
-        bar_y_col_name="proportion_of_n",
         xlab="Age",
         ylab="AUROC / Proportion of patients",
+        figure_file_name="auroc_by_age.png",
+        rotate_x_axis_labels_degrees=45,
     )
+
+    return p
 
 
 if __name__ == "__main__":
