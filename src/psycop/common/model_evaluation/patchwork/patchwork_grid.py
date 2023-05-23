@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from math import ceil
 
 import patchworklib as pw
 import plotnine as pn
@@ -13,10 +14,14 @@ def create_patchwork_grid(
     """Create a grid from a sequence of ggplot objects."""
     print_a4_ratio(plots, single_plot_dimensions, n_in_row)
 
-    bricks = [pw.load_ggplot(plot, figsize=single_plot_dimensions) for plot in plots]
+    bricks = []
+
+    for plot in plots:
+        # Iterate here to catch errors while only a single plot is in scope
+        # Makes debugging much easier
+        bricks.append(pw.load_ggplot(plot, figsize=single_plot_dimensions))
 
     alphabet = "abcdefghijklmnopqrstuvwxyz"
-
     rows = []
     current_row = []
 
@@ -28,7 +33,10 @@ def create_patchwork_grid(
         # Add it to the row
         current_row.append(bricks[i])
 
-        if i % n_in_row != 0:
+        row_is_full = i % n_in_row != 0
+        all_bricks_used = i == len(bricks) - 1
+
+        if row_is_full or all_bricks_used:
             # Rows should consist of two elements
             rows.append(pw.stack(current_row, operator="|"))
             current_row = []
@@ -44,7 +52,7 @@ def print_a4_ratio(
     n_in_row: int,
 ):
     """Print conversion factor to A4 for a given grid of plots."""
-    n_rows = int(len(plots) / n_in_row)
+    n_rows = ceil(len(plots) / n_in_row)
     total_height = single_plot_dimensions[1] * n_rows
     total_width = single_plot_dimensions[0] * n_in_row
     a4_ratio = 297 / 210

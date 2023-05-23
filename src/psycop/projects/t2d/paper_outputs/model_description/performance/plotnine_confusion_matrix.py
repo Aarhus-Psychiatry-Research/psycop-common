@@ -10,14 +10,14 @@ from psycop.projects.t2d.paper_outputs.config import PN_THEME
 def plotnine_confusion_matrix(matrix: ConfusionMatrix, x_title: str) -> pn.ggplot:
     df = str_to_df(
         f"""true,pred,estimate
-Yes,+,{matrix.true_positives},
-Yes,-,{matrix.false_negatives},
-No,+,{matrix.false_positives},
-No,-,{matrix.true_negatives},
-" ",+,"PPV:\n{round(matrix.ppv, 2)}",
-" ",-,"NPV:\n{round(matrix.npv, 2)}",
-No," ","Spec:\n{round(matrix.specificity, 2)}",
-Yes," ","Sens:\n{round(matrix.sensitivity, 2)}",
+Yes,+,"{f'{matrix.true_positives:,}'}",
+Yes,-,"{f'{matrix.false_negatives:,}'}",
+No,+,"{f'{matrix.false_positives:,}'}",
+No,-,"{f'{matrix.true_negatives:,}'}",
+" ",+,"PPV:\n{round(matrix.ppv*100, 1)}%",
+" ",-,"NPV:\n{round(matrix.npv*100,1)}%",
+No," ","Spec:\n{round(matrix.specificity*100, 1)}%",
+Yes," ","Sens:\n{round(matrix.sensitivity*100, 1)}%",
 """,
     )
 

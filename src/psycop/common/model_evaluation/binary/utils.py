@@ -84,11 +84,12 @@ def sensitivity_by_group(
     n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Get the sensitivity by group within a dataframe."""
-    return df.groupby(groupby_col_name, as_index=False).apply(
-        _sensitivity_within_group,
+    df = df.groupby(groupby_col_name, as_index=False).apply(
+        func=_sensitivity_within_group,
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
     )
+    return df
 
 
 def get_top_fraction(df: pd.DataFrame, col_name: str, fraction: float) -> pd.DataFrame:

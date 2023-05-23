@@ -2,7 +2,7 @@ import pandas as pd
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
-def get_percentage_of_events_captured_from_eval_dataset(
+def get_prop_of_events_captured_from_eval_dataset(
     eval_dataset: EvalDataset,
     positive_rate: float,
 ) -> float:
@@ -30,4 +30,4 @@ def get_percentage_of_events_captured(df: pd.DataFrame) -> float:
         lambda x: x["pred"].sum() > 0,
     )
 
-    return len(df_events_captured) / len(df_patients_with_events) * 100
+    return len(df_events_captured) / len(df_patients_with_events)

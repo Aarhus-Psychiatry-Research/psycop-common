@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 import plotnine as pn
-from psycop.projects.t2d.utils.best_runs import Run, RunGroup
+from psycop.projects.t2d.utils.best_runs import ModelRun, RunGroup
 
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
@@ -12,7 +12,7 @@ EVALUATION_ROOT = Path(__file__).parent
 
 DEV_GROUP_NAME = "mistouching-unwontedness"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
-BEST_DEV_RUN = Run(
+BEST_DEV_RUN = ModelRun(
     group=DEVELOPMENT_GROUP,
     name="surefootedlygoatpox",
     pos_rate=0.03,
@@ -21,7 +21,7 @@ BEST_DEV_RUN = Run(
 EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 BEST_POS_RATE = 0.03
-EVAL_RUN = Run(
+EVAL_RUN = ModelRun(
     group=EVAL_GROUP,
     name="pseudoreformatoryhizz",
     pos_rate=BEST_POS_RATE,

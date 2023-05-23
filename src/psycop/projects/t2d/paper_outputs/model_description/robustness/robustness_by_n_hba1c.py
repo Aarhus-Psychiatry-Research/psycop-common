@@ -5,7 +5,7 @@ from typing import Optional, Union
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.common.model_training.training_output.model_evaluator import EvalDataset
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, ROBUSTNESS_PATH
-from psycop.projects.t2d.utils.best_runs import Run
+from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
 def plot_performance_by_n_hba1c(
@@ -45,7 +45,7 @@ def plot_performance_by_n_hba1c(
     # TODO: Implement plot function
 
 
-def plot_auroc_by_n_hba1c(run: Run):
+def plot_auroc_by_n_hba1c(run: ModelRun):
     print("Plotting AUC by n HbA1c")
     eval_ds = run.get_eval_dataset(
         custom_columns=["eval_hba1c_within_9999_days_count_fallback_nan"],
