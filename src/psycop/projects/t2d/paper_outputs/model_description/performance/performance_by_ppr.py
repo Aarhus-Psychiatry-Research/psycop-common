@@ -59,7 +59,8 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
     renamed_df["Mean years from first positive to T2D"] = round(
-        df["mean_warning_days"] / 365, 1
+        df["mean_warning_days"] / 365,
+        1,
     )
 
     return renamed_df

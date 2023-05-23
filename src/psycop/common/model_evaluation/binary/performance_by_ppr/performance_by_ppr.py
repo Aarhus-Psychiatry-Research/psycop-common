@@ -10,7 +10,6 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from sklearn.metrics import confusion_matrix
 
 
 def get_true_positives(
