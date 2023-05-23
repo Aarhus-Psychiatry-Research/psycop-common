@@ -22,7 +22,6 @@ def test_generate_performance_by_threshold_table(
     output_table: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=subsampled_eval_dataset,
         positive_rates=positive_rates,
-        output_format="df",
     )
     assert output_table["true_prevalence"].std() == 0
     assert output_table["positive_rate"].is_monotonic_decreasing
@@ -40,7 +39,7 @@ def test_generate_performance_by_threshold_table(
     assert output_table["false_negatives"].is_monotonic_increasing
     assert output_table["total_warning_days"].is_monotonic_decreasing
     assert output_table["warning_days_per_false_positive"].dtype == "float64"
-    assert output_table["% with ≥1 true positive"].is_monotonic_decreasing
+    assert output_table["prop with ≥1 true positive"].is_monotonic_decreasing
 
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):

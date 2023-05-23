@@ -130,12 +130,12 @@ def _add_commit(c: Context, msg: Optional[str] = None):
     if msg is None:
         msg = input("Commit message [--a to amend previous commit]: ")
 
-        if "--a" in msg:
-            c.run("git commit --amend --reuse-message=HEAD", pty=NOT_WINDOWS, hide=True)
-            print(f"{msg_type.GOOD} Commit amended")
-
-    c.run(f'git commit -m "{msg}"', pty=NOT_WINDOWS, hide=True)
-    print(f"{msg_type.GOOD} Changes added and committed")
+    if "--a" in msg:
+        c.run("git commit --amend --reuse-message=HEAD", pty=NOT_WINDOWS, hide=True)
+        print(f"{msg_type.GOOD} Commit amended")
+    else:
+        c.run(f'git commit -m "{msg}"', pty=NOT_WINDOWS, hide=True)
+        print(f"{msg_type.GOOD} Changes added and committed")
 
 
 def is_uncommitted_changes(c: Context) -> bool:
