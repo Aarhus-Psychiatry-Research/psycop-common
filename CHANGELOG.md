@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.74.0 (2023-05-23)
+### Feature
+* Add thousand separator to conf matrix ([`fc9b6dc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fc9b6dcc980cbcbc51af0f044fd70b090f6862fb))
+* Add thousand separator to conf matrix ([`4f98c0b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4f98c0b3be497748382d94a64ca698d67168bbd6))
+* Add thousand separator to plotnine conf matrix ([`d27d0f7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d27d0f7dc390f6f88421070261399c8df5d505e2))
+* Add lines to sens by time to event ([`b739267`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b73926792969feb2c8ee4bc5d3ac1a857b1846bb))
+* First stab at sens by time to event plot ([`91571f9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/91571f9f5a1edba08ee33e170b98ede70a15d669))
+* Add full performance figure ([`45c1d6e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/45c1d6e73bb525c19f0864328c0a80b22fff6c5e))
+
+### Fix
+* Do not check for venv for tests, conflicts with CI ([`672d43f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/672d43fa866fd6f29cec52abbb70da1cf194c052))
+* Handle uneven number of plots in patchwork_grid ([`a833eb7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a833eb7d694e661c3c124d45f79c61095dfa4ef6))
+
 ## v0.73.0 (2023-05-17)
 ### Feature
 * Convert auroc to plotnine ([`80f5cbf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/80f5cbf734367a433687ca87fd026cd9f8ad73f2))
