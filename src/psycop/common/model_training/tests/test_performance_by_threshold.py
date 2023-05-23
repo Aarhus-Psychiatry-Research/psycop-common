@@ -39,7 +39,7 @@ def test_generate_performance_by_threshold_table(
     assert output_table["false_negatives"].is_monotonic_increasing
     assert output_table["total_warning_days"].is_monotonic_decreasing
     assert output_table["warning_days_per_false_positive"].dtype == "float64"
-    assert output_table["% with ≥1 true positive"].is_monotonic_decreasing
+    assert output_table["prop with ≥1 true positive"].is_monotonic_decreasing
 
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):

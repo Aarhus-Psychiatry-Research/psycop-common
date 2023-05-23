@@ -29,9 +29,9 @@ def test_get_percentage_of_events_captured():
         """,
     )
 
-    percentage_of_events_captured = get_percentage_of_events_captured(df=input_df)
+    prop_of_events_captured = get_percentage_of_events_captured(df=input_df)
 
-    assert percentage_of_events_captured == (1 / 3) * 100
+    assert prop_of_events_captured == (1 / 3)
 
 
 def test_get_true_positives(synth_eval_dataset: EvalDataset):
