@@ -1,30 +1,10 @@
-import pandas as pd
 import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
-from psycop.projects.t2d.paper_outputs.config import COLORS, EVAL_RUN, PN_THEME
+from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
+    plot_robustness,
+)
 from psycop.projects.t2d.utils.best_runs import ModelRun
-
-
-def plot_robustness(df: pd.DataFrame) -> pn.ggplot:
-    p = (
-        pn.ggplot(df, pn.aes(x="age_binned", y="auroc"))
-        + pn.geom_bar(
-            pn.aes(x="age_binned", y="proportion_of_n"),
-            stat="identity",
-            fill=COLORS.background,
-        )
-        + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-            color=COLORS.primary,
-            size=0.5,
-        )
-        + pn.geom_path(group=1, color=COLORS.primary, size=1)
-        + pn.xlab("Age")
-        + pn.ylab("AUROC / Proportion of patients")
-        + PN_THEME
-    )
-
-    return p
 
 
 def auroc_by_age(run: ModelRun) -> pn.ggplot:
@@ -40,7 +20,14 @@ def auroc_by_age(run: ModelRun) -> pn.ggplot:
         confidence_interval=True,
     )
 
-    return plot_robustness(df)
+    return plot_robustness(
+        df,
+        x_column="age_binned",
+        line_y_col_name="auroc",
+        bar_y_col_name="proportion_of_n",
+        xlab="Age",
+        ylab="AUROC / Proportion of patients",
+    )
 
 
 if __name__ == "__main__":

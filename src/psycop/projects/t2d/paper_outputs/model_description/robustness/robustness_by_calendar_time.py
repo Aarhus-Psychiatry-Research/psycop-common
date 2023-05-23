@@ -2,6 +2,9 @@ from psycop.common.model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
+    plot_robustness,
+)
 
 
 def roc_auc_by_calendar_time():
@@ -16,7 +19,14 @@ def roc_auc_by_calendar_time():
         confidence_interval=True,
     )
 
-    # TODO: Create plotting function
+    return plot_robustness(
+        df,
+        x_column="age_binned",
+        line_y_col_name="auroc",
+        bar_y_col_name="proportion_of_n",
+        xlab="Age",
+        ylab="AUROC / Proportion of patients",
+    )
 
 
 if __name__ == "__main__":
