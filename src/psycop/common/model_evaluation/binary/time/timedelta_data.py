@@ -45,7 +45,7 @@ def get_timedelta_series(
 
 def get_timedelta_df(
     y: Iterable[int],
-    y_hat: Iterable[float],
+    output: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -55,11 +55,28 @@ def get_timedelta_df(
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
-    """Get a timedelta dataframe with the time difference between two timestamps."""
+    """Get a timedelta dataframe with the time difference between two timestamps.
+
+    Args:
+        y (Iterable[int]): True labels
+        output (Iterable[float]): Model predictions. This can be either be probabilities or predictions, depending on whether the timedelta dataframe will be used for calculating sensitivity or AUROC.
+        time_one (Iterable[pd.Timestamp]): Timestamp for time one
+        time_two (Iterable[pd.Timestamp]): Timestamp for time two
+        direction (Literal[&quot;t1): The order of the timestamps in the calculation of time difference. Takes either "t1-t2" or "t2-t1"
+        bins (Sequence[float]): Bin values to aggregate by.
+        bin_unit (TIMEDELTA_STRINGS): The unit of bin values, such as hours or days. Takes "h", "D", "M", "Q", or "Y".
+        bin_continuous_input (bool, optional): Whether to aggregate continuous output by bins. Defaults to True.
+        drop_na_events (bool, optional): Whether to drop missing values from the first timestamp. Defaults to True.
+        min_n_in_bin (int, optional): Minimum number of samples in included bins. If there are less than n samples in a bin, it will be set to NA. Defaults to 5.
+
+    Returns:
+        pd.DataFrame: Timedelta dataframe
+    """
+
     df = pd.DataFrame(
         {
             "y": y,
-            "y_hat": y_hat,
+            "output": output,
             "t1_timestamp": time_one,
             "t2_timestamp": time_two,
         },
@@ -106,6 +123,7 @@ def get_auroc_by_timedelta_df(
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
+    n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
     some event (e.g. time of diagnosis, time from first visit).
@@ -124,12 +142,13 @@ def get_auroc_by_timedelta_df(
         bin_continuous_input: Whether to bin input. Defaults to True.
         drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
         min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
+        n_bootstraps: number of samples for bootstrap resampling
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
     df = get_timedelta_df(
         y=y,
-        y_hat=y_hat_probs,
+        output=y_hat_probs,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -138,12 +157,13 @@ def get_auroc_by_timedelta_df(
         bin_continuous_input=bin_continuous_input,
         drop_na_events=drop_na_events,
         min_n_in_bin=min_n_in_bin,
-    )
+    ).rename(columns={"output": "y_hat_probs"})
 
     return auroc_by_group(
         df=df,
         groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
+        n_bootstraps=n_bootstraps,
     )
 
 
@@ -182,7 +202,7 @@ def get_sensitivity_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat=y_hat,
+        output=y_hat,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -191,7 +211,7 @@ def get_sensitivity_by_timedelta_df(
         bin_continuous_input=bin_continuous_input,
         drop_na_events=drop_na_events,
         min_n_in_bin=min_n_in_bin,
-    )
+    ).rename(columns={"output": "y_hat"})
 
     return sensitivity_by_group(
         df=df,
@@ -222,7 +242,7 @@ def create_sensitivity_by_time_to_outcome_df(
     """
 
     (
-        y_hat_probs_series,
+        y_hat_series,
         actual_positive_rate,
     ) = eval_dataset.get_predictions_for_positive_rate(
         desired_positive_rate=desired_positive_rate,
@@ -231,7 +251,7 @@ def create_sensitivity_by_time_to_outcome_df(
     df = pd.DataFrame(
         {
             "y": eval_dataset.y,
-            "y_hat_probs": y_hat_probs_series,
+            "y_hat": y_hat_series,
             "outcome_timestamp": outcome_timestamps,
             "prediction_timestamp": prediction_timestamps,
         },
@@ -241,7 +261,7 @@ def create_sensitivity_by_time_to_outcome_df(
 
     df = get_timedelta_df(
         y=df["y"],
-        y_hat=df["y_hat_probs"],
+        output=df["y_hat"],
         time_one=df["prediction_timestamp"],
         time_two=df["outcome_timestamp"],
         direction="t2-t1",
@@ -251,10 +271,12 @@ def create_sensitivity_by_time_to_outcome_df(
         drop_na_events=True,
         min_n_in_bin=5,
     )
-    df = df.rename(columns={"unit_from_event_binned": "days_to_outcome_binned"})
+    df = df.rename(
+        columns={"unit_from_event_binned": "days_to_outcome_binned", "output": "y_hat"},
+    )
 
-    df["true_positive"] = (df["y"] == 1) & (df["y_hat_probs"] == 1)
-    df["false_negative"] = (df["y"] == 1) & (df["y_hat_probs"] == 0)
+    df["true_positive"] = (df["y"] == 1) & (df["y_hat"] == 1)
+    df["false_negative"] = (df["y"] == 1) & (df["y_hat"] == 0)
 
     df_with_metric = sensitivity_by_group(
         df=df,

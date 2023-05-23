@@ -16,6 +16,7 @@ def get_auroc_by_input_df(
     bins: Sequence[float] = (0, 1, 2, 5, 10),
     bin_continuous_input: Optional[bool] = True,
     confidence_interval: bool = True,
+    n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Calculate performance by given input values, e.g. age or number of hbac1
     measurements.
@@ -26,6 +27,7 @@ def get_auroc_by_input_df(
         bins: Bins to group by. Defaults to (0, 1, 2, 5, 10, 100).
         bin_continuous_input: Whether to bin input. Defaults to True.
         confidence_interval: Whether to bootstrap confidence interval. Defaults to True.
+        n_bootstraps: number of samples for bootstrap resampling
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
@@ -43,6 +45,7 @@ def get_auroc_by_input_df(
             df=df,
             groupby_col_name=f"{input_name}_binned",
             confidence_interval=confidence_interval,
+            n_bootstraps=n_bootstraps,
         )
 
     else:
@@ -52,6 +55,7 @@ def get_auroc_by_input_df(
             df=df,
             groupby_col_name=input_name,
             confidence_interval=confidence_interval,
+            n_bootstraps=n_bootstraps,
         )
 
     final_df = output_df.reset_index().rename({0: "metric"}, axis=1)

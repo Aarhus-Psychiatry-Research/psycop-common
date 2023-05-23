@@ -12,6 +12,7 @@ def roc_auc_by_periodic_time_df(
     timestamps: Iterable[pd.Timestamp],
     bin_period: str,
     confidence_interval: bool = True,
+    n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Calculate performance by cyclic time period of prediction time data
     frame. Cyclic time periods include e.g. day of week, hour of day, etc.
@@ -21,6 +22,7 @@ def roc_auc_by_periodic_time_df(
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
         confidence_interval (bool, optional): Whether to create bootstrapped confidence interval. Defaults to True.
+        n_bootstraps: number of samples for bootstrap resampling
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
@@ -74,6 +76,7 @@ def roc_auc_by_periodic_time_df(
         df=df,
         groupby_col_name="time_bin",
         confidence_interval=confidence_interval,
+        n_bootstraps=n_bootstraps,
     )
 
     return output_df.reset_index().rename({0: "metric"}, axis=1)
