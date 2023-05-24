@@ -1,8 +1,14 @@
 import copy
+import sys
+from pathlib import Path
 from typing import Any
 
 import wandb
 from omegaconf import DictConfig, OmegaConf
+from psycop.common.feature_generation.application_modules.project_setup import (
+    init_wandb,
+)
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.config_schemas.basemodel import BaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.utils.utils import (
@@ -60,6 +66,13 @@ class WandbHandler:
             if self.cfg.project.wandb.mode != "offline"
             else RandomWords().get_random_word() + RandomWords().get_random_word()
         )
+
+        # Create debug-cli on Windows, otherwise complains that it's missing
+        if sys.platform == "win32":
+            (PSYCOP_PKG_ROOT.parent.parent.parent / "wandb" / "debug-cli.onerm").mkdir(
+                exist_ok=True,
+                parents=True,
+            )
 
         wandb.init(
             project=f"{self.cfg.project.name}-baseline-model-training",
