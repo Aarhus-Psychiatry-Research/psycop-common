@@ -86,7 +86,6 @@ class PipelineRun:
     def eval_dir(self) -> Path:
         return self.group.group_dir / self.name
 
-    @property
     def model_type(self) -> str:
         return self.cfg.model.name
 
