@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.76.0 (2023-05-24)
+### Feature
+* Automatic robustness figure ([`07f9f2c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/07f9f2cada678d19e85fef6e139c029ae8a41c5d))
+* Abstract robustness plots ([`514226b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/514226ba12b61ef6bee9ba8a93adf8e907dfbedb))
+
+### Fix
+* Ensure X_by_group returns a dataframe ([`57b3160`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/57b31608278bf58be7da5227511e65fafe067162))
+* Ensure X_by_group returns a dataframe ([`efab826`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/efab826354785cee8e18d7f761f70c0e4731a263))
+
 ## v0.75.1 (2023-05-24)
 ### Fix
 * Pin wandb version to avoid failing on tests ([`2a92dda`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2a92dda845db5a49264454b20843eb86733ae5c8))
