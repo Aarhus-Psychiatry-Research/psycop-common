@@ -425,7 +425,25 @@ def test_for_venv(c: Context):
 def test_for_rej(c: Context):
     # Get all paths in current directory or subdirectories that end in .rej
     c = c
-    rej_files = list(Path("src").rglob("*.rej"))
+    search_dirs = [
+        d
+        for d in Path(".").iterdir()
+        if d.is_dir()
+        and not (
+            "venv" in d.name
+            or ".git" in d.name
+            or "build" in d.name
+            or ".tox" in d.name
+        )
+    ]
+    print(f"Looking for .rej files in {search_dirs}")
+
+    # Get top_level rej files
+    rej_files = list(Path(".").glob("*.rej"))
+
+    for d in search_dirs:
+        rej_files_in_dir = list(d.rglob("*.rej"))
+        rej_files += rej_files_in_dir
 
     if len(rej_files) > 0:
         print(f"\n{msg_type.FAIL} Found .rej files leftover from cruft update.\n")
@@ -433,6 +451,8 @@ def test_for_rej(c: Context):
             print(f"    /{file}")
         print("\nResolve the conflicts and try again. \n")
         exit(1)
+    else:
+        print(f"{msg_type.GOOD} No .rej files found.")
 
 
 @task
