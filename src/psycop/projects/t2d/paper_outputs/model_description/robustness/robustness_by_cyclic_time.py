@@ -6,10 +6,10 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
-def t2d_auroc_by_day_of_week(run: ModelRun) -> pn.ggplot:
+def t2d_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
@@ -28,7 +28,7 @@ def t2d_auroc_by_day_of_week(run: ModelRun) -> pn.ggplot:
     )
 
 
-def t2d_auroc_by_month_of_year(run: ModelRun) -> pn.ggplot:
+def t2d_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(

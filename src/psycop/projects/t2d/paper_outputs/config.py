@@ -3,16 +3,25 @@ from datetime import datetime
 from pathlib import Path
 
 import plotnine as pn
-from psycop.projects.t2d.utils.best_runs import ModelRun, RunGroup
+from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
 
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
 EVALUATION_ROOT = Path(__file__).parent
 
+
+def get_chosen_model() -> PipelineRun:
+    return PipelineRun(
+        group=DEVELOPMENT_GROUP,
+        name="surefootedlygoatpox",
+        pos_rate=0.03,
+    )
+
+
 DEV_GROUP_NAME = "mistouching-unwontedness"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
-BEST_DEV_RUN = ModelRun(
+BEST_DEV_RUN = PipelineRun(
     group=DEVELOPMENT_GROUP,
     name="surefootedlygoatpox",
     pos_rate=0.03,
@@ -21,7 +30,7 @@ BEST_DEV_RUN = ModelRun(
 EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 BEST_POS_RATE = 0.03
-EVAL_RUN = ModelRun(
+EVAL_RUN = PipelineRun(
     group=EVAL_GROUP,
     name="pseudoreformatoryhizz",
     pos_rate=BEST_POS_RATE,

@@ -6,14 +6,14 @@ from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
 from psycop.projects.t2d.paper_outputs.config import FIGURES_PATH
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 from wasabi import Printer
 
 msg = Printer(timestamp=True)
 
 
 def t2d_create_patchwork_figure(
-    run: ModelRun,
+    run: PipelineRun,
     plot_fns: Sequence[Callable],
     output_filename: str,
 ):

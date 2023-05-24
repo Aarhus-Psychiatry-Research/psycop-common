@@ -5,7 +5,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
 def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
@@ -84,7 +84,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     return p
 
 
-def t2d_sensitivity_by_time_to_event(run: ModelRun) -> pn.ggplot:
+def t2d_sensitivity_by_time_to_event(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
     return sensitivity_by_time_to_event(eval_dataset=eval_ds)

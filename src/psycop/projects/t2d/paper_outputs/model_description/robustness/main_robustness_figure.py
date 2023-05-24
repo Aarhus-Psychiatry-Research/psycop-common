@@ -18,10 +18,10 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_b
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_time_from_first_visit import (
     t2d_auroc_by_time_from_first_visit,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
-def t2d_create_main_robustness_figure(run: ModelRun) -> None:
+def t2d_create_main_robustness_figure(run: PipelineRun) -> None:
     t2d_create_patchwork_figure(
         run=run,
         plot_fns=(

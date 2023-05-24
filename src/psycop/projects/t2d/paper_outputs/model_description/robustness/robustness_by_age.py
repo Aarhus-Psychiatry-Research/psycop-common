@@ -4,10 +4,10 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
-def t2d_auroc_by_age(run: ModelRun) -> pn.ggplot:
+def t2d_auroc_by_age(run: PipelineRun) -> pn.ggplot:
     print("Plotting AUROC by age")
     eval_ds = run.get_eval_dataset()
 

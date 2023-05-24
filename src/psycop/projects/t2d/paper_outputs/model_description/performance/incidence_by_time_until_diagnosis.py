@@ -1,10 +1,10 @@
 import plotnine as pn
 import polars as pl
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
-def t2d_first_pred_to_event(run: ModelRun) -> pn.ggplot:
+def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
     df = pl.DataFrame(

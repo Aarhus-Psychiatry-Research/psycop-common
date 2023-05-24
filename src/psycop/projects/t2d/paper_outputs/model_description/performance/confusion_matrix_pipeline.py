@@ -7,10 +7,10 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH
 from psycop.projects.t2d.paper_outputs.model_description.performance.plotnine_confusion_matrix import (
     plotnine_confusion_matrix,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
-def t2d_confusion_matrix_plot(run: ModelRun) -> pn.ggplot:
+def t2d_confusion_matrix_plot(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
     df = pd.DataFrame(

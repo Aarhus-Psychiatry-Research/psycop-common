@@ -27,13 +27,13 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_b
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_time_from_first_visit import (
     t2d_auroc_by_time_from_first_visit,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 from wasabi import Printer
 
 pd.set_option("mode.chained_assignment", None)
 
 
-def evaluate_best_run(run: ModelRun):
+def evaluate_best_run(run: PipelineRun):
     msg = Printer(timestamp=True)
     msg.info(f"Evaluating {run.name}")
 

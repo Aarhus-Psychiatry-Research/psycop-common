@@ -7,10 +7,10 @@ from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
-def t2d_auroc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
+def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
     print("Plotting AUC by time from first visit")
     eval_ds = run.get_eval_dataset()
 
