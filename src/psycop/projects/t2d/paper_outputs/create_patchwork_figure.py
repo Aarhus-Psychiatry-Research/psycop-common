@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Callable, Sequence
+from typing import Callable
 
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
@@ -12,7 +13,9 @@ msg = Printer(timestamp=True)
 
 
 def t2d_create_patchwork_figure(
-    run: ModelRun, plot_fns: Sequence[Callable], output_filename: str
+    run: ModelRun,
+    plot_fns: Sequence[Callable],
+    output_filename: str,
 ):
     """Create a patchwork figure from plot_fns. All plot_fns must only need a ModelRun object as input, and return a plotnine ggplot output."""
     for output_str, value in (

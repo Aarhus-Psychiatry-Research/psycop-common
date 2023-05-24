@@ -5,9 +5,6 @@ from psycop.projects.t2d.paper_outputs.create_patchwork_figure import (
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
     t2d_auroc_by_age,
 )
-from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_calendar_time import (
-    t2d_auroc_by_quarter,
-)
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_cyclic_time import (
     t2d_auroc_by_day_of_week,
     t2d_auroc_by_month_of_year,

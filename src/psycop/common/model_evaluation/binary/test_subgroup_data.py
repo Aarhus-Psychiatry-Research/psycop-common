@@ -1,10 +1,8 @@
 import pandas as pd
-from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.common.model_evaluation.binary.utils import (
     auroc_by_group,
     sensitivity_by_group,
 )
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
