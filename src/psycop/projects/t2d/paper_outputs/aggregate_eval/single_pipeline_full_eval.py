@@ -1,7 +1,4 @@
-from psycop.projects.t2d.paper_outputs.config import BEST_DEV_RUN
-from psycop.projects.t2d.paper_outputs.create_patchwork_figure import (
-    t2d_create_patchwork_figure,
-)
+from psycop.projects.t2d.paper_outputs.config import BEST_DEV_RUN, DEV_GROUP_NAME
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
 )
@@ -14,7 +11,10 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustn
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     run_pipeline_on_train,
 )
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
+    t2d_create_patchwork_figure,
+)
+from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
 
 
 def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
@@ -25,4 +25,10 @@ def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
 
 
 if __name__ == "__main__":
-    t2d_main_manuscript_eval(dev_pipeline=BEST_DEV_RUN)
+    t2d_main_manuscript_eval(
+        dev_pipeline=PipelineRun(
+            group=RunGroup(name=DEV_GROUP_NAME),
+            name="townwardspluralistic",
+            pos_rate=0.03,
+        ),
+    )

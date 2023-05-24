@@ -1,5 +1,5 @@
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
-from psycop.projects.t2d.paper_outputs.create_patchwork_figure import (
+from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
     t2d_create_patchwork_figure,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
