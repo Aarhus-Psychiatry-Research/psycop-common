@@ -434,9 +434,14 @@ def test_for_rej(c: Context):
             or ".git" in d.name
             or "build" in d.name
             or ".tox" in d.name
+            or "cache" in d.name
+            or "vscode" in d.name
+            or "wandb" in d.name
         )
     ]
-    print(f"Looking for .rej files in {search_dirs}")
+    print(
+        f"Looking for .rej files in the current dir and {[d.name for d in search_dirs]}"
+    )
 
     # Get top_level rej files
     rej_files = list(Path(".").glob("*.rej"))
