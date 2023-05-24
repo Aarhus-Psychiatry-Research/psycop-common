@@ -10,14 +10,14 @@ def _auroc_within_group(
     df: pd.DataFrame,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
-) -> pd.Series:
+) -> pd.DataFrame:
     """Get the auroc within a dataframe."""
     if df.empty or df["y"].nunique() == 1 or len(df) < 5:
         # Many of our models probably try to predict the majority class.
         # I'm not sure how exactly we want to handle this, but thousands of msg.info is not ideal.
         # For now, suppressing this message.
         # Also protect against fewer than 5 in bin
-        return pd.Series({"auroc": np.nan, "n_in_bin": np.nan})
+        return pd.DataFrame({"auroc": np.nan, "n_in_bin": np.nan}, index=[0])
 
     auroc = roc_auc_score(df["y"], df["y_hat_probs"])
     auroc_by_group = {"auroc": auroc, "n_in_bin": len(df)}
@@ -33,7 +33,7 @@ def _auroc_within_group(
         auroc_by_group["ci_lower"] = ci[0][0]
         auroc_by_group["ci_upper"] = ci[0][1]
 
-    return pd.Series(auroc_by_group)
+    return pd.DataFrame(auroc_by_group, index=[0])
 
 
 def auroc_by_group(
@@ -43,22 +43,26 @@ def auroc_by_group(
     n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Get the auroc by group within a dataframe."""
-    return df.groupby(groupby_col_name, as_index=False).apply(
-        _auroc_within_group,
-        confidence_interval=confidence_interval,
-        n_bootstraps=n_bootstraps,
-    )
+    df = (
+        df.groupby(groupby_col_name).apply(
+            _auroc_within_group,
+            confidence_interval=confidence_interval,
+            n_bootstraps=n_bootstraps,
+        )
+    ).reset_index(drop=False)
+
+    return df
 
 
 def _sensitivity_within_group(
     df: pd.DataFrame,
     confidence_interval: bool = True,
     n_bootstraps: int = 100,
-) -> pd.Series:
+) -> pd.DataFrame:
     """Get the sensitivity within a dataframe."""
     if df.empty or len(df) < 5:
         # Protect against fewer than 5 in bin
-        return pd.Series({"sensitivity": np.nan, "n_in_bin": np.nan})
+        return pd.DataFrame({"sensitivity": np.nan, "n_in_bin": np.nan}, index=[0])
 
     sensitivity = recall_score(df["y"], df["y_hat"])
     sensitivity_by_group = {"sensitivity": sensitivity, "n_in_bin": len(df)}
@@ -74,7 +78,7 @@ def _sensitivity_within_group(
         sensitivity_by_group["ci_lower"] = ci[0][0]
         sensitivity_by_group["ci_upper"] = ci[0][1]
 
-    return pd.Series(sensitivity_by_group)
+    return pd.DataFrame(sensitivity_by_group, index=[0])
 
 
 def sensitivity_by_group(
@@ -84,11 +88,16 @@ def sensitivity_by_group(
     n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Get the sensitivity by group within a dataframe."""
-    df = df.groupby(groupby_col_name, as_index=False).apply(
-        func=_sensitivity_within_group,
-        confidence_interval=confidence_interval,
-        n_bootstraps=n_bootstraps,
+    df = (
+        df.groupby(groupby_col_name)
+        .apply(
+            func=_sensitivity_within_group,
+            confidence_interval=confidence_interval,
+            n_bootstraps=n_bootstraps,
+        )
+        .reset_index(drop=False)
     )
+
     return df
 
 
