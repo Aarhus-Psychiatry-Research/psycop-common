@@ -56,7 +56,7 @@ def roc_auc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
 
     return t2d_plot_robustness(
         plot_df,
-        x_column="time_bin",
+        x_column="unit_from_event_binned",
         line_y_col_name="auroc",
         xlab="Months since first visit",
         figure_file_name="t2d_auroc_by_time_from_first_visit",
