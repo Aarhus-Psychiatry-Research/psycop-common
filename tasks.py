@@ -440,7 +440,7 @@ def test_for_rej(c: Context):
         )
     ]
     print(
-        f"Looking for .rej files in the current dir and {[d.name for d in search_dirs]}"
+        f"Looking for .rej files in the current dir and {[d.name for d in search_dirs]}",
     )
 
     # Get top_level rej files
