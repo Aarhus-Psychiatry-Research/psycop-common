@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.75.1 (2023-05-24)
+### Fix
+* Pin wandb version to avoid failing on tests ([`2a92dda`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2a92dda845db5a49264454b20843eb86733ae5c8))
+
 ## v0.75.0 (2023-05-23)
 ### Feature
 * Generate a publication-ready performance_by_ppr table ([`32c20ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/32c20edfa1cfdd855c505e546b6304bbf1ffa2a9))
