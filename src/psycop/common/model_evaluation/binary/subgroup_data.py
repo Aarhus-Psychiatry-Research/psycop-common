@@ -38,25 +38,19 @@ def get_auroc_by_input_df(
             input_name: input_values,
         },
     )
+
     if bin_continuous_input:
-        df[f"{input_name}_binned"], _ = bin_continuous_data(df[input_name], bins=bins)
-
-        output_df = auroc_by_group(
-            df=df,
-            groupby_col_name=f"{input_name}_binned",
-            confidence_interval=confidence_interval,
-            n_bootstraps=n_bootstraps,
-        )
-
+        groupby_col_name = f"{input_name}_binned"
+        df[groupby_col_name], _ = bin_continuous_data(df[input_name], bins=bins)
     else:
-        df["n_in_bin"] = df.groupby(input_name)[input_name].transform("count")
+        groupby_col_name = input_name
 
-        output_df = auroc_by_group(
-            df=df,
-            groupby_col_name=input_name,
-            confidence_interval=confidence_interval,
-            n_bootstraps=n_bootstraps,
-        )
+    output_df = auroc_by_group(
+        df=df,
+        groupby_col_name=groupby_col_name,
+        confidence_interval=confidence_interval,
+        n_bootstraps=n_bootstraps,
+    )
 
     final_df = output_df.reset_index().rename({0: "metric"}, axis=1)
     return final_df

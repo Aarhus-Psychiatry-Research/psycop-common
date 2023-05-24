@@ -1,53 +1,52 @@
+import plotnine as pn
 from psycop.common.model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
+    t2d_plot_robustness,
+)
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def auroc_by_hour_of_day(run: ModelRun):
+def t2d_auroc_by_day_of_week(run: ModelRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
-    roc_auc_by_periodic_time_df(
+    df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs,
+        y_hat_probs=eval_ds.y_hat_probs,
         timestamps=eval_ds.pred_timestamps,
-        bin_period="H",
+        bin_period="D",
     )
 
-    # TODO: Plotting function
+    return t2d_plot_robustness(
+        df,
+        x_column="time_bin",
+        line_y_col_name="auroc",
+        xlab="Day of Week",
+        figure_file_name="t2d_auroc_by_day_of_week",
+    )
 
 
-def auroc_by_day_of_week(run: ModelRun):
+def t2d_auroc_by_month_of_year(run: ModelRun) -> pn.ggplot:
     eval_ds = run.get_eval_dataset()
 
-    roc_auc_by_periodic_time_df(
+    df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs,
+        y_hat_probs=eval_ds.y_hat_probs,
         timestamps=eval_ds.pred_timestamps,
-        bin_period="H",
+        bin_period="M",
     )
 
-    # TODO: Plotting function
-
-
-def auroc_by_month_of_year(run: ModelRun):
-    eval_ds = run.get_eval_dataset()
-
-    roc_auc_by_periodic_time_df(
-        labels=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs,
-        timestamps=eval_ds.pred_timestamps,
-        bin_period="H",
+    return t2d_plot_robustness(
+        df,
+        x_column="time_bin",
+        line_y_col_name="auroc",
+        xlab="Month of Year",
+        figure_file_name="t2d_auroc_by_month_of_year",
     )
-
-    # TODO: Plotting function
-
-
-def roc_auc_by_cyclic_time():
-    print("Plotting AUC by cyclic time")
-    EVAL_RUN.get_eval_dataset()
 
 
 if __name__ == "__main__":
-    roc_auc_by_cyclic_time()
+    t2d_auroc_by_day_of_week(run=EVAL_RUN)
+    t2d_auroc_by_month_of_year(run=EVAL_RUN)

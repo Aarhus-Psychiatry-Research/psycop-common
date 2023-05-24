@@ -157,12 +157,16 @@ def get_auroc_by_timedelta_df(
         min_n_in_bin=min_n_in_bin,
     ).rename(columns={"output": "y_hat_probs"})
 
-    return auroc_by_group(
+    df = df.rename({"y_hat": "y_hat_probs"}, axis=1)
+
+    grouped_df = auroc_by_group(
         df=df,
         groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
         n_bootstraps=n_bootstraps,
     )
+
+    return grouped_df
 
 
 def get_sensitivity_by_timedelta_df(

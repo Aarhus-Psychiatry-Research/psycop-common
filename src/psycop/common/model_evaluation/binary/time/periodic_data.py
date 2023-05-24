@@ -8,7 +8,7 @@ from psycop.common.model_evaluation.binary.utils import (
 
 def roc_auc_by_periodic_time_df(
     labels: Iterable[int],
-    y_hat: Iterable[float],
+    y_hat_probs: Iterable[float],
     timestamps: Iterable[pd.Timestamp],
     bin_period: str,
     confidence_interval: bool = True,
@@ -18,7 +18,7 @@ def roc_auc_by_periodic_time_df(
     frame. Cyclic time periods include e.g. day of week, hour of day, etc.
     Args:
         labels (Iterable[int]): True labels
-        y_hat (Iterable[int, float]): Predicted probabilities or labels depending on metric
+        y_hat_probs (Iterable[int, float]): Predicted probabilities or labels depending on metric
         timestamps (Iterable[pd.Timestamp]): Timestamps of predictions
         bin_period (str): Which cyclic time period to bin on. Takes "H" for hour of day, "D" for day of week and "M" for month of year.
         confidence_interval (bool, optional): Whether to create bootstrapped confidence interval. Defaults to True.
@@ -26,7 +26,9 @@ def roc_auc_by_periodic_time_df(
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
-    df = pd.DataFrame({"y": labels, "y_hat_probs": y_hat, "timestamp": timestamps})
+    df = pd.DataFrame(
+        {"y": labels, "y_hat_probs": y_hat_probs, "timestamp": timestamps},
+    )
 
     if bin_period == "H":
         df["time_bin"] = pd.to_datetime(df["timestamp"]).dt.strftime("%H")
