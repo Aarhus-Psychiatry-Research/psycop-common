@@ -6,7 +6,7 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.auroc impor
     t2d_auroc_plot,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.performance_by_ppr import (
-    output_performance_by_ppr,
+    t2d_output_performance_by_ppr,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
     t2d_sensitivity_by_time_to_event,
@@ -50,7 +50,7 @@ def evaluate_best_run(run: PipelineRun):
             t2d_auroc_by_month_of_year,
             t2d_auroc_by_day_of_week,
         ],
-        "performance_by_ppr_table": [output_performance_by_ppr],
+        "performance_by_ppr_table": [t2d_output_performance_by_ppr],
     }
 
     for group in output_fns:

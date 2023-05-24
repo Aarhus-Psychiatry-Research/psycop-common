@@ -66,7 +66,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     return renamed_df
 
 
-def output_performance_by_ppr(run: PipelineRun) -> Path:
+def t2d_output_performance_by_ppr(run: PipelineRun) -> Path:
     eval_dataset = run.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
@@ -84,4 +84,4 @@ def output_performance_by_ppr(run: PipelineRun) -> Path:
 
 
 if __name__ == "__main__":
-    output_performance_by_ppr(run=EVAL_RUN)
+    t2d_output_performance_by_ppr(run=EVAL_RUN)
