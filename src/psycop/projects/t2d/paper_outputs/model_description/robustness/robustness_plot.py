@@ -18,6 +18,8 @@ def t2d_plot_robustness(
         x_column (str): Column name for x-axis values
         line_y_col_name (str): Column name for y-axis values for line
         xlab (str): x-axis label
+        figure_file_name (str): Filename for output figure (without extension)
+        rotate_x_axis_labels_degrees (int, optional): Degrees to rotate x-axis labels. Defaults to 45.
     """
     print(f"Plotting {figure_file_name}")
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
@@ -34,7 +36,7 @@ def t2d_plot_robustness(
         + pn.ylab("AUROC / Proportion of patients")
         + PN_THEME
         + pn.theme(
-            axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1)
+            axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1),
         )
     )
 

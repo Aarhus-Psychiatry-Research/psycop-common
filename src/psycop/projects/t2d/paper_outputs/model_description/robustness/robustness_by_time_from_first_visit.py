@@ -1,11 +1,5 @@
 import plotnine as pn
 import polars as pl
-from psycop.common.model_evaluation.binary.time.absolute_data import (
-    create_roc_auc_by_absolute_time_df,
-)
-from psycop.common.model_evaluation.binary.time.periodic_data import (
-    roc_auc_by_periodic_time_df,
-)
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_auroc_by_timedelta_df,
 )
@@ -26,7 +20,7 @@ def roc_auc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
             "y": eval_ds.y,
             "y_hat_probs": eval_ds.y_hat_probs,
             "pred_timestamp": eval_ds.pred_timestamps,
-        }
+        },
     )
 
     first_visit = (
@@ -37,7 +31,8 @@ def roc_auc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
     )
 
     df = df.join(
-        first_visit.select(["first_visit_timestamp", "id"]), on="id"
+        first_visit.select(["first_visit_timestamp", "id"]),
+        on="id",
     ).to_pandas()
 
     plot_df = get_auroc_by_timedelta_df(

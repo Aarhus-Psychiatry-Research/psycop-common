@@ -1,3 +1,4 @@
+import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
@@ -6,7 +7,7 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def roc_auc_by_sex(run: ModelRun):
+def roc_auc_by_sex(run: ModelRun) -> pn.ggplot:
     print("Plotting AUC by sex")
     eval_ds = run.get_eval_dataset(custom_columns=["is_female"])
 

@@ -25,7 +25,7 @@ def roc_auc_by_periodic_time_df(
         pd.DataFrame: Dataframe ready for plotting
     """
     df = pd.DataFrame(
-        {"y": labels, "y_hat_probs": y_hat_probs, "timestamp": timestamps}
+        {"y": labels, "y_hat_probs": y_hat_probs, "timestamp": timestamps},
     )
 
     if bin_period == "H":

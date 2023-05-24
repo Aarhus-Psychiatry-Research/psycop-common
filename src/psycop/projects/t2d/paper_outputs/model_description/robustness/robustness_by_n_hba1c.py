@@ -1,14 +1,6 @@
-from collections.abc import Sequence
-from pathlib import Path
-from typing import Optional, Union
-
 import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
-from psycop.common.model_training.training_output.model_evaluator import EvalDataset
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, ROBUSTNESS_PATH
-from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
-    t2d_auroc_plot,
-)
+from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
