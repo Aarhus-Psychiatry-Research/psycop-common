@@ -1,8 +1,10 @@
 import pandas as pd
+from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.common.model_evaluation.binary.utils import (
     auroc_by_group,
     sensitivity_by_group,
 )
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
@@ -24,7 +26,6 @@ def test_auroc_by_group():
         3,1,0.3, # Bad prediction
         3,0,0.9, # Bad prediction
         3,0,0.8, # Bad prediction
-
         """,
     )
 

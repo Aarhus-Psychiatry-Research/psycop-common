@@ -61,7 +61,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     for ppr in [0.01, 0.03, 0.05]:
         df = get_sensitivity_by_timedelta_df(
             y=eval_dataset.y,
-            y_pred=eval_dataset.get_predictions_for_positive_rate(
+            y_hat=eval_dataset.get_predictions_for_positive_rate(
                 desired_positive_rate=ppr,
             )[0],
             time_one=eval_dataset.pred_timestamps,
