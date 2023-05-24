@@ -8,7 +8,7 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
 )
 
 
-def auroc_by_calendar_time() -> pn.ggplot:
+def t2d_auroc_by_quarter() -> pn.ggplot:
     print("Plotting AUROC by calendar time")
     eval_ds = EVAL_RUN.get_eval_dataset()
 
@@ -30,4 +30,4 @@ def auroc_by_calendar_time() -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    auroc_by_calendar_time()
+    t2d_auroc_by_quarter()

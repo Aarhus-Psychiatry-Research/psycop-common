@@ -37,7 +37,7 @@ def t2d_auroc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
 
     plot_df = get_auroc_by_timedelta_df(
         y=df["y"],
-        y_pred_proba=df["y_hat_probs"],
+        y_hat_probs=df["y_hat_probs"],
         time_one=df["first_visit_timestamp"],
         time_two=df["pred_timestamp"],
         direction="t2-t1",
