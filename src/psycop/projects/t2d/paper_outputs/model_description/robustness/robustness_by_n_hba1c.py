@@ -7,7 +7,7 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def plot_performance_by_n_hba1c(
+def t2d_auroc_by_n_hba1c(
     run: ModelRun,
 ) -> pn.ggplot:
     """Plot performance by n hba1c"""
@@ -35,4 +35,4 @@ def plot_performance_by_n_hba1c(
 
 
 if __name__ == "__main__":
-    plot_performance_by_n_hba1c(run=EVAL_RUN)
+    t2d_auroc_by_n_hba1c(run=EVAL_RUN)

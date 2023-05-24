@@ -12,20 +12,20 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity
     t2d_sensitivity_by_time_to_event,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
-    auroc_by_age,
+    t2d_auroc_by_age,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_cyclic_time import (
-    auroc_by_day_of_week,
-    auroc_by_month_of_year,
+    t2d_auroc_by_day_of_week,
+    t2d_auroc_by_month_of_year,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_n_hba1c import (
-    plot_auroc_by_n_hba1c,
+    t2d_auroc_by_n_hba1c,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_sex import (
-    roc_auc_by_sex,
+    t2d_auroc_by_sex,
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_time_from_first_visit import (
-    roc_auc_by_time_from_first_visit,
+    t2d_auroc_by_time_from_first_visit,
 )
 from psycop.projects.t2d.utils.best_runs import ModelRun
 from wasabi import Printer
@@ -43,12 +43,12 @@ def evaluate_best_run(run: ModelRun):
             t2d_sensitivity_by_time_to_event,
         ],
         "robustness": [
-            roc_auc_by_sex,
-            auroc_by_age,
-            plot_auroc_by_n_hba1c,
-            roc_auc_by_time_from_first_visit,
-            auroc_by_month_of_year,
-            auroc_by_day_of_week,
+            t2d_auroc_by_sex,
+            t2d_auroc_by_age,
+            t2d_auroc_by_n_hba1c,
+            t2d_auroc_by_time_from_first_visit,
+            t2d_auroc_by_month_of_year,
+            t2d_auroc_by_day_of_week,
         ],
         "performance_by_ppr_table": [output_performance_by_ppr],
     }

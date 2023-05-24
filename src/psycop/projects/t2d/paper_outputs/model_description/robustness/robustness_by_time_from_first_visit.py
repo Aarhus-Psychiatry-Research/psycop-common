@@ -10,7 +10,7 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def roc_auc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
+def t2d_auroc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
     print("Plotting AUC by time from first visit")
     eval_ds = run.get_eval_dataset()
 
@@ -59,4 +59,4 @@ def roc_auc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    roc_auc_by_time_from_first_visit(run=EVAL_RUN)
+    t2d_auroc_by_time_from_first_visit(run=EVAL_RUN)

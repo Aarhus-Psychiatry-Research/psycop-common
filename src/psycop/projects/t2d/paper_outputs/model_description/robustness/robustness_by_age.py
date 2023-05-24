@@ -7,7 +7,7 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
 from psycop.projects.t2d.utils.best_runs import ModelRun
 
 
-def auroc_by_age(run: ModelRun) -> pn.ggplot:
+def t2d_auroc_by_age(run: ModelRun) -> pn.ggplot:
     print("Plotting AUROC by age")
     eval_ds = run.get_eval_dataset()
 
@@ -34,4 +34,4 @@ def auroc_by_age(run: ModelRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    auroc_by_age(run=EVAL_RUN)
+    t2d_auroc_by_age(run=EVAL_RUN)
