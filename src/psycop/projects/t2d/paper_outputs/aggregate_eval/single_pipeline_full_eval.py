@@ -28,8 +28,10 @@ msg = Printer(timestamp=True)
 
 def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
     relative_to = run.paper_outputs.artifact_path.parent
-    pos_rate_percent = f"{int(run.paper_outputs.pos_rate*100)}%)
-    lookahead_years = int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)
+    pos_rate_percent = f"{int(run.paper_outputs.pos_rate * 100)}%)"
+    lookahead_years = int(
+        run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365
+    )
 
     artifacts = [
         MarkdownFigure(
@@ -40,7 +42,7 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
             relative_to=relative_to,
         ),
         MarkdownFigure(
-            title=f"Robustness of {run.model_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead at {run.}",
+            title=f"Robustness of {run.model_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
             file_path=run.paper_outputs.paths.figures
             / run.paper_outputs.artifact_names.main_robustness_figure,
             description="Robustness of the model across a variety of stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the number of contacts in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
