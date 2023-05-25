@@ -6,13 +6,13 @@ import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events_hit_by_true_positive import (
     get_prop_of_events_captured_from_eval_dataset,
 )
+from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_time_from_first_positive_to_diagnosis_df,
+)
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_by_time_until_diagnosis import (
-    get_time_from_first_positive_to_diagnosis_df,
-)
 
 
 def get_true_positives(

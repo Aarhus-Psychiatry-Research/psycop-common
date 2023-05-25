@@ -60,13 +60,16 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
         artifacts += t2d_main_manuscript_eval(dev_pipeline=run)
         run_md = create_supplementary_from_markdown_artifacts(artifacts=artifacts)
 
-        with (EVAL_ROOT / f"{run.name}.md").open("w") as f:
+        with (
+            EVAL_ROOT
+            / f"supplementary_{run.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_{run.model_type}_{run.name}.md"
+        ).open("w") as f:
             f.write(run_md)
 
     combined_supplementary_md = create_supplementary_from_markdown_artifacts(
         artifacts=artifacts, first_table_index=4, first_figure_index=3
     )
-    with (EVAL_ROOT / f"{dev_run_group.name}-combined.md").open("w") as f:
+    with (EVAL_ROOT / f"supllementary_{dev_run_group.name}-combined.md").open("w") as f:
         f.write(combined_supplementary_md)
 
 
