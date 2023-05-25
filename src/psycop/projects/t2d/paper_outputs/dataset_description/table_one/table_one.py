@@ -6,17 +6,19 @@ import polars as pl
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
     get_eligible_prediction_times_as_polars,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, TABLES_PATH
 
 model_train_df = pl.concat(
     [
-        EVAL_RUN.get_flattened_split_as_lazyframe(split="train"),
-        EVAL_RUN.get_flattened_split_as_lazyframe(split="val"),
+        BEST_EVAL_PIPELINE.get_flattened_split_as_lazyframe(split="train"),
+        BEST_EVAL_PIPELINE.get_flattened_split_as_lazyframe(split="val"),
     ],
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
-test_dataset = EVAL_RUN.get_flattened_split_as_lazyframe(split="test").with_columns(
+test_dataset = BEST_EVAL_PIPELINE.get_flattened_split_as_lazyframe(
+    split="test"
+).with_columns(
     dataset=pl.format("test"),
 )
 

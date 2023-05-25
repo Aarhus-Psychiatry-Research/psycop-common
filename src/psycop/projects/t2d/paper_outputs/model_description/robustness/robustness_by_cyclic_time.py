@@ -2,7 +2,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
@@ -48,5 +48,5 @@ def t2d_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_day_of_week(run=EVAL_RUN)
-    t2d_auroc_by_month_of_year(run=EVAL_RUN)
+    t2d_auroc_by_day_of_week(run=BEST_EVAL_PIPELINE)
+    t2d_auroc_by_month_of_year(run=BEST_EVAL_PIPELINE)

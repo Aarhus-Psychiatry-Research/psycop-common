@@ -1,4 +1,4 @@
-from psycop.projects.t2d.paper_outputs.config import BEST_DEV_RUN, DEV_GROUP_NAME
+from psycop.projects.t2d.paper_outputs.config import BEST_DEV_PIPELINE, DEV_GROUP_NAME
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
 )

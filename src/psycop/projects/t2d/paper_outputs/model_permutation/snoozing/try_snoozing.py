@@ -1,14 +1,14 @@
 import datetime as dt
 
 import pandas as pd
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_permutation.snoozing.snoozing import (
     snooze_dataframe,
 )
 from sklearn.metrics import roc_auc_score
 
 if __name__ == "__main__":
-    evaluation_dataset = EVAL_RUN.get_eval_dataset()
+    evaluation_dataset = BEST_EVAL_PIPELINE.get_eval_dataset()
 
     eval_df = pd.DataFrame(
         {

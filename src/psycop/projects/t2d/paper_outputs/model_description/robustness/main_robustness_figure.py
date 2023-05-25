@@ -1,7 +1,4 @@
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
-from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
-    t2d_create_patchwork_figure,
-)
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
     t2d_auroc_by_age,
 )
@@ -17,6 +14,9 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_b
 )
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_time_from_first_visit import (
     t2d_auroc_by_time_from_first_visit,
+)
+from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
+    t2d_create_patchwork_figure,
 )
 from psycop.projects.t2d.utils.best_runs import PipelineRun
 
@@ -37,4 +37,4 @@ def t2d_create_main_robustness_figure(run: PipelineRun) -> None:
 
 
 if __name__ == "__main__":
-    t2d_create_main_robustness_figure(run=EVAL_RUN)
+    t2d_create_main_robustness_figure(run=BEST_EVAL_PIPELINE)

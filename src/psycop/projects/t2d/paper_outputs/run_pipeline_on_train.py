@@ -5,7 +5,7 @@ from pathlib import Path
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
-from psycop.projects.t2d.paper_outputs.config import BEST_DEV_RUN
+from psycop.projects.t2d.paper_outputs.config import BEST_DEV_PIPELINE
 from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
 from wasabi import Printer
 
@@ -74,4 +74,4 @@ def run_pipeline_on_train(pipeline_to_train: PipelineRun) -> PipelineRun:
 
 
 if __name__ == "__main__":
-    eval_run = run_pipeline_on_train(pipeline_to_train=BEST_DEV_RUN)
+    eval_run = run_pipeline_on_train(pipeline_to_train=BEST_DEV_PIPELINE)

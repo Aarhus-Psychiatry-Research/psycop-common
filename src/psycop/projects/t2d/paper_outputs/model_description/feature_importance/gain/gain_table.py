@@ -2,11 +2,11 @@ import polars as pl
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, TABLES_PATH
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
 
 if __name__ == "__main__":
-    pipeline = EVAL_RUN.pipe
+    pipeline = BEST_EVAL_PIPELINE.pipe
 
     # Get feature importance scores
     feature_importances = pipeline.named_steps["model"].feature_importances_
@@ -15,8 +15,8 @@ if __name__ == "__main__":
     )
 
     split_df = load_and_filter_split_from_cfg(
-        data_cfg=EVAL_RUN.cfg.data,
-        pre_split_cfg=EVAL_RUN.cfg.preprocessing.pre_split,
+        data_cfg=BEST_EVAL_PIPELINE.cfg.data,
+        pre_split_cfg=BEST_EVAL_PIPELINE.cfg.preprocessing.pre_split,
         split="test",
     )
 

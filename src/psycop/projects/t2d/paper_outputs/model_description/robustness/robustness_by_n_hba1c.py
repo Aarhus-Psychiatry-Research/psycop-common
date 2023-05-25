@@ -1,6 +1,6 @@
 import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
@@ -35,4 +35,4 @@ def t2d_auroc_by_n_hba1c(
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_n_hba1c(run=EVAL_RUN)
+    t2d_auroc_by_n_hba1c(run=BEST_EVAL_PIPELINE)

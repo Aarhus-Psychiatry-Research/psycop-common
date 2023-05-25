@@ -4,7 +4,7 @@ import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, TABLES_PATH
 from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
@@ -84,4 +84,4 @@ def t2d_output_performance_by_ppr(run: PipelineRun) -> Path:
 
 
 if __name__ == "__main__":
-    t2d_output_performance_by_ppr(run=EVAL_RUN)
+    t2d_output_performance_by_ppr(run=BEST_EVAL_PIPELINE)

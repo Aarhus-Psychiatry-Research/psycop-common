@@ -1,6 +1,10 @@
 import plotnine as pn
 import polars as pl
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
+from psycop.projects.t2d.paper_outputs.config import (
+    BEST_EVAL_PIPELINE,
+    FIGURES_PATH,
+    PN_THEME,
+)
 from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
@@ -61,7 +65,7 @@ def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_first_pred_to_event(run=EVAL_RUN).save(
+    t2d_first_pred_to_event(run=BEST_EVAL_PIPELINE).save(
         FIGURES_PATH / "time_from_pred_to_event.png",
         width=5,
         height=5,

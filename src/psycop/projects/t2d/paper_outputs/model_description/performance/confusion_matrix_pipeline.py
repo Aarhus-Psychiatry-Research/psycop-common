@@ -3,7 +3,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, FIGURES_PATH
 from psycop.projects.t2d.paper_outputs.model_description.performance.plotnine_confusion_matrix import (
     plotnine_confusion_matrix,
 )
@@ -32,4 +32,4 @@ def t2d_confusion_matrix_plot(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_confusion_matrix_plot(run=EVAL_RUN)
+    t2d_confusion_matrix_plot(run=BEST_EVAL_PIPELINE)

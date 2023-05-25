@@ -58,10 +58,14 @@ SplitNames = Literal["train", "test", "val"]
 
 
 @dataclass
-class PipelineRun:
+class PipelineInputs:
     group: RunGroup
-    name: str
-    pos_rate: float
+    eval_dir: Path
+
+    def get_cfg_as_json(self) -> FullConfigSchema:
+        # Load json
+        path = self.eval_dir / "cfg.json"
+        return json.loads(json.loads(path.read_text()))
 
     def _get_flattened_split_path(self, split: SplitNames) -> Path:
         matches = list(self.group.flattened_ds_dir.glob(f"*{split}*.parquet"))
@@ -82,18 +86,12 @@ class PipelineRun:
         # of whether the imports in psycop-common model-training have changed
         return FullConfigSchema.parse_obj(self.get_cfg_as_json())
 
-    @property
-    def eval_dir(self) -> Path:
-        return self.group.group_dir / self.name
 
-    @property
-    def model_type(self) -> str:
-        return self.cfg.model.name
-
-    def get_cfg_as_json(self) -> FullConfigSchema:
-        # Load json
-        path = self.eval_dir / "cfg.json"
-        return json.loads(json.loads(path.read_text()))
+@dataclass
+class PipelineOutputs:
+    name: str
+    group: RunGroup
+    eval_dir: Path
 
     def get_eval_dataset(
         self,
@@ -107,14 +105,34 @@ class PipelineRun:
 
     def get_auroc(self) -> float:
         df = self.group.all_runs_performance_df
-
         self_run = df[df["run_name"] == self.name]
-
         return self_run["roc_auc"].iloc[0]
 
     @property
     def pipe(self) -> Pipeline:
         return load_file_from_pkl(self.eval_dir / "pipe.pkl")
+
+
+@dataclass
+class PipelineEvalSettings:
+    pos_rate: float
+
+
+class PipelineRun:
+    def __init__(self, name: str, group: RunGroup, pos_rate: float):
+        self.name = name
+        self.group = group
+        self.eval_dir = self.group.group_dir / self.name
+
+        self.inputs = PipelineInputs(group=group, eval_dir=self.eval_dir)
+        self.outputs = PipelineOutputs(
+            group=group, eval_dir=self.eval_dir, name=self.name
+        )
+        self.eval_settings = PipelineEvalSettings(pos_rate=pos_rate)
+
+    @property
+    def model_type(self) -> str:
+        return self.inputs.cfg.model.name
 
 
 def load_file_from_pkl(file_path: Path) -> Any:

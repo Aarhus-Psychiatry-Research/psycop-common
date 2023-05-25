@@ -21,7 +21,7 @@ def get_chosen_model() -> PipelineRun:
 
 DEV_GROUP_NAME = "mistouching-unwontedness"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
-BEST_DEV_RUN = PipelineRun(
+BEST_DEV_PIPELINE = PipelineRun(
     group=DEVELOPMENT_GROUP,
     name="surefootedlygoatpox",
     pos_rate=0.03,
@@ -30,7 +30,7 @@ BEST_DEV_RUN = PipelineRun(
 EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 BEST_POS_RATE = 0.03
-EVAL_RUN = PipelineRun(
+BEST_EVAL_PIPELINE = PipelineRun(
     group=EVAL_GROUP,
     name="pseudoreformatoryhizz",
     pos_rate=BEST_POS_RATE,
@@ -46,7 +46,7 @@ GENERAL_ARTIFACT_PATH = (
     EVALUATION_ROOT
     / "outputs_for_publishing"
     / f"{EVAL_GROUP.name}"
-    / f"{EVAL_RUN.name}"
+    / f"{BEST_EVAL_PIPELINE.name}"
 )
 FIGURES_PATH = GENERAL_ARTIFACT_PATH / "figures"
 TABLES_PATH = GENERAL_ARTIFACT_PATH / "tables"

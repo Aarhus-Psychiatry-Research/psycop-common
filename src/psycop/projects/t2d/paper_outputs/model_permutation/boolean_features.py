@@ -3,14 +3,14 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.paper_outputs.config import ESTIMATES_PATH, EVAL_RUN
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, ESTIMATES_PATH
 
 if __name__ == "__main__":
-    cfg: FullConfigSchema = EVAL_RUN.cfg
+    cfg: FullConfigSchema = BEST_EVAL_PIPELINE.cfg
 
     # Create the dataset with only HbA1c-predictors
     df: pl.LazyFrame = pl.concat(
-        EVAL_RUN.get_flattened_split_as_lazyframe(split) for split in ["train", "val"]  # type: ignore
+        BEST_EVAL_PIPELINE.get_flattened_split_as_lazyframe(split) for split in ["train", "val"]  # type: ignore
     )
 
     pred_cols = [c for c in df.columns if c.startswith(cfg.data.pred_prefix)]
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     path_prefix = "boolean"
 
-    boolean_pred_dir = EVAL_RUN.eval_dir / f"{path_prefix}_preds"
+    boolean_pred_dir = BEST_EVAL_PIPELINE.eval_dir / f"{path_prefix}_preds"
     boolean_pred_dir.mkdir(parents=True, exist_ok=True)
     boolean_pred_path = boolean_pred_dir / f"{path_prefix}_preds.parquet"
     boolean_df.write_parquet(boolean_pred_path)
