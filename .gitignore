@@ -188,3 +188,4 @@ src/psycop/tests/test_eval_results/*
 .ruff_cache
 *.csv
 *.docx
+src/**/*.md
