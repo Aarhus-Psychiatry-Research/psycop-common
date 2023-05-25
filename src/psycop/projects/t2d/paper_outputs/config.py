@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
 
 import plotnine as pn
 from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
