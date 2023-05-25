@@ -1,6 +1,6 @@
 import pandas as pd
 import plotnine as pn
-from psycop.projects.t2d.paper_outputs.config import COLORS, FIGURES_PATH, PN_THEME
+from psycop.projects.t2d.paper_outputs.config import COLORS, PN_THEME
 
 
 def t2d_plot_robustness(
@@ -50,6 +50,6 @@ def t2d_plot_robustness(
     if df[x_column].nunique() < 3:
         p += pn.scale_x_discrete()
 
-    p.save(FIGURES_PATH / f"{figure_file_name}.png")
+    p.save(run.paper_outputs.paths.figures / f"{figure_file_name}.png")
 
     return p

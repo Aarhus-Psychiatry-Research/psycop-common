@@ -24,12 +24,12 @@ p = (
 )
 
 # %%
-from psycop.projects.t2d.paper_outputs.config import FIGURES_PATH, OUTPUT_MAPPING
+from psycop.projects.t2d.paper_outputs.config import OUTPUT_MAPPING
 
-FIGURES_PATH.mkdir(parents=True, exist_ok=True)
+run.paper_outputs.paths.figures.mkdir(parents=True, exist_ok=True)
 
 save_path = (
-    FIGURES_PATH
+    run.paper_outputs.paths.figures
     / f"{OUTPUT_MAPPING.diabetes_incidence_by_time} - incidence_by_time.png"
 )
 

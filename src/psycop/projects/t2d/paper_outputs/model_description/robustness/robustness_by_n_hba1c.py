@@ -11,7 +11,7 @@ def t2d_auroc_by_n_hba1c(
     run: PipelineRun,
 ) -> pn.ggplot:
     """Plot performance by n hba1c"""
-    eval_ds = run.get_eval_dataset(
+    eval_ds = run.pipeline_outputs.get_eval_dataset(
         custom_columns=["eval_hba1c_within_9999_days_count_fallback_nan"],
     )
 

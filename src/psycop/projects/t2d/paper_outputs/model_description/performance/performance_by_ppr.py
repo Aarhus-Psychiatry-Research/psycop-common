@@ -4,7 +4,7 @@ import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, TABLES_PATH
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
@@ -67,7 +67,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 
 
 def t2d_output_performance_by_ppr(run: PipelineRun) -> Path:
-    eval_dataset = run.get_eval_dataset()
+    eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=eval_dataset,
@@ -76,8 +76,8 @@ def t2d_output_performance_by_ppr(run: PipelineRun) -> Path:
 
     df = clean_up_performance_by_ppr(df)
 
-    table_path = TABLES_PATH / "performance_by_ppr.xlsx"
-    TABLES_PATH.mkdir(exist_ok=True, parents=True)
+    table_path = run.paper_outputs.paths.tables / "performance_by_ppr.xlsx"
+    run.paper_outputs.paths.tables.mkdir(exist_ok=True, parents=True)
     df.to_excel(table_path)
 
     return table_path

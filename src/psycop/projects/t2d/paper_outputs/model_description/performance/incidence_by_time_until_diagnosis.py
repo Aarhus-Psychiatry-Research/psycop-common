@@ -2,19 +2,18 @@ import plotnine as pn
 import polars as pl
 from psycop.projects.t2d.paper_outputs.config import (
     BEST_EVAL_PIPELINE,
-    FIGURES_PATH,
     PN_THEME,
 )
 from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
 def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
-    eval_ds = run.get_eval_dataset()
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pl.DataFrame(
         {
             "y_pred": eval_ds.get_predictions_for_positive_rate(
-                desired_positive_rate=run.pos_rate,
+                desired_positive_rate=run.paper_outputs.pos_rate,
             )[0],
             "y": eval_ds.y,
             "patient_id": eval_ds.ids,
@@ -59,14 +58,14 @@ def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
         + PN_THEME
     )
 
-    p.save(FIGURES_PATH / "first_pred_to_event.png")
+    p.save(run.paper_outputs.paths.figures / "first_pred_to_event.png")
 
     return p
 
 
 if __name__ == "__main__":
     t2d_first_pred_to_event(run=BEST_EVAL_PIPELINE).save(
-        FIGURES_PATH / "time_from_pred_to_event.png",
+        BEST_EVAL_PIPELINE.paper_outputs.paths.figures / "time_from_pred_to_event.png",
         width=5,
         height=5,
         dpi=600,

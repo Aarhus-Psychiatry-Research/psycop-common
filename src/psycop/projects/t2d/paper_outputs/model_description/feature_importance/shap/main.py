@@ -20,9 +20,9 @@ if __name__ == "__main__":
 
     plotting_df = pl.from_pandas(long_shap_df)
 
-    from psycop.projects.t2d.paper_outputs.config import FIGURES_PATH, OUTPUT_MAPPING
+    from psycop.projects.t2d.paper_outputs.config import OUTPUT_MAPPING
 
-    shap_figures_path = FIGURES_PATH / OUTPUT_MAPPING.shap_plots
+    shap_figures_path = run.paper_outputs.paths.figures / OUTPUT_MAPPING.shap_plots
     shap_figures_path.mkdir(exist_ok=True, parents=True)
 
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.plot_shap import (
@@ -30,7 +30,5 @@ if __name__ == "__main__":
     )
 
     save_plots_for_top_i_shap_by_mean_abs(
-        shap_long_df=plotting_df,
-        i=10,
-        save_dir=shap_figures_path,
+        shap_long_df=plotting_df, i=10, save_dir=shap_
     )
