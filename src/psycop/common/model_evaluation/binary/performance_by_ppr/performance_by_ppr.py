@@ -221,6 +221,14 @@ def generate_performance_by_ppr_table(
         )
 
         threshold_metrics[
+            "median_warning_days"
+        ] = days_from_first_positive_to_diagnosis(
+            eval_dataset=eval_dataset,
+            positive_rate=positive_rate,
+            aggregation_method="median",
+        )
+
+        threshold_metrics[
             "prop with ≥1 true positive"
         ] = get_prop_with_at_least_one_true_positve(
             eval_dataset=eval_dataset,
