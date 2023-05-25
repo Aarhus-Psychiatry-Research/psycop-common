@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 
@@ -28,6 +29,7 @@ class MarkdownFigure(MarkdownArtifact):
         title: str,
         title_prefix: str = "Figure",
         check_filepath_exists: bool = True,
+        relative_to: Optional[Path] = None,
     ):
         super().__init__(
             title=title,
@@ -36,6 +38,9 @@ class MarkdownFigure(MarkdownArtifact):
             check_filepath_exists=check_filepath_exists,
         )
         self.title_prefix = title_prefix
+
+        if relative_to is not None:
+            self.file_path = self.file_path.relative_to(relative_to)
 
     def get_markdown(self) -> str:
         return f"""{self.title}
@@ -68,7 +73,9 @@ class MarkdownTable(MarkdownArtifact):
             return pd.read_csv(self.file_path)
 
         if self.file_path.suffix == ".xlsx":
-            return pd.read_excel(self.file_path)
+            return pd.read_excel(
+                self.file_path,
+            )
 
         raise ValueError(
             f"File extension {self.file_path.suffix} not supported. "
@@ -97,7 +104,6 @@ def create_supplementary_from_markdown_artifacts(
     figures = [a for a in artifacts if isinstance(a, MarkdownFigure)]
 
     markdown = """# Supplementary material
-\newpage
 
 """
 
@@ -115,7 +121,6 @@ def create_supplementary_from_markdown_artifacts(
             artifact.title = f"## **{title_prefix} {index}**: {artifact.title}"
             markdown += f"""{artifact.get_markdown()}
 
-\\newpage
 
 """
             index += 1

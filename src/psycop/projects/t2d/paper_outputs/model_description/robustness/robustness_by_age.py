@@ -8,7 +8,6 @@ from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def t2d_auroc_by_age(run: PipelineRun) -> pn.ggplot:
-    print("Plotting AUROC by age")
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = get_auroc_by_input_df(

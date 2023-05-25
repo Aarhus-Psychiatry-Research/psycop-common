@@ -21,7 +21,6 @@ def t2d_plot_robustness(
         figure_file_name (str): Filename for output figure (without extension)
         rotate_x_axis_labels_degrees (int, optional): Degrees to rotate x-axis labels. Defaults to 45.
     """
-    print(f"Plotting {figure_file_name}")
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
     p = (

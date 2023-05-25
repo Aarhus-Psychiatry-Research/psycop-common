@@ -3,6 +3,9 @@ from math import ceil
 
 import patchworklib as pw
 import plotnine as pn
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
 def create_patchwork_grid(
@@ -58,8 +61,8 @@ def print_a4_ratio(
     a4_ratio = 297 / 210
     new_plot_height_for_a4 = (a4_ratio * total_width - total_height) / n_rows
 
-    print(f"height/width ratio is {total_height/total_width}")
-    print(f"Vertical A4 ratio is {a4_ratio}")
-    print(
-        f"You could decrease single_plot_height to {new_plot_height_for_a4} for the patchwork to fit A4",
+    msg.info(f"height/width ratio is {round(total_height/total_width,1)}")
+    msg.info(f"Vertical A4 ratio is {rorund(a4_ratio,1)}")
+    msg.info(
+        f"You could decrease single_plot_height to {round(new_plot_height_for_a4,1)} for the patchwork to fit A4",
     )

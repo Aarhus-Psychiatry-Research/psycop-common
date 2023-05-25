@@ -143,9 +143,9 @@ class PipelineOutputs:
 
 @dataclass
 class T2DArtifactNames:
-    main_performance_figure: str = "t2d_main_performance_figure"
-    main_robustness_figure: str = "t2d_main_robustness_figure"
-    performance_by_ppr: str = "t2d_performance_by_ppr"
+    main_performance_figure: str = "t2d_main_performance_figure.png"
+    main_robustness_figure: str = "t2d_main_robustness.png"
+    performance_by_ppr: str = "t2d_performance_by_ppr.xlsx"
 
 
 class PaperOutputPaths:

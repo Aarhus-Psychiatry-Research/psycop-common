@@ -1,4 +1,5 @@
 from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
+    MarkdownArtifact,
     MarkdownFigure,
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
@@ -15,33 +16,37 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustn
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     get_test_pipeline_run,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import (
+    BEST_DEV_PIPELINE,
+    BEST_EVAL_PIPELINE,
+)
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from wasabi import Printer
 
 msg = Printer(timestamp=True)
 
 
-def _t2d_concat_results_to_md_objects(run: PipelineRun) -> str:
-
-    artifact_dir = run.paper_outputs.artifact_path
+def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
+    relative_to = run.paper_outputs.artifact_path.parent
 
     artifacts = [
         MarkdownFigure(
             title=f"Performance of {run.model_type} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead",
-            file_path=artifact_dir
+            file_path=run.paper_outputs.paths.figures
             / run.paper_outputs.artifact_names.main_performance_figure,
             description="A) Receiver operating characteristics (ROC) curve. B) Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. C) Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. D) Distribution of months from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).",
+            relative_to=relative_to,
         ),
         MarkdownFigure(
             title=f"Robustness of {run.model_type} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead",
-            file_path=artifact_dir
+            file_path=run.paper_outputs.paths.figures
             / run.paper_outputs.artifact_names.main_robustness_figure,
             description="Robustness of the model across a variety of stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the number of contacts in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
+            relative_to=relative_to,
         ),
         MarkdownTable(
             title=f"Performance of {run.model_type} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.",
-            file_path=artifact_dir
+            file_path=run.paper_outputs.paths.tables
             / run.paper_outputs.artifact_names.performance_by_ppr,
             description="""**Predicted positive**: The proportion of contacts predicted positive by the model. Since the model outputs a predicted probability, this is a threshold set by us.
 **True prevalence**: The proportion of contacts that qualified for type 2 diabetes within the lookahead window.
@@ -54,19 +59,15 @@ def _t2d_concat_results_to_md_objects(run: PipelineRun) -> str:
 **FP**: False positives.
 **FN**: False negatives.
 **Mean warning days**: For all patients with at least one true positive, the number of days from their first positive prediction to their diagnosis.
-
             """,
         ),
     ]
 
-    return create_supplementary_from_markdown_artifacts(
-        artifacts=artifacts,
-        first_table_index=3,
-        first_figure_index=4,
-    )
+    return artifacts
 
 
-def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
+def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> list[MarkdownArtifact]:
+    msg.info(f"--------- Evaluating {dev_pipeline.name} ----------")
     train_pipeline = get_test_pipeline_run(pipeline_to_train=dev_pipeline)
 
     msg.info(
@@ -77,15 +78,11 @@ def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
     t2d_create_main_robustness_figure(run=train_pipeline)
     t2d_output_performance_by_ppr(run=train_pipeline)
 
-    md = _t2d_concat_results_to_md_objects(run=train_pipeline)
-
-    with (dev_pipeline.paper_outputs.artifact_path / "supplementary_material.md").open(
-        "w",
-    ) as f:
-        f.write(md)
+    return _t2d_create_markdown_artifacts(run=train_pipeline)
 
 
 if __name__ == "__main__":
-    t2d_main_manuscript_eval(
-        dev_pipeline=BEST_EVAL_PIPELINE,
-    )
+    train_pipeline = get_test_pipeline_run(pipeline_to_train=BEST_EVAL_PIPELINE)
+    # t2d_main_manuscript_eval(
+    #     dev_pipeline=BEST_EVAL_PIPELINE,
+    # )

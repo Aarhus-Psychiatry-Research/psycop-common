@@ -1,9 +1,15 @@
 import polars as pl
+from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
+    create_supplementary_from_markdown_artifacts,
+)
 from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval import (
     t2d_main_manuscript_eval,
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_GROUP
-from psycop.projects.t2d.utils.pipeline_objects import EVAL_ROOT, PipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
 def get_best_runs_from_model_type(
@@ -26,10 +32,11 @@ def get_best_runs_from_model_type(
             group=dev_run_group,
             name=name,
             pos_rate=BEST_POS_RATE,
-            paper_outputs_path=EVAL_ROOT / "supplementary" / "full_eval" / model_type,
         )
         for name in best_run_names
     )
+
+    msg.info(f"Evaluating {[run.name for run in best_runs]}")
 
     return best_runs
 
@@ -42,8 +49,14 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
         model_type=best_model_type,
     )
 
+    artifacts = []
+
     for run in best_runs_from_model_type:
-        t2d_main_manuscript_eval(dev_pipeline=run)
+        artifacts += t2d_main_manuscript_eval(dev_pipeline=run)
+
+    create_supplementary_from_markdown_artifacts(
+        artifacts=artifacts, first_table_index=4, first_figure_index=3
+    )
 
 
 if __name__ == "__main__":

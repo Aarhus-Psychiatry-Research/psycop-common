@@ -5,6 +5,9 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     generate_performance_by_ppr_table,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
 def format_with_thousand_separator(num: int) -> str:
@@ -65,7 +68,15 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     return renamed_df
 
 
-def t2d_output_performance_by_ppr(run: PipelineRun) -> Path:
+def t2d_output_performance_by_ppr(run: PipelineRun):
+    output_path = (
+        run.paper_outputs.paths.tables
+        / run.paper_outputs.artifact_names.performance_by_ppr
+    )
+
+    if output_path.exists():
+        msg.good(f"{run.name}: Performance by PPR already exists, continuing")
+
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
@@ -74,15 +85,7 @@ def t2d_output_performance_by_ppr(run: PipelineRun) -> Path:
     )
 
     df = clean_up_performance_by_ppr(df)
-
-    table_path = (
-        run.paper_outputs.paths.tables
-        / run.paper_outputs.artifact_names.performance_by_ppr
-    )
-    run.paper_outputs.paths.tables.mkdir(exist_ok=True, parents=True)
-    df.to_excel(table_path)
-
-    return table_path
+    df.to_excel(output_path, index=False)
 
 
 if __name__ == "__main__":

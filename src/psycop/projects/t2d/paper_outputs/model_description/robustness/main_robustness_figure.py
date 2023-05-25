@@ -32,7 +32,7 @@ def t2d_create_main_robustness_figure(run: PipelineRun) -> None:
             t2d_auroc_by_month_of_year,
             t2d_auroc_by_day_of_week,
         ),
-        output_filename=run.paper_outputs.artifact_names.main_performance_figure,
+        output_filename=run.paper_outputs.artifact_names.main_robustness_figure,
     )
 
 

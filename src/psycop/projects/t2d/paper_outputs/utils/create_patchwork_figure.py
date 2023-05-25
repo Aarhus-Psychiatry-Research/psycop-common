@@ -29,11 +29,12 @@ def t2d_create_patchwork_figure(
     any_plot_failed = False
 
     for fn in plot_fns:
+        output_path = run.paper_outputs.paths.figures / f"{fn.__name__}.png"
         try:
             now = datetime.now()
             p = fn(run)
             plots.append(p)
-            p.save(run.paper_outputs.paths.figures / f"{fn.__name__}.png")
+            p.save(output_path)
             finished = datetime.now()
 
             msg.good(

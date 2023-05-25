@@ -10,7 +10,6 @@ from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def t2d_auroc_by_quarter(run: PipelineRun) -> pn.ggplot:
-    print("Plotting AUROC by calendar time")
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = create_roc_auc_by_absolute_time_df(

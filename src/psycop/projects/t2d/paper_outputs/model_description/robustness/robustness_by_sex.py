@@ -8,7 +8,6 @@ from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def t2d_auroc_by_sex(run: PipelineRun) -> pn.ggplot:
-    print("Plotting AUC by sex")
     eval_ds = run.pipeline_outputs.get_eval_dataset(custom_columns=["is_female"])
 
     df = get_auroc_by_input_df(
