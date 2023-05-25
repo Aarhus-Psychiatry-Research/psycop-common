@@ -6,7 +6,7 @@ import polars as pl
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
     get_eligible_prediction_times_as_polars,
 )
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 
 model_train_df = pl.concat(
     [

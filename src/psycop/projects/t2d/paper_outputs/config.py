@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import plotnine as pn
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import RunGroup
 
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
@@ -10,20 +10,9 @@ from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
 DEV_GROUP_NAME = "mistouching-unwontedness"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_POS_RATE = 0.03
-BEST_DEV_PIPELINE = PipelineRun(
-    group=DEVELOPMENT_GROUP,
-    name="surefootedlygoatpox",
-    pos_rate=BEST_POS_RATE,
-)
 
 EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
-BEST_EVAL_PIPELINE = PipelineRun(
-    group=EVAL_GROUP,
-    name="pseudoreformatoryhizz",
-    pos_rate=BEST_POS_RATE,
-)
-
 
 ################
 # OUTPUT PATHS #

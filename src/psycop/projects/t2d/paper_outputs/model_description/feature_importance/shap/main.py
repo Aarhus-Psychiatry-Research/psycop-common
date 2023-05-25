@@ -1,4 +1,4 @@
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.get_shap_values import (

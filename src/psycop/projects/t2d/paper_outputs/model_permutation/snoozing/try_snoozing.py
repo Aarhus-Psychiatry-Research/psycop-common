@@ -1,10 +1,10 @@
 import datetime as dt
 
 import pandas as pd
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_permutation.snoozing.snoozing import (
     snooze_dataframe,
 )
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from sklearn.metrics import roc_auc_score
 
 if __name__ == "__main__":

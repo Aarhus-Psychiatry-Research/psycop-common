@@ -3,10 +3,10 @@ import plotnine as pn
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_description.performance.plotnine_confusion_matrix import (
     plotnine_confusion_matrix,
 )
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 

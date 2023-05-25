@@ -34,7 +34,7 @@ selected_specs = [
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 
 out_dir = BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "feature_description"
 out_dir.mkdir(parents=True, exist_ok=True)

@@ -2,7 +2,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
     plot_auc_roc,
 )
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 

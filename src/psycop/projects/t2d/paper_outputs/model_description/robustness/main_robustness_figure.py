@@ -1,4 +1,3 @@
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
     t2d_auroc_by_age,
 )
@@ -15,6 +14,7 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_b
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_time_from_first_visit import (
     t2d_auroc_by_time_from_first_visit,
 )
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
     t2d_create_patchwork_figure,
 )

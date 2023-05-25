@@ -1,9 +1,9 @@
 import plotnine as pn
 import polars as pl
 from psycop.projects.t2d.paper_outputs.config import (
-    BEST_EVAL_PIPELINE,
     PN_THEME,
 )
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 

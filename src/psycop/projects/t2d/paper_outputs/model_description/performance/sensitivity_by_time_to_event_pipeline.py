@@ -5,7 +5,6 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.config import (
-    BEST_EVAL_PIPELINE,
     PN_THEME,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
@@ -96,4 +95,6 @@ def t2d_sensitivity_by_time_to_event(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
+    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+
     t2d_sensitivity_by_time_to_event(run=BEST_EVAL_PIPELINE)

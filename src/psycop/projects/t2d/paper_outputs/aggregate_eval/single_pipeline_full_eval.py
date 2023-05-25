@@ -1,4 +1,4 @@
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, DEV_GROUP_NAME
+from psycop.projects.t2d.paper_outputs.config import DEV_GROUP_NAME
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
 )
@@ -11,6 +11,7 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustn
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     get_test_pipeline_run,
 )
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
 from wasabi import Printer
 
