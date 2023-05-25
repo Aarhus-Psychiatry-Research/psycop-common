@@ -28,7 +28,7 @@ msg = Printer(timestamp=True)
 
 def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
     relative_to = run.paper_outputs.artifact_path.parent
-    pos_rate_percent = f"{int(run.paper_outputs.pos_rate*100)}%)
+    pos_rate_percent = f"{int(run.paper_outputs.pos_rate*100)}%)"
     lookahead_years = int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)
 
     artifacts = [
