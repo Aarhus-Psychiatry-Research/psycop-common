@@ -11,9 +11,8 @@ from psycop.common.model_training.config_schemas.conf_utils import (
     FullConfigSchema,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.t2d.paper_outputs.config import EVALUATION_ROOT
 from sklearn.pipeline import Pipeline
-
-EVALUATION_ROOT = Path(__file__).parent.parent / "paper_outputs"
 
 
 def load_file_from_pkl(file_path: Path) -> Any:

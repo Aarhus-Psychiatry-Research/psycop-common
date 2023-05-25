@@ -30,7 +30,5 @@ if __name__ == "__main__":
     )
 
     save_plots_for_top_i_shap_by_mean_abs(
-        shap_long_df=plotting_df,
-        i=10,
-        save_dir=shap_figures_path,
+        shap_long_df=plotting_df, i=10, save_dir=shap_figures_path
     )
