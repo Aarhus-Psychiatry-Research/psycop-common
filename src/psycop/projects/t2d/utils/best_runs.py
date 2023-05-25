@@ -11,7 +11,6 @@ from psycop.common.model_training.config_schemas.conf_utils import (
     FullConfigSchema,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.t2d.paper_outputs.config import EVALUATION_ROOT
 from sklearn.pipeline import Pipeline
 
 
@@ -161,7 +160,10 @@ class PaperOutputSettings:
         self.name = name
         self.pos_rate = pos_rate
         self.artifact_path = (
-            EVALUATION_ROOT / "outputs_for_publishing" / f"{self.name}"
+            Path(__file__).parent.parent
+            / "paper_outputs"
+            / "outputs_for_publishing"
+            / f"{self.name}"
             if artifact_path is None
             else artifact_path
         )
