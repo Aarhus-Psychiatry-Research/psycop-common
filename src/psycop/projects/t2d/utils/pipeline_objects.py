@@ -149,14 +149,15 @@ class T2DArtifactNames:
 
 
 class PaperOutputPaths:
-    def __init__(self, artifact_path: Path):
+    def __init__(self, artifact_path: Path, create_output_paths_on_init: bool = True):
         self.artifact = artifact_path
         self.tables = self.artifact / "tables"
         self.figures = self.artifact / "figures"
         self.estimates = self.artifact / "estimates"
 
-        for path in [self.artifact, self.tables, self.figures, self.estimates]:
-            path.mkdir(parents=True, exist_ok=True)
+        if create_output_paths_on_init:
+            for path in [self.artifact, self.tables, self.figures, self.estimates]:
+                path.mkdir(parents=True, exist_ok=True)
 
 
 class PaperOutputSettings:
@@ -167,15 +168,18 @@ class PaperOutputSettings:
         model_type: str,
         lookahead_days: int,
         artifact_root: Optional[Path] = None,
+        create_output_paths_on_init: bool = True,
     ):
         self.name = name
         self.pos_rate = pos_rate
         artifact_root = EVAL_ROOT if artifact_root is None else artifact_root
         self.artifact_path = (
-            artifact_root / f"{lookahead_days} - {model_type} - {self.name}"
+            artifact_root / f"{lookahead_days}_{model_type}_{self.name}"
         )
         self.artifact_names = T2DArtifactNames()
-        self.paths = PaperOutputPaths(self.artifact_path)
+        self.paths = PaperOutputPaths(
+            self.artifact_path, create_output_paths_on_init=create_output_paths_on_init
+        )
 
 
 class PipelineRun:
@@ -185,6 +189,7 @@ class PipelineRun:
         group: RunGroup,
         pos_rate: float,
         paper_outputs_path: Optional[Path] = None,
+        create_output_paths_on_init: bool = True,
     ):
         self.name = name
         self.group = group
@@ -202,6 +207,7 @@ class PipelineRun:
             artifact_root=paper_outputs_path,
             lookahead_days=self.inputs.cfg.preprocessing.pre_split.min_lookahead_days,
             model_type=self.model_type,
+            create_output_paths_on_init=create_output_paths_on_init,
         )
 
     @property

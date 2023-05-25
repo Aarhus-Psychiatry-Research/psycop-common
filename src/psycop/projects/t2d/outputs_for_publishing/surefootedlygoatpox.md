@@ -1,22 +1,22 @@
 # Supplementary material
 
-## **eFigure 4**: Performance of xgboost with 5 years of lookahead
+## **eFigure 1**: Performance of xgboost with 5 years of lookahead
 
-![## **eFigure 4**: Performance of xgboost with 5 years of lookahead](figures\t2d_main_performance_figure.png)
+![## **eFigure 1**: Performance of xgboost with 5 years of lookahead](1825_xgboost_surefootedlygoatpox-eval-on-test\figures\t2d_main_performance_figure.png)
 
 A) Receiver operating characteristics (ROC) curve. B) Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. C) Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. D) Distribution of months from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).
 
 
 
-## **eFigure 5**: Robustness of xgboost with 5 years of lookahead
+## **eFigure 2**: Robustness of xgboost with 5 years of lookahead
 
-![## **eFigure 5**: Robustness of xgboost with 5 years of lookahead](figures\t2d_main_robustness.png)
+![## **eFigure 2**: Robustness of xgboost with 5 years of lookahead](1825_xgboost_surefootedlygoatpox-eval-on-test\figures\t2d_main_robustness.png)
 
 Robustness of the model across a variety of stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the number of contacts in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.
 
 
 
-## **eTable 3**: Performance of xgboost with 5 years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.
+## **eTable 1**: Performance of xgboost with 5 years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.
 
 | Positive rate   | True prevalence   | PPV   | NPV   | Sensitivity   | Specificity   | FPR   | FNR   | Accuracy   |   True positives | True negatives   | False positives   | False negatives   | % of all events captured   |   Mean years from first positive to T2D |
 |:----------------|:------------------|:------|:------|:--------------|:--------------|:------|:------|:-----------|-----------------:|:-----------------|:------------------|:------------------|:---------------------------|----------------------------------------:|
@@ -37,7 +37,6 @@ Robustness of the model across a variety of stratifications. Blue line is the ar
 **FP**: False positives.
 **FN**: False negatives.
 **Mean warning days**: For all patients with at least one true positive, the number of days from their first positive prediction to their diagnosis.
-
             
 
 

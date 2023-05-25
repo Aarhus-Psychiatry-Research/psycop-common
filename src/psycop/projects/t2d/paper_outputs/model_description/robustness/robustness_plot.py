@@ -37,6 +37,7 @@ def t2d_plot_robustness(
         + pn.theme(
             axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1),
         )
+        + pn.ylim(0,1)
     )
 
     if "ci_lower" in df.columns:

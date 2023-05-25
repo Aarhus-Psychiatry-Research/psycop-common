@@ -62,7 +62,7 @@ def print_a4_ratio(
     new_plot_height_for_a4 = (a4_ratio * total_width - total_height) / n_rows
 
     msg.info(f"height/width ratio is {round(total_height/total_width,1)}")
-    msg.info(f"Vertical A4 ratio is {rorund(a4_ratio,1)}")
+    msg.info(f"Vertical A4 ratio is {round(a4_ratio,1)}")
     msg.info(
         f"You could decrease single_plot_height to {round(new_plot_height_for_a4,1)} for the patchwork to fit A4",
     )

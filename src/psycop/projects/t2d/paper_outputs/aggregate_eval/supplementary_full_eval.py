@@ -6,7 +6,7 @@ from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval 
     t2d_main_manuscript_eval,
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_GROUP
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import EVAL_ROOT, PipelineRun, RunGroup
 from wasabi import Printer
 
 msg = Printer(timestamp=True)
@@ -27,11 +27,16 @@ def get_best_runs_from_model_type(
     )
 
     best_run_names = list(best_run_df["run_name"])
+
+    # Sort the list to make the order deterministic
+    best_run_names.sort()
+
     best_runs = tuple(
         PipelineRun(
             group=dev_run_group,
             name=name,
             pos_rate=BEST_POS_RATE,
+            create_output_paths_on_init=False,
         )
         for name in best_run_names
     )
@@ -53,10 +58,16 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
 
     for run in best_runs_from_model_type:
         artifacts += t2d_main_manuscript_eval(dev_pipeline=run)
+        run_md = create_supplementary_from_markdown_artifacts(artifacts=artifacts)
 
-    create_supplementary_from_markdown_artifacts(
+        with (EVAL_ROOT / f"{run.name}.md").open("w") as f:
+            f.write(run_md)
+
+    combined_supplementary_md = create_supplementary_from_markdown_artifacts(
         artifacts=artifacts, first_table_index=4, first_figure_index=3
     )
+    with (EVAL_ROOT / f"{dev_run_group.name}-combined.md").open("w") as f:
+        f.write(combined_supplementary_md)
 
 
 if __name__ == "__main__":

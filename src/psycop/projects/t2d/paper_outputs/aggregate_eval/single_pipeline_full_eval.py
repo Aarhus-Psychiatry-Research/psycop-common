@@ -67,7 +67,7 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
 
 
 def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> list[MarkdownArtifact]:
-    msg.info(f"--------- Evaluating {dev_pipeline.name} ----------")
+    msg.divider(f"Evaluating {dev_pipeline.name}")
     train_pipeline = get_test_pipeline_run(pipeline_to_train=dev_pipeline)
 
     msg.info(
