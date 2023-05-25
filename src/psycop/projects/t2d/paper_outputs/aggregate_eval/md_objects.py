@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence
 
 import pandas as pd
 
@@ -72,7 +72,7 @@ class MarkdownTable(MarkdownArtifact):
 
         raise ValueError(
             f"File extension {self.file_path.suffix} not supported. "
-            f"Only .csv and .xlsx are supported."
+            f"Only .csv and .xlsx are supported.",
         )
 
     def get_markdown_table(self) -> str:
@@ -81,7 +81,7 @@ class MarkdownTable(MarkdownArtifact):
 
     def get_markdown(self) -> str:
         return f"""{self.title}
-    
+
 {self.get_markdown_table()}
 
 {self.description}
@@ -114,7 +114,7 @@ def create_supplementary_from_markdown_artifacts(
         for artifact in artifacts:
             artifact.title = f"## **{title_prefix} {index}**: {artifact.title}"
             markdown += f"""{artifact.get_markdown()}
-            
+
 \\newpage
 
 """

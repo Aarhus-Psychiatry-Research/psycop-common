@@ -3,7 +3,6 @@ from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
 )
-from psycop.projects.t2d.paper_outputs.config import DEV_GROUP_NAME
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
 )
@@ -17,14 +16,13 @@ from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     get_test_pipeline_run,
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from wasabi import Printer
 
 msg = Printer(timestamp=True)
 
 
 def _t2d_concat_results_to_md_objects(run: PipelineRun) -> str:
-    md = ""
 
     artifact_dir = run.paper_outputs.artifact_path
 
@@ -45,24 +43,26 @@ def _t2d_concat_results_to_md_objects(run: PipelineRun) -> str:
             title=f"Performance of {run.model_type} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.",
             file_path=artifact_dir
             / run.paper_outputs.artifact_names.performance_by_ppr,
-            description="""**Predicted positive**: The proportion of contacts predicted positive by the model. Since the model outputs a predicted probability, this is a threshold set by us. 
-**True prevalence**: The proportion of contacts that qualified for type 2 diabetes within the lookahead window. 
-**PPV**: Positive predictive value. 
-**NPV**: Negative predictive value.  
-**FPR**: False positive rate. 
-**FNR**: False negative rate. 
-**TP**: True positives. 
-**TN**: True negatives. 
-**FP**: False positives. 
-**FN**: False negatives. 
-**Mean warning days**: For all patients with at least one true positive, the number of days from their first positive prediction to their diagnosis.  
+            description="""**Predicted positive**: The proportion of contacts predicted positive by the model. Since the model outputs a predicted probability, this is a threshold set by us.
+**True prevalence**: The proportion of contacts that qualified for type 2 diabetes within the lookahead window.
+**PPV**: Positive predictive value.
+**NPV**: Negative predictive value.
+**FPR**: False positive rate.
+**FNR**: False negative rate.
+**TP**: True positives.
+**TN**: True negatives.
+**FP**: False positives.
+**FN**: False negatives.
+**Mean warning days**: For all patients with at least one true positive, the number of days from their first positive prediction to their diagnosis.
 
             """,
         ),
     ]
 
     return create_supplementary_from_markdown_artifacts(
-        artifacts=artifacts, first_table_index=3, first_figure_index=4
+        artifacts=artifacts,
+        first_table_index=3,
+        first_figure_index=4,
     )
 
 
@@ -70,7 +70,7 @@ def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
     train_pipeline = get_test_pipeline_run(pipeline_to_train=dev_pipeline)
 
     msg.info(
-        f"Generating main manuscript eval to {train_pipeline.paper_outputs.artifact_path}"
+        f"Generating main manuscript eval to {train_pipeline.paper_outputs.artifact_path}",
     )
 
     t2d_create_main_performance_figure(run=train_pipeline)
@@ -80,7 +80,7 @@ def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
     md = _t2d_concat_results_to_md_objects(run=train_pipeline)
 
     with (dev_pipeline.paper_outputs.artifact_path / "supplementary_material.md").open(
-        "w"
+        "w",
     ) as f:
         f.write(md)
 

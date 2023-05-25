@@ -2,21 +2,21 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from pandas import describe_option
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
     MarkdownFigure,
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
 )
-from sqlalchemy import desc
 
 
 class TestMarkdownFigure:
     def test_file_does_not_exist(self):
         with pytest.raises(FileNotFoundError):
             MarkdownFigure(
-                title="Title", file_path=Path("path/to/file"), description="Description"
+                title="Title",
+                file_path=Path("path/to/file"),
+                description="Description",
             )
 
     def test_markdown_figure_output(self):
@@ -35,7 +35,7 @@ class TestMarkdownTable:
         """col1,col2,col3
 1,2,3,
 4,5,6,
-"""
+""",
     )
 
     def test_loading_of_table(self, tmp_path: Path):
@@ -76,7 +76,7 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
         """col1,col2,col3
 1,2,3,
 4,5,6,
-"""
+""",
     )
 
     figure_string = "Figure here"
@@ -112,7 +112,9 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
         ]
 
         md = create_supplementary_from_markdown_artifacts(
-            artifacts=artifacts, first_table_index=3, first_figure_index=1
+            artifacts=artifacts,
+            first_table_index=3,
+            first_figure_index=1,
         )
 
         with (tmp_path / "test.md").open("w") as f:

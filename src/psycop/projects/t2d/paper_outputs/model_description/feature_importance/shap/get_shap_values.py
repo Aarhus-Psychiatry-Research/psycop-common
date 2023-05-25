@@ -89,7 +89,7 @@ def get_shap_bundle_for_best_run(
     n_rows: Optional[int] = 10_000,
     cache_ver: float = 0.1,
 ) -> ShapBundle:
-    print(f"Generating shap values for {run_name}, with cache version {cache_ver}")
+    print(f"Generating shap values for {run.name}, with cache version {cache_ver}")
 
     flattened_ds: pl.DataFrame = (
         pl.concat(

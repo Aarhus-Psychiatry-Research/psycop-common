@@ -1,4 +1,3 @@
-from pathlib import Path
 import polars as pl
 from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval import (
     t2d_main_manuscript_eval,
