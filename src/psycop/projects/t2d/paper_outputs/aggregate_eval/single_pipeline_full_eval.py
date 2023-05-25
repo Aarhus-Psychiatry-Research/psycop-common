@@ -1,3 +1,8 @@
+from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
+    MarkdownFigure,
+    MarkdownTable,
+    create_supplementary_from_markdown_artifacts,
+)
 from psycop.projects.t2d.paper_outputs.config import DEV_GROUP_NAME
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
@@ -18,19 +23,47 @@ from wasabi import Printer
 msg = Printer(timestamp=True)
 
 
-def t2d_md_main_performance_figure(run: PipelineRun) -> str:
-    return f"""### Performance of {run.model_type.capitalize()} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead
-![Performance]({run.paper_outputs.artifact_path / run.paper_outputs.artifact_names.main_performance_figure})
-
-"""
-
-
-def t2d_concat_results_to_md_objects(run: PipelineRun) -> None:
+def _t2d_concat_results_to_md_objects(run: PipelineRun) -> str:
     md = ""
 
-    md += t2d_md_main_performance_figure(run=run)
-    md += t2d_md_main_robustness_figure(run=run)
-    md += t2d_md_main_performance_by_ppr_figure(run=run)
+    artifact_dir = run.paper_outputs.artifact_path
+
+    artifacts = [
+        MarkdownFigure(
+            title=f"Performance of {run.model_type} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead",
+            file_path=artifact_dir
+            / run.paper_outputs.artifact_names.main_performance_figure,
+            description="A) Receiver operating characteristics (ROC) curve. B) Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. C) Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. D) Distribution of months from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).",
+        ),
+        MarkdownFigure(
+            title=f"Robustness of {run.model_type} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead",
+            file_path=artifact_dir
+            / run.paper_outputs.artifact_names.main_robustness_figure,
+            description="Robustness of the model across a variety of stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the number of contacts in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
+        ),
+        MarkdownTable(
+            title=f"Performance of {run.model_type} with {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.",
+            file_path=artifact_dir
+            / run.paper_outputs.artifact_names.performance_by_ppr,
+            description="""**Predicted positive**: The proportion of contacts predicted positive by the model. Since the model outputs a predicted probability, this is a threshold set by us. 
+**True prevalence**: The proportion of contacts that qualified for type 2 diabetes within the lookahead window. 
+**PPV**: Positive predictive value. 
+**NPV**: Negative predictive value.  
+**FPR**: False positive rate. 
+**FNR**: False negative rate. 
+**TP**: True positives. 
+**TN**: True negatives. 
+**FP**: False positives. 
+**FN**: False negatives. 
+**Mean warning days**: For all patients with at least one true positive, the number of days from their first positive prediction to their diagnosis.  
+
+            """,
+        ),
+    ]
+
+    return create_supplementary_from_markdown_artifacts(
+        artifacts=artifacts, first_table_index=3, first_figure_index=4
+    )
 
 
 def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
@@ -44,7 +77,12 @@ def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
     t2d_create_main_robustness_figure(run=train_pipeline)
     t2d_output_performance_by_ppr(run=train_pipeline)
 
-    t2d_concat_results_to_md_objects(run=train_pipeline)
+    md = _t2d_concat_results_to_md_objects(run=train_pipeline)
+
+    with (dev_pipeline.paper_outputs.artifact_path / "supplementary_material.md").open(
+        "w"
+    ) as f:
+        f.write(md)
 
 
 if __name__ == "__main__":

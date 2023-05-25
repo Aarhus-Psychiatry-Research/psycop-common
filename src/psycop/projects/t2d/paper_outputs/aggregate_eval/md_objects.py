@@ -21,8 +21,20 @@ class MarkdownArtifact:
 
 
 class MarkdownFigure(MarkdownArtifact):
-    def __init__(self, title_prefix: str = "Figure", *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        file_path: Path,
+        description: str,
+        title: str,
+        title_prefix: str = "Figure",
+        check_filepath_exists: bool = True,
+    ):
+        super().__init__(
+            title=title,
+            file_path=file_path,
+            description=description,
+            check_filepath_exists=check_filepath_exists,
+        )
         self.title_prefix = title_prefix
 
     def get_markdown(self) -> str:
@@ -35,8 +47,20 @@ class MarkdownFigure(MarkdownArtifact):
 
 
 class MarkdownTable(MarkdownArtifact):
-    def __init__(self, title_prefix: str = "Table", *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        file_path: Path,
+        description: str,
+        title: str,
+        title_prefix: str = "Table",
+        check_filepath_exists: bool = True,
+    ):
+        super().__init__(
+            title=title,
+            file_path=file_path,
+            description=description,
+            check_filepath_exists=check_filepath_exists,
+        )
         self.title_prefix = title_prefix
 
     def _get_table_as_pd(self) -> pd.DataFrame:
