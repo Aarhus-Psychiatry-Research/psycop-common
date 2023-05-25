@@ -10,6 +10,9 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_by_time_until_diagnosis import (
+    get_time_from_first_positive_to_diagnosis_df,
+)
 
 
 def get_true_positives(
@@ -152,41 +155,9 @@ def get_days_from_first_positive_to_diagnosis_from_df(
     aggregation_method: str,
     df: pd.DataFrame,
 ) -> float:
-    """Get a dataframe. Easily testable.
-    Use the `days_from_first_positive_to_diagnosis` function when you have an eval_dataset.
-    """
-    # Keep only true positives
-    df["true_positive"] = (df["pred"] == 1) & (df["y"] == 1)
-    df = df[df["true_positive"]]
+    df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
 
-    # Find timestamp of first positive prediction
-    df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
-        "min",
-    )
-    df = df[df["timestamp_first_pos_pred"].notnull()]
-
-    # Keep only one record per patient
-    df = df.drop_duplicates(
-        subset=["id", "timestamp_first_pos_pred", "outcome_timestamps"],
-    )
-
-    # Calculate warning days
-    df["warning_days"] = round(
-        (df["outcome_timestamps"] - df["timestamp_first_pos_pred"])
-        / np.timedelta64(1, "D"),  # type: ignore
-        0,
-    )
-
-    df = df[
-        [
-            "id",
-            "timestamp_first_pos_pred",
-            "outcome_timestamps",
-            "warning_days",
-        ]
-    ]
-
-    aggregated = df["warning_days"].agg(aggregation_method)
+    aggregated = df["days_from_pred_to_event"].agg(aggregation_method)
     return aggregated
 
 
