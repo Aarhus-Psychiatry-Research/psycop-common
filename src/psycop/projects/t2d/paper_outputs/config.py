@@ -8,8 +8,6 @@ from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-EVALUATION_ROOT = Path(__file__).parent
-
 DEV_GROUP_NAME = "mistouching-unwontedness"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_POS_RATE = 0.03

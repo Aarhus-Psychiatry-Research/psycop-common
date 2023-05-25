@@ -207,7 +207,7 @@ combined = pd.concat([visit_table_one, patient_table_one])
 
 BEST_EVAL_PIPELINE.paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
 combined.to_csv(
-    BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "descriptive_stats_table.csv"
+    BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "descriptive_stats_table.csv",
 )
 
 # %%
