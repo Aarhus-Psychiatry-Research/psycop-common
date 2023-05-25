@@ -24,10 +24,12 @@ def get_performance_for_group(group: RunGroup, pos_rate: float) -> pl.DataFrame:
 
 def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
     return_dict = {
-        "model_name": run.cfg.model.name,
-        "lookahead_days": float(run.cfg.preprocessing.pre_split.min_lookahead_days),
+        "model_name": run.inputs.cfg.model.name,
+        "lookahead_days": float(
+            run.inputs.cfg.preprocessing.pre_split.min_lookahead_days,
+        ),
         "run_name": run.name,
-        "auroc": run.get_auroc(),
+        "auroc": run.pipeline_outputs.get_auroc(),
         "mean_warning_days": get_mean_days_from_first_positive_to_diagnosis_for_run(
             run=run,
         ),
@@ -38,8 +40,8 @@ def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
 
 def get_mean_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -> float:
     return days_from_first_positive_to_diagnosis(
-        eval_dataset=run.get_eval_dataset(),
-        positive_rate=run.pos_rate,
+        eval_dataset=run.pipeline_outputs.get_eval_dataset(),
+        positive_rate=run.paper_outputs.pos_rate,
         aggregation_method="mean",
     )
 

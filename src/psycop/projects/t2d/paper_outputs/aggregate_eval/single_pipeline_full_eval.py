@@ -1,4 +1,4 @@
-from psycop.projects.t2d.paper_outputs.config import BEST_DEV_PIPELINE, DEV_GROUP_NAME
+from psycop.projects.t2d.paper_outputs.config import DEV_GROUP_NAME
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
 )
@@ -9,16 +9,13 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustn
     t2d_create_main_robustness_figure,
 )
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
-    run_pipeline_on_train,
-)
-from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
-    t2d_create_patchwork_figure,
+    get_test_pipeline_run,
 )
 from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
 
 
 def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> None:
-    train_pipeline = run_pipeline_on_train(pipeline_to_train=dev_pipeline)
+    train_pipeline = get_test_pipeline_run(pipeline_to_train=dev_pipeline)
     t2d_create_main_performance_figure(run=train_pipeline)
     t2d_create_main_robustness_figure(run=train_pipeline)
     t2d_output_performance_by_ppr(run=train_pipeline)

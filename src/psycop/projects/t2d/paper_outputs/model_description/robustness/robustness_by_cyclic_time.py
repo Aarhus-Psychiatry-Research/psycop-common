@@ -10,7 +10,7 @@ from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
 def t2d_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
-    eval_ds = run.get_eval_dataset()
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,
@@ -29,7 +29,7 @@ def t2d_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
 
 
 def t2d_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
-    eval_ds = run.get_eval_dataset()
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,

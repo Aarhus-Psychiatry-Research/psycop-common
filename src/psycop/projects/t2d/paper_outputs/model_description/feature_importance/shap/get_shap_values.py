@@ -58,7 +58,7 @@ class ShapBundle:
         * shap_value (e.g. 0.1)
         Each row represents an observation of a feature at a prediction time.
         """
-        return get_long_shap_df(X=self.X, shap_values=self.shap_values)
+        return get_long_shap_df(X=self.X, shap_values=self.shap_values)  # type: ignore
 
 
 def generate_shap_values_from_pipe(
@@ -93,7 +93,7 @@ def get_shap_bundle_for_best_run(
 
     flattened_ds: pl.DataFrame = (
         pl.concat(
-            BEST_EVAL_PIPELINE.get_flattened_split_as_lazyframe(split=split) for split in ["train", "val"]  # type: ignore
+            BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(split=split) for split in ["train", "val"]  # type: ignore
         )
         .collect()
         .sample(n=n_rows)
@@ -102,7 +102,7 @@ def get_shap_bundle_for_best_run(
     if n_rows:
         flattened_ds = flattened_ds.sample(n=n_rows)
 
-    cfg = BEST_EVAL_PIPELINE.cfg
+    cfg = BEST_EVAL_PIPELINE.inputs.cfg
     predictor_cols = [
         c for c in flattened_ds.columns if c.startswith(cfg.data.pred_prefix)
     ]
@@ -113,7 +113,7 @@ def get_shap_bundle_for_best_run(
         and str(cfg.preprocessing.pre_split.min_lookahead_days) in c
     ]
 
-    pipe = BEST_EVAL_PIPELINE.pipe
+    pipe = BEST_EVAL_PIPELINE.pipeline_outputs.pipe
 
     shap_values = generate_shap_values_from_pipe(
         features=flattened_ds.lazy().select(predictor_cols),
@@ -155,6 +155,6 @@ if __name__ == "__main__":
         cache_ver=0.1,
     )
 
-    long_shap_df = shap_bundle.get_long_shap_df()
+    long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore
 
     pass

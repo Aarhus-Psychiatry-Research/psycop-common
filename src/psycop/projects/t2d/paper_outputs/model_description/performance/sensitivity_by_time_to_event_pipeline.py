@@ -6,7 +6,6 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.config import (
     BEST_EVAL_PIPELINE,
-    FIGURES_PATH,
     PN_THEME,
 )
 from psycop.projects.t2d.utils.best_runs import PipelineRun
@@ -42,8 +41,6 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     for value in df["actual_positive_rate"].unique():
         p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1)
 
-    plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
-    p.save(plot_path, width=7, height=7)
     return p
 
 
@@ -89,9 +86,13 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
 
 
 def t2d_sensitivity_by_time_to_event(run: PipelineRun) -> pn.ggplot:
-    eval_ds = run.get_eval_dataset()
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
-    return sensitivity_by_time_to_event(eval_dataset=eval_ds)
+    p = sensitivity_by_time_to_event(eval_dataset=eval_ds)
+
+    p.save(run.paper_outputs.paths.figures, width=7, height=7)
+
+    return p
 
 
 if __name__ == "__main__":

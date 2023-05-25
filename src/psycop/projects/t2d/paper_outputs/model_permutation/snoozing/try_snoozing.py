@@ -8,7 +8,7 @@ from psycop.projects.t2d.paper_outputs.model_permutation.snoozing.snoozing impor
 from sklearn.metrics import roc_auc_score
 
 if __name__ == "__main__":
-    evaluation_dataset = BEST_EVAL_PIPELINE.get_eval_dataset()
+    evaluation_dataset = BEST_EVAL_PIPELINE.pipeline_outputs.get_eval_dataset()
 
     eval_df = pd.DataFrame(
         {

@@ -12,7 +12,7 @@ from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
     print("Plotting AUC by time from first visit")
-    eval_ds = run.get_eval_dataset()
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pl.DataFrame(
         {

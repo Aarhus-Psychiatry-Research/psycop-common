@@ -6,11 +6,12 @@ from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 
 
-def t2d_auroc_by_quarter() -> pn.ggplot:
+def t2d_auroc_by_quarter(run: PipelineRun) -> pn.ggplot:
     print("Plotting AUROC by calendar time")
-    eval_ds = BEST_EVAL_PIPELINE.get_eval_dataset()
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = create_roc_auc_by_absolute_time_df(
         labels=eval_ds.y,
@@ -30,4 +31,4 @@ def t2d_auroc_by_quarter() -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_quarter()
+    t2d_auroc_by_quarter(run=BEST_EVAL_PIPELINE)

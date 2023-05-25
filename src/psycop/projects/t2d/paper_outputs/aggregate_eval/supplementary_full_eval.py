@@ -7,7 +7,8 @@ from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
 
 
 def get_best_runs_from_model_type(
-    dev_run_group: RunGroup, model_type: str
+    dev_run_group: RunGroup,
+    model_type: str,
 ) -> tuple[PipelineRun]:
     """Get PipelineRun objects for the best runs of a given model type"""
     performance_df = pl.from_pandas(dev_run_group.all_runs_performance_df)
@@ -32,7 +33,8 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
     """Run full evaluation for the supplementary material."""
     best_model_type = "xgboost"
     best_runs_from_model_type = get_best_runs_from_model_type(
-        dev_run_group=dev_run_group, model_type=best_model_type
+        dev_run_group=dev_run_group,
+        model_type=best_model_type,
     )
 
     for run in best_runs_from_model_type:

@@ -1,13 +1,9 @@
 import copy
 import sys
-from pathlib import Path
 from typing import Any
 
 import wandb
 from omegaconf import DictConfig, OmegaConf
-from psycop.common.feature_generation.application_modules.project_setup import (
-    init_wandb,
-)
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.config_schemas.basemodel import BaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema

@@ -11,7 +11,34 @@ from psycop.common.model_training.config_schemas.conf_utils import (
     FullConfigSchema,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.t2d.paper_outputs.config import EVALUATION_ROOT
 from sklearn.pipeline import Pipeline
+
+
+def load_file_from_pkl(file_path: Path) -> Any:
+    with file_path.open("rb") as f:
+        return pickle.load(f)
+
+
+def df_to_eval_dataset(
+    df: pd.DataFrame,
+    custom_columns: Optional[Sequence[str]],
+) -> EvalDataset:
+    """Convert dataframe to EvalDataset."""
+    return EvalDataset(
+        ids=df["ids"],
+        y=df["y"],
+        y_hat_probs=df["y_hat_probs"],
+        pred_timestamps=df["pred_timestamps"],
+        outcome_timestamps=df["outcome_timestamps"],
+        age=df["age"],
+        is_female=df["is_female"],
+        exclusion_timestamps=df["exclusion_timestamps"],
+        pred_time_uuids=df["pred_time_uuids"],
+        custom_columns={col: df[col] for col in custom_columns}
+        if custom_columns
+        else None,
+    )
 
 
 @dataclass
@@ -91,13 +118,13 @@ class PipelineInputs:
 class PipelineOutputs:
     name: str
     group: RunGroup
-    eval_dir: Path
+    dir_path: Path
 
     def get_eval_dataset(
         self,
         custom_columns: Optional[Sequence[str]] = None,
     ) -> EvalDataset:
-        df = pd.read_parquet(self.eval_dir / "evaluation_dataset.parquet")
+        df = pd.read_parquet(self.dir_path / "evaluation_dataset.parquet")
 
         eval_dataset = df_to_eval_dataset(df, custom_columns=custom_columns)
 
@@ -110,52 +137,61 @@ class PipelineOutputs:
 
     @property
     def pipe(self) -> Pipeline:
-        return load_file_from_pkl(self.eval_dir / "pipe.pkl")
+        return load_file_from_pkl(self.dir_path / "pipe.pkl")
 
 
-@dataclass
-class PipelineEvalSettings:
-    pos_rate: float
+class PaperOutputPaths:
+    def __init__(self, artifact_path: Path):
+        self.artifact = artifact_path
+        self.tables = self.artifact / "tables"
+        self.figures = self.artifact / "figures"
+        self.estimates = self.artifact / "estimates"
+
+        for path in [self.artifact, self.tables, self.figures, self.estimates]:
+            path.mkdir(parents=True, exist_ok=True)
+
+
+class PaperOutputSettings:
+    def __init__(
+        self,
+        name: str,
+        pos_rate: float,
+        artifact_path: Optional[Path] = None,
+    ):
+        self.name = name
+        self.pos_rate = pos_rate
+        self.artifact_path = (
+            EVALUATION_ROOT / "outputs_for_publishing" / f"{self.name}"
+            if artifact_path is None
+            else artifact_path
+        )
+        self.paths = PaperOutputPaths(self.artifact_path)
 
 
 class PipelineRun:
-    def __init__(self, name: str, group: RunGroup, pos_rate: float):
+    def __init__(
+        self,
+        name: str,
+        group: RunGroup,
+        pos_rate: float,
+        paper_outputs_path: Optional[Path] = None,
+    ):
         self.name = name
         self.group = group
-        self.eval_dir = self.group.group_dir / self.name
+        pipeline_output_dir = self.group.group_dir / self.name
 
-        self.inputs = PipelineInputs(group=group, eval_dir=self.eval_dir)
-        self.outputs = PipelineOutputs(
-            group=group, eval_dir=self.eval_dir, name=self.name
+        self.inputs = PipelineInputs(group=group, eval_dir=pipeline_output_dir)
+        self.pipeline_outputs = PipelineOutputs(
+            group=group,
+            dir_path=pipeline_output_dir,
+            name=self.name,
         )
-        self.eval_settings = PipelineEvalSettings(pos_rate=pos_rate)
+        self.paper_outputs = PaperOutputSettings(
+            name=name,
+            pos_rate=pos_rate,
+            artifact_path=paper_outputs_path,
+        )
 
     @property
     def model_type(self) -> str:
         return self.inputs.cfg.model.name
-
-
-def load_file_from_pkl(file_path: Path) -> Any:
-    with file_path.open("rb") as f:
-        return pickle.load(f)
-
-
-def df_to_eval_dataset(
-    df: pd.DataFrame,
-    custom_columns: Optional[Sequence[str]],
-) -> EvalDataset:
-    """Convert dataframe to EvalDataset."""
-    return EvalDataset(
-        ids=df["ids"],
-        y=df["y"],
-        y_hat_probs=df["y_hat_probs"],
-        pred_timestamps=df["pred_timestamps"],
-        outcome_timestamps=df["outcome_timestamps"],
-        age=df["age"],
-        is_female=df["is_female"],
-        exclusion_timestamps=df["exclusion_timestamps"],
-        pred_time_uuids=df["pred_time_uuids"],
-        custom_columns={col: df[col] for col in custom_columns}
-        if custom_columns
-        else None,
-    )

@@ -2,11 +2,13 @@ import polars as pl
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )
-from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE, TABLES_PATH
+from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.utils.best_runs import PipelineRun
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
 
-if __name__ == "__main__":
-    pipeline = BEST_EVAL_PIPELINE.pipe
+
+def generate_feature_importance_table(pipeline_run: PipelineRun):
+    pipeline = pipeline_run.pipeline_outputs.pipe
 
     # Get feature importance scores
     feature_importances = pipeline.named_steps["model"].feature_importances_
@@ -15,8 +17,8 @@ if __name__ == "__main__":
     )
 
     split_df = load_and_filter_split_from_cfg(
-        data_cfg=BEST_EVAL_PIPELINE.cfg.data,
-        pre_split_cfg=BEST_EVAL_PIPELINE.cfg.preprocessing.pre_split,
+        data_cfg=pipeline_run.inputs.cfg.data,
+        pre_split_cfg=pipeline_run.inputs.cfg.preprocessing.pre_split,
         split="test",
     )
 
@@ -36,5 +38,13 @@ if __name__ == "__main__":
         pl.col("Feature Name").apply(lambda x: feature_name_to_readable(x)),  # type: ignore
     )
 
-    with (TABLES_PATH / "feature_importance_by_gain.html").open("w") as html_file:
+    with (
+        pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html"
+    ).open("w") as html_file:
         html_file.write(top_100_features.to_pandas().to_html())
+
+
+if __name__ == "__main__":
+    top_100_features = generate_feature_importance_table(
+        pipeline_run=BEST_EVAL_PIPELINE,
+    )
