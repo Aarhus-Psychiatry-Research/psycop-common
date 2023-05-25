@@ -141,6 +141,13 @@ class PipelineOutputs:
         return load_file_from_pkl(self.dir_path / "pipe.pkl")
 
 
+@dataclass
+class T2DArtifactNames:
+    main_performance_figure: str = "t2d_main_performance_figure"
+    main_robustness_figure: str = "t2d_main_robustness_figure"
+    performance_by_ppr: str = "t2d_performance_by_ppr"
+
+
 class PaperOutputPaths:
     def __init__(self, artifact_path: Path):
         self.artifact = artifact_path
@@ -157,15 +164,17 @@ class PaperOutputSettings:
         self,
         name: str,
         pos_rate: float,
-        artifact_path: Optional[Path] = None,
+        model_type: str,
+        lookahead_days: int,
+        artifact_root: Optional[Path] = None,
     ):
         self.name = name
         self.pos_rate = pos_rate
+        artifact_root = EVAL_ROOT if artifact_root is None else artifact_root
         self.artifact_path = (
-            EVAL_ROOT / f"{self.name}"
-            if artifact_path is None
-            else artifact_path / f"{self.name}"
+            artifact_root / f"{lookahead_days} - {model_type} - {self.name}"
         )
+        self.artifact_names = T2DArtifactNames()
         self.paths = PaperOutputPaths(self.artifact_path)
 
 
@@ -190,7 +199,9 @@ class PipelineRun:
         self.paper_outputs = PaperOutputSettings(
             name=name,
             pos_rate=pos_rate,
-            artifact_path=paper_outputs_path,
+            artifact_root=paper_outputs_path,
+            lookahead_days=self.inputs.cfg.preprocessing.pre_split.min_lookahead_days,
+            model_type=self.model_type,
         )
 
     @property

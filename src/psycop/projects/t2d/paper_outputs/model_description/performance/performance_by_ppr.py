@@ -76,7 +76,10 @@ def t2d_output_performance_by_ppr(run: PipelineRun) -> Path:
 
     df = clean_up_performance_by_ppr(df)
 
-    table_path = run.paper_outputs.paths.tables / "performance_by_ppr.xlsx"
+    table_path = (
+        run.paper_outputs.paths.tables
+        / run.paper_outputs.artifact_names.performance_by_ppr
+    )
     run.paper_outputs.paths.tables.mkdir(exist_ok=True, parents=True)
     df.to_excel(table_path)
 

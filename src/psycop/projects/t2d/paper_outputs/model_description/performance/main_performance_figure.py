@@ -26,7 +26,7 @@ def t2d_create_main_performance_figure(run: PipelineRun) -> None:
             t2d_sensitivity_by_time_to_event,
             t2d_first_pred_to_event,
         ),
-        output_filename="t2d_main_performance_figure.png",
+        output_filename=run.paper_outputs.artifact_names.main_performance_figure,
     )
 
 
