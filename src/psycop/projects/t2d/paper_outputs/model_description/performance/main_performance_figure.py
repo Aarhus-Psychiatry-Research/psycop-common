@@ -14,7 +14,7 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity
 from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
     t2d_create_patchwork_figure,
 )
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def t2d_create_main_performance_figure(run: PipelineRun) -> None:

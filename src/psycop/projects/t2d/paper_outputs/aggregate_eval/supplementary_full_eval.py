@@ -1,9 +1,10 @@
+from pathlib import Path
 import polars as pl
 from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval import (
     t2d_main_manuscript_eval,
 )
-from psycop.projects.t2d.paper_outputs.config import DEVELOPMENT_GROUP
-from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
+from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_GROUP
+from psycop.projects.t2d.utils.pipeline_objects import EVAL_ROOT, PipelineRun, RunGroup
 
 
 def get_best_runs_from_model_type(
@@ -22,7 +23,12 @@ def get_best_runs_from_model_type(
 
     best_run_names = list(best_run_df["run_name"])
     best_runs = tuple(
-        PipelineRun(group=dev_run_group, name=name, pos_rate=0.03)
+        PipelineRun(
+            group=dev_run_group,
+            name=name,
+            pos_rate=BEST_POS_RATE,
+            paper_outputs_path=EVAL_ROOT / "supplementary" / "full_eval" / model_type,
+        )
         for name in best_run_names
     )
 

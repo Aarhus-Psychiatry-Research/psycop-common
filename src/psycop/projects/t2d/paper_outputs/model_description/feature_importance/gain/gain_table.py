@@ -3,7 +3,7 @@ from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
 
 

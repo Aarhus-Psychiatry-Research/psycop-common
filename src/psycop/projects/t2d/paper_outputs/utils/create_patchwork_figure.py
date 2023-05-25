@@ -5,7 +5,7 @@ from typing import Callable
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from wasabi import Printer
 
 msg = Printer(timestamp=True)

@@ -6,7 +6,7 @@ from psycop.projects.t2d.paper_outputs.config import (
     BEST_POS_RATE,
     DEVELOPMENT_GROUP,
 )
-from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
 
 
 def get_performance_for_group(group: RunGroup, pos_rate: float) -> pl.DataFrame:

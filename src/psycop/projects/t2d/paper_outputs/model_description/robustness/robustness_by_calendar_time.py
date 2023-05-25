@@ -6,7 +6,7 @@ from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def t2d_auroc_by_quarter(run: PipelineRun) -> pn.ggplot:

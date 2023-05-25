@@ -5,7 +5,7 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     generate_performance_by_ppr_table,
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def format_with_thousand_separator(num: int) -> str:

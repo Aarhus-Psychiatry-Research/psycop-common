@@ -4,7 +4,7 @@ from psycop.common.model_training.application_modules.train_model.main import (
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.projects.t2d.paper_outputs.config import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def evaluate_pipeline_on_hba1c_only(run: PipelineRun):

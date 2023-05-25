@@ -6,7 +6,7 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_DEV_PIPELINE
-from psycop.projects.t2d.utils.best_runs import PipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
 from wasabi import Printer
 
 msg = Printer(timestamp=True)

@@ -13,6 +13,8 @@ from psycop.common.model_training.config_schemas.conf_utils import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from sklearn.pipeline import Pipeline
 
+EVAL_ROOT = Path(__file__).parent.parent / "outputs_for_publishing"
+
 
 def load_file_from_pkl(file_path: Path) -> Any:
     with file_path.open("rb") as f:
@@ -160,12 +162,9 @@ class PaperOutputSettings:
         self.name = name
         self.pos_rate = pos_rate
         self.artifact_path = (
-            Path(__file__).parent.parent
-            / "paper_outputs"
-            / "outputs_for_publishing"
-            / f"{self.name}"
+            EVAL_ROOT / f"{self.name}"
             if artifact_path is None
-            else artifact_path
+            else artifact_path / f"{self.name}"
         )
         self.paths = PaperOutputPaths(self.artifact_path)
 

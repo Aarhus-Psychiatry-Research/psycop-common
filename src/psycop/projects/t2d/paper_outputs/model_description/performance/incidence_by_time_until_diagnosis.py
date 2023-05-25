@@ -4,7 +4,7 @@ from psycop.projects.t2d.paper_outputs.config import (
     BEST_EVAL_PIPELINE,
     PN_THEME,
 )
-from psycop.projects.t2d.utils.best_runs import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
