@@ -26,7 +26,6 @@ def t2d_auroc_by_sex(run: PipelineRun) -> pn.ggplot:
         x_column="Sex",
         line_y_col_name="auroc",
         xlab="Sex",
-        figure_file_name="t2d_auroc_by_sex",
     )
 
 

@@ -21,5 +21,4 @@ def test_auroc_by_age(synth_eval_dataset: EvalDataset):
         x_column="age_binned",
         line_y_col_name="auroc",
         xlab="Age",
-        figure_file_name="test_auroc_by_age",
     )

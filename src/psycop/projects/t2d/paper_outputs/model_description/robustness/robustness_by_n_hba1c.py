@@ -30,7 +30,6 @@ def t2d_auroc_by_n_hba1c(
         x_column="eval_hba1c_within_9999_days_count_fallback_nan_binned",
         line_y_col_name="auroc",
         xlab="n HbA1c measurements prior to visit",
-        figure_file_name="t2d_auroc_by_hba1c",
     )
 
 

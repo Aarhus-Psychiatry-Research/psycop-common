@@ -24,7 +24,6 @@ def t2d_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
         x_column="time_bin",
         line_y_col_name="auroc",
         xlab="Day of Week",
-        figure_file_name="t2d_auroc_by_day_of_week",
     )
 
 
@@ -43,7 +42,6 @@ def t2d_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
         x_column="time_bin",
         line_y_col_name="auroc",
         xlab="Month of Year",
-        figure_file_name="t2d_auroc_by_month_of_year",
     )
 
 

@@ -15,9 +15,6 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustn
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     get_test_pipeline_run,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import (
-    BEST_EVAL_PIPELINE,
-)
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from wasabi import Printer
 

@@ -25,7 +25,6 @@ def t2d_auroc_by_quarter(run: PipelineRun) -> pn.ggplot:
         x_column="time_bin",
         line_y_col_name="auroc",
         xlab="Quarter",
-        figure_file_name="t2d_auroc_by_calendar_time",
     )
 
 

@@ -24,7 +24,6 @@ def t2d_auroc_by_age(run: PipelineRun) -> pn.ggplot:
         x_column="age_binned",
         line_y_col_name="auroc",
         xlab="Age",
-        figure_file_name="auroc_by_age.png",
         rotate_x_axis_labels_degrees=45,
     )
 
