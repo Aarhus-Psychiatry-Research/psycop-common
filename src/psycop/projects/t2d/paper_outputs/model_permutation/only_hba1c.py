@@ -1,44 +1,55 @@
+from pathlib import Path
+from typing import Sequence
+
 import polars as pl
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
+    evaluate_pipeline_with_modified_dataset,
+)
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
 
+from wasabi import Printer
+msg = Printer(timestamp=True)
 
-def evaluate_pipeline_on_hba1c_only(run: PipelineRun):
-    cfg: FullConfigSchema = run.inputs.cfg
+def convert_predictors_to_boolean(df: pl.LazyFrame, predictor_prefix: str) -> pl.LazyFrame:
+    
 
-    # Create the dataset with only HbA1c-predictors
+def create_hba1c_only_dataset(
+    run: PipelineRun,
+    output_dir_path: Path,
+    input_split_names: Sequence[SplitNames],
+    output_split_name: str,
+    recreate_dataset: bool = True,
+):
+    if output_dir_path.exists() and not recreate_dataset:
+        msg.info("Boolean dataset has already been created, returning")
+        return
+
     df: pl.LazyFrame = pl.concat(
-        run.get_flattened_split_as_lazyframe(split) for split in ["train", "val"]  # type: ignore
+        run.inputs.get_flattened_split_as_lazyframe(split)
+        for split in input_split_names
     )
 
-    non_hba1c_pred_cols = [
-        c
-        for c in df.columns
-        if c.startswith(cfg.data.pred_prefix) and ("hba1c" not in c)
-    ]
+    hba1c_only_df = convert_predictors_to_boolean(
+        df, predictor_prefix=run.inputs.cfg.data.pred_prefix
+    )
 
-    hba1c_only_df = df.drop(non_hba1c_pred_cols).collect()
+    msg.info(f"Collecting modified df with input_splits {input_split_names}")
+    hba1c_only_df = hba1c_only_df.collect()
 
-    hba1c_only_dir = run.paper_outputs.paths.estimates / "hba1c_only"
-    hba1c_only_dir.mkdir(parents=True, exist_ok=True)
-    hba1c_only_path = hba1c_only_dir / "hba1c_only.parquet"
-    hba1c_only_df.write_parquet(hba1c_only_path)
-
-    # Point the model at that dataset
-    cfg.data.Config.allow_mutation = True
-    cfg.data.dir = str(hba1c_only_dir)
-    cfg.data.splits_for_training = ["hba1c"]
-    roc_auc = train_model(cfg=cfg)
-
-    # Write AUROC
-    with (run.paper_outputs.paths.estimates / "hba1c_only_auroc.txt").open("a") as f:
-        f.write(str(roc_auc))
-        f.write(str(hba1c_only_df.columns))
+    output_dir_path.mkdir(exist_ok=True, parents=True)
+    hba1c_only_df.write_parquet(output_dir_path / f"{output_split_name}.parquet")
 
 
 if __name__ == "__main__":
-    evaluate_pipeline_on_hba1c_only(run=BEST_EVAL_PIPELINE)
+    from psycop.projects.t2d.paper_outputs.selected_runs import (
+        BEST_EVAL_PIPELINE,
+    )
+
+    evaluate_pipeline_with_modified_dataset(
+        run=BEST_EVAL_PIPELINE, feature_modification_fn=create_hba1c_only_dataset
+    )
