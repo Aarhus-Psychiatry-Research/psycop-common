@@ -28,7 +28,7 @@ msg = Printer(timestamp=True)
 
 def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
     relative_to = run.paper_outputs.artifact_path.parent
-    pos_rate_percent = f"{int(run.paper_outputs.pos_rate * 100)}%)"
+    pos_rate_percent = f"{int(run.paper_outputs.pos_rate * 100)}%"
     lookahead_years = int(
         run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365
     )
@@ -38,7 +38,7 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
             title=f"Performance of {run.model_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
             file_path=run.paper_outputs.paths.figures
             / run.paper_outputs.artifact_names.main_performance_figure,
-            description="A) Receiver operating characteristics (ROC) curve. B) Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. C) Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. D) Distribution of months from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).",
+            description="**A**: Receiver operating characteristics (ROC) curve. **B**: Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. **C**: Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. **D**: Distribution of months from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).",
             relative_to=relative_to,
         ),
         MarkdownFigure(
@@ -71,16 +71,18 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
 
 
 def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> list[MarkdownArtifact]:
-    msg.divider(f"Evaluating {dev_pipeline.name}")
+    msg.divider(
+        f"Evaluating {dev_pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {dev_pipeline.model_type} - {dev_pipeline.name}"
+    )
     train_pipeline = get_test_pipeline_run(pipeline_to_train=dev_pipeline)
 
     msg.info(
         f"Generating main manuscript eval to {train_pipeline.paper_outputs.artifact_path}",
     )
 
+    t2d_output_performance_by_ppr(run=train_pipeline)
     t2d_create_main_performance_figure(run=train_pipeline)
     t2d_create_main_robustness_figure(run=train_pipeline)
-    t2d_output_performance_by_ppr(run=train_pipeline)
 
     return _t2d_create_markdown_artifacts(run=train_pipeline)
 

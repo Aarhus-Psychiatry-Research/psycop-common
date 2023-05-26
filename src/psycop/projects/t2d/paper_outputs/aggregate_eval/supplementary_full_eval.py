@@ -21,15 +21,13 @@ def get_best_runs_from_model_type(
 
     best_run_df = (
         performance_df.filter(pl.col("model_name") == model_type)
-        .sort(by="roc_auc", descending=True)
+        .sort(by=["roc_auc"], descending=True)
         .groupby(["model_name", "lookahead_days"])
         .head(1)
+        .sort(by=["lookahead_days"], descending=False)
     )
 
     best_run_names = list(best_run_df["run_name"])
-
-    # Sort the list to make the order deterministic
-    best_run_names.sort()
 
     best_runs = tuple(
         PipelineRun(
@@ -41,7 +39,7 @@ def get_best_runs_from_model_type(
         for name in best_run_names
     )
 
-    msg.info(f"Evaluating {[run.name for run in best_runs]}")
+    msg.divider(f"Evaluating {[run.name for run in best_runs]}")
 
     return best_runs
 
@@ -57,8 +55,12 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
     artifacts = []
 
     for run in best_runs_from_model_type:
-        artifacts += t2d_main_manuscript_eval(dev_pipeline=run)
-        run_md = create_supplementary_from_markdown_artifacts(artifacts=artifacts)
+        current_run_artifacts = t2d_main_manuscript_eval(dev_pipeline=run)
+        artifacts += current_run_artifacts
+
+        run_md = create_supplementary_from_markdown_artifacts(
+            artifacts=current_run_artifacts
+        )
 
         with (
             EVAL_ROOT

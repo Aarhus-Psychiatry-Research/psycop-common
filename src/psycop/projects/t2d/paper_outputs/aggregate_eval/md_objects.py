@@ -45,7 +45,7 @@ class MarkdownFigure(MarkdownArtifact):
     def get_markdown(self) -> str:
         return f"""{self.title}
 
-![{self.title}]({self.file_path})
+![{self.title}]({self.file_path.as_posix()})
 
 {self.description}
 """
@@ -100,8 +100,8 @@ def create_supplementary_from_markdown_artifacts(
     first_table_index: int = 1,
     first_figure_index: int = 1,
 ) -> str:
-    tables = [a for a in artifacts if isinstance(a, MarkdownTable)]
-    figures = [a for a in artifacts if isinstance(a, MarkdownFigure)]
+    tables = tuple(a for a in artifacts if isinstance(a, MarkdownTable))
+    figures = tuple(a for a in artifacts if isinstance(a, MarkdownFigure))
 
     markdown = """# Supplementary material
 

@@ -43,7 +43,7 @@ def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
             label=annotation_text,
             ha="right",
             nudge_x=-0.3,
-            size=9,
+            size=11,
         )
         + PN_THEME
     )

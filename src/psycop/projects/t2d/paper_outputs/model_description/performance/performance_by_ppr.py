@@ -29,6 +29,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "warning_days_per_false_positive",
             "negative_rate",
             "mean_warning_days",
+            "median_warning_days",
             "prop with ≥1 true positive",
         ],
         axis=1,
@@ -38,13 +39,13 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
         {
             "positive_rate": "Positive rate",
             "true_prevalence": "True prevalence",
-            "sensitivity": "Sensitivity",
-            "specificity": "Specificity",
-            "accuracy": "Accuracy",
-            "true_positives": "True positives",
-            "true_negatives": "True negatives",
-            "false_positives": "False positives",
-            "false_negatives": "False negatives",
+            "sensitivity": "Sens",
+            "specificity": "Spec",
+            "accuracy": "Acc",
+            "true_positives": "TP",
+            "true_negatives": "TN",
+            "false_positives": "FP",
+            "false_negatives": "FN",
             "prop of all events captured": "% of all events captured",
         },
         axis=1,
@@ -73,10 +74,6 @@ def t2d_output_performance_by_ppr(run: PipelineRun):
         run.paper_outputs.paths.tables
         / run.paper_outputs.artifact_names.performance_by_ppr
     )
-
-    if output_path.exists():
-        msg.good(f"{run.name}: Performance by PPR already exists, continuing")
-
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore

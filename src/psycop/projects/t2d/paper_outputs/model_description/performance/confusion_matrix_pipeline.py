@@ -25,7 +25,7 @@ def t2d_confusion_matrix_plot(run: PipelineRun) -> pn.ggplot:
 
     p = plotnine_confusion_matrix(
         matrix=confusion_matrix,
-        x_title=f"T2D within {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days/365)} years",
+        outcome_text=f"T2D within {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days/365)} years",
     )
 
     p.save(run.paper_outputs.paths.figures / "t2d_confusion_matrix_plot.png")
