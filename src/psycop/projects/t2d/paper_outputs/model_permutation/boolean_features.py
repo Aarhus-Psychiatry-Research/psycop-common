@@ -42,12 +42,8 @@ def create_boolean_dataset(
 def convert_predictors_to_boolean(
     df: pl.LazyFrame, predictor_prefix: str
 ) -> pl.LazyFrame:
-    non_boolean_pred_cols = [c for c in df.columns if c.startswith(predictor_prefix)]
-
-    boolean_df = df
-
-    boolean_df = boolean_df.with_columns(
-        pl.when(pl.col("^pred_.*$").is_not_null()).then(1).otherwise(0).keep_name()
+    boolean_df = df.with_columns(
+        pl.when(pl.col(f"^{predictor_prefix}.*$").is_not_null()).then(1).otherwise(0).keep_name()
     )
 
     return boolean_df
