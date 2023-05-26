@@ -5,8 +5,10 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.paper_outputs.model_permutation.boolean_features import msg
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
 def train_model_with_modified_dataset(

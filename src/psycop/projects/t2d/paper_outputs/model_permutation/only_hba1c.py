@@ -9,14 +9,20 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
     evaluate_pipeline_with_modified_dataset,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
-
 from wasabi import Printer
+
 msg = Printer(timestamp=True)
 
-def convert_predictors_to_boolean(df: pl.LazyFrame, predictor_prefix: str) -> pl.LazyFrame:
-    
+
+def keep_only_hba1c_predictors(df: pl.LazyFrame, predictor_prefix: str) -> pl.LazyFrame:
+    non_hba1c_pred_cols = [
+        c for c in df.schema if "hba1c" not in c and predictor_prefix in c
+    ]
+    hba1c_only_df = df.drop(non_hba1c_pred_cols)
+
+    return hba1c_only_df
+
 
 def create_hba1c_only_dataset(
     run: PipelineRun,
@@ -34,7 +40,7 @@ def create_hba1c_only_dataset(
         for split in input_split_names
     )
 
-    hba1c_only_df = convert_predictors_to_boolean(
+    hba1c_only_df = keep_only_hba1c_predictors(
         df, predictor_prefix=run.inputs.cfg.data.pred_prefix
     )
 

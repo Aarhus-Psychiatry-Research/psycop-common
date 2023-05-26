@@ -1,25 +1,30 @@
 import polars as pl
-from psycop.common.test_utils.str_to_df import str_to_df
+from psycop.common.test_utils.str_to_df import str_to_df, str_to_pl_df
+from psycop.projects.t2d.paper_outputs.model_permutation.boolean_features import (
+    convert_predictors_to_boolean,
+)
 
 
-def test_polars_to_boolean():
-    pd_df = str_to_df(
-        """id,timestamp,pred_test,pred_test2,outc_test
-        1,2020-01-01 00:00:00,0,NaN,0
-        1,2020-01-01 00:00:00,400,0,0
-        1,2020-01-03 00:00:00,NaN,0,1
-        """,
-    )
+def test_convert_predictors_to_boolean():
+    input_df = str_to_pl_df(
+        """pred_test1,pred_test2,eval_test1,prediction_time_uuid,outc_1,
+1,2,1,1,1
+2,4,2,2,2
+3,6,3,3,3
+NaN,NaN,NaN,NaN,NaN"""
+    ).lazy()
 
-    pl_df = pl.from_pandas(pd_df).lazy()
+    boolean_df = convert_predictors_to_boolean(
+        df=input_df, predictor_prefix="pred_"
+    ).collect()
 
-    pred_cols = [c for c in pl_df.columns if "pred_" in c]
-
-    for col in pred_cols:
-        pl_df = pl_df.with_columns(
-            pl.when(pl.col(col).is_not_null()).then(1).otherwise(0).alias(col),
-        )
-
-    pl_df.collect()
-
-    pass
+    for expected_outcome_col in (
+        "eval_test1",
+        "prediction_time_uuid",
+        "outc_1",
+        "pred_test1",
+        "pred_test2",
+    ):
+        assert expected_outcome_col in boolean_df.columns
+        if "pred_" in expected_outcome_col:
+            assert boolean_df[expected_outcome_col].dtype == pl.Int32
