@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.77.0 (2023-05-26)
+### Feature
+* Implement full supplementary generation ([`530d972`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/530d972926a3371fa95cfb55778ecf38f38fea82))
+* Switch to TDD for md_object generation ([`35b4787`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/35b4787be204a4d48cb138dccd5e05de148f3c6a))
+* Create required wandb folder when initialising wandb in WandbHandler ([`41037d9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/41037d9c35de294c0116a7697b4754b8861cb8ef))
+* Misc. ([`0a54195`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0a541954135fbc5f91cb78635fb967ecdb3b1976))
+* Eval run on test_set ([`76644ee`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/76644eee75f2f3b58c9538f701e17bc37f1e6250))
+
+### Fix
+* Align plot and table for median warning days ([`bda3eed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bda3eedc117c906bfa1b2f7f7c59f683fe7420ca))
+
 ## v0.76.0 (2023-05-24)
 ### Feature
 * Automatic robustness figure ([`07f9f2c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/07f9f2cada678d19e85fef6e139c029ae8a41c5d))
