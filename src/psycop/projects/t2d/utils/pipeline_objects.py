@@ -52,9 +52,9 @@ class RunGroup:
 
     @property
     def flattened_ds_dir(self) -> Path:
-        first_run = list(self.group_dir.glob(r"*"))[0]
+        oldest_run = min(self.group_dir.iterdir(), key=lambda f: f.stat().st_mtime)
 
-        config_path = first_run / "cfg.json"
+        config_path = oldest_run / "cfg.json"
 
         with config_path.open() as f:
             config_str = json.load(f)
@@ -98,7 +98,7 @@ class PipelineInputs:
     def _get_flattened_split_path(self, split: SplitNames) -> Path:
         matches = list(self.group.flattened_ds_dir.glob(f"*{split}*.parquet"))
 
-        if len(matches) != 1:
+        if len(matches) > 1:
             raise ValueError("More than one matching split file found")
         return matches[0]
 

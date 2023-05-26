@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Sequence
 
 import polars as pl
+from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
@@ -17,11 +18,28 @@ msg = Printer(timestamp=True)
 
 def keep_only_hba1c_predictors(df: pl.LazyFrame, predictor_prefix: str) -> pl.LazyFrame:
     non_hba1c_pred_cols = [
-        c for c in df.schema if "hba1c" not in c and predictor_prefix in c
+        c
+        for c in df.schema
+        if "hba1c" not in c
+        and predictor_prefix in c
+        and "pred_age" not in c
+        and "pred_sex" not in c
     ]
     hba1c_only_df = df.drop(non_hba1c_pred_cols)
 
-    return hba1c_only_df
+    non_five_year_hba1c = [
+        c for c in df.schema if "pred_hba1c" in c and "1825" not in c
+    ]
+    five_year_hba1c_only = hba1c_only_df.drop(non_five_year_hba1c)
+
+    non_mean_hba1c = [
+        c
+        for c in five_year_hba1c_only.schema
+        if "pred_hba1c" in c and "_mean_" not in c
+    ]
+    mean_five_year_hba1c_only = five_year_hba1c_only.drop(non_mean_hba1c)
+
+    return mean_five_year_hba1c_only
 
 
 def create_hba1c_only_dataset(
@@ -59,7 +77,7 @@ if __name__ == "__main__":
     evaluate_pipeline_with_modified_dataset(
         run=BEST_EVAL_PIPELINE,
         feature_modification_fn=create_hba1c_only_dataset,
-        check_columns_exist_in_dataset=False,
+        rerun_if_exists=True,
     )
 
     pass

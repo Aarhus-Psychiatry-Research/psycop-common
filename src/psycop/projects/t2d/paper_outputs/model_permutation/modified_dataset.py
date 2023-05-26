@@ -14,13 +14,11 @@ msg = Printer(timestamp=True)
 def train_model_with_modified_dataset(
     cfg: FullConfigSchema,
     boolean_dataset_dir: Path,
-    check_columns_exist_in_dataset: bool,
 ) -> float:
     cfg.data.Config.allow_mutation = True
     cfg.data.dir = str(boolean_dataset_dir)
     cfg.data.splits_for_training = ["train"]
     cfg.data.splits_for_evaluation = ["test"]
-    cfg.data.check_columns_exist_in_dataset = check_columns_exist_in_dataset
 
     msg.info(f"Training model from dataset at {cfg.data.dir}")
     roc_auc = train_model(cfg=cfg)
@@ -30,7 +28,7 @@ def train_model_with_modified_dataset(
 def evaluate_pipeline_with_modified_dataset(
     run: PipelineRun,
     feature_modification_fn: Callable,
-    check_columns_exist_in_dataset: bool = True,
+    rerun_if_exists: bool = True,
 ):
     modified_name = feature_modification_fn.__name__
 
@@ -41,7 +39,7 @@ def evaluate_pipeline_with_modified_dataset(
     modified_dataset_dir = modified_dir / "dataset"
     auroc_md_path = modified_dir / f"{modified_name}_auroc.md"
 
-    if auroc_md_path.exists():
+    if auroc_md_path.exists() and not rerun_if_exists:
         msg.info(f"{modified_name} AUROC already exists for {run.name}, returning")
         return
 
@@ -62,8 +60,9 @@ def evaluate_pipeline_with_modified_dataset(
     auroc = train_model_with_modified_dataset(
         cfg=cfg,
         boolean_dataset_dir=modified_dataset_dir,
-        check_columns_exist_in_dataset=check_columns_exist_in_dataset,
     )
+
+    msg.divider(f"AUROC was {auroc}")
 
     if auroc == 0.5:
         raise ValueError(
