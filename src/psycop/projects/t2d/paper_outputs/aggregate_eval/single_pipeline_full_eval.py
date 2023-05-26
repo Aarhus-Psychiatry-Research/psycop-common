@@ -2,7 +2,6 @@ from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
     MarkdownArtifact,
     MarkdownFigure,
     MarkdownTable,
-    create_supplementary_from_markdown_artifacts,
 )
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
@@ -17,7 +16,6 @@ from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     get_test_pipeline_run,
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import (
-    BEST_DEV_PIPELINE,
     BEST_EVAL_PIPELINE,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
@@ -30,7 +28,7 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
     relative_to = run.paper_outputs.artifact_path.parent
     pos_rate_percent = f"{int(run.paper_outputs.pos_rate * 100)}%"
     lookahead_years = int(
-        run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365
+        run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365,
     )
 
     artifacts = [
@@ -72,7 +70,7 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
 
 def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> list[MarkdownArtifact]:
     msg.divider(
-        f"Evaluating {dev_pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {dev_pipeline.model_type} - {dev_pipeline.name}"
+        f"Evaluating {dev_pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {dev_pipeline.model_type} - {dev_pipeline.name}",
     )
     train_pipeline = get_test_pipeline_run(pipeline_to_train=dev_pipeline)
 
@@ -88,7 +86,4 @@ def t2d_main_manuscript_eval(dev_pipeline: PipelineRun) -> list[MarkdownArtifact
 
 
 if __name__ == "__main__":
-    train_pipeline = get_test_pipeline_run(pipeline_to_train=BEST_EVAL_PIPELINE)
-    # t2d_main_manuscript_eval(
-    #     dev_pipeline=BEST_EVAL_PIPELINE,
-    # )
+    pass

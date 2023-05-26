@@ -59,7 +59,7 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
         artifacts += current_run_artifacts
 
         run_md = create_supplementary_from_markdown_artifacts(
-            artifacts=current_run_artifacts
+            artifacts=current_run_artifacts,
         )
 
         with (
@@ -69,7 +69,9 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
             f.write(run_md)
 
     combined_supplementary_md = create_supplementary_from_markdown_artifacts(
-        artifacts=artifacts, first_table_index=4, first_figure_index=3
+        artifacts=artifacts,
+        first_table_index=4,
+        first_figure_index=3,
     )
     with (EVAL_ROOT / f"supllementary_{dev_run_group.name}-combined.md").open("w") as f:
         f.write(combined_supplementary_md)

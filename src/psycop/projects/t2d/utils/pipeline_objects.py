@@ -178,7 +178,8 @@ class PaperOutputSettings:
         )
         self.artifact_names = T2DArtifactNames()
         self.paths = PaperOutputPaths(
-            self.artifact_path, create_output_paths_on_init=create_output_paths_on_init
+            self.artifact_path,
+            create_output_paths_on_init=create_output_paths_on_init,
         )
 
 

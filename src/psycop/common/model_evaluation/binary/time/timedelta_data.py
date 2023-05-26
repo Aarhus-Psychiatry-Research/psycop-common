@@ -238,12 +238,12 @@ def get_time_from_first_positive_to_diagnosis_df(
     """
     df = pl.from_pandas(input_df).with_columns(
         (pl.col("outcome_timestamps") - pl.col("pred_timestamps")).alias(
-            "time_from_pred_to_event"
-        )
+            "time_from_pred_to_event",
+        ),
     )
 
     ever_positives = df.filter(
-        pl.col("time_from_pred_to_event").is_not_null() & pl.col("pred") == 1
+        pl.col("time_from_pred_to_event").is_not_null() & pl.col("pred") == 1,
     )
 
     plot_df = (

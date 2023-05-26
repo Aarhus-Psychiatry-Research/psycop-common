@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,

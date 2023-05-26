@@ -8,7 +8,6 @@ def t2d_plot_robustness(
     x_column: str,
     line_y_col_name: str,
     xlab: str,
-    figure_file_name: str,
     rotate_x_axis_labels_degrees: int = 45,
 ) -> pn.ggplot:
     """Plot robustness of model performance by a given input variable.
@@ -37,7 +36,7 @@ def t2d_plot_robustness(
         + pn.theme(
             axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1),
         )
-        + pn.ylim(0,1)
+        + pn.ylim(0, 1)
     )
 
     if "ci_lower" in df.columns:
