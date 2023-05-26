@@ -21,11 +21,7 @@ def evaluate_pipeline_on_hba1c_only(run: PipelineRun):
         if c.startswith(cfg.data.pred_prefix) and ("hba1c" not in c)
     ]
 
-    cols_to_drop = [
-        c for c in non_hba1c_pred_cols if "pred_sex" not in c and "pred_age" not in c
-    ]
-
-    hba1c_only_df = df.drop(cols_to_drop).collect()
+    hba1c_only_df = df.drop(non_hba1c_pred_cols).collect()
 
     hba1c_only_dir = run.paper_outputs.paths.estimates / "hba1c_only"
     hba1c_only_dir.mkdir(parents=True, exist_ok=True)
