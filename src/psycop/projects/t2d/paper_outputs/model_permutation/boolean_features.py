@@ -6,9 +6,6 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.paper_outputs.selected_runs import (
-    BEST_EVAL_PIPELINE,
-)
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
 from wasabi import Printer
 
@@ -26,34 +23,38 @@ def create_boolean_dataset(
         msg.info("Boolean dataset has already been created, returning")
         return
 
-    cfg = run.inputs.cfg
-
     df: pl.LazyFrame = pl.concat(
         run.inputs.get_flattened_split_as_lazyframe(split)
         for split in input_split_names
     )
 
-    non_boolean_pred_cols = [
-        c for c in df.columns if c.startswith(cfg.data.pred_prefix)
-    ]
-
-    boolean_df = df
-
-    for col in non_boolean_pred_cols:
-        boolean_df = boolean_df.with_columns(
-            pl.when(pl.col(col).is_not_null())
-            .then(1)
-            .otherwise(0)
-            .alias(f"{col}_boolean"),
-        )
-
-    boolean_df = boolean_df.drop(non_boolean_pred_cols)
+    boolean_df = convert_predictors_to_boolean(
+        df, predictor_prefix=run.inputs.cfg.data.pred_prefix
+    )
 
     msg.info(f"Collecting boolean df with input_splits {input_split_names}")
     boolean_df = boolean_df.collect()
 
     output_dir_path.mkdir(exist_ok=True, parents=True)
     boolean_df.write_parquet(output_dir_path / f"{output_split_name}.parquet")
+
+
+def convert_predictors_to_boolean(
+    df: pl.LazyFrame, predictor_prefix: str
+) -> pl.LazyFrame:
+    non_boolean_pred_cols = [c for c in df.columns if c.startswith(predictor_prefix)]
+
+    boolean_df = df
+
+    boolean_df = boolean_df.with_columns(
+        pl.when(pl.col("^pred_.*$").is_not_null())
+        .then(1)
+        .otherwise(0)
+        .suffix("_boolean")
+    )
+
+    boolean_df = boolean_df.drop(non_boolean_pred_cols)
+    return boolean_df
 
 
 def train_model_with_boolean_dataset(
@@ -110,4 +111,8 @@ def evaluate_pipeline_with_boolean_features(run: PipelineRun):
 
 
 if __name__ == "__main__":
+    from psycop.projects.t2d.paper_outputs.selected_runs import (
+        BEST_EVAL_PIPELINE,
+    )
+
     evaluate_pipeline_with_boolean_features(run=BEST_EVAL_PIPELINE)
