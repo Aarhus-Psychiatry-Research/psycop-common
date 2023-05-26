@@ -43,3 +43,7 @@ class DataSchema(BaseModel):
 
     n_training_samples: Optional[int]
     # Number of training samples to use, defaults to null in which cases it uses all samples.
+
+    check_columns_exist_in_dataset: bool = True
+    # Whether to check that all column names in ColumnNamesSchema exist in the dataset. Typically want this to be true,
+    # but when evaluating the model on permuted data (e.g. all data as boolean), can be handy to disable.

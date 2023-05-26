@@ -77,7 +77,7 @@ class DataLoader:
         else:
             raise ValueError(f"File suffix {self.file_suffix} not supported.")
 
-        if self.column_name_checker:
+        if self.column_name_checker and self.data_cfg.check_columns_exist_in_dataset:
             self._check_column_names(df=df)
 
         return df

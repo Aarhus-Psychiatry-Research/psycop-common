@@ -12,12 +12,15 @@ msg = Printer(timestamp=True)
 
 
 def train_model_with_modified_dataset(
-    cfg: FullConfigSchema, boolean_dataset_dir: Path
+    cfg: FullConfigSchema,
+    boolean_dataset_dir: Path,
+    check_columns_exist_in_dataset: bool,
 ) -> float:
     cfg.data.Config.allow_mutation = True
     cfg.data.dir = str(boolean_dataset_dir)
     cfg.data.splits_for_training = ["train"]
     cfg.data.splits_for_evaluation = ["test"]
+    cfg.data.check_columns_exist_in_dataset = check_columns_exist_in_dataset
 
     msg.info(f"Training model from dataset at {cfg.data.dir}")
     roc_auc = train_model(cfg=cfg)
@@ -25,7 +28,9 @@ def train_model_with_modified_dataset(
 
 
 def evaluate_pipeline_with_modified_dataset(
-    run: PipelineRun, feature_modification_fn: Callable
+    run: PipelineRun,
+    feature_modification_fn: Callable,
+    check_columns_exist_in_dataset: bool = True,
 ):
     modified_name = feature_modification_fn.__name__
 
@@ -55,7 +60,9 @@ def evaluate_pipeline_with_modified_dataset(
 
     # Point the model at that dataset
     auroc = train_model_with_modified_dataset(
-        cfg=cfg, boolean_dataset_dir=modified_dataset_dir
+        cfg=cfg,
+        boolean_dataset_dir=modified_dataset_dir,
+        check_columns_exist_in_dataset=check_columns_exist_in_dataset,
     )
 
     if auroc == 0.5:

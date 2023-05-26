@@ -57,5 +57,9 @@ if __name__ == "__main__":
     )
 
     evaluate_pipeline_with_modified_dataset(
-        run=BEST_EVAL_PIPELINE, feature_modification_fn=create_hba1c_only_dataset
+        run=BEST_EVAL_PIPELINE,
+        feature_modification_fn=create_hba1c_only_dataset,
+        check_columns_exist_in_dataset=False,
     )
+
+    pass
