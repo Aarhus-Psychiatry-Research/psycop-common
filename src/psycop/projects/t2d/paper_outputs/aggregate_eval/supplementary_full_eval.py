@@ -73,6 +73,7 @@ def full_eval_for_supplementary(dev_run_group: RunGroup) -> None:
         first_table_index=4,
         first_figure_index=3,
     )
+
     with (EVAL_ROOT / f"supllementary_{dev_run_group.name}-combined.md").open("w") as f:
         f.write(combined_supplementary_md)
 
