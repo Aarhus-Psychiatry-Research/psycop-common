@@ -33,14 +33,14 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
             title=f"Performance of {run.model_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
             file_path=run.paper_outputs.paths.figures
             / run.paper_outputs.artifact_names.main_performance_figure,
-            description="**A**: Receiver operating characteristics (ROC) curve. **B**: Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. **C**: Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. **D**: Distribution of months from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).",
+            description="**A**: Receiver operating characteristics (ROC) curve. **B**: Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. **C**: Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. **D**: Distribution of years from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).",
             relative_to=relative_to,
         ),
         MarkdownFigure(
             title=f"Robustness of {run.model_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
             file_path=run.paper_outputs.paths.figures
             / run.paper_outputs.artifact_names.main_robustness_figure,
-            description="Robustness of the model across a variety of stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the number of contacts in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
+            description="Robustness of the model across a variety of stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the proportion of visits that are present in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
             relative_to=relative_to,
         ),
         MarkdownTable(
@@ -57,7 +57,8 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
 **TN**: True negatives.
 **FP**: False positives.
 **FN**: False negatives.
-**Mean warning days**: For all patients with at least one true positive, the number of days from their first positive prediction to their diagnosis.
+**% of all events captured**: Percentage of all events which were within the lookahead window of at least one prediction time marked as "positive".
+**Median years from first positive to T2D**: For all patients with at least one true positive, the number of days from their first positive prediction to being labelled as T2D.
             """,
         ),
     ]
