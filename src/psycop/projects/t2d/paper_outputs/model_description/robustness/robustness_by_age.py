@@ -1,15 +1,14 @@
 import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
-def t2d_auroc_by_age(run: ModelRun) -> pn.ggplot:
-    print("Plotting AUROC by age")
-    eval_ds = run.get_eval_dataset()
+def t2d_auroc_by_age(run: PipelineRun) -> pn.ggplot:
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = get_auroc_by_input_df(
         eval_dataset=eval_ds,
@@ -25,7 +24,6 @@ def t2d_auroc_by_age(run: ModelRun) -> pn.ggplot:
         x_column="age_binned",
         line_y_col_name="auroc",
         xlab="Age",
-        figure_file_name="auroc_by_age.png",
         rotate_x_axis_labels_degrees=45,
     )
 
@@ -33,4 +31,4 @@ def t2d_auroc_by_age(run: ModelRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_age(run=EVAL_RUN)
+    t2d_auroc_by_age(run=BEST_EVAL_PIPELINE)

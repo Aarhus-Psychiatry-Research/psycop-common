@@ -5,15 +5,14 @@ from typing import Callable
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
-from psycop.projects.t2d.paper_outputs.config import FIGURES_PATH
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from wasabi import Printer
 
 msg = Printer(timestamp=True)
 
 
 def t2d_create_patchwork_figure(
-    run: ModelRun,
+    run: PipelineRun,
     plot_fns: Sequence[Callable],
     output_filename: str,
 ):
@@ -21,7 +20,7 @@ def t2d_create_patchwork_figure(
     for output_str, value in (
         ("Run group", run.group.name),
         ("Model_type", run.model_type),
-        ("Lookahead days", run.cfg.preprocessing.pre_split.min_lookahead_days),
+        ("Lookahead days", run.inputs.cfg.preprocessing.pre_split.min_lookahead_days),
     ):
         msg.info(f"    {output_str}: {value}")
 
@@ -30,11 +29,12 @@ def t2d_create_patchwork_figure(
     any_plot_failed = False
 
     for fn in plot_fns:
+        output_path = run.paper_outputs.paths.figures / f"{fn.__name__}.png"
         try:
             now = datetime.now()
             p = fn(run)
             plots.append(p)
-            p.save(FIGURES_PATH / f"{fn.__name__}.png")
+            p.save(output_path)
             finished = datetime.now()
 
             msg.good(
@@ -51,4 +51,4 @@ def t2d_create_patchwork_figure(
             single_plot_dimensions=(5, 5),
             n_in_row=2,
         )
-        grid.savefig(FIGURES_PATH / output_filename)
+        grid.savefig(run.paper_outputs.paths.figures / output_filename)

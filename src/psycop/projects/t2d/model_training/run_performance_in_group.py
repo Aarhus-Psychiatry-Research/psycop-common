@@ -2,7 +2,7 @@ import datetime
 
 import pandas as pd
 from psycop.projects.t2d.paper_outputs.config import EVAL_GROUP
-from psycop.projects.t2d.utils.best_runs import RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import RunGroup
 
 
 def get_best_models_by_lookahead(current_group: RunGroup) -> pd.DataFrame:

@@ -1,10 +1,12 @@
 """Get performance by which threshold is used to classify positive. PPR means predicted positive rate, i.e. the proportion of the population that is predicted to be positive."""
 from collections.abc import Sequence
 
-import numpy as np
 import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events_hit_by_true_positive import (
     get_prop_of_events_captured_from_eval_dataset,
+)
+from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_time_from_first_positive_to_diagnosis_df,
 )
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
@@ -152,41 +154,9 @@ def get_days_from_first_positive_to_diagnosis_from_df(
     aggregation_method: str,
     df: pd.DataFrame,
 ) -> float:
-    """Get a dataframe. Easily testable.
-    Use the `days_from_first_positive_to_diagnosis` function when you have an eval_dataset.
-    """
-    # Keep only true positives
-    df["true_positive"] = (df["pred"] == 1) & (df["y"] == 1)
-    df = df[df["true_positive"]]
+    df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
 
-    # Find timestamp of first positive prediction
-    df["timestamp_first_pos_pred"] = df.groupby("id")["pred_timestamps"].transform(
-        "min",
-    )
-    df = df[df["timestamp_first_pos_pred"].notnull()]
-
-    # Keep only one record per patient
-    df = df.drop_duplicates(
-        subset=["id", "timestamp_first_pos_pred", "outcome_timestamps"],
-    )
-
-    # Calculate warning days
-    df["warning_days"] = round(
-        (df["outcome_timestamps"] - df["timestamp_first_pos_pred"])
-        / np.timedelta64(1, "D"),  # type: ignore
-        0,
-    )
-
-    df = df[
-        [
-            "id",
-            "timestamp_first_pos_pred",
-            "outcome_timestamps",
-            "warning_days",
-        ]
-    ]
-
-    aggregated = df["warning_days"].agg(aggregation_method)
+    aggregated = df["days_from_pred_to_event"].agg(aggregation_method)
     return aggregated
 
 
@@ -247,6 +217,14 @@ def generate_performance_by_ppr_table(
             eval_dataset=eval_dataset,
             positive_rate=positive_rate,
             aggregation_method="mean",
+        )
+
+        threshold_metrics[
+            "median_warning_days"
+        ] = days_from_first_positive_to_diagnosis(
+            eval_dataset=eval_dataset,
+            positive_rate=positive_rate,
+            aggregation_method="median",
         )
 
         threshold_metrics[

@@ -1,7 +1,3 @@
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
-from psycop.projects.t2d.paper_outputs.create_patchwork_figure import (
-    t2d_create_patchwork_figure,
-)
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_age import (
     t2d_auroc_by_age,
 )
@@ -18,10 +14,14 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_b
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_by_time_from_first_visit import (
     t2d_auroc_by_time_from_first_visit,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
+    t2d_create_patchwork_figure,
+)
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
-def t2d_create_main_robustness_figure(run: ModelRun) -> None:
+def t2d_create_main_robustness_figure(run: PipelineRun) -> None:
     t2d_create_patchwork_figure(
         run=run,
         plot_fns=(
@@ -32,9 +32,9 @@ def t2d_create_main_robustness_figure(run: ModelRun) -> None:
             t2d_auroc_by_month_of_year,
             t2d_auroc_by_day_of_week,
         ),
-        output_filename="t2d_main_robustness.png",
+        output_filename=run.paper_outputs.artifact_names.main_robustness_figure,
     )
 
 
 if __name__ == "__main__":
-    t2d_create_main_robustness_figure(run=EVAL_RUN)
+    t2d_create_main_robustness_figure(run=BEST_EVAL_PIPELINE)

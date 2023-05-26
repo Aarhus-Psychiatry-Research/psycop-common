@@ -1,6 +1,6 @@
 import pandas as pd
 import plotnine as pn
-from psycop.projects.t2d.paper_outputs.config import COLORS, FIGURES_PATH, PN_THEME
+from psycop.projects.t2d.paper_outputs.config import COLORS, PN_THEME
 
 
 def t2d_plot_robustness(
@@ -8,7 +8,6 @@ def t2d_plot_robustness(
     x_column: str,
     line_y_col_name: str,
     xlab: str,
-    figure_file_name: str,
     rotate_x_axis_labels_degrees: int = 45,
 ) -> pn.ggplot:
     """Plot robustness of model performance by a given input variable.
@@ -21,7 +20,6 @@ def t2d_plot_robustness(
         figure_file_name (str): Filename for output figure (without extension)
         rotate_x_axis_labels_degrees (int, optional): Degrees to rotate x-axis labels. Defaults to 45.
     """
-    print(f"Plotting {figure_file_name}")
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
     p = (
@@ -38,6 +36,7 @@ def t2d_plot_robustness(
         + pn.theme(
             axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1),
         )
+        + pn.ylim(0, 1)
     )
 
     if "ci_lower" in df.columns:
@@ -50,6 +49,7 @@ def t2d_plot_robustness(
     if df[x_column].nunique() < 3:
         p += pn.scale_x_discrete()
 
-    p.save(FIGURES_PATH / f"{figure_file_name}.png")
+    # Draw the plot to check that it works
+    p.draw()
 
     return p

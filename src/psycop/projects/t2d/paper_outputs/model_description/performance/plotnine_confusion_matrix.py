@@ -7,22 +7,22 @@ from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.t2d.paper_outputs.config import PN_THEME
 
 
-def plotnine_confusion_matrix(matrix: ConfusionMatrix, x_title: str) -> pn.ggplot:
+def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.ggplot:
     df = str_to_df(
         f"""true,pred,estimate
-Yes,+,"{f'{matrix.true_positives:,}'}",
-Yes,-,"{f'{matrix.false_negatives:,}'}",
-No,+,"{f'{matrix.false_positives:,}'}",
-No,-,"{f'{matrix.true_negatives:,}'}",
++,+,"{f'{matrix.true_positives:,}'}",
++,-,"{f'{matrix.false_negatives:,}'}",
+-,+,"{f'{matrix.false_positives:,}'}",
+-,-,"{f'{matrix.true_negatives:,}'}",
 " ",+,"PPV:\n{round(matrix.ppv*100, 1)}%",
 " ",-,"NPV:\n{round(matrix.npv*100,1)}%",
-No," ","Spec:\n{round(matrix.specificity*100, 1)}%",
-Yes," ","Sens:\n{round(matrix.sensitivity*100, 1)}%",
+-," ","Spec:\n{round(matrix.specificity*100, 1)}%",
++," ","Sens:\n{round(matrix.sensitivity*100, 1)}%",
 """,
     )
 
     """Create a confusion matrix and return a plotnine object."""
-    df["true"] = pd.Categorical(df["true"], ["Yes", "No", " "])
+    df["true"] = pd.Categorical(df["true"], ["+", "-", " "])
     df["pred"] = pd.Categorical(df["pred"], ["+", "-", " "])
 
     p = (
@@ -40,7 +40,7 @@ Yes," ","Sens:\n{round(matrix.sensitivity*100, 1)}%",
             legend_position="none",
         )
         + pn.scale_y_discrete(reverse=True)
-        + pn.labs(x=x_title, y="Predicted")
+        + pn.labs(x=f"Actual {outcome_text}", y=f"Predicted {outcome_text}")
     )
 
     return p

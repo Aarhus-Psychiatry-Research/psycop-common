@@ -3,16 +3,15 @@ import polars as pl
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_auroc_by_timedelta_df,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
-def t2d_auroc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
-    print("Plotting AUC by time from first visit")
-    eval_ds = run.get_eval_dataset()
+def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pl.DataFrame(
         {
@@ -54,9 +53,8 @@ def t2d_auroc_by_time_from_first_visit(run: ModelRun) -> pn.ggplot:
         x_column="unit_from_event_binned",
         line_y_col_name="auroc",
         xlab="Months since first visit",
-        figure_file_name="t2d_auroc_by_time_from_first_visit",
     )
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_time_from_first_visit(run=EVAL_RUN)
+    t2d_auroc_by_time_from_first_visit(run=BEST_EVAL_PIPELINE)
