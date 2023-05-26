@@ -47,13 +47,9 @@ def convert_predictors_to_boolean(
     boolean_df = df
 
     boolean_df = boolean_df.with_columns(
-        pl.when(pl.col("^pred_.*$").is_not_null())
-        .then(1)
-        .otherwise(0)
-        .suffix("_boolean")
+        pl.when(pl.col("^pred_.*$").is_not_null()).then(1).otherwise(0).keep_name()
     )
 
-    boolean_df = boolean_df.drop(non_boolean_pred_cols)
     return boolean_df
 
 

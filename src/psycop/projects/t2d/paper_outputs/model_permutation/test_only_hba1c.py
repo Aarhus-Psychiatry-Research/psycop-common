@@ -7,11 +7,11 @@ from psycop.projects.t2d.paper_outputs.model_permutation.boolean_features import
 
 def test_convert_predictors_to_boolean():
     input_df = str_to_pl_df(
-        """pred_test1,eval_test1,prediction_time_uuid,outc_1,
-1,1,1,1
-2,2,2,2
-3,3,3,3
-NaN,NaN,NaN,NaN"""
+        """pred_test1,pred_test2,eval_test1,prediction_time_uuid,outc_1,
+1,2,1,1,1
+2,4,2,2,2
+3,6,3,3,3
+NaN,NaN,NaN,NaN,NaN"""
     ).lazy()
 
     boolean_df = convert_predictors_to_boolean(
@@ -22,8 +22,9 @@ NaN,NaN,NaN,NaN"""
         "eval_test1",
         "prediction_time_uuid",
         "outc_1",
-        "pred_test1_boolean",
+        "pred_test1",
+        "pred_test2",
     ):
         assert expected_outcome_col in boolean_df.columns
-        if "boolean" in expected_outcome_col:
+        if "pred_" in expected_outcome_col:
             assert boolean_df[expected_outcome_col].dtype == pl.Int32
