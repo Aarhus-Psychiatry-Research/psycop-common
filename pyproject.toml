@@ -49,7 +49,7 @@ dependencies = [
   "polars==0.17.12",
   "tableone",
   "shap",
-  "typing_extensions==4.5.0", # Pins the typing extension due to a bug a buggy interaction with pydantic and Literal, see https://github.com/SeldonIO/alibi/issues/927 and https://github.com/pydantic/pydantic/issues/545
+  "typing_extensions==4.6.2", # Pins the typing extension due to a bug a buggy interaction with pydantic and Literal, see https://github.com/SeldonIO/alibi/issues/927 and https://github.com/pydantic/pydantic/issues/545
   "patchworklib==0.6.1",
 ]
 
