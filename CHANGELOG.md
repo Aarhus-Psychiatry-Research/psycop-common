@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.77.1 (2023-05-30)
+### Fix
+* Correct lookbehind selection ([`3807a94`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3807a9468f1225d77134786298a88d82185b71c8))
+
 ## v0.77.0 (2023-05-26)
 ### Feature
 * Implement full supplementary generation ([`530d972`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/530d972926a3371fa95cfb55778ecf38f38fea82))
