@@ -1,14 +1,31 @@
+from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Sequence
 
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
 from wasabi import Printer
 
 msg = Printer(timestamp=True)
+
+
+class FeatureModifier(ABC):
+    def __init__(self):
+        self.name: str
+
+    @abstractmethod
+    def modify_features(
+        self,
+        run: PipelineRun,
+        output_dir_path: Path,
+        input_split_names: Sequence[SplitNames],
+        output_split_name: str,
+        recreate_dataset: bool,
+    ) -> None:
+        pass
 
 
 def train_model_with_modified_dataset(
@@ -27,10 +44,10 @@ def train_model_with_modified_dataset(
 
 def evaluate_pipeline_with_modified_dataset(
     run: PipelineRun,
-    feature_modification_fn: Callable,
+    feature_modifier: FeatureModifier,
     rerun_if_exists: bool = True,
 ):
-    modified_name = feature_modification_fn.__name__
+    modified_name = feature_modifier.name
 
     msg.divider(f"Evaluating {run.name} with dataset modified by {modified_name}")
     cfg: FullConfigSchema = run.inputs.cfg
@@ -43,17 +60,19 @@ def evaluate_pipeline_with_modified_dataset(
         msg.info(f"{modified_name} AUROC already exists for {run.name}, returning")
         return
 
-    feature_modification_fn(
+    feature_modifier.modify_features(
         run=run,
         output_dir_path=modified_dataset_dir,
         input_split_names=["train", "val"],
         output_split_name="train",
+        recreate_dataset=rerun_if_exists,
     )
-    feature_modification_fn(
+    feature_modifier.modify_features(
         run=run,
         output_dir_path=modified_dataset_dir,
         input_split_names=["test"],
         output_split_name="test",
+        recreate_dataset=rerun_if_exists,
     )
 
     # Point the model at that dataset

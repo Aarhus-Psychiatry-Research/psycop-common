@@ -57,5 +57,5 @@ if __name__ == "__main__":
     )
 
     evaluate_pipeline_with_modified_dataset(
-        run=BEST_EVAL_PIPELINE, feature_modification_fn=create_boolean_dataset
+        run=BEST_EVAL_PIPELINE, feature_modifier=create_boolean_dataset
     )

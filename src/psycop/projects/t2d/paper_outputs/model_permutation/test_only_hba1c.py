@@ -1,7 +1,5 @@
 from psycop.common.test_utils.str_to_df import str_to_pl_df
-from psycop.projects.t2d.paper_outputs.model_permutation.only_hba1c import (
-    keep_only_hba1c_predictors,
-)
+from psycop.projects.t2d.paper_outputs.model_permutation.only_hba1c import Hba1cOnly
 
 
 def test_keep_only_hba1c_predictors():
@@ -13,7 +11,7 @@ def test_keep_only_hba1c_predictors():
 NaN,NaN,NaN,NaN,NaN"""
     ).lazy()
 
-    hba1c_only_df = keep_only_hba1c_predictors(
+    hba1c_only_df = Hba1cOnly._keep_only_hba1c_predictors(
         df=input_df, predictor_prefix="pred_"
     ).collect()
 
