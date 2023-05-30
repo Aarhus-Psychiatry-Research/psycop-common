@@ -7,7 +7,7 @@ class LoadCoercion:
     """Class for loading data frames with prediction times and outcome for
     forced admissions."""
 
-    def forced_admissions_inpatient(timestamps_only=True):
+    def forced_admissions_inpatient(timestamps_only=True) -> pd.DataFrame:
 
         df = LoadCoercion.process_forced_pred_dfs(
             visit_type="inpatient",
@@ -21,7 +21,7 @@ class LoadCoercion:
 
         return df.reset_index(drop=True)
 
-    def forced_admissions_outpatient(timestamps_only=True):
+    def forced_admissions_outpatient(timestamps_only=True) -> pd.DataFrame:
 
         df = LoadCoercion.process_forced_pred_dfs(
             visit_type="outpatient",
@@ -55,13 +55,12 @@ class LoadCoercion:
             ]
         ]
 
-        df.rename(
+        df = df.rename(
             columns={
                 prediction_times_col_name: "timestamp",
                 "outc_182_days": "outc_bool_within_182_days",
                 "outcome_timestamp": "outc_timestamp",
             },
-            inplace=True,
         )
         df["timestamp"] = pd.to_datetime(df["timestamp"])
         df["outc_timestamp"] = pd.to_datetime(df["outc_timestamp"])

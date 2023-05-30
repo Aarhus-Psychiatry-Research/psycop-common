@@ -15,8 +15,6 @@ from psycop.common.model_training.application_modules.trainer_spawner import (
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 from psycop_ml_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
-from psycop.common.model_training.training.train_and_predict import CONFIG_PATH
-
 
 
 @wandb_alert_on_exception
@@ -47,7 +45,8 @@ def main(
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
         train_single_model_file_path=Path(
-            "src/psycop/projects/forced_admission_inpatient/model_training/train_model_from_application_module.py",),
+            "src/psycop/projects/forced_admission_inpatient/model_training/train_model_from_application_module.py",
+        ),
     )
 
 
@@ -62,11 +61,12 @@ def train_models_in_parallel(dataset_override_path: Optional[Path] = None):
     )
 
     main(
-        cfg=cfg, 
-        wandb_group=wandb_group, 
+        cfg=cfg,
+        wandb_group=wandb_group,
         dataset_override_path=dataset_override_path,
         config_file_name=CONFIG_FILE_NAME,
     )
-    
+
+
 if __name__ == "__main__":
     train_models_in_parallel()

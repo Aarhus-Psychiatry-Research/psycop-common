@@ -13,9 +13,9 @@ def main():
     config_file_name = "default_config.yaml"
 
     cfg = load_app_cfg_as_pydantic(config_file_name=config_file_name)
-    df = load_train_raw(cfg=cfg)  # pylint: disable=unused-variable
+    load_train_raw(cfg=cfg)  # pylint: disable=unused-variable
 
-    df_filtered = load_and_filter_train_from_cfg(  # pylint: disable=unused-variable
+    load_and_filter_train_from_cfg(  # pylint: disable=unused-variable
         cfg=cfg,
     )
 

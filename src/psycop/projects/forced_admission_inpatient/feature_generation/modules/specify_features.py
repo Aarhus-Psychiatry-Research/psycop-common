@@ -1,12 +1,10 @@
 """Feature specification module."""
 import logging
-from sys import prefix
 
 import numpy as np
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
-
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     OutcomeSpec,
@@ -33,22 +31,25 @@ class FeatureSpecifier:
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
 
-    def _get_static_predictor_specs(self):
+    def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
         return [
             StaticSpec(
                 values_loader="sex_female",
                 input_col_name_override="sex_female",
                 prefix=self.project_info.prefix.predictor,
-                feature_name="sex_female"
+                feature_name="sex_female",
             ),
         ]
 
     def _get_visits_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
+        self,
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get visits specs."""
-        log.info("–––––––– Generating visits specs ––––––––")
+        log.info("-------- Generating visits specs --------")
 
         visits = PredictorGroupSpec(
             values_loader=(
@@ -59,16 +60,19 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="physical_visits"
+            feature_name="physical_visits",
         ).create_combinations()
 
         return visits
 
     def _get_admissions_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
+        self,
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get admissions specs."""
-        log.info("–––––––– Generating admissions specs ––––––––")
+        log.info("-------- Generating admissions specs --------")
 
         admissions = PredictorGroupSpec(
             values_loader=("admissions",),
@@ -76,16 +80,19 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="admissions"
+            feature_name="admissions",
         ).create_combinations()
 
         return admissions
 
     def _get_medication_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
+        self,
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get medication specs."""
-        log.info("–––––––– Generating medication specs ––––––––")
+        log.info("-------- Generating medication specs --------")
 
         psychiatric_medications = PredictorGroupSpec(
             values_loader=(
@@ -114,16 +121,19 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="phychiatric_medications"
+            feature_name="phychiatric_medications",
         ).create_combinations()
 
         return psychiatric_medications
 
     def _get_diagnoses_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
+        self,
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
-        log.info("–––––––– Generating diagnoses specs ––––––––")
+        log.info("-------- Generating diagnoses specs --------")
 
         psychiatric_diagnoses = PredictorGroupSpec(
             values_loader=(
@@ -146,16 +156,19 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="psychiatric_diagnoses"
+            feature_name="psychiatric_diagnoses",
         ).create_combinations()
 
         return psychiatric_diagnoses
 
     def _get_coercion_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
+        self,
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get coercion specs."""
-        log.info("–––––––– Generating coercion specs ––––––––")
+        log.info("-------- Generating coercion specs --------")
 
         coercion = PredictorGroupSpec(
             values_loader=(
@@ -175,16 +188,19 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="coercion_types"
+            feature_name="coercion_types",
         ).create_combinations()
 
         return coercion
 
     def _get_beroligende_medicin_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
+        self,
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get beroligende medicin specs."""
-        log.info("–––––––– Generating beroligende medicicn specs ––––––––")
+        log.info("-------- Generating beroligende medicicn specs --------")
 
         beroligende_medicin = PredictorGroupSpec(
             values_loader=("beroligende_medicin",),
@@ -192,16 +208,19 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="beroligende_medicin"
+            feature_name="beroligende_medicin",
         ).create_combinations()
 
         return beroligende_medicin
 
     def _get_structured_sfi_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
+        self,
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get structured sfi specs."""
-        log.info("–––––––– Generating structured sfi specs ––––––––")
+        log.info("-------- Generating structured sfi specs --------")
 
         structured_sfi = PredictorGroupSpec(
             values_loader=(
@@ -214,17 +233,17 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="structured_sfi"
+            feature_name="structured_sfi",
         ).create_combinations()
 
         return structured_sfi
 
     def _get_lab_result_specs(
         self,
-        resolve_multiple,
-        interval_days,
-        allowed_nan_value_prop,
-    ):
+        resolve_multiple: list[str],
+        interval_days: list[float],
+        allowed_nan_value_prop: list[float],
+    ) -> list[PredictorSpec]:
         """Get lab result specs."""
         log.info("-------- Generating lab result specs --------")
 
@@ -247,14 +266,14 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            feature_name="lab_results"
+            feature_name="lab_results",
         ).create_combinations()
 
         return lab_results
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
-        log.info("–––––––– Generating temporal predictor specs ––––––––")
+        log.info("-------- Generating temporal predictor specs --------")
 
         if self.min_set_for_debug:
             return [
@@ -265,7 +284,7 @@ class FeatureSpecifier:
                     fallback=np.nan,
                     allowed_nan_value_prop=0,
                     prefix=self.project_info.prefix.predictor,
-                )
+                ),
             ]
 
         interval_days = [10, 30, 180, 365]
@@ -336,7 +355,6 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return (
                 self._get_temporal_predictor_specs()
-                # + self._get_outcome_specs()
             )
 
         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()

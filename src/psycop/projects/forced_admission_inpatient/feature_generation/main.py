@@ -4,11 +4,6 @@ import logging
 import sys
 from pathlib import Path
 
-from modules.loaders.load_forced_admissions_dfs_with_prediction_times_and_outcome import (
-    LoadCoercion,
-)
-from modules.specify_features import FeatureSpecifier
-from modules.utils import add_outcome_col
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -19,7 +14,6 @@ from psycop.common.feature_generation.application_modules.loggers import (
     init_root_logger,
 )
 from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
     get_project_info,
     init_wandb,
 )
@@ -32,8 +26,15 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
-
-import wandb
+from psycop.projects.forced_admission_inpatient.feature_generation.modules.loaders.load_forced_admissions_dfs_with_prediction_times_and_outcome import (
+    LoadCoercion,
+)
+from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_features import (
+    FeatureSpecifier,
+)
+from psycop.projects.forced_admission_inpatient.feature_generation.modules.utils import (
+    add_outcome_col,
+)
 
 log = logging.getLogger()
 
@@ -50,7 +51,7 @@ def main():
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
         prediction_times_df=LoadCoercion.forced_admissions_inpatient(
-            timestamps_only=True
+            timestamps_only=True,
         ),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     init_root_logger(project_info=project_info)
 
     log.info(
-        f"Stdout level is {logging.getLevelName(log.level)}"
+        f"Stdout level is {logging.getLevelName(log.level)}",
     )  # pylint: disable=logging-fstring-interpolation
     log.debug("Debugging is still captured in the log file")
 

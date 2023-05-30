@@ -3,8 +3,9 @@
 Required to allow the trainer_spawner to point towards a python script
 file, rather than an installed module.
 """
-from pathlib import Path
 import sys
+from pathlib import Path
+
 import hydra
 from omegaconf import DictConfig
 from psycop.common.model_training.application_modules.train_model.main import (
@@ -25,7 +26,7 @@ CONFIG_PATH = PROJECT_ROOT / "model_training" / "config"
     config_name="default_config",
     version_base="1.2",
 )
-def main(cfg: DictConfig):
+def main(cfg: DictConfig) -> float:
     """Main."""
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)
