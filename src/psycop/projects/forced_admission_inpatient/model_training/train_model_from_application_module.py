@@ -15,7 +15,6 @@ from psycop.common.model_training.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.training.train_and_predict import CONFIG_PATH
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = PROJECT_ROOT / "model_training" / "config"
