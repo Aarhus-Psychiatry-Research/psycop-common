@@ -40,6 +40,7 @@ class FeatureSpecifier:
                 values_loader="sex_female",
                 input_col_name_override="sex_female",
                 prefix=self.project_info.prefix.predictor,
+                feature_name="sex_female"
             ),
         ]
 
@@ -58,6 +59,7 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="physical_visits"
         ).create_combinations()
 
         return visits
@@ -74,6 +76,7 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="admissions"
         ).create_combinations()
 
         return admissions
@@ -111,6 +114,7 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="phychiatric_medications"
         ).create_combinations()
 
         return psychiatric_medications
@@ -142,6 +146,7 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="psychiatric_diagnoses"
         ).create_combinations()
 
         return psychiatric_diagnoses
@@ -170,6 +175,7 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="coercion_types"
         ).create_combinations()
 
         return coercion
@@ -186,6 +192,7 @@ class FeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="beroligende_medicin"
         ).create_combinations()
 
         return beroligende_medicin
@@ -207,6 +214,7 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="structured_sfi"
         ).create_combinations()
 
         return structured_sfi
@@ -239,6 +247,7 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
+            feature_name="lab_results"
         ).create_combinations()
 
         return lab_results

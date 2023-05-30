@@ -1,0 +1,60 @@
+project:
+  name: forced_admissions
+  seed: 42
+  wandb:
+    entity: psycop
+    mode: offline
+    group: unnurtured-controversialists
+  gpu: true
+data:
+  dir: E:\shared_resources\forced_admissions_inpatient\feature_sets\psycop_forced_admissions_inpatient_adminERPERF_features_2023_04_25_13_43
+  suffix: parquet
+  splits_for_training:
+  - train
+  splits_for_evaluation: null
+  pred_prefix: pred_
+  outc_prefix: outc_bool
+  col_name:
+    pred_timestamp: timestamp
+    outcome_timestamp: outc_timestamp
+    is_female: pred_sex_female
+    id: dw_ek_borger
+    age: pred_age_in_years
+    pred_time_uuid: prediction_time_uuid
+preprocessing:
+  pre_split:
+    convert_to_boolean: false
+    convert_booleans_to_int: true
+    drop_datetime_predictor_columns: true
+    convert_datetimes_to_ordinal: false
+    drop_visits_after_exclusion_timestamp: false
+    min_prediction_time_date: '2014-01-01'
+    min_lookahead_days: 182
+    lookbehind_combination:
+    - 365
+    min_age: 18
+  post_split:
+    imputation_method: most_frequent
+    scaling: null
+    feature_selection:
+      name: f_classif
+      params:
+        percentile: 6
+model:
+  name: logistic-regression
+  require_imputation: true
+  args:
+    dual: false
+    tol: 0.0001
+    C: 0.7379980257779784
+    fit_intercept: true
+    intercept_scaling: true
+    class_weight: null
+    random_state: ${project.seed}
+    penalty_solver: elasticnet_saga
+    max_iter: 100
+    l1_ratio: 0.18249990553619547
+train:
+  n_trials_per_lookahead: 300
+  n_jobs_per_trainer: 1
+  n_active_trainers: 10

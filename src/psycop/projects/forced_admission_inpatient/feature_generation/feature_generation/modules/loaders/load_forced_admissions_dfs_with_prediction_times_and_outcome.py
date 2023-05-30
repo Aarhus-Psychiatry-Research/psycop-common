@@ -44,7 +44,6 @@ class LoadCoercion:
         df = sql_load(
             f"SELECT * FROM [fct].[psycop_fa_outcome_all_disorders_forced_admission_{visit_type}_730.5d_0f_182d_2014_2021]",
             database="USR_PS_FORSK",
-            chunksize=None,
         )
 
         df = df[

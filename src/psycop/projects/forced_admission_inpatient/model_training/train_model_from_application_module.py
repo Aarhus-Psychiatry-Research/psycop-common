@@ -17,7 +17,7 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 from psycop.common.model_training.training.train_and_predict import CONFIG_PATH
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CONFIG_PATH = PROJECT_ROOT / "application" / "config"
+CONFIG_PATH = PROJECT_ROOT / "model_training" / "config"
 
 
 @hydra.main(

@@ -1,0 +1,56 @@
+project:
+  name: forced_admissions
+  seed: 42
+  wandb:
+    entity: psycop
+    mode: offline
+    group: forced_admissions
+  gpu: true
+data:
+  dir: E:\shared_resources\forced_admissions_inpatient\feature_sets\psycop_forced_admissions_inpatient_adminERPERF_features_2023_04_25_13_43
+  suffix: parquet
+  splits_for_training:
+  - train
+  splits_for_evaluation: null
+  pred_prefix: pred_
+  outc_prefix: outc_bool
+  col_name:
+    pred_timestamp: timestamp
+    outcome_timestamp: outc_timestamp
+    is_female: pred_sex_female
+    id: dw_ek_borger
+    age: pred_age_in_years
+    pred_time_uuid: prediction_time_uuid
+preprocessing:
+  pre_split:
+    convert_to_boolean: false
+    convert_booleans_to_int: true
+    drop_datetime_predictor_columns: true
+    convert_datetimes_to_ordinal: false
+    drop_visits_after_exclusion_timestamp: false
+    min_prediction_time_date: '2014-01-01'
+    min_lookahead_days: 182
+    lookbehind_combination:
+    - 10
+    - 30
+    - 180
+    - 365
+    min_age: 18
+  post_split:
+    imputation_method: most_frequent
+    scaling: z-score-normalisation
+    feature_selection:
+      name: chi2
+      params:
+        percentile: 20
+model:
+  name: xgboost
+  require_imputation: false
+  args:
+    n_estimators: 100
+    tree_method: gpu_hist
+    booster: gbtree
+train:
+  n_trials_per_lookahead: 300
+  n_jobs_per_trainer: 1
+  n_active_trainers: 10

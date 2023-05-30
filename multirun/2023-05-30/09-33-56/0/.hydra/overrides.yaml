@@ -1,0 +1,13 @@
+- ++preprocessing.post_split.imputation_method=most_frequent
+- ++preprocessing.post_split.scaling=null
+- ++preprocessing.post_split.feature_selection.name=f_classif
+- ++preprocessing.post_split.feature_selection.params.percentile=6
+- ++preprocessing.pre_split.lookbehind_combination=[365]
+- ++model.args.penalty_solver=elasticnet_saga
+- ++model.args.C=0.7379980257779784
+- ++model.args.l1_ratio=0.18249990553619547
+- project.wandb.group='unnurtured-controversialists'
+- data.dir=E\:\\shared_resources\\forced_admissions_inpatient\\feature_sets\\psycop_forced_admissions_inpatient_adminERPERF_features_2023_04_25_13_43
+- project.wandb.mode=offline
+- model=logistic-regression
+- preprocessing.pre_split.min_lookahead_days=182
