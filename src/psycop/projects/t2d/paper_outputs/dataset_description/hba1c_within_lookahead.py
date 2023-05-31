@@ -150,7 +150,9 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
             )
             + pn.ylab("No further HbA1c measurements \nwithin lookahead window")
             + pn.xlab("Days since prediction time")
-            + PN_THEME
+            + pn.scale_x_continuous(expand=(0, 0))
+            + pn.scale_y_continuous(expand=(0, 0))
+            + pn.theme_bw()
         )
 
         plot.save(Path(".") / "test.png")
@@ -197,4 +199,5 @@ class Hba1cWithinLookaheadForTrueNegatives(HbA1cWithinLookaheadPlot):
 
 
 if __name__ == "__main__":
-    plot = HbA1cWithinLookaheadPlot().get_plot(run=BEST_EVAL_PIPELINE)
+    plot = Hba1cWithinLookaheadForFalsePositives().get_plot(run=BEST_EVAL_PIPELINE)
+    plot.save("test.png")
