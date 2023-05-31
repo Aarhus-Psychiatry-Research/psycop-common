@@ -19,7 +19,7 @@ EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 ################
 date_str = datetime.now().strftime("%Y-%m-%d")
 
-PN_THEME = pn.theme_bw() + pn.theme(
+T2D_PN_THEME = pn.theme_bw() + pn.theme(
     panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
 )
 

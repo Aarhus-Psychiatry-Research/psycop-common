@@ -5,7 +5,7 @@ from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
 from psycop.common.model_evaluation.utils import TEST_PLOT_PATH
-from psycop.projects.t2d.paper_outputs.config import PN_THEME
+from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
 
 
 def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
@@ -21,7 +21,7 @@ def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
 
     plots = [
         (pn.ggplot(df, pn.aes(x="is_female", y="auroc")) + pn.geom_bar(stat="identity"))
-        + PN_THEME
+        + T2D_PN_THEME
         for _ in range(6)
     ]
 

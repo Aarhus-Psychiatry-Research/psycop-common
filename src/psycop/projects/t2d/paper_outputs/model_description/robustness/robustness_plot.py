@@ -1,6 +1,6 @@
 import pandas as pd
 import plotnine as pn
-from psycop.projects.t2d.paper_outputs.config import COLORS, PN_THEME
+from psycop.projects.t2d.paper_outputs.config import COLORS, T2D_PN_THEME
 
 
 def t2d_plot_robustness(
@@ -32,7 +32,7 @@ def t2d_plot_robustness(
         + pn.geom_path(group=1, color=COLORS.primary, size=1)
         + pn.xlab(xlab)
         + pn.ylab("AUROC / Proportion of patients")
-        + PN_THEME
+        + T2D_PN_THEME
         + pn.theme(
             axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1),
         )
