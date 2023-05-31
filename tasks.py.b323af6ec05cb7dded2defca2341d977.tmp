@@ -33,17 +33,14 @@ SUPPORTED_PYTHON_VERSIONS = [
 
 NOT_WINDOWS = platform.system() != "Windows"
 
-
 def on_ovartaci() -> bool:
     import platform
-
     if platform.node() == "RMAPPS1279":
         print(f"\n{msg_type.GOOD}: On Ovartaci")
         return True
 
     print(f"\n{msg_type.GOOD}: Not on Ovartaci")
     return False
-
 
 def echo_header(msg: str):
     print(f"\n--- {msg} ---")
@@ -278,9 +275,7 @@ def static_type_checks(c: Context):
         echo_header(f"{msg_type.CLEAN} Running static type checks")
         c.run("tox -e type", pty=NOT_WINDOWS)
     else:
-        print(
-            f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks"
-        )
+        print(f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks")
 
 
 @task
