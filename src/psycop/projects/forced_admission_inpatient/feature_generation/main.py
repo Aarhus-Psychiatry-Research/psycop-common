@@ -27,7 +27,8 @@ from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.loaders.load_forced_admissions_dfs_with_prediction_times_and_outcome import (
-    LoadCoercion,
+    forced_admissions_inpatient,
+    forced_admissions_outpatient,
 )
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_features import (
     FeatureSpecifier,
@@ -50,7 +51,7 @@ def main():
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
-        prediction_times_df=LoadCoercion.forced_admissions_inpatient(
+        prediction_times_df=forced_admissions_inpatient(
             timestamps_only=True,
         ),
         drop_pred_times_with_insufficient_look_distance=False,
@@ -70,7 +71,7 @@ def main():
     )
 
     save_flattened_dataset_description_to_disk(
-        feature_specs=feature_specs,
+        feature_specs=feature_specs,# type: ignore
         project_info=project_info,
     )
 
