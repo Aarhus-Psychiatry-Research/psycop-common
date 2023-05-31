@@ -13,8 +13,12 @@ msg = Printer(timestamp=True)
 
 
 class Hba1cOnly(FeatureModifier):
-    def __init__(self):
-        self.name = "hba1c_only"
+    def __init__(
+        self, lookahead: str, aggregation_method: str, name: str = "hba1c_only"
+    ):
+        self.name = name
+        self.lookahead = lookahead
+        self.aggregation_method = aggregation_method
 
     def modify_features(
         self,
@@ -44,8 +48,8 @@ class Hba1cOnly(FeatureModifier):
         output_dir_path.mkdir(exist_ok=True, parents=True)
         hba1c_only_df.write_parquet(output_dir_path / f"{output_split_name}.parquet")
 
-    @staticmethod
     def _keep_only_hba1c_predictors(
+        self,
         df: pl.LazyFrame,
         predictor_prefix: str,
     ) -> pl.LazyFrame:
@@ -59,15 +63,15 @@ class Hba1cOnly(FeatureModifier):
         ]
         hba1c_only_df = df.drop(non_hba1c_pred_cols)
 
-        non_five_year_hba1c = [
-            c for c in df.schema if "pred_hba1c" in c and "1825" not in c
+        non_lookahead_hba1c = [
+            c for c in df.schema if "pred_hba1c" in c and self.lookahead not in c
         ]
-        five_year_hba1c_only = hba1c_only_df.drop(non_five_year_hba1c)
+        five_year_hba1c_only = hba1c_only_df.drop(non_lookahead_hba1c)
 
         non_mean_hba1c = [
             c
             for c in five_year_hba1c_only.schema
-            if "pred_hba1c" in c and "_mean_" not in c
+            if "pred_hba1c" in c and f"_{self.aggregation_method}_" not in c
         ]
         mean_five_year_hba1c_only = five_year_hba1c_only.drop(non_mean_hba1c)
 
@@ -98,6 +102,6 @@ if __name__ == "__main__":
 
     evaluate_pipeline_with_modified_dataset(
         run=BEST_EVAL_PIPELINE,
-        feature_modifier=Hba1cOnly(),
+        feature_modifier=Hba1cOnly(lookahead="365", aggregation_method="mean"),
         rerun_if_exists=True,
     )
