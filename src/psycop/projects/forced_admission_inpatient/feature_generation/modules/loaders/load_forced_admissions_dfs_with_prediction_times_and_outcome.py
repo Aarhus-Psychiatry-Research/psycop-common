@@ -6,16 +6,17 @@ from wasabi import msg
 def forced_admissions_inpatient(timestamps_only: bool = True) -> pd.DataFrame:
 
     df = process_forced_pred_dfs(
-            visit_type="inpatient",
-            prediction_times_col_name="datotid_slut",
-            timestamps_only=timestamps_only,
+        visit_type="inpatient",
+        prediction_times_col_name="datotid_slut",
+        timestamps_only=timestamps_only,
     )
 
     msg.good(
-            "Finished loading data frame for forced admissions with prediction times and outcome for all inpatient admissions",
-        )
+        "Finished loading data frame for forced admissions with prediction times and outcome for all inpatient admissions",
+    )
 
     return df.reset_index(drop=True)
+
 
 def forced_admissions_outpatient(
     timestamps_only: bool = True,
@@ -25,13 +26,14 @@ def forced_admissions_outpatient(
         visit_type="outpatient",
         prediction_times_col_name="datotid_predict",
         timestamps_only=timestamps_only,
-        )
+    )
 
     msg.good(
-            "Finished loading data frame for forced admissions with prediction times and outcome for all outpatient visits",
-        )
+        "Finished loading data frame for forced admissions with prediction times and outcome for all outpatient visits",
+    )
 
     return df.reset_index(drop=True)
+
 
 def process_forced_pred_dfs(
     visit_type: str,
@@ -42,7 +44,7 @@ def process_forced_pred_dfs(
     df = sql_load(
         f"SELECT * FROM [fct].[psycop_fa_outcome_all_disorders_forced_admission_{visit_type}_730.5d_0f_182d_2014_2021]",
         database="USR_PS_FORSK",
-        )
+    )
 
     df = df[
         [
@@ -51,14 +53,14 @@ def process_forced_pred_dfs(
             "outc_182_days",
             "outcome_timestamp",
         ]
-        ]
+    ]
 
     df = df.rename(
         columns={
             prediction_times_col_name: "timestamp",
             "outc_182_days": "outc_bool_within_182_days",
             "outcome_timestamp": "outc_timestamp",
-            },
+        },
     )
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df["outc_timestamp"] = pd.to_datetime(df["outc_timestamp"])
