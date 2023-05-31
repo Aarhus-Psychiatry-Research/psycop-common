@@ -57,7 +57,7 @@ def _t2d_create_markdown_artifacts(run: PipelineRun) -> list[MarkdownArtifact]:
 **TN**: True negatives.
 **FP**: False positives.
 **FN**: False negatives.
-**% of all events captured**: Percentage of all events which were within the lookahead window of at least one prediction time marked as "positive".
+**% of all T2D captured**: Percentage of all patients who developed T2D, who had at least one positive prediction.
 **Median years from first positive to T2D**: For all patients with at least one true positive, the number of days from their first positive prediction to being labelled as T2D.
             """,
         ),
