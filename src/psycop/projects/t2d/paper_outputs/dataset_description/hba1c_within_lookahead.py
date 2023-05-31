@@ -5,23 +5,12 @@ import numpy as np
 import pandas as pd
 import plotnine as pn
 import polars as pl
-from matplotlib.cbook import flatten
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
 from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_timedelta_series,
 )
-from psycop.common.model_training.preprocessing.pre_split.full_processor import (
-    FullProcessor,
-)
 from psycop.common.model_training.preprocessing.pre_split.processors.row_filter import (
     PreSplitRowFilter,
-)
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
-    get_eligible_prediction_times_as_pandas,
-    get_eligible_prediction_times_as_polars,
 )
 from psycop.projects.t2d.paper_outputs.config import PN_THEME
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
@@ -29,7 +18,6 @@ from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from timeseriesflattener.feature_spec_objects import OutcomeSpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 from timeseriesflattener.resolve_multiple_functions import latest
-from wasabi import Printer
 
 
 def get_pipeline_eligible_prediction_times(run: PipelineRun) -> pd.DataFrame:
@@ -48,7 +36,7 @@ def get_pipeline_eligible_prediction_times(run: PipelineRun) -> pd.DataFrame:
             [
                 run.inputs.get_flattened_split_as_lazyframe(split=split)
                 for split in ("train", "test", "val")
-            ]
+            ],
         )
         .select(columns_to_keep)
         .collect()
@@ -86,7 +74,7 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
 
     def get_dataset(self, run: PipelineRun) -> pd.DataFrame:
         prediction_times_eligible_for_pipeline = get_pipeline_eligible_prediction_times(
-            run=run
+            run=run,
         )
 
         flattener = TimeseriesFlattener(
@@ -127,13 +115,16 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
                 "prediction_time_uuid": eval_ds.pred_time_uuids,
                 "y": eval_ds.y,
                 "y_hat": eval_ds.get_predictions_for_positive_rate(
-                    run.paper_outputs.pos_rate
+                    run.paper_outputs.pos_rate,
                 )[0],
-            }
+            },
         )
 
         plot_df = results_df.merge(
-            flattened, how="left", on="prediction_time_uuid", validate="1:1"
+            flattened,
+            how="left",
+            on="prediction_time_uuid",
+            validate="1:1",
         )
 
         plot_df["days_until_hba1c"] = get_timedelta_series(
@@ -153,7 +144,7 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
             pn.ggplot(data=df, mapping=pn.aes(x="days_until_hba1c"))
             + pn.stat_ecdf()
             + pn.coord_cartesian(
-                xlim=(0, run.inputs.cfg.preprocessing.pre_split.min_lookahead_days)
+                xlim=(0, run.inputs.cfg.preprocessing.pre_split.min_lookahead_days),
             )
             + pn.ylab("No further HbA1c measurements \nwithin lookahead window")
             + pn.xlab("Days since prediction time")
@@ -178,7 +169,7 @@ class Hba1cWithinLookaheadForFalsePositives(HbA1cWithinLookaheadPlot):
         df = super().get_dataset(run)
 
         false_positives = pl.from_pandas(df).filter(
-            (pl.col("y") == 0) & (pl.col("y_hat") == 1)
+            (pl.col("y") == 0) & (pl.col("y_hat") == 1),
         )
 
         return false_positives
@@ -189,7 +180,7 @@ class Hba1cWithinLookaheadForTrueNegatives(HbA1cWithinLookaheadPlot):
         df = super().get_dataset(run)
 
         true_negatives = pl.from_pandas(df).filter(
-            (pl.col("y") == 0) & (pl.col("y_hat") == 0)
+            (pl.col("y") == 0) & (pl.col("y_hat") == 0),
         )
 
         return true_negatives

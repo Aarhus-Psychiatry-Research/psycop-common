@@ -8,11 +8,12 @@ def test_keep_only_hba1c_predictors():
 1,2,1,1,1
 2,4,2,2,2
 3,6,3,3,3
-NaN,NaN,NaN,NaN,NaN"""
+NaN,NaN,NaN,NaN,NaN""",
     ).lazy()
 
     hba1c_only_df = Hba1cOnly._keep_only_hba1c_predictors(
-        df=input_df, predictor_prefix="pred_"
+        df=input_df,
+        predictor_prefix="pred_",
     ).collect()
 
     assert "pred_test1" not in hba1c_only_df.columns

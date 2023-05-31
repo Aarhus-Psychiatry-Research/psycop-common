@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Callable, Sequence
 
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
@@ -85,7 +85,7 @@ def evaluate_pipeline_with_modified_dataset(
 
     if auroc == 0.5:
         raise ValueError(
-            "Returned AUROC was 0.5, indicates that try/except block was hit"
+            "Returned AUROC was 0.5, indicates that try/except block was hit",
         )
 
     # Write AUROC

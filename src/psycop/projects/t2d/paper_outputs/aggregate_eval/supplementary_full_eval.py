@@ -49,7 +49,8 @@ def get_best_runs_from_model_type(
 
 
 def full_eval_for_supplementary(
-    dev_run_group: RunGroup, recreate_artifacts: bool = True
+    dev_run_group: RunGroup,
+    recreate_artifacts: bool = True,
 ) -> None:
     """Run full evaluation for the supplementary material."""
     best_model_type = "xgboost"
@@ -65,7 +66,7 @@ def full_eval_for_supplementary(
             current_run_artifacts = t2d_main_manuscript_eval(dev_pipeline=run)
         else:
             msg.warn(
-                f"recreate_artifacts set to {recreate_artifacts}: Not recreating artifacts"
+                f"recreate_artifacts set to {recreate_artifacts}: Not recreating artifacts",
             )
             run = get_test_pipeline_run(pipeline_to_train=run)  # noqa
             current_run_artifacts = _t2d_create_markdown_artifacts(run=run)
@@ -94,5 +95,6 @@ def full_eval_for_supplementary(
 
 if __name__ == "__main__":
     full_eval_for_supplementary(
-        dev_run_group=DEVELOPMENT_GROUP, recreate_artifacts=False
+        dev_run_group=DEVELOPMENT_GROUP,
+        recreate_artifacts=False,
     )

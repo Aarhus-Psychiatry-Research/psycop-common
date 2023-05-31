@@ -1,12 +1,7 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import polars as pl
-from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
-)
-from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
     FeatureModifier,
     evaluate_pipeline_with_modified_dataset,
@@ -39,7 +34,8 @@ class Hba1cOnly(FeatureModifier):
         )
 
         hba1c_only_df = self._keep_only_hba1c_predictors(
-            df, predictor_prefix=run.inputs.cfg.data.pred_prefix
+            df,
+            predictor_prefix=run.inputs.cfg.data.pred_prefix,
         )
 
         msg.info(f"Collecting modified df with input_splits {input_split_names}")
@@ -50,7 +46,8 @@ class Hba1cOnly(FeatureModifier):
 
     @staticmethod
     def _keep_only_hba1c_predictors(
-        df: pl.LazyFrame, predictor_prefix: str
+        df: pl.LazyFrame,
+        predictor_prefix: str,
     ) -> pl.LazyFrame:
         non_hba1c_pred_cols = [
             c

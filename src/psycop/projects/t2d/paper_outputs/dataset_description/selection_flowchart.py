@@ -1,7 +1,4 @@
 import polars as pl
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
-    get_eligible_prediction_times_as_polars,
-)
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from wasabi import Printer
 
@@ -35,5 +32,5 @@ if __name__ == "__main__":
         percent_negative = f"{round(n_negative / total*100, 1)}%"
 
         msg.info(
-            f"{lookahead_distance}: pos: {n_positive:,} ({percent_positive}) | neg: {n_negative:,} ({percent_negative})"
+            f"{lookahead_distance}: pos: {n_positive:,} ({percent_positive}) | neg: {n_negative:,} ({percent_negative})",
         )

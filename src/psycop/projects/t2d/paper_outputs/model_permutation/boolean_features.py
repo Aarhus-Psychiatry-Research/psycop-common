@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import polars as pl
 from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
@@ -12,13 +12,14 @@ msg = Printer(timestamp=True)
 
 
 def convert_predictors_to_boolean(
-    df: pl.LazyFrame, predictor_prefix: str
+    df: pl.LazyFrame,
+    predictor_prefix: str,
 ) -> pl.LazyFrame:
     boolean_df = df.with_columns(
         pl.when(pl.col(f"^{predictor_prefix}.*$").is_not_null())
         .then(1)
         .otherwise(0)
-        .keep_name()
+        .keep_name(),
     )
 
     return boolean_df
@@ -41,7 +42,8 @@ def create_boolean_dataset(
     )
 
     boolean_df = convert_predictors_to_boolean(
-        df, predictor_prefix=run.inputs.cfg.data.pred_prefix
+        df,
+        predictor_prefix=run.inputs.cfg.data.pred_prefix,
     )
 
     msg.info(f"Collecting boolean df with input_splits {input_split_names}")
@@ -57,5 +59,6 @@ if __name__ == "__main__":
     )
 
     evaluate_pipeline_with_modified_dataset(
-        run=BEST_EVAL_PIPELINE, feature_modifier=create_boolean_dataset
+        run=BEST_EVAL_PIPELINE,
+        feature_modifier=create_boolean_dataset,
     )

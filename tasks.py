@@ -279,7 +279,7 @@ def static_type_checks(c: Context):
         c.run("tox -e type", pty=NOT_WINDOWS)
     else:
         print(
-            f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks"
+            f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",
         )
 
 
