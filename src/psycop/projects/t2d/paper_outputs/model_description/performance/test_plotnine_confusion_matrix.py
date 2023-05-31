@@ -15,6 +15,7 @@ def test_plotnine_confusion_matrix():
         true_negatives=2000,
     )
 
-    plotnine_confusion_matrix(cm, outcome_text="Diabetes within 5 years").save(
+    p = plotnine_confusion_matrix(cm, outcome_text="T2D within 5 years").save(
         TEST_PLOT_PATH / "test_plotnine_confusion_matrix.png",
     )
+    pass

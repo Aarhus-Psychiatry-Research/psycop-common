@@ -28,12 +28,12 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.
     p = (
         pn.ggplot(df, pn.aes(x="true", y="pred", fill="estimate"))
         + T2D_PN_THEME
-        + pn.geom_tile(pn.aes(width=0.95, height=0.95), fill="lightgrey")
-        + pn.geom_text(pn.aes(label="estimate"), size=20, color="White")
+        + pn.geom_tile(pn.aes(width=0.95, height=0.95), fill="gainsboro")
+        + pn.geom_text(pn.aes(label="estimate"), size=20, color="black")
         + pn.theme(
             axis_line=pn.element_blank(),
             axis_ticks=pn.element_blank(),
-            axis_text=pn.element_text(size=15),
+            axis_text=pn.element_text(size=15, color="black"),
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
             panel_background=pn.element_blank(),
