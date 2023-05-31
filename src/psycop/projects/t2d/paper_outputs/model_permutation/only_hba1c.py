@@ -14,7 +14,10 @@ msg = Printer(timestamp=True)
 
 class Hba1cOnly(FeatureModifier):
     def __init__(
-        self, lookahead: str, aggregation_method: str, name: str = "hba1c_only"
+        self,
+        lookahead: str,
+        aggregation_method: str,
+        name: str = "hba1c_only",
     ):
         self.name = name
         self.lookahead = lookahead
