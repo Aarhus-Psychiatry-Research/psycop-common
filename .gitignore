@@ -192,3 +192,6 @@ src/**/*.md
 # Wandb
 multirun
 wandb
+
+# Ignore the ouptuts for publishing folder
+**/outputs_for_publishing
