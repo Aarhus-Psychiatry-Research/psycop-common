@@ -1,51 +1,67 @@
+from collections.abc import Sequence
+from pathlib import Path
+
 import polars as pl
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
+from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
+    FeatureModifier,
+    evaluate_pipeline_with_modified_dataset,
 )
-from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.paper_outputs.selected_runs import (
-    BEST_EVAL_PIPELINE,
-)
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
-def evaluate_pipeline_with_boolean_features(run: PipelineRun):
-    cfg: FullConfigSchema = run.inputs.cfg
-
-    # Create the dataset with only HbA1c-predictors
-    df: pl.LazyFrame = pl.concat(
-        run.get_flattened_split_as_lazyframe(split) for split in ["train", "val"]  # type: ignore
+def convert_predictors_to_boolean(
+    df: pl.LazyFrame,
+    predictor_prefix: str,
+) -> pl.LazyFrame:
+    boolean_df = df.with_columns(
+        pl.when(pl.col(f"^{predictor_prefix}.*$").is_not_null())
+        .then(1)
+        .otherwise(0)
+        .keep_name(),
     )
 
-    pred_cols = [c for c in df.columns if c.startswith(cfg.data.pred_prefix)]
-    pred_cols_sans_sex = [c for c in pred_cols if "sex" not in c]
+    return boolean_df
 
-    boolean_df = df
-    for col in pred_cols_sans_sex:
-        boolean_df = df.with_columns(
-            pl.when(pl.col(col).is_not_null()).then(1).otherwise(0).alias(col),
+
+class CreateBooleanDataset(FeatureModifier):
+    def modify_features(
+        self,
+        run: PipelineRun,
+        output_dir_path: Path,
+        input_split_names: Sequence[SplitNames],
+        output_split_name: str,
+        recreate_dataset: bool,
+    ) -> None:
+        if output_dir_path.exists() and not recreate_dataset:
+            msg.info("Boolean dataset has already been created, returning")
+            return
+
+        df: pl.LazyFrame = pl.concat(
+            run.inputs.get_flattened_split_as_lazyframe(split)
+            for split in input_split_names
         )
 
-    boolean_df = boolean_df.collect()
+        boolean_df = convert_predictors_to_boolean(
+            df,
+            predictor_prefix=run.inputs.cfg.data.pred_prefix,
+        )
 
-    path_prefix = "boolean"
+        msg.info(f"Collecting boolean df with input_splits {input_split_names}")
+        boolean_df = boolean_df.collect()
 
-    boolean_pred_dir = run.paper_outputs.paths.estimates / f"{path_prefix}_preds"
-    boolean_pred_dir.mkdir(parents=True, exist_ok=True)
-    boolean_pred_path = boolean_pred_dir / f"{path_prefix}_preds.parquet"
-    boolean_df.write_parquet(boolean_pred_path)
-
-    # Point the model at that dataset
-    cfg.data.Config.allow_mutation = True
-    cfg.data.dir = str(boolean_pred_dir)
-    cfg.data.splits_for_training = [f"{path_prefix}"]
-    roc_auc = train_model(cfg=cfg)
-
-    # Write AUROC
-    with (run.paper_outputs.paths.estimates / f"{path_prefix}.txt").open("a") as f:
-        f.write(str(roc_auc))
-        f.write(str(boolean_df.columns))
+        output_dir_path.mkdir(exist_ok=True, parents=True)
+        boolean_df.write_parquet(output_dir_path / f"{output_split_name}.parquet")
 
 
 if __name__ == "__main__":
-    evaluate_pipeline_with_boolean_features(run=BEST_EVAL_PIPELINE)
+    from psycop.projects.t2d.paper_outputs.selected_runs import (
+        BEST_EVAL_PIPELINE,
+    )
+
+    evaluate_pipeline_with_modified_dataset(
+        run=BEST_EVAL_PIPELINE,
+        feature_modifier=CreateBooleanDataset(),
+    )

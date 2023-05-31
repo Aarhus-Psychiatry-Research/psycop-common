@@ -15,6 +15,7 @@ def t2d_create_patchwork_figure(
     run: PipelineRun,
     plot_fns: Sequence[Callable],
     output_filename: str,
+    single_plot_dimensions: tuple[float, float] = (5, 5),
 ):
     """Create a patchwork figure from plot_fns. All plot_fns must only need a ModelRun object as input, and return a plotnine ggplot output."""
     for output_str, value in (
@@ -48,7 +49,9 @@ def t2d_create_patchwork_figure(
     if not any_plot_failed:
         grid = create_patchwork_grid(
             plots=plots,
-            single_plot_dimensions=(5, 5),
+            single_plot_dimensions=single_plot_dimensions,
             n_in_row=2,
         )
-        grid.savefig(run.paper_outputs.paths.figures / output_filename)
+        grid_output_path = run.paper_outputs.paths.figures / output_filename
+        grid.savefig(grid_output_path)
+        msg.good(f"Saved figure to {grid_output_path}")

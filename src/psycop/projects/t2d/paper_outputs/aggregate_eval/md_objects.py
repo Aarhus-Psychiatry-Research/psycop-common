@@ -1,3 +1,4 @@
+import copy
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional
@@ -45,7 +46,7 @@ class MarkdownFigure(MarkdownArtifact):
     def get_markdown(self) -> str:
         return f"""{self.title}
 
-![{self.title}]({self.file_path.as_posix()})
+![]({self.file_path.as_posix()})
 
 {self.description}
 """
@@ -118,8 +119,15 @@ def create_supplementary_from_markdown_artifacts(
             raise ValueError(f"Unknown artifact type {type(artifacts[0])}")
 
         for artifact in artifacts:
-            artifact.title = f"## **{title_prefix} {index}**: {artifact.title}"
-            markdown += f"""{artifact.get_markdown()}
+            # Create a copy to avoid modifying the pointed-to object, e.g.
+            # to avoid adding two titles if the function is called twice on
+            # the same object
+            artifact_copy = copy.copy(artifact)
+
+            artifact_copy.title = (
+                f"## **{title_prefix} {index}**: {artifact_copy.title}"
+            )
+            markdown += f"""{artifact_copy.get_markdown()}
 
 
 """

@@ -30,7 +30,7 @@ def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
         ),
         "run_name": run.name,
         "auroc": run.pipeline_outputs.get_auroc(),
-        "mean_warning_days": get_mean_days_from_first_positive_to_diagnosis_for_run(
+        "median": get_median_days_from_first_positive_to_diagnosis_for_run(
             run=run,
         ),
     }
@@ -38,11 +38,11 @@ def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
     return pl.DataFrame(return_dict)
 
 
-def get_mean_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -> float:
+def get_median_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -> float:
     return days_from_first_positive_to_diagnosis(
         eval_dataset=run.pipeline_outputs.get_eval_dataset(),
         positive_rate=run.paper_outputs.pos_rate,
-        aggregation_method="mean",
+        aggregation_method="median",
     )
 
 
@@ -63,12 +63,12 @@ def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataF
     warning_days_df = df.pivot(
         index=["model_name"],
         columns=["lookahead_days"],
-        values=["mean_warning_days"],
+        values=["median"],
         aggregate_function="first",
     ).select(
         pl.col("model_name"),
         pl.lit(
-            f"Mean years from first positive to event at {BEST_POS_RATE} positive rate",
+            f"Median years from first positive to event at {BEST_POS_RATE} positive rate",
         ).alias("measure"),
         (pl.all().exclude("model_name") / 365.25).round(1),
     )

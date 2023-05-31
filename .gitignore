@@ -157,7 +157,6 @@ pytest-coverage.txt
 
 #other
 *test_load_data.py
-wandb
 poetry.lock
 *.html
 
@@ -189,3 +188,7 @@ src/psycop/tests/test_eval_results/*
 *.csv
 *.docx
 src/**/*.md
+
+# Wandb
+multirun
+wandb

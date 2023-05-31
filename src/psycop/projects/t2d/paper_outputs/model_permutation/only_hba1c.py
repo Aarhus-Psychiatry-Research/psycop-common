@@ -1,48 +1,110 @@
+from collections.abc import Sequence
+from pathlib import Path
+
 import polars as pl
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
+from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
+    FeatureModifier,
+    evaluate_pipeline_with_modified_dataset,
 )
-from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
-def evaluate_pipeline_on_hba1c_only(run: PipelineRun):
-    cfg: FullConfigSchema = run.inputs.cfg
+class Hba1cOnly(FeatureModifier):
+    def __init__(
+        self,
+        lookahead: str,
+        aggregation_method: str,
+        name: str = "hba1c_only",
+    ):
+        self.name = name
+        self.lookahead = lookahead
+        self.aggregation_method = aggregation_method
 
-    # Create the dataset with only HbA1c-predictors
-    df: pl.LazyFrame = pl.concat(
-        run.get_flattened_split_as_lazyframe(split) for split in ["train", "val"]  # type: ignore
-    )
+    def modify_features(
+        self,
+        run: PipelineRun,
+        output_dir_path: Path,
+        input_split_names: Sequence[SplitNames],
+        output_split_name: str,
+        recreate_dataset: bool,
+    ) -> None:
+        if output_dir_path.exists() and not recreate_dataset:
+            msg.info("Boolean dataset has already been created, returning")
+            return
 
-    non_hba1c_pred_cols = [
-        c
-        for c in df.columns
-        if c.startswith(cfg.data.pred_prefix) and ("hba1c" not in c)
-    ]
+        df: pl.LazyFrame = pl.concat(
+            run.inputs.get_flattened_split_as_lazyframe(split)
+            for split in input_split_names
+        )
 
-    cols_to_drop = [
-        c for c in non_hba1c_pred_cols if "pred_sex" not in c and "pred_age" not in c
-    ]
+        hba1c_only_df = self._keep_only_hba1c_predictors(
+            df,
+            predictor_prefix=run.inputs.cfg.data.pred_prefix,
+        )
 
-    hba1c_only_df = df.drop(cols_to_drop).collect()
+        msg.info(f"Collecting modified df with input_splits {input_split_names}")
+        hba1c_only_df = hba1c_only_df.collect()
 
-    hba1c_only_dir = run.paper_outputs.paths.estimates / "hba1c_only"
-    hba1c_only_dir.mkdir(parents=True, exist_ok=True)
-    hba1c_only_path = hba1c_only_dir / "hba1c_only.parquet"
-    hba1c_only_df.write_parquet(hba1c_only_path)
+        output_dir_path.mkdir(exist_ok=True, parents=True)
+        hba1c_only_df.write_parquet(output_dir_path / f"{output_split_name}.parquet")
 
-    # Point the model at that dataset
-    cfg.data.Config.allow_mutation = True
-    cfg.data.dir = str(hba1c_only_dir)
-    cfg.data.splits_for_training = ["hba1c"]
-    roc_auc = train_model(cfg=cfg)
+    def _keep_only_hba1c_predictors(
+        self,
+        df: pl.LazyFrame,
+        predictor_prefix: str,
+    ) -> pl.LazyFrame:
+        non_hba1c_pred_cols = [
+            c
+            for c in df.schema
+            if "hba1c" not in c
+            and predictor_prefix in c
+            and "pred_age" not in c
+            and "pred_sex" not in c
+        ]
+        hba1c_only_df = df.drop(non_hba1c_pred_cols)
 
-    # Write AUROC
-    with (run.paper_outputs.paths.estimates / "hba1c_only_auroc.txt").open("a") as f:
-        f.write(str(roc_auc))
-        f.write(str(hba1c_only_df.columns))
+        non_lookahead_hba1c = [
+            c for c in df.schema if "pred_hba1c" in c and self.lookahead not in c
+        ]
+        five_year_hba1c_only = hba1c_only_df.drop(non_lookahead_hba1c)
+
+        non_mean_hba1c = [
+            c
+            for c in five_year_hba1c_only.schema
+            if "pred_hba1c" in c and f"_{self.aggregation_method}_" not in c
+        ]
+        mean_five_year_hba1c_only = five_year_hba1c_only.drop(non_mean_hba1c)
+
+        return mean_five_year_hba1c_only
 
 
 if __name__ == "__main__":
-    evaluate_pipeline_on_hba1c_only(run=BEST_EVAL_PIPELINE)
+    from copy import copy
+
+    from psycop.projects.t2d.paper_outputs.selected_runs import (
+        BEST_EVAL_PIPELINE,
+    )
+
+    run = copy(BEST_EVAL_PIPELINE)
+    cfg = run.inputs.cfg
+
+    # Set XGBoost to default hyperparameters
+    cfg.model.Config.allow_mutation = True
+    cfg.model.args = {
+        "n_estimators": 100,
+        "alpha": 0,
+        "lambda": 1,
+        "max_depth": 6,
+        "learning_rate": 0.3,
+        "gamma": 0,
+        "grow_policy": "depthwise",
+    }
+
+    evaluate_pipeline_with_modified_dataset(
+        run=BEST_EVAL_PIPELINE,
+        feature_modifier=Hba1cOnly(lookahead="365", aggregation_method="mean"),
+        rerun_if_exists=True,
+    )

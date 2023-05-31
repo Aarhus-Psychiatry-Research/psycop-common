@@ -29,7 +29,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
         + pn.scale_color_brewer(type="qual", palette=2)
-        + pn.labs(color="PPR")
+        + pn.labs(color="Predicted Positive Rate")
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
