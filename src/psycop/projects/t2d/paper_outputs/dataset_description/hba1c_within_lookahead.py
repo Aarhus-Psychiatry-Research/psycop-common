@@ -12,7 +12,6 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.preprocessing.pre_split.processors.row_filter import (
     PreSplitRowFilter,
 )
-from psycop.projects.t2d.paper_outputs.config import PN_THEME
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from timeseriesflattener.feature_spec_objects import OutcomeSpec
