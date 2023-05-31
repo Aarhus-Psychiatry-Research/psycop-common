@@ -20,7 +20,7 @@ from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 from timeseriesflattener.resolve_multiple_functions import latest
 
 
-def get_pipeline_eligible_prediction_times(run: PipelineRun) -> pd.DataFrame:
+def get_eligible_prediction_times_for_pipeline(run: PipelineRun) -> pd.DataFrame:
     col_names = run.inputs.cfg.data.col_name
 
     columns_to_keep = (
@@ -73,8 +73,10 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
         pass
 
     def get_dataset(self, run: PipelineRun) -> pd.DataFrame:
-        prediction_times_eligible_for_pipeline = get_pipeline_eligible_prediction_times(
-            run=run,
+        prediction_times_eligible_for_pipeline = (
+            get_eligible_prediction_times_for_pipeline(
+                run=run,
+            )
         )
 
         flattener = TimeseriesFlattener(
@@ -168,22 +170,30 @@ class Hba1cWithinLookaheadForFalsePositives(HbA1cWithinLookaheadPlot):
     def get_dataset(self, run: PipelineRun) -> pl.DataFrame:
         df = super().get_dataset(run)
 
-        false_positives = pl.from_pandas(df).filter(
+        false_positives = pl.from_pandas(data=df).filter(
             (pl.col("y") == 0) & (pl.col("y_hat") == 1),
         )
 
         return false_positives
+
+    def _create_plot(self, df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
+        p = super()._create_plot(df, run)
+        return p + pn.ggtitle("False positives")
 
 
 class Hba1cWithinLookaheadForTrueNegatives(HbA1cWithinLookaheadPlot):
     def get_dataset(self, run: PipelineRun) -> pl.DataFrame:
         df = super().get_dataset(run)
 
-        true_negatives = pl.from_pandas(df).filter(
+        true_negatives = pl.from_pandas(data=df).filter(
             (pl.col("y") == 0) & (pl.col("y_hat") == 0),
         )
 
         return true_negatives
+
+    def _create_plot(self, df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
+        p = super()._create_plot(df, run)
+        return p + pn.ggtitle("True negatives")
 
 
 if __name__ == "__main__":
