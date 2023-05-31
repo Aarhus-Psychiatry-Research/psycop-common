@@ -36,7 +36,7 @@ class FeatureSpecifier:
         """Get static predictor specs."""
         return [
             StaticSpec(
-                values_loader="sex_female", #type: ignore
+                values_loader="sex_female",  # type: ignore
                 input_col_name_override="sex_female",
                 prefix=self.project_info.prefix.predictor,
                 feature_name="sex_female",
@@ -354,8 +354,9 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return (self._get_temporal_predictor_specs()
-                    +self. _get_static_predictor_specs()
+            return (
+                self._get_temporal_predictor_specs()
+                + self._get_static_predictor_specs()
             )
 
         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()
