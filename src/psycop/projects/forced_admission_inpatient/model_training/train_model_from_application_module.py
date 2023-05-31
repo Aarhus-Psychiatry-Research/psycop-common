@@ -5,6 +5,7 @@ file, rather than an installed module.
 """
 import sys
 from pathlib import Path
+from typing import Union
 
 import hydra
 from omegaconf import DictConfig
@@ -25,7 +26,7 @@ CONFIG_PATH = PROJECT_ROOT / "model_training" / "config"
     config_name="default_config",
     version_base="1.2",
 )
-def main(cfg: DictConfig) -> float:
+def main(cfg: Union[DictConfig, FullConfigSchema]) -> float:
     """Main."""
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)

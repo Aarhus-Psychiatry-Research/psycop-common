@@ -7,9 +7,9 @@ class LoadCoercion:
     """Class for loading data frames with prediction times and outcome for
     forced admissions."""
 
-    def forced_admissions_inpatient(timestamps_only=True) -> pd.DataFrame:
+    def forced_admissions_inpatient(self, timestamps_only: bool = True) -> pd.DataFrame:
 
-        df = LoadCoercion.process_forced_pred_dfs(
+        df = self.process_forced_pred_dfs(
             visit_type="inpatient",
             prediction_times_col_name="datotid_slut",
             timestamps_only=timestamps_only,
@@ -21,9 +21,12 @@ class LoadCoercion:
 
         return df.reset_index(drop=True)
 
-    def forced_admissions_outpatient(timestamps_only=True) -> pd.DataFrame:
+    def forced_admissions_outpatient(
+        self,
+        timestamps_only: bool = True,
+    ) -> pd.DataFrame:
 
-        df = LoadCoercion.process_forced_pred_dfs(
+        df = self.process_forced_pred_dfs(
             visit_type="outpatient",
             prediction_times_col_name="datotid_predict",
             timestamps_only=timestamps_only,
@@ -36,6 +39,7 @@ class LoadCoercion:
         return df.reset_index(drop=True)
 
     def process_forced_pred_dfs(
+        self,
         visit_type: str,
         prediction_times_col_name: str,
         timestamps_only: bool = True,

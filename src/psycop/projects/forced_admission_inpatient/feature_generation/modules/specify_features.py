@@ -1,5 +1,6 @@
 """Feature specification module."""
 import logging
+from typing import Union
 
 import numpy as np
 from psycop.common.feature_generation.application_modules.project_setup import (
@@ -35,7 +36,7 @@ class FeatureSpecifier:
         """Get static predictor specs."""
         return [
             StaticSpec(
-                values_loader="sex_female",
+                values_loader="sex_female", #type: ignore
                 input_col_name_override="sex_female",
                 prefix=self.project_info.prefix.predictor,
                 feature_name="sex_female",
@@ -57,7 +58,7 @@ class FeatureSpecifier:
                 "physical_visits_to_somatic",
             ),
             lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
             feature_name="physical_visits",
@@ -77,7 +78,7 @@ class FeatureSpecifier:
         admissions = PredictorGroupSpec(
             values_loader=("admissions",),
             lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
             feature_name="admissions",
@@ -118,7 +119,7 @@ class FeatureSpecifier:
                 "zuclopenthixol_depot",
             ),
             lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
             feature_name="phychiatric_medications",
@@ -152,7 +153,7 @@ class FeatureSpecifier:
                 "f8_disorders",
                 "f9_disorders",
             ),
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
@@ -184,7 +185,7 @@ class FeatureSpecifier:
                 "remme",
                 "farlighed",
             ),
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
@@ -205,7 +206,7 @@ class FeatureSpecifier:
         beroligende_medicin = PredictorGroupSpec(
             values_loader=("beroligende_medicin",),
             lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
             feature_name="beroligende_medicin",
@@ -229,7 +230,7 @@ class FeatureSpecifier:
                 "hamilton_d17",
                 "mas_m",
             ),
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             lookbehind_days=interval_days,
             fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
@@ -262,7 +263,7 @@ class FeatureSpecifier:
                 "p_clomipramine",
                 "cancelled_standard_lab_results",
             ),
-            resolve_multiple_fn=resolve_multiple,
+            resolve_multiple_fn=resolve_multiple,  # type: ignore
             lookbehind_days=interval_days,
             fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
@@ -287,8 +288,8 @@ class FeatureSpecifier:
                 ),
             ]
 
-        interval_days = [10, 30, 180, 365]
-        allowed_nan_value_prop = [0]
+        interval_days = [10.0, 30.0, 180.0, 365.0]
+        allowed_nan_value_prop = [0.0]
 
         visits = self._get_visits_specs(
             resolve_multiple=["count"],
@@ -349,10 +350,12 @@ class FeatureSpecifier:
             + lab_results
         )
 
-    def get_feature_specs(self) -> list[_AnySpec]:
+    def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_temporal_predictor_specs()
+            return (self._get_temporal_predictor_specs()
+                    +self. _get_static_predictor_specs()
+            )
 
         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()
