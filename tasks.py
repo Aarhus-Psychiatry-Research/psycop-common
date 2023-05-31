@@ -34,6 +34,17 @@ SUPPORTED_PYTHON_VERSIONS = [
 NOT_WINDOWS = platform.system() != "Windows"
 
 
+def on_ovartaci() -> bool:
+    import platform
+
+    if platform.node() == "RMAPPS1279":
+        print(f"\n{msg_type.GOOD} On Ovartaci")
+        return True
+
+    print(f"\n{msg_type.GOOD} Not on Ovartaci")
+    return False
+
+
 def echo_header(msg: str):
     print(f"\n--- {msg} ---")
 
@@ -199,21 +210,22 @@ def create_pr(c: Context):
 
 
 def update_pr(c: Context):
-    echo_header(f"{msg_type.COMMUNICATE} Syncing PR")
-    # Get current branch name
-    branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
-    pr_result: Result = c.run(
-        "gh pr list --state OPEN",
-        pty=False,
-        hide=True,
-    )
+    if not on_ovartaci():
+        echo_header(f"{msg_type.COMMUNICATE} Syncing PR")
+        # Get current branch name
+        branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
+        pr_result: Result = c.run(
+            "gh pr list --state OPEN",
+            pty=False,
+            hide=True,
+        )
 
-    if branch_name not in pr_result.stdout:
-        create_pr(c)
-    else:
-        open_web = input("Open in browser? [y/n] ")
-        if "y" in open_web.lower():
-            c.run("gh pr view --web", pty=NOT_WINDOWS)
+        if branch_name not in pr_result.stdout:
+            create_pr(c)
+        else:
+            open_web = input("Open in browser? [y/n] ")
+            if "y" in open_web.lower():
+                c.run("gh pr view --web", pty=NOT_WINDOWS)
 
 
 def exit_if_error_in_stdout(result: Result):
@@ -263,8 +275,13 @@ def pre_commit(c: Context, auto_fix: bool):
 
 @task
 def static_type_checks(c: Context):
-    echo_header(f"{msg_type.CLEAN} Running static type checks")
-    c.run("tox -e type", pty=NOT_WINDOWS)
+    if not on_ovartaci():
+        echo_header(f"{msg_type.CLEAN} Running static type checks")
+        c.run("tox -e type", pty=NOT_WINDOWS)
+    else:
+        print(
+            f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",
+        )
 
 
 @task
