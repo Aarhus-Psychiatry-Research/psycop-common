@@ -2,6 +2,23 @@
 
 <!--next-version-placeholder-->
 
+## v0.78.0 (2023-06-01)
+### Feature
+* Increase size of axis labels in t2d pn theme ([`71b8dd0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/71b8dd04e56288244188dd7fbaa017740adb7cd1))
+* Increase size of patchwork subpanel labels ([`384e06d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/384e06d829075404e48325595b5fed37a5414fae))
+* Make HbA1c only configurable ([`d2854a8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d2854a8d2695900a923260c98eea82972a19c005))
+* Adopt boolean dataset to featuremodifier ([`5188047`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/51880477c34ae803db51a5500637e45b35f2decf))
+* Ignore static type checks on Ovartaci ([`840c015`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/840c015f06b3eb315f6c024518657c59b4ed853a))
+* Allow disabling of column name checks ([`ad519be`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ad519be2bfd16f6d927cd99ffcd68a7122468945))
+* Boolean cols in place ([`8b968e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8b968e543010b05de7fd11b23efcb514b398b9e3))
+* Use native polars column selection ([`ef25f17`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ef25f17571d96721722c04fd59c5111a915c6b2c))
+
+### Fix
+* Imports ([`e31e18d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e31e18df498be78b35e57c5b2edede2c8970d956))
+
+### Documentation
+* Improve docs wording ([`173807e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/173807e46001f789b371824cc6ada49a980279e1))
+
 ## v0.77.1 (2023-05-30)
 ### Fix
 * Correct lookbehind selection ([`3807a94`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3807a9468f1225d77134786298a88d82185b71c8))
