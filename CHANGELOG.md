@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.78.1 (2023-06-01)
+### Fix
+* Patchwork grid of size 1 ([`b159a10`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b159a108b896511d540c44dfcfbb89d9cb33b361))
+
 ## v0.78.0 (2023-06-01)
 ### Feature
 * Increase size of axis labels in t2d pn theme ([`71b8dd0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/71b8dd04e56288244188dd7fbaa017740adb7cd1))
