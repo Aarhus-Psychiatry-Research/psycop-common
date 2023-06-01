@@ -21,7 +21,6 @@ def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
 
     plots = [
         (pn.ggplot(df, pn.aes(x="is_female", y="auroc")) + pn.geom_bar(stat="identity"))
-        + T2D_PN_THEME
         for _ in range(6)
     ]
 
