@@ -44,7 +44,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "true_negatives": "TN",
             "false_positives": "FP",
             "false_negatives": "FN",
-            "prop of all events captured": "% of all events captured",
+            "prop of all events captured": "% of all T2D captured",
         },
         axis=1,
     )

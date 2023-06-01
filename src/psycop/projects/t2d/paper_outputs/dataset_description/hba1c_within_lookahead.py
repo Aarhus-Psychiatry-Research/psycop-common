@@ -34,7 +34,7 @@ def get_eligible_prediction_times_for_pipeline(run: PipelineRun) -> pd.DataFrame
         pl.concat(
             [
                 run.inputs.get_flattened_split_as_lazyframe(split=split)
-                for split in ("train", "test", "val")
+                for split in ("test",)
             ],
         )
         .select(columns_to_keep)
@@ -128,27 +128,34 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
             validate="1:1",
         )
 
-        plot_df["days_until_hba1c"] = get_timedelta_series(
+        plot_df["years_until_last_hba1c"] = get_timedelta_series(
             df=plot_df,
             direction="t2-t1",
-            bin_unit="D",
+            bin_unit="Y",
             t2_col_name="outc_hba1c_within_1825_days_latest_fallback_nan",
             t1_col_name="timestamp",
         )
 
-        plot_df["days_until_hba1c"] = plot_df["days_until_hba1c"].fillna(9999)
+        plot_df["years_until_last_hba1c"] = plot_df["years_until_last_hba1c"].fillna(
+            9999,
+        )
 
         return plot_df
 
     def _create_plot(self, df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
         plot = (
-            pn.ggplot(data=df, mapping=pn.aes(x="days_until_hba1c"))
+            pn.ggplot(data=df, mapping=pn.aes(x="years_until_last_hba1c"))
             + pn.stat_ecdf()
             + pn.coord_cartesian(
-                xlim=(0, run.inputs.cfg.preprocessing.pre_split.min_lookahead_days),
+                xlim=(
+                    0,
+                    int(
+                        run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365,
+                    ),
+                ),
             )
-            + pn.ylab("No further HbA1c measurements \nwithin lookahead window")
-            + pn.xlab("Days since prediction time")
+            + pn.ylab("Last HbA1c in lookahead window")
+            + pn.xlab("Years since prediction time")
             + pn.scale_x_continuous(expand=(0, 0))
             + pn.scale_y_continuous(expand=(0, 0))
             + pn.theme_bw()
@@ -198,5 +205,27 @@ class Hba1cWithinLookaheadForTrueNegatives(HbA1cWithinLookaheadPlot):
 
 
 if __name__ == "__main__":
-    plot = Hba1cWithinLookaheadForFalsePositives().get_plot(run=BEST_EVAL_PIPELINE)
-    plot.save("test.png")
+    pipeline = BEST_EVAL_PIPELINE
+    false_positives = Hba1cWithinLookaheadForFalsePositives().get_plot(
+        run=BEST_EVAL_PIPELINE,
+    )
+    size = (5, 3)
+
+    false_positives.save(
+        pipeline.paper_outputs.paths.figures / "t2d_last_hba1c_false_positives.png",
+        width=size[0],
+        height=size[1],
+        dpi=600,
+    )
+
+    true_negatives = Hba1cWithinLookaheadForTrueNegatives().get_plot(
+        run=BEST_EVAL_PIPELINE,
+    )
+    true_negatives.save(
+        pipeline.paper_outputs.paths.figures / "t2d_last_hba1c_true_negatives.png",
+        width=size[0],
+        height=size[1],
+        dpi=600,
+    )
+
+    pass

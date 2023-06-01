@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from math import ceil
+from typing import Literal
 
 import patchworklib as pw
 import plotnine as pn
@@ -13,6 +14,15 @@ def create_patchwork_grid(
     single_plot_dimensions: tuple[float, float],
     n_in_row: int,
     add_subpanels_letters: bool = True,
+    panel_letter_size: Literal[
+        "xx-small",
+        "x-small",
+        "small",
+        "medium",
+        "large",
+        "x-large",
+        "xx-large",
+    ] = "x-large",
 ) -> pw.Bricks:
     """Create a grid from a sequence of ggplot objects."""
     print_a4_ratio(plots, single_plot_dimensions, n_in_row)
@@ -31,7 +41,7 @@ def create_patchwork_grid(
     for i in range(len(bricks)):
         # Add the letter
         if add_subpanels_letters:
-            bricks[i].set_index(alphabet[i].upper())
+            bricks[i].set_index(alphabet[i].upper(), size=panel_letter_size)
 
         # Add it to the row
         current_row.append(bricks[i])

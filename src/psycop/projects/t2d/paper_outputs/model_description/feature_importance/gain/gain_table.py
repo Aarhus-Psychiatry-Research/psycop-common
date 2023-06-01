@@ -7,23 +7,26 @@ from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_r
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
-def generate_feature_importance_table(pipeline_run: PipelineRun):
+def generate_feature_importance_table(pipeline_run: PipelineRun) -> pl.DataFrame:
     pipeline = pipeline_run.pipeline_outputs.pipe
 
     # Get feature importance scores
     feature_importances = pipeline.named_steps["model"].feature_importances_
-    feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
-        indices=True,
-    )
 
     split_df = load_and_filter_split_from_cfg(
         data_cfg=pipeline_run.inputs.cfg.data,
         pre_split_cfg=pipeline_run.inputs.cfg.preprocessing.pre_split,
         split="test",
     )
-
     feature_names = [c for c in split_df.columns if "pred_" in c]
-    selected_feature_names = [feature_names[i] for i in feature_indices]
+
+    if "feature_selection" in pipeline["preprocessing"]:  # type: ignore
+        feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
+            indices=True,
+        )
+        selected_feature_names = [feature_names[i] for i in feature_indices]
+    else:
+        selected_feature_names = feature_names
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
@@ -43,8 +46,11 @@ def generate_feature_importance_table(pipeline_run: PipelineRun):
     ).open("w") as html_file:
         html_file.write(top_100_features.to_pandas().to_html())
 
+    return top_100_features
+
 
 if __name__ == "__main__":
     top_100_features = generate_feature_importance_table(
         pipeline_run=BEST_EVAL_PIPELINE,
     )
+    pass

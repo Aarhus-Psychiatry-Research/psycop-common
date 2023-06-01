@@ -5,7 +5,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.config import (
-    PN_THEME,
+    T2D_PN_THEME,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
@@ -26,7 +26,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
         + pn.labs(x="Months to outcome", y="Sensitivity")
-        + PN_THEME
+        + T2D_PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
         + pn.scale_color_brewer(type="qual", palette=2)
         + pn.labs(color="Predicted Positive Rate")

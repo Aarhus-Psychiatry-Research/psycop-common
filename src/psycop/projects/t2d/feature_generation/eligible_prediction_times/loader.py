@@ -19,9 +19,11 @@ def get_eligible_prediction_times_as_polars() -> pl.DataFrame:
         ),
     )
 
-    return filter_prediction_times_by_eligibility(
+    filtered_df = filter_prediction_times_by_eligibility(
         df=df,
     ).select(["dw_ek_borger", "timestamp"])
+
+    return filtered_df
 
 
 def get_eligible_prediction_times_as_pandas() -> pd.DataFrame:

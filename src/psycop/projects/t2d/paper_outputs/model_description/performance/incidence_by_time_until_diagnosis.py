@@ -4,7 +4,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
 )
 from psycop.projects.t2d.paper_outputs.config import (
-    PN_THEME,
+    T2D_PN_THEME,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
@@ -45,7 +45,7 @@ def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
             nudge_x=-0.3,
             size=11,
         )
-        + PN_THEME
+        + T2D_PN_THEME
     )
 
     p.save(run.paper_outputs.paths.figures / "first_pred_to_event.png")
