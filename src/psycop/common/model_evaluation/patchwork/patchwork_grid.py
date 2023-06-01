@@ -46,7 +46,7 @@ def create_patchwork_grid(
         # Add it to the row
         current_row.append(bricks[i])
 
-        row_is_full = i % n_in_row != 0
+        row_is_full = i % n_in_row != 0 or n_in_row == 1
         all_bricks_used = i == len(bricks) - 1
 
         if row_is_full or all_bricks_used:
