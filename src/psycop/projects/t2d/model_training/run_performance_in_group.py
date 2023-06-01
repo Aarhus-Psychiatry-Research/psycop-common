@@ -1,7 +1,9 @@
 import datetime
 
 import pandas as pd
-from psycop.projects.t2d.paper_outputs.config import EVAL_GROUP
+from psycop.projects.t2d.paper_outputs.config import (
+    DEVELOPMENT_GROUP,
+)
 from psycop.projects.t2d.utils.pipeline_objects import RunGroup
 
 
@@ -20,7 +22,7 @@ def get_best_models_by_lookahead(current_group: RunGroup) -> pd.DataFrame:
 
 if __name__ == "__main__":
     print("\n\n")
-    run_performance_df = get_best_models_by_lookahead(current_group=EVAL_GROUP)
+    run_performance_df = get_best_models_by_lookahead(current_group=DEVELOPMENT_GROUP)
 
     now = datetime.datetime.now()
 

@@ -15,7 +15,13 @@ def create_patchwork_grid(
     n_in_row: int,
     add_subpanels_letters: bool = True,
     panel_letter_size: Literal[
-        "xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large"
+        "xx-small",
+        "x-small",
+        "small",
+        "medium",
+        "large",
+        "x-large",
+        "xx-large",
     ] = "x-large",
 ) -> pw.Bricks:
     """Create a grid from a sequence of ggplot objects."""

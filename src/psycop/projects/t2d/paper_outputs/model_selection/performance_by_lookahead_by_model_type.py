@@ -9,13 +9,13 @@ from psycop.projects.t2d.paper_outputs.config import (
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
 
 
-def get_performance_for_group(group: RunGroup, pos_rate: float) -> pl.DataFrame:
-    best_runs_by_lookahead = group.get_best_runs_by_lookahead()
+def get_performance_for_group(run_group: RunGroup, pos_rate: float) -> pl.DataFrame:
+    best_runs_by_lookahead = run_group.get_best_runs_by_lookahead()
 
     performance_dfs: list[pl.DataFrame] = []
 
     for run_name in best_runs_by_lookahead["run_name"]:
-        run_object = PipelineRun(group=group, name=run_name, pos_rate=pos_rate)
+        run_object = PipelineRun(group=run_group, name=run_name, pos_rate=pos_rate)
 
         performance_dfs.append(get_performance_for_run(run=run_object))
 
@@ -47,7 +47,7 @@ def get_median_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -
 
 
 def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataFrame:
-    df = get_performance_for_group(group=run_group, pos_rate=BEST_POS_RATE)
+    df = get_performance_for_group(run_group=run_group, pos_rate=BEST_POS_RATE)
 
     auroc_df = df.pivot(
         index=["model_name"],

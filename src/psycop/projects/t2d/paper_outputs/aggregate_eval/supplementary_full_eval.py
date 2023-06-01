@@ -1,5 +1,6 @@
 import polars as pl
 from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
+    MarkdownArtifact,
     create_supplementary_from_markdown_artifacts,
 )
 from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval import (
@@ -8,8 +9,9 @@ from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval 
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_GROUP
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
-    get_test_pipeline_run,
+    test_pipeline,
 )
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import EVAL_ROOT, PipelineRun, RunGroup
 from wasabi import Printer
 
@@ -48,12 +50,41 @@ def get_best_runs_from_model_type(
     return best_runs
 
 
+def get_test_artifacts_for_pipeline(
+    recreate_artifacts: bool,
+    dev_pipeline: PipelineRun,
+) -> list[MarkdownArtifact]:
+    """Get the standard set of artifacts for a given pipeline"""
+    pipeline = test_pipeline(pipeline_to_test=dev_pipeline)
+
+    if recreate_artifacts:
+        current_run_artifacts = t2d_main_manuscript_eval(pipeline=pipeline)
+    else:
+        msg.warn(
+            f"recreate_artifacts set to {recreate_artifacts}: Not recreating artifacts",
+        )
+        current_run_artifacts = _t2d_create_markdown_artifacts(pipeline=pipeline)
+
+    run_md = create_supplementary_from_markdown_artifacts(
+        artifacts=current_run_artifacts,
+    )
+
+    with (
+        EVAL_ROOT
+        / f"supplementary_{pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_{pipeline.model_type}_{pipeline.name}.md"
+    ).open("w") as f:
+        f.write(run_md)
+
+    return current_run_artifacts
+
+
 def full_eval_for_supplementary(
     dev_run_group: RunGroup,
     recreate_artifacts: bool = True,
 ) -> None:
     """Run full evaluation for the supplementary material."""
     best_model_type = "xgboost"
+
     best_runs_from_model_type = get_best_runs_from_model_type(
         dev_run_group=dev_run_group,
         model_type=best_model_type,
@@ -62,26 +93,14 @@ def full_eval_for_supplementary(
     artifacts = []
 
     for run in best_runs_from_model_type:
-        if recreate_artifacts:
-            current_run_artifacts = t2d_main_manuscript_eval(dev_pipeline=run)
-        else:
-            msg.warn(
-                f"recreate_artifacts set to {recreate_artifacts}: Not recreating artifacts",
-            )
-            run = get_test_pipeline_run(pipeline_to_train=run)  # noqa
-            current_run_artifacts = _t2d_create_markdown_artifacts(run=run)
-
-        artifacts += current_run_artifacts
-
-        run_md = create_supplementary_from_markdown_artifacts(
-            artifacts=current_run_artifacts,
+        run_artifacts = get_test_artifacts_for_pipeline(
+            recreate_artifacts=recreate_artifacts,
+            dev_pipeline=run,
         )
 
-        with (
-            EVAL_ROOT
-            / f"supplementary_{run.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_{run.model_type}_{run.name}.md"
-        ).open("w") as f:
-            f.write(run_md)
+        # Do not add the main pipeline's eval to supplementary
+        if run.name != BEST_EVAL_PIPELINE.name:
+            artifacts += run_artifacts
 
     combined_supplementary_md = create_supplementary_from_markdown_artifacts(
         artifacts=artifacts,
@@ -96,5 +115,5 @@ def full_eval_for_supplementary(
 if __name__ == "__main__":
     full_eval_for_supplementary(
         dev_run_group=DEVELOPMENT_GROUP,
-        recreate_artifacts=False,
+        recreate_artifacts=True,
     )
