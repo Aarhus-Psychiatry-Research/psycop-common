@@ -25,8 +25,6 @@ def get_eligible_prediction_times_as_polars() -> pl.DataFrame:
 
     return filtered_df
 
-    return filtered_df
-
 
 def get_eligible_prediction_times_as_pandas() -> pd.DataFrame:
     return get_eligible_prediction_times_as_polars().to_pandas()
