@@ -27,6 +27,9 @@ def convert_predictors_to_boolean(
 
 
 class CreateBooleanDataset(FeatureModifier):
+    def __init__(self):
+        self.name = "Boolean dataset"
+
     def modify_features(
         self,
         run: PipelineRun,
@@ -65,3 +68,5 @@ if __name__ == "__main__":
         run=BEST_EVAL_PIPELINE,
         feature_modifier=CreateBooleanDataset(),
     )
+
+    pass

@@ -7,7 +7,7 @@ from psycop.projects.t2d.utils.pipeline_objects import RunGroup
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-DEV_GROUP_NAME = "mistouching-unwontedness"
+DEV_GROUP_NAME = "urosepsis-helicoid"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_POS_RATE = 0.03
 

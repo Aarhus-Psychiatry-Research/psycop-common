@@ -15,12 +15,12 @@ msg = Printer(timestamp=True)
 class Hba1cOnly(FeatureModifier):
     def __init__(
         self,
-        lookahead: str,
+        lookbehind: str,
         aggregation_method: str,
         name: str = "hba1c_only",
     ):
         self.name = name
-        self.lookahead = lookahead
+        self.lookahead = lookbehind
         self.aggregation_method = aggregation_method
 
     def modify_features(
@@ -69,14 +69,16 @@ class Hba1cOnly(FeatureModifier):
         non_lookahead_hba1c = [
             c for c in df.schema if "pred_hba1c" in c and self.lookahead not in c
         ]
-        five_year_hba1c_only = hba1c_only_df.drop(non_lookahead_hba1c)
+        lookahead_hba1c_only = hba1c_only_df.drop(non_lookahead_hba1c)
 
-        non_mean_hba1c = [
+        non_aggregation_method_hba1c = [
             c
-            for c in five_year_hba1c_only.schema
+            for c in lookahead_hba1c_only.schema
             if "pred_hba1c" in c and f"_{self.aggregation_method}_" not in c
         ]
-        mean_five_year_hba1c_only = five_year_hba1c_only.drop(non_mean_hba1c)
+        mean_five_year_hba1c_only = lookahead_hba1c_only.drop(
+            non_aggregation_method_hba1c
+        )
 
         return mean_five_year_hba1c_only
 
@@ -88,23 +90,27 @@ if __name__ == "__main__":
         BEST_EVAL_PIPELINE,
     )
 
-    run = copy(BEST_EVAL_PIPELINE)
-    cfg = run.inputs.cfg
+    default_xgboost_params = False
 
-    # Set XGBoost to default hyperparameters
-    cfg.model.Config.allow_mutation = True
-    cfg.model.args = {
-        "n_estimators": 100,
-        "alpha": 0,
-        "lambda": 1,
-        "max_depth": 6,
-        "learning_rate": 0.3,
-        "gamma": 0,
-        "grow_policy": "depthwise",
-    }
+    if default_xgboost_params:
+        msg.divider("Training with default xgboost params")
+        run = copy(BEST_EVAL_PIPELINE)
+        cfg = run.inputs.cfg
+
+        # Set XGBoost to default hyperparameters
+        cfg.model.Config.allow_mutation = True
+        cfg.model.args = {
+            "n_estimators": 100,
+            "alpha": 0,
+            "lambda": 1,
+            "max_depth": 6,
+            "learning_rate": 0.3,
+            "gamma": 0,
+            "grow_policy": "depthwise",
+        }
 
     evaluate_pipeline_with_modified_dataset(
         run=BEST_EVAL_PIPELINE,
-        feature_modifier=Hba1cOnly(lookahead="365", aggregation_method="mean"),
+        feature_modifier=Hba1cOnly(lookbehind="730", aggregation_method="mean"),
         rerun_if_exists=True,
     )

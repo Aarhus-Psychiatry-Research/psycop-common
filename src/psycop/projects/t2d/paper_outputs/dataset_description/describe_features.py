@@ -45,8 +45,12 @@ save_feature_descriptive_stats_from_dir(
     ).parent,
     feature_specs=selected_specs,  # type: ignore
     file_suffix="parquet",
-    splits=["train"],
+    splits=["train", "test", "val"],
     out_dir=out_dir,
 )
 
+# %%
+
+out_dir = BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "feature_description"
+list(out_dir.glob("*"))
 # %%

@@ -5,7 +5,6 @@ from pathlib import Path
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_DEV_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
 from wasabi import Printer
 
@@ -49,29 +48,32 @@ def _train_pipeline_on_test(pipeline_to_train: PipelineRun):
     )
 
 
-def get_test_pipeline_run(pipeline_to_train: PipelineRun) -> PipelineRun:
+def test_pipeline(
+    pipeline_to_test: PipelineRun,
+) -> PipelineRun:
     # Check if the pipeline has already been trained on the test set
     # If so, return the existing run
     pipeline_has_been_evaluated_on_test = _get_test_pipeline_dir(
-        pipeline_to_train=pipeline_to_train,
+        pipeline_to_train=pipeline_to_test,
     ).exists()
 
     if not pipeline_has_been_evaluated_on_test:
         msg.info(
-            f"{pipeline_to_train.group.name}/{pipeline_to_train.name} has not been evaluated on train, evaluating",
+            f"{pipeline_to_test.group.name}/{pipeline_to_test.name} has not been evaluated, training",
         )
-        _train_pipeline_on_test(pipeline_to_train=pipeline_to_train)
+        _train_pipeline_on_test(pipeline_to_train=pipeline_to_test)
     else:
         msg.good(
-            f"{pipeline_to_train.group.name}/{pipeline_to_train.name} has already been evaluated on train, returning",
+            f"{pipeline_to_test.group.name}/{pipeline_to_test.name} has been evaluated, loading",
         )
 
     return PipelineRun(
-        group=RunGroup(name=_get_test_group_name(pipeline_to_train)),
-        name=_get_test_run_name(pipeline_to_train),
+        group=RunGroup(name=_get_test_group_name(pipeline_to_test)),
+        name=_get_test_run_name(pipeline_to_test),
         pos_rate=0.03,
     )
 
 
 if __name__ == "__main__":
-    eval_run = get_test_pipeline_run(pipeline_to_train=BEST_DEV_PIPELINE)
+    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_DEV_PIPELINE
+    eval_run = test_pipeline(pipeline_to_test=BEST_DEV_PIPELINE)
