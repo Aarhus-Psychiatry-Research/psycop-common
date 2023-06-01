@@ -22,7 +22,7 @@ def get_eligible_prediction_times_as_polars() -> pl.DataFrame:
     filtered_df = filter_prediction_times_by_eligibility(
         df=df,
     ).select(["dw_ek_borger", "timestamp"])
-    
+
     return filtered_df
 
     return filtered_df
