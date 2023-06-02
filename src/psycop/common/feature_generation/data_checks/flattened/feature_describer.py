@@ -112,14 +112,13 @@ def generate_temporal_feature_description(
         "Fallback strategy": str(predictor_spec.fallback),
         "Proportion missing": series.isna().mean(),
         "Mean": round(series.mean(), 2),
-        "Histogram": create_unicode_hist(series),
         "Proportion using fallback": get_value_proportion(
             series,
             predictor_spec.fallback,
         ),
     }
 
-    for percentile in (0.01, 0.25, 0.5, 0.75, 0.99):
+    for percentile in (0.25, 0.5, 0.75):
         # Get the value representing the percentile
         d[f"{percentile * 100}-percentile"] = round(series.quantile(percentile), 1)
 
@@ -139,7 +138,6 @@ def generate_static_feature_description(
         "Fallback strategy": "N/A",
         "Proportion missing": series.isna().mean(),
         "Mean": round(series.mean(), 2),
-        "Histogram": create_unicode_hist(series),
         "Proportion using fallback": "N/A",
     }
 
