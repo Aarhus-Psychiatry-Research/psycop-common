@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.79.0 (2023-06-02)
+### Feature
+* Simplify feature describer ([`a9f9f7b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a9f9f7b9906559f61867eed90d347bbd55620b72))
+
 ## v0.78.1 (2023-06-01)
 ### Fix
 * Patchwork grid of size 1 ([`b159a10`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b159a108b896511d540c44dfcfbb89d9cb33b361))
