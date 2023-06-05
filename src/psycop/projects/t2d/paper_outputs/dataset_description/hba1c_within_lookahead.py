@@ -5,7 +5,13 @@ import numpy as np
 import pandas as pd
 import plotnine as pn
 import polars as pl
-from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
+from plotnine.themes.themeable import legend_position
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
+    fasting_p_glc,
+    hba1c,
+    ogtt,
+    unscheduled_p_glc,
+)
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_timedelta_series,
 )
@@ -67,7 +73,7 @@ class AbstractPlot(ABC):
         raise NotImplementedError
 
 
-class HbA1cWithinLookaheadPlot(AbstractPlot):
+class MeasurementsWithinLookaheadPlot(AbstractPlot):
     def __init__(self):
         pass
 
@@ -96,16 +102,36 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
         hba1c_timestamps = hba1c()
         hba1c_timestamps["value"] = hba1c_timestamps["timestamp"]
 
-        spec = OutcomeSpec(
-            feature_name="hba1c",
-            values_df=hba1c_timestamps,
-            resolve_multiple_fn=latest,
-            fallback=np.nan,
-            entity_id_col_name="dw_ek_borger",
-            incident=False,
-            lookahead_days=lookahead_days,
-        )
-        flattener.add_spec(spec=spec)
+        any_lab_result_dfs = [
+            hba1c_timestamps,
+            unscheduled_p_glc(),
+            fasting_p_glc(),
+            ogtt(),
+        ]
+        any_lab_result_timestamps = pd.concat(any_lab_result_dfs)
+        any_lab_result_timestamps["value"] = any_lab_result_timestamps["timestamp"]
+
+        specs = [
+            OutcomeSpec(
+                feature_name="hba1c",
+                values_df=hba1c_timestamps,
+                resolve_multiple_fn=latest,
+                fallback=np.nan,
+                entity_id_col_name="dw_ek_borger",
+                incident=False,
+                lookahead_days=lookahead_days,
+            ),
+            OutcomeSpec(
+                feature_name="t2d_lab_result",
+                values_df=any_lab_result_timestamps,
+                resolve_multiple_fn=latest,
+                fallback=np.nan,
+                entity_id_col_name="dw_ek_borger",
+                incident=False,
+                lookahead_days=lookahead_days,
+            ),
+        ]
+        flattener.add_spec(spec=specs)  # type: ignore
 
         flattened = flattener.get_df()
 
@@ -128,24 +154,65 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
             validate="1:1",
         )
 
-        plot_df["years_until_last_hba1c"] = get_timedelta_series(
-            df=plot_df,
-            direction="t2-t1",
-            bin_unit="Y",
-            t2_col_name="outc_hba1c_within_1825_days_latest_fallback_nan",
-            t1_col_name="timestamp",
-        )
+        for feature_name in ("t2d_lab_result", "hba1c"):
+            flattened_col_name = (
+                f"outc_{feature_name}_within_1825_days_latest_fallback_nan"
+            )
+            plot_df_col_name = f"years_until_last_{feature_name}"
 
-        plot_df["years_until_last_hba1c"] = plot_df["years_until_last_hba1c"].fillna(
-            9999
-        )
+            plot_df[plot_df_col_name] = get_timedelta_series(
+                df=plot_df,
+                direction="t2-t1",
+                bin_unit="Y",
+                t2_col_name=flattened_col_name,
+                t1_col_name="timestamp",
+            )
+
+            plot_df[plot_df_col_name] = plot_df[plot_df_col_name].fillna(9999)
 
         return plot_df
 
     def _create_plot(self, df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
+        pl_df = pl.from_pandas(df)
+
+        plot_df = (
+            pl_df.select(
+                [
+                    "prediction_time_uuid",
+                    "y",
+                    "y_hat",
+                    "years_until_last_t2d_lab_result",
+                    "years_until_last_hba1c",
+                ]
+            )
+            .with_columns(
+                prediction=pl.when((pl.col("y") == 0) & (pl.col("y_hat") == 1))
+                .then("False positive")
+                .when((pl.col("y") == 0) & (pl.col("y_hat") == 0))
+                .then("True negative")
+                .when((pl.col("y") == 1) & (pl.col("y_hat") == 1))
+                .then("True positive")
+                .when((pl.col("y") == 1) & (pl.col("y_hat") == 0))
+                .then("False negative"),
+            )
+            .rename(
+                {
+                    "years_until_last_t2d_lab_result": "HbA1c, OGTT, fasting p-Glc or unscheduled p-Glc",
+                    "years_until_last_hba1c": "HbA1c",
+                }
+            )
+            .melt(
+                id_vars=["prediction_time_uuid", "prediction"],
+                value_vars=["HbA1c, OGTT, fasting p-Glc or unscheduled p-Glc", "HbA1c"],
+            )
+            .filter(pl.col("prediction") is not None)
+        )
+
         plot = (
-            pn.ggplot(data=df, mapping=pn.aes(x="years_until_last_hba1c"))
-            + pn.stat_ecdf()
+            pn.ggplot(data=plot_df)
+            + pn.stat_ecdf(mapping=pn.aes(x="value", color="variable"))
+            + pn.scale_color_brewer(type="qual", palette=2)
+            + pn.facet_wrap("prediction", nrow=2)
             + pn.coord_cartesian(
                 xlim=(
                     0,
@@ -154,11 +221,13 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
                     ),
                 ),
             )
-            + pn.ylab("Last HbA1c in lookahead window")
+            + pn.ylab("Last measurement in lookahead window")
             + pn.xlab("Years since prediction time")
             + pn.scale_x_continuous(expand=(0, 0))
             + pn.scale_y_continuous(expand=(0, 0))
             + pn.theme_bw()
+            + pn.theme(legend_position="bottom")
+            + pn.labs(color="")
         )
 
         plot.save(Path(".") / "test.png")
@@ -174,58 +243,15 @@ class HbA1cWithinLookaheadPlot(AbstractPlot):
         return plot
 
 
-class Hba1cWithinLookaheadForFalsePositives(HbA1cWithinLookaheadPlot):
-    def get_dataset(self, run: PipelineRun) -> pl.DataFrame:
-        df = super().get_dataset(run)
-
-        false_positives = pl.from_pandas(data=df).filter(
-            (pl.col("y") == 0) & (pl.col("y_hat") == 1),
-        )
-
-        return false_positives
-
-    def _create_plot(self, df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
-        p = super()._create_plot(df, run)
-        return p + pn.ggtitle("False positives")
-
-
-class Hba1cWithinLookaheadForTrueNegatives(HbA1cWithinLookaheadPlot):
-    def get_dataset(self, run: PipelineRun) -> pl.DataFrame:
-        df = super().get_dataset(run)
-
-        true_negatives = pl.from_pandas(data=df).filter(
-            (pl.col("y") == 0) & (pl.col("y_hat") == 0),
-        )
-
-        return true_negatives
-
-    def _create_plot(self, df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
-        p = super()._create_plot(df, run)
-        return p + pn.ggtitle("True negatives")
-
-
 if __name__ == "__main__":
     pipeline = BEST_EVAL_PIPELINE
-    false_positives = Hba1cWithinLookaheadForFalsePositives().get_plot(
-        run=BEST_EVAL_PIPELINE
-    )
-    size = (5, 3)
+    false_positives = MeasurementsWithinLookaheadPlot().get_plot(run=BEST_EVAL_PIPELINE)
+    size = (6.5, 8)
 
     false_positives.save(
-        pipeline.paper_outputs.paths.figures / "t2d_last_hba1c_false_positives.png",
+        pipeline.paper_outputs.paths.figures / "t2d_last_diabetes_measurement.png",
         width=size[0],
         height=size[1],
         dpi=600,
     )
-
-    true_negatives = Hba1cWithinLookaheadForTrueNegatives().get_plot(
-        run=BEST_EVAL_PIPELINE
-    )
-    true_negatives.save(
-        pipeline.paper_outputs.paths.figures / "t2d_last_hba1c_true_negatives.png",
-        width=size[0],
-        height=size[1],
-        dpi=600,
-    )
-
     pass
