@@ -46,7 +46,7 @@ dependencies = [
   "plotnine==0.10.1",
   "timeseriesflattener",
   "scipy==1.10.1",
-  "polars==0.17.15",
+  "polars==0.18.0",
   "tableone",
   "shap",
   "typing_extensions==4.6.2", # Pins the typing extension due to a bug a buggy interaction with pydantic and Literal, see https://github.com/SeldonIO/alibi/issues/927 and https://github.com/pydantic/pydantic/issues/545
