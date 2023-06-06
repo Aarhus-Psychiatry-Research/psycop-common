@@ -24,6 +24,9 @@ def start_trainer(
     """Start a trainer."""
     msg = Printer(timestamp=True)
 
+    if cfg.train is None:
+        raise ValueError("cfg.train is None, but is required for training in parallel.")
+
     if train_single_model_file_path is None:
         train_single_model_file_path = Path(
             "application/train_model_from_application_module.py",
