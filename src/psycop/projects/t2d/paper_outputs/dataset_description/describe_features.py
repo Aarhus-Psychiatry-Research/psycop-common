@@ -29,7 +29,6 @@ selected_specs = [spec for spec in feature_specs if "pred" in spec.get_col_str()
 # %%
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_df,
-    save_feature_descriptive_stats_from_dir,
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 
@@ -43,7 +42,6 @@ df = generate_feature_description_df(
 
 # %%
 import pandas as pd
-import polars as pl
 
 
 def prettify_feature_description_df(
@@ -75,11 +73,12 @@ def prettify_feature_description_df(
             "f7_disorders": "f7 - Mental retardation",
             "f8_disorders": "f8 - Developmental disorders",
             "hyperkinetic_disorders": "f9 - Child & adolescent disorders",
-        }
+        },
     )
 
     df = df.drop(
-        ["1.0-percentile", "99.0-percentile", "Histogram", "Proportion missing"], axis=1
+        ["1.0-percentile", "99.0-percentile", "Histogram", "Proportion missing"],
+        axis=1,
     )
 
     df = df.sort_values("Predictor df", ascending=True)
@@ -124,7 +123,7 @@ md = MarkdownTable(
 ).get_markdown()
 
 with (BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "predictor_description.md").open(
-    "+w"
+    "+w",
 ) as f:
     f.write(md)
 

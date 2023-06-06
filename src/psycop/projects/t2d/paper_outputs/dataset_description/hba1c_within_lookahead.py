@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import plotnine as pn
 import polars as pl
-from plotnine.themes.themeable import legend_position
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     fasting_p_glc,
     hba1c,
@@ -183,7 +182,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
                     "y_hat",
                     "years_until_last_t2d_lab_result",
                     "years_until_last_hba1c",
-                ]
+                ],
             )
             .with_columns(
                 prediction=pl.when((pl.col("y") == 0) & (pl.col("y_hat") == 1))
@@ -199,7 +198,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
                 {
                     "years_until_last_t2d_lab_result": "HbA1c, OGTT, fasting p-Glc or unscheduled p-Glc",
                     "years_until_last_hba1c": "HbA1c",
-                }
+                },
             )
             .melt(
                 id_vars=["prediction_time_uuid", "prediction"],
@@ -222,7 +221,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             )
             + pn.ylab("Last measurement in lookahead window")
             + pn.xlab("Years since prediction time")
-            # + pn.scale_x_continuous(expand=(0, 0))
+            + pn.scale_x_continuous(expand=(0, 0))
             + pn.scale_y_continuous(expand=(0, 0))
             + pn.theme_bw()
             + pn.theme(legend_position="bottom")
