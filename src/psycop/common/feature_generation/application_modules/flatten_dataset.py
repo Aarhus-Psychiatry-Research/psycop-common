@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 import pandas as pd
 import psutil
@@ -31,7 +31,7 @@ def flatten_dataset_to_disk(
     prediction_times_df: pd.DataFrame,
     quarantine_df: pd.DataFrame | None = None,
     quarantine_days: int | None = None,
-    split2ids_df: Optional[dict[str, pd.DataFrame]] = None,
+    split2ids_df: dict[str, pd.DataFrame] | None = None,
     split_names: Sequence[str] = ("train", "val", "test"),
 ):
     flattened_dataset = create_flattened_dataset(

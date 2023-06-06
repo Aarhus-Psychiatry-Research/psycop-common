@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pandas as pd
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    create_flattened_dataset,
     flatten_dataset_to_disk,
 )
 from psycop.common.feature_generation.application_modules.project_setup import (
@@ -29,12 +28,10 @@ from psycop.common.model_training.config_schemas.project import (
     ProjectSchema,
     WandbSchema,
 )
-from psycop.common.model_training.config_schemas.train import TrainConfSchema
 from psycop.common.test_utils.str_to_df import str_to_df
 from timeseriesflattener.feature_spec_objects import (
     OutcomeSpec,
     PredictorSpec,
-    resolve_multiple_fns,
 )
 from timeseriesflattener.resolve_multiple_functions import maximum, minimum
 
@@ -58,7 +55,7 @@ def test_e2e(tmp_path: Path):
 5,2020-01-02 00:00:00,
 6,2020-01-02 00:00:00,
 999,2030-01-01, # Late end of dataset to avoid filtering
-"""
+""",
     )
 
     prediction_times_dfs = []
@@ -76,7 +73,7 @@ def test_e2e(tmp_path: Path):
 4,2020-01-01,0
 5,2020-01-01,1
 6,2020-01-01,0
-"""
+""",
     )
 
     outcome_df = str_to_df(
@@ -87,7 +84,7 @@ def test_e2e(tmp_path: Path):
 4,2020-01-03,0
 5,2020-01-03,1
 6,2020-01-03,0
-"""
+""",
     )
 
     feature_specs = [
@@ -122,7 +119,9 @@ def test_e2e(tmp_path: Path):
         cfg=FullConfigSchema(
             project=ProjectSchema(
                 wandb=WandbSchema(
-                    group="test_group", mode="offline", entity="test_entity"
+                    group="test_group",
+                    mode="offline",
+                    entity="test_entity",
                 ),
                 project_path=project_info.project_path,
                 name=project_info.project_name,
@@ -133,7 +132,10 @@ def test_e2e(tmp_path: Path):
                 dir=project_info.flattened_dataset_path,
                 splits_for_training=["train"],
                 col_name=ColumnNamesSchema(
-                    age=None, is_female=None, id="entity_id", outcome_timestamp=None
+                    age=None,
+                    is_female=None,
+                    id="entity_id",
+                    outcome_timestamp=None,
                 ),
                 pred_prefix=project_info.prefix.predictor,
                 outc_prefix=project_info.prefix.outcome,

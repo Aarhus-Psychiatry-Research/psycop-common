@@ -19,7 +19,6 @@ from psycop.common.model_training.utils.col_name_inference import get_col_names
 from psycop.common.model_training.utils.decorators import (
     wandb_alert_on_exception_return_terrible_auc,
 )
-from psycop.common.model_training.utils.utils import OVARTACI_SHARED_DIR
 
 
 def get_eval_dir(cfg: FullConfigSchema) -> Path:

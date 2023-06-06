@@ -1,6 +1,7 @@
 """Utilities for saving a dataset to disk."""
 import logging
-from typing import Literal, Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd

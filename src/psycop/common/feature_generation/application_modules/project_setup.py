@@ -4,7 +4,6 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Literal
 
 import wandb
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, PSYCOP_PKG_ROOT
