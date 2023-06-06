@@ -60,7 +60,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
 
     if eval_dataset.outcome_timestamps is None:
         raise ValueError(
-            "The outcome timestamps must be provided in order to calculate the sensitivity by time to event."
+            "The outcome timestamps must be provided in order to calculate the sensitivity by time to event.",
         )
 
     for ppr in [0.01, 0.03, 0.05]:

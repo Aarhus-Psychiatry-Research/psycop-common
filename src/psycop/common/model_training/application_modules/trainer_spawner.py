@@ -73,6 +73,9 @@ def spawn_trainers(
     active_trainers: list[subprocess.Popen] = []
     trainer_combinations_queue = trainer_specs.copy()
 
+    if cfg.train is None:
+        raise ValueError("cfg.train is None, but is required for training in parallel.")
+
     while trainer_combinations_queue or active_trainers:
         # Wait until there is a free slot in the trainers group
         if (
