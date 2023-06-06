@@ -10,12 +10,14 @@ from psycop.common.test_utils.str_to_df import str_to_df
 
 
 def test_get_percentage_of_events_captured_from_eval_dataset(
-    synth_eval_dataset: EvalDataset,
+    subsampled_eval_dataset: EvalDataset,
 ):
     get_prop_of_events_captured_from_eval_dataset(
-        eval_dataset=synth_eval_dataset,
+        eval_dataset=subsampled_eval_dataset,
         positive_rate=0.02,
     )
+
+    pass
 
 
 def test_get_percentage_of_events_captured():
