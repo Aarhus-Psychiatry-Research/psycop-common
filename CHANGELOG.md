@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.79.1 (2023-06-06)
+### Fix
+* Remove project specific md code ([`945a0fd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/945a0fd0597000de2197df502e983f75a804b948))
+
 ## v0.79.0 (2023-06-02)
 ### Feature
 * Simplify feature describer ([`a9f9f7b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a9f9f7b9906559f61867eed90d347bbd55620b72))
