@@ -71,7 +71,7 @@ class MarkdownTable(MarkdownArtifact):
 
     def _get_table_as_pd(self) -> pd.DataFrame:
         if self.file_path.suffix == ".csv":
-            return pd.read_csv(self.file_path).drop("Unnamed: 0", axis=1)
+            return pd.read_csv(self.file_path)
 
         if self.file_path.suffix == ".xlsx":
             return pd.read_excel(
