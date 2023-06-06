@@ -172,8 +172,8 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
         return plot_df
 
-    def _create_plot(self, df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
-        pl_df = pl.from_pandas(df)
+    def _create_plot(self, input_df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
+        pl_df = pl.from_pandas(input_df)
 
         plot_df = (
             pl_df.select(
@@ -205,8 +205,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
                 id_vars=["prediction_time_uuid", "prediction"],
                 value_vars=["HbA1c, OGTT, fasting p-Glc or unscheduled p-Glc", "HbA1c"],
             )
-            .filter(pl.col("prediction") is not None)
-        )
+        ).filter(pl.col("prediction") == "False positive")
 
         plot = (
             pn.ggplot(data=plot_df)
@@ -223,7 +222,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             )
             + pn.ylab("Last measurement in lookahead window")
             + pn.xlab("Years since prediction time")
-            + pn.scale_x_continuous(expand=(0, 0))
+            # + pn.scale_x_continuous(expand=(0, 0))
             + pn.scale_y_continuous(expand=(0, 0))
             + pn.theme_bw()
             + pn.theme(legend_position="bottom")
@@ -237,7 +236,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
     def get_plot(self, run: PipelineRun) -> pn.ggplot:
         df = self.get_dataset(run=run)
 
-        plot = self._create_plot(df=df, run=run)
+        plot = self._create_plot(input_df=df, run=run)
         plot.draw()
 
         return plot
