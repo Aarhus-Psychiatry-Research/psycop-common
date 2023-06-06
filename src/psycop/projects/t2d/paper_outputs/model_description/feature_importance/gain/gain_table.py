@@ -41,10 +41,16 @@ def generate_feature_importance_table(pipeline_run: PipelineRun) -> pl.DataFrame
         pl.col("Feature Name").apply(lambda x: feature_name_to_readable(x)),  # type: ignore
     )
 
+    pd_df = top_100_features.to_pandas()
+    pd_df = pd_df.reset_index()
+    pd_df["index"] = pd_df["index"] + 1
+    pd_df = pd_df.set_index("index")
+
     with (
         pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html"
     ).open("w") as html_file:
-        html_file.write(top_100_features.to_pandas().to_html())
+        html = pd_df.to_html()
+        html_file.write(html)
 
     return top_100_features
 

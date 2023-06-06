@@ -55,9 +55,9 @@ class MarkdownFigure(MarkdownArtifact):
 class MarkdownTable(MarkdownArtifact):
     def __init__(
         self,
+        title: str,
         file_path: Path,
         description: str,
-        title: str,
         title_prefix: str = "Table",
         check_filepath_exists: bool = True,
     ):
