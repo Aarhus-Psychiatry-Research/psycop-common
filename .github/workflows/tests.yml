@@ -2,7 +2,7 @@
 # then it will in python 3.9 (ubuntu-latest) create a badge with the coverage
 # and add it to the PR. This badge will be updated if the PR is updated.
 
-name: Tests
+name: tests
 on:
   push:
     branches: [main]

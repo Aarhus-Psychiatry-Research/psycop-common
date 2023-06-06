@@ -1,4 +1,4 @@
-name: Cruft Check
+name: cruft check
 
 on:
   schedule:

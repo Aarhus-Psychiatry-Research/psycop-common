@@ -1,5 +1,5 @@
 # .github/workflows/coverage.yml
-name: Post coverage comment
+name: post coverage comment
 
 on:
   workflow_run:
