@@ -35,19 +35,12 @@ class ProjectInfo(BaseModel):
 
     project_name: str
     project_path: Path
-    feature_set_path: Path
-    feature_set_prefix: str
-    dataset_format: Literal["parquet", "csv"] = "parquet"
     prefix: Prefixes = Prefixes()
     col_names: ColNames = ColNames()
 
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-
-        # Iterate over each attribute. If the attribute is a Path, create it if it does not exist.
-        for attr in self.__dict__:
-            if isinstance(attr, Path):
-                attr.mkdir(exist_ok=True, parents=True)
+    @property
+    def flattened_dataset_path(self) -> Path:
+        return self.project_path / "flattened_datasets"
 
 
 def create_feature_set_path(
@@ -96,7 +89,7 @@ def get_project_info(
 
     return ProjectInfo(
         project_path=proj_path,
-        feature_set_path=feature_set_path,
+        flattened_dataset_path=feature_set_path,
         feature_set_prefix=feature_set_id,
         project_name=project_name,
     )
@@ -113,7 +106,7 @@ def init_wandb(
     """
 
     feature_settings = {
-        "feature_set_path": project_info.feature_set_path,
+        "feature_set_path": project_info.flattened_dataset_path,
     }
 
     # on Overtaci, the wandb tmp directory is not automatically created,

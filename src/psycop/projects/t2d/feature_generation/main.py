@@ -57,7 +57,7 @@ def _generate_feature_set(project_info: ProjectInfo) -> Path:
         feature_specs=feature_specs,  # type: ignore
     )
 
-    return project_info.feature_set_path
+    return project_info.flattened_dataset_path
 
 
 def generate_feature_set() -> Path:

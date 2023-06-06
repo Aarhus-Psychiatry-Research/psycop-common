@@ -26,7 +26,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
     """Get the directory to save evaluation results to."""
     # If online
     ovartaci_path = (
-        OVARTACI_SHARED_DIR
+        cfg.project.project_path
         / cfg.project.name
         / "model_eval"
         / wandb.run.group  # type: ignore

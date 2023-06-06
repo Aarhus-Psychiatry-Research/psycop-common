@@ -35,9 +35,11 @@ def create_eval_dataset(
         y=df[outcome_col_name],
         y_hat_probs=df["y_hat_prob"],
         pred_timestamps=df[col_names.pred_timestamp],
-        outcome_timestamps=df[col_names.outcome_timestamp],
-        age=df[col_names.age],
-        is_female=df[col_names.is_female],
+        outcome_timestamps=df[col_names.outcome_timestamp]
+        if col_names.outcome_timestamp
+        else None,
+        age=df[col_names.age] if col_names.age else None,
+        is_female=df[col_names.is_female] if col_names.is_female else None,
         exclusion_timestamps=df[col_names.exclusion_timestamp]
         if col_names.exclusion_timestamp
         else None,

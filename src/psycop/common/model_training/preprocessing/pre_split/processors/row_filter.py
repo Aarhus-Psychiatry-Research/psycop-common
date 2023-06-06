@@ -182,6 +182,11 @@ class PreSplitRowFilter:
         if self.pre_split_cfg.min_age:
             dataset = self._keep_only_if_older_than_min_age(dataset)
 
-        dataset = self._drop_rows_after_event_time(dataset=dataset)
+        if self.pre_split_cfg.drop_rows_after_outcome:
+            if not self.data_cfg.col_name.outcome_timestamp:
+                raise ValueError(
+                    "Can't drop rows after outcome if outcome timestamp is not specified in config.",
+                )
+            dataset = self._drop_rows_after_event_time(dataset=dataset)
 
         return dataset

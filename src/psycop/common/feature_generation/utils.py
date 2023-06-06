@@ -124,6 +124,9 @@ def write_df_to_file(
 
     file_suffix = file_path.suffix
 
+    if not file_path.parent.exists():
+        file_path.parent.mkdir(parents=True)
+
     if file_suffix == ".csv":
         df.to_csv(file_path, index=False)
     elif file_suffix == ".parquet":

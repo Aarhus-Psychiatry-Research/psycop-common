@@ -18,11 +18,14 @@ class FeatureSelectionSchema(BaseModel):
 class PreSplitPreprocessingConfigSchema(BaseModel):
     """Pre split preprocessing config."""
 
-    drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]]
+    drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]] = None
     # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
 
     drop_visits_after_exclusion_timestamp: bool = True
     # Whether to drop visits for a given patietn after their exclusion timestamp. If False, no visits are dropped.
+
+    drop_rows_after_outcome: bool = False
+    # Whether to drop rows after the outcome has occurred. If False, no rows are dropped.
 
     convert_to_boolean: bool = False
     # Convert all prediction values (except gender) to boolean. Defaults to False. Useful as a sensitivity test, i.e. "is model performance based on whether blood samples are taken, or their values". If based purely on whether blood samples are taken, might indicate that it's just predicting whatever the doctor suspected.
