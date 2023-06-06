@@ -55,9 +55,9 @@ class MarkdownFigure(MarkdownArtifact):
 class MarkdownTable(MarkdownArtifact):
     def __init__(
         self,
+        title: str,
         file_path: Path,
         description: str,
-        title: str,
         title_prefix: str = "Table",
         check_filepath_exists: bool = True,
     ):
@@ -71,7 +71,7 @@ class MarkdownTable(MarkdownArtifact):
 
     def _get_table_as_pd(self) -> pd.DataFrame:
         if self.file_path.suffix == ".csv":
-            return pd.read_csv(self.file_path)
+            return pd.read_csv(self.file_path).drop("Unnamed: 0", axis=1)
 
         if self.file_path.suffix == ".xlsx":
             return pd.read_excel(
