@@ -3,12 +3,12 @@ name: Post coverage comment
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["tests"]
     types:
       - completed
 
 jobs:
-  test:
+  test_post_coverage_comment:
     name: Run tests & display coverage
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
