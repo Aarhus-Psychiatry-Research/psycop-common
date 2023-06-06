@@ -195,3 +195,4 @@ wandb
 
 # Ignore the ouptuts for publishing folder
 **/outputs_for_publishing
+pytest.xml
