@@ -11,6 +11,7 @@ def get_prop_of_events_captured_from_eval_dataset(
             "y": eval_dataset.y,
             "pred": eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
             "id": eval_dataset.ids,
+            "age": eval_dataset.age,
         },
     )
 
