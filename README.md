@@ -43,6 +43,7 @@
 | src/psycop/common/global\_utils/cache.py                                                                            |        8 |        1 |     88% |         8 |
 | src/psycop/common/global\_utils/paths.py                                                                            |        4 |        0 |    100% |           |
 | src/psycop/common/global\_utils/pickle.py                                                                           |       11 |        6 |     45% |7-10, 14-17 |
+| src/psycop/common/minimal\_pipeline.py                                                                              |       12 |        0 |    100% |           |
 | src/psycop/common/model\_evaluation/\_\_init\_\_.py                                                                 |        0 |        0 |    100% |           |
 | src/psycop/common/model\_evaluation/binary/bootstrap\_estimates.py                                                  |       18 |        3 |     83% |     35-37 |
 | src/psycop/common/model\_evaluation/binary/global\_performance/roc\_auc.py                                          |       33 |        0 |    100% |           |
@@ -117,7 +118,7 @@
 | src/psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |34-52, 87-112 |
 | src/psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | src/psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |20-21, 29, 51, 55-63, 67-73, 76-78, 95-96, 99-103, 106, 109, 116, 129-133, 136-138, 142, 154-161, 174-181, 196-206, 217 |
-|                                                                                                           **TOTAL** | **3492** |  **980** | **72%** |           |
+|                                                                                                           **TOTAL** | **3504** |  **980** | **72%** |           |
 
 
 ## Setup coverage badge
