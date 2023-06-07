@@ -2,7 +2,6 @@
 
 import logging
 from pathlib import Path
-from typing import List
 
 import pandas as pd
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
@@ -24,13 +23,6 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.t2d.feature_generation.specify_features import FeatureSpecifier
-from psycop.projects.t2d.t2d_config import (
-    get_t2d_eligible_prediction_times_as_pandas,
-    get_t2d_feature_specifications,
-    get_t2d_project_info,
-)
 from timeseriesflattener.feature_spec_objects import _AnySpec
 
 log = logging.getLogger()
@@ -40,7 +32,7 @@ log = logging.getLogger()
 def _generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
-    feature_specs: List[_AnySpec],
+    feature_specs: list[_AnySpec],
 ) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
@@ -67,7 +59,7 @@ def _generate_feature_set(
 def generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
-    feature_specs: List[_AnySpec],
+    feature_specs: list[_AnySpec],
 ) -> Path:
     # Run elements that are required before wandb init first,
     # then run the rest in main so you can wrap it all in

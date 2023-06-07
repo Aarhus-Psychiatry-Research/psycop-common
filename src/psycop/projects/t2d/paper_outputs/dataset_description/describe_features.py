@@ -10,7 +10,7 @@ log = logging.getLogger()
 from psycop.projects.t2d.feature_generation.specify_features import FeatureSpecifier
 
 feature_specs = FeatureSpecifier(
-    project_info=get_t2d_project_info,
+    project_info=get_t2d_project_info(),
     min_set_for_debug=False,  # Remember to set to False when generating full dataset
 ).get_feature_specs()
 
