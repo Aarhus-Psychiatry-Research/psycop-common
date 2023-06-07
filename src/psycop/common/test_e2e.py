@@ -1,4 +1,5 @@
 from pathlib import Path
+from re import split
 
 import pandas as pd
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
@@ -9,6 +10,7 @@ from psycop.common.feature_generation.application_modules.project_setup import (
     Prefixes,
     ProjectInfo,
 )
+from psycop.common.minimal_pipeline import minimal_pipeline
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
@@ -105,65 +107,66 @@ def test_e2e(tmp_path: Path):
         ),
     ]
 
+    prediction_times_df = pd.concat(prediction_times_dfs)
+
     train_ids_df = prediction_times_df[["entity_id"]].drop_duplicates()
 
-    flatten_dataset_to_disk(
-        project_info=project_info,
-        feature_specs=feature_specs,
-        add_birthdays=False,
-        prediction_times_df=pd.concat(prediction_times_dfs),
-        split2ids_df={"train": train_ids_df},
-        split_names=("train",),
+    model_training_cfg = FullConfigSchema(
+        project=ProjectSchema(
+            wandb=WandbSchema(
+                group="test_group",
+                mode="offline",
+                entity="test_entity",
+            ),
+            project_path=project_info.project_path,
+            name=project_info.project_name,
+            seed=42,
+            gpu=False,
+        ),
+        data=DataSchema(
+            dir=project_info.flattened_dataset_dir,
+            splits_for_training=["train"],
+            col_name=ColumnNamesSchema(
+                age=None,
+                is_female=None,
+                id="entity_id",
+                outcome_timestamp=None,
+            ),
+            pred_prefix=project_info.prefix.predictor,
+            outc_prefix=project_info.prefix.outcome,
+            n_training_samples=None,
+        ),
+        preprocessing=PreprocessingConfigSchema(
+            pre_split=PreSplitPreprocessingConfigSchema(
+                min_lookahead_days=0,
+                min_age=0,
+                min_prediction_time_date="2020-01-01",
+                lookbehind_combination=[3],
+                drop_visits_after_exclusion_timestamp=False,
+                drop_rows_after_outcome=False,
+            ),
+            post_split=PostSplitPreprocessingConfigSchema(
+                imputation_method=None,
+                scaling=None,
+                feature_selection=FeatureSelectionSchema(),
+            ),
+        ),
+        model=ModelConfSchema(
+            name="xgboost",
+            require_imputation=False,
+            args={},
+        ),
+        n_crossval_splits=2,
     )
 
-    auroc = train_model(
-        cfg=FullConfigSchema(
-            project=ProjectSchema(
-                wandb=WandbSchema(
-                    group="test_group",
-                    mode="offline",
-                    entity="test_entity",
-                ),
-                project_path=project_info.project_path,
-                name=project_info.project_name,
-                seed=42,
-                gpu=False,
-            ),
-            data=DataSchema(
-                dir=project_info.flattened_dataset_dir,
-                splits_for_training=["train"],
-                col_name=ColumnNamesSchema(
-                    age=None,
-                    is_female=None,
-                    id="entity_id",
-                    outcome_timestamp=None,
-                ),
-                pred_prefix=project_info.prefix.predictor,
-                outc_prefix=project_info.prefix.outcome,
-                n_training_samples=None,
-            ),
-            preprocessing=PreprocessingConfigSchema(
-                pre_split=PreSplitPreprocessingConfigSchema(
-                    min_lookahead_days=0,
-                    min_age=0,
-                    min_prediction_time_date="2020-01-01",
-                    lookbehind_combination=[3],
-                    drop_visits_after_exclusion_timestamp=False,
-                    drop_rows_after_outcome=False,
-                ),
-                post_split=PostSplitPreprocessingConfigSchema(
-                    imputation_method=None,
-                    scaling=None,
-                    feature_selection=FeatureSelectionSchema(),
-                ),
-            ),
-            model=ModelConfSchema(
-                name="xgboost",
-                require_imputation=False,
-                args={},
-            ),
-            n_crossval_splits=2,
-        ),
+    auroc = minimal_pipeline(
+        project_info=project_info,
+        feature_specs=feature_specs,
+        prediction_times_df=prediction_times_df,
+        add_birthdays=False,
+        model_training_cfg=model_training_cfg,
+        split2ids_df={"train": train_ids_df},
+        split_names=["train"],
     )
 
     assert auroc == 1.0
