@@ -110,6 +110,7 @@ def test_e2e(tmp_path: Path):
     flatten_dataset_to_disk(
         project_info=project_info,
         feature_specs=feature_specs,
+        add_birthdays=False,
         prediction_times_df=pd.concat(prediction_times_dfs),
         split2ids_df={"train": train_ids_df},
         split_names=("train",),
@@ -129,7 +130,7 @@ def test_e2e(tmp_path: Path):
                 gpu=False,
             ),
             data=DataSchema(
-                dir=project_info.flattened_dataset_path,
+                dir=project_info.flattened_dataset_dir,
                 splits_for_training=["train"],
                 col_name=ColumnNamesSchema(
                     age=None,

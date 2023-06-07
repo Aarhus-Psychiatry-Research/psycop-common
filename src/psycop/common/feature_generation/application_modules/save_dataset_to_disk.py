@@ -25,9 +25,8 @@ def save_split_to_disk(
     """Save split to disk."""
     # Version table with current date and time
     filename = f"{split_name}.parquet"
-    log.info(f"Saving {filename} to disk")
-
-    file_path = project_info.flattened_dataset_path / filename
+    file_path = project_info.flattened_dataset_dir / filename
+    log.info(f"Saving {file_path} to disk")
 
     write_df_to_file(df=split_df, file_path=file_path)
 

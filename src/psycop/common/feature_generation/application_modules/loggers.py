@@ -35,7 +35,7 @@ def init_root_logger(
     # Create a timestamped file handler which writes all logging messages from
     # the root logger to a file
     now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    log_dir_path = project_info.flattened_dataset_path / "logs"
+    log_dir_path = project_info.project_path / "logs"
     log_dir_path.mkdir(exist_ok=True, parents=True)
 
     file_handler = logging.FileHandler(filename=log_dir_path / f"{now}.log")

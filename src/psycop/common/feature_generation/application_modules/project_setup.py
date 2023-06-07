@@ -2,11 +2,10 @@
 import logging
 import sys
 import tempfile
-import time
 from pathlib import Path
 
 import wandb
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, PSYCOP_PKG_ROOT
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
 )
@@ -38,60 +37,8 @@ class ProjectInfo(BaseModel):
     col_names: ColNames = ColNames()
 
     @property
-    def flattened_dataset_path(self) -> Path:
+    def flattened_dataset_dir(self) -> Path:
         return self.project_path / "flattened_datasets"
-
-
-def create_feature_set_path(
-    proj_path: Path,
-    feature_set_id: str,
-) -> Path:
-    """Create save directory.
-
-    Args:
-        proj_path (Path): Path to project.
-        feature_set_id (str): Feature set id.
-
-    Returns:
-        Path: Path to sub directory.
-    """
-
-    # Split and save to disk
-    # Create directory to store all files related to this run
-    save_dir = proj_path / "feature_sets" / feature_set_id
-
-    save_dir.mkdir(exist_ok=True, parents=True)
-
-    return save_dir
-
-
-def get_project_info(
-    project_name: str,
-) -> ProjectInfo:
-    """Setup for main.
-
-    Args:
-        project_name (str): Name of project.
-    Returns:
-        tuple[Path, str]: Tuple of project path, and feature_set_id
-    """
-    log.info("Setting up project")
-    proj_path = OVARTACI_SHARED_DIR / project_name
-
-    current_user = Path().home().name
-    feature_set_id = f"psycop_{project_name}_{current_user}_features_{time.strftime('%Y_%m_%d_%H_%M')}"
-
-    feature_set_path = create_feature_set_path(
-        feature_set_id=feature_set_id,
-        proj_path=proj_path,
-    )
-
-    return ProjectInfo(
-        project_path=proj_path,
-        flattened_dataset_path=feature_set_path,
-        feature_set_prefix=feature_set_id,
-        project_name=project_name,
-    )
 
 
 def init_wandb(
@@ -105,7 +52,7 @@ def init_wandb(
     """
 
     feature_settings = {
-        "feature_set_path": project_info.flattened_dataset_path,
+        "feature_set_path": project_info.flattened_dataset_dir,
     }
 
     # on Overtaci, the wandb tmp directory is not automatically created,

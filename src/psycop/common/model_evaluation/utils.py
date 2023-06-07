@@ -19,13 +19,6 @@ from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline
 
-OVARTACI_SHARED_DIR = Path(r"E:\shared_resources")
-FEATURE_SETS_PATH = OVARTACI_SHARED_DIR / "feature_sets"
-OUTCOME_DATA_PATH = OVARTACI_SHARED_DIR / "outcome_data"
-RAW_DATA_VALIDATION_PATH = OVARTACI_SHARED_DIR / "raw_data_validation"
-FEATURIZERS_PATH = OVARTACI_SHARED_DIR / "featurizers"
-MODEL_PREDICTIONS_PATH = OVARTACI_SHARED_DIR / "model_predictions"
-
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
 

@@ -2,21 +2,15 @@
 # %%
 import logging
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    get_project_info,
-)
+from psycop.projects.t2d.config import T2D_PROJECT_INFO
 
 log = logging.getLogger()
 
 # %%
-project_info = get_project_info(
-    project_name="t2d",
-)
-
 from psycop.projects.t2d.feature_generation.specify_features import FeatureSpecifier
 
 feature_specs = FeatureSpecifier(
-    project_info=project_info,
+    project_info=T2D_PROJECT_INFO,
     min_set_for_debug=False,  # Remember to set to False when generating full dataset
 ).get_feature_specs()
 

@@ -14,7 +14,6 @@ from psycop.common.feature_generation.application_modules.loggers import (
 )
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
-    get_project_info,
     init_wandb,
 )
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
@@ -23,6 +22,7 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
     get_eligible_prediction_times_as_pandas,
 )
@@ -57,7 +57,7 @@ def _generate_feature_set(project_info: ProjectInfo) -> Path:
         feature_specs=feature_specs,  # type: ignore
     )
 
-    return project_info.flattened_dataset_path
+    return project_info.flattened_dataset_dir
 
 
 def generate_feature_set() -> Path:
@@ -65,8 +65,11 @@ def generate_feature_set() -> Path:
     # then run the rest in main so you can wrap it all in
     # wandb_alert_on_exception, which will send a slack alert
     # if you have wandb alerts set up in wandb
-    project_info = get_project_info(
-        project_name="t2d",
+    project_name = "t2d"
+
+    project_info = ProjectInfo(
+        project_name=project_name,
+        project_path=OVARTACI_SHARED_DIR / project_name,
     )
 
     init_root_logger(project_info=project_info)
