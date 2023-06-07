@@ -40,6 +40,7 @@ def load_and_filter_split_from_cfg(
         pd.DataFrame: Train dataset
     """
     dataset = DataLoader(data_cfg=data_cfg).load_dataset_from_dir(split_names=split)
+
     filtered_data = pre_split_process_full_dataset(
         dataset=dataset,
         pre_split_cfg=pre_split_cfg,

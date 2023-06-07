@@ -19,5 +19,7 @@ class FullConfigSchema(BaseModel):
     data: DataSchema
     preprocessing: PreprocessingConfigSchema
     model: ModelConfSchema
-    train: TrainConfSchema
-    debug: Optional[DebugConfSchema]
+    train: Optional[TrainConfSchema] = None
+
+    n_crossval_splits: int = 5  # Number of splits to use for crossvalidation
+    debug: Optional[DebugConfSchema] = None

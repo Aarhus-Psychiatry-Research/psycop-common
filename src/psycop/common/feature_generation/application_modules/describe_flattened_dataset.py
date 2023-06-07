@@ -37,24 +37,26 @@ def save_flattened_dataset_description_to_disk(
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
     feature_set_descriptive_stats_path = (
-        project_info.feature_set_path / "feature_set_descriptive_stats"
+        project_info.flattened_dataset_dir / "feature_set_descriptive_stats"
     )
-    data_integrity_checks_path = project_info.feature_set_path / "data_integrity_checks"
+    data_integrity_checks_path = (
+        project_info.flattened_dataset_dir / "data_integrity_checks"
+    )
 
     log.info(
         f"Saving flattened dataset descriptions to disk. Check {feature_set_descriptive_stats_path} and {data_integrity_checks_path} to view data set descriptions and validate that your dataset is not broken in some way.",
     )
 
     save_feature_descriptive_stats_from_dir(
-        feature_set_dir=project_info.feature_set_path,
+        feature_set_dir=project_info.flattened_dataset_dir,
         feature_specs=feature_specs,
         file_suffix=".parquet",
     )
 
     save_feature_set_integrity_checks_from_dir(
-        feature_set_dir=project_info.feature_set_path,
+        feature_set_dir=project_info.flattened_dataset_dir,
         splits=splits,
         out_dir=data_integrity_checks_path,
-        dataset_format=project_info.dataset_format,
+        dataset_format="parquet",
         compare_splits=compare_splits,
     )

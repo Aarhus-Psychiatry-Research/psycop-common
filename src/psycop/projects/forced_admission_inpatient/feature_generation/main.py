@@ -14,7 +14,7 @@ from psycop.common.feature_generation.application_modules.loggers import (
     init_root_logger,
 )
 from psycop.common.feature_generation.application_modules.project_setup import (
-    get_project_info,
+    ProjectInfo,
     init_wandb,
 )
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
@@ -26,6 +26,7 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.loaders.load_forced_admissions_dfs_with_prediction_times_and_outcome import (
     forced_admissions_inpatient,
 )
@@ -80,8 +81,9 @@ if __name__ == "__main__":
     # then run the rest in main so you can wrap it all in
     # wandb_alert_on_exception, which will send a slack alert
     # if you have wandb alerts set up in wandb
-    project_info = get_project_info(
+    project_info = ProjectInfo(
         project_name="forced_admissions_inpatient",
+        project_path=OVARTACI_SHARED_DIR / "forced_admissions_inpatient",
     )
 
     init_root_logger(project_info=project_info)

@@ -24,6 +24,9 @@ def start_trainer(
     """Start a trainer."""
     msg = Printer(timestamp=True)
 
+    if cfg.train is None:
+        raise ValueError("cfg.train is None, but is required for training in parallel.")
+
     if train_single_model_file_path is None:
         train_single_model_file_path = Path(
             "application/train_model_from_application_module.py",
@@ -69,6 +72,9 @@ def spawn_trainers(
     """Train a model for each cell in the grid of possible look distances."""
     active_trainers: list[subprocess.Popen] = []
     trainer_combinations_queue = trainer_specs.copy()
+
+    if cfg.train is None:
+        raise ValueError("cfg.train is None, but is required for training in parallel.")
 
     while trainer_combinations_queue or active_trainers:
         # Wait until there is a free slot in the trainers group

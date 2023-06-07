@@ -51,7 +51,7 @@ def stratified_cross_validation(
     msg.info("Creating folds")
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
 
-    folds = StratifiedGroupKFold(n_splits=5).split(
+    folds = StratifiedGroupKFold(n_splits=cfg.n_crossval_splits).split(
         X=X,
         y=y,
         groups=train_df[cfg.data.col_name.id],

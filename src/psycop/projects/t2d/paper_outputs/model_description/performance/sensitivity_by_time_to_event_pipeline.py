@@ -58,6 +58,11 @@ def t2d_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
 def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     dfs = []
 
+    if eval_dataset.outcome_timestamps is None:
+        raise ValueError(
+            "The outcome timestamps must be provided in order to calculate the sensitivity by time to event.",
+        )
+
     for ppr in [0.01, 0.03, 0.05]:
         df = get_sensitivity_by_timedelta_df(
             y=eval_dataset.y,

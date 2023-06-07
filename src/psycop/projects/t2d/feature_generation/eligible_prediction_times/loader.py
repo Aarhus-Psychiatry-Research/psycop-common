@@ -1,4 +1,3 @@
-import pandas as pd
 import polars as pl
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
@@ -9,6 +8,7 @@ from psycop.projects.t2d.feature_generation.eligible_prediction_times.combined_f
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.tooling import (
     stepdeltas,
 )
+from psycop.projects.t2d.t2d_config import get_t2d_eligible_prediction_times_as_pandas
 
 
 def get_eligible_prediction_times_as_polars() -> pl.DataFrame:
@@ -26,12 +26,8 @@ def get_eligible_prediction_times_as_polars() -> pl.DataFrame:
     return filtered_df
 
 
-def get_eligible_prediction_times_as_pandas() -> pd.DataFrame:
-    return get_eligible_prediction_times_as_polars().to_pandas()
-
-
 if __name__ == "__main__":
-    df = get_eligible_prediction_times_as_pandas()
+    df = get_t2d_eligible_prediction_times_as_pandas()
 
     for stepdelta in stepdeltas:
         print(
