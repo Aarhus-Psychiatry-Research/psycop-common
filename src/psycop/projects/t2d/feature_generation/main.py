@@ -2,7 +2,9 @@
 
 import logging
 from pathlib import Path
+from typing import List
 
+import pandas as pd
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -23,26 +25,28 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
-    get_eligible_prediction_times_as_pandas,
-)
 from psycop.projects.t2d.feature_generation.specify_features import FeatureSpecifier
+from psycop.projects.t2d.t2d_config import (
+    get_t2d_eligible_prediction_times_as_pandas,
+    get_t2d_feature_specifications,
+    get_t2d_project_info,
+)
+from timeseriesflattener.feature_spec_objects import _AnySpec
 
 log = logging.getLogger()
 
 
 @wandb_alert_on_exception
-def _generate_feature_set(project_info: ProjectInfo) -> Path:
+def _generate_feature_set(
+    project_info: ProjectInfo,
+    eligible_prediction_times: pd.DataFrame,
+    feature_specs: List[_AnySpec],
+) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
-    feature_specs = FeatureSpecifier(
-        project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
-    ).get_feature_specs()
-
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
-        prediction_times_df=get_eligible_prediction_times_as_pandas(),
+        prediction_times_df=eligible_prediction_times,
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
     )
@@ -60,18 +64,15 @@ def _generate_feature_set(project_info: ProjectInfo) -> Path:
     return project_info.flattened_dataset_dir
 
 
-def generate_feature_set() -> Path:
+def generate_feature_set(
+    project_info: ProjectInfo,
+    eligible_prediction_times: pd.DataFrame,
+    feature_specs: List[_AnySpec],
+) -> Path:
     # Run elements that are required before wandb init first,
     # then run the rest in main so you can wrap it all in
     # wandb_alert_on_exception, which will send a slack alert
     # if you have wandb alerts set up in wandb
-    project_name = "t2d"
-
-    project_info = ProjectInfo(
-        project_name=project_name,
-        project_path=OVARTACI_SHARED_DIR / project_name,  # type: ignore
-    )
-
     init_root_logger(project_info=project_info)
 
     log.info(  # pylint: disable=logging-fstring-interpolation
@@ -86,8 +87,8 @@ def generate_feature_set() -> Path:
         project_info=project_info,
     )
 
-    return _generate_feature_set(project_info=project_info)
-
-
-if __name__ == "__main__":
-    generate_feature_set()
+    return _generate_feature_set(
+        project_info=project_info,
+        eligible_prediction_times=eligible_prediction_times,
+        feature_specs=feature_specs,
+    )
