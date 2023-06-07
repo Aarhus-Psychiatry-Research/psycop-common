@@ -17,13 +17,6 @@ from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.training_output.dataclasses import ModelEvalData
 from sklearn.pipeline import Pipeline
 
-OVARTACI_SHARED_DIR = Path(r"E:\shared_resources")
-FEATURE_SETS_PATH = OVARTACI_SHARED_DIR / "feature_sets"
-OUTCOME_DATA_PATH = OVARTACI_SHARED_DIR / "outcome_data"
-RAW_DATA_VALIDATION_PATH = OVARTACI_SHARED_DIR / "raw_data_validation"
-FEATURIZERS_PATH = OVARTACI_SHARED_DIR / "featurizers"
-MODEL_PREDICTIONS_PATH = OVARTACI_SHARED_DIR / "model_predictions"
-
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "tests" / "plots_from_tests"
 
 

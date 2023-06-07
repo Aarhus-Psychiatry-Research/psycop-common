@@ -23,22 +23,17 @@ from psycop.common.model_training.utils.decorators import (
 
 def get_eval_dir(cfg: FullConfigSchema) -> Path:
     """Get the directory to save evaluation results to."""
-    # If online
-    ovartaci_path = (
-        cfg.project.project_path
-        / cfg.project.name
-        / "model_eval"
-        / wandb.run.group  # type: ignore
-        / wandb.run.name  # type: ignore
-    )
-
     if cfg.project.wandb.group == "integration_testing":
         eval_dir_path = PSYCOP_PKG_ROOT / "model_training" / "test_eval_results"
     else:
-        eval_dir_path = ovartaci_path
+        eval_dir_path = (
+            cfg.project.project_path
+            / "pipeline_eval"
+            / wandb.run.group  # type: ignore
+            / wandb.run.name  # type: ignore
+        )
 
     eval_dir_path.mkdir(parents=True, exist_ok=True)
-
     return eval_dir_path
 
 

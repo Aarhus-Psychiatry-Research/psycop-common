@@ -32,6 +32,7 @@ def flatten_dataset_to_disk(
     quarantine_df: pd.DataFrame | None = None,
     quarantine_days: int | None = None,
     split2ids_df: dict[str, pd.DataFrame] | None = None,
+    add_birthdays: bool = True,
     split_names: Sequence[str] = ("train", "val", "test"),
 ):
     flattened_dataset = create_flattened_dataset(
@@ -40,6 +41,7 @@ def flatten_dataset_to_disk(
         prediction_times_df=prediction_times_df,
         quarantine_df=quarantine_df,
         quarantine_days=quarantine_days,
+        add_birthdays=add_birthdays,
     )
 
     split_and_save_dataset_to_disk(
