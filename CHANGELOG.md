@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.80.0 (2023-06-07)
+### Feature
+* Misc. ([`482db66`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/482db66238e0276df827af39284ca2cf41000353))
+
+### Fix
+* Guard for newly optional configs ([`e9ff39e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e9ff39ef52c3ee3204f787478331bd4f314c147a))
+
 ## v0.79.1 (2023-06-06)
 ### Fix
 * Remove project specific md code ([`945a0fd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/945a0fd0597000de2197df502e983f75a804b948))
