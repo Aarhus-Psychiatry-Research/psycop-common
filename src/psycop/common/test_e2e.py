@@ -1,19 +1,12 @@
 from pathlib import Path
-from re import split
 
 import pandas as pd
-from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    flatten_dataset_to_disk,
-)
 from psycop.common.feature_generation.application_modules.project_setup import (
     ColNames,
     Prefixes,
     ProjectInfo,
 )
 from psycop.common.minimal_pipeline import minimal_pipeline
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
-)
 from psycop.common.model_training.config_schemas.data import (
     ColumnNamesSchema,
     DataSchema,

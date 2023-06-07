@@ -1,4 +1,5 @@
-from typing import Optional, Sequence
+from collections.abc import Sequence
+from typing import Optional
 
 import pandas as pd
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
