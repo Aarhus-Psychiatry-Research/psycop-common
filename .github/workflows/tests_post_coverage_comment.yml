@@ -9,7 +9,7 @@ on:
 
 jobs:
   test_post_coverage_comment:
-    name: Run tests & display coverage
+    name: Display coverage comment
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
     permissions:
@@ -31,11 +31,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
-          ANNOTATE_MISSING_LINES: true
-          COMMENT_TEMPLATE: |
-            {% extends "base" %}
-            {% block coverage_single_file_title %}`{{ filename }}`{% endblock coverage_single_file_title %}
-            {% block diff_coverage_single_file_wording %}{% endblock diff_coverage_single_file_wording %}
           # Update those if you changed the default values:
           # COMMENT_ARTIFACT_NAME: python-coverage-comment-action
           # COMMENT_FILENAME: python-coverage-comment-action.txt
