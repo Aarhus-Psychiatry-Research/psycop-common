@@ -30,7 +30,7 @@ class MarkdownFigure(MarkdownArtifact):
         title: str,
         title_prefix: str = "Figure",
         check_filepath_exists: bool = True,
-        relative_to: Optional[Path] = None,
+        relative_to_path: Optional[Path] = None,
     ):
         super().__init__(
             title=title,
@@ -38,13 +38,14 @@ class MarkdownFigure(MarkdownArtifact):
             description=description,
             check_filepath_exists=check_filepath_exists,
         )
+
         self.title_prefix = title_prefix
 
-        if relative_to is not None:
-            self.file_path = self.file_path.relative_to(relative_to)
+        if relative_to_path is not None:
+            self.file_path = self.file_path.relative_to(relative_to_path)
 
     def get_markdown(self) -> str:
-        return f"""{self.title}
+        return f"""{self.title_prefix} {self.title}
 
 ![]({self.file_path.as_posix()})
 
@@ -88,7 +89,7 @@ class MarkdownTable(MarkdownArtifact):
         return df.to_markdown(index=False)
 
     def get_markdown(self) -> str:
-        return f"""{self.title}
+        return f"""{self.title_prefix} {self.title}
 
 {self.get_markdown_table()}
 
@@ -99,7 +100,9 @@ class MarkdownTable(MarkdownArtifact):
 def create_supplementary_from_markdown_artifacts(
     artifacts: Sequence[MarkdownArtifact],
     first_table_index: int = 1,
+    table_title_prefix: str = "eTable",
     first_figure_index: int = 1,
+    figure_title_prefix: str = "eFigure",
 ) -> str:
     tables = tuple(a for a in artifacts if isinstance(a, MarkdownTable))
     figures = tuple(a for a in artifacts if isinstance(a, MarkdownFigure))
@@ -110,10 +113,10 @@ def create_supplementary_from_markdown_artifacts(
 
     for artifacts in figures, tables:
         if isinstance(artifacts[0], MarkdownTable):
-            title_prefix = "eTable"
+            title_prefix = table_title_prefix
             index = first_table_index
         elif isinstance(artifacts[0], MarkdownFigure):
-            title_prefix = "eFigure"
+            title_prefix = figure_title_prefix
             index = first_figure_index
         else:
             raise ValueError(f"Unknown artifact type {type(artifacts[0])}")

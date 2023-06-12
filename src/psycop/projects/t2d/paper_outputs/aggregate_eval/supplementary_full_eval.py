@@ -1,5 +1,5 @@
 import polars as pl
-from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
+from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownArtifact,
     create_supplementary_from_markdown_artifacts,
 )

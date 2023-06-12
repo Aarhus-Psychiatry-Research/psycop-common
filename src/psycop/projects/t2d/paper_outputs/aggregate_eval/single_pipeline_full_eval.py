@@ -1,4 +1,4 @@
-from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
+from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownArtifact,
     MarkdownFigure,
     MarkdownTable,
@@ -31,14 +31,14 @@ def _t2d_create_markdown_artifacts(pipeline: PipelineRun) -> list[MarkdownArtifa
             file_path=pipeline.paper_outputs.paths.figures
             / pipeline.paper_outputs.artifact_names.main_performance_figure,
             description="**A**: Receiver operating characteristics (ROC) curve. **B**: Confusion matrix. PPV: Positive predictive value. NPV: Negative predictive value. **C**: Sensitivity by months from prediction time to event, stratified by desired predicted positive rate (PPR). Note that the numbers do not match those in Table 1, since all prediction times with insufficient lookahead distance have been dropped. **D**: Distribution of years from the first positive prediction to the patient fulfilling T2D-criteria at a 3% predicted positive rate (PPR).",
-            relative_to=relative_to,
+            relative_to_path=relative_to,
         ),
         MarkdownFigure(
             title=f"Robustness of {pipeline.model_type} at a {pos_rate_percent} predicted positive rate with {lookahead_years} years of lookahead",
             file_path=pipeline.paper_outputs.paths.figures
             / pipeline.paper_outputs.artifact_names.main_robustness_figure,
             description="Robustness of the model across a variety of stratifications. Blue line is the area under the receiver operating characteristics curve. Grey bars represent the proportion of visits that are present in each group. Error bars are 95%-confidence intervals from 100-fold bootstrap.",
-            relative_to=relative_to,
+            relative_to_path=relative_to,
         ),
         MarkdownTable(
             title=f"Performance of {pipeline.model_type} with {int(pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)} years of lookahead by predicted positive rate (PPR). Numbers are physical contacts.",
