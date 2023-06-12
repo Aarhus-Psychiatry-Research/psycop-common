@@ -1,0 +1,26 @@
+diff a/pyproject.toml b/pyproject.toml	(rejected hunks)
+@@ -27,13 +27,13 @@ name = "MIT"
+ [project.optional-dependencies]
+ dev = [
+   "cruft>=2.0.0",
+-  "pyright>=1.1.165",
++  "pyright==1.1.305",
+   "pyright-polite>=0.0.1",
+   "pre-commit>=2.20.0",
+   "ruff>=0.0.254",
+   "black[jupyter]>=22.8.0",
+   "pandas-stubs>=0.0.0", # type stubs for pandas
+-  "invoke>=2.0.0",
++  "invoke==2.1.1",
+ ]
+ tests = [
+   "pytest>=7.1.3",
+@@ -175,7 +175,7 @@ commands =
+ 
+ [testenv:type]
+ description: run type checks
+-extras = test, dev
++extras = tests, dev
+ basepython = py39 # Setting these explicitly avoid recreating env if your shell is set to a different version
+ use_develop = true
+ commands =
