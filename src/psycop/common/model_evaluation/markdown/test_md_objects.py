@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownFigure,
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
 )
+from psycop.common.test_utils.str_to_df import str_to_df
 
 
 class TestMarkdownFigure:
