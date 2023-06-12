@@ -83,6 +83,9 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
 
     def test_can_output_markdown(self, tmp_path: Path):
         self.table_csv.to_csv(tmp_path / "table.csv", index=False)
+        filepath = tmp_path / "test.md"
+        with filepath.open("w") as f:
+            f.write("Testing 123")
 
         artifacts = [
             MarkdownTable(
@@ -93,9 +96,9 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
             ),
             MarkdownFigure(
                 title="Figure_title",
-                file_path=Path("path/to/file"),
+                file_path=filepath,
                 description="Figure description",
-                check_filepath_exists=False,
+                relative_to_path=tmp_path,
             ),
             MarkdownTable(
                 title="Table_title",
