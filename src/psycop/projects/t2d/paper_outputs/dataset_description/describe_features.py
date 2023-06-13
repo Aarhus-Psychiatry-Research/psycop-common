@@ -93,7 +93,7 @@ predictor_description_path = (
 prettified.to_csv(predictor_description_path)
 
 # %%
-from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import MarkdownTable
+from psycop.common.model_evaluation.markdown.md_objects import MarkdownTable
 
 md = MarkdownTable(
     title="## **eTable 2**: Descriptive statistics for predictors (a list of abbreviations is inserted below the table)",

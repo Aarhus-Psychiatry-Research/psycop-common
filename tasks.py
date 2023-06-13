@@ -190,14 +190,12 @@ def branch_exists_on_remote(c: Context) -> bool:
     return branch_name in branch_exists_result.stdout
 
 
-def update_branch(c: Context):
+def push_to_branch(c: Context):
     echo_header(f"{msg_type.SYNC} Syncing branch with remote")
 
     if not branch_exists_on_remote(c):
         c.run("git push --set-upstream origin HEAD")
     else:
-        print("Pulling")
-        c.run("git pull")
         print("Pushing")
         c.run("git push")
 
@@ -416,7 +414,7 @@ def create_pr_from_staged_changes(c: Context):
     c.run("git checkout main")
     c.run(f"git checkout -b {branch_title}")
     c.run(f"git commit -m '{pr_title}'")
-    update_branch(c)
+    push_to_branch(c)
     update_pr(c)
 
     checkout_previous_branch = input("Checkout previous branch? [y/n]: ")
@@ -492,7 +490,7 @@ def pr(c: Context, auto_fix: bool = True):
     add_and_commit(c)
     lint(c, auto_fix=auto_fix)
     test(c)
-    update_branch(c)
+    push_to_branch(c)
     update_pr(c)
 
 

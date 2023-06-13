@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.projects.t2d.paper_outputs.aggregate_eval.md_objects import (
+from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownFigure,
     MarkdownTable,
     create_supplementary_from_markdown_artifacts,
 )
+from psycop.common.test_utils.str_to_df import str_to_df
 
 
 class TestMarkdownFigure:
@@ -83,6 +83,9 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
 
     def test_can_output_markdown(self, tmp_path: Path):
         self.table_csv.to_csv(tmp_path / "table.csv", index=False)
+        filepath = tmp_path / "test.md"
+        with filepath.open("w") as f:
+            f.write("Testing 123")
 
         artifacts = [
             MarkdownTable(
@@ -93,9 +96,9 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
             ),
             MarkdownFigure(
                 title="Figure_title",
-                file_path=Path("path/to/file"),
+                file_path=filepath,
                 description="Figure description",
-                check_filepath_exists=False,
+                relative_to_path=tmp_path,
             ),
             MarkdownTable(
                 title="Table_title",
@@ -114,8 +117,13 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
         md = create_supplementary_from_markdown_artifacts(
             artifacts=artifacts,
             first_table_index=3,
+            table_title_prefix="eTable",
             first_figure_index=1,
+            figure_title_prefix="eFigure",
         )
+
+        assert "eTable 3" in md
+        assert "eFigure 1" in md
 
         with (tmp_path / "test.md").open("w") as f:
             f.write(md)
