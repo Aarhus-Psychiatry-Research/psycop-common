@@ -117,8 +117,13 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
         md = create_supplementary_from_markdown_artifacts(
             artifacts=artifacts,
             first_table_index=3,
+            table_title_prefix="eTable",
             first_figure_index=1,
+            figure_title_prefix="eFigure",
         )
+
+        assert "eTable 3" in md
+        assert "eFigure 1" in md
 
         with (tmp_path / "test.md").open("w") as f:
             f.write(md)
