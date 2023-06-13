@@ -1,4 +1,6 @@
+import abc
 import copy
+from abc import ABC
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional
@@ -6,7 +8,7 @@ from typing import Optional
 import pandas as pd
 
 
-class MarkdownArtifact:
+class MarkdownArtifact(ABC):
     def __init__(
         self,
         title: str,
@@ -20,6 +22,10 @@ class MarkdownArtifact:
 
         if check_filepath_exists and not self.file_path.exists():
             raise FileNotFoundError(f"{self.file_path} does not exist")
+
+    @abc.abstractmethod
+    def get_markdown(self) -> str:
+        raise NotImplementedError
 
 
 class MarkdownFigure(MarkdownArtifact):
@@ -104,36 +110,36 @@ def create_supplementary_from_markdown_artifacts(
     first_figure_index: int = 1,
     figure_title_prefix: str = "eFigure",
 ) -> str:
-    tables = tuple(a for a in artifacts if isinstance(a, MarkdownTable))
-    figures = tuple(a for a in artifacts if isinstance(a, MarkdownFigure))
-
     markdown = """# Supplementary material
 
 """
 
-    for artifacts in figures, tables:
-        if isinstance(artifacts[0], MarkdownTable):
-            title_prefix = table_title_prefix
-            index = first_table_index
-        elif isinstance(artifacts[0], MarkdownFigure):
-            title_prefix = figure_title_prefix
-            index = first_figure_index
-        else:
-            raise ValueError(f"Unknown artifact type {type(artifacts[0])}")
+    figure_index = first_figure_index
+    table_index = first_table_index
 
-        for artifact in artifacts:
-            # Create a copy to avoid modifying the pointed-to object, e.g.
-            # to avoid adding two titles if the function is called twice on
-            # the same object
-            artifact_copy = copy.copy(artifact)
+    for artifact in artifacts:
+        # Create a copy to avoid modifying the pointed-to object, e.g.
+        # to avoid adding two titles if the function is called twice on
+        # the same object
+        artifact_copy = copy.copy(artifact)
+        artifact_type = type(artifact_copy)
 
+        if artifact_type == MarkdownTable:
             artifact_copy.title = (
-                f"## **{title_prefix} {index}**: {artifact_copy.title}"
+                f"## **{table_title_prefix} {table_index}**: {artifact_copy.title}"
             )
-            markdown += f"""{artifact_copy.get_markdown()}
+            table_index += 1
+        elif artifact_type == MarkdownFigure:
+            artifact_copy.title = (
+                f"## **{figure_title_prefix} {figure_index}**: {artifact_copy.title}"
+            )
+            figure_index += 1
+        else:
+            raise ValueError(
+                f"Artifact type {artifact_type} not supported. "
+                f"Only MarkdownTable and MarkdownFigure are supported.",
+            )
 
-
-"""
-            index += 1
+        markdown += artifact_copy.get_markdown()
 
     return markdown
