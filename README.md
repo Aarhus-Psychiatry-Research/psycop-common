@@ -54,6 +54,7 @@
 | src/psycop/common/model\_evaluation/binary/time/timedelta\_data.py                                                  |       37 |        6 |     84% |38, 105, 148-170 |
 | src/psycop/common/model\_evaluation/binary/utils.py                                                                 |       35 |        6 |     83% |20, 65, 109-115 |
 | src/psycop/common/model\_evaluation/confusion\_matrix/confusion\_matrix.py                                          |       27 |        0 |    100% |           |
+| src/psycop/common/model\_evaluation/markdown/md\_objects.py                                                         |       56 |        5 |     91% |28, 83-88, 138 |
 | src/psycop/common/model\_evaluation/patchwork/patchwork\_grid.py                                                    |       35 |        0 |    100% |           |
 | src/psycop/common/model\_evaluation/utils.py                                                                        |      101 |       46 |     54% |54, 83-94, 114, 130-133, 161, 178, 187, 232-238, 250-251, 265-272, 284, 302-305, 312-317, 325-336, 341, 349-356 |
 | src/psycop/common/model\_training/\_\_init\_\_.py                                                                   |        0 |        0 |    100% |           |
@@ -103,7 +104,6 @@
 | src/psycop/common/test\_utils/test\_data/model\_eval/generate\_synthetic\_dataset\_for\_eval.py                     |       55 |       39 |     29% |37, 42, 61-65, 84-88, 92-170 |
 | src/psycop/conftest.py                                                                                              |       47 |        3 |     94% |32, 36, 103 |
 | src/psycop/projects/forced\_admission\_inpatient/utils/feature\_name\_to\_readable.py                               |       26 |        5 |     81% | 15, 39-42 |
-| src/psycop/projects/t2d/paper\_outputs/aggregate\_eval/md\_objects.py                                               |       53 |        5 |     91% |44, 76-81, 119 |
 | src/psycop/projects/t2d/paper\_outputs/config.py                                                                    |       18 |        0 |    100% |           |
 | src/psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/conftest.py                      |        7 |        0 |    100% |           |
 | src/psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/get\_shap\_values.py             |       59 |       33 |     44% |17-28, 33-45, 61, 69-83, 92-124, 152-160 |
@@ -118,7 +118,7 @@
 | src/psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |34-52, 87-112 |
 | src/psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | src/psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |20-21, 29, 51, 55-63, 67-73, 76-78, 95-96, 99-103, 106, 109, 116, 129-133, 136-138, 142, 154-161, 174-181, 196-206, 217 |
-|                                                                                                           **TOTAL** | **3504** |  **980** | **72%** |           |
+|                                                                                                           **TOTAL** | **3507** |  **980** | **72%** |           |
 
 
 ## Setup coverage badge
