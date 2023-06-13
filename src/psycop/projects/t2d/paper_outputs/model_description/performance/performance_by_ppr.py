@@ -35,7 +35,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 
     renamed_df = output_df.rename(
         {
-            "positive_rate": "Positive rate",
+            "positive_rate": "Predicted positive rate",
             "true_prevalence": "True prevalence",
             "sensitivity": "Sens",
             "specificity": "Spec",

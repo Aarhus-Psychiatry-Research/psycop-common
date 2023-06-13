@@ -68,7 +68,7 @@ def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataF
     ).select(
         pl.col("model_name"),
         pl.lit(
-            f"Median years from first positive to event at {BEST_POS_RATE} positive rate",
+            f"Median years from first positive to event at {BEST_POS_RATE} predicted positive rate",
         ).alias("measure"),
         (pl.all().exclude("model_name") / 365.25).round(1),
     )
