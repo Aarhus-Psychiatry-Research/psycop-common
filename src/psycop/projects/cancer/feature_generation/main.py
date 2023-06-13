@@ -37,7 +37,7 @@ import wandb
 log = logging.getLogger()
 
 
-@wandb_alert_on_exception
+# @wandb_alert_on_exception
 def _generate_feature_set(project_info: ProjectInfo) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
@@ -93,9 +93,9 @@ def generate_feature_set() -> Path:
     #             parents=True,
     #         )
 
-    init_wandb(
-        project_info=project_info,
-    )
+    # init_wandb(
+    #     project_info=project_info,
+    # )
 
     return _generate_feature_set(project_info=project_info)
 
