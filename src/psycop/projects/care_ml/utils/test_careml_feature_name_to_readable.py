@@ -9,7 +9,7 @@ from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_r
         ("pred_age", "Age"),
     ],
 )
-def test_feature_name_to_readable(feature_name: str, expected_output: str):
+def test_careml_feature_name_to_readable(feature_name: str, expected_output: str):
     pass
     extracted_feature_name = feature_name_to_readable(feature_name)
 
