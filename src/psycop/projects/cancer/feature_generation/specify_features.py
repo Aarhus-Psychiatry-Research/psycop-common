@@ -44,7 +44,7 @@ class FeatureSpecifier:
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
 
-    def _get_static_predictor_specs(self):
+    def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
         return [
             StaticSpec(
@@ -73,7 +73,7 @@ class FeatureSpecifier:
             # ),
         ]
 
-    def _get_outcome_specs(self):
+    def _get_outcome_specs(self) -> list[OutcomeSpec]:
         """Get outcome specs."""
         log.info("-------- Generating outcome specs --------")
 

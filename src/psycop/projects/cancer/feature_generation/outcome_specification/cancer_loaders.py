@@ -19,7 +19,7 @@ def any_cancer() -> pd.DataFrame:
     df = pd.read_csv(CANCER_DATA_DIR / "cancer_cohort.csv")
     df = df.rename(columns={"datotid_start": "timestamp"})
     df["timestamp"] = pd.to_datetime(df["timestamp"]).apply(
-        lambda x: x.replace(tzinfo=None)
+        lambda x: x.replace(tzinfo=None),
     )
     df["value"] = 1
 
