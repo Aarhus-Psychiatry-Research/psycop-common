@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.82.0 (2023-06-14)
+### Feature
+* Add careml to monorepo ([`534400a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/534400afb70b5d3c2b662e3b0bdd2350067be1d4))
+
 ## v0.81.0 (2023-06-13)
 ### Feature
 * Move markdown handling to common ([`bdfeafa`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bdfeafac5f55490233f17988b006ec6a1f027307))
