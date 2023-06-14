@@ -1,10 +1,8 @@
 """Feature specification module."""
 import logging
-from sys import prefix
+# from sys import prefix
 
 import numpy as np
-
-from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
@@ -12,13 +10,15 @@ from timeseriesflattener.feature_spec_objects import (
     OutcomeSpec,
     PredictorGroupSpec,
     PredictorSpec,
-    StaticSpec, 
+    StaticSpec,
     _AnySpec,
 )
 
-from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (  # noqa noqa: RUF100
-    any_cancer,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+
+# from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (
+#     any_cancer,
+# )
 
 
 log = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class FeatureSpecifier:
         """Get static predictor specs."""
         return [
             StaticSpec(
-                values_loader="sex_female",
+                values_loader="sex_female",  # type: ignore
                 input_col_name_override="sex_female",
                 prefix=self.project_info.prefix.predictor,
             ),
@@ -60,7 +60,7 @@ class FeatureSpecifier:
 
         return [
             StaticSpec(
-                values_loader="any_cancer",
+                values_loader="any_cancer",  # type: ignore
                 input_col_name_override="timestamp",
                 output_col_name_override="timestamp_first_cancer_diagnosis",
                 prefix="",
