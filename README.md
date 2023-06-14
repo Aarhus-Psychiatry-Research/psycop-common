@@ -40,7 +40,7 @@
 | src/psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       21 |        5 |     76% |     69-89 |
 | src/psycop/common/feature\_generation/text\_models/utils.py                                                         |       12 |        5 |     58% |22-23, 36-40 |
 | src/psycop/common/feature\_generation/utils.py                                                                      |       47 |       22 |     53% |35, 62, 66, 70, 91-98, 111, 131, 135, 145-160 |
-| src/psycop/common/global\_utils/cache.py                                                                            |        8 |        1 |     88% |         8 |
+| src/psycop/common/global\_utils/cache.py                                                                            |        8 |        1 |     88% |         9 |
 | src/psycop/common/global\_utils/paths.py                                                                            |        4 |        0 |    100% |           |
 | src/psycop/common/global\_utils/pickle.py                                                                           |       11 |        6 |     45% |7-10, 14-17 |
 | src/psycop/common/minimal\_pipeline.py                                                                              |       12 |        0 |    100% |           |
@@ -103,6 +103,17 @@
 | src/psycop/common/test\_utils/str\_to\_df.py                                                                        |       31 |        1 |     97% |        75 |
 | src/psycop/common/test\_utils/test\_data/model\_eval/generate\_synthetic\_dataset\_for\_eval.py                     |       55 |       39 |     29% |37, 42, 61-65, 84-88, 92-170 |
 | src/psycop/conftest.py                                                                                              |       47 |        3 |     94% |32, 36, 103 |
+| src/psycop/projects/care\_ml/\_\_init\_\_.py                                                                        |        0 |        0 |    100% |           |
+| src/psycop/projects/care\_ml/model\_evaluation/config.py                                                            |       43 |        0 |    100% |           |
+| src/psycop/projects/care\_ml/model\_evaluation/figures/feature\_importance/shap/get\_shap\_values.py                |       73 |       41 |     44% |26-37, 42-54, 70, 78-92, 102-134, 164-172, 181-194 |
+| src/psycop/projects/care\_ml/model\_evaluation/figures/feature\_importance/shap/shap\_plots.py                      |       53 |       29 |     45% |40, 48, 74-86, 95-101, 117-147 |
+| src/psycop/projects/care\_ml/model\_evaluation/figures/feature\_importance/shap/shap\_table.py                      |        7 |        0 |    100% |           |
+| src/psycop/projects/care\_ml/model\_evaluation/utils/feature\_name\_to\_readable.py                                 |       53 |       11 |     79% |6-19, 74-82, 145 |
+| src/psycop/projects/care\_ml/test/\_\_init\_\_.py                                                                   |        0 |        0 |    100% |           |
+| src/psycop/projects/care\_ml/test/test\_model\_evaluation/\_\_init\_\_.py                                           |        0 |        0 |    100% |           |
+| src/psycop/projects/care\_ml/test/test\_model\_evaluation/conftest.py                                               |        7 |        0 |    100% |           |
+| src/psycop/projects/care\_ml/utils/best\_runs.py                                                                    |       76 |       33 |     57% |23, 27-35, 39-45, 48-50, 67-71, 74, 77, 83, 87, 91, 95-96, 102-106, 109-113, 117, 121-122, 130 |
+| src/psycop/projects/care\_ml/utils/feature\_name\_to\_readable.py                                                   |       26 |       22 |     15% |6-16, 21-54, 59-64 |
 | src/psycop/projects/forced\_admission\_inpatient/utils/feature\_name\_to\_readable.py                               |       26 |        5 |     81% | 15, 39-42 |
 | src/psycop/projects/t2d/paper\_outputs/config.py                                                                    |       18 |        0 |    100% |           |
 | src/psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/conftest.py                      |        7 |        0 |    100% |           |
@@ -118,7 +129,7 @@
 | src/psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |34-52, 87-112 |
 | src/psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | src/psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |20-21, 29, 51, 55-63, 67-73, 76-78, 95-96, 99-103, 106, 109, 116, 129-133, 136-138, 142, 154-161, 174-181, 196-206, 217 |
-|                                                                                                           **TOTAL** | **3507** |  **980** | **72%** |           |
+|                                                                                                           **TOTAL** | **3845** | **1116** | **71%** |           |
 
 
 ## Setup coverage badge
