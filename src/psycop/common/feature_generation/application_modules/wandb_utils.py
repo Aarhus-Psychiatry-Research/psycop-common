@@ -1,4 +1,4 @@
-"""Wandb utils.""" ""
+"""Wandb utils."""
 import traceback
 
 import wandb

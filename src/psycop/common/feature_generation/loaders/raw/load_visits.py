@@ -122,7 +122,7 @@ def physical_visits(
 
         if shak_code is not None:
             sql += f" AND {schema.location_col_name} != 'Ukendt'"
-            sql += f" AND left({schema.location_col_name}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
+            sql += f" AND left({schema.location_col_name}, {len(str(shak_code))}) {shak_sql_operator} {shak_code!s}"
 
         if where_clause is not None:
             sql += f" {where_separator} {where_clause}"

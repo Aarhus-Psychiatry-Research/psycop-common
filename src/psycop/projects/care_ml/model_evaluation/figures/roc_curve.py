@@ -41,7 +41,7 @@ def plot_auc_roc(
     for spec in specs:
         fpr, tpr, _ = roc_curve(spec.y, spec.y_hat_probs)
         auc = roc_auc_score(spec.y, spec.y_hat_probs)
-        auc_str = f"(AUC = {str(round(auc, 3))})"  # type: ignore
+        auc_str = f"(AUC = {round(auc, 3)!s})"  # type: ignore
 
         plt.plot(fpr, tpr, label=f"{spec.legend_title} {auc_str}")
 

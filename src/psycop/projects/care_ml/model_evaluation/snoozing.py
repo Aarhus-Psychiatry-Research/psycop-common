@@ -35,7 +35,7 @@ def snooze_dataframe(
     prediction_column_name: str = "prediction",
     time_column_name: str = "date",
     id_column_name: str = "id",
-    snoozing_timedelta: dt.timedelta = dt.timedelta(days=90),  # noqa: B008
+    snoozing_timedelta: dt.timedelta = dt.timedelta(days=90),
     snooze_on_value: int = 1,
 ) -> pd.DataFrame:
     """
