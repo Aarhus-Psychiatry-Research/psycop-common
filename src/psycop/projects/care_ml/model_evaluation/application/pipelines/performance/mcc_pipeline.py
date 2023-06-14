@@ -1,16 +1,16 @@
 from pathlib import Path
 
 import pandas as pd
-from care_ml.model_evaluation.config import (
+from psycop.common.model_evaluation.binary.bootstrap_estimates import (
+    bootstrap_estimates,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
     EVAL_RUN,
     TABLES_PATH,
     TEXT_EVAL_RUN,
     TEXT_TABLES_PATH,
 )
-from care_ml.utils.best_runs import Run
-from psycop.common.model_evaluation.binary.bootstrap_estimates import (
-    bootstrap_estimates,
-)
+from psycop.projects.care_ml.utils.best_runs import Run
 from sklearn.metrics import matthews_corrcoef
 
 

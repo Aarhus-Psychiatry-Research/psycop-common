@@ -1,4 +1,6 @@
-from care_ml.model_evaluation.dataset_description.utils import load_feature_set
+from psycop.projects.care_ml.model_evaluation.dataset_description.utils import (
+    load_feature_set,
+)
 
 
 def main():

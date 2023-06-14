@@ -1,4 +1,4 @@
-from care_ml.model_evaluation.utils.feature_name_to_readable import (
+from psycop.projects.care_ml.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
 

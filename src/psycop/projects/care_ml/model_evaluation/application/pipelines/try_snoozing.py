@@ -1,9 +1,11 @@
 import datetime as dt
 
 import pandas as pd
-from care_ml.model_evaluation.best_runs import best_run
-from care_ml.model_evaluation.data.load_true_data import load_eval_dataset
-from care_ml.model_evaluation.snoozing import snooze_dataframe
+from psycop.projects.care_ml.model_evaluation.best_runs import best_run
+from psycop.projects.care_ml.model_evaluation.data.load_true_data import (
+    load_eval_dataset,
+)
+from psycop.projects.care_ml.model_evaluation.snoozing import snooze_dataframe
 from sklearn.metrics import roc_auc_score
 
 if __name__ == "__main__":

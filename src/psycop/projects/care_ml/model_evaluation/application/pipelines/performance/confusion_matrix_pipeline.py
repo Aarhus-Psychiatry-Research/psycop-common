@@ -2,7 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 import plotnine as pn
-from care_ml.model_evaluation.config import (
+from psycop.common.model_evaluation.confusion_matrix import confusion_matrix
+from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
+    ConfusionMatrix,
+)
+from psycop.common.test_utils.str_to_df import str_to_df
+from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     MODEL_NAME,
@@ -11,12 +16,7 @@ from care_ml.model_evaluation.config import (
     TEXT_EVAL_RUN,
     TEXT_TABLES_PATH,
 )
-from care_ml.utils.best_runs import Run
-from psycop.common.model_evaluation.confusion_matrix import confusion_matrix
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-)
-from psycop.common.test_utils.str_to_df import str_to_df
+from psycop.projects.care_ml.utils.best_runs import Run
 
 
 def plotnine_confusion_matrix(matrix: ConfusionMatrix, x_title: str) -> pn.ggplot:

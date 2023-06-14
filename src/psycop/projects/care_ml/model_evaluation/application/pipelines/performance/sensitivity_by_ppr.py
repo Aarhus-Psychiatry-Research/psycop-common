@@ -2,7 +2,10 @@ from pathlib import Path
 
 import pandas as pd
 import plotnine as pn
-from care_ml.model_evaluation.config import (
+from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_sensitivity_by_timedelta_df,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     FIGURES_PATH,
@@ -11,10 +14,7 @@ from care_ml.model_evaluation.config import (
     TEXT_EVAL_RUN,
     TEXT_FIGURES_PATH,
 )
-from care_ml.utils.best_runs import Run
-from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    get_sensitivity_by_timedelta_df,
-)
+from psycop.projects.care_ml.utils.best_runs import Run
 
 
 def _plot_sensitivity_by_time_to_event(
@@ -96,7 +96,7 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
                 desired_positive_rate=ppr,
             )[0],
             time_one=eval_ds.pred_timestamps,
-            time_two=eval_ds.outcome_timestamps,
+            time_two=eval_ds.outcome_timestamps,  # type: ignore
             direction="t2-t1",
             bins=range(0, 48, 4),
             bin_unit="h",

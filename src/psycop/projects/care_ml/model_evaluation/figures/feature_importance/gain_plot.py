@@ -4,10 +4,6 @@ from pathlib import Path
 from typing import Literal, Union
 
 import pandas as pd
-from care_ml.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
-from care_ml.model_evaluation.utils.feature_name_to_readable import (
-    feature_name_to_readable,
-)
 from plotnine import (
     aes,
     coord_flip,
@@ -16,6 +12,14 @@ from plotnine import (
     ggplot,
     labs,
     theme,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
+    COLOURS,
+    FIGURES_PATH,
+    PN_THEME,
+)
+from psycop.projects.care_ml.model_evaluation.utils.feature_name_to_readable import (
+    feature_name_to_readable,
 )
 
 

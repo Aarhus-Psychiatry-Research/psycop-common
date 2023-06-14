@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import plotnine as pn
-from care_ml.utils.best_runs import Run, RunGroup
+from psycop.projects.care_ml.utils.best_runs import Run, RunGroup
 
 
 @dataclass

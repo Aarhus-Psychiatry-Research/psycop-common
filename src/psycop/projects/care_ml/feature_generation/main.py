@@ -5,10 +5,6 @@ import sys
 from pathlib import Path
 
 import wandb
-from care_ml.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
-    load_coercion_prediction_times,
-)
-from care_ml.feature_generation.modules.specify_features import FeatureSpecifier
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -18,14 +14,18 @@ from psycop.common.feature_generation.application_modules.flatten_dataset import
 from psycop.common.feature_generation.application_modules.loggers import (
     init_root_logger,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    get_project_info,
-)
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
+)
+from psycop.projects.care_ml.careml_global_config import CAREML_PROJECT_INFO
+from psycop.projects.care_ml.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
+    load_coercion_prediction_times,
+)
+from psycop.projects.care_ml.feature_generation.modules.specify_features import (
+    FeatureSpecifier,
 )
 
 log = logging.getLogger()
@@ -35,6 +35,8 @@ log = logging.getLogger()
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""
+    project_info = CAREML_PROJECT_INFO
+
     feature_specs = FeatureSpecifier(
         project_info=project_info,
         min_set_for_debug=True,  # Remember to set to False when generating full dataset
@@ -59,13 +61,8 @@ def main():
 
 
 if __name__ == "__main__":
-    # Run elements that are required before wandb init first,
-    # then run the rest in main so you can wrap it all in
-    # wandb_alert_on_exception, which will send a slack alert
-    # if you have wandb alerts set up in wandb
-    project_info = get_project_info(
-        project_name="coercion",
-    )
+    project_info = CAREML_PROJECT_INFO
+
     init_root_logger(project_info=project_info)
 
     log.info(f"Stdout level is {logging.getLevelName(log.level)}")

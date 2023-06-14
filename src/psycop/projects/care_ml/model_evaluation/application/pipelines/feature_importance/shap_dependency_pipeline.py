@@ -3,7 +3,7 @@
 from typing import Literal, Optional
 
 import polars as pl
-from care_ml.model_evaluation.config import (
+from psycop.projects.care_ml.model_evaluation.config import (
     EVAL_RUN,
     FIGURES_PATH,
     TABLES_PATH,
@@ -11,13 +11,13 @@ from care_ml.model_evaluation.config import (
     TEXT_FIGURES_PATH,
     TEXT_TABLES_PATH,
 )
-from care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values import (
+from psycop.projects.care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values import (
     get_shap_bundle_for_best_run,
 )
-from care_ml.model_evaluation.figures.feature_importance.shap.shap_plots import (
+from psycop.projects.care_ml.model_evaluation.figures.feature_importance.shap.shap_plots import (
     save_plots_for_top_i_shap_by_mean_abs,
 )
-from care_ml.model_evaluation.figures.feature_importance.shap.shap_table import (
+from psycop.projects.care_ml.model_evaluation.figures.feature_importance.shap.shap_table import (
     get_top_i_shap_values_for_printing,
 )
 

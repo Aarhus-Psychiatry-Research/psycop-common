@@ -2,7 +2,10 @@
 
 from typing import Literal
 
-from care_ml.model_evaluation.config import (
+from psycop.common.model_evaluation.feature_importance.feature_importance_table import (
+    generate_feature_importances_table,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
     EVAL_RUN,
     FIGURES_PATH,
     TABLES_PATH,
@@ -10,14 +13,11 @@ from care_ml.model_evaluation.config import (
     TEXT_FIGURES_PATH,
     TEXT_TABLES_PATH,
 )
-from care_ml.model_evaluation.data.load_true_data import (
+from psycop.projects.care_ml.model_evaluation.data.load_true_data import (
     load_file_from_pkl,
 )
-from care_ml.model_evaluation.figures.feature_importance.gain_plot import (
+from psycop.projects.care_ml.model_evaluation.figures.feature_importance.gain_plot import (
     plot_gain,
-)
-from psycop.common.model_evaluation.feature_importance.feature_importance_table import (
-    generate_feature_importances_table,
 )
 
 

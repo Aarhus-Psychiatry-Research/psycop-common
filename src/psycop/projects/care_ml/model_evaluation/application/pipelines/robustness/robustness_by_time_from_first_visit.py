@@ -1,7 +1,10 @@
 from pathlib import Path
 
 import plotnine as pn
-from care_ml.model_evaluation.config import (
+from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_auroc_by_timedelta_df,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     MODEL_NAME,
@@ -10,13 +13,10 @@ from care_ml.model_evaluation.config import (
     TEXT_EVAL_RUN,
     TEXT_ROBUSTNESS_PATH,
 )
-from care_ml.model_evaluation.data.load_true_data import (
+from psycop.projects.care_ml.model_evaluation.data.load_true_data import (
     load_eval_df,
 )
-from care_ml.utils.best_runs import Run
-from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    get_auroc_by_timedelta_df,
-)
+from psycop.projects.care_ml.utils.best_runs import Run
 
 
 def roc_auc_by_time_from_first_prediction(run: Run, path: Path):

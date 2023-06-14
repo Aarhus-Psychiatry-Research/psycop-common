@@ -1,14 +1,14 @@
 from pathlib import Path
 
 import plotnine as pn
-from care_ml.model_evaluation.config import (
+from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     FIGURES_PATH,
     PN_THEME,
 )
-from care_ml.model_evaluation.data.load_true_data import load_eval_df
-from care_ml.utils.best_runs import Run
+from psycop.projects.care_ml.model_evaluation.data.load_true_data import load_eval_df
+from psycop.projects.care_ml.utils.best_runs import Run
 
 
 def incidence_by_time_until_outcome_pipeline(run: Run, path: Path):

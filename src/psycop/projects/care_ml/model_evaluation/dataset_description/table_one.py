@@ -1,5 +1,5 @@
-from care_ml.model_evaluation.config import TABLES_PATH
-from care_ml.model_evaluation.dataset_description.utils import (
+from psycop.projects.care_ml.model_evaluation.config import TABLES_PATH
+from psycop.projects.care_ml.model_evaluation.dataset_description.utils import (
     load_feature_set,
     table_one_coercion,
     table_one_demographics,

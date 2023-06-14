@@ -1,8 +1,11 @@
 """A script for taking the current best model and running it on the test set."""
 
-from care_ml.model_evaluation.config import BEST_DEV_RUN, TEXT_BEST_DEV_RUN
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
+    BEST_DEV_RUN,
+    TEXT_BEST_DEV_RUN,
 )
 
 if __name__ == "__main__":

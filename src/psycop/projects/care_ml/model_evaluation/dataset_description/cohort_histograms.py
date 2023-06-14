@@ -1,11 +1,11 @@
 import pandas as pd
 import plotnine as pn
-from care_ml.model_evaluation.config import (
+from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     GENERAL_ARTIFACT_PATH,
     PN_THEME,
 )
-from care_ml.model_evaluation.dataset_description.utils import (
+from psycop.projects.care_ml.model_evaluation.dataset_description.utils import (
     get_sex_and_age_group_at_first_contact,
     load_feature_set,
 )

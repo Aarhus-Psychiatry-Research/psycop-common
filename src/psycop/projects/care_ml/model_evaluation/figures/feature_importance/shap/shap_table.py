@@ -1,8 +1,10 @@
 import polars as pl
-from care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values import (
+from psycop.projects.care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values import (
     get_top_i_features_by_mean_abs_shap,
 )
-from care_ml.utils.feature_name_to_readable import feature_name_to_readable
+from psycop.projects.care_ml.utils.feature_name_to_readable import (
+    feature_name_to_readable,
+)
 
 
 def get_top_i_shap_values_for_printing(

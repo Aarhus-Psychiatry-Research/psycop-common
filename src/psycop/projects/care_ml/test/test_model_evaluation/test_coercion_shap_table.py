@@ -1,8 +1,7 @@
 import pandas as pd
 import polars as pl
 from psycop.common.test_utils.str_to_df import str_to_df
-
-from care_ml.model_evaluation.figures.feature_importance.shap.shap_table import (
+from psycop.projects.care_ml.model_evaluation.figures.feature_importance.shap.shap_table import (
     get_top_i_shap_values_for_printing,
 )
 

@@ -1,7 +1,10 @@
 from pathlib import Path
 
 import plotnine as pn
-from care_ml.model_evaluation.config import (
+from psycop.common.model_evaluation.binary.time.periodic_data import (
+    roc_auc_by_periodic_time_df,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     MODEL_NAME,
@@ -10,10 +13,7 @@ from care_ml.model_evaluation.config import (
     TEXT_EVAL_RUN,
     TEXT_ROBUSTNESS_PATH,
 )
-from care_ml.utils.best_runs import Run
-from psycop.common.model_evaluation.binary.time.periodic_data import (
-    roc_auc_by_periodic_time_df,
-)
+from psycop.projects.care_ml.utils.best_runs import Run
 
 
 def auroc_by_day_of_week(run: Run, path: Path):

@@ -2,20 +2,16 @@
 
 import logging
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    get_project_info,
-)
+from psycop.projects.care_ml.careml_global_config import CAREML_PROJECT_INFO
 
 log = logging.getLogger()
 
-project_info = get_project_info(
-    project_name="coercion",
+from psycop.projects.care_ml.feature_generation.modules.specify_features import (
+    FeatureSpecifier,
 )
 
-from care_ml.feature_generation.modules.specify_features import FeatureSpecifier
-
 feature_specs = FeatureSpecifier(
-    project_info=project_info,
+    project_info=CAREML_PROJECT_INFO,
     min_set_for_debug=False,
 ).get_feature_specs()
 
@@ -25,9 +21,12 @@ selected_specs = [
     if "pred" in spec.get_col_str() or "outc" in spec.get_col_str()
 ]
 
-from care_ml.model_evaluation.config import TEXT_EVAL_RUN, TEXT_TABLES_PATH
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
+)
+from psycop.projects.care_ml.model_evaluation.config import (
+    TEXT_EVAL_RUN,
+    TEXT_TABLES_PATH,
 )
 
 out_dir = TEXT_TABLES_PATH / "feature_description"
