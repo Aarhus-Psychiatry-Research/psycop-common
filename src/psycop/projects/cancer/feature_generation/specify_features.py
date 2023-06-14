@@ -1,9 +1,11 @@
 """Feature specification module."""
 import logging
+
 # from sys import prefix
-
 import numpy as np
-
+from psycop.common.feature_generation.application_modules.project_setup import (
+    ProjectInfo,
+)
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     OutcomeGroupSpec,
@@ -13,8 +15,6 @@ from timeseriesflattener.feature_spec_objects import (
     StaticSpec,
     _AnySpec,
 )
-
-from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 
 # from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (
 #     any_cancer,
@@ -56,7 +56,7 @@ class FeatureSpecifier:
 
     def _get_metadata_specs(self) -> list[_AnySpec]:
         """Get metadata specs."""
-        log.info("–––––––– Generating metadata specs ––––––––")
+        log.info("-------- Generating metadata specs --------")
 
         return [
             StaticSpec(
@@ -75,7 +75,7 @@ class FeatureSpecifier:
 
     def _get_outcome_specs(self):
         """Get outcome specs."""
-        log.info("–––––––– Generating outcome specs ––––––––")
+        log.info("-------- Generating outcome specs --------")
 
         if self.min_set_for_debug:
             return [
@@ -95,7 +95,7 @@ class FeatureSpecifier:
             lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
             resolve_multiple_fn=["max"],
             fallback=[0],
-            incident=[True], #Set to false because they can have multiple cancers????
+            incident=[True],  # Set to false because they can have multiple cancers????
             allowed_nan_value_prop=[0],
             prefix=self.project_info.prefix.outcome,
         ).create_combinations()
@@ -107,7 +107,7 @@ class FeatureSpecifier:
         allowed_nan_value_prop: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
-        log.info("–––––––– Generating medication specs ––––––––")
+        log.info("-------- Generating medication specs --------")
 
         psychiatric_medications = PredictorGroupSpec(
             values_loader=(
@@ -147,10 +147,13 @@ class FeatureSpecifier:
         return psychiatric_medications + lifestyle_medications
 
     def _get_diagnoses_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
+        self,
+        resolve_multiple,
+        interval_days,
+        allowed_nan_value_prop,
     ):
         """Get diagnoses specs."""
-        log.info("–––––––– Generating diagnoses specs ––––––––")
+        log.info("-------- Generating diagnoses specs --------")
 
         lifestyle_diagnoses = PredictorGroupSpec(
             values_loader=(
@@ -187,12 +190,14 @@ class FeatureSpecifier:
 
         return lifestyle_diagnoses + psychiatric_diagnoses
 
-
     def _get_lab_result_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
+        self,
+        resolve_multiple,
+        interval_days,
+        allowed_nan_value_prop,
     ):
         """Get lab result specs."""
-        log.info("–––––––– Generating lab result specs ––––––––")
+        log.info("-------- Generating lab result specs --------")
 
         general_lab_results = PredictorGroupSpec(
             values_loader=(
@@ -223,11 +228,11 @@ class FeatureSpecifier:
         #     allowed_nan_value_prop=allowed_nan_value_prop,
         # ).create_combinations()
 
-        return general_lab_results # + diabetes_lab_results
+        return general_lab_results  # + diabetes_lab_results
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
-        log.info("–––––––– Generating temporal predictor specs ––––––––")
+        log.info("-------- Generating temporal predictor specs --------")
 
         if self.min_set_for_debug:
             return [
@@ -238,7 +243,7 @@ class FeatureSpecifier:
                     fallback=np.nan,
                     allowed_nan_value_prop=0,
                     prefix=self.project_info.prefix.predictor,
-                )
+                ),
             ]
 
         resolve_multiple = ["max", "min", "mean", "latest", "count"]

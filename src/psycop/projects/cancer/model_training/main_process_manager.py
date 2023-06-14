@@ -9,15 +9,16 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from psycop_ml_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
-
 from psycop.common.model_training.application_modules.get_search_space import (
     SearchSpaceInferrer,
 )
 from psycop.common.model_training.application_modules.process_manager_setup import setup
-from psycop.common.model_training.application_modules.trainer_spawner import spawn_trainers
+from psycop.common.model_training.application_modules.trainer_spawner import (
+    spawn_trainers,
+)
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.data_loader import DataLoader
+from psycop_ml_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
 
 
 @wandb_alert_on_exception
@@ -48,7 +49,7 @@ def main(
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
         train_single_model_file_path=Path(
-        #    "src/t2d/model_training/train_model_from_application_module.py", ######################## what to do here????????
+            #    "src/t2d/model_training/train_model_from_application_module.py", ######################## what to do here????????
         ),
     )
 
@@ -58,9 +59,9 @@ if __name__ == "__main__":
 
     if sys.platform == "win32":
         (Path(__file__).resolve().parents[1] / "wandb" / "debug-cli.onerm").mkdir(
-                exist_ok=True,
-                parents=True,
-            )
+            exist_ok=True,
+            parents=True,
+        )
 
     # Must run cfg before main to ensure that wandb is initialized
     # before adding wandb_alert_on_exception decorator

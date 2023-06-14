@@ -1,7 +1,6 @@
 """Main feature generation."""
 
 import logging
-import sys
 from pathlib import Path
 
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
@@ -10,17 +9,15 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
-from psycop.common.feature_generation.application_modules.loggers import init_root_logger
+from psycop.common.feature_generation.application_modules.loggers import (
+    init_root_logger,
+)
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
     get_project_info,
-    init_wandb,
 )
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
-)
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
 )
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
@@ -28,11 +25,7 @@ from psycop.common.feature_generation.loaders.raw.load_moves import (
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
-
 from psycop.projects.cancer.feature_generation.specify_features import FeatureSpecifier
-
-
-import wandb
 
 log = logging.getLogger()
 
@@ -42,8 +35,8 @@ def _generate_feature_set(project_info: ProjectInfo) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     feature_specs = FeatureSpecifier(
-        project_info=project_info, 
-        min_set_for_debug=True, # Remember to set to False when generating full dataset
+        project_info=project_info,
+        min_set_for_debug=True,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
     flattened_df = create_flattened_dataset(
@@ -62,7 +55,7 @@ def _generate_feature_set(project_info: ProjectInfo) -> Path:
 
     save_flattened_dataset_description_to_disk(
         project_info=project_info,
-        feature_specs=feature_specs, #type: ignore
+        feature_specs=feature_specs,  # type: ignore
     )
 
     return project_info.feature_set_path
