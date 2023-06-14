@@ -7,6 +7,7 @@ repos:
       - id: ruff
         args:
           [
+            "-v",
             "--extend-select",
             "F401",
             "--extend-select",
