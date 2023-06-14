@@ -1,0 +1,9 @@
+name: coercion
+seed: 42
+
+wandb:
+  entity: psycop # Which entity to run WanDB in.
+  mode: offline # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+  group: coercion # Which group to run WanDB in.
+  
+gpu: true
