@@ -4,7 +4,6 @@ from wasabi import msg
 
 
 def forced_admissions_inpatient(timestamps_only: bool = True) -> pd.DataFrame:
-
     df = process_forced_pred_dfs(
         visit_type="inpatient",
         prediction_times_col_name="datotid_slut",
@@ -21,7 +20,6 @@ def forced_admissions_inpatient(timestamps_only: bool = True) -> pd.DataFrame:
 def forced_admissions_outpatient(
     timestamps_only: bool = True,
 ) -> pd.DataFrame:
-
     df = process_forced_pred_dfs(
         visit_type="outpatient",
         prediction_times_col_name="datotid_predict",
@@ -40,7 +38,6 @@ def process_forced_pred_dfs(
     prediction_times_col_name: str,
     timestamps_only: bool = True,
 ) -> pd.DataFrame:
-
     df = sql_load(
         f"SELECT * FROM [fct].[psycop_fa_outcome_all_disorders_forced_admission_{visit_type}_730.5d_0f_182d_2014_2021]",
         database="USR_PS_FORSK",

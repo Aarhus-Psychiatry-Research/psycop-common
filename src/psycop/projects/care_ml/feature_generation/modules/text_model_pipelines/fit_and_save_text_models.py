@@ -5,7 +5,6 @@ from psycop.common.feature_generation.text_models.text_model_pipeline import (
 )
 
 if __name__ == "__main__":
-
     text_model_pipeline(
         model="bow",
         corpus_name="psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed",

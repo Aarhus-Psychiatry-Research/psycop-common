@@ -19,7 +19,6 @@ _test_tf_idf_vocab = [
 TEST_TFIDF_VOCAB = ["tfidf-" + word for word in _test_tf_idf_vocab]
 
 if __name__ == "__main__":
-
     p = Path("tests") / "test_data" / "test_tfidf"
 
     with open(p / "tfidf_10.pkl", "rb") as f:  # noqa
