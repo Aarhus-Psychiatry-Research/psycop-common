@@ -6,12 +6,6 @@ import numpy as np
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.combined import (  # noqa noqa: RUF100
-    get_first_diabetes_indicator,
-)
-from psycop.projects.t2d.feature_generation.outcome_specification.lab_results import (  # noqa noqa: RUF100
-    get_first_diabetes_lab_result_above_threshold,
-)
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     OutcomeGroupSpec,

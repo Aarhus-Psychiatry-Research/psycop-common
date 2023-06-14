@@ -1,0 +1,23 @@
+# @package _global_
+data:
+  # General config
+  n_training_samples: null
+  dir: E:/shared_resources/coercion/feature_sets/psycop_coercion_adminsakold_features_2023_05_12_11_31
+  suffix: parquet
+
+  # Feature specs
+  pred_prefix: pred_
+  outc_prefix: outcome_coercion_bool
+
+  splits_for_training: ["train"]
+  splits_for_evaluation: null
+
+  col_name:
+    pred_timestamp: timestamp
+    outcome_timestamp: outcome_timestamp
+    id: dw_ek_borger
+    age: pred_age_in_years
+    exclusion_timestamp: 
+    custom_columns: 
+    - outcome_coercion_type_within_2_days 
+    - adm_id

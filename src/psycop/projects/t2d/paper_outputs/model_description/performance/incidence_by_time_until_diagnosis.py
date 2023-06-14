@@ -27,7 +27,7 @@ def t2d_first_pred_to_event(run: PipelineRun) -> pn.ggplot:
     plot_df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
 
     median_years = plot_df["years_from_pred_to_event"].median()
-    annotation_text = f"Median: {str(round(median_years, 1))} years"
+    annotation_text = f"Median: {round(median_years, 1)!s} years"
 
     p = (
         pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event"))  # type: ignore

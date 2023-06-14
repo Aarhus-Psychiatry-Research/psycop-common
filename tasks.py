@@ -20,7 +20,7 @@ import platform
 import re
 import shutil
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from invoke import Context, Result, task
 
@@ -353,10 +353,10 @@ def update(c: Context):
 @task(iterable="pytest_args")
 def test(
     c: Context,
-    pytest_args: List[str] = [],  # noqa
+    pytest_args: list[str] = [],  # noqa
 ):
     """Run tests"""
-    # Invoke requires lists as type hints, but does not support lists as default arguments.
+    # Invoke requires list as type hints, but does not support lists as default arguments.
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
 

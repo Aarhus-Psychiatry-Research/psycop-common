@@ -16,7 +16,7 @@ def _get_test_run_name(pipeline_to_train: PipelineRun) -> str:
 
 
 def _get_test_group_name(pipeline_to_train: PipelineRun) -> str:
-    return f"{str(pipeline_to_train.group.name)}-eval-on-test"
+    return f"{pipeline_to_train.group.name!s}-eval-on-test"
 
 
 def _get_test_group_path(pipeline_to_train: PipelineRun) -> Path:
