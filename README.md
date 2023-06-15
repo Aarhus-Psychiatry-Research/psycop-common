@@ -21,10 +21,16 @@ The shared code across the PSYCOP projects.
 
 ## Installation
 
-We recommend installing straight into your `src` folder, so you can make modifications to the libraries when required:
+One of the beauties of a monorepo and shared dependencies is that we spend less time managing installation and dependencies:
 
 ```bash
-pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-common#egg=psycop
+git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
+```
+
+On Ovartaci, we have a shared environment:
+```bash
+conda activate psycop-common
+pip install -e ".[dev,text,tests]"
 ```
 
 ## Migrating from the polyrepos
