@@ -510,3 +510,9 @@ def docs(c: Context, view: bool = False, view_only: bool = False):
             c.run("start docs/_build/html/index.html")
         else:
             c.run("open docs/_build/html/index.html")
+
+@task
+def update(c: Context):
+    c.run("pip install --upgrade -r requirements.txt")
+    c.run("pip freeze > frozen_requirements.txt")
+        
