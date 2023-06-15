@@ -6,11 +6,23 @@ import numpy as np
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
-from psycop.common.feature_generation.loaders.raw.load_coercion import af_legemlig_lidelse, baelte, ect, farlighed, fastholden, medicinering, remme, skema_1, skema_2_without_nutrition, skema_3, tvangstilbageholdelse
+from psycop.common.feature_generation.loaders.raw.load_coercion import (
+    af_legemlig_lidelse,
+    baelte,
+    beroligende_medicin,
+    ect,
+    farlighed,
+    fastholden,
+    medicinering,
+    remme,
+    skema_1,
+    skema_2_without_nutrition,
+    skema_3,
+    tvangstilbageholdelse,
+)
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     cluster_b,
-    essential_hypertension,
     f0_disorders,
     f1_disorders,
     f2_disorders,
@@ -21,27 +33,12 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
     f9_disorders,
-    gerd,
-    hyperlipidemia,
     manic_and_bipolar,
-    polycystic_ovarian_syndrome,
     schizoaffective,
     schizophrenia,
-    sleep_apnea,
 )
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
-    alat,
-    albumine_creatinine_ratio,
-    arterial_p_glc,
     cancelled_standard_lab_results,
-    crp,
-    egfr,
-    fasting_ldl,
-    fasting_p_glc,
-    hba1c,
-    hdl,
-    ldl,
-    ogtt,
     p_aripiprazol,
     p_clomipramine,
     p_clozapine,
@@ -53,68 +50,50 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     p_paliperidone,
     p_paracetamol,
     p_risperidone,
-    scheduled_glc,
-    triglycerides,
-    unscheduled_p_glc,
-    urinary_glc,
 )
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     alcohol_abstinence,
     analgesic,
     antidepressives,
-    antihypertensives,
     antipsychotics,
     anxiolytics,
     aripiprazole_depot,
-    benzodiazepine_related_sleeping_agents,
-    benzodiazepines,
     clozapine,
-    diuretics,
     first_gen_antipsychotics,
-    gerd_drugs,
     haloperidol_depot,
     hyperactive_disorders_medications,
     hypnotics,
-    lamotrigine,
     lithium,
     olanzapine,
     olanzapine_depot,
     opioid_dependence,
     paliperidone_depot,
     perphenazine_depot,
-    pregabaline,
     risperidone_depot,
     second_gen_antipsychotics,
-    selected_nassa,
-    snri,
-    ssri,
-    statins,
-    tca,
-    top_10_weight_gaining_antipsychotics,
-    valproate,
     zuclopenthixol_depot,
 )
 from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
-    bmi,
     broeset_violence_checklist,
     hamilton_d17,
-    height_in_cm,
     mas_m,
     selvmordsrisiko,
-    weight_in_kg,
 )
-from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry, physical_visits_to_somatic
-from psycop.projects.t2d.feature_generation.outcome_specification.combined import (
-    get_first_diabetes_indicator,
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    physical_visits_to_psychiatry,
+    physical_visits_to_somatic,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.lab_results import (
-    get_first_diabetes_lab_result_above_threshold,
+from timeseriesflattener.aggregation_fns import (
+    boolean,
+    change_per_day,
+    count,
+    latest,
+    maximum,
+    mean,
+    variance,
 )
-from timeseriesflattener.aggregation_fns import boolean, change_per_day, count, latest, maximum, mean, minimum, variance
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
-    PredictorGroupSpec,,
-    OutcomeGroupSpec,
     PredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
@@ -148,7 +127,7 @@ class FeatureSpecifier:
         """Get static predictor specs."""
         return [
             StaticSpec(
-                timeseries_df=sex_female(), 
+                timeseries_df=sex_female(),
                 prefix=self.project_info.prefix.predictor,
                 feature_base_name="sex_female",
             ),
@@ -164,11 +143,17 @@ class FeatureSpecifier:
 
         visits = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(df=physical_visits_to_psychiatry(), name="physical_visits_to_psychiatry"),
-                NamedDataframe(df=physical_visits_to_somatic(), name="physical_visits_to_somatic"),
+                NamedDataframe(
+                    df=physical_visits_to_psychiatry(),
+                    name="physical_visits_to_psychiatry",
+                ),
+                NamedDataframe(
+                    df=physical_visits_to_somatic(),
+                    name="physical_visits_to_somatic",
+                ),
             ),
             lookbehind_days=interval_days,
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             fallback=[0],
         ).create_combinations()
 
@@ -185,7 +170,7 @@ class FeatureSpecifier:
         admissions_df = PredictorGroupSpec(
             named_dataframes=[NamedDataframe(df=admissions(), name="admissions")],
             lookbehind_days=interval_days,
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             fallback=[0],
         ).create_combinations()
 
@@ -202,15 +187,24 @@ class FeatureSpecifier:
         psychiatric_medications = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=antipsychotics(), name="antipsychotics"),
-                NamedDataframe(df=first_gen_antipsychotics(), name="first_gen_antipsychotics"),
-                NamedDataframe(df=second_gen_antipsychotics(), name="second_gen_antipsychotics"),
+                NamedDataframe(
+                    df=first_gen_antipsychotics(),
+                    name="first_gen_antipsychotics",
+                ),
+                NamedDataframe(
+                    df=second_gen_antipsychotics(),
+                    name="second_gen_antipsychotics",
+                ),
                 NamedDataframe(df=olanzapine(), name="olanzapine"),
                 NamedDataframe(df=clozapine(), name="clozapine"),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
                 NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
                 NamedDataframe(df=lithium(), name="lithium"),
-                NamedDataframe(df=hyperactive_disorders_medications(), name="hyperactive disorders medications"),
+                NamedDataframe(
+                    df=hyperactive_disorders_medications(),
+                    name="hyperactive disorders medications",
+                ),
                 NamedDataframe(df=alcohol_abstinence(), name="alcohol_abstinence"),
                 NamedDataframe(df=opioid_dependence(), name="opioid_dependence"),
                 NamedDataframe(df=analgesic(), name="analgesics"),
@@ -223,7 +217,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=zuclopenthixol_depot(), name="zuclopenthixol_depot"),
             ),
             lookbehind_days=interval_days,
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             fallback=[0],
         ).create_combinations()
 
@@ -254,7 +248,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=f8_disorders(), name="f8_disorders"),
                 NamedDataframe(df=f9_disorders(), name="f9_disorders"),
             ),
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[0],
         ).create_combinations()
@@ -272,8 +266,14 @@ class FeatureSpecifier:
         coercion = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=skema_1(), name="skema_1"),
-                NamedDataframe(df=tvangstilbageholdelse(), name="tvangstilbageholdelse"),
-                NamedDataframe(df=skema_2_without_nutrition(), name="skema_2_without_nutrition"),
+                NamedDataframe(
+                    df=tvangstilbageholdelse(),
+                    name="tvangstilbageholdelse",
+                ),
+                NamedDataframe(
+                    df=skema_2_without_nutrition(),
+                    name="skema_2_without_nutrition",
+                ),
                 NamedDataframe(df=medicinering(), name="medicinering"),
                 NamedDataframe(df=ect(), name="ect"),
                 NamedDataframe(df=af_legemlig_lidelse(), name="af_legemlig_lidelse"),
@@ -283,7 +283,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=remme(), name="remme"),
                 NamedDataframe(df=farlighed(), name="farlighed"),
             ),
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[0],
         ).create_combinations()
@@ -298,14 +298,16 @@ class FeatureSpecifier:
         """Get beroligende medicin specs."""
         log.info("-------- Generating beroligende medicicn specs --------")
 
-        beroligende_medicin = PredictorGroupSpec(
-            named_dataframes=(NamedDataframe(df=beroligende_medicin(), name="beroligende_medicin"),),
+        beroligende_medicin_df = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(df=beroligende_medicin(), name="beroligende_medicin"),
+            ),
             lookbehind_days=interval_days,
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             fallback=[0],
         ).create_combinations()
 
-        return beroligende_medicin
+        return beroligende_medicin_df
 
     def _get_structured_sfi_specs(
         self,
@@ -317,12 +319,15 @@ class FeatureSpecifier:
 
         structured_sfi = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(df=broeset_violence_checklist(), name="broeset_violence_checklist"),
+                NamedDataframe(
+                    df=broeset_violence_checklist(),
+                    name="broeset_violence_checklist",
+                ),
                 NamedDataframe(df=selvmordsrisiko(), name="selvmordsrisiko"),
                 NamedDataframe(df=hamilton_d17(), name="hamilton_d17"),
                 NamedDataframe(df=mas_m(), name="mas_m"),
             ),
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[np.nan],
         ).create_combinations()
@@ -350,9 +355,12 @@ class FeatureSpecifier:
                 NamedDataframe(df=p_ethanol(), name="p_ethanol"),
                 NamedDataframe(df=p_nortriptyline(), name="p_nortriptyline"),
                 NamedDataframe(df=p_clomipramine(), name="p_clomipramine"),
-                NamedDataframe(df=cancelled_standard_lab_results(), name="cancelled_standard_lab_results"),
+                NamedDataframe(
+                    df=cancelled_standard_lab_results(),
+                    name="cancelled_standard_lab_results",
+                ),
             ),
-            aggregation_fns=resolve_multiple, 
+            aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[np.nan],
         ).create_combinations()

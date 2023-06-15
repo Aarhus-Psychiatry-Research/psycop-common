@@ -174,7 +174,7 @@ class FeatureSpecifier:
                 NamedDataframe(
                     df=get_first_diabetes_lab_result_above_threshold(),
                     name="first_diabetes_lab_result",
-                )
+                ),
             ],
             lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
             aggregation_fns=[maximum],
@@ -243,11 +243,13 @@ class FeatureSpecifier:
         lifestyle_diagnoses = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=essential_hypertension(), name="essential_hypertension"
+                    df=essential_hypertension(),
+                    name="essential_hypertension",
                 ),
                 NamedDataframe(df=hyperlipidemia(), name="hyperlipidemia"),
                 NamedDataframe(
-                    df=polycystic_ovarian_syndrome(), name="polycystic_ovarian_syndrome"
+                    df=polycystic_ovarian_syndrome(),
+                    name="polycystic_ovarian_syndrome",
                 ),
                 NamedDataframe(df=sleep_apnea(), name="sleep_apnea"),
                 NamedDataframe(df=gerd(), name="gerd"),
@@ -310,7 +312,8 @@ class FeatureSpecifier:
                 NamedDataframe(df=fasting_p_glc(), name="fasting_p_glc"),
                 NamedDataframe(df=egfr(), name="egfr"),
                 NamedDataframe(
-                    df=albumine_creatinine_ratio(), name="albumine_creatinine_ratio"
+                    df=albumine_creatinine_ratio(),
+                    name="albumine_creatinine_ratio",
                 ),
             ),
             aggregation_fns=resolve_multiple,
@@ -338,7 +341,6 @@ class FeatureSpecifier:
 
         resolve_multiple = [maximum, minimum, mean, latest]
         interval_days: list[float] = [30, 180, 365, 730, 1095, 1460, 1825]
-        allowed_nan_value_prop: list[float] = [0]
 
         lab_results = self._get_lab_result_specs(
             resolve_multiple,

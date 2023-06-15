@@ -1,6 +1,7 @@
 """Feature specification module."""
 import logging
-from typing import Callable, Sequence, Union
+from collections.abc import Sequence
+from typing import Callable, Union
 
 import numpy as np
 from psycop.common.feature_generation.application_modules.project_setup import (
@@ -25,8 +26,6 @@ from psycop.common.feature_generation.loaders.raw.load_coercion import (
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    cluster_b,
-    essential_hypertension,
     f0_disorders,
     f1_disorders,
     f2_disorders,
@@ -37,78 +36,15 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
     f9_disorders,
-    gerd,
-    hyperlipidemia,
-    manic_and_bipolar,
-    polycystic_ovarian_syndrome,
-    schizoaffective,
-    schizophrenia,
-    sleep_apnea,
-)
-from psycop.common.feature_generation.loaders.raw.load_lab_results import (
-    alat,
-    albumine_creatinine_ratio,
-    arterial_p_glc,
-    cancelled_standard_lab_results,
-    crp,
-    egfr,
-    fasting_ldl,
-    fasting_p_glc,
-    hba1c,
-    hdl,
-    ldl,
-    ogtt,
-    p_aripiprazol,
-    p_clomipramine,
-    p_clozapine,
-    p_ethanol,
-    p_haloperidol,
-    p_lithium,
-    p_nortriptyline,
-    p_olanzapine,
-    p_paliperidone,
-    p_paracetamol,
-    p_risperidone,
-    scheduled_glc,
-    triglycerides,
-    unscheduled_p_glc,
-    urinary_glc,
 )
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     alcohol_abstinence,
-    analgesic,
     antidepressives,
-    antihypertensives,
     antipsychotics,
     anxiolytics,
-    aripiprazole_depot,
-    benzodiazepine_related_sleeping_agents,
-    benzodiazepines,
-    clozapine,
-    diuretics,
-    first_gen_antipsychotics,
-    gerd_drugs,
-    haloperidol_depot,
-    hyperactive_disorders_medications,
     hypnotics,
-    lamotrigine,
     lithium,
-    olanzapine,
-    olanzapine_depot,
     opioid_dependence,
-    paliperidone_depot,
-    perphenazine_depot,
-    pregabaline,
-    risperidone_depot,
-    second_gen_antipsychotics,
-    selected_nassa,
-    snri,
-    ssri,
-    statins,
-    tca,
-    top_10_weight_gaining_antipsychotics,
-    valproate,
-    zuclopenthixol_depot,
 )
 from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     bmi,
@@ -126,35 +62,23 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_somatic,
 )
 from psycop.common.feature_generation.text_models.utils import load_text_model
-from psycop.projects.t2d.feature_generation.outcome_specification.combined import (
-    get_first_diabetes_indicator,
-)
-from psycop.projects.t2d.feature_generation.outcome_specification.lab_results import (
-    get_first_diabetes_lab_result_above_threshold,
-)
 from timeseriesflattener.aggregation_fns import (
     boolean,
     change_per_day,
     concatenate,
     count,
     latest,
-    maximum,
     mean,
     mean_number_of_characters,
-    minimum,
     type_token_ratio,
     variance,
 )
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
-    OutcomeGroupSpec,
     PredictorGroupSpec,
-    TextPredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
     BaseModel,
-    OutcomeSpec,
     PredictorSpec,
     StaticSpec,
     TextPredictorSpec,
@@ -228,7 +152,8 @@ class FeatureSpecifier:
                     name="physical_visits_to_psychiatry",
                 ),
                 NamedDataframe(
-                    df=physical_visits_to_somatic(), name="physical_visits_to_somatic"
+                    df=physical_visits_to_somatic(),
+                    name="physical_visits_to_somatic",
                 ),
             ),
             lookbehind_days=interval_days,
@@ -304,16 +229,20 @@ class FeatureSpecifier:
                 NamedDataframe(df=skema_1(), name="skema_1"),
                 NamedDataframe(df=tvangsindlaeggelse(), name="tvangsindlaeggelse"),
                 NamedDataframe(
-                    df=tvangstilbageholdelse(), name="tvangstilbageholdelse"
+                    df=tvangstilbageholdelse(),
+                    name="tvangstilbageholdelse",
                 ),
                 NamedDataframe(
-                    df=paa_grund_af_farlighed(), name="paa_grund_af_farlighed"
+                    df=paa_grund_af_farlighed(),
+                    name="paa_grund_af_farlighed",
                 ),  # røde papirer
                 NamedDataframe(
-                    df=af_helbredsmaessige_grunde(), name="af_helbredsmaessige_grunde"
+                    df=af_helbredsmaessige_grunde(),
+                    name="af_helbredsmaessige_grunde",
                 ),  # gule papirer
                 NamedDataframe(
-                    df=skema_2_without_nutrition(), name="skema_2_without_nutrition"
+                    df=skema_2_without_nutrition(),
+                    name="skema_2_without_nutrition",
                 ),
                 NamedDataframe(df=medicinering(), name="medicinering"),
                 NamedDataframe(df=ect(), name="ect"),
@@ -360,7 +289,8 @@ class FeatureSpecifier:
                     name="skema_2_without_nutrition",
                 ),
                 NamedDataframe(
-                    df=medicinering(unpack_to_intervals=True), name="medicinering"
+                    df=medicinering(unpack_to_intervals=True),
+                    name="medicinering",
                 ),
                 NamedDataframe(df=ect(unpack_to_intervals=True), name="ect"),
                 NamedDataframe(
@@ -428,7 +358,8 @@ class FeatureSpecifier:
         structured_sfi = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=broeset_violence_checklist(), name="broeset_violence_checklist"
+                    df=broeset_violence_checklist(),
+                    name="broeset_violence_checklist",
                 ),
                 NamedDataframe(df=selvmordsrisiko(), name="selvmordsrisiko"),
                 NamedDataframe(df=hamilton_d17(), name="hamilton_d17"),
@@ -462,7 +393,6 @@ class FeatureSpecifier:
 
     def _get_text_embedding_features_specs(
         self,
-        resolve_multiple: Callable,
         interval_days: Sequence[float],
     ) -> list[TextPredictorSpec]:
         """Get bow all sfis specs"""
@@ -496,7 +426,7 @@ class FeatureSpecifier:
                         embedding_fn_kwargs=[{"model": tfidf_model}],  # type: ignore
                         fallback=np.nan,
                     ),
-                ]
+                ],
             )
 
         return return_list
@@ -591,7 +521,6 @@ class FeatureSpecifier:
                 interval_days=[7],
             )  # type: ignore
 
-        resolve_multiple = [concatenate]
         interval_days = [7.0, 30.0]
 
         text_features = self._get_text_features_specs(
@@ -600,7 +529,6 @@ class FeatureSpecifier:
         )
 
         text_embedding_features = self._get_text_embedding_features_specs(
-            resolve_multiple=concatenate,
             interval_days=interval_days,
         )
 
