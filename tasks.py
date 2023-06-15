@@ -16,6 +16,7 @@ If you do not wish to use invoke you can simply delete this file.
 """
 
 
+import os
 import platform
 import re
 import shutil
@@ -293,8 +294,7 @@ def install(
     if msg:
         echo_header(f"{msg_type.DOING} Installing project")
 
-    extras = ".[dev,tests,docs]" if NOT_WINDOWS else ".[dev,tests,docs]"
-    install_cmd = f"pip install -e {extras} {pip_args}"
+    install_cmd = f"pip install -r requirements.txt {pip_args}"
 
     if venv_path is not None and NOT_WINDOWS:
         with c.prefix(f"source {venv_path}/bin/activate"):
@@ -512,7 +512,29 @@ def docs(c: Context, view: bool = False, view_only: bool = False):
             c.run("open docs/_build/html/index.html")
 
 @task
-def update(c: Context):
+def update_deps(c: Context):
     c.run("pip install --upgrade -r requirements.txt")
-    c.run("pip freeze > frozen_requirements.txt")
-        
+    
+    frozen_requirements_filename = "frozen-requirements.txt"
+    c.run(f"pip freeze > {frozen_requirements_filename}")
+    # Remove all files in the frozen-requirements.txt that contain "@"
+
+    # Create a temporary file
+    temp_file_path = 'temp.txt'
+
+    # Open the file in read mode
+    with open(frozen_requirements_filename, 'r') as file:
+        # Open the temporary file in write mode
+        with open(temp_file_path, 'w') as temp_file:
+            # Iterate over the lines in the file
+            for line in file:
+                # Check if the line contains "@"
+                if '@' not in line:
+                    # Write the line to the temporary file
+                    temp_file.write(line)
+
+    # Remove the original file
+    os.remove(frozen_requirements_filename)
+
+    # Rename the temporary file to the original file name
+    os.rename(temp_file_path, frozen_requirements_filename)
