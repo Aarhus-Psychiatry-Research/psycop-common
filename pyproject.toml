@@ -1,9 +1,4 @@
-[build-system]
-requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "psycop"
 version = "0.82.0"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"}
@@ -17,7 +12,6 @@ classifiers = [
   "Programming Language :: Python :: 3.10"
 ]
 requires-python = ">=3.9"
-dependencies = [a]
 
 [project.license]
 file = "LICENSE"
