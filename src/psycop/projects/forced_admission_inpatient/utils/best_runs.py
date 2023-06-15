@@ -7,9 +7,7 @@ from typing import Any, Literal, Optional
 
 import pandas as pd
 import polars as pl
-from psycop.common.model_training.config_schemas.conf_utils import (
-    FullConfigSchema,
-)
+from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from sklearn.pipeline import Pipeline
 
@@ -20,7 +18,9 @@ class RunGroup:
 
     @property
     def group_dir(self) -> Path:
-        return Path(f"E:/shared_resources/t2d/model_eval/{self.name}")
+        return Path(
+            f"E:/shared_resources/forced_admissions_inpatient/pipeline_eval/{self.name}",
+        )
 
     @property
     def flattened_ds_dir(self) -> Path:
@@ -58,7 +58,7 @@ SplitNames = Literal["train", "test", "val"]
 
 
 @dataclass
-class ModelRun:
+class Run:
     group: RunGroup
     name: str
     pos_rate: float
@@ -135,7 +135,6 @@ def df_to_eval_dataset(
         outcome_timestamps=df["outcome_timestamps"],
         age=df["age"],
         is_female=df["is_female"],
-        exclusion_timestamps=df["exclusion_timestamps"],
         pred_time_uuids=df["pred_time_uuids"],
         custom_columns={col: df[col] for col in custom_columns}
         if custom_columns

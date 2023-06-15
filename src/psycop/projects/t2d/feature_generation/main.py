@@ -28,7 +28,7 @@ from psycop.projects.t2d.t2d_config import (
     get_t2d_feature_specifications,
     get_t2d_project_info,
 )
-from timeseriesflattener.feature_spec_objects import _AnySpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 log = logging.getLogger()
 
@@ -37,7 +37,7 @@ log = logging.getLogger()
 def _generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
-    feature_specs: list[_AnySpec],
+    feature_specs: list[AnySpec],
 ) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
@@ -64,7 +64,7 @@ def _generate_feature_set(
 def generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
-    feature_specs: list[_AnySpec],
+    feature_specs: list[AnySpec],
 ) -> Path:
     # Run elements that are required before wandb init first,
     # then run the rest in main so you can wrap it all in

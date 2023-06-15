@@ -124,8 +124,8 @@ def check_required_columns(
         # Check for NaN in cols
         na_prop_failures = get_na_prop_failures(
             df=df,
-            allowed_nan_value_prop=allowed_nan_value_prop,
             col=col,
+            allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         for f_type in dtype_failures, na_prop_failures:
@@ -195,8 +195,8 @@ def check_raw_df(
     source_failures += check_required_columns(
         df=df,
         required_columns=required_columns,
-        allowed_nan_value_prop=allowed_nan_value_prop,
         expected_val_dtypes=expected_val_dtypes,
+        allowed_nan_value_prop=allowed_nan_value_prop,
     )
 
     # Check for duplicates

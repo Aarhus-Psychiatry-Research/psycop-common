@@ -20,22 +20,12 @@ The shared code across the PSYCOP projects.
 <!-- end short-description -->
 
 ## Installation
-
-We recommend installing straight into your `src` folder, so you can make modifications to the libraries when required:
-
 ```bash
-pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-common#egg=psycop
+git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
+cd psycop-common
+<activate virtual environment (conda, .venv etc.) here>
+pip install -e ".[dev,text,tests]"
 ```
-
-## Migrating from the polyrepos
-* Install into your environment using the command above
-* Fix imports. Use `cmd+shift+f` to replace:
-
-`psycop_feature_generation.` -> `psycop.common.feature_generation.`
-
-`psycop_model_training.` -> `psycop.common.model_training.`
-
-`psycop_model_evaluation.` -> `psycop.common.model_evaluation.`
 
 <!--
 To see more examples, see the [documentation].
