@@ -16,7 +16,7 @@ from psycop.common.feature_generation.data_checks.flattened.data_integrity impor
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
-from timeseriesflattener.feature_spec_objects import StaticSpec, TemporalSpec
+from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
 
 log = logging.getLogger(__name__)
 

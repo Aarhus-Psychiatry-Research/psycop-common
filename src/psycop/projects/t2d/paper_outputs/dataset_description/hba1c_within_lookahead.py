@@ -19,9 +19,9 @@ from psycop.common.model_training.preprocessing.pre_split.processors.row_filter 
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
-from timeseriesflattener.feature_spec_objects import OutcomeSpec
+from timeseriesflattener.aggregation_fns import latest
+from timeseriesflattener.feature_specs.single_specs import OutcomeSpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
-from timeseriesflattener.resolve_multiple_functions import latest
 
 
 def get_eligible_prediction_times_for_pipeline(run: PipelineRun) -> pd.DataFrame:
@@ -114,7 +114,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             OutcomeSpec(
                 feature_name="hba1c",
                 values_df=hba1c_timestamps,
-                resolve_multiple_fn=latest,
+                aggregation_fn=latest,
                 fallback=np.nan,
                 entity_id_col_name="dw_ek_borger",
                 incident=False,
@@ -123,7 +123,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             OutcomeSpec(
                 feature_name="t2d_lab_result",
                 values_df=any_lab_result_timestamps,
-                resolve_multiple_fn=latest,
+                aggregation_fn=latest,
                 fallback=np.nan,
                 entity_id_col_name="dw_ek_borger",
                 incident=False,

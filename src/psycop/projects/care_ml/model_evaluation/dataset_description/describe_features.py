@@ -18,7 +18,7 @@ feature_specs = FeatureSpecifier(
 selected_specs = [
     spec
     for spec in feature_specs
-    if "pred" in spec.get_col_str() or "outc" in spec.get_col_str()
+    if "pred" in spec.get_output_col_name() or "outc" in spec.get_output_col_name()
 ]
 
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
