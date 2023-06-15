@@ -21,11 +21,18 @@ The shared code across the PSYCOP projects.
 
 ## Installation
 
-We recommend installing straight into your `src` folder, so you can make modifications to the libraries when required:
+Clone the repository using the following command:
 
 ```bash
-pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-common#egg=psycop
+git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
 ```
+
+Install dependencies:
+
+```bash
+pip install . -e
+```
+
 
 ## Migrating from the polyrepos
 * Install into your environment using the command above
