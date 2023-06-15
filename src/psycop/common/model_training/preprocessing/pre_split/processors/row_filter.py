@@ -152,7 +152,7 @@ class PreSplitRowFilter:
                 n_days = self.pre_split_cfg.min_lookahead_days
             elif direction == "behind":
                 if self.pre_split_cfg.lookbehind_combination is not None:
-                    n_days = min(self.pre_split_cfg.lookbehind_combination)
+                    n_days = max(self.pre_split_cfg.lookbehind_combination)
                 else:
                     n_days = None
             else:
@@ -182,6 +182,11 @@ class PreSplitRowFilter:
         if self.pre_split_cfg.min_age:
             dataset = self._keep_only_if_older_than_min_age(dataset)
 
-        dataset = self._drop_rows_after_event_time(dataset=dataset)
+        if self.pre_split_cfg.drop_rows_after_outcome:
+            if not self.data_cfg.col_name.outcome_timestamp:
+                raise ValueError(
+                    "Can't drop rows after outcome if outcome timestamp is not specified in config.",
+                )
+            dataset = self._drop_rows_after_event_time(dataset=dataset)
 
         return dataset

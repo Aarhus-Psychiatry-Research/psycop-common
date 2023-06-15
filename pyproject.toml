@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psycop"
-version = "0.75.0"
+version = "0.82.0"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"}
 ]
@@ -23,9 +23,9 @@ dependencies = [
   "xgboost>=1.6.1,<1.8.0",
   "hydra-core>=1.1.13,<1.4.0",
   "matplotlib>=3.5.2,<3.8.0",
-  "wandb>=0.12.21,<0.16.0",
+  "wandb==0.13.10",
   "tabulate>=0.8.10,<0.10.0",
-  "optuna>=2.10.1,<3.2.0",
+  "optuna>=2.10.1,<3.3.0",
   "hydra-optuna-sweeper>=1.2.0,<1.3.0",
   "hydra-joblib-launcher>=1.2.0, <1.3.0",
   "pyarrow>=9.0.0",
@@ -36,7 +36,7 @@ dependencies = [
   "scikit-learn>=1.1.2",
   "deepchecks>=0.8.0",
   "dill>=0.3.0",
-  "SQLAlchemy>=1.4.41, <2.0.16",
+  "SQLAlchemy>=1.4.41, <2.0.17",
   "pyodbc>=4.0.34, <4.0.40",
   "pydantic>=1.9.0",
   "psutil>=5.9.1, <6.0.0",
@@ -44,12 +44,12 @@ dependencies = [
   "numpy>=1.23.3",
   "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
   "plotnine==0.10.1",
-  "timeseriesflattener",
+  "timeseriesflattener==1.0.0",
   "scipy==1.10.1",
-  "polars==0.17.12",
+  "polars==0.18.2",
   "tableone",
   "shap",
-  "typing_extensions==4.5.0", # Pins the typing extension due to a bug a buggy interaction with pydantic and Literal, see https://github.com/SeldonIO/alibi/issues/927 and https://github.com/pydantic/pydantic/issues/545
+  "typing_extensions==4.6.3", # Pins the typing extension due to a bug a buggy interaction with pydantic and Literal, see https://github.com/SeldonIO/alibi/issues/927 and https://github.com/pydantic/pydantic/issues/545
   "patchworklib==0.6.1",
 ]
 
@@ -61,7 +61,7 @@ dev = [
   "cruft",
   "pyright==1.1.305",
   "pre-commit==3.3.2",
-  "ruff==0.0.269", # important that these match the pre-commit hooks
+  "ruff==0.0.272", # important that these match the pre-commit hooks
   "black[jupyter]==23.3.0", # important that these match the pre-commit hooks
   "pandas-stubs", # type stubs for pandas
   "invoke",
@@ -69,7 +69,7 @@ dev = [
 ]
 tests = [
   "pytest>=7.1.3,<7.4.0",
-  "pytest-cov>=3.0.0,<4.1.0",
+  "pytest-cov>=3.0.0,<4.2.0",
   "pytest-xdist>=3.0.0,<3.4.0",
   "pytest-sugar>=0.9.4,<0.10.0",
   "tox",
@@ -177,11 +177,17 @@ mypy-init-return = true
 suppress-none-returning = true
 
 [tool.ruff.isort]
-known-third-party = ["wandb"]
+known-third-party = ["wandb", "joblib"]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 10
+
+[tool.ruff.per-file-ignores]
+"src/psycop/projects/care_ml/model_evaluation/figures/feature_importance/shap/get_shap_values.py" = ["I001"]
+"src/psycop/projects/care_ml/model_evaluation/data/load_true_data.py" = ["I001"]
+"src/psycop/common/global_utils/cache.py" = ["I001"]
+
 
 [tool.semantic_release]
 branch = "main"

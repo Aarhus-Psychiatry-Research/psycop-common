@@ -5,7 +5,7 @@ import pandas as pd
 import polars as pl
 import shap
 from psycop.common.global_utils.cache import mem
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 from sklearn.pipeline import Pipeline
 
 
@@ -58,7 +58,7 @@ class ShapBundle:
         * shap_value (e.g. 0.1)
         Each row represents an observation of a feature at a prediction time.
         """
-        return get_long_shap_df(X=self.X, shap_values=self.shap_values)
+        return get_long_shap_df(X=self.X, shap_values=self.shap_values)  # type: ignore
 
 
 def generate_shap_values_from_pipe(
@@ -85,15 +85,15 @@ def generate_shap_values_from_pipe(
 
 @mem.cache
 def get_shap_bundle_for_best_run(
-    run_name: str = EVAL_RUN.name,
+    run: PipelineRun,
     n_rows: Optional[int] = 10_000,
     cache_ver: float = 0.1,
 ) -> ShapBundle:
-    print(f"Generating shap values for {run_name}, with cache version {cache_ver}")
+    print(f"Generating shap values for {run.name}, with cache version {cache_ver}")
 
     flattened_ds: pl.DataFrame = (
         pl.concat(
-            EVAL_RUN.get_flattened_split_as_lazyframe(split=split) for split in ["train", "val"]  # type: ignore
+            run.inputs.get_flattened_split_as_lazyframe(split=split) for split in ["train", "val"]  # type: ignore
         )
         .collect()
         .sample(n=n_rows)
@@ -102,7 +102,7 @@ def get_shap_bundle_for_best_run(
     if n_rows:
         flattened_ds = flattened_ds.sample(n=n_rows)
 
-    cfg = EVAL_RUN.cfg
+    cfg = run.inputs.cfg
     predictor_cols = [
         c for c in flattened_ds.columns if c.startswith(cfg.data.pred_prefix)
     ]
@@ -113,7 +113,7 @@ def get_shap_bundle_for_best_run(
         and str(cfg.preprocessing.pre_split.min_lookahead_days) in c
     ]
 
-    pipe = EVAL_RUN.pipe
+    pipe = run.pipeline_outputs.pipe
 
     shap_values = generate_shap_values_from_pipe(
         features=flattened_ds.lazy().select(predictor_cols),
@@ -149,12 +149,14 @@ def get_top_i_features_by_mean_abs_shap(
 
 
 if __name__ == "__main__":
+    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+
     shap_bundle = get_shap_bundle_for_best_run(
-        run_name=EVAL_RUN.name,
+        run=BEST_EVAL_PIPELINE,
         n_rows=1_000,
         cache_ver=0.1,
     )
 
-    long_shap_df = shap_bundle.get_long_shap_df()
+    long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore
 
     pass

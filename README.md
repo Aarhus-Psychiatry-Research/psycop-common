@@ -4,6 +4,9 @@
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-common)][pypi status] -->
 [![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-common/actions/workflows/tests.yml/badge.svg)][tests]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/charliermarsh/ruff)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+![python versions](https://img.shields.io/badge/Python=3.9-blue)
 
 [pypi status]: https://pypi.org/project/psycop-common/
 [tests]: https://github.com/Aarhus-Psychiatry-Research/psycop-common/actions?workflow=Tests
@@ -17,22 +20,12 @@ The shared code across the PSYCOP projects.
 <!-- end short-description -->
 
 ## Installation
-
-We recommend installing straight into your `src` folder, so you can make modifications to the libraries when required:
-
 ```bash
-pip install --src ./src -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-common#egg=psycop
+git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
+cd psycop-common
+<activate virtual environment (conda, .venv etc.) here>
+pip install -e ".[dev,text,tests]"
 ```
-
-## Migrating from the polyrepos
-* Install into your environment using the command above
-* Fix imports. Use `cmd+shift+f` to replace:
-
-`psycop_feature_generation.` -> `psycop.feature_generation.`
-
-`psycop_model_training.` -> `psycop.model_training.`
-
-`psycop_model_evaluation.` -> `psycop.model_evaluation.`
 
 <!--
 To see more examples, see the [documentation].

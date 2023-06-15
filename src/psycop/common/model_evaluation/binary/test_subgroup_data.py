@@ -24,7 +24,6 @@ def test_auroc_by_group():
         3,1,0.3, # Bad prediction
         3,0,0.9, # Bad prediction
         3,0,0.8, # Bad prediction
-
         """,
     )
 

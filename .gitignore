@@ -157,7 +157,6 @@ pytest-coverage.txt
 
 #other
 *test_load_data.py
-wandb
 poetry.lock
 *.html
 
@@ -187,3 +186,13 @@ src/psycop/tests/test_eval_results/*
 # Ruff
 .ruff_cache
 *.csv
+*.docx
+src/**/*.md
+
+# Wandb
+multirun
+wandb
+
+# Ignore the ouptuts for publishing folder
+**/outputs_for_publishing
+pytest.xml

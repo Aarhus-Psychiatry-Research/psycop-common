@@ -4,8 +4,10 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, FIGURES_PATH, PN_THEME
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.paper_outputs.config import (
+    T2D_PN_THEME,
+)
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
 def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
@@ -24,22 +26,20 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
         + pn.labs(x="Months to outcome", y="Sensitivity")
-        + PN_THEME
+        + T2D_PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
         + pn.scale_color_brewer(type="qual", palette=2)
-        + pn.labs(color="PPR")
+        + pn.labs(color="Predicted Positive Rate")
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
-            legend_position=(0.3, 0.85),
+            legend_position=(0.3, 0.88),
         )
     )
 
     for value in df["actual_positive_rate"].unique():
         p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1)
 
-    plot_path = FIGURES_PATH / "sensitivity_by_time_to_event.png"
-    p.save(plot_path, width=7, height=7)
     return p
 
 
@@ -58,10 +58,15 @@ def t2d_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
 def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     dfs = []
 
+    if eval_dataset.outcome_timestamps is None:
+        raise ValueError(
+            "The outcome timestamps must be provided in order to calculate the sensitivity by time to event.",
+        )
+
     for ppr in [0.01, 0.03, 0.05]:
         df = get_sensitivity_by_timedelta_df(
             y=eval_dataset.y,
-            y_pred=eval_dataset.get_predictions_for_positive_rate(
+            y_hat=eval_dataset.get_predictions_for_positive_rate(
                 desired_positive_rate=ppr,
             )[0],
             time_one=eval_dataset.pred_timestamps,
@@ -84,11 +89,17 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     return p
 
 
-def t2d_sensitivity_by_time_to_event(run: ModelRun) -> pn.ggplot:
-    eval_ds = run.get_eval_dataset()
+def t2d_sensitivity_by_time_to_event(run: PipelineRun) -> pn.ggplot:
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
-    return sensitivity_by_time_to_event(eval_dataset=eval_ds)
+    p = sensitivity_by_time_to_event(eval_dataset=eval_ds)
+
+    p.save(run.paper_outputs.paths.figures, width=7, height=7)
+
+    return p
 
 
 if __name__ == "__main__":
-    t2d_sensitivity_by_time_to_event(run=EVAL_RUN)
+    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+
+    t2d_sensitivity_by_time_to_event(run=BEST_EVAL_PIPELINE)

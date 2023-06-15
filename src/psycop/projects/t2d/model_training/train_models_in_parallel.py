@@ -45,7 +45,7 @@ def main(
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
         train_single_model_file_path=Path(
-            "src/t2d/model_training/train_model_from_application_module.py",
+            "src/psycop/projects/t2d/model_training/train_model_from_application_module.py",
         ),
     )
 
@@ -57,7 +57,7 @@ def train_models_in_parallel(dataset_override_path: Optional[Path] = None):
     # before adding wandb_alert_on_exception decorator
     cfg, wandb_group = setup(
         config_file_name=CONFIG_FILE_NAME,
-        application_config_dir_relative_path="../../../../t2d/model_training/config/",
+        application_config_dir_relative_path="../../../../psycop/projects/t2d/model_training/config/",
     )
 
     main(

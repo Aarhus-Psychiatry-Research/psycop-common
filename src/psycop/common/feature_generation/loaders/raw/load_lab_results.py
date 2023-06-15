@@ -324,7 +324,7 @@ def arterial_p_glc(
 
 
 @data_loaders.register("urinary_glc")
-def urinary_p_glc(
+def urinary_glc(
     n_rows: int | None = None,
     values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:

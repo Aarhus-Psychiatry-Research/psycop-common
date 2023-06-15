@@ -1,3 +1,5 @@
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.get_shap_values import (
         get_shap_bundle_for_best_run,
@@ -6,7 +8,7 @@ if __name__ == "__main__":
     long_shap_df = get_shap_bundle_for_best_run(
         n_rows=100_000,
         cache_ver=0.01,
-    ).get_long_shap_df()
+    ).get_long_shap_df()  # type: ignore
 
     import polars as pl
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.shap_table import (
@@ -20,9 +22,7 @@ if __name__ == "__main__":
 
     plotting_df = pl.from_pandas(long_shap_df)
 
-    from psycop.projects.t2d.paper_outputs.config import FIGURES_PATH, OUTPUT_MAPPING
-
-    shap_figures_path = FIGURES_PATH / OUTPUT_MAPPING.shap_plots
+    shap_figures_path = BEST_EVAL_PIPELINE.paper_outputs.paths.figures / "shap_plot.png"
     shap_figures_path.mkdir(exist_ok=True, parents=True)
 
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.plot_shap import (

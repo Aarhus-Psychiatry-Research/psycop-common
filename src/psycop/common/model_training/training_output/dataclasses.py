@@ -33,7 +33,7 @@ class EvalDataset(BaseModel):
     ids: pd.Series
     pred_time_uuids: pd.Series
     pred_timestamps: pd.Series
-    outcome_timestamps: pd.Series
+    outcome_timestamps: Optional[pd.Series] = None
     y: pd.Series
     y_hat_probs: pd.Series
     age: Optional[pd.Series] = None

@@ -1,35 +1,14 @@
-import pandas as pd
 import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
-from psycop.projects.t2d.paper_outputs.config import COLORS, EVAL_RUN, PN_THEME
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
+    t2d_plot_robustness,
+)
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 
 
-def plot_robustness(df: pd.DataFrame) -> pn.ggplot:
-    p = (
-        pn.ggplot(df, pn.aes(x="age_binned", y="auroc"))
-        + pn.geom_bar(
-            pn.aes(x="age_binned", y="proportion_of_n"),
-            stat="identity",
-            fill=COLORS.background,
-        )
-        + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-            color=COLORS.primary,
-            size=0.5,
-        )
-        + pn.geom_path(group=1, color=COLORS.primary, size=1)
-        + pn.xlab("Age")
-        + pn.ylab("AUROC / Proportion of patients")
-        + PN_THEME
-    )
-
-    return p
-
-
-def auroc_by_age(run: ModelRun) -> pn.ggplot:
-    print("Plotting AUC by age")
-    eval_ds = run.get_eval_dataset()
+def t2d_auroc_by_age(run: PipelineRun) -> pn.ggplot:
+    eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = get_auroc_by_input_df(
         eval_dataset=eval_ds,
@@ -40,8 +19,16 @@ def auroc_by_age(run: ModelRun) -> pn.ggplot:
         confidence_interval=True,
     )
 
-    return plot_robustness(df)
+    p = t2d_plot_robustness(
+        df,
+        x_column="age_binned",
+        line_y_col_name="auroc",
+        xlab="Age",
+        rotate_x_axis_labels_degrees=45,
+    )
+
+    return p
 
 
 if __name__ == "__main__":
-    auroc_by_age(run=EVAL_RUN)
+    t2d_auroc_by_age(run=BEST_EVAL_PIPELINE)

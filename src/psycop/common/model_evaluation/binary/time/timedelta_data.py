@@ -3,6 +3,7 @@ from typing import Literal
 
 import numpy as np
 import pandas as pd
+import polars as pl
 from psycop.common.model_evaluation.binary.utils import (
     auroc_by_group,
     sensitivity_by_group,
@@ -43,7 +44,7 @@ def get_timedelta_series(
 
 def get_timedelta_df(
     y: Iterable[int],
-    y_hat: Iterable[float],
+    output: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -53,11 +54,28 @@ def get_timedelta_df(
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
 ) -> pd.DataFrame:
-    """Get a timedelta dataframe with the time difference between two timestamps."""
+    """Get a timedelta dataframe with the time difference between two timestamps.
+
+    Args:
+        y (Iterable[int]): True labels
+        output (Iterable[float]): Model predictions. This can be either be probabilities or predictions, depending on whether the timedelta dataframe will be used for calculating sensitivity or AUROC.
+        time_one (Iterable[pd.Timestamp]): Timestamp for time one
+        time_two (Iterable[pd.Timestamp]): Timestamp for time two
+        direction (Literal[&quot;t1): The order of the timestamps in the calculation of time difference. Takes either "t1-t2" or "t2-t1"
+        bins (Sequence[float]): Bin values to aggregate by.
+        bin_unit (TIMEDELTA_STRINGS): The unit of bin values, such as hours or days. Takes "h", "D", "M", "Q", or "Y".
+        bin_continuous_input (bool, optional): Whether to aggregate continuous output by bins. Defaults to True.
+        drop_na_events (bool, optional): Whether to drop missing values from the first timestamp. Defaults to True.
+        min_n_in_bin (int, optional): Minimum number of samples in included bins. If there are less than n samples in a bin, it will be set to NA. Defaults to 5.
+
+    Returns:
+        pd.DataFrame: Timedelta dataframe
+    """
+
     df = pd.DataFrame(
         {
             "y": y,
-            "y_hat": y_hat,
+            "output": output,
             "t1_timestamp": time_one,
             "t2_timestamp": time_two,
         },
@@ -94,7 +112,7 @@ def get_timedelta_df(
 
 def get_auroc_by_timedelta_df(
     y: Iterable[int],
-    y_pred_proba: Iterable[float],
+    y_hat_probs: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -104,13 +122,14 @@ def get_auroc_by_timedelta_df(
     bin_continuous_input: bool = True,
     drop_na_events: bool = True,
     min_n_in_bin: int = 5,
+    n_bootstraps: int = 100,
 ) -> pd.DataFrame:
     """Create dataframe for plotting performance metric from time to or from
     some event (e.g. time of diagnosis, time from first visit).
 
     Args:
         y: True labels
-        y_pred_proba: The predicted probabilities by the function.
+        y_hat_probs: The predicted probabilities by the function.
         metric_fn: Function to calculate metric
         time_one: Timestamps for time one (e.g. first visit).
         time_two: Timestamps for time two.
@@ -122,12 +141,13 @@ def get_auroc_by_timedelta_df(
         bin_continuous_input: Whether to bin input. Defaults to True.
         drop_na_events: Whether to drop rows where the event is NA. Defaults to True.
         min_n_in_bin: Minimum number of rows in a bin to include in output. Defaults to 10.
+        n_bootstraps: number of samples for bootstrap resampling
     Returns:
         pd.DataFrame: Dataframe ready for plotting where each row represents a bin.
     """
     df = get_timedelta_df(
         y=y,
-        y_hat=y_pred_proba,
+        output=y_hat_probs,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -136,18 +156,23 @@ def get_auroc_by_timedelta_df(
         bin_continuous_input=bin_continuous_input,
         drop_na_events=drop_na_events,
         min_n_in_bin=min_n_in_bin,
-    )
+    ).rename(columns={"output": "y_hat_probs"})
 
-    return auroc_by_group(
+    df = df.rename({"y_hat": "y_hat_probs"}, axis=1)
+
+    grouped_df = auroc_by_group(
         df=df,
         groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
+        n_bootstraps=n_bootstraps,
     )
+
+    return grouped_df
 
 
 def get_sensitivity_by_timedelta_df(
     y: Iterable[int],
-    y_pred: Iterable[float],
+    y_hat: Iterable[float],
     time_one: Iterable[pd.Timestamp],
     time_two: Iterable[pd.Timestamp],
     direction: Literal["t1-t2", "t2-t1"],
@@ -163,7 +188,7 @@ def get_sensitivity_by_timedelta_df(
 
     Args:
         y: True labels
-        y_pred: The predicted class.
+        y_hat: The predicted class.
         metric_fn: Function to calculate metric
         time_one: Timestamps for time one (e.g. first visit).
         time_two: Timestamps for time two.
@@ -180,7 +205,7 @@ def get_sensitivity_by_timedelta_df(
     """
     df = get_timedelta_df(
         y=y,
-        y_hat=y_pred,
+        output=y_hat,
         time_one=time_one,
         time_two=time_two,
         direction=direction,
@@ -189,10 +214,50 @@ def get_sensitivity_by_timedelta_df(
         bin_continuous_input=bin_continuous_input,
         drop_na_events=drop_na_events,
         min_n_in_bin=min_n_in_bin,
-    )
+    ).rename(columns={"output": "y_hat"})
 
     return sensitivity_by_group(
         df=df,
         groupby_col_name="unit_from_event_binned",
         confidence_interval=confidence_interval,
     )
+
+
+def get_time_from_first_positive_to_diagnosis_df(
+    input_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """input_df must contain columns:
+        y: 1 or 0
+        pred: 1 or 0
+        id: Patient ID
+        pred_timestamps: Timestamp of prediction
+        outcome_timestamps: Timestamp of outcome
+    Returns a dataframe with the additional columns:
+        years_from_pred_to_event: Years from first positive prediction to event
+        days_from_pred_to_event: Days from first positive prediction to event
+    """
+    df = pl.from_pandas(input_df).with_columns(
+        (pl.col("outcome_timestamps") - pl.col("pred_timestamps")).alias(
+            "time_from_pred_to_event",
+        ),
+    )
+
+    ever_positives = df.filter(
+        pl.col("time_from_pred_to_event").is_not_null() & pl.col("pred") == 1,
+    )
+
+    plot_df = (
+        ever_positives.sort("time_from_pred_to_event", descending=True)
+        .groupby("id")
+        .head(1)
+        .with_columns(
+            (pl.col("time_from_pred_to_event").dt.days() / 365.25).alias(
+                "years_from_pred_to_event",
+            ),
+            (pl.col("time_from_pred_to_event").dt.days()).alias(
+                "days_from_pred_to_event",
+            ),
+        )
+    ).to_pandas()
+
+    return plot_df

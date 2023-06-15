@@ -6,29 +6,31 @@ from psycop.projects.t2d.paper_outputs.config import (
     BEST_POS_RATE,
     DEVELOPMENT_GROUP,
 )
-from psycop.projects.t2d.utils.best_runs import ModelRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
 
 
-def get_performance_for_group(group: RunGroup, pos_rate: float) -> pl.DataFrame:
-    best_runs_by_lookahead = group.get_best_runs_by_lookahead()
+def get_performance_for_group(run_group: RunGroup, pos_rate: float) -> pl.DataFrame:
+    best_runs_by_lookahead = run_group.get_best_runs_by_lookahead()
 
     performance_dfs: list[pl.DataFrame] = []
 
     for run_name in best_runs_by_lookahead["run_name"]:
-        run_object = ModelRun(group=group, name=run_name, pos_rate=pos_rate)
+        run_object = PipelineRun(group=run_group, name=run_name, pos_rate=pos_rate)
 
         performance_dfs.append(get_performance_for_run(run=run_object))
 
     return pl.concat(performance_dfs, how="vertical")
 
 
-def get_performance_for_run(run: ModelRun) -> pl.DataFrame:
+def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
     return_dict = {
-        "model_name": run.cfg.model.name,
-        "lookahead_days": float(run.cfg.preprocessing.pre_split.min_lookahead_days),
+        "model_name": run.inputs.cfg.model.name,
+        "lookahead_days": float(
+            run.inputs.cfg.preprocessing.pre_split.min_lookahead_days,
+        ),
         "run_name": run.name,
-        "auroc": run.get_auroc(),
-        "mean_warning_days": get_mean_days_from_first_positive_to_diagnosis_for_run(
+        "auroc": run.pipeline_outputs.get_auroc(),
+        "median": get_median_days_from_first_positive_to_diagnosis_for_run(
             run=run,
         ),
     }
@@ -36,16 +38,16 @@ def get_performance_for_run(run: ModelRun) -> pl.DataFrame:
     return pl.DataFrame(return_dict)
 
 
-def get_mean_days_from_first_positive_to_diagnosis_for_run(run: ModelRun) -> float:
+def get_median_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -> float:
     return days_from_first_positive_to_diagnosis(
-        eval_dataset=run.get_eval_dataset(),
-        positive_rate=run.pos_rate,
-        aggregation_method="mean",
+        eval_dataset=run.pipeline_outputs.get_eval_dataset(),
+        positive_rate=run.paper_outputs.pos_rate,
+        aggregation_method="median",
     )
 
 
 def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataFrame:
-    df = get_performance_for_group(group=run_group, pos_rate=BEST_POS_RATE)
+    df = get_performance_for_group(run_group=run_group, pos_rate=BEST_POS_RATE)
 
     auroc_df = df.pivot(
         index=["model_name"],
@@ -61,12 +63,12 @@ def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataF
     warning_days_df = df.pivot(
         index=["model_name"],
         columns=["lookahead_days"],
-        values=["mean_warning_days"],
+        values=["median"],
         aggregate_function="first",
     ).select(
         pl.col("model_name"),
         pl.lit(
-            f"Mean years from first positive to event at {BEST_POS_RATE} positive rate",
+            f"Median years from first positive to event at {BEST_POS_RATE} predicted positive rate",
         ).alias("measure"),
         (pl.all().exclude("model_name") / 365.25).round(1),
     )

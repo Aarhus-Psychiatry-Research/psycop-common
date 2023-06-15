@@ -20,7 +20,7 @@ import platform
 import re
 import shutil
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from invoke import Context, Result, task
 
@@ -32,6 +32,17 @@ SUPPORTED_PYTHON_VERSIONS = [
 ]
 
 NOT_WINDOWS = platform.system() != "Windows"
+
+
+def on_ovartaci() -> bool:
+    import platform
+
+    if platform.node() == "RMAPPS1279":
+        print(f"\n{msg_type.GOOD} On Ovartaci")
+        return True
+
+    print(f"\n{msg_type.GOOD} Not on Ovartaci")
+    return False
 
 
 def echo_header(msg: str):
@@ -179,14 +190,12 @@ def branch_exists_on_remote(c: Context) -> bool:
     return branch_name in branch_exists_result.stdout
 
 
-def update_branch(c: Context):
+def push_to_branch(c: Context):
     echo_header(f"{msg_type.SYNC} Syncing branch with remote")
 
     if not branch_exists_on_remote(c):
         c.run("git push --set-upstream origin HEAD")
     else:
-        print("Pulling")
-        c.run("git pull")
         print("Pushing")
         c.run("git push")
 
@@ -199,21 +208,22 @@ def create_pr(c: Context):
 
 
 def update_pr(c: Context):
-    echo_header(f"{msg_type.COMMUNICATE} Syncing PR")
-    # Get current branch name
-    branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
-    pr_result: Result = c.run(
-        "gh pr list --state OPEN",
-        pty=False,
-        hide=True,
-    )
+    if not on_ovartaci():
+        echo_header(f"{msg_type.COMMUNICATE} Syncing PR")
+        # Get current branch name
+        branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
+        pr_result: Result = c.run(
+            "gh pr list --state OPEN",
+            pty=False,
+            hide=True,
+        )
 
-    if branch_name not in pr_result.stdout:
-        create_pr(c)
-    else:
-        open_web = input("Open in browser? [y/n] ")
-        if "y" in open_web.lower():
-            c.run("gh pr view --web", pty=NOT_WINDOWS)
+        if branch_name not in pr_result.stdout:
+            create_pr(c)
+        else:
+            open_web = input("Open in browser? [y/n] ")
+            if "y" in open_web.lower():
+                c.run("gh pr view --web", pty=NOT_WINDOWS)
 
 
 def exit_if_error_in_stdout(result: Result):
@@ -263,8 +273,13 @@ def pre_commit(c: Context, auto_fix: bool):
 
 @task
 def static_type_checks(c: Context):
-    echo_header(f"{msg_type.CLEAN} Running static type checks")
-    c.run("tox -e type", pty=NOT_WINDOWS)
+    if not on_ovartaci():
+        echo_header(f"{msg_type.CLEAN} Running static type checks")
+        c.run("tox -e type", pty=NOT_WINDOWS)
+    else:
+        print(
+            f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",
+        )
 
 
 @task
@@ -338,10 +353,10 @@ def update(c: Context):
 @task(iterable="pytest_args")
 def test(
     c: Context,
-    pytest_args: List[str] = [],  # noqa
+    pytest_args: list[str] = [],  # noqa
 ):
     """Run tests"""
-    # Invoke requires lists as type hints, but does not support lists as default arguments.
+    # Invoke requires list as type hints, but does not support lists as default arguments.
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
 
@@ -399,7 +414,7 @@ def create_pr_from_staged_changes(c: Context):
     c.run("git checkout main")
     c.run(f"git checkout -b {branch_title}")
     c.run(f"git commit -m '{pr_title}'")
-    update_branch(c)
+    push_to_branch(c)
     update_pr(c)
 
     checkout_previous_branch = input("Checkout previous branch? [y/n]: ")
@@ -425,7 +440,30 @@ def test_for_venv(c: Context):
 def test_for_rej(c: Context):
     # Get all paths in current directory or subdirectories that end in .rej
     c = c
-    rej_files = list(Path("src").rglob("*.rej"))
+    search_dirs = [
+        d
+        for d in Path(".").iterdir()
+        if d.is_dir()
+        and not (
+            "venv" in d.name
+            or ".git" in d.name
+            or "build" in d.name
+            or ".tox" in d.name
+            or "cache" in d.name
+            or "vscode" in d.name
+            or "wandb" in d.name
+        )
+    ]
+    print(
+        f"Looking for .rej files in the current dir and {[d.name for d in search_dirs]}",
+    )
+
+    # Get top_level rej files
+    rej_files = list(Path(".").glob("*.rej"))
+
+    for d in search_dirs:
+        rej_files_in_dir = list(d.rglob("*.rej"))
+        rej_files += rej_files_in_dir
 
     if len(rej_files) > 0:
         print(f"\n{msg_type.FAIL} Found .rej files leftover from cruft update.\n")
@@ -433,6 +471,8 @@ def test_for_rej(c: Context):
             print(f"    /{file}")
         print("\nResolve the conflicts and try again. \n")
         exit(1)
+    else:
+        print(f"{msg_type.GOOD} No .rej files found.")
 
 
 @task
@@ -450,7 +490,7 @@ def pr(c: Context, auto_fix: bool = True):
     add_and_commit(c)
     lint(c, auto_fix=auto_fix)
     test(c)
-    update_branch(c)
+    push_to_branch(c)
     update_pr(c)
 
 

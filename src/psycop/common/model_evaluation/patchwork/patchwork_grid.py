@@ -1,8 +1,12 @@
 from collections.abc import Sequence
 from math import ceil
+from typing import Literal
 
 import patchworklib as pw
 import plotnine as pn
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
 def create_patchwork_grid(
@@ -10,6 +14,15 @@ def create_patchwork_grid(
     single_plot_dimensions: tuple[float, float],
     n_in_row: int,
     add_subpanels_letters: bool = True,
+    panel_letter_size: Literal[
+        "xx-small",
+        "x-small",
+        "small",
+        "medium",
+        "large",
+        "x-large",
+        "xx-large",
+    ] = "x-large",
 ) -> pw.Bricks:
     """Create a grid from a sequence of ggplot objects."""
     print_a4_ratio(plots, single_plot_dimensions, n_in_row)
@@ -28,12 +41,12 @@ def create_patchwork_grid(
     for i in range(len(bricks)):
         # Add the letter
         if add_subpanels_letters:
-            bricks[i].set_index(alphabet[i].upper())
+            bricks[i].set_index(alphabet[i].upper(), size=panel_letter_size)
 
         # Add it to the row
         current_row.append(bricks[i])
 
-        row_is_full = i % n_in_row != 0
+        row_is_full = i % n_in_row != 0 or n_in_row == 1
         all_bricks_used = i == len(bricks) - 1
 
         if row_is_full or all_bricks_used:
@@ -58,8 +71,8 @@ def print_a4_ratio(
     a4_ratio = 297 / 210
     new_plot_height_for_a4 = (a4_ratio * total_width - total_height) / n_rows
 
-    print(f"height/width ratio is {total_height/total_width}")
-    print(f"Vertical A4 ratio is {a4_ratio}")
-    print(
-        f"You could decrease single_plot_height to {new_plot_height_for_a4} for the patchwork to fit A4",
+    msg.info(f"height/width ratio is {round(total_height/total_width,1)}")
+    msg.info(f"Vertical A4 ratio is {round(a4_ratio,1)}")
+    msg.info(
+        f"You could decrease single_plot_height to {round(new_plot_height_for_a4,1)} for the patchwork to fit A4",
     )

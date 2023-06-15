@@ -20,7 +20,7 @@ def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
 
     plots = [
         (pn.ggplot(df, pn.aes(x="is_female", y="auroc")) + pn.geom_bar(stat="identity"))
-        for _ in range(10)
+        for _ in range(6)
     ]
 
     patchwork = create_patchwork_grid(
@@ -30,3 +30,5 @@ def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
     )
 
     patchwork.savefig(TEST_PLOT_PATH / "patchwork.png")
+
+    pass

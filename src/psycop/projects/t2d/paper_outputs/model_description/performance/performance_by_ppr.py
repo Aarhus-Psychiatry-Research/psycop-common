@@ -1,11 +1,11 @@
-from pathlib import Path
-
 import pandas as pd
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
-from psycop.projects.t2d.utils.best_runs import ModelRun
+from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 
 def format_with_thousand_separator(num: int) -> str:
@@ -27,6 +27,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "warning_days_per_false_positive",
             "negative_rate",
             "mean_warning_days",
+            "median_warning_days",
             "prop with ≥1 true positive",
         ],
         axis=1,
@@ -34,16 +35,16 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 
     renamed_df = output_df.rename(
         {
-            "positive_rate": "Positive rate",
+            "positive_rate": "Predicted positive rate",
             "true_prevalence": "True prevalence",
-            "sensitivity": "Sensitivity",
-            "specificity": "Specificity",
-            "accuracy": "Accuracy",
-            "true_positives": "True positives",
-            "true_negatives": "True negatives",
-            "false_positives": "False positives",
-            "false_negatives": "False negatives",
-            "prop of all events captured": "% of all events captured",
+            "sensitivity": "Sens",
+            "specificity": "Spec",
+            "accuracy": "Acc",
+            "true_positives": "TP",
+            "true_negatives": "TN",
+            "false_positives": "FP",
+            "false_negatives": "FN",
+            "prop of all events captured": "% of all T2D captured",
         },
         axis=1,
     )
@@ -58,16 +59,20 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     for col in count_cols:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
-    renamed_df["Mean years from first positive to T2D"] = round(
-        df["mean_warning_days"] / 365,
+    renamed_df["Median years from first positive to T2D"] = round(
+        df["median_warning_days"] / 365.25,
         1,
     )
 
     return renamed_df
 
 
-def output_performance_by_ppr(run: ModelRun) -> Path:
-    eval_dataset = run.get_eval_dataset()
+def t2d_output_performance_by_ppr(run: PipelineRun):
+    output_path = (
+        run.paper_outputs.paths.tables
+        / run.paper_outputs.artifact_names.performance_by_ppr
+    )
+    eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=eval_dataset,
@@ -75,13 +80,10 @@ def output_performance_by_ppr(run: ModelRun) -> Path:
     )
 
     df = clean_up_performance_by_ppr(df)
-
-    table_path = TABLES_PATH / "performance_by_ppr.xlsx"
-    TABLES_PATH.mkdir(exist_ok=True, parents=True)
-    df.to_excel(table_path)
-
-    return table_path
+    df.to_excel(output_path, index=False)
 
 
 if __name__ == "__main__":
-    output_performance_by_ppr(run=EVAL_RUN)
+    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+
+    t2d_output_performance_by_ppr(run=BEST_EVAL_PIPELINE)

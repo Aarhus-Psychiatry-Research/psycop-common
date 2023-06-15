@@ -154,7 +154,7 @@ def load_from_codes(
     )
 
     if shak_code is not None:
-        sql += f" AND left({shak_location_col}, {len(str(shak_code))}) {shak_sql_operator} {str(shak_code)}"
+        sql += f" AND left({shak_location_col}, {len(str(shak_code))}) {shak_sql_operator} {shak_code!s}"
 
     if administration_method:
         allowed_administration_methods = (

@@ -1,4 +1,6 @@
 """Project configuration schemas."""
+from pathlib import Path
+
 from psycop.common.model_training.config_schemas.basemodel import BaseModel
 
 
@@ -15,5 +17,6 @@ class ProjectSchema(BaseModel):
 
     wandb: WandbSchema
     name: str = "psycop_model_training"
+    project_path: Path
     seed: int
     gpu: bool

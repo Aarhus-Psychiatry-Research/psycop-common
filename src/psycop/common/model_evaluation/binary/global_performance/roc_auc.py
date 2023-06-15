@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import plotnine as pn
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.t2d.paper_outputs.config import PN_THEME
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.utils import resample
 
@@ -108,6 +107,5 @@ def plot_auc_roc(
         + pn.labs(title=title, x="1 - Specificity", y="Sensitivity")
         + pn.xlim(0, 1)
         + pn.ylim(0, 1)
-        + PN_THEME
         + auroc_label
     )

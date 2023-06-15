@@ -1,4 +1,4 @@
-"""Create post split pipeline.""" ""
+"""Create post split pipeline."""
 import logging
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema

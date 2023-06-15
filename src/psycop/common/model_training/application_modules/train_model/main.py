@@ -19,27 +19,21 @@ from psycop.common.model_training.utils.col_name_inference import get_col_names
 from psycop.common.model_training.utils.decorators import (
     wandb_alert_on_exception_return_terrible_auc,
 )
-from psycop.common.model_training.utils.utils import OVARTACI_SHARED_DIR
 
 
 def get_eval_dir(cfg: FullConfigSchema) -> Path:
     """Get the directory to save evaluation results to."""
-    # If online
-    ovartaci_path = (
-        OVARTACI_SHARED_DIR
-        / cfg.project.name
-        / "model_eval"
-        / wandb.run.group  # type: ignore
-        / wandb.run.name  # type: ignore
-    )
-
     if cfg.project.wandb.group == "integration_testing":
         eval_dir_path = PSYCOP_PKG_ROOT / "model_training" / "test_eval_results"
     else:
-        eval_dir_path = ovartaci_path
+        eval_dir_path = (
+            cfg.project.project_path
+            / "pipeline_eval"
+            / wandb.run.group  # type: ignore
+            / wandb.run.name  # type: ignore
+        )
 
     eval_dir_path.mkdir(parents=True, exist_ok=True)
-
     return eval_dir_path
 
 

@@ -6,17 +6,19 @@ import polars as pl
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
     get_eligible_prediction_times_as_polars,
 )
-from psycop.projects.t2d.paper_outputs.config import EVAL_RUN, TABLES_PATH
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 
 model_train_df = pl.concat(
     [
-        EVAL_RUN.get_flattened_split_as_lazyframe(split="train"),
-        EVAL_RUN.get_flattened_split_as_lazyframe(split="val"),
+        BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(split="train"),
+        BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(split="val"),
     ],
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
-test_dataset = EVAL_RUN.get_flattened_split_as_lazyframe(split="test").with_columns(
+test_dataset = BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(
+    split="test",
+).with_columns(
     dataset=pl.format("test"),
 )
 
@@ -203,8 +205,10 @@ patient_table_one = create_table(
 ############
 combined = pd.concat([visit_table_one, patient_table_one])
 
-TABLES_PATH.mkdir(parents=True, exist_ok=True)
-combined.to_csv(TABLES_PATH / "descriptive_stats_table.csv")
+BEST_EVAL_PIPELINE.paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
+combined.to_csv(
+    BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "descriptive_stats_table.csv",
+)
 
 # %%
 # %load_ext autoreload

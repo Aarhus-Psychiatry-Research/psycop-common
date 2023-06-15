@@ -15,10 +15,9 @@ from psycop.common.feature_generation.data_checks.utils import (
 from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import (
     load_split,
 )
-from timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_specs.single_specs import (
     PredictorSpec,
     StaticSpec,
-    TemporalSpec,
     TextPredictorSpec,
 )
 from wasabi import Printer
@@ -95,31 +94,30 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
 
 def generate_temporal_feature_description(
     series: pd.Series,
-    predictor_spec: TemporalSpec,
+    predictor_spec: PredictorSpec,
     feature_name: str | None = None,
 ) -> dict[str, Any]:
     """Generate a row with feature description for a temporal predictor."""
     if feature_name is not None:
         feature_name = feature_name
     else:
-        feature_name = predictor_spec.feature_name
+        feature_name = predictor_spec.feature_base_name
 
     d = {
         "Predictor df": feature_name,
-        "Lookbehind days": predictor_spec.interval_days,
-        "Resolve multiple": predictor_spec.resolve_multiple_fn.__name__,  # type: ignore
+        "Lookbehind days": predictor_spec.lookbehind_days,
+        "Resolve multiple": predictor_spec.aggregation_fn.__name__,
         "N unique": series.nunique(),
         "Fallback strategy": str(predictor_spec.fallback),
         "Proportion missing": series.isna().mean(),
         "Mean": round(series.mean(), 2),
-        "Histogram": create_unicode_hist(series),
         "Proportion using fallback": get_value_proportion(
             series,
             predictor_spec.fallback,
         ),
     }
 
-    for percentile in (0.01, 0.25, 0.5, 0.75, 0.99):
+    for percentile in (0.25, 0.5, 0.75):
         # Get the value representing the percentile
         d[f"{percentile * 100}-percentile"] = round(series.quantile(percentile), 1)
 
@@ -132,21 +130,20 @@ def generate_static_feature_description(
 ) -> dict[str, Any]:
     """Generate a row with feature description for a static predictor."""
     return {
-        "Predictor df": predictor_spec.feature_name,
+        "Predictor df": predictor_spec.feature_base_name,
         "Lookbehind days": "N/A",
         "Resolve multiple": "N/A",
         "N unique": series.nunique(),
         "Fallback strategy": "N/A",
         "Proportion missing": series.isna().mean(),
         "Mean": round(series.mean(), 2),
-        "Histogram": create_unicode_hist(series),
         "Proportion using fallback": "N/A",
     }
 
 
 def generate_feature_description_row(
     series: pd.Series,
-    predictor_spec: StaticSpec | TemporalSpec,
+    predictor_spec: StaticSpec | PredictorSpec,
     feature_name: str | None = None,
 ) -> dict:
     """Generate a row with feature description.
@@ -162,7 +159,7 @@ def generate_feature_description_row(
 
     if isinstance(predictor_spec, StaticSpec):
         return generate_static_feature_description(series, predictor_spec)
-    if isinstance(predictor_spec, TemporalSpec):
+    if isinstance(predictor_spec, PredictorSpec):
         return generate_temporal_feature_description(
             series,
             predictor_spec,
@@ -173,7 +170,7 @@ def generate_feature_description_row(
 
 def generate_feature_description_df(
     df: pd.DataFrame,
-    predictor_specs: list[PredictorSpec | StaticSpec | TemporalSpec],
+    predictor_specs: list[PredictorSpec | StaticSpec],
 ) -> pd.DataFrame:
     """Generate a data frame with feature descriptions.
 
@@ -188,10 +185,10 @@ def generate_feature_description_df(
     rows = []
 
     for spec in predictor_specs:
-        column_name = spec.get_col_str()
+        column_name = spec.get_output_col_name()
 
         if isinstance(spec, TextPredictorSpec):
-            last_part = column_name.split(f"{spec.prefix}_{spec.feature_name}")[1]
+            last_part = column_name.split(f"{spec.prefix}_{spec.feature_base_name}")[1]
             first_part = column_name.split(last_part)[0]
             string_match = f"{first_part}[\\dA-Za-z\\-]+{last_part}"
 
@@ -210,7 +207,7 @@ def generate_feature_description_df(
                     ),
                 )
 
-        else:
+        elif isinstance(spec, (StaticSpec, PredictorSpec)):
             rows.append(
                 generate_feature_description_row(
                     series=df[column_name],
@@ -229,7 +226,7 @@ def generate_feature_description_df(
 
 def save_feature_descriptive_stats_from_dir(
     feature_set_dir: Path,
-    feature_specs: list[TemporalSpec | StaticSpec],
+    feature_specs: list[PredictorSpec | StaticSpec],
     file_suffix: str,
     splits: Sequence[str] = ("train",),
     out_dir: Path | None = None,

@@ -2,6 +2,78 @@
 
 <!--next-version-placeholder-->
 
+## v0.82.0 (2023-06-14)
+### Feature
+* Add careml to monorepo ([`534400a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/534400afb70b5d3c2b662e3b0bdd2350067be1d4))
+
+## v0.81.0 (2023-06-13)
+### Feature
+* Move markdown handling to common ([`bdfeafa`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bdfeafac5f55490233f17988b006ec6a1f027307))
+
+## v0.80.0 (2023-06-07)
+### Feature
+* Misc. ([`482db66`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/482db66238e0276df827af39284ca2cf41000353))
+
+### Fix
+* Guard for newly optional configs ([`e9ff39e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e9ff39ef52c3ee3204f787478331bd4f314c147a))
+
+## v0.79.1 (2023-06-06)
+### Fix
+* Remove project specific md code ([`945a0fd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/945a0fd0597000de2197df502e983f75a804b948))
+
+## v0.79.0 (2023-06-02)
+### Feature
+* Simplify feature describer ([`a9f9f7b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a9f9f7b9906559f61867eed90d347bbd55620b72))
+
+## v0.78.1 (2023-06-01)
+### Fix
+* Patchwork grid of size 1 ([`b159a10`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b159a108b896511d540c44dfcfbb89d9cb33b361))
+
+## v0.78.0 (2023-06-01)
+### Feature
+* Increase size of axis labels in t2d pn theme ([`71b8dd0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/71b8dd04e56288244188dd7fbaa017740adb7cd1))
+* Increase size of patchwork subpanel labels ([`384e06d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/384e06d829075404e48325595b5fed37a5414fae))
+* Make HbA1c only configurable ([`d2854a8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d2854a8d2695900a923260c98eea82972a19c005))
+* Adopt boolean dataset to featuremodifier ([`5188047`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/51880477c34ae803db51a5500637e45b35f2decf))
+* Ignore static type checks on Ovartaci ([`840c015`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/840c015f06b3eb315f6c024518657c59b4ed853a))
+* Allow disabling of column name checks ([`ad519be`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ad519be2bfd16f6d927cd99ffcd68a7122468945))
+* Boolean cols in place ([`8b968e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8b968e543010b05de7fd11b23efcb514b398b9e3))
+* Use native polars column selection ([`ef25f17`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ef25f17571d96721722c04fd59c5111a915c6b2c))
+
+### Fix
+* Imports ([`e31e18d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e31e18df498be78b35e57c5b2edede2c8970d956))
+
+### Documentation
+* Improve docs wording ([`173807e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/173807e46001f789b371824cc6ada49a980279e1))
+
+## v0.77.1 (2023-05-30)
+### Fix
+* Correct lookbehind selection ([`3807a94`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3807a9468f1225d77134786298a88d82185b71c8))
+
+## v0.77.0 (2023-05-26)
+### Feature
+* Implement full supplementary generation ([`530d972`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/530d972926a3371fa95cfb55778ecf38f38fea82))
+* Switch to TDD for md_object generation ([`35b4787`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/35b4787be204a4d48cb138dccd5e05de148f3c6a))
+* Create required wandb folder when initialising wandb in WandbHandler ([`41037d9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/41037d9c35de294c0116a7697b4754b8861cb8ef))
+* Misc. ([`0a54195`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0a541954135fbc5f91cb78635fb967ecdb3b1976))
+* Eval run on test_set ([`76644ee`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/76644eee75f2f3b58c9538f701e17bc37f1e6250))
+
+### Fix
+* Align plot and table for median warning days ([`bda3eed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bda3eedc117c906bfa1b2f7f7c59f683fe7420ca))
+
+## v0.76.0 (2023-05-24)
+### Feature
+* Automatic robustness figure ([`07f9f2c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/07f9f2cada678d19e85fef6e139c029ae8a41c5d))
+* Abstract robustness plots ([`514226b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/514226ba12b61ef6bee9ba8a93adf8e907dfbedb))
+
+### Fix
+* Ensure X_by_group returns a dataframe ([`57b3160`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/57b31608278bf58be7da5227511e65fafe067162))
+* Ensure X_by_group returns a dataframe ([`efab826`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/efab826354785cee8e18d7f761f70c0e4731a263))
+
+## v0.75.1 (2023-05-24)
+### Fix
+* Pin wandb version to avoid failing on tests ([`2a92dda`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2a92dda845db5a49264454b20843eb86733ae5c8))
+
 ## v0.75.0 (2023-05-23)
 ### Feature
 * Generate a publication-ready performance_by_ppr table ([`32c20ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/32c20edfa1cfdd855c505e546b6304bbf1ffa2a9))
@@ -404,7 +476,7 @@
 * Reimplement ([`c99585f`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/c99585fdf9f9f407a69e0ead05f935d34ed86a63))
 * Use lru cache decorator for values_df loading ([`4006818`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/40068187da20854fcca980872bc42b8a3a096cc9))
 * Add support for loader kwargs ([`127f821`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/127f8215c35b792390595b890210baa0e8cf3591))
-* Move values_df resolution to _AnySpec object ([`714e83f`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/714e83fd3722b298cdd256b06915659ca7a34259))
+* Move values_df resolution to AnySpec object ([`714e83f`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/714e83fd3722b298cdd256b06915659ca7a34259))
 * Make date of birth output prefix a param ([`0ed1198`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/0ed11982ba1b239e5650d23dbfab707100e38137))
 * Ensure that dfs are sorted and of same length before concat ([`84a4d65`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/84a4d65b731a6822d0a8f6313d01b7de9c574afe))
 * Use pandas with set_index for concat ([`b93290a`](https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation/commit/b93290ae733857855abe8197291dd047cf6c6fa8))

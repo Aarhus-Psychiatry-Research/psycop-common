@@ -1,5 +1,6 @@
 name: psycop-model-training-integration-testing
 seed: 42
+project_path: output_from_tests
 
 wandb:
   mode: "offline" # Which mode to run WanDB in. Takes "run", "dryrun", and "disabled"
