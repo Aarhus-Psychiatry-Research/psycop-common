@@ -1,4 +1,5 @@
 import pytest
+
 from psycop.projects.forced_admission_inpatient.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )

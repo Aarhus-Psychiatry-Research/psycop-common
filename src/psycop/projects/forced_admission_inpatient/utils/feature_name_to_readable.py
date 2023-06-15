@@ -21,17 +21,22 @@ def parse_temporal_feature(full_string: str) -> str:
     feature_name = re.findall(r"pred_(.*)?_within", full_string)[0]
 
     feature_name_mappings = {
-        "sex_female": "sex female",
-        "physical_visits_to_psychiatry": "physical visits to psychiatry",
-        "second_gen_antipsychotics": "2. generation antipsychotics",
-        "first_gen_antipsychotics": "1. generation antipsychotics",
-        "schizophrenia": "Schizophrenia",
-        "f2_disorders": "F2-disorders",
-        "baelte": "mechanical restraint",
-        "skema_1": "skema 1",
-        "beroligende_medicin": "acute sedative",
-        "broeset_violence_checklist": "brøset violence checklist",
-        "cancelled_standard_lab_results": "cancelled standard lab results",
+        "hba1c": "HbA1c",
+        "fasting_p_glc": "fasting p-Glc",
+        "weight_in_kg": "weight (kg)",
+        "unscheduled_p_glc": "unscheduled p-Glc",
+        "alat": "ALAT",
+        "arterial_p_glc": "arterial p-Glc",
+        "bmi": "BMI",
+        "ogtt": "OGTT",
+        "height_in_cm": "height (cm)",
+        "scheduled_glc": "scheduled p-Glc",
+        "ldl": "LDL",
+        "hdl": "HDL",
+        "crp": "CRP",
+        "fasting_ldl": "fasting LDL",
+        "albumine_creatinine_ratio": "albumine creatinine ratio",
+        "top_10_weight_gaining_antipsychotics": "top 10 weight gaining antipsychotics",
     }
 
     if feature_name in feature_name_mappings:
