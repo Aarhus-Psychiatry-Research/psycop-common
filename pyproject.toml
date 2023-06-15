@@ -44,7 +44,7 @@ dependencies = [
   "numpy>=1.23.3",
   "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
   "plotnine==0.10.1",
-  "timeseriesflattener",
+  "timeseriesflattener==1.0.0",
   "scipy==1.10.1",
   "polars==0.18.2",
   "tableone",

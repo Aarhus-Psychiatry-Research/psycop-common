@@ -19,7 +19,7 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from timeseriesflattener.feature_spec_objects import _AnySpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 log = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 def flatten_dataset_to_disk(
     project_info: ProjectInfo,
-    feature_specs: list[_AnySpec],
+    feature_specs: list[AnySpec],
     prediction_times_df: pd.DataFrame,
     quarantine_df: pd.DataFrame | None = None,
     quarantine_days: int | None = None,
@@ -55,7 +55,7 @@ def flatten_dataset_to_disk(
 @wandb_alert_on_exception
 def create_flattened_dataset(
     project_info: ProjectInfo,
-    feature_specs: list[_AnySpec],
+    feature_specs: list[AnySpec],
     prediction_times_df: pd.DataFrame,
     add_birthdays: bool = False,
     drop_pred_times_with_insufficient_look_distance: bool = False,
@@ -65,7 +65,7 @@ def create_flattened_dataset(
     """Create flattened dataset.
 
     Args:
-        feature_specs (list[_AnySpec]): List of feature specifications of any type.
+        feature_specs (list[AnySpec]): List of feature specifications of any type.
         project_info (ProjectInfo): Project info.
         prediction_times_df (pd.DataFrame): Prediction times dataframe.
             Should contain entity_id and timestamp columns with col_names matching those in project_info.col_names.

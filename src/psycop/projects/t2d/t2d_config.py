@@ -7,7 +7,7 @@ from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader imp
     get_eligible_prediction_times_as_polars,
 )
 from psycop.projects.t2d.feature_generation.specify_features import FeatureSpecifier
-from timeseriesflattener.feature_spec_objects import _AnySpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 
 def get_t2d_project_info() -> ProjectInfo:
@@ -21,7 +21,7 @@ def get_t2d_eligible_prediction_times_as_pandas() -> pd.DataFrame:
     return get_eligible_prediction_times_as_polars().to_pandas()
 
 
-def get_t2d_feature_specifications() -> list[_AnySpec]:
+def get_t2d_feature_specifications() -> list[AnySpec]:
     return FeatureSpecifier(
         project_info=get_t2d_project_info(),
         min_set_for_debug=False,  # Remember to set to False when generating full dataset

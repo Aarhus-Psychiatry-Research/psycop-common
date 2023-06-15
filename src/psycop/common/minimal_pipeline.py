@@ -12,12 +12,12 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from timeseriesflattener.feature_spec_objects import _AnySpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 
 def minimal_pipeline(
     project_info: ProjectInfo,
-    feature_specs: list[_AnySpec],
+    feature_specs: list[AnySpec],
     prediction_times_df: pd.DataFrame,
     model_training_cfg: FullConfigSchema,
     add_birthdays: bool = True,
