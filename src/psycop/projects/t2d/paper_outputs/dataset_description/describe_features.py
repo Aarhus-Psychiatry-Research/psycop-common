@@ -14,7 +14,9 @@ feature_specs = FeatureSpecifier(
     min_set_for_debug=False,  # Remember to set to False when generating full dataset
 ).get_feature_specs()
 
-selected_specs = [spec for spec in feature_specs if "pred" in spec.get_col_str()]
+selected_specs = [
+    spec for spec in feature_specs if "pred" in spec.get_output_col_name()
+]
 
 # %%
 # %reload_ext autoreload

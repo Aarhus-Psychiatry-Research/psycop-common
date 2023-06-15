@@ -186,7 +186,7 @@ def generate_feature_description_df(
     rows = []
 
     for spec in predictor_specs:
-        column_name = spec.get_col_str()
+        column_name = spec.get_output_col_name()
 
         if isinstance(spec, TextPredictorSpec):
             last_part = column_name.split(f"{spec.prefix}_{spec.feature_name}")[1]

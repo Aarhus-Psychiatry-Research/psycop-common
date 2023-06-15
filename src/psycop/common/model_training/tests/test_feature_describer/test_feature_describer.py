@@ -10,6 +10,7 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer im
     save_feature_descriptive_stats_from_dir,
 )
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
+from timeseriesflattener.aggregation_fns import maximum
 from timeseriesflattener.feature_specs.single_specs import (
     OutcomeSpec,
     PredictorSpec,
@@ -21,11 +22,11 @@ from timeseriesflattener.feature_specs.single_specs import (
 def predictor_specs() -> list[PredictorSpec]:
     return [
         PredictorSpec(
-            values_df=pd.DataFrame({"hba1c": [0]}),
-            interval_days=100,
-            aggregation_fn="max",
+            timeseries_df=pd.DataFrame({"hba1c": [0]}),
+            lookbehind_days=100,
+            aggregation_fn=maximum,
             fallback=np.nan,
-            feature_name="hba1c",
+            feature_base_name="hba1c",
         ),
     ]
 
@@ -34,9 +35,9 @@ def predictor_specs() -> list[PredictorSpec]:
 def static_specs() -> list[StaticSpec]:
     return [
         StaticSpec(
-            values_df=pd.DataFrame({"value": [0]}),
+            timeseries_df=pd.DataFrame({"value": [0]}),
             prefix="pred",
-            feature_name="hba1c",
+            feature_base_name="hba1c",
         ),
     ]
 
@@ -45,13 +46,13 @@ def static_specs() -> list[StaticSpec]:
 def outcome_specs() -> list[OutcomeSpec]:
     return [
         OutcomeSpec(
-            values_df=pd.DataFrame({"value": [0]}),
+            timeseries_df=pd.DataFrame({"value": [0]}),
             prefix="outc",
-            incident="true",
+            incident=True,
             lookahead_days=30,
-            feature_name="t2d",
-            aggregation_fn="max",
-            fallback="0",
+            feature_base_name="t2d",
+            aggregation_fn=maximum,
+            fallback=0,
         ),
     ]
 
@@ -99,7 +100,7 @@ def test_generate_feature_description_row_for_temporal_spec(
 ):
     spec = predictor_specs[0]
 
-    column_name = spec.get_col_str()
+    column_name = spec.get_output_col_name()
 
     row = generate_feature_description_row(series=df[column_name], predictor_spec=spec)
 
@@ -123,7 +124,7 @@ def test_generate_feature_description_row_for_static_spec(
 ):
     spec = static_specs[0]
 
-    column_name = spec.get_col_str()
+    column_name = spec.get_output_col_name()
 
     df = df.rename(
         columns={"pred_hba1c_within_100_days_max_fallback_nan": column_name},
