@@ -7,7 +7,7 @@ from psycop.projects.forced_admission_inpatient.utils.feature_name_to_readable i
 @pytest.mark.parametrize(
     ("feature_name", "expected_output"),
     [
-        ("pred_skema_1_within_365_days_count_fallback_nan", "365-day count skema_1"),
+        ("pred_skema_1_within_365_days_count_fallback_nan", "365-day count skema 1"),
         ("pred_age", "Age"),
     ],
 )
