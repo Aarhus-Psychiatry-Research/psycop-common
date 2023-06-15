@@ -65,7 +65,6 @@ from psycop.common.feature_generation.text_models.utils import load_text_model
 from timeseriesflattener.aggregation_fns import (
     boolean,
     change_per_day,
-    concatenate,
     count,
     latest,
     mean,
