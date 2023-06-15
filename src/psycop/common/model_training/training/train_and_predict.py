@@ -73,9 +73,9 @@ def stratified_cross_validation(
 
         y_pred = pipe.predict_proba(X_train)[:, 1]
 
-        msg.info(f"{msg_prefix}: AUC = {round(roc_auc_score(y_train,y_pred), 3)}")
+        msg.info(f"{msg_prefix}: AUC = {round(roc_auc_score(y_train,y_pred), 3)}")  # type: ignore
 
-        train_df.loc[val_idxs, "oof_y_hat"] = pipe.predict_proba(X.loc[val_idxs])[
+        train_df.loc[val_idxs, "oof_y_hat"] = pipe.predict_proba(X.loc[val_idxs])[  # type: ignore
             :,
             1,
         ]
@@ -153,7 +153,7 @@ def train_validate(
     y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
 
     print(
-        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",
+        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",  # type: ignore
     )
 
     df = val

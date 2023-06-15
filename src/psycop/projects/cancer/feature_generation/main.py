@@ -14,7 +14,6 @@ from psycop.common.feature_generation.application_modules.loggers import (
 )
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
-    get_project_info,
 )
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
@@ -25,6 +24,7 @@ from psycop.common.feature_generation.loaders.raw.load_moves import (
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.cancer.feature_generation.specify_features import FeatureSpecifier
 
 log = logging.getLogger()
@@ -58,7 +58,7 @@ def _generate_feature_set(project_info: ProjectInfo) -> Path:
         feature_specs=feature_specs,  # type: ignore
     )
 
-    return project_info.feature_set_path
+    return project_info.flattened_dataset_dir
 
 
 def generate_feature_set() -> Path:
@@ -66,8 +66,9 @@ def generate_feature_set() -> Path:
     # then run the rest in main so you can wrap it all in
     # wandb_alert_on_exception, which will send a slack alert
     # if you have wandb alerts set up in wandb
-    project_info = get_project_info(
+    project_info = ProjectInfo(
         project_name="cancer",
+        project_path=OVARTACI_SHARED_DIR / "cancer",
     )
 
     init_root_logger(project_info=project_info)

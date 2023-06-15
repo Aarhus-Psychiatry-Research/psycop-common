@@ -1,19 +1,77 @@
 """Feature specification module."""
 import logging
+from typing import Callable
 
 # from sys import prefix
 import numpy as np
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
-from timeseriesflattener.feature_spec_objects import (
-    BaseModel,
+from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
+from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    essential_hypertension,
+    f0_disorders,
+    f1_disorders,
+    f2_disorders,
+    f3_disorders,
+    f4_disorders,
+    f5_disorders,
+    f6_disorders,
+    f7_disorders,
+    f8_disorders,
+    gerd,
+    hyperkinetic_disorders,
+    hyperlipidemia,
+    polycystic_ovarian_syndrome,
+    sleep_apnea,
+)
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
+    alat,
+    crp,
+    fasting_ldl,
+    hdl,
+    ldl,
+    triglycerides,
+)
+from psycop.common.feature_generation.loaders.raw.load_medications import (
+    antihypertensives,
+    antipsychotics,
+    benzodiazepine_related_sleeping_agents,
+    benzodiazepines,
+    clozapine,
+    diuretics,
+    gerd_drugs,
+    lamotrigine,
+    lithium,
+    pregabaline,
+    selected_nassa,
+    snri,
+    ssri,
+    statins,
+    tca,
+    top_10_weight_gaining_antipsychotics,
+    valproate,
+)
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
+    bmi,
+    height_in_cm,
+    weight_in_kg,
+)
+from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (
+    any_cancer,
+)
+from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum
+from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
     OutcomeGroupSpec,
-    OutcomeSpec,
     PredictorGroupSpec,
+)
+from timeseriesflattener.feature_specs.single_specs import (
+    AnySpec,
+    BaseModel,
+    OutcomeSpec,
     PredictorSpec,
     StaticSpec,
-    _AnySpec,
 )
 
 # from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (
@@ -30,7 +88,7 @@ class SpecSet(BaseModel):
     temporal_predictors: list[PredictorSpec]
     static_predictors: list[StaticSpec]
     outcomes: list[OutcomeSpec]
-    metadata: list[_AnySpec]
+    metadata: list[AnySpec]
 
 
 class FeatureSpecifier:
@@ -48,27 +106,24 @@ class FeatureSpecifier:
         """Get static predictor specs."""
         return [
             StaticSpec(
-                values_loader="sex_female",  # type: ignore
-                input_col_name_override="sex_female",
+                timeseries_df=sex_female(),
+                feature_base_name="sex_female",
                 prefix=self.project_info.prefix.predictor,
             ),
         ]
 
-    def _get_metadata_specs(self) -> list[_AnySpec]:
+    def _get_metadata_specs(self) -> list[AnySpec]:
         """Get metadata specs."""
         log.info("-------- Generating metadata specs --------")
 
         return [
             StaticSpec(
-                values_loader="any_cancer",  # type: ignore
-                input_col_name_override="timestamp",
-                output_col_name_override="timestamp_first_cancer_diagnosis",
+                feature_base_name="any_cancer",
+                timeseries_df=any_cancer(),
                 prefix="",
             ),
             # StaticSpec(
             #     values_loader="any_cancer",
-            #     input_col_name_override="adiagnosekode",
-            #     output_col_name_override="diagnosis_code",
             #     prefix="",
             # ),
         ]
@@ -80,152 +135,157 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return [
                 OutcomeSpec(
-                    values_loader="any_cancer",
+                    feature_base_name="any_cancer",
+                    timeseries_df=any_cancer(),
                     lookahead_days=365,
-                    resolve_multiple_fn="max",
+                    aggregation_fn=maximum,
                     fallback=0,
                     incident=True,
-                    allowed_nan_value_prop=0,
                     prefix=self.project_info.prefix.outcome,
                 ),
             ]
 
         return OutcomeGroupSpec(
-            values_loader=["any_cancer"],
+            named_dataframes=[NamedDataframe(df=any_cancer(), name="any_cancer")],
             lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
-            resolve_multiple_fn=["max"],
+            aggregation_fns=[maximum],
             fallback=[0],
             incident=[True],  # Set to false because they can have multiple cancers????
-            allowed_nan_value_prop=[0],
             prefix=self.project_info.prefix.outcome,
         ).create_combinations()
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[str],
+        resolve_multiple: list[Callable],
         interval_days: list[float],
-        allowed_nan_value_prop: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
         log.info("-------- Generating medication specs --------")
 
         psychiatric_medications = PredictorGroupSpec(
-            values_loader=(
-                "antipsychotics",
-                "clozapine",
-                "top_10_weight_gaining_antipsychotics",
-                "lithium",
-                "valproate",
-                "lamotrigine",
-                "benzodiazepines",
-                "pregabaline",
-                "ssri",
-                "snri",
-                "tca",
-                "selected_nassa",
-                "benzodiazepine_related_sleeping_agents",
+            named_dataframes=(
+                NamedDataframe(df=antipsychotics(), name="antipsychotics"),
+                NamedDataframe(df=clozapine(), name="clozapine"),
+                NamedDataframe(
+                    df=top_10_weight_gaining_antipsychotics(),
+                    name="top_10_weight_gaining_antipsychotics",
+                ),
+                NamedDataframe(df=lithium(), name="lithium"),
+                NamedDataframe(df=valproate(), name="valproate"),
+                NamedDataframe(df=lamotrigine(), name="lamotrigine"),
+                NamedDataframe(df=benzodiazepines(), name="benzodiazepines"),
+                NamedDataframe(df=pregabaline(), name="pregabaline"),
+                NamedDataframe(df=ssri(), name="ssri"),
+                NamedDataframe(df=snri(), name="snri"),
+                NamedDataframe(df=tca(), name="tca"),
+                NamedDataframe(df=selected_nassa(), name="selected_nassa"),
+                NamedDataframe(
+                    df=benzodiazepine_related_sleeping_agents(),
+                    name="benzodiazepine_related_sleeping_agents",
+                ),
             ),
             lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
+            aggregation_fns=resolve_multiple,
             fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
         lifestyle_medications = PredictorGroupSpec(
-            values_loader=(
-                "gerd_drugs",
-                "statins",
-                "antihypertensives",
-                "diuretics",
+            named_dataframes=(
+                NamedDataframe(df=gerd_drugs(), name="gerd_drugs"),
+                NamedDataframe(df=statins(), name="statins"),
+                NamedDataframe(df=antihypertensives(), name="antihypertensives"),
+                NamedDataframe(df=diuretics(), name="diuretics"),
             ),
             lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
+            aggregation_fns=resolve_multiple,
             fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
         return psychiatric_medications + lifestyle_medications
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple,
-        interval_days,
-        allowed_nan_value_prop,
-    ):
+        resolve_multiple: list[Callable],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
         log.info("-------- Generating diagnoses specs --------")
 
         lifestyle_diagnoses = PredictorGroupSpec(
-            values_loader=(
-                "essential_hypertension",
-                "hyperlipidemia",
-                "polycystic_ovarian_syndrome",
-                "sleep_apnea",
-                "gerd",
+            named_dataframes=(
+                NamedDataframe(
+                    df=essential_hypertension(),
+                    name="essential_hypertension",
+                ),
+                NamedDataframe(df=hyperlipidemia(), name="hyperlipidemia"),
+                NamedDataframe(
+                    df=polycystic_ovarian_syndrome(),
+                    name="polycystic_ovarian_syndrome",
+                ),
+                NamedDataframe(df=sleep_apnea(), name="sleep_apnea"),
+                NamedDataframe(df=gerd(), name="gerd"),
             ),
-            resolve_multiple_fn=resolve_multiple,
+            aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
         psychiatric_diagnoses = PredictorGroupSpec(
-            values_loader=(
-                "f0_disorders",
-                "f1_disorders",
-                "f2_disorders",
-                "f3_disorders",
-                "f4_disorders",
-                "f5_disorders",
-                "f6_disorders",
-                "f7_disorders",
-                "f8_disorders",
-                "hyperkinetic_disorders",
+            named_dataframes=(
+                NamedDataframe(df=f0_disorders(), name="f0_disorders"),
+                NamedDataframe(df=f1_disorders(), name="f1_disorders"),
+                NamedDataframe(df=f2_disorders(), name="f2_disorders"),
+                NamedDataframe(df=f3_disorders(), name="f3_disorders"),
+                NamedDataframe(df=f4_disorders(), name="f4_disorders"),
+                NamedDataframe(df=f5_disorders(), name="f5_disorders"),
+                NamedDataframe(df=f6_disorders(), name="f6_disorders"),
+                NamedDataframe(df=f7_disorders(), name="f7_disorders"),
+                NamedDataframe(df=f8_disorders(), name="f8_disorders"),
+                NamedDataframe(
+                    df=hyperkinetic_disorders(),
+                    name="hyperkinetic_disorders",
+                ),
             ),
-            resolve_multiple_fn=resolve_multiple,
+            aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
         return lifestyle_diagnoses + psychiatric_diagnoses
 
     def _get_lab_result_specs(
         self,
-        resolve_multiple,
-        interval_days,
-        allowed_nan_value_prop,
-    ):
+        resolve_multiple: list[Callable],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
         """Get lab result specs."""
         log.info("-------- Generating lab result specs --------")
 
         general_lab_results = PredictorGroupSpec(
-            values_loader=(
-                "alat",
-                "hdl",
-                "ldl",
-                "triglycerides",
-                "fasting_ldl",
-                "crp",
+            named_dataframes=(
+                NamedDataframe(df=alat(), name="alat"),
+                NamedDataframe(df=hdl(), name="hdl"),
+                NamedDataframe(df=ldl(), name="ldl"),
+                NamedDataframe(df=triglycerides(), name="triglycerides"),
+                NamedDataframe(df=fasting_ldl(), name="fasting_ldl"),
+                NamedDataframe(df=crp(), name="crp"),
             ),
-            resolve_multiple_fn=resolve_multiple,
+            aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[np.nan],
-            allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
         # diabetes_lab_results = PredictorGroupSpec(
-        #     values_loader=(
-        #         "hba1c",
-        #         "scheduled_glc",
-        #         "unscheduled_p_glc",
-        #         "egfr",
-        #         "albumine_creatinine_ratio",
+        #     named_dataframes=(
+        #         NamedDataframe(df=hba1c(), name="hba1c"),
+        #         NamedDataframe(df=scheduled_glc(), name="scheduled_glc"),
+        #         NamedDataframe(df=unscheduled_p_glc(), name="unscheduled_p_glc"),
+        #         NamedDataframe(df=egfr(), name="egfr"),
+        #         NamedDataframe(df=albumine_creatinine_ratio(), name="albumine_creatinine_ratio"),
         #     ),
-        #     resolve_multiple_fn=resolve_multiple,
+        #     aggregation_fns=resolve_multiple,
         #     lookbehind_days=interval_days,
         #     fallback=[np.nan],
-        #     allowed_nan_value_prop=allowed_nan_value_prop,
         # ).create_combinations()
 
         return general_lab_results  # + diabetes_lab_results
@@ -237,49 +297,48 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return [
                 PredictorSpec(
-                    values_loader="alat",
+                    timeseries_df=alat(),
+                    feature_base_name="alat",
                     lookbehind_days=30,
-                    resolve_multiple_fn="max",
+                    aggregation_fn=maximum,
                     fallback=np.nan,
-                    allowed_nan_value_prop=0,
                     prefix=self.project_info.prefix.predictor,
                 ),
             ]
 
-        resolve_multiple = ["max", "min", "mean", "latest", "count"]
+        resolve_multiple = [maximum, minimum, mean, latest, count]
         interval_days: list[float] = [30, 90, 180, 365, 730]
-        allowed_nan_value_prop: list[float] = [0]
 
         lab_results = self._get_lab_result_specs(
             resolve_multiple,
             interval_days,
-            allowed_nan_value_prop,
         )
 
         diagnoses = self._get_diagnoses_specs(
             resolve_multiple,
             interval_days,
-            allowed_nan_value_prop,
         )
 
         medications = self._get_medication_specs(
             resolve_multiple,
             interval_days,
-            allowed_nan_value_prop,
         )
 
         demographics = PredictorGroupSpec(
-            values_loader=["weight_in_kg", "height_in_cm", "bmi"],
+            named_dataframes=[
+                NamedDataframe(df=weight_in_kg(), name="weight_in_kg"),
+                NamedDataframe(df=height_in_cm(), name="height_in_cm"),
+                NamedDataframe(df=bmi(), name="bmi"),
+            ],
             lookbehind_days=interval_days,
-            resolve_multiple_fn=["latest"],
+            aggregation_fns=[latest],
             fallback=[np.nan],
-            allowed_nan_value_prop=allowed_nan_value_prop,
             prefix=self.project_info.prefix.predictor,
         ).create_combinations()
 
         return lab_results + medications + diagnoses + demographics
 
-    def get_feature_specs(self) -> list[_AnySpec]:
+    def get_feature_specs(self) -> list[AnySpec]:
         """Get a spec set."""
 
         if self.min_set_for_debug:

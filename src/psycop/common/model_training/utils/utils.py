@@ -262,7 +262,7 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
         Union[None, dict[str, float]]: Dictionary of feature importances.
     """
     return dict(
-        zip(pipe["model"].feature_names, pipe["model"].feature_importances_),
+        zip(pipe["model"].feature_names, pipe["model"].feature_importances_),  # type: ignore
     )
 
 
@@ -280,7 +280,7 @@ def get_selected_features_dict(
         Union[None, dict[str, int]]: Dictionary of selected features. 0 if not selected, 1 if selected.
     """
     is_selected = [
-        int(i) for i in pipe["preprocessing"]["feature_selection"].get_support()
+        int(i) for i in pipe["preprocessing"]["feature_selection"].get_support()  # type: ignore
     ]
     return dict(
         zip(train_col_names, is_selected),

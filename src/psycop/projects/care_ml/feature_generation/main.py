@@ -82,7 +82,7 @@ if __name__ == "__main__":
         project=f"{project_info.project_name}-feature-generation",
         entity="psycop",
         config={
-            "feature_set_path": project_info.feature_set_path,
+            "feature_set_path": project_info.flattened_dataset_dir,
         },
         mode="offline",
     )

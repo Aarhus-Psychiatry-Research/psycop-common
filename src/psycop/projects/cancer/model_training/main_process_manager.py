@@ -65,6 +65,9 @@ if __name__ == "__main__":
 
     # Must run cfg before main to ensure that wandb is initialized
     # before adding wandb_alert_on_exception decorator
-    cfg, wandb_group = setup(config_file_name=CONFIG_FILE_NAME)
+    cfg, wandb_group = setup(
+        config_file_name=CONFIG_FILE_NAME,
+        application_config_dir_relative_path="./config",
+    )
 
-    main(cfg=cfg, wandb_group=wandb_group)
+    main(cfg=cfg, wandb_group=wandb_group, config_file_name=CONFIG_FILE_NAME)
