@@ -24,11 +24,11 @@ from psycop.common.model_training.config_schemas.project import (
     WandbSchema,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
-from timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.aggregation_fns import maximum, minimum
+from timeseriesflattener.feature_specs.single_specs import (
     OutcomeSpec,
     PredictorSpec,
 )
-from timeseriesflattener.resolve_multiple_functions import maximum, minimum
 
 
 def test_e2e(tmp_path: Path):
@@ -85,14 +85,14 @@ def test_e2e(tmp_path: Path):
     feature_specs = [
         PredictorSpec(
             feature_name="test_predictor",
-            resolve_multiple_fn=minimum,
+            aggregation_fn=minimum,
             lookbehind_days=3,
             values_df=predictor_df,
             fallback=0,
         ),
         OutcomeSpec(
             feature_name="test_outcome",
-            resolve_multiple_fn=maximum,
+            aggregation_fn=maximum,
             lookahead_days=3,
             incident=False,
             values_df=outcome_df,

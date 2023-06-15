@@ -15,7 +15,7 @@ from psycop.common.feature_generation.data_checks.utils import (
 from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import (
     load_split,
 )
-from timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_specs.single_specs import (
     PredictorSpec,
     StaticSpec,
     TemporalSpec,

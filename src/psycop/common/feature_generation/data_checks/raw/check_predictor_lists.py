@@ -51,7 +51,6 @@ def check_df_conforms_to_feature_spec(
         df=df,
         required_columns=required_columns,
         subset_duplicates_columns=subset_duplicates_columns,
-        allowed_nan_value_prop=allowed_nan_value_prop,
         expected_val_dtypes=expected_val_dtypes,
     )
 
@@ -184,7 +183,6 @@ def check_feature_combinations_return_correct_dfs(
             subset_duplicates_columns=subset_duplicates_columns,
             expected_val_dtypes=expected_val_dtypes,
             msg_prefix=msg_prefix,
-            allowed_nan_value_prop=allowed_nan_value_prop,
             arg_dict=d,
         )
 

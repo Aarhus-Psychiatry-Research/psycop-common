@@ -10,7 +10,7 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer im
     save_feature_descriptive_stats_from_dir,
 )
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
-from timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_specs.single_specs import (
     OutcomeSpec,
     PredictorSpec,
     StaticSpec,
@@ -23,10 +23,9 @@ def predictor_specs() -> list[PredictorSpec]:
         PredictorSpec(
             values_df=pd.DataFrame({"hba1c": [0]}),
             interval_days=100,
-            resolve_multiple_fn="max",
+            aggregation_fn="max",
             fallback=np.nan,
             feature_name="hba1c",
-            input_col_name_override="hba1c",
         ),
     ]
 
@@ -51,7 +50,7 @@ def outcome_specs() -> list[OutcomeSpec]:
             incident="true",
             lookahead_days=30,
             feature_name="t2d",
-            resolve_multiple_fn="max",
+            aggregation_fn="max",
             fallback="0",
         ),
     ]

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import wandb
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
-from timeseriesflattener.feature_spec_objects import (
+from timeseriesflattener.feature_specs.single_specs import (
     BaseModel,
 )
 

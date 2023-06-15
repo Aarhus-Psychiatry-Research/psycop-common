@@ -11,10 +11,8 @@ from psycop.projects.t2d.feature_generation.outcome_specification.t1d_diagnoses 
 from psycop.projects.t2d.feature_generation.outcome_specification.t2d_diagnoses import (
     get_first_type_2_diabetes_diagnosis,
 )
-from timeseriesflattener.utils import data_loaders
 
 
-@data_loaders.register("first_diabetes_indicator")
 def get_first_diabetes_indicator() -> pd.DataFrame:
     dfs = {
         "t1d_diagnoses": get_first_type_1_diabetes_diagnosis(),
