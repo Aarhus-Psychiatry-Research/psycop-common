@@ -127,7 +127,7 @@ def test_generate_feature_description_row_for_static_spec(
     column_name = spec.get_output_col_name()
 
     df = df.rename(
-        columns={"pred_hba1c_within_100_days_max_fallback_nan": column_name},
+        columns={"pred_hba1c_within_100_days_maximum_fallback_nan": column_name},
     )
 
     generate_feature_description_row(series=df[column_name], predictor_spec=spec)
