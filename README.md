@@ -33,16 +33,6 @@ conda activate psycop-common
 pip install -e ".[dev,text,tests]"
 ```
 
-## Migrating from the polyrepos
-* Install into your environment using the command above
-* Fix imports. Use `cmd+shift+f` to replace:
-
-`psycop_feature_generation.` -> `psycop.common.feature_generation.`
-
-`psycop_model_training.` -> `psycop.common.model_training.`
-
-`psycop_model_evaluation.` -> `psycop.common.model_evaluation.`
-
 <!--
 To see more examples, see the [documentation].
 
