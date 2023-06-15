@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-from pathlib import Path
 
 import plotnine as pn
-
 from psycop.projects.forced_admission_inpatient.utils.best_runs import Run, RunGroup
 
 
@@ -11,6 +9,7 @@ class BestRun:
     wandb_group: str
     model: str
     pos_rate: float
+
 
 POS_RATE = 0.05
 
@@ -33,14 +32,10 @@ EVAL_RUN = Run(
 
 EVAL_CONFIG = EVAL_RUN.cfg
 
-EVAL_ROOT =  EVAL_CONFIG.project.project_path / "pipeline_eval" 
+EVAL_ROOT = EVAL_CONFIG.project.project_path / "pipeline_eval"
 
 # output paths
-GENERAL_ARTIFACT_PATH = (
-    EVAL_ROOT
-    / f"{EVAL_GROUP.name}"
-    / f"{EVAL_RUN.name}"
-)
+GENERAL_ARTIFACT_PATH = EVAL_ROOT / f"{EVAL_GROUP.name}" / f"{EVAL_RUN.name}"
 FIGURES_PATH = GENERAL_ARTIFACT_PATH / "figures"
 TABLES_PATH = GENERAL_ARTIFACT_PATH / "tables"
 ESTIMATES_PATH = GENERAL_ARTIFACT_PATH / "estimates"

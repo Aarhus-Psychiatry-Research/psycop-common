@@ -4,14 +4,15 @@ from typing import Any, Optional
 
 import pandas as pd
 from joblib import Memory
-from sklearn.pipeline import Pipeline
-
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from sklearn.pipeline import Pipeline
 
 # create a memory cache with a directory to store the cache
 memory = Memory(
-    location=Path("E:/shared_resources/forced_admissions_inpatient/model_eval/model_eval_cache"),
+    location=Path(
+        "E:/shared_resources/forced_admissions_inpatient/model_eval/model_eval_cache",
+    ),
 )
 
 

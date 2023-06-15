@@ -7,10 +7,9 @@ from typing import Any, Literal, Optional
 
 import pandas as pd
 import polars as pl
-from sklearn.pipeline import Pipeline
-
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from sklearn.pipeline import Pipeline
 
 
 @dataclass
@@ -19,7 +18,9 @@ class RunGroup:
 
     @property
     def group_dir(self) -> Path:
-        return Path(f"E:/shared_resources/forced_admissions_inpatient/pipeline_eval/{self.name}")
+        return Path(
+            f"E:/shared_resources/forced_admissions_inpatient/pipeline_eval/{self.name}",
+        )
 
     @property
     def flattened_ds_dir(self) -> Path:

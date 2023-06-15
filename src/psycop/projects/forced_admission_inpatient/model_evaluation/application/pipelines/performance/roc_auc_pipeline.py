@@ -3,7 +3,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotnine as pn
-
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
     bootstrap_roc,
 )
