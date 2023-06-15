@@ -3,6 +3,7 @@
 Required to allow the trainer_spawner to point towards a python script
 file, rather than an installed module.
 """
+import faulthandler
 import sys
 from pathlib import Path
 from typing import Union
@@ -38,4 +39,5 @@ def main(cfg: Union[DictConfig, FullConfigSchema]) -> float:
 
 
 if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
+    faulthandler.enable(all_threads=True)
+    main()
