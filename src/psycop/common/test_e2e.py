@@ -84,18 +84,18 @@ def test_e2e(tmp_path: Path):
 
     feature_specs = [
         PredictorSpec(
-            feature_name="test_predictor",
+            feature_base_name="test_predictor",
             aggregation_fn=minimum,
             lookbehind_days=3,
-            values_df=predictor_df,
+            timeseries_df=predictor_df,
             fallback=0,
         ),
         OutcomeSpec(
-            feature_name="test_outcome",
+            feature_base_name="test_outcome",
             aggregation_fn=maximum,
             lookahead_days=3,
             incident=False,
-            values_df=outcome_df,
+            timeseries_df=outcome_df,
             fallback=0,
         ),
     ]
