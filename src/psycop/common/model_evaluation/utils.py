@@ -3,21 +3,23 @@
 utilities.
 """
 import math
+import os
 import sys
 import tempfile
 from collections.abc import Iterable, MutableMapping, Sequence
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import dill as pkl
 import numpy as np
 import pandas as pd
-import wandb
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline
+
+import wandb
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
@@ -358,25 +360,34 @@ def output_table(
 
 def find_best_run_in_dir(
     run_group: str,
-    performance_file_name: str,
+    lookahead_window: int,
     dir_path: Path,
-) -> str:
+) -> Dict:
     """Function for finding best performing model run in a directory containing multiple runs.
-    Loops through the directory and opens the relevant pickle file in each subfolder.
 
     Args:
         run_group (str): Name of run group.
-        performance_file_name (str): Name of performance file.
+        lookahead_window (int): Number of lookahead days for outcome specification. Used to identify performance files.
         dir_path (Path): Path to directory containing runs.
 
     Returns:
         str: Name of best performing run.
     """
 
-    performance_file = dir_path / run_group / performance_file_name
+    dir = dir_path / run_group 
 
-    df = pd.read_parquet(performance_file)
+    parquet_files = [file for file in os.listdir(dir) if file.endswith(f"{lookahead_window}.parquet")]
 
-    best_run_name = str(df.loc[df["roc_auc"].idxmax(), "run_name"])
+    dfs = []
 
-    return best_run_name
+    for file in parquet_files:
+
+        parquet_file = os.path.join(dir, file)
+        df = pd.read_parquet(parquet_file)
+        dfs.append(df)
+
+    concatenated_df = pd.concat(dfs, ignore_index=True)
+
+    best_run = concatenated_df.loc[concatenated_df["roc_auc"].idxmax()].to_dict()
+
+    return best_run
