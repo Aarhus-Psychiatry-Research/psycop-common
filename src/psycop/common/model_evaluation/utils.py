@@ -9,17 +9,16 @@ import tempfile
 from collections.abc import Iterable, MutableMapping, Sequence
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import dill as pkl
 import numpy as np
 import pandas as pd
+import wandb
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline
-
-import wandb
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
@@ -362,7 +361,7 @@ def find_best_run_in_dir(
     run_group: str,
     lookahead_window: int,
     dir_path: Path,
-) -> Dict:
+) -> dict:
     """Function for finding best performing model run in a directory containing multiple runs.
 
     Args:
@@ -374,14 +373,15 @@ def find_best_run_in_dir(
         str: Name of best performing run.
     """
 
-    dir = dir_path / run_group 
+    dir = dir_path / run_group
 
-    parquet_files = [file for file in os.listdir(dir) if file.endswith(f"{lookahead_window}.parquet")]
+    parquet_files = [
+        file for file in os.listdir(dir) if file.endswith(f"{lookahead_window}.parquet")
+    ]
 
     dfs = []
 
     for file in parquet_files:
-
         parquet_file = os.path.join(dir, file)
         df = pd.read_parquet(parquet_file)
         dfs.append(df)
