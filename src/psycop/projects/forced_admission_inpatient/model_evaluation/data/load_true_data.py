@@ -38,7 +38,7 @@ def df_to_eval_dataset(
 
 def get_run_item_file_path(wandb_group: str, wandb_run: str, file_name: str) -> Path:
     return Path(
-        f"E:/shared_resources/forced_admissions_inpatient/model_eval/{wandb_group}/{wandb_run}/{file_name}",
+        f"E:/shared_resources/forced_admissions_inpatient/pipeline_eval/{wandb_group}/{wandb_run}/{file_name}",
     )
 
 

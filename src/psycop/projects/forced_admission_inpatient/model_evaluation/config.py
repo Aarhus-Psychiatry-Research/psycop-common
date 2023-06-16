@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 import plotnine as pn
+
+from psycop.common.model_evaluation.utils import find_best_run_in_dir
 from psycop.projects.forced_admission_inpatient.utils.best_runs import Run, RunGroup
 
 
@@ -11,14 +14,25 @@ class BestRun:
     pos_rate: float
 
 
+PROJECT_MODEL_DIR = Path(
+    "E:\\shared_resources\\forced_admissions_inpatient\\pipeline_eval",
+)
 POS_RATE = 0.05
+
 
 # Best model on structured features
 DEV_GROUP_NAME = "bonnetiere-coarrange"
+
+BEST_RUN_NAME = find_best_run_in_dir(
+    run_group=DEV_GROUP_NAME,
+    performance_file_name="xgboost_182.parquet",
+    dir=PROJECT_MODEL_DIR,
+)
+
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_DEV_RUN = Run(
     group=DEVELOPMENT_GROUP,
-    name="impertriturature",
+    name=BEST_RUN_NAME,
     pos_rate=POS_RATE,
 )
 
