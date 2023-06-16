@@ -22,7 +22,7 @@ def gain_pipeline(model: Literal["baseline"], top_n: int = 20):
     """Pipeline for running gain plot and gain table
 
     Args:
-        model (Literal["baseline"]: Which model to use.
+        model (Literal["baseline"]): Which model to use.
         top_n (int, optional): How many features to include in gain plot. Defaults to 20
     """
     if model == "baseline":
