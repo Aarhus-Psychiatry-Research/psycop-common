@@ -14,11 +14,12 @@ from typing import Any, Optional, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
-import wandb
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline
+
+import wandb
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
@@ -373,16 +374,16 @@ def find_best_run_in_dir(
         str: Name of best performing run.
     """
 
-    dir = dir_path / run_group
+    full_dir = dir_path / run_group
 
     parquet_files = [
-        file for file in os.listdir(dir) if file.endswith(f"{lookahead_window}.parquet")
+        file for file in os.listdir(full_dir) if file.endswith(f"{lookahead_window}.parquet")
     ]
 
     dfs = []
 
     for file in parquet_files:
-        parquet_file = os.path.join(dir, file)
+        parquet_file = full_dir / file
         df = pd.read_parquet(parquet_file)
         dfs.append(df)
 
