@@ -13,12 +13,11 @@ from typing import Any, Optional, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
+import wandb
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline
-
-import wandb
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
@@ -357,11 +356,24 @@ def output_table(
     raise ValueError("Output format does not match anything that is allowed")
 
 
-def find_best_run_in_dir(run_group: str, performance_file_name: str, dir: Path) -> str:
+def find_best_run_in_dir(
+    run_group: str,
+    performance_file_name: str,
+    dir_path: Path,
+) -> str:
     """Function for finding best performing model run in a directory containing multiple runs.
-    Loops through the directory and opens the relevant pickle file in each subfolder."""
+    Loops through the directory and opens the relevant pickle file in each subfolder.
 
-    performance_file = dir / run_group / performance_file_name
+    Args:
+        run_group (str): Name of run group.
+        performance_file_name (str): Name of performance file.
+        dir_path (Path): Path to directory containing runs.
+
+    Returns:
+        str: Name of best performing run.
+    """
+
+    performance_file = dir_path / run_group / performance_file_name
 
     df = pd.read_parquet(performance_file)
 

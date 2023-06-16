@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import plotnine as pn
-
 from psycop.common.model_evaluation.utils import find_best_run_in_dir
 from psycop.projects.forced_admission_inpatient.utils.best_runs import Run, RunGroup
 
@@ -26,7 +25,7 @@ DEV_GROUP_NAME = "bonnetiere-coarrange"
 BEST_RUN_NAME = find_best_run_in_dir(
     run_group=DEV_GROUP_NAME,
     performance_file_name="xgboost_182.parquet",
-    dir=PROJECT_MODEL_DIR,
+    dir_path=PROJECT_MODEL_DIR,
 )
 
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
