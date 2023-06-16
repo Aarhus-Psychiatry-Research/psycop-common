@@ -366,7 +366,7 @@ def find_best_run_in_dir(
 
     Args:
         run_group (str): Name of run group.
-        lookahead_window (int): Number of lookahead days for outcome specification. Used to identify performance files.
+        lookahead_window (int): Number of lookahead days for outcome specification. Used to identify performance files in the directory.
         dir_path (Path): Path to directory containing runs.
 
     Returns:
