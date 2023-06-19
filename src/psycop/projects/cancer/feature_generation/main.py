@@ -1,6 +1,6 @@
 """Main feature generation."""
-
 import logging
+import sys
 from pathlib import Path
 
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
@@ -14,9 +14,13 @@ from psycop.common.feature_generation.application_modules.loggers import (
 )
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
+    init_wandb,
 )
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
+)
+from psycop.common.feature_generation.application_modules.wandb_utils import (
+    wandb_alert_on_exception,
 )
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
@@ -30,7 +34,7 @@ from psycop.projects.cancer.feature_generation.specify_features import FeatureSp
 log = logging.getLogger()
 
 
-# @wandb_alert_on_exception
+@wandb_alert_on_exception
 def _generate_feature_set(project_info: ProjectInfo) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
@@ -79,17 +83,14 @@ def generate_feature_set() -> Path:
     # Use wandb to keep track of your dataset generations
     # Makes it easier to find paths on wandb, as well as
     # allows monitoring and automatic slack alert on failure
-
-    # # Solution for problem with temp folders for wandb. Might not need anymore.
-    # if sys.platform == "win32":
-    #     (Path(__file__).resolve().parents[1] / "wandb" / "debug-cli.onerm").mkdir(
-    #             exist_ok=True,
-    #             parents=True,
-    #         )
-
-    # init_wandb(
-    #     project_info=project_info,
-    # )
+    if sys.platform == "win32":
+        (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
+            exist_ok=True,
+            parents=True,
+        )
+    init_wandb(
+        project_info=project_info,
+    )
 
     return _generate_feature_set(project_info=project_info)
 
