@@ -1,4 +1,5 @@
 import plotnine as pn
+
 from psycop.common.model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )

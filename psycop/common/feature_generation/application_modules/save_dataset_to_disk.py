@@ -5,6 +5,7 @@ from typing import Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
+
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )

@@ -1,6 +1,7 @@
 import polars as pl
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from wasabi import Printer
+
+from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 
 msg = Printer(timestamp=True)
 

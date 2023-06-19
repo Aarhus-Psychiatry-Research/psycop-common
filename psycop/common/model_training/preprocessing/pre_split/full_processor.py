@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
+
 from psycop.common.model_training.config_schemas.data import DataSchema
 from psycop.common.model_training.config_schemas.preprocessing import (
     PreSplitPreprocessingConfigSchema,

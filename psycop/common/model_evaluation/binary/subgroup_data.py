@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from typing import Optional
 
 import pandas as pd
+
 from psycop.common.model_evaluation.binary.utils import (
     auroc_by_group,
 )

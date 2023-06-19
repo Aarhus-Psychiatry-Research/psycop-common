@@ -1,6 +1,7 @@
 import datetime
 
 import pandas as pd
+
 from psycop.projects.t2d.paper_outputs.config import (
     DEVELOPMENT_GROUP,
 )

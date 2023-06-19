@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal, Optional
 
 import pandas as pd
+
 from psycop.common.feature_generation.loaders.raw.load_text import (
     get_valid_text_sfi_names,
     load_text_split,

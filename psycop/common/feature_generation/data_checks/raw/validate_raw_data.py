@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 from deepchecks.tabular import Dataset
 from deepchecks.tabular.suites import data_integrity
+from wasabi import Printer
+
 from psycop.common.feature_generation.data_checks.flattened.data_integrity import (
     get_failed_check_names,
 )
@@ -17,7 +19,6 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer im
 from psycop.common.feature_generation.data_checks.utils import (
     save_df_to_pretty_html_table,
 )
-from wasabi import Printer
 
 
 def median_absolute_deviation(series: pd.Series) -> float:

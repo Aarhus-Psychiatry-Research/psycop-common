@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Literal, Optional
 
 import pandas as pd
+
 from psycop.common.feature_generation.text_models.fit_text_models import fit_text_model
 from psycop.common.feature_generation.text_models.text_model_paths import (
     PREPROCESSED_TEXT_DIR,

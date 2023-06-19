@@ -1,6 +1,7 @@
 """Tests of check_raw_df."""
 
 import pytest
+
 from psycop.common.feature_generation.data_checks.raw.check_raw_df import check_raw_df
 from psycop.common.test_utils.str_to_df import (
     str_to_df,

@@ -2,12 +2,13 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from pathlib import Path
 
+from wasabi import Printer
+
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

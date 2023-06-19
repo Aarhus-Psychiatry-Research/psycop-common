@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 
 import pandas as pd
+
 from psycop.common.model_evaluation.binary.utils import (
     auroc_by_group,
 )

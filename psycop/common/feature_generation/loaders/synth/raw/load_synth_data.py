@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pandas as pd
+
 from psycop.common.feature_generation.utils import data_loaders
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 

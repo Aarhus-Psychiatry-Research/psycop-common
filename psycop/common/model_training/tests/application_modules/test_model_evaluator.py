@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )

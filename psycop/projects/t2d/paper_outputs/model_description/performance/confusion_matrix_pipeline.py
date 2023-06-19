@@ -1,5 +1,6 @@
 import pandas as pd
 import plotnine as pn
+
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )

@@ -1,5 +1,4 @@
 """Create preprocessing pipeline based on config."""
-from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from sklearn.feature_selection import (
     SelectPercentile,
     chi2,
@@ -10,6 +9,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from wasabi import Printer
+
+from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 
 def get_feature_selection_steps(cfg: FullConfigSchema) -> list:

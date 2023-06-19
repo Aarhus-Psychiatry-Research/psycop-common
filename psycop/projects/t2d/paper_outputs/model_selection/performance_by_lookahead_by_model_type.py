@@ -1,4 +1,5 @@
 import polars as pl
+
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     days_from_first_positive_to_diagnosis,
 )

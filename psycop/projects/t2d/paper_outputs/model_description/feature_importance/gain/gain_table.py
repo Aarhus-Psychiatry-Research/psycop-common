@@ -1,4 +1,5 @@
 import polars as pl
+
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )

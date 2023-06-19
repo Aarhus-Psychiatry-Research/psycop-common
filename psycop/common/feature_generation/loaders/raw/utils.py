@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 
 import pandas as pd
+
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 log = logging.getLogger(__name__)

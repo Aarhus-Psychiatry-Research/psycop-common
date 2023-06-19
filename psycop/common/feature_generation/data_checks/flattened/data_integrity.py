@@ -25,11 +25,12 @@ from deepchecks.tabular.checks import (
     StringLengthOutOfBounds,
     TrainTestLabelDrift,
 )
+from wasabi import Printer
+
 from psycop.common.feature_generation.loaders.flattened import (
     load_split_outcomes,
     load_split_predictors,
 )
-from wasabi import Printer
 
 
 def pruned_data_integrity_checks(**kwargs: Any) -> Suite:

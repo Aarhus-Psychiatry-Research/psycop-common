@@ -1,4 +1,5 @@
 import pandas as pd
+
 from psycop.common.model_evaluation.binary.utils import (
     auroc_by_group,
     sensitivity_by_group,

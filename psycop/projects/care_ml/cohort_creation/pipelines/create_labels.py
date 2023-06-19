@@ -8,11 +8,12 @@ Labels: Kig to dage frem
 from datetime import date
 
 import pandas as pd
+from psycop_ml_utils.sql.writer import write_df_to_sql
+
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.projects.care_ml.cohort_creation.utils.cohort_hyperparameters import (
     create_binary_and_categorical_labels_with_lookahead,
 )
-from psycop_ml_utils.sql.writer import write_df_to_sql
 
 df_cohort = sql_load(
     "psycop_coercion_cohort_with_all_days_without_labels_feb2022",

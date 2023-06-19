@@ -2,6 +2,7 @@ import random
 
 import numpy as np
 import pandas as pd
+
 from psycop.common.model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )

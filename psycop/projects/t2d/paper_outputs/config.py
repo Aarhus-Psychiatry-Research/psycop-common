@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import plotnine as pn
+
 from psycop.projects.t2d.utils.pipeline_objects import RunGroup
 
 ########################################

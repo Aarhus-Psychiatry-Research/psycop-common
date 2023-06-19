@@ -2,6 +2,7 @@
 from collections.abc import Sequence
 
 import pandas as pd
+
 from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events_hit_by_true_positive import (
     get_prop_of_events_captured_from_eval_dataset,
 )

@@ -4,18 +4,19 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
-    generate_feature_description_df,
-    generate_feature_description_row,
-    save_feature_descriptive_stats_from_dir,
-)
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from timeseriesflattener.aggregation_fns import maximum
 from timeseriesflattener.feature_specs.single_specs import (
     OutcomeSpec,
     PredictorSpec,
     StaticSpec,
 )
+
+from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
+    generate_feature_description_df,
+    generate_feature_description_row,
+    save_feature_descriptive_stats_from_dir,
+)
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 
 @pytest.fixture()

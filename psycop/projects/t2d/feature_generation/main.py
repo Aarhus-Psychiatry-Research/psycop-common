@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 
 import pandas as pd
+from timeseriesflattener.feature_specs.single_specs import AnySpec
+
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -28,7 +30,6 @@ from psycop.projects.t2d.t2d_config import (
     get_t2d_feature_specifications,
     get_t2d_project_info,
 )
-from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 log = logging.getLogger()
 

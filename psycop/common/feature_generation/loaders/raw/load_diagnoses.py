@@ -9,6 +9,7 @@ import logging
 from typing import Literal
 
 import pandas as pd
+
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t1d_diag,
     keep_rows_where_diag_matches_t2d_diag,

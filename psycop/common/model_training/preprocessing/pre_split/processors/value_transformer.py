@@ -7,6 +7,8 @@ information about the values in the dataset.
 from datetime import datetime
 
 import pandas as pd
+from wasabi import Printer
+
 from psycop.common.model_training.config_schemas.data import DataSchema
 from psycop.common.model_training.config_schemas.preprocessing import (
     PreSplitPreprocessingConfigSchema,
@@ -15,7 +17,6 @@ from psycop.common.model_training.utils.col_name_inference import (
     infer_predictor_col_name,
 )
 from psycop.common.model_training.utils.decorators import print_df_dimensions_diff
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

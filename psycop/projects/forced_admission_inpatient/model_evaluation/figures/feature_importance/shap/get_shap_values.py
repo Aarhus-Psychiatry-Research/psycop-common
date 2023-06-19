@@ -6,13 +6,14 @@ import pandas as pd
 import polars as pl
 import shap
 from joblib import Memory
+from sklearn.pipeline import Pipeline
+
 from psycop.common.global_utils.cache import mem
 from psycop.projects.forced_admission_inpatient.model_evaluation.config import EVAL_RUN
 from psycop.projects.forced_admission_inpatient.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
 from psycop.projects.forced_admission_inpatient.utils.best_runs import Run
-from sklearn.pipeline import Pipeline
 
 mem = Memory(location=".", verbose=0)  # noqa: F811
 

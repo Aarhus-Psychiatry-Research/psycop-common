@@ -1,4 +1,5 @@
 import pandas as pd
+
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import type_2_diabetes
 
 

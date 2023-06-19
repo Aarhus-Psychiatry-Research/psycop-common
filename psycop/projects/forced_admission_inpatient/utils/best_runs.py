@@ -7,9 +7,10 @@ from typing import Any, Literal, Optional
 
 import pandas as pd
 import polars as pl
+from sklearn.pipeline import Pipeline
+
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from sklearn.pipeline import Pipeline
 
 
 @dataclass

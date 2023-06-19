@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import plotnine as pn
+
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )

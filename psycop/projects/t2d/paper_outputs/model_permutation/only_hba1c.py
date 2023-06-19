@@ -2,12 +2,13 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import polars as pl
+from wasabi import Printer
+
 from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
     FeatureModifier,
     evaluate_pipeline_with_modified_dataset,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

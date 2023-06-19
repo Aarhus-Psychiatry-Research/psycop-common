@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import wandb
+
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )

@@ -14,10 +14,11 @@ import dill as pkl
 import numpy as np
 import pandas as pd
 import wandb
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from sklearn.pipeline import Pipeline
+
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "test_utils" / "test_outputs" / "plots_from_tests"
 TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)

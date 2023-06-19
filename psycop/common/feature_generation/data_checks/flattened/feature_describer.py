@@ -9,18 +9,19 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from psycop.common.feature_generation.data_checks.utils import (
-    save_df_to_pretty_html_table,
-)
-from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import (
-    load_split,
-)
 from timeseriesflattener.feature_specs.single_specs import (
     PredictorSpec,
     StaticSpec,
     TextPredictorSpec,
 )
 from wasabi import Printer
+
+from psycop.common.feature_generation.data_checks.utils import (
+    save_df_to_pretty_html_table,
+)
+from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import (
+    load_split,
+)
 
 UNICODE_HIST = {
     0: " ",

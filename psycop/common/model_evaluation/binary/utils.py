@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
+from sklearn.metrics import recall_score, roc_auc_score
+
 from psycop.common.model_evaluation.binary.bootstrap_estimates import (
     bootstrap_estimates,
 )
-from sklearn.metrics import recall_score, roc_auc_score
 
 
 def _auroc_within_group(

@@ -5,8 +5,9 @@ from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import roc_auc_score, roc_curve
+
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
 @dataclass

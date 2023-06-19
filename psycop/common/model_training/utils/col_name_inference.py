@@ -5,6 +5,7 @@ from typing import Union
 
 import pandas as pd
 from omegaconf import DictConfig
+
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 

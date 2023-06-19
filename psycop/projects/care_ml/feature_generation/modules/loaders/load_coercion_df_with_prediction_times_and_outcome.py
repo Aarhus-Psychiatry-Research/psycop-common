@@ -1,6 +1,7 @@
 import pandas as pd
-from psycop.common.feature_generation.loaders.raw import sql_load
 from wasabi import msg
+
+from psycop.common.feature_generation.loaders.raw import sql_load
 
 
 def load_coercion_prediction_times(

@@ -4,6 +4,9 @@ from __future__ import annotations
 import logging
 from collections.abc import Iterable
 
+from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
+from timeseriesflattener.flattened_dataset import PredictorSpec
+
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
@@ -16,8 +19,6 @@ from psycop.common.feature_generation.data_checks.flattened.data_integrity impor
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
-from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
-from timeseriesflattener.flattened_dataset import PredictorSpec
 
 log = logging.getLogger(__name__)
 

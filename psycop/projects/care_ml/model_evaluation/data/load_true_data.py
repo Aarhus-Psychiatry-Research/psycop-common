@@ -3,11 +3,11 @@ from pathlib import Path
 from typing import Any, Optional
 
 import pandas as pd
-from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from joblib import Memory
 from sklearn.pipeline import Pipeline
 
-from joblib import Memory
+from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 # create a memory cache with a directory to store the cache
 memory = Memory(

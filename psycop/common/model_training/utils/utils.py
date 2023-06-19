@@ -13,9 +13,10 @@ from typing import Any, Union
 import dill as pkl
 import numpy as np
 import pandas as pd
+from sklearn.pipeline import Pipeline
+
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.training_output.dataclasses import ModelEvalData
-from sklearn.pipeline import Pipeline
 
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "tests" / "plots_from_tests"
 

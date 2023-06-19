@@ -2,11 +2,12 @@ from collections.abc import Sequence
 from datetime import datetime
 from typing import Callable
 
+from wasabi import Printer
+
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

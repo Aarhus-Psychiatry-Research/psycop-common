@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.config_schemas.conf_utils import (
     FullConfigSchema,

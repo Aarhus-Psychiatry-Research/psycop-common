@@ -13,6 +13,7 @@ from plotnine import (
     labs,
     theme,
 )
+
 from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     FIGURES_PATH,

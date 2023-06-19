@@ -1,4 +1,5 @@
 import pandas as pd
+
 from psycop.common.feature_generation.text_models.preprocessing import (
     text_preprocessing,
 )

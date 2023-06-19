@@ -4,6 +4,30 @@ from collections.abc import Sequence
 from typing import Callable, Union
 
 import numpy as np
+from timeseriesflattener.aggregation_fns import (
+    boolean,
+    change_per_day,
+    count,
+    latest,
+    mean,
+    mean_number_of_characters,
+    type_token_ratio,
+    variance,
+)
+from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
+    PredictorGroupSpec,
+)
+from timeseriesflattener.feature_specs.single_specs import (
+    BaseModel,
+    PredictorSpec,
+    StaticSpec,
+    TextPredictorSpec,
+)
+from timeseriesflattener.text_embedding_functions import (
+    sklearn_embedding,
+)
+
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
@@ -62,29 +86,6 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_somatic,
 )
 from psycop.common.feature_generation.text_models.utils import load_text_model
-from timeseriesflattener.aggregation_fns import (
-    boolean,
-    change_per_day,
-    count,
-    latest,
-    mean,
-    mean_number_of_characters,
-    type_token_ratio,
-    variance,
-)
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    BaseModel,
-    PredictorSpec,
-    StaticSpec,
-    TextPredictorSpec,
-)
-from timeseriesflattener.text_embedding_functions import (
-    sklearn_embedding,
-)
 
 log = logging.getLogger(__name__)
 

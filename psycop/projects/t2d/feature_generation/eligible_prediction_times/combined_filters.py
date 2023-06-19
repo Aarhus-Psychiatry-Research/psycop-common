@@ -1,4 +1,5 @@
 import polars as pl
+
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,

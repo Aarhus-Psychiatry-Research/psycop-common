@@ -3,6 +3,7 @@
 from typing import Literal, Optional
 
 import polars as pl
+
 from psycop.projects.forced_admission_inpatient.model_evaluation.config import (
     EVAL_RUN,
     FIGURES_PATH,

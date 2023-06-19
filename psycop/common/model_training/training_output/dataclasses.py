@@ -3,6 +3,7 @@ from typing import Any, Optional, Union
 
 import pandas as pd
 from numpy import float64
+
 from psycop.common.model_training.config_schemas.basemodel import BaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 

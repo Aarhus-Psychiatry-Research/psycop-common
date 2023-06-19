@@ -5,8 +5,9 @@ import urllib
 import urllib.parse
 
 import pandas as pd
-from psycop.common.global_utils.cache import mem
 from sqlalchemy import create_engine, text
+
+from psycop.common.global_utils.cache import mem
 
 
 @mem.cache  # type: ignore

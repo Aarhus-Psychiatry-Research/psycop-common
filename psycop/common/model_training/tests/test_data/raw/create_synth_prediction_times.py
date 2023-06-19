@@ -1,9 +1,10 @@
 """Generate dataframe with prediction times."""
 
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop_ml_utils.synth_data_generator.synth_col_generators import (
     generate_data_columns,
 )
+
+from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 if __name__ == "__main__":
     # Get project root directory

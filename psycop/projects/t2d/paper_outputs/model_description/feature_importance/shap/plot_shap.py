@@ -2,6 +2,7 @@ from pathlib import Path
 
 import plotnine as pn
 import polars as pl
+
 from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.get_shap_values import (
     get_top_i_features_by_mean_abs_shap,
 )

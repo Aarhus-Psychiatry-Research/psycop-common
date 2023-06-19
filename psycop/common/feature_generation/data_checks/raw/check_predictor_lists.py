@@ -8,9 +8,10 @@ from collections.abc import Sequence
 from typing import Any
 
 import pandas as pd
+from wasabi import Printer
+
 from psycop.common.feature_generation.data_checks.raw.check_raw_df import check_raw_df
 from psycop.common.feature_generation.utils import data_loaders
-from wasabi import Printer
 
 
 def check_df_conforms_to_feature_spec(

@@ -7,6 +7,7 @@ from pathlib import Path
 
 import hydra
 from omegaconf import DictConfig
+
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )

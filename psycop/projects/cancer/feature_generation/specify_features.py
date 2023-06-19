@@ -3,6 +3,20 @@ import logging
 from typing import Callable
 
 import numpy as np
+from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum
+from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
+    OutcomeGroupSpec,
+    PredictorGroupSpec,
+)
+from timeseriesflattener.feature_specs.single_specs import (
+    AnySpec,
+    BaseModel,
+    OutcomeSpec,
+    PredictorSpec,
+    StaticSpec,
+)
+
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
@@ -58,19 +72,6 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
 )
 from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (
     any_cancer,
-)
-from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    OutcomeGroupSpec,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-    BaseModel,
-    OutcomeSpec,
-    PredictorSpec,
-    StaticSpec,
 )
 
 log = logging.getLogger(__name__)

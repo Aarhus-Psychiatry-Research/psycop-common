@@ -2,6 +2,7 @@
 
 
 import pytest
+
 from psycop.common.model_training.application_modules.train_model.main import (
     post_wandb_setup_train_model,
     train_model,

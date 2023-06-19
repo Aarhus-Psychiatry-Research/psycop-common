@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import plotnine as pn
+
 from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,

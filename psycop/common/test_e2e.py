@@ -1,6 +1,12 @@
 from pathlib import Path
 
 import pandas as pd
+from timeseriesflattener.aggregation_fns import maximum, minimum
+from timeseriesflattener.feature_specs.single_specs import (
+    OutcomeSpec,
+    PredictorSpec,
+)
+
 from psycop.common.feature_generation.application_modules.project_setup import (
     ColNames,
     Prefixes,
@@ -24,11 +30,6 @@ from psycop.common.model_training.config_schemas.project import (
     WandbSchema,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
-from timeseriesflattener.aggregation_fns import maximum, minimum
-from timeseriesflattener.feature_specs.single_specs import (
-    OutcomeSpec,
-    PredictorSpec,
-)
 
 
 def test_e2e(tmp_path: Path):

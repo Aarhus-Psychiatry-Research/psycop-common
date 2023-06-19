@@ -3,6 +3,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotnine as pn
+from sklearn.metrics import average_precision_score, precision_recall_curve
+from sklearn.utils import resample
+
 from psycop.projects.care_ml.model_evaluation.config import (
     EVAL_RUN,
     FIGURES_PATH,
@@ -12,8 +15,6 @@ from psycop.projects.care_ml.model_evaluation.config import (
     TEXT_FIGURES_PATH,
 )
 from psycop.projects.care_ml.utils.best_runs import Run
-from sklearn.metrics import average_precision_score, precision_recall_curve
-from sklearn.utils import resample
 
 
 def bootstrap_pr(

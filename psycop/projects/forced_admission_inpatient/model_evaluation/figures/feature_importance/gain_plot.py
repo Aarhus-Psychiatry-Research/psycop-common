@@ -13,6 +13,7 @@ from plotnine import (
     labs,
     theme,
 )
+
 from psycop.projects.forced_admission_inpatient.model_evaluation.config import (
     COLOURS,
     FIGURES_PATH,

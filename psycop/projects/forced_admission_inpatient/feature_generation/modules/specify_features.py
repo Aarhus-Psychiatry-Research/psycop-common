@@ -3,6 +3,27 @@ import logging
 from typing import Callable, Union
 
 import numpy as np
+from timeseriesflattener.aggregation_fns import (
+    boolean,
+    change_per_day,
+    count,
+    latest,
+    maximum,
+    mean,
+    variance,
+)
+from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
+    PredictorGroupSpec,
+)
+from timeseriesflattener.feature_specs.single_specs import (
+    AnySpec,
+    BaseModel,
+    OutcomeSpec,
+    PredictorSpec,
+    StaticSpec,
+)
+
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
@@ -82,26 +103,6 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
-)
-from timeseriesflattener.aggregation_fns import (
-    boolean,
-    change_per_day,
-    count,
-    latest,
-    maximum,
-    mean,
-    variance,
-)
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-    BaseModel,
-    OutcomeSpec,
-    PredictorSpec,
-    StaticSpec,
 )
 
 log = logging.getLogger(__name__)

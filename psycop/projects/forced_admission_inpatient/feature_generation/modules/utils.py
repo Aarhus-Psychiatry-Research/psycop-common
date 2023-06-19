@@ -2,6 +2,7 @@
 import logging
 
 import pandas as pd
+
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.loaders.load_forced_admissions_dfs_with_prediction_times_and_outcome import (
     forced_admissions_inpatient,
     forced_admissions_outpatient,

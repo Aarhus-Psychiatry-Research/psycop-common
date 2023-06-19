@@ -3,6 +3,9 @@ from pathlib import Path
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
 import wandb
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
+
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.training_output.artifact_saver.to_disk import (
     ArtifactsToDiskSaver,
@@ -15,8 +18,6 @@ from psycop.common.model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
 )
-from sklearn.metrics import roc_auc_score
-from sklearn.pipeline import Pipeline
 
 log = logging.getLogger(__name__)
 

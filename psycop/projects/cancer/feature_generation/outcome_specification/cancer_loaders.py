@@ -4,6 +4,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from psycop.common.feature_generation.utils import data_loaders
 
 CANCER_DATA_DIR = Path(r"E:\shared_resources") / "cancer"

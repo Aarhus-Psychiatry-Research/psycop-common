@@ -1,6 +1,7 @@
 """Tests of value cleaner."""
 
 import pandas as pd
+
 from psycop.common.model_training.preprocessing.pre_split.processors.value_cleaner import (
     PreSplitValueCleaner,
 )

@@ -1,5 +1,6 @@
 import pandas as pd
 import plotnine as pn
+
 from psycop.projects.t2d.paper_outputs.config import COLORS, T2D_PN_THEME
 
 

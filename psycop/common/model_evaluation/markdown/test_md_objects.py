@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+
 from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownFigure,
     MarkdownTable,

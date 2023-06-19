@@ -1,5 +1,6 @@
 import pandas as pd
 import plotnine as pn
+
 from psycop.common.model_training.application_modules.process_manager_setup import setup
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 from psycop.projects.care_ml.model_evaluation.config import (

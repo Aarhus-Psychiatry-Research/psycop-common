@@ -6,13 +6,14 @@ from typing import Any, Optional, Union
 import dill as pkl
 import pandas as pd
 import wandb
+from sklearn.pipeline import Pipeline
+
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import (
     EvalDataset,
     PipeMetadata,
 )
 from psycop.common.model_training.utils.utils import write_df_to_file
-from sklearn.pipeline import Pipeline
 
 log = logging.getLogger(__name__)
 

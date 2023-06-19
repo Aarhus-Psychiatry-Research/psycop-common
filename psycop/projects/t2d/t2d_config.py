@@ -1,4 +1,6 @@
 import pandas as pd
+from timeseriesflattener.feature_specs.single_specs import AnySpec
+
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
@@ -7,7 +9,6 @@ from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader imp
     get_eligible_prediction_times_as_polars,
 )
 from psycop.projects.t2d.feature_generation.specify_features import FeatureSpecifier
-from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 
 def get_t2d_project_info() -> ProjectInfo:

@@ -2,11 +2,12 @@
 
 from pathlib import Path
 
+from wasabi import Printer
+
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, RunGroup
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

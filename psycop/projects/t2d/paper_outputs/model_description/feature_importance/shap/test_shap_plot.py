@@ -2,6 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import polars as pl
+
 from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.plot_shap import (
     plot_shap_for_feature,
     save_plots_for_top_i_shap_by_mean_abs,

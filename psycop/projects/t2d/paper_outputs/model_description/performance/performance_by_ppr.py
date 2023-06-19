@@ -1,9 +1,10 @@
 import pandas as pd
+from wasabi import Printer
+
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

@@ -3,6 +3,7 @@
 
 import pandas as pd
 import pytest
+
 from psycop.common.model_training.config_schemas.data import ColumnNamesSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.col_name_checker import (

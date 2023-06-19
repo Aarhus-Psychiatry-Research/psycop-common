@@ -2,9 +2,10 @@
 
 from typing import Any, Union
 
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.global_utils.pickle import read_pickle, write_to_pickle
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
 def save_text_model_to_dir(

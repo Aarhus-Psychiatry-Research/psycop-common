@@ -2,6 +2,7 @@
 
 import pytest
 from hydra import compose, initialize
+
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,

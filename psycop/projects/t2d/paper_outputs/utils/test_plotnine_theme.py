@@ -1,5 +1,6 @@
 import pandas as pd
 import plotnine as pn
+
 from psycop.common.model_evaluation.binary.utils import auroc_by_group
 from psycop.common.model_evaluation.utils import TEST_PLOT_PATH
 

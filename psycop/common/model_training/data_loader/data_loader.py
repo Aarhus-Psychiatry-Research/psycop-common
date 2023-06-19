@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import Callable, Optional, Union
 
 import pandas as pd
-from psycop.common.model_training.config_schemas.data import DataSchema
 from wasabi import Printer
+
+from psycop.common.model_training.config_schemas.data import DataSchema
 
 msg = Printer(timestamp=True)
 

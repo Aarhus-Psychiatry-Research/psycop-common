@@ -4,9 +4,10 @@ from collections.abc import Sequence
 from typing import Literal, Union
 
 import pandas as pd
+from pydantic import BaseModel
+
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
-from pydantic import BaseModel
 
 log = logging.getLogger(__name__)
 

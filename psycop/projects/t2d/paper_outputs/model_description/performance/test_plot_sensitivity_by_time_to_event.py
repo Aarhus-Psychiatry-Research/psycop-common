@@ -1,4 +1,5 @@
 import pandas as pd
+
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )

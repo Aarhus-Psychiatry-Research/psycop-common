@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+
 from psycop.common.model_training.training_output.dataclasses import (
     EvalDataset,
     get_predictions_for_positive_rate,

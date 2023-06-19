@@ -1,8 +1,9 @@
+from sklearn.metrics import recall_score, roc_auc_score
+
 from psycop.common.model_evaluation.binary.bootstrap_estimates import (
     bootstrap_estimates,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
-from sklearn.metrics import recall_score, roc_auc_score
 
 
 def test_boostrap_estimates():

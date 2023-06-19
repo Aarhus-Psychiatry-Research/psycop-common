@@ -8,6 +8,7 @@ import polars as pl
 import shap
 from matplotlib import rcParams
 from matplotlib.colors import LinearSegmentedColormap
+
 from psycop.projects.care_ml.model_evaluation.config import (
     COLOURS,
     FIGURES_PATH,

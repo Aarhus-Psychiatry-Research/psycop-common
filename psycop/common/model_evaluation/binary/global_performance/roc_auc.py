@@ -3,9 +3,10 @@
 import numpy as np
 import pandas as pd
 import plotnine as pn
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.utils import resample
+
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
 def bootstrap_roc(

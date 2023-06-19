@@ -4,6 +4,7 @@
 import pandas as pd
 import pytest
 from pandas import DataFrame
+
 from psycop.common.feature_generation.loaders.synth.raw.load_synth_data import (
     load_synth_outcome,
     load_synth_prediction_times,

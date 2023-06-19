@@ -3,6 +3,7 @@
 # Load the data #
 #################
 import polars as pl
+
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
     get_eligible_prediction_times_as_polars,
 )
@@ -49,6 +50,7 @@ eligible_prediction_times = flattened_combined.join(
 # Grouped by visit #
 ####################
 import pandas as pd
+
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_lib import (
     RowSpecification,

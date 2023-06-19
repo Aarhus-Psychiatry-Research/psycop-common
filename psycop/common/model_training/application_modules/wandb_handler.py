@@ -4,6 +4,8 @@ from typing import Any
 
 import wandb
 from omegaconf import DictConfig, OmegaConf
+from random_word import RandomWords
+
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.config_schemas.basemodel import BaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
@@ -11,7 +13,6 @@ from psycop.common.model_training.utils.utils import (
     create_wandb_folders,
     flatten_nested_dict,
 )
-from random_word import RandomWords
 
 
 class WandbHandler:

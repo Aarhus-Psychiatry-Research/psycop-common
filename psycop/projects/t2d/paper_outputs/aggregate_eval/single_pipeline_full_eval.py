@@ -1,3 +1,5 @@
+from wasabi import Printer
+
 from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownArtifact,
     MarkdownFigure,
@@ -13,7 +15,6 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustn
     t2d_create_main_robustness_figure,
 )
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

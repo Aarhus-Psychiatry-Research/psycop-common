@@ -3,6 +3,7 @@ from datetime import timedelta
 from typing import Union
 
 import pandas as pd
+
 from psycop.common.model_training.config_schemas.data import DataSchema
 from psycop.common.model_training.config_schemas.preprocessing import (
     PreSplitPreprocessingConfigSchema,

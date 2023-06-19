@@ -2,6 +2,7 @@
 
 import Levenshtein
 import pandas as pd
+
 from psycop.common.model_training.config_schemas.data import ColumnNamesSchema
 
 

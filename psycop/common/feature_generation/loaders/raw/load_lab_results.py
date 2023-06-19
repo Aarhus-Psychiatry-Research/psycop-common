@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pandas as pd
+
 from psycop.common.feature_generation.loaders.non_numerical_coercer import (
     multiply_inequalities_in_df,
 )

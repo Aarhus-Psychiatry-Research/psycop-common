@@ -2,6 +2,8 @@ from collections.abc import Sequence
 from typing import Optional
 
 import pandas as pd
+from timeseriesflattener.feature_specs.single_specs import AnySpec
+
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     flatten_dataset_to_disk,
 )
@@ -12,7 +14,6 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 
 def minimal_pipeline(

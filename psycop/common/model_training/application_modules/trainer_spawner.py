@@ -5,11 +5,12 @@ import time
 from pathlib import Path
 from typing import Optional, Union
 
+from wasabi import Printer
+
 from psycop.common.model_training.application_modules.get_search_space import (
     TrainerSpec,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from wasabi import Printer
 
 
 def start_trainer(

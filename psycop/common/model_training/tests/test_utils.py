@@ -1,6 +1,7 @@
 """Testing of the utils module."""
 import numpy as np
 import pandas as pd
+
 from psycop.common.model_training.utils.utils import (
     bin_continuous_data,
     drop_records_if_datediff_days_smaller_than,

@@ -1,4 +1,6 @@
 import polars as pl
+from wasabi import Printer
+
 from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownArtifact,
     create_supplementary_from_markdown_artifacts,
@@ -13,7 +15,6 @@ from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import EVAL_ROOT, PipelineRun, RunGroup
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 

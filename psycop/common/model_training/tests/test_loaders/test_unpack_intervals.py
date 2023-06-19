@@ -1,6 +1,7 @@
 """Tests of unpack_intervals"""
 
 import pandas as pd
+
 from psycop.common.feature_generation.loaders.raw.utils import (
     unpack_intervals,
 )

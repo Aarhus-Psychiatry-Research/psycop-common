@@ -1,4 +1,5 @@
 import polars as pl
+
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )

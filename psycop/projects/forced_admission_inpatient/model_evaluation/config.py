@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import plotnine as pn
+
 from psycop.projects.forced_admission_inpatient.utils.best_runs import Run, RunGroup
 
 

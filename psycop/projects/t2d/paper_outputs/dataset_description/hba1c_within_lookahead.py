@@ -5,6 +5,10 @@ import numpy as np
 import pandas as pd
 import plotnine as pn
 import polars as pl
+from timeseriesflattener.aggregation_fns import latest
+from timeseriesflattener.feature_specs.single_specs import OutcomeSpec
+from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     fasting_p_glc,
     hba1c,
@@ -19,9 +23,6 @@ from psycop.common.model_training.preprocessing.pre_split.processors.row_filter 
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
-from timeseriesflattener.aggregation_fns import latest
-from timeseriesflattener.feature_specs.single_specs import OutcomeSpec
-from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 
 def get_eligible_prediction_times_for_pipeline(run: PipelineRun) -> pd.DataFrame:

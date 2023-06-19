@@ -11,6 +11,7 @@ if __name__ == "__main__":
     ).get_long_shap_df()  # type: ignore
 
     import polars as pl
+
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.shap_table import (
         get_top_i_shap_values_for_printing,
     )
