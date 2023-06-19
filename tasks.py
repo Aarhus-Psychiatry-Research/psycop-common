@@ -276,7 +276,7 @@ def pre_commit(c: Context, auto_fix: bool):
 def static_type_checks(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
-        c.run("tox -e type", pty=NOT_WINDOWS)
+        c.run("pyright src/", pty=NOT_WINDOWS)
     else:
         print(
             f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",
@@ -374,9 +374,9 @@ def test(
 
     pytest_arg_str = " ".join(pytest_args)
 
-    tox_command = f"tox -e test -- {pytest_arg_str}"
+    command = f"pytest {pytest_arg_str}"
     test_result: Result = c.run(
-        tox_command,
+        command,
         warn=True,
         pty=NOT_WINDOWS,
     )
@@ -511,30 +511,7 @@ def docs(c: Context, view: bool = False, view_only: bool = False):
         else:
             c.run("open docs/_build/html/index.html")
 
+
 @task
 def update_deps(c: Context):
     c.run("pip install --upgrade -r requirements.txt")
-    
-    frozen_requirements_filename = "frozen-requirements.txt"
-    c.run(f"pip freeze > {frozen_requirements_filename}")
-    # Remove all files in the frozen-requirements.txt that contain "@"
-
-    # Create a temporary file
-    temp_file_path = 'temp.txt'
-
-    # Open the file in read mode
-    with open(frozen_requirements_filename, 'r') as file:
-        # Open the temporary file in write mode
-        with open(temp_file_path, 'w') as temp_file:
-            # Iterate over the lines in the file
-            for line in file:
-                # Check if the line contains "@"
-                if '@' not in line:
-                    # Write the line to the temporary file
-                    temp_file.write(line)
-
-    # Remove the original file
-    os.remove(frozen_requirements_filename)
-
-    # Rename the temporary file to the original file name
-    os.rename(temp_file_path, frozen_requirements_filename)

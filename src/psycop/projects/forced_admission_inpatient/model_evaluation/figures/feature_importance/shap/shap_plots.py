@@ -8,16 +8,15 @@ import polars as pl
 import shap
 from matplotlib import rcParams
 from matplotlib.colors import LinearSegmentedColormap
-from psycop.projects.care_ml.model_evaluation.config import (
+from psycop.projects.forced_admission_inpatient.model_evaluation.config import (
     COLOURS,
     FIGURES_PATH,
     PN_THEME,
-    TEXT_FIGURES_PATH,
 )
-from psycop.projects.care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values import (
+from psycop.projects.forced_admission_inpatient.model_evaluation.figures.feature_importance.shap.get_shap_values import (
     get_top_i_features_by_mean_abs_shap,
 )
-from psycop.projects.care_ml.model_evaluation.utils.feature_name_to_readable import (
+from psycop.projects.forced_admission_inpatient.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
 
@@ -135,8 +134,6 @@ def plot_shap_summary(
     )
     if model == "baseline":
         output_path = FIGURES_PATH / "shap" / "shap_summary.png"
-    elif model == "text":
-        output_path = TEXT_FIGURES_PATH / "shap" / "shap_summary.png"
     else:
         raise ValueError(f"model is {model}, but must be 'baseline' or 'text.")
 

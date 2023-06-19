@@ -7,11 +7,11 @@ import polars as pl
 import shap
 from joblib import Memory
 from psycop.common.global_utils.cache import mem
-from psycop.projects.care_ml.model_evaluation.config import EVAL_RUN
-from psycop.projects.care_ml.model_evaluation.utils.feature_name_to_readable import (
+from psycop.projects.forced_admission_inpatient.model_evaluation.config import EVAL_RUN
+from psycop.projects.forced_admission_inpatient.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
-from psycop.projects.care_ml.utils.best_runs import Run
+from psycop.projects.forced_admission_inpatient.utils.best_runs import Run
 from sklearn.pipeline import Pipeline
 
 mem = Memory(location=".", verbose=0)  # noqa: F811
@@ -182,11 +182,9 @@ def generate_shap_values(
             features[feature] = features[feature].round(1)
 
     # rename features
-    features.columns = [
-        feature_name_to_readable(col, warning=False) for col in features.columns
-    ]
+    features.columns = [feature_name_to_readable(col) for col in features.columns]
 
-    model = pipeline["model"]
+    model = pipeline["model"]  # type: ignore
     explainer = shap.TreeExplainer(model)  # type: ignore
     shap_values = explainer(features, y=outcome)
 

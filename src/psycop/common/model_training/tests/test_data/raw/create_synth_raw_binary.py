@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     for i in (1, 2):
         df = generate_data_columns(
-            predictors=column_specs,
+            predictors=column_specs,  # type: ignore
             n_samples=10_000,
         )
 
