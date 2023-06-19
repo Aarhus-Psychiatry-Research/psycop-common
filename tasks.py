@@ -293,7 +293,7 @@ def install(
     if msg:
         echo_header(f"{msg_type.DOING} Installing project")
 
-    install_cmd = f"pip install -r requirements.txt {pip_args}"
+    install_cmd = f"pip install -r dev-requirements.txt {pip_args}"
 
     if venv_path is not None and NOT_WINDOWS:
         with c.prefix(f"source {venv_path}/bin/activate"):

@@ -2,3 +2,4 @@
 black==22.6.0
 ruff==0.0.272
 invoke==2.1.3
+pyright==1.1.305
