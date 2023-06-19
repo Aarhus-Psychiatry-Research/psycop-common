@@ -19,7 +19,7 @@ PROJECT_MODEL_DIR = Path(
 POS_RATE = 0.05
 
 
-DEV_GROUP_NAME = "bonnetiere-coarrange"
+DEV_GROUP_NAME = "mangi-bouquets"
 
 # Best model on structured features
 BEST_RUN = find_best_run_in_dir(
@@ -43,7 +43,7 @@ EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 EVAL_RUN = Run(
     group=EVAL_GROUP,
-    name="patteredauxograph",
+    name="unprosecutingbrutishly",
     pos_rate=POS_RATE,
 )
 
