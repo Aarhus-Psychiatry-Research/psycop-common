@@ -23,7 +23,7 @@ CONFIG_PATH = PROJECT_ROOT / "model_training" / "config"
 
 @hydra.main(
     config_path=str(CONFIG_PATH),
-    config_name="default_config_frihae",
+    config_name="default_config",
     version_base="1.2",
 )
 def main(cfg: Union[DictConfig, FullConfigSchema]) -> float:
