@@ -16,7 +16,6 @@ If you do not wish to use invoke you can simply delete this file.
 """
 
 
-import os
 import platform
 import re
 import shutil
