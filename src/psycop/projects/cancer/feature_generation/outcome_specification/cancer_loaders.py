@@ -6,8 +6,6 @@ from pathlib import Path
 import pandas as pd
 from psycop.common.feature_generation.utils import data_loaders
 
-# from psycop_feature_generation.loaders.raw.load_diagnoses import from_physical_visits
-
 CANCER_DATA_DIR = Path(r"E:\shared_resources") / "cancer"
 
 
@@ -24,22 +22,3 @@ def any_cancer() -> pd.DataFrame:
     df["value"] = 1
 
     return df.reset_index(drop=True)
-
-
-df = any_cancer()
-# @data_loaders.register("any_cancer")
-# def any_cancer(n_rows: Optional[int] = None) -> pd.DataFrame:
-#     return from_physical_visits(
-#         icd_code="C",
-#         wildcard_icd_code=True,
-#         n_rows=n_rows,
-#     )
-
-
-# @data_loaders.register("lung_cancer")
-# def lung_cancer(n_rows: Optional[int] = None) -> pd.DataFrame:
-#     return from_physical_visits(
-#         icd_code="C34",
-#         wildcard_icd_code=True,
-#         n_rows=n_rows,
-#     )

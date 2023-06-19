@@ -2,7 +2,6 @@
 import logging
 from typing import Callable
 
-# from sys import prefix
 import numpy as np
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
@@ -74,11 +73,6 @@ from timeseriesflattener.feature_specs.single_specs import (
     StaticSpec,
 )
 
-# from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (
-#     any_cancer,
-# )
-
-
 log = logging.getLogger(__name__)
 
 
@@ -122,10 +116,6 @@ class FeatureSpecifier:
                 timeseries_df=any_cancer(),
                 prefix="",
             ),
-            # StaticSpec(
-            #     values_loader="any_cancer",
-            #     prefix="",
-            # ),
         ]
 
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
@@ -274,19 +264,6 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[np.nan],
         ).create_combinations()
-
-        # diabetes_lab_results = PredictorGroupSpec(
-        #     named_dataframes=(
-        #         NamedDataframe(df=hba1c(), name="hba1c"),
-        #         NamedDataframe(df=scheduled_glc(), name="scheduled_glc"),
-        #         NamedDataframe(df=unscheduled_p_glc(), name="unscheduled_p_glc"),
-        #         NamedDataframe(df=egfr(), name="egfr"),
-        #         NamedDataframe(df=albumine_creatinine_ratio(), name="albumine_creatinine_ratio"),
-        #     ),
-        #     aggregation_fns=resolve_multiple,
-        #     lookbehind_days=interval_days,
-        #     fallback=[np.nan],
-        # ).create_combinations()
 
         return general_lab_results  # + diabetes_lab_results
 
