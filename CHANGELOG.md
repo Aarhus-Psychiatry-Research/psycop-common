@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v0.83.0 (2023-06-19)
+
+### Feature
+
+* Eval pipeline works ([`a663436`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a663436072abb38f06f12d974de129533b398bf2))
+* Add typehints to feature specs ([`bf42de0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bf42de0ec820607c891aa737bf39fb3b4bab0444))
+* Turn wandb off for now in main feature_gen script ([`2ea9ef3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2ea9ef36f8b067c36033d334dc32bd0fd345ec8b))
+* Cancer project initial setup ([`de8f9cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/de8f9cf4d713c05ae5e82821af3f7a810dfe79e8))
+
+### Fix
+
+* Minor change ([`41e07b2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/41e07b288480bada959f0537148cc9238b352740))
+* Update readable feature names ([`a4073c3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a4073c358fd5c3cc21b6525225d03c397da801a6))
+* Update readable feature names ([`114cd24`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/114cd247d19d8b9c65986ab079dde9ac902d7a44))
+
 ## v0.82.0 (2023-06-14)
 ### Feature
 * Add careml to monorepo ([`534400a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/534400afb70b5d3c2b662e3b0bdd2350067be1d4))
