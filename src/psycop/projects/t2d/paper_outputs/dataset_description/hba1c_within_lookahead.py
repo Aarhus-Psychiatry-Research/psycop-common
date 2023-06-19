@@ -112,20 +112,18 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
         specs = [
             OutcomeSpec(
-                feature_name="hba1c",
-                values_df=hba1c_timestamps,
+                feature_base_name="hba1c",
+                timeseries_df=hba1c_timestamps,
                 aggregation_fn=latest,
                 fallback=np.nan,
-                entity_id_col_name="dw_ek_borger",
                 incident=False,
                 lookahead_days=lookahead_days,
             ),
             OutcomeSpec(
-                feature_name="t2d_lab_result",
-                values_df=any_lab_result_timestamps,
+                feature_base_name="t2d_lab_result",
+                timeseries_df=any_lab_result_timestamps,
                 aggregation_fn=latest,
                 fallback=np.nan,
-                entity_id_col_name="dw_ek_borger",
                 incident=False,
                 lookahead_days=lookahead_days,
             ),

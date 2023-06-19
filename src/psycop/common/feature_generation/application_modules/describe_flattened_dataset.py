@@ -17,6 +17,7 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer im
     save_feature_descriptive_stats_from_dir,
 )
 from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
+from timeseriesflattener.flattened_dataset import PredictorSpec
 
 log = logging.getLogger(__name__)
 
@@ -49,7 +50,9 @@ def save_flattened_dataset_description_to_disk(
 
     save_feature_descriptive_stats_from_dir(
         feature_set_dir=project_info.flattened_dataset_dir,
-        feature_specs=feature_specs,
+        feature_specs=[
+            s for s in feature_specs if isinstance(s, (StaticSpec, PredictorSpec))
+        ],
         file_suffix=".parquet",
     )
 

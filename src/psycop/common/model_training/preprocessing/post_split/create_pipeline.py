@@ -48,7 +48,7 @@ def get_feature_selection_steps(cfg: FullConfigSchema) -> list:
                 (
                     "feature_selection",
                     SelectPercentile(
-                        mutual_info_classif,
+                        mutual_info_classif,  # type: ignore
                         percentile=cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
                             "percentile"
                         ],
