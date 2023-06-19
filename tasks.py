@@ -329,7 +329,7 @@ def setup(c: Context, python_path: Optional[str] = None):
 
     if python_path is None:
         # get path to python executable
-        python_path = get_python_path(preferred_version="3.9")
+        python_path = get_python_path(preferred_version="3.10")
         if not python_path:
             print(f"{msg_type.FAIL} Python executable not found")
             exit(1)
