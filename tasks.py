@@ -275,7 +275,7 @@ def pre_commit(c: Context, auto_fix: bool):
 def static_type_checks(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
-        c.run("tox -e type", pty=NOT_WINDOWS)
+        c.run("pyright src/", pty=NOT_WINDOWS)
     else:
         print(
             f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",
@@ -293,7 +293,7 @@ def install(
     if msg:
         echo_header(f"{msg_type.DOING} Installing project")
 
-    extras = ".[dev,tests,docs]" if NOT_WINDOWS else ".[dev,tests,docs]"
+    extras = ".[dev,tests]" if NOT_WINDOWS else ".[dev,tests]"
     install_cmd = f"pip install -e {extras} {pip_args}"
 
     if venv_path is not None and NOT_WINDOWS:
@@ -374,9 +374,9 @@ def test(
 
     pytest_arg_str = " ".join(pytest_args)
 
-    tox_command = f"tox -e test -- {pytest_arg_str}"
+    command = f"pytest {pytest_arg_str}"
     test_result: Result = c.run(
-        tox_command,
+        command,
         warn=True,
         pty=NOT_WINDOWS,
     )
@@ -492,21 +492,3 @@ def pr(c: Context, auto_fix: bool = True):
     test(c)
     push_to_branch(c)
     update_pr(c)
-
-
-@task
-def docs(c: Context, view: bool = False, view_only: bool = False):
-    """
-    Build and view docs. If neither build or view are specified, both are run.
-    """
-    if not view_only:
-        echo_header(f"{msg_type.DOING}: Building docs")
-        c.run("tox -e docs")
-
-    if view or view_only:
-        echo_header(f"{msg_type.EXAMINE}: Opening docs in browser")
-        # check the OS and open the docs in the browser
-        if platform.system() == "Windows":
-            c.run("start docs/_build/html/index.html")
-        else:
-            c.run("open docs/_build/html/index.html")
