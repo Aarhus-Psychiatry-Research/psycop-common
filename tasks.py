@@ -16,6 +16,7 @@ If you do not wish to use invoke you can simply delete this file.
 """
 
 
+import multiprocessing
 import platform
 import re
 import shutil
@@ -359,10 +360,12 @@ def test(
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
 
+    n_cores = multiprocessing.cpu_count()
+
     if not pytest_args:
         pytest_args = [
-            "src/psycop",
-            "-n 4",
+            "psycop",
+            f"-n {n_cores - 2}",
             "-rfE",
             "--failed-first",
             "-p no:cov",
