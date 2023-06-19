@@ -43,7 +43,7 @@ repository = "https://github.com/Aarhus-Psychiatry-Research/psycop-common"
 documentation = "https://Aarhus-Psychiatry-Research.github.io/psycop-common/"
 
 [tool.pyright]
-include = ["src/psycop"]
+include = ["psycop"]
 exclude = ["**/.*venv*", ".tox", "build"]
 pythonPlatform = "Darwin"
 
@@ -129,9 +129,9 @@ known-third-party = ["wandb", "joblib"]
 max-complexity = 10
 
 [tool.ruff.per-file-ignores]
-"src/psycop/projects/care_ml/model_evaluation/figures/feature_importance/shap/get_shap_values.py" = ["I001"]
-"src/psycop/projects/care_ml/model_evaluation/data/load_true_data.py" = ["I001"]
-"src/psycop/common/global_utils/cache.py" = ["I001"]
+"psycop/projects/care_ml/model_evaluation/figures/feature_importance/shap/get_shap_values.py" = ["I001"]
+"psycop/projects/care_ml/model_evaluation/data/load_true_data.py" = ["I001"]
+"psycop/common/global_utils/cache.py" = ["I001"]
 
 
 [tool.semantic_release]

@@ -276,7 +276,7 @@ def pre_commit(c: Context, auto_fix: bool):
 def static_type_checks(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
-        c.run("pyright src/", pty=NOT_WINDOWS)
+        c.run("pyright psycop/", pty=NOT_WINDOWS)
     else:
         print(
             f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",

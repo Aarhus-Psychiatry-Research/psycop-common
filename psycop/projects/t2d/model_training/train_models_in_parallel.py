@@ -46,7 +46,7 @@ def main(
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
         train_single_model_file_path=Path(
-            "src/psycop/projects/t2d/model_training/train_model_from_application_module.py",
+            "psycop/projects/t2d/model_training/train_model_from_application_module.py",
         ),
     )
 

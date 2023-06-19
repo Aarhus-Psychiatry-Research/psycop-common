@@ -29,4 +29,4 @@ def get_t2d_feature_specifications() -> list[AnySpec]:
     ).get_feature_specs()
 
 
-# For model training configuration, see src/psycop/projects/t2d/model_training/config/*
+# For model training configuration, see psycop/projects/t2d/model_training/config/*
