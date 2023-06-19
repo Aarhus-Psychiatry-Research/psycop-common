@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           pip install invoke
-          pip install -e '.[dev,text]'
+          pip install -r requirements.txt test-requirements.txt
 
       - name: Run static type checker
         id: pyright

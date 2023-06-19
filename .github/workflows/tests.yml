@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           pip install invoke
-          pip install -e .[dev,tests]
+          pip install -r test-requirements.txt -r requirements.txt
 
       - name: Run and write pytest
         shell: bash
