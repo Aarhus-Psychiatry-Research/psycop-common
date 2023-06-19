@@ -3,7 +3,6 @@
 utilities.
 """
 import math
-import os
 import sys
 import tempfile
 from collections.abc import Iterable, MutableMapping, Sequence
@@ -355,41 +354,3 @@ def output_table(
         return wandb.Table(dataframe=df)
 
     raise ValueError("Output format does not match anything that is allowed")
-
-
-def find_best_run_in_dir(
-    run_group: str,
-    lookahead_window: int,
-    dir_path: Path,
-) -> dict:
-    """Function for finding best performing model run in a directory containing multiple runs.
-
-    Args:
-        run_group (str): Name of run group.
-        lookahead_window (int): Number of lookahead days for outcome specification. Used to identify performance files in the directory.
-        dir_path (Path): Path to directory containing runs.
-
-    Returns:
-        str: Name of best performing run.
-    """
-
-    full_dir = dir_path / run_group
-
-    parquet_files = [
-        file
-        for file in os.listdir(full_dir)
-        if file.endswith(f"{lookahead_window}.parquet")
-    ]
-
-    dfs = []
-
-    for file in parquet_files:
-        parquet_file = full_dir / file
-        df = pd.read_parquet(parquet_file)
-        dfs.append(df)
-
-    concatenated_df = pd.concat(dfs, ignore_index=True)
-
-    best_run = concatenated_df.loc[concatenated_df["roc_auc"].idxmax()].to_dict()
-
-    return best_run

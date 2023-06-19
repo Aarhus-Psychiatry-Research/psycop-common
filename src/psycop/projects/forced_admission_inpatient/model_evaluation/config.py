@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import plotnine as pn
-from psycop.common.model_evaluation.utils import find_best_run_in_dir
 from psycop.projects.forced_admission_inpatient.utils.best_runs import Run, RunGroup
 
 
@@ -21,18 +20,10 @@ POS_RATE = 0.05
 
 DEV_GROUP_NAME = "mangi-bouquets"
 
-# Best model on structured features
-BEST_RUN = find_best_run_in_dir(
-    run_group=DEV_GROUP_NAME,
-    lookahead_window=182,
-    dir_path=PROJECT_MODEL_DIR,
-)
-
-# Exteracting name of run
-BEST_RUN_NAME = BEST_RUN["run_name"]
-
-
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
+
+BEST_RUN_NAME = DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[1, 2]
+
 BEST_DEV_RUN = Run(
     group=DEVELOPMENT_GROUP,
     name=BEST_RUN_NAME,
@@ -43,7 +34,7 @@ EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 EVAL_RUN = Run(
     group=EVAL_GROUP,
-    name="unprosecutingbrutishly",
+    name="congreganistcarburating",
     pos_rate=POS_RATE,
 )
 
