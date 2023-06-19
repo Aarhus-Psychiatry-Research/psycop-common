@@ -33,14 +33,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache tox
-        uses: actions/cache@v3.2.6
-        id: cache_tox
-        with:
-          path: |
-            .tox
-          key: ${{ runner.os }}-${{ matrix.python-version }}-cache-1.0.0-tests
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -49,7 +41,8 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pip install invoke tox
+          pip install invoke
+          pip install -e .[dev,tests]
 
       - name: Run and write pytest
         shell: bash

@@ -35,6 +35,7 @@ MANIFEST
 # Unit test / coverage reports
 htmlcov/
 .tox/
+_build/
 .nox/
 .coverage
 .coverage.*
@@ -163,10 +164,6 @@ poetry.lock
 # PyCharm
 /.idea/*
 tests/outputs_from_tests
-
-# Tox
-_build/
-.tox/
 
 # Outputs
 # Images
