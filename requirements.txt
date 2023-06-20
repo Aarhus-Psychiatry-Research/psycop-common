@@ -8,7 +8,6 @@ hydra-optuna-sweeper==1.2.0
 hydra-joblib-launcher==1.2.0
 pyarrow==8.0.0
 Random-Word==1.0.11
-psycopmlutils
 Levenshtein==0.21.0
 wasabi==0.9.1
 deepchecks==0.17.0
