@@ -2,6 +2,26 @@
 
 <!--next-version-placeholder-->
 
+## v0.84.0 (2023-06-20)
+
+### Feature
+
+* Add print statement ([`7924dcd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7924dcded8d514b1407b75e8844663f45d9f837e))
+* Adding function ([`a08fdac`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a08fdac8687d9712d988a7590e417ba5379a925b))
+
+### Fix
+
+* Add correct new models ([`fe9d4bb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fe9d4bb9285546cf8c8be6e54a1947e06351d41a))
+* New best models ([`2db0f03`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2db0f0385eaeceada59693147de9358d6999011c))
+* Adding more flexibility ([`014ba4e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/014ba4e6a25988432b2828649db44a76ad6c44df))
+* Adding more flexibility ([`fca7264`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fca726429a3c4447185ee644ac25cfba97710b3a))
+
+### Documentation
+
+* Update figure terminology ([`d0e8cc8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d0e8cc8ac6e1f0ecdee5ea3c9225a40067ed723c))
+* Update docstring ([`82498cc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/82498cc7e8a8c75fc9cde4fedc795b3b7b6afa9c))
+* Adding docstring ([`0b8e5b4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0b8e5b41bdb4aac79c6747f0c2b026c594418e2a))
+
 ## v0.83.0 (2023-06-19)
 
 ### Feature
