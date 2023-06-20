@@ -1,5 +1,6 @@
 [project]
-version = "0.83.0"
+name = "psycop"
+version = "0.84.0"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"}
 ]
