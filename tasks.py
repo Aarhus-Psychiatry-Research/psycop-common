@@ -16,6 +16,7 @@ If you do not wish to use invoke you can simply delete this file.
 """
 
 
+import multiprocessing
 import platform
 import re
 import shutil
@@ -275,7 +276,7 @@ def pre_commit(c: Context, auto_fix: bool):
 def static_type_checks(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
-        c.run("pyright src/", pty=NOT_WINDOWS)
+        c.run("pyright psycop/", pty=NOT_WINDOWS)
     else:
         print(
             f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",
@@ -293,8 +294,7 @@ def install(
     if msg:
         echo_header(f"{msg_type.DOING} Installing project")
 
-    extras = ".[dev,tests]" if NOT_WINDOWS else ".[dev,tests]"
-    install_cmd = f"pip install -e {extras} {pip_args}"
+    install_cmd = f"pip install -r dev-requirements.txt {pip_args}"
 
     if venv_path is not None and NOT_WINDOWS:
         with c.prefix(f"source {venv_path}/bin/activate"):
@@ -329,7 +329,7 @@ def setup(c: Context, python_path: Optional[str] = None):
 
     if python_path is None:
         # get path to python executable
-        python_path = get_python_path(preferred_version="3.9")
+        python_path = get_python_path(preferred_version="3.10")
         if not python_path:
             print(f"{msg_type.FAIL} Python executable not found")
             exit(1)
@@ -360,10 +360,12 @@ def test(
     # Hence this super weird type hint and default argument for the python_versions arg.
     echo_header(f"{msg_type.TEST} Running tests")
 
+    n_cores = multiprocessing.cpu_count()
+
     if not pytest_args:
         pytest_args = [
-            "src/psycop",
-            "-n 4",
+            "psycop",
+            f"-n {n_cores - 2}",
             "-rfE",
             "--failed-first",
             "-p no:cov",
@@ -492,3 +494,26 @@ def pr(c: Context, auto_fix: bool = True):
     test(c)
     push_to_branch(c)
     update_pr(c)
+
+
+@task
+def docs(c: Context, view: bool = False, view_only: bool = False):
+    """
+    Build and view docs. If neither build or view are specified, both are run.
+    """
+    if not view_only:
+        echo_header(f"{msg_type.DOING}: Building docs")
+        c.run("tox -e docs")
+
+    if view or view_only:
+        echo_header(f"{msg_type.EXAMINE}: Opening docs in browser")
+        # check the OS and open the docs in the browser
+        if platform.system() == "Windows":
+            c.run("start docs/_build/html/index.html")
+        else:
+            c.run("open docs/_build/html/index.html")
+
+
+@task
+def update_deps(c: Context):
+    c.run("pip install --upgrade -r requirements.txt")

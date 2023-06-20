@@ -5,7 +5,7 @@ name: modified-library-files
 on:
   pull_request:
     paths:
-        - "src/psycop/common/**"
+        - "psycop/common/**"
     branches: [main]
 
 jobs:
@@ -22,6 +22,6 @@ jobs:
         id: add_comment
         with:
           message: |
-            Looks like your PR modifies shared library files in `src/psycop/common/`. 
+            Looks like your PR modifies shared library files in `psycop/common/`. 
             
             We highly recommend getting your code reviewed by one of the core maintainers to avoid breaking other projects that depend on these files :-)

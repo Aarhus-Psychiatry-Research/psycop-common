@@ -1,7 +1,3 @@
-[build-system]
-requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "psycop"
 version = "0.84.0"
@@ -13,45 +9,9 @@ classifiers = [
   "Operating System :: POSIX :: Linux",
   "Operating System :: MacOS :: MacOS X",
   "Operating System :: Microsoft :: Windows",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10"
 ]
-requires-python = ">=3.9"
-dependencies = [
-  "pandas>=1.4.0,<2.1.0",
-  "scikit-learn>=1.1.1,<1.3.0",
-  "xgboost>=1.6.1,<1.8.0",
-  "hydra-core>=1.1.13,<1.4.0",
-  "matplotlib>=3.5.2,<3.8.0",
-  "wandb==0.13.10",
-  "tabulate>=0.8.10,<0.10.0",
-  "optuna>=2.10.1,<3.3.0",
-  "hydra-optuna-sweeper>=1.2.0,<1.3.0",
-  "hydra-joblib-launcher>=1.2.0, <1.3.0",
-  "pyarrow>=9.0.0",
-  "Random-Word>=1.0.11, <=1.0.12",
-  "psycopmlutils",
-  "Levenshtein>=0.20.0, <0.22.0",
-  "wasabi>=0.9.1",
-  "scikit-learn>=1.1.2",
-  "deepchecks>=0.8.0",
-  "dill>=0.3.0",
-  "SQLAlchemy>=1.4.41, <2.0.17",
-  "pyodbc>=4.0.34, <4.0.40",
-  "pydantic>=1.9.0",
-  "psutil>=5.9.1, <6.0.0",
-  "catalogue>=2.0.0",
-  "numpy>=1.23.3",
-  "protobuf<=3.20.3", # Other versions give errors with pytest, super weird!
-  "plotnine==0.10.1",
-  "timeseriesflattener==1.0.0",
-  "scipy==1.10.1",
-  "polars==0.18.3",
-  "tableone",
-  "shap",
-  "typing_extensions==4.6.3", # Pins the typing extension due to a bug a buggy interaction with pydantic and Literal, see https://github.com/SeldonIO/alibi/issues/927 and https://github.com/pydantic/pydantic/issues/545
-  "patchworklib==0.6.1",
-]
+requires-python = ">=3.10"
 
 [project.license]
 file = "LICENSE"
@@ -73,9 +33,6 @@ tests = [
   "pytest-xdist>=3.0.0,<3.4.0",
   "pytest-sugar>=0.9.4,<0.10.0",
 ]
-text = [
-  "transformers>=4.22.2, <5.0.0",
-]
 
 [project.readme]
 file = "README.md"
@@ -87,7 +44,7 @@ repository = "https://github.com/Aarhus-Psychiatry-Research/psycop-common"
 documentation = "https://Aarhus-Psychiatry-Research.github.io/psycop-common/"
 
 [tool.pyright]
-include = ["src/psycop"]
+include = ["psycop"]
 exclude = ["**/.*venv*", ".tox", "build"]
 pythonPlatform = "Darwin"
 
@@ -173,9 +130,9 @@ known-third-party = ["wandb", "joblib"]
 max-complexity = 10
 
 [tool.ruff.per-file-ignores]
-"src/psycop/projects/care_ml/model_evaluation/figures/feature_importance/shap/get_shap_values.py" = ["I001"]
-"src/psycop/projects/care_ml/model_evaluation/data/load_true_data.py" = ["I001"]
-"src/psycop/common/global_utils/cache.py" = ["I001"]
+"psycop/projects/care_ml/model_evaluation/figures/feature_importance/shap/get_shap_values.py" = ["I001"]
+"psycop/projects/care_ml/model_evaluation/data/load_true_data.py" = ["I001"]
+"psycop/common/global_utils/cache.py" = ["I001"]
 
 
 [tool.semantic_release]

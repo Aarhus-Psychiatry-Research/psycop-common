@@ -6,7 +6,7 @@
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/charliermarsh/ruff)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-![python versions](https://img.shields.io/badge/Python=3.9-blue)
+![python versions](https://img.shields.io/badge/Python=3.10-blue)
 
 [pypi status]: https://pypi.org/project/psycop-common/
 [tests]: https://github.com/Aarhus-Psychiatry-Research/psycop-common/actions?workflow=Tests
@@ -21,12 +21,18 @@ The shared code across the PSYCOP projects.
 
 ## Installation
 ```bash
+If you're working on Ovartaci, all you need is to activate the shared environment by
+
+conda activate psycop
+```
+
+```bash
 git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
 cd psycop-common
 
-<activate virtual environment (conda, .venv etc.) here>
+<activate virtual environment (conda, .venv etc.) here> 
 
-pip install -e ".[dev,text,tests]"
+pip install -r dev-requirements.txt
 ```
 
 <!--

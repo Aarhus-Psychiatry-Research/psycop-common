@@ -178,18 +178,19 @@ tests/outputs_from_tests
 *.xlsx
 
 # Test
-src/psycop/tests/test_eval_results/*
+psycop/tests/test_eval_results/*
 
 # Ruff
 .ruff_cache
 *.csv
 *.docx
-src/**/*.md
+psycop/**/*.md
 
 # Wandb
+/wandb
 multirun
-wandb
 
 # Ignore the ouptuts for publishing folder
 **/outputs_for_publishing
 pytest.xml
+joblib

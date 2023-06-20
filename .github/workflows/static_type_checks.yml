@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.9"]
+        python-version: ["3.10"]
     steps:
       - uses: actions/checkout@v3
 
@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           pip install invoke
-          pip install -e '.[dev,text]'
+          pip install -r dev-requirements.txt
 
       - name: Run static type checker
         id: pyright
