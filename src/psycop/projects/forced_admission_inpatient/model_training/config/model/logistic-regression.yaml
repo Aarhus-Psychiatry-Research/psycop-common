@@ -9,7 +9,7 @@ model:
     fit_intercept: True
     intercept_scaling: True
     class_weight: Null
-    random_state: 42
+    random_state: ${project.seed}
     penalty_solver: "elasticnet_saga" # custom argument is split into penalty and solver
     max_iter: 100
     l1_ratio: 0.9478534303437285
