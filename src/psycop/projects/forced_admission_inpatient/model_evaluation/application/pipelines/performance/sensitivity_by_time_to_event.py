@@ -5,7 +5,6 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
-from psycop.projects.care_ml.utils.best_runs import Run
 from psycop.projects.forced_admission_inpatient.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
@@ -13,6 +12,7 @@ from psycop.projects.forced_admission_inpatient.model_evaluation.config import (
     MODEL_NAME,
     PN_THEME,
 )
+from psycop.projects.forced_admission_inpatient.utils.best_runs import Run
 
 
 def _plot_sensitivity_by_time_to_event(
@@ -31,20 +31,20 @@ def _plot_sensitivity_by_time_to_event(
             ),
         )
         + pn.geom_bar(
-            pn.aes(y="proportion_in_bin"),
+            pn.aes(y="proportion_in_bin_norm"),
             stat="identity",
             position="identity",
             fill=COLOURS["blue"],
         )
         + pn.geom_text(
-            pn.aes(y="proportion_in_bin", label="n_in_bin"),
+            pn.aes(y="proportion_in_bin_norm", label="n_in_bin"),
             va="bottom",
             size=11,
         )
-        + pn.scale_x_discrete(reverse=True)
+        + pn.scale_x_discrete(limits=df["unit_from_event_binned"].tolist())
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
-        + pn.labs(x="Hours to outcome", y="Sensitivity", title=title)
+        + pn.labs(x="Days to outcome", y="Sensitivity", title=title)
         + PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=90))
         + pn.labs(color="PPR")
@@ -54,6 +54,7 @@ def _plot_sensitivity_by_time_to_event(
             legend_position=(0.75, 0.2),
         )
         + pn.geom_path(group=1, size=0.5)
+        + pn.scale_y_continuous(limits=(0, 1))
     )
 
     p.save(
@@ -103,16 +104,20 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
         time_one=eval_ds.pred_timestamps,
         time_two=eval_ds.outcome_timestamps,  # type: ignore
         direction="t2-t1",
-        bins=range(0, 48, 4),
-        bin_unit="h",
+        bins=range(0, 180, 30),
+        bin_unit="D",
         bin_continuous_input=True,
         drop_na_events=True,
+    )
+
+    df["proportion_in_bin_norm"] = (
+        df["proportion_in_bin"] / df["proportion_in_bin"].max()
     )
 
     plot_sensitivity_by_time_to_event(
         df,
         path,
-        f"{MODEL_NAME[run.name]} Performance by Time to Outcome",
+        f"{MODEL_NAME[run.name]} Sensitivity by Time to Outcome",
     )
 
 
