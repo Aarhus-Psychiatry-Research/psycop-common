@@ -2,21 +2,19 @@ from pathlib import Path
 
 import pandas as pd
 import plotnine as pn
-from psycop.common.model_evaluation.confusion_matrix import confusion_matrix
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     ConfusionMatrix,
+    get_confusion_matrix_cells_from_df,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.projects.care_ml.model_evaluation.config import (
+from psycop.projects.forced_admission_inpatient.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     MODEL_NAME,
     PN_THEME,
     TABLES_PATH,
-    TEXT_EVAL_RUN,
-    TEXT_TABLES_PATH,
 )
-from psycop.projects.care_ml.utils.best_runs import Run
+from psycop.projects.forced_admission_inpatient.utils.best_runs import Run
 
 
 def plotnine_confusion_matrix(matrix: ConfusionMatrix, x_title: str) -> pn.ggplot:
@@ -64,7 +62,7 @@ def confusion_matrix_metrics(
     Creates a confusion matrix dataframe with PPV, NPV, SENS, and SPEC.
     """
     # Calculate the confusion matrix using sklearn
-    cm = confusion_matrix.get_confusion_matrix_cells_from_df(df)
+    cm = get_confusion_matrix_cells_from_df(df)
 
     # Extract the TP, FP, TN, and FN values from the confusion matrix
 
@@ -117,4 +115,3 @@ def confusion_matrix_pipeline(run: Run, path: Path):
 
 if __name__ == "__main__":
     confusion_matrix_pipeline(EVAL_RUN, TABLES_PATH)
-    confusion_matrix_pipeline(TEXT_EVAL_RUN, TEXT_TABLES_PATH)
