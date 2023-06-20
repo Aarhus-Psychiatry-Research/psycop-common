@@ -22,7 +22,7 @@ DEV_GROUP_NAME = "mangi-bouquets"
 
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 
-BEST_RUN_NAME = DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[1, 2]
+BEST_RUN_NAME = DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[0, 2]
 
 BEST_DEV_RUN = Run(
     group=DEVELOPMENT_GROUP,

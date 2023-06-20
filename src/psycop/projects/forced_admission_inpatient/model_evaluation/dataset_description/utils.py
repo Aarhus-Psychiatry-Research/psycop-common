@@ -12,7 +12,7 @@ def load_feature_set() -> pd.DataFrame:
     """
     cfg, _ = setup(
         config_file_name="default_config.yaml",
-        application_config_dir_relative_path="../../../../../../forced_admission_inpatient/model_training/application/config/",
+        application_config_dir_relative_path="../../../../../../psycop-common/forced_admission_inpatient/model_training/config/",
     )
 
     train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")
