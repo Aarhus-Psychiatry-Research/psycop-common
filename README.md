@@ -21,6 +21,12 @@ The shared code across the PSYCOP projects.
 
 ## Installation
 ```bash
+If you're working on Ovartaci, all you need is to activate the shared environment by
+
+conda activate psycop
+```
+
+```bash
 git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
 cd psycop-common
 
