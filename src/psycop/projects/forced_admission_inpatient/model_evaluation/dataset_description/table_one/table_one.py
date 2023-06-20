@@ -2,6 +2,7 @@
 
 import pandas as pd
 import polars as pl
+
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.application_modules.process_manager_setup import setup
 from psycop.common.model_training.data_loader.data_loader import DataLoader
