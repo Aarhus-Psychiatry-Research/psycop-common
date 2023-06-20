@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.85.0 (2023-06-20)
+
+### Feature
+
+* Add plot code ([`8c0b347`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8c0b3477051a0e4c07481b1d98e0d598316b2c01))
+* Remove name and build-system to avoid pip install -e . ([`63e871b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/63e871bd4f1a1b5fd2895905f2bbcef119a5fb35))
+* Migrate to requirements.txt ([`cab38a5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cab38a5ba2c42b3037ef306fa3afcb97937070ff))
+
+### Fix
+
+* Reset project seed ([`8cb0677`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8cb0677ea7a11bb31284cea5ea9450b44a8df74b))
+* Order in plot ([`6974eab`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6974eab20eed301f5e37f19a150857482e952d32))
+
+### Documentation
+
+* Update readme ([`1214fb4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1214fb4ef3fc038c8657670be6914ac49772e3b5))
+* Match docs ([`27d9661`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/27d96616978864224f8c8a7063234006cad71dbd))
+
 ## v0.84.0 (2023-06-20)
 
 ### Feature
