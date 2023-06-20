@@ -2,11 +2,11 @@
 from pathlib import Path
 
 import numpy as np
-from psycop_ml_utils.synth_data_generator.synth_prediction_times_generator import (
-    generate_synth_data,
-)
 
 from psycop.common.global_utils.paths import RANDOM_SEED
+from psycop.common.global_utils.synth_data_generator.synth_prediction_times_generator import (
+    generate_synth_data,
+)
 from psycop.common.test_utils.test_data.model_eval.generate_synthetic_dataset_for_eval import (
     add_age_is_female,
 )

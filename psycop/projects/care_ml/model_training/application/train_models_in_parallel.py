@@ -4,8 +4,9 @@ wandb.
 
 from pathlib import Path
 
-from psycop_ml_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
-
+from psycop.common.global_utils.wandb.wandb_try_except_decorator import (
+    wandb_alert_on_exception,
+)
 from psycop.common.model_training.application_modules.get_search_space import (
     SearchSpaceInferrer,
 )

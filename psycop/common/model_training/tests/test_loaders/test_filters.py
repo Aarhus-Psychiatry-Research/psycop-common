@@ -1,8 +1,7 @@
-from psycop_ml_utils.utils_for_testing import str_to_df
-
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t2d_diag,
 )
+from psycop.common.test_utils.str_to_df import str_to_df
 
 
 def test_keep_rows_where_diag_matches_t2d_diag():

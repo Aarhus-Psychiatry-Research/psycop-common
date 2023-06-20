@@ -187,8 +187,8 @@ psycop/tests/test_eval_results/*
 psycop/**/*.md
 
 # Wandb
+/wandb
 multirun
-wandb
 
 # Ignore the ouptuts for publishing folder
 **/outputs_for_publishing
