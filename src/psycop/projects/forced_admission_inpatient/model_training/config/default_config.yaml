@@ -3,6 +3,6 @@ defaults:
   - project: default_project
   - data: default_data
   - preprocessing: default_preprocessing
-  - model: xgboost
+  - model: logistic-regression
   - train: default_training
   - sweeper: optuna_singlethread
