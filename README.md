@@ -23,7 +23,9 @@ The shared code across the PSYCOP projects.
 ```bash
 git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
 cd psycop-common
+
 <activate virtual environment (conda, .venv etc.) here>
+
 pip install -e ".[dev,text,tests]"
 ```
 
