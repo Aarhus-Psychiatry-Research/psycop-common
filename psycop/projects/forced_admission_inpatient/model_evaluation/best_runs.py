@@ -9,7 +9,7 @@ class BestRun:
 
 
 best_run = BestRun(
-    wandb_group="bonnetiere-coarrange",
-    model="impertriturature",
+    wandb_group="mangi-bouquets",
+    model="unprosecutingbrutishly",
     pos_rate=0.05,
 )

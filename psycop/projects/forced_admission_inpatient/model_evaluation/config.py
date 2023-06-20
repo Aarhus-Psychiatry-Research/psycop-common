@@ -88,5 +88,5 @@ COLOURS = {
 }
 
 MODEL_NAME = {
-    "patteredauxograph": "Baseline Model",
+    "congreganistcarburating": "Baseline Model",
 }
