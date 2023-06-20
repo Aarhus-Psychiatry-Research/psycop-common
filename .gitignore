@@ -182,7 +182,7 @@ psycop/tests/test_eval_results/*
 
 # Ruff
 .ruff_cache
-*.csv
+# *.csv
 *.docx
 psycop/**/*.md
 
