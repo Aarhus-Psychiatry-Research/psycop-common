@@ -1,4 +1,4 @@
-# Type 2 diabetes, baseline paper
+# Type 2 diabetes prediction
 ## Installation
 All requirements are specified in the `pyproject.toml`. To install the project, clone it locally and run:
 
