@@ -365,7 +365,7 @@ def test(
     if not pytest_args:
         pytest_args = [
             "psycop",
-            f"-n {n_cores - 2}",
+            f"-n {min([n_cores-2, 8])}",
             "-rfE",
             "--failed-first",
             "-p no:cov",
