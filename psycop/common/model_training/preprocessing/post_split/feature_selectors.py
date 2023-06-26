@@ -2,7 +2,7 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class DropDateTimeColumns(BaseEstimator, TransformerMixin):
+class DropDateTimeColumns(BaseEstimator, TransformerMixin):  # type: ignore
     """Convert all cells with a value to True, otherwise false."""
 
     def __init__(

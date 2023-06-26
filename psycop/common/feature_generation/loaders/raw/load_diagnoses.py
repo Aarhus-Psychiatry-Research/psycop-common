@@ -94,7 +94,7 @@ def from_contacts(
         keep="first",
     )
 
-    return df.reset_index(drop=True)
+    return df.reset_index(drop=True)  # type: ignore
 
 
 @data_loaders.register("essential_hypertension")

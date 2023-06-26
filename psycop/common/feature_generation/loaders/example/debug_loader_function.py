@@ -53,7 +53,7 @@ def get_prop_of_each_unique_value_for_non_floats(
 
     # Convert all strings that start with a number to floats
     # Replace all "," with "."
-    series[starts_with_number_idx] = series[starts_with_number_idx].str.replace(
+    series[starts_with_number_idx] = series[starts_with_number_idx].str.replace(  # type: ignore
         ",",
         ".",
     )
@@ -81,7 +81,7 @@ def get_prop_of_each_unique_value_for_non_floats(
         non_float_unique_values
     ]
 
-    return prop_of_each_non_float_unique_value
+    return prop_of_each_non_float_unique_value  # type: ignore
 
 
 if __name__ == "__main__":

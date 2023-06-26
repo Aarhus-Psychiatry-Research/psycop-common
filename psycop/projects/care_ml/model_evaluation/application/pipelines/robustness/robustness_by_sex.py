@@ -30,7 +30,7 @@ def roc_auc_by_sex(run: Run, path: Path):
     patients = (
         pd.DataFrame({"ids": eval_ds.ids, "sex": eval_ds.is_female})
         .drop_duplicates()
-        .sex.value_counts()
+        .sex.value_counts()  # type: ignore
     )
 
     binned_df["proportion_in_bin"] = (

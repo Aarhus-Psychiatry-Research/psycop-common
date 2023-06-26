@@ -21,7 +21,7 @@ def t2d(n_rows: int | None = None) -> pd.DataFrame:
     # 2 duplicates, dropping
     df = df.drop_duplicates(keep="first")
 
-    return df.reset_index(drop=True)
+    return df.reset_index(drop=True)  # type: ignore
 
 
 @data_loaders.register("any_diabetes")

@@ -194,7 +194,7 @@ def validate_raw_data(
     )
 
     save_df_to_pretty_html_table(
-        data_description,
+        data_description,  # type: ignore
         save_path / "data_description.html",
         title=f"Data description - {feature_set_name}",
         subtitle=f"Yellow rows indicate {deviation_threshold_ratio}x deviations from the {deviation_baseline_column}\n(99th/1st percentile within {deviation_baseline_column} +- {deviation_variation_column} * threshold={deviation_threshold_ratio}) from the baseline.)",

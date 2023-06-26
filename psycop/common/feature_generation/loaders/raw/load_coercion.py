@@ -57,7 +57,7 @@ def coercion_duration(
     # Drop duplicate rows
     df = df.drop_duplicates(keep="first")
 
-    df = df.rename(
+    df = df.rename(  # type: ignore
         columns={"datotid_slut_sei": "timestamp", "varighed_timer_sei": "value"},
     )
 

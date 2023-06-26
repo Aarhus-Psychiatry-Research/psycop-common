@@ -167,7 +167,8 @@ def generate_feature_description_row(
                 predictor_spec,
                 feature_name=feature_name,
             )
-    raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
+        case _:  # type: ignore
+            raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
 
 
 def generate_feature_description_df(

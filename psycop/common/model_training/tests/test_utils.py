@@ -32,7 +32,7 @@ def test_drop_records_if_datediff_days_smaller_than():
 
     differences = (
         (test_df["timestamp_2"] - test_df["timestamp_1"]) / np.timedelta64(1, "D")
-    ).to_list()
+    ).to_list()  # type: ignore
     expected = [29.0, np.nan]
 
     for i, diff in enumerate(differences):
@@ -67,21 +67,21 @@ def test_bin_contiuous_data():
     one_to_four = pd.Series([1, 2, 3, 4])
     bins, samples_in_bins = bin_continuous_data(series=one_to_four, bins=[0, 5])
     assert bins.unique() == "1+"
-    assert samples_in_bins.isna().all()
+    assert samples_in_bins.isna().all()  # type: ignore
 
     # Two bins, less than 5
     bins, samples_in_bins = bin_continuous_data(series=one_to_four, bins=[0, 2, 5])
-    assert (bins.unique() == ["0-2", "3+"]).all()
-    assert samples_in_bins.isna().all()
+    assert (bins.unique() == ["0-2", "3+"]).all()  # type: ignore
+    assert samples_in_bins.isna().all()  # type: ignore
 
     # Two bins, more than 5
     one_to_ten = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10])
     bins, _ = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
-    assert (bins.unique() == ["0-5", "6+"]).all()
+    assert (bins.unique() == ["0-5", "6+"]).all()  # type: ignore
     assert bins.isna().sum() == 0
 
     # Series is only NaNs
     nans = pd.Series([np.nan, np.nan, np.nan])
     nan_bins, nan_values = bin_continuous_data(series=nans, bins=[0, 5, 11])
-    assert nan_bins.isna().all()
-    assert nan_values.isna().all()
+    assert nan_bins.isna().all()  # type: ignore
+    assert nan_values.isna().all()  # type: ignore
