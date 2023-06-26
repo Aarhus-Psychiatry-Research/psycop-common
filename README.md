@@ -26,13 +26,15 @@ If you're working on Ovartaci, all you need is to activate the shared environmen
 conda activate psycop
 ```
 
+If local:
+
 ```bash
 git clone https://github.com/Aarhus-Psychiatry-Research/psycop-common.git
 cd psycop-common
 
 <activate virtual environment (conda, .venv etc.) here> 
 
-pip install -r dev-requirements.txt
+inv install
 ```
 
 <!--
