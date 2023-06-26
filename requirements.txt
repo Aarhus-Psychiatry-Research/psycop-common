@@ -6,7 +6,7 @@ wandb==0.15.4
 tabulate==0.8.10
 hydra-optuna-sweeper==1.2.0
 hydra-joblib-launcher==1.2.0
-pyarrow==8.0.0
+pyarrow==12.0.1
 Random-Word==1.0.11
 Levenshtein==0.21.0
 wasabi==0.9.1
