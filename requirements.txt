@@ -20,7 +20,7 @@ catalogue==2.0.7
 protobuf==3.20.3
 numpy==1.23.5
 plotnine==0.10.1
-scipy==1.10.0
+scipy==1.11.0
 polars==0.18.2
 tableone==0.8.0
 shap==0.41.0
