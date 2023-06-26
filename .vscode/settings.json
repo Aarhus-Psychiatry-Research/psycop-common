@@ -1,0 +1,21 @@
+{
+    "python.testing.pytestArgs": [
+        "psycop"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "explorer.excludeGitIgnore": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/BUILD": true
+    },
+    "terminal.integrated.env.osx": {"PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"},
+    "terminal.integrated.env.windows": {"PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}"},
+    "terminal.integrated.env.linux": {"PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"},
+    "explorerExclude.backup": {}
+}
