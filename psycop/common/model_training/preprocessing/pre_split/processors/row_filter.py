@@ -153,14 +153,14 @@ class PreSplitRowFilter:
                 n_days = self.pre_split_cfg.min_lookahead_days
             elif direction == "behind":
                 n_days = max(self.pre_split_cfg.lookbehind_combination)
+            else:
                 raise ValueError(f"Direction {direction} not supported.")
 
-            if n_days is not None:
-                dataset = self._drop_rows_if_datasets_ends_within_days(
-                    n_days=n_days,
-                    dataset=dataset,
-                    direction=direction,
-                )
+            dataset = self._drop_rows_if_datasets_ends_within_days(
+                n_days=n_days,
+                dataset=dataset,
+                direction=direction,
+            )
 
         if self.pre_split_cfg.drop_patient_if_exclusion_before_date:
             if self.data_cfg.col_name.exclusion_timestamp is None:

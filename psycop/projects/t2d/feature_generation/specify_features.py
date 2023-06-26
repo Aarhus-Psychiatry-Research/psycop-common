@@ -1,6 +1,6 @@
 """Feature specification module."""
 import logging
-from typing import Callable  # noqa
+from typing import Callable
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum

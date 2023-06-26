@@ -41,7 +41,7 @@ def bootstrap_estimates(
         statistic=metric_wrapper,
         confidence_level=ci_width,
         paired=True,
-        **_kwargs,
+        **_kwargs,  # type: ignore
     )
 
     low, high = boot.confidence_interval.low, boot.confidence_interval.high
