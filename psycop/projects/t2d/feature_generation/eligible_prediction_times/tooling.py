@@ -1,17 +1,5 @@
-from dataclasses import dataclass
-
 import polars as pl
-
-
-@dataclass
-class StepDelta:
-    step_name: str
-    n_before: int
-    n_after: int
-
-    @property
-    def n_dropped(self) -> int:
-        return self.n_before - self.n_after
+from psycop.common.cohort_definition import StepDelta
 
 
 stepdeltas = []
