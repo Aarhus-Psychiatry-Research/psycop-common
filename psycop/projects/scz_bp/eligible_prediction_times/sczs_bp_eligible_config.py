@@ -1,0 +1,7 @@
+from datetime import datetime
+
+MIN_AGE = 18
+MAX_AGE = 40
+MIN_DATE = datetime(year=2013, month=1, day=1)
+N_DAYS_WASHIN = 182
+AGE_COL = "age"

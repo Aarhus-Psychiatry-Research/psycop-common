@@ -1,0 +1,288 @@
+---
+title: "kohorte_udtræk"
+output: html_document
+---
+
+Dette script udtrækker kohorten til prædiktion af bipolar lidelse og skizofrenis. Falder i to dele
+
+1) Alle patienter der potentielt kan udvikle outcome (skizofreni eller bipolar) fra psykiatrien
+  - Alle patienter i psykiatrien AGE_MIN < alder < AGE_MAX
+2) Outcome patienter: patienter diagnosticeret med skizofreni eller bipolar lidelse
+  - Alle patienter AGE_MIN (16) < alder < AGE_MAX (40) med en F20* eller F31* diagnose (ref til epi - meget få onset over 40)
+3) Første gang af en af F20*, F25*, F30*, F31* 
+4) Minimum 6 måneder fra første besøg til diagnosen
+
+
+TODO:
+Inkluder kun hvis patienten:
+- Har afsluttet en kontakt (ikke blevet set i 3(?) måneder) 
+- Har haft 1 til *n* kontakter tidligere
+- Washout hvis patienten fik diagnosien før 2013
+- Plot antal patienter ved forskellige max aldre
+
+brug yngre?
+- børn er anderledes end voksne i journalen
+
+
+tjek duration of untreated illness/psychosis schz, bp -- se hvor langt tilbage
+(prædiktionsvindue: 0.5-1 år)
+
+prædiktion ved hvert ambluante besøg - prædiktion første besøg hvert år/1. januar/hvert halve år
+
+Features til baseline uden tekst:
+- Snak med Jakob -- strukturede variable som diagnoser, tvang, tidligere kontatker, medicin
+- Lav en liste og send til Søren og Andreas
+- Multiclass (0, bp, schz)
+
+- 2 papers? hvor sofistikerede modeller/sprogmodeller/..? Hvor skal der deles? 
+
+```{r echo=FALSE, warning=FALSE}
+pacman::p_load(tidyverse, here, future, lubridate, glue, ggforce)
+source(here("r-utilities", "import_from_sql.r"))
+
+```
+
+```{r setup}
+con <- DBI::dbConnect(
+  odbc::odbc(),
+  Driver = "SQL Server",
+  Server = "BI-DPA-PROD",
+  database = "USR_PS_Forsk",
+  Trusted_Connection = "TRUE"
+)
+```
+
+### Define constants
+```{r}
+AGE_MIN <- 18
+AGE_MAX <- 40
+
+DIAGNOSIS_CODES <- c("F20", "F31", "F25", "F30")
+
+N_DAYS_WASHIN <- 182
+
+```
+
+
+
+
+```{r}
+format_sql_import <- function(df) {
+    df <- df %>%
+        rename_with(tolower) %>%
+        mutate(across(matches(".*diagnosekode.*"), ~ substr(.x, 2, 99))) %>% # Remove leading Ds
+        mutate(across(matches("datotid.+"), ~ ymd_hms(.x))) %>% # Convert typical datetime columns to POSIXct
+        mutate(across(matches("(.)+dato"), ~ ymd_hms(.x))) # Convert typical date strings to date
+
+    return(df)
+}
+```
+
+
+
+## Extract all patients in the age range and all visits for patients with F20 or F32 diagnosis
+```{r}
+# Extract all patients within the age range
+df_all_psychiatric_patients <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_kohorte_indhold_pt_journal_inkl_2021")) %>%
+  select(dw_ek_borger, min_alder, adiagnosekode, datotid_start) %>% 
+  filter(min_alder >= AGE_MIN, min_alder <= AGE_MAX) 
+
+
+# If patient has a bipolar/schizophrenia diagnosis, extract all visits
+df_schz_bipolar_patients <- df_all_psychiatric_patients %>% 
+  collect() %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(any(substr(adiagnosekode, 2, 4) %in% DIAGNOSIS_CODES)) %>% 
+  format_sql_import()
+
+
+head_df <- con %>% 
+  tbl(sql("SELECT * FROM [fct].FOR_kohorte_indhold_pt_journal_inkl_2021")) %>%
+  head() %>% 
+  collect()
+```
+
+
+## Calculate calendar time from first visit to F20/F31 diagnosis
+```{r}
+# Get date of first schz/bp diagnosis
+first_schz_bp_diagnosis <- df_all_psychiatric_patients %>% 
+  filter(substr(adiagnosekode, 2, 4) %in% DIAGNOSIS_CODES) %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start == min(datotid_start)) %>% 
+  rename(first_schz_bp_diag_dato = datotid_start) %>% # only keep first date with the outcome 
+  collect() %>% 
+  format_sql_import() %>% 
+  distinct()
+
+# still some duplicates. Investigating
+first_schz_bp_diagnosis %>% 
+  group_by(dw_ek_borger) %>%
+  filter(n() > 1) 
+# duplicates seem to be related to an unspecified diagnoses becoming specified at the same time
+# e.g. both F316 and 314.
+
+# only keeping the lowest number as that is the most specificed/severe
+first_schz_bp_diagnosis <- first_schz_bp_diagnosis %>% 
+  group_by(dw_ek_borger) %>% 
+  mutate(numeric_diagnosis = as.numeric(substr(adiagnosekode, 2, 9))) %>% 
+  # ignore warnings: because some have e.g. F309A, but none with two occurences 
+  filter(is.na(numeric_diagnosis) | numeric_diagnosis == min(numeric_diagnosis)) %>% 
+  select(!numeric_diagnosis)
+  
+
+
+# Extract date of first visit (any diagnosis) for each patient
+first_visit_any <- df_schz_bipolar_patients %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start == min(datotid_start)) %>% 
+  rename(first_visit = datotid_start) %>% 
+  distinct()
+
+# same case, some duplicates. using the same strategy as above.
+first_visit_any <- first_visit_any %>% 
+  group_by(dw_ek_borger) %>% 
+  mutate(numeric_diagnosis = as.numeric(substr(adiagnosekode, 2, 9))) %>% 
+  filter(is.na(numeric_diagnosis) | numeric_diagnosis == min(numeric_diagnosis)) %>% 
+  select(!c(numeric_diagnosis, min_alder, adiagnosekode))
+
+
+
+# Calculate calendar time distance between the two
+calendar_time_to_diag <- first_schz_bp_diagnosis %>% 
+  left_join(first_visit_any, by="dw_ek_borger") %>% 
+  mutate(distance_days = first_schz_bp_diag_dato - first_visit,
+         distance_days = as.double(distance_days, units="days")) # convert from seconds to days
+
+
+# Plot histogram
+calendar_time_to_diag %>% 
+  ggplot(aes(distance_days)) +
+  geom_histogram(bins=400) +
+  facet_zoom(xlim=c(0,100)) +
+  labs(title = "N. days from first visit to schz/bp diagnosis")
+  
+
+# Number of patients if we require n days from first visit to diagnosis
+calendar_time_to_diag %>% 
+  summarise(total_patients = n(),
+            n_patients_30_days = sum(distance_days >= 30),
+            n_patients_60_days = sum(distance_days >= 60),
+            n_patients_90_days = sum(distance_days >= 90),
+            n_patients_180_days = sum(distance_days >= 180),
+            n_patients_1_year = sum(distance_days >= 365),
+            n_patients_2_years = sum(distance_days >= 365*2)) %>% 
+  glimpse()
+
+
+
+## Approx 60/40 BP/SCHZ ratio
+
+```
+
+## Calculate number of visits between first contact and F20/F31 diagnosis
+```{r}
+# Calculate number of visits from first contact to first schz/bp diagnosis
+n_contacts_to_first_diagnosis <- df_schz_bipolar_patients %>% 
+  left_join(first_visit_any, by="dw_ek_borger") %>% 
+  left_join(first_schz_bp_diagnosis, by="dw_ek_borger") %>% 
+  group_by(dw_ek_borger) %>% 
+  filter(datotid_start <= first_schz_bp_diag_dato) %>% 
+  summarise(n_contacts_before_diag = n() - 1)
+
+
+n_contacts_to_first_diagnosis %>% 
+  ggplot(aes(n_contacts_before_diag)) +
+  geom_histogram(bins=200) +
+  facet_zoom(xlim=c(0, 10))
+
+# Number of patients if we require n contacts before diagnosis
+n_contacts_to_first_diagnosis %>% 
+  summarise(total_patients = n(),
+            n_patients_3_visits = sum(n_contacts_before_diag >= 3),
+            n_patients_5_visits = sum(n_contacts_before_diag >= 5),
+            n_patients_7_visits = sum(n_contacts_before_diag >= 7),
+            n_patients_10_visits = sum(n_contacts_before_diag >= 10)) %>% 
+  glimpse()
+
+```
+
+
+
+## Patients with the outcome if we require min. 182 days from first contact to diagnosis
+```{r}
+
+time_filtered_df <- calendar_time_to_diag %>% 
+  filter(distance_days >= N_DAYS_WASHIN) 
+
+# remove outcomes before 2013
+time_filtered_df <- time_filtered_df %>% 
+  filter(first_schz_bp_diag_dato > "2013-01-01")
+
+# clean column names
+time_filtered_df <- time_filtered_df %>% 
+  rename(timestamp = first_schz_bp_diag_dato,
+         days_from_first_visit_to_diagnosis = distance_days,
+         diagnosis = adiagnosekode) %>% 
+  select(!c(first_visit, min_alder)) %>% 
+  mutate(main_diagnosis = substr(diagnosis, 1, 3))
+
+
+summary(as.factor(time_filtered_df$main_diagnosis))
+
+time_filtered_df %>% 
+  ggplot(aes(timestamp, fill=main_diagnosis)) +
+  geom_histogram() +
+  facet_wrap(~main_diagnosis)
+
+
+time_filtered_df %>% 
+  group_by(main_diagnosis, year(timestamp)) %>% 
+  summarise(n())
+
+split_ids <- time_filtered_df %>% select(dw_ek_borger)
+
+split_ids %>% write_csv("lasse_ids.csv")
+
+time_filtered_df %>% write_csv("scz_bp_cohort.csv")
+
+
+```
+
+
+
+
+
+
+```{r}
+
+    
+schizophrenia <- df_all_psychiatric_patients %>% 
+  filter(substr(adiagnosekode, 2, 4) == "F20") %>% 
+  distinct(dw_ek_borger) %>% 
+  collect() %>% 
+  pull(dw_ek_borger)
+
+bipolar <- df_all_psychiatric_patients %>% 
+  filter(substr(adiagnosekode, 2, 4) == "F31") %>% 
+  distinct(dw_ek_borger) %>% 
+  collect() %>% 
+  pull(dw_ek_borger)
+  
+```
+
+
+
+```{r}
+glue(
+  "
+{length(schizophrenia)} patients with schizophrenia
+{length(bipolar)} patients with bipolar
+{length(intersect(schizophrenia, bipolar))} with both"
+)
+```
+
+
+
+
