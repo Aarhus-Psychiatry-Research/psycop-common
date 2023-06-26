@@ -33,14 +33,18 @@ def max_age(df: pl.DataFrame) -> pl.DataFrame:
 
 def time_from_first_visit(df: pl.DataFrame) -> pl.DataFrame:
     # get first visit
-    first_visit = pl.from_pandas(
-        physical_visits_to_psychiatry(
-            n_rows=None,
-            timestamps_only=False,
-            return_value_as_visit_length_days=False,
-            timestamp_for_output="start",
+    first_visit = (
+        pl.from_pandas(
+            physical_visits_to_psychiatry(
+                n_rows=None,
+                timestamps_only=False,
+                return_value_as_visit_length_days=False,
+                timestamp_for_output="start",
+            ),
         )
-    ).groupby("dw_ek_borger").agg(pl.col("timestamp").min().alias("first_visit"))
+        .groupby("dw_ek_borger")
+        .agg(pl.col("timestamp").min().alias("first_visit"))
+    )
 
     # left join first visit to df
     df = df.join(first_visit, on="dw_ek_borger", how="left")
@@ -63,7 +67,7 @@ def washout_move(df: pl.DataFrame) -> pl.DataFrame:
             timestamp_col_name="timestamp",
         ).run_filter(),
     )
-    return not_within_two_years_from_move 
+    return not_within_two_years_from_move
 
 
 def add_age(df: pl.DataFrame) -> pl.DataFrame:
@@ -76,4 +80,3 @@ def add_age(df: pl.DataFrame) -> pl.DataFrame:
     df = df.with_columns((pl.col(AGE_COL_NAME) / 365.25).alias(AGE_COL_NAME))
 
     return df
-

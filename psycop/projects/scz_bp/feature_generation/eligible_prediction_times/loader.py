@@ -37,7 +37,7 @@ class SczBpCohort(Cohort):
                 return_value_as_visit_length_days=False,
                 shak_code=6600,
                 shak_sql_operator="=",
-            )
+            ),
         )
         for (
             filtering_step_name,

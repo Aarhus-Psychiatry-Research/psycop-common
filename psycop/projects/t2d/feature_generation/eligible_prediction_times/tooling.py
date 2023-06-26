@@ -1,6 +1,6 @@
 import polars as pl
-from psycop.common.cohort_definition import StepDelta
 
+from psycop.common.cohort_definition import StepDelta
 
 stepdeltas = []
 
