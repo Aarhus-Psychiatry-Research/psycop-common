@@ -29,4 +29,5 @@ def get_first_scz_or_bp_diagnosis() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df = get_first_scz_or_bp_diagnosis
+    df = get_first_scz_or_bp_diagnosis()
+    pass
