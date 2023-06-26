@@ -15,7 +15,7 @@
         "**/BUILD": true
     },
     "terminal.integrated.env.osx": {"PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"},
-    "terminal.integrated.env.windows": {"PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"},
+    "terminal.integrated.env.windows": {"PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}"},
     "terminal.integrated.env.linux": {"PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"},
     "explorerExclude.backup": {}
 }
