@@ -25,5 +25,5 @@ polars==0.18.2
 tableone==0.8.0
 shap==0.41.0
 patchworklib==0.5.2
-transformers==4.24.0
+transformers==4.30.2
 timeseriesflattener==1.2.1
