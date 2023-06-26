@@ -1,5 +1,8 @@
 import polars as pl
 
+from psycop.projects.t2d.feature_generation.eligible_prediction_times.tooling import (
+    add_stepdelta_from_df,
+)
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -11,10 +14,7 @@ from psycop.projects.t2d.feature_generation.eligible_prediction_times.eligible_c
     MIN_AGE,
     MIN_DATE,
 )
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.tooling import (
-    add_stepdelta_from_df,
-    add_stepdelta_manual,
-)
+from psycop.projects.t2d.feature_generation.eligible_prediction_times.tooling import add_stepdelta_manual
 from psycop.projects.t2d.feature_generation.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )

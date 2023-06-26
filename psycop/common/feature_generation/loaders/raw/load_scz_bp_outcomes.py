@@ -43,4 +43,3 @@ def scz_and_sczaffective(
         shak_sql_operator=shak_sql_operator,
         timestamp_purpose=timestamp_purpose,
     )
-    
