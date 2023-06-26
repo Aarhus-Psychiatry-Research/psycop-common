@@ -9,7 +9,7 @@ hydra-joblib-launcher==1.2.0
 pyarrow==8.0.0
 Random-Word==1.0.11
 Levenshtein==0.21.0
-wasabi==0.9.1
+wasabi==1.1.2
 deepchecks==0.17.0
 dill==0.3.6
 sqlalchemy==1.4.39
