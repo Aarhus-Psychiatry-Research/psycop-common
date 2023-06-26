@@ -44,7 +44,7 @@ def get_prop_of_each_unique_value_for_non_floats(
         pd.Series: A series with the proportion of each unique value in the
         original series.
     """
-    if series.dtype in ["float64", "int64"]:
+    if series.dtype in ["float64", "int64"]:  # type: ignore
         print("All values in series can be converted to floats.")
         return None
 

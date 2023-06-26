@@ -3,7 +3,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from scipy.stats import bootstrap
+from scipy.stats import bootstrap  # type: ignore
 
 np.random.seed(42)
 

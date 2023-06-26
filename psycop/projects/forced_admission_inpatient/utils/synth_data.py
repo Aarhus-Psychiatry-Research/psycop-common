@@ -130,7 +130,7 @@ def synth_pred_times(df: pd.DataFrame, pred_hour: int = 6) -> pd.DataFrame:
             row["admission_timestamp"].date()
             + pd.Timedelta(days=int(np.random.normal(16, 5))),
         )
-        for idx, row in df.iterrows()
+        for _, row in df.iterrows()
     ]
     df = df.explode("timestamp")
 

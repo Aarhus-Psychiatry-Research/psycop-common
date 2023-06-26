@@ -78,7 +78,7 @@ def generate_shap_values_from_pipe(
     numerical_predictors = []
 
     for c in features.schema:
-        if features.schema[c] == pl.Float64 and c.startswith("pred_"):
+        if features.schema[c] == pl.Float64 and c.startswith("pred_"): # type: ignore
             numerical_predictors.append(c)
 
     features = features.with_columns(pl.col(numerical_predictors).round(1).keep_name())

@@ -76,7 +76,7 @@ def test_bin_contiuous_data():
 
     # Two bins, more than 5
     one_to_ten = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10])
-    bins, n_in_bins = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
+    bins, _ = bin_continuous_data(series=one_to_ten, bins=[0, 5, 11])
     assert (bins.unique() == ["0-5", "6+"]).all()
     assert bins.isna().sum() == 0
 

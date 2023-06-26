@@ -6,7 +6,7 @@ from psycop.common.model_evaluation.markdown.md_objects import (
     create_supplementary_from_markdown_artifacts,
 )
 from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval import (
-    _t2d_create_markdown_artifacts,
+    t2d_create_markdown_artifacts,
     t2d_main_manuscript_eval,
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_GROUP
@@ -64,7 +64,7 @@ def get_test_artifacts_for_pipeline(
         msg.warn(
             f"recreate_artifacts set to {recreate_artifacts}: Not recreating artifacts",
         )
-        current_run_artifacts = _t2d_create_markdown_artifacts(pipeline=pipeline)
+        current_run_artifacts = t2d_create_markdown_artifacts(pipeline=pipeline)
 
     run_md = create_supplementary_from_markdown_artifacts(
         artifacts=current_run_artifacts,

@@ -13,7 +13,7 @@ NaN,NaN,NaN,NaN,NaN,NaN""",
 
     hba1c_only_df = (
         Hba1cOnly(lookbehind="365", aggregation_method="mean")
-        ._keep_only_hba1c_predictors(
+        ._keep_only_hba1c_predictors(  # type: ignore
             df=input_df,
             predictor_prefix="pred_",
         )

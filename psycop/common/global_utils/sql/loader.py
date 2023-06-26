@@ -57,6 +57,10 @@ def sql_load(
     df = pd.read_sql(query, conn, chunksize=chunksize)
 
     if format_timestamp_cols_to_datetime:
+        if isinstance(df, Generator):
+            raise ValueError(
+                "format_timestamp_cols_to_datetime is only supported when chunksize is None, cannot infer colnames from generator",
+            )
         datetime_col_names = [
             colname
             for colname in df.columns

@@ -47,6 +47,16 @@ documentation = "https://Aarhus-Psychiatry-Research.github.io/psycop-common/"
 include = ["psycop"]
 exclude = ["**/.*venv*", ".tox", "build"]
 pythonPlatform = "Darwin"
+typeCheckingMode = "strict"
+reportUnknownArgumentType = "none"	
+reportUnknownLambdaType = "none"	
+reportUnknownMemberType = "none"	
+reportUnknownParameterType = "none"	
+reportUnknownVariableType = "none" 
+reportMissingTypeStubs = "none"
+reportMissingTypeArgument = "none"
+reportUntypedFunctionDecorator = "none"
+reportIncompatibleVariableOverride = "none"
 
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.

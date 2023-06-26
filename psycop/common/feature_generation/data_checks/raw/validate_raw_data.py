@@ -104,7 +104,7 @@ def highlight_large_deviation(
     )
     return [
         "background-color: yellow" if above_threshold.any() else ""
-        for v in above_threshold
+        for _ in above_threshold
     ]
 
 

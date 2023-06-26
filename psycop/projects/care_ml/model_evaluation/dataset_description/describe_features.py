@@ -33,7 +33,7 @@ out_dir = TEXT_TABLES_PATH / "feature_description"
 out_dir.mkdir(parents=True, exist_ok=True)
 
 save_feature_descriptive_stats_from_dir(
-    feature_set_dir=TEXT_EVAL_RUN._get_flattened_split_path(split="train").parent,
+    feature_set_dir=TEXT_EVAL_RUN._get_flattened_split_path(split="train").parent,  # type: ignore
     feature_specs=selected_specs,  # type: ignore
     file_suffix="parquet",
     splits=["train"],

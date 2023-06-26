@@ -308,11 +308,10 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
             date_repr,
         )
 
-    if isinstance(date_repr, date):
-        date_repr = datetime.combine(
-            date_repr,
-            datetime.min.time(),
-        )
+    date_repr = datetime.combine(
+        date_repr,
+        datetime.min.time(),
+    )
 
     return date_repr
 
