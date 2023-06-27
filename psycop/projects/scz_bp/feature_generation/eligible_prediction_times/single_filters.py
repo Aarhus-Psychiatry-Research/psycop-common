@@ -72,22 +72,20 @@ class SczBpWashoutMoveFilter(PredictionTimeFilter):
 class SczBpPrevalentFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
+        """Filter prediction times where the patient already has a diagnosis of
+        scizophrenia or bipolar disorder"""
         time_of_first_scz_bp_diagnosis = get_first_scz_or_bp_diagnosis().select(
             pl.col("timestamp").alias("timestamp_outcome"),
             pl.col("dw_ek_borger"),
         )
 
-        prediction_times_with_outcome = df.filter(
-            pl.col("dw_ek_borger").is_in(
-                time_of_first_scz_bp_diagnosis.get_column("dw_ek_borger"),
-            ),
-        ).join(time_of_first_scz_bp_diagnosis, on="dw_ek_borger", how="inner")
+        prediction_times_with_outcome = df.join(time_of_first_scz_bp_diagnosis, on="dw_ek_borger", how="inner")
 
         prevalent_prediction_times = prediction_times_with_outcome.filter(
             pl.col("timestamp") > pl.col("timestamp_outcome"),
         )
 
-        return df.join(prevalent_prediction_times, on="dw_ek_borger", how="anti")
+        return df.join(prevalent_prediction_times, on=["dw_ek_borger", "timestamp"], how="anti")
 
 
 class SczBpExcludedByWashinFilter(PredictionTimeFilter):

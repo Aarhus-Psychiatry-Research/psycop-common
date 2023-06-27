@@ -8,7 +8,7 @@ from psycop.common.feature_generation.utils import data_loaders
 
 
 @data_loaders.register("manic_bipolar_outcome")
-def manic_and_bipolar(
+def manic_or_bipolar(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
     shak_code: int | None = None,
@@ -27,7 +27,7 @@ def manic_and_bipolar(
 
 
 @data_loaders.register("scz_outcome")
-def scz_and_sczaffective(
+def scz_or_sczaffective(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
     shak_code: int | None = None,

@@ -31,6 +31,7 @@ def get_first_scz_or_bp_diagnosis() -> pl.DataFrame:
         .first()
         .reset_index(drop=False)
     )
+
     # subtract 1 day from first diagnosis to avoid any leakage and add indicator column
     first_scz_or_bp_indicator = pl.from_pandas(first_scz_or_bp_indicator).with_columns(
         pl.col("timestamp") - pl.duration(days=1),

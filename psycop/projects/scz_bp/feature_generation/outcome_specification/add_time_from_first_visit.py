@@ -18,6 +18,7 @@ def add_time_from_first_visit(df: pl.DataFrame) -> pl.DataFrame:
         .groupby("dw_ek_borger")
         .agg(pl.col("timestamp").min().alias("first_visit"))
     )
+
     df = df.join(first_visit, on="dw_ek_borger", how="left")
 
     df = df.with_columns(
