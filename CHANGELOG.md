@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.85.1 (2023-06-27)
+
+### Fix
+
+* Remove duplicate csv ([`10b98f7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/10b98f7355062ee35c1cf133dc01acd5538bb972))
+* Merge over correct fa eval files ([`879e166`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/879e166d58e2eef872eca264741e53ffaedbd743))
+
 ## v0.85.0 (2023-06-20)
 
 ### Feature
