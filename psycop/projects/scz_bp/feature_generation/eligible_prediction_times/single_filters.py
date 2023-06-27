@@ -71,7 +71,7 @@ def without_prevalent_scz_or_bp(df: pl.DataFrame) -> pl.DataFrame:
     prevalent_prediction_times = prediction_times_with_outcome.filter(
         pl.col("timestamp") > pl.col("timestamp_outcome"),
     )
-    # rename to have the same columns as df
+
     return df.join(prevalent_prediction_times, on="dw_ek_borger", how="anti")
 
 
