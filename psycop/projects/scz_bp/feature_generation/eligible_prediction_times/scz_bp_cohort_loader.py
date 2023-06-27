@@ -77,5 +77,3 @@ if __name__ == "__main__":
         )
 
     print(f"Remaining: {df.shape[0]}")
-
-    print(cohort.stepdeltas)
