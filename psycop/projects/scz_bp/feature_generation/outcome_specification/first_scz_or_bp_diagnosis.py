@@ -26,7 +26,7 @@ def get_first_scz_or_bp_diagnosis() -> pl.DataFrame:
     )
 
     first_scz_or_bp_indicator = (
-        combined.sort_values("timestamp")
+        combined.sort_values("timestamp", ascending=True)
         .groupby("dw_ek_borger")
         .first()
         .reset_index(drop=False)
