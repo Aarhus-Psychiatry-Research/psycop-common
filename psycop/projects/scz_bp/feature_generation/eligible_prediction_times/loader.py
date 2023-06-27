@@ -4,16 +4,18 @@ import polars as pl
 
 from psycop.common.cohort_definition import Cohort, FilteredCohort, StepDelta
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
+from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import add_time_from_first_visit
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
     add_age,
+    excluded_by_washin,
     max_age,
     min_age,
     min_date,
-    time_from_first_visit,
     washout_move,
+    without_prevalent_scz_or_bp,
 )
-from psycop.projects.scz_bp.feature_generation.outcome_specification.combined import (
-    get_first_scz_or_bp_diagnosis,
+from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
+    get_first_scz_bp_diagnosis_after_washin,
 )
 
 
@@ -26,7 +28,7 @@ class SczBpCohort(Cohort):
         return FilteredCohort(cohort=prediction_times, filter_steps=self.stepdeltas)
 
     def get_outcome_timestamps(self) -> pl.DataFrame:
-        return pl.from_pandas(get_first_scz_or_bp_diagnosis())
+        return get_first_scz_bp_diagnosis_after_washin()
 
     def _get_eligible_prediction_times(self) -> pl.DataFrame:
         df = pl.from_pandas(
@@ -60,8 +62,9 @@ class SczBpCohort(Cohort):
             "min_age": min_age,
             "max_age": max_age,
             "min_date": min_date,
-            "time_from_first_visit": time_from_first_visit,
+            "washin": excluded_by_washin,
             "washout_move": washout_move,
+            "prevalent_scz_or_bp" : without_prevalent_scz_or_bp
         }
 
 

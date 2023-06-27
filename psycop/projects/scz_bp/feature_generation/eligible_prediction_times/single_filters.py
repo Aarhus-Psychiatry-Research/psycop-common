@@ -7,15 +7,15 @@ from psycop.common.feature_generation.loaders.raw.load_demographic import birthd
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_eligible_config import (
     AGE_COL_NAME,
     MAX_AGE,
     MIN_AGE,
     MIN_DATE,
-    N_DAYS_WASHIN,
+)
+from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
+    get_first_scz_or_bp_diagnosis,
+    get_scz_bp_patients_excluded_by_washin,
 )
 
 
@@ -29,32 +29,6 @@ def min_age(df: pl.DataFrame) -> pl.DataFrame:
 
 def max_age(df: pl.DataFrame) -> pl.DataFrame:
     return df.filter(pl.col(AGE_COL_NAME) <= MAX_AGE)
-
-
-def time_from_first_visit(df: pl.DataFrame) -> pl.DataFrame:
-    # get first visit
-    first_visit = (
-        pl.from_pandas(
-            physical_visits_to_psychiatry(
-                n_rows=None,
-                timestamps_only=False,
-                return_value_as_visit_length_days=False,
-                timestamp_for_output="start",
-            ),
-        )
-        .groupby("dw_ek_borger")
-        .agg(pl.col("timestamp").min().alias("first_visit"))
-    )
-
-    # left join first visit to df
-    df = df.join(first_visit, on="dw_ek_borger", how="left")
-    # exclude those with less than N_DAYS_WASHIN days from first visit
-
-    ## check what format timestamp is in
-    df = df.filter(
-        (pl.col("timestamp") - pl.col("first_visit")) >= N_DAYS_WASHIN,
-    )
-    return df
 
 
 def washout_move(df: pl.DataFrame) -> pl.DataFrame:
@@ -80,3 +54,27 @@ def add_age(df: pl.DataFrame) -> pl.DataFrame:
     df = df.with_columns((pl.col(AGE_COL_NAME) / 365.25).alias(AGE_COL_NAME))
 
     return df
+
+
+def without_prevalent_scz_or_bp(df: pl.DataFrame) -> pl.DataFrame:
+    time_of_first_scz_bp_diagnosis = (
+        get_first_scz_or_bp_diagnosis().select(
+        pl.col("timestamp").alias("timestamp_outcome"),
+        pl.col("dw_ek_borger")
+        )
+    )
+    
+    prediction_times_with_outcome = df.filter(
+        pl.col("dw_ek_borger").is_in(time_of_first_scz_bp_diagnosis.get_column("dw_ek_borger"))
+    ).join(time_of_first_scz_bp_diagnosis, on="dw_ek_borger", how="inner")
+
+    prevalent_prediction_times = prediction_times_with_outcome.filter(
+        pl.col("timestamp") > pl.col("timestamp_outcome")
+    )
+    # rename to have the same columns as df
+    return df.join(prevalent_prediction_times, on="dw_ek_borger", how="anti")
+
+
+def excluded_by_washin(df: pl.DataFrame) -> pl.DataFrame:
+    ids_to_exclude = get_scz_bp_patients_excluded_by_washin()
+    return df.filter(~pl.col("dw_ek_borger").is_in(ids_to_exclude))

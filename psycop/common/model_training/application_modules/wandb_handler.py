@@ -70,6 +70,10 @@ class WandbHandler:
                 exist_ok=True,
                 parents=True,
             )
+            (PSYCOP_PKG_ROOT.parent / "wandb" / "debug-cli.onerm").mkdir(
+                exist_ok=True,
+                parents=True,
+            )
 
         wandb.init(
             project=f"{self.cfg.project.name}-baseline-model-training",

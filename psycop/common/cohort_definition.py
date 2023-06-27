@@ -22,6 +22,9 @@ class FilteredCohort(BaseModel):
     cohort: pl.DataFrame
     filter_steps: list[StepDelta]
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class Cohort(ABC):
     """Interface for a cohort definition."""
