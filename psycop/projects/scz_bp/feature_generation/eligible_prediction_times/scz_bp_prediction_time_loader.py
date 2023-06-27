@@ -1,5 +1,3 @@
-
-
 from collections.abc import Iterable
 
 import polars as pl
@@ -26,7 +24,6 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
 
 
 class SczBpCohort(CohortDefiner):
-
     @staticmethod
     def get_eligible_prediction_times() -> FilteredPredictionTimes:
         # prediction times are right before an ambulatory visit
@@ -40,7 +37,7 @@ class SczBpCohort(CohortDefiner):
                 shak_sql_operator="=",
             ),
         ).with_columns(
-            pl.col("timestamp") - pl.duration(days=1)
+            pl.col("timestamp") - pl.duration(days=1),
         )
 
         stepdeltas: list[StepDelta] = []
@@ -55,12 +52,13 @@ class SczBpCohort(CohortDefiner):
                     step_index=i,
                 ),
             )
-        return FilteredPredictionTimes(prediction_times=prediction_times, filter_steps=stepdeltas)
+        return FilteredPredictionTimes(
+            prediction_times=prediction_times, filter_steps=stepdeltas
+        )
 
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
         return get_first_scz_bp_diagnosis_after_washin()
-
 
     @staticmethod
     def _get_filtering_steps() -> Iterable[PredictionTimeFilter]:

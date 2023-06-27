@@ -1,7 +1,6 @@
-
 import polars as pl
-from psycop.common.cohort_definition import PredictionTimeFilter
 
+from psycop.common.cohort_definition import PredictionTimeFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -79,13 +78,17 @@ class SczBpPrevalentFilter(PredictionTimeFilter):
             pl.col("dw_ek_borger"),
         )
 
-        prediction_times_with_outcome = df.join(time_of_first_scz_bp_diagnosis, on="dw_ek_borger", how="inner")
+        prediction_times_with_outcome = df.join(
+            time_of_first_scz_bp_diagnosis, on="dw_ek_borger", how="inner"
+        )
 
         prevalent_prediction_times = prediction_times_with_outcome.filter(
             pl.col("timestamp") > pl.col("timestamp_outcome"),
         )
 
-        return df.join(prevalent_prediction_times, on=["dw_ek_borger", "timestamp"], how="anti")
+        return df.join(
+            prevalent_prediction_times, on=["dw_ek_borger", "timestamp"], how="anti"
+        )
 
 
 class SczBpExcludedByWashinFilter(PredictionTimeFilter):

@@ -43,7 +43,7 @@ class CohortDefiner(ABC):
 
 class PredictionTimeFilter(ABC):
     """Interface for filtering functions applied to prediction times. Requried
-    to have an `apply` method that takes a `pl.DataFrame` (the unfiltered 
+    to have an `apply` method that takes a `pl.DataFrame` (the unfiltered
     prediction times) and returns a `pl.DataFrame` (the filtered prediction times).
     """
 
