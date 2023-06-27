@@ -167,7 +167,7 @@ def generate_col_from_specs(
             ),
             unit="D",
         ).round(  # type: ignore
-            "min"
+            "min",
         )
 
     raise ValueError(f"Unknown distribution: {column_type}")
