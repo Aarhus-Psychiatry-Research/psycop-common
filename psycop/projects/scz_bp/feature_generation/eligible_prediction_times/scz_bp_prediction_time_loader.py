@@ -53,7 +53,8 @@ class SczBpCohort(CohortDefiner):
                 ),
             )
         return FilteredPredictionTimes(
-            prediction_times=prediction_times, filter_steps=stepdeltas
+            prediction_times=prediction_times,
+            filter_steps=stepdeltas,
         )
 
     @staticmethod

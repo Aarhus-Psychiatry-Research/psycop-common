@@ -79,7 +79,9 @@ class SczBpPrevalentFilter(PredictionTimeFilter):
         )
 
         prediction_times_with_outcome = df.join(
-            time_of_first_scz_bp_diagnosis, on="dw_ek_borger", how="inner"
+            time_of_first_scz_bp_diagnosis,
+            on="dw_ek_borger",
+            how="inner",
         )
 
         prevalent_prediction_times = prediction_times_with_outcome.filter(
@@ -87,7 +89,9 @@ class SczBpPrevalentFilter(PredictionTimeFilter):
         )
 
         return df.join(
-            prevalent_prediction_times, on=["dw_ek_borger", "timestamp"], how="anti"
+            prevalent_prediction_times,
+            on=["dw_ek_borger", "timestamp"],
+            how="anti",
         )
 
 
