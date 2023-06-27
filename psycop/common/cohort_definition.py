@@ -25,6 +25,7 @@ class FilteredCohort(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class Cohort(ABC):
     """Interface for a cohort definition."""
 

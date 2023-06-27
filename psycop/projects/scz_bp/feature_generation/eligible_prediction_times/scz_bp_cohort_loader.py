@@ -4,7 +4,6 @@ import polars as pl
 
 from psycop.common.cohort_definition import Cohort, FilteredCohort, StepDelta
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
-from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import add_time_from_first_visit
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
     add_age,
     excluded_by_washin,
@@ -64,7 +63,7 @@ class SczBpCohort(Cohort):
             "min_date": min_date,
             "washin": excluded_by_washin,
             "washout_move": washout_move,
-            "prevalent_scz_or_bp" : without_prevalent_scz_or_bp
+            "prevalent_scz_or_bp": without_prevalent_scz_or_bp,
         }
 
 
