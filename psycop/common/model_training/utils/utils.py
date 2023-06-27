@@ -114,9 +114,9 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
         A numpy ndarray with the borders.
     """
     _, edges = pd.cut(series, bins=bins, retbins=True, duplicates="drop")
-    labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]
+    labels = [f"({abs(edges[i]):.0f}, {edges[i+1]:.0f}]" for i in range(len(bins) - 1)]  # type: ignore
 
-    return pd.cut(series, bins=bins, labels=labels)
+    return pd.cut(series, bins=bins, labels=labels)  # type: ignore
 
 
 def bin_continuous_data(
@@ -145,9 +145,9 @@ def bin_continuous_data(
         bins = list(bins)
 
     # Append maximum value from series to bins set upper cut-off if larger than maximum bins value
-    if not series.isna().all() and series.max() > max(bins):
+    if not series.isna().all() and series.max() > max(bins):  # type: ignore
         # Round max value up
-        max_value_rounded = math.ceil(series.max())
+        max_value_rounded = math.ceil(series.max())  # type: ignore
         bins.append(max_value_rounded)
 
     # Create bin labels
@@ -308,11 +308,10 @@ def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
             date_repr,
         )
 
-    if isinstance(date_repr, date):
-        date_repr = datetime.combine(
-            date_repr,
-            datetime.min.time(),
-        )
+    date_repr = datetime.combine(
+        date_repr,
+        datetime.min.time(),
+    )
 
     return date_repr
 

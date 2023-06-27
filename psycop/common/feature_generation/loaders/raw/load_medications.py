@@ -110,7 +110,7 @@ def load(
         },
     )
 
-    return df.reset_index(drop=True).drop_duplicates(
+    return df.reset_index(drop=True).drop_duplicates(  # type: ignore
         subset=["dw_ek_borger", "timestamp", "value"],
         keep="first",
     )
@@ -147,7 +147,7 @@ def concat_medications(
             subset=["dw_ek_borger", "timestamp", "value"],
             keep="first",
         )
-        .reset_index(drop=True)
+        .reset_index(drop=True)  # type: ignore
     )
 
 

@@ -3,7 +3,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from scipy.stats import bootstrap
+from scipy.stats import bootstrap  # type: ignore
 
 np.random.seed(42)
 
@@ -41,7 +41,7 @@ def bootstrap_estimates(
         statistic=metric_wrapper,
         confidence_level=ci_width,
         paired=True,
-        **_kwargs,
+        **_kwargs,  # type: ignore
     )
 
     low, high = boot.confidence_interval.low, boot.confidence_interval.high

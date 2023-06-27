@@ -59,7 +59,7 @@ def infer_look_distance(
 
     look_distances: list[str] = []
 
-    if isinstance(col_name, Iterable) and not isinstance(col_name, str):
+    if not isinstance(col_name, str):
         for c_name in col_name:
             look_distances += infer_look_distance(
                 col_name=c_name,

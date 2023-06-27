@@ -46,7 +46,7 @@ def create_outcome_values(
     _y = stats.zscore(_y) + noise
 
     out = 1 / (1 + np.exp(_y))
-    return out
+    return out  # type: ignore
 
 
 def generate_text_data(
@@ -83,7 +83,7 @@ def generate_text_data(
             size=1,
         )[0]
 
-        outputs = model.generate(
+        outputs = model.generate(  # type: ignore
             inputs,
             min_length=0,
             max_length=max_tokens,
@@ -166,7 +166,9 @@ def generate_col_from_specs(
                 size=n_samples,
             ),
             unit="D",
-        ).round("min")
+        ).round(  # type: ignore
+            "min",
+        )
 
     raise ValueError(f"Unknown distribution: {column_type}")
 

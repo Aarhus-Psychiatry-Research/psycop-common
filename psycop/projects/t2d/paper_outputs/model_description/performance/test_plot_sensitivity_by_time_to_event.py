@@ -6,7 +6,7 @@ from psycop.common.model_evaluation.patchwork.patchwork_grid import (
 from psycop.common.model_evaluation.utils import TEST_PLOT_PATH
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
-    _plot_sensitivity_by_time_to_event,
+    _plot_sensitivity_by_time_to_event,  # type: ignore
 )
 
 

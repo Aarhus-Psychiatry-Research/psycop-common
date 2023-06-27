@@ -21,7 +21,7 @@ def incidence_by_time_until_outcome_pipeline(run: Run, path: Path):
     only_positives = df[df["y"] == 1]
     only_positives["time_from_pred_to_event"] = [
         (row["outcome_timestamps"] - row["pred_timestamps"]).total_seconds() / 60 / 60
-        for idx, row in only_positives.iterrows()
+        for _, row in only_positives.iterrows()
     ]
 
     (

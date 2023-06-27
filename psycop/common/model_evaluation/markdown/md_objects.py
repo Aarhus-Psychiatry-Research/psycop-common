@@ -92,7 +92,7 @@ class MarkdownTable(MarkdownArtifact):
 
     def get_markdown_table(self) -> str:
         df = self._get_table_as_pd()
-        return df.to_markdown(index=False)
+        return df.to_markdown(index=False)  # type: ignore
 
     def get_markdown(self) -> str:
         return f"""{self.title_prefix} {self.title}

@@ -235,7 +235,7 @@ def blood_sample(
     # Concatenate dfs
     df = pd.concat(dfs) if len(dfs) > 1 else dfs[0]
 
-    return df.reset_index(drop=True).drop_duplicates(
+    return df.reset_index(drop=True).drop_duplicates(  # type: ignore
         subset=["dw_ek_borger", "timestamp", "value"],
         keep="first",
     )

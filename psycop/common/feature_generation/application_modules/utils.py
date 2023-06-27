@@ -2,6 +2,7 @@
 import functools
 import logging
 from collections.abc import Callable
+from typing import Any
 
 import pandas as pd
 
@@ -14,7 +15,7 @@ def print_df_dimensions_diff(  # noqa: ANN201
     """Print the difference in rows between the input and output dataframes."""
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):  # noqa
+    def wrapper(*args: Any, **kwargs: Any):  # noqa
         log = logging.getLogger(__name__)
 
         if print_when_starting:
