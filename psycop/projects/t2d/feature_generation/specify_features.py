@@ -79,10 +79,10 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     height_in_cm,
     weight_in_kg,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.combined import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.lab_results import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
 

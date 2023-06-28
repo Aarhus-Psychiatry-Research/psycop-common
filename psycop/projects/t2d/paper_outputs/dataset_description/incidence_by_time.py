@@ -3,7 +3,7 @@
 # %autoreload 2
 
 # %%
-from psycop.projects.t2d.feature_generation.outcome_specification.lab_results import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
 
