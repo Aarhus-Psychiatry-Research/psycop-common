@@ -7,6 +7,7 @@ from psycop.common.cohort_definition import (
     FilteredPredictionTimes,
     PredictionTimeFilter,
     StepDelta,
+    filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
@@ -40,21 +41,9 @@ class SczBpCohort(CohortDefiner):
             pl.col("timestamp") - pl.duration(days=1),
         )
 
-        stepdeltas: list[StepDelta] = []
-        for i, filter_step in enumerate(SczBpCohort._get_filtering_steps()):
-            n_before = prediction_times.shape[0]
-            prediction_times = filter_step.apply(prediction_times)
-            stepdeltas.append(
-                StepDelta(
-                    step_name=filter_step.__class__.__name__,
-                    n_before=n_before,
-                    n_after=prediction_times.shape[0],
-                    step_index=i,
-                ),
-            )
-        return FilteredPredictionTimes(
+        return filter_prediction_times(
             prediction_times=prediction_times,
-            filter_steps=stepdeltas,
+            filtering_steps=SczBpCohort._get_filtering_steps(),
         )
 
     @staticmethod

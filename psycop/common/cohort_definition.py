@@ -1,12 +1,24 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import Iterable, TypeVar
 
 import pandas as pd
 import polars as pl
 from pydantic import BaseModel
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
+
+
+class PredictionTimeFilter(ABC):
+    """Interface for filtering functions applied to prediction times. Requried
+    to have an `apply` method that takes a `pl.DataFrame` (the unfiltered
+    prediction times) and returns a `pl.DataFrame` (the filtered prediction times).
+    """
+
+    @staticmethod
+    @abstractmethod
+    def apply(df: pl.DataFrame) -> pl.DataFrame:
+        ...
 
 
 class StepDelta(PSYCOPBaseModel):
@@ -37,13 +49,22 @@ class CohortDefiner(ABC):
         ...
 
 
-class PredictionTimeFilter(ABC):
-    """Interface for filtering functions applied to prediction times. Requried
-    to have an `apply` method that takes a `pl.DataFrame` (the unfiltered
-    prediction times) and returns a `pl.DataFrame` (the filtered prediction times).
-    """
+def filter_prediction_times(
+    prediction_times: pl.DataFrame, filtering_steps: Iterable[PredictionTimeFilter]
+) -> FilteredPredictionTimes:
+    stepdeltas: list[StepDelta] = []
+    for i, filter_step in enumerate(filtering_steps):
+        n_before = prediction_times.shape[0]
+        prediction_times = filter_step.apply(prediction_times)
+        stepdeltas.append(
+            StepDelta(
+                step_name=filter_step.__class__.__name__,
+                n_before=n_before,
+                n_after=prediction_times.shape[0],
+                step_index=i,
+            ),
+        )
 
-    @staticmethod
-    @abstractmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        ...
+    return FilteredPredictionTimes(
+        prediction_times=prediction_times, filter_steps=stepdeltas
+    )
