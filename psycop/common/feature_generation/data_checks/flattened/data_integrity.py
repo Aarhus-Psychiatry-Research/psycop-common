@@ -1,12 +1,8 @@
 """Code to generate data integrity and train/val/test drift reports."""
 from __future__ import annotations
 
-from collections.abc import Iterable
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import pandas as pd
-from deepchecks.core.suite import SuiteResult
 from deepchecks.tabular import Dataset, Suite
 from deepchecks.tabular.checks import (
     CategoryMismatchTrainTest,
@@ -31,6 +27,13 @@ from psycop.common.feature_generation.loaders.flattened import (
     load_split_outcomes,
     load_split_predictors,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+
+    import pandas as pd
+    from deepchecks.core.suite import SuiteResult
 
 
 def pruned_data_integrity_checks(**kwargs: Any) -> Suite:

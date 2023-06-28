@@ -1,10 +1,9 @@
 """Load text data from sql warehouse."""
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
 from functools import partial
 from multiprocessing import Pool
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import pandas as pd
 
@@ -14,6 +13,9 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 )
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 def get_valid_text_sfi_names() -> set[str]:

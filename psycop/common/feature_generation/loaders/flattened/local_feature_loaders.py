@@ -1,11 +1,14 @@
 """Feature loaders for loading .csv from disk."""
 from __future__ import annotations
 
-from pathlib import Path
-
-import pandas as pd
+from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.utils import load_dataset_from_file
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pandas as pd
 
 
 def get_predictors(df: pd.DataFrame, include_id: bool) -> pd.DataFrame:

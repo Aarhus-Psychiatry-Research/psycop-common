@@ -4,7 +4,7 @@ E.g. if predicted probability is .4, and threshold is .5, resolve to 0.
 """
 
 
-import pandas as pd
+from typing import TYPE_CHECKING
 
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     days_from_first_positive_to_diagnosis,
@@ -13,6 +13,9 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.test_utils.str_to_df import str_to_df
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def test_generate_performance_by_threshold_table(

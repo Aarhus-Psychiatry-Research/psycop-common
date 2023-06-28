@@ -1,6 +1,5 @@
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )
@@ -19,6 +18,9 @@ from psycop.projects.forced_admission_inpatient.model_evaluation.figures.feature
 from psycop.projects.forced_admission_inpatient.model_evaluation.figures.feature_importance.shap.shap_plots import (
     plot_shap_summary,
 )
+
+if TYPE_CHECKING:
+    from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 
 def shap_summary_pipeline(model: Literal["baseline"], top_n: int = 20):
