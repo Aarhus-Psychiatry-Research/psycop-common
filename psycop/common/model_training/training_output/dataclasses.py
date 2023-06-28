@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 import pandas as pd
 from numpy import float64
 
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 
@@ -24,7 +24,7 @@ def get_predictions_for_positive_rate(
     return y_hat_int, actual_positive_rate  # type: ignore
 
 
-class EvalDataset(BaseModel):
+class EvalDataset(PSYCOPBaseModel):
     """Evaluation dataset.
 
     Makes the interfaces of our evaluation functions simpler and
@@ -61,7 +61,7 @@ class EvalDataset(BaseModel):
         )
 
 
-class PipeMetadata(BaseModel):
+class PipeMetadata(PSYCOPBaseModel):
     """Metadata for a pipe.
 
     Currently only has feature_importances and selected_features, but
@@ -76,7 +76,7 @@ class PipeMetadata(BaseModel):
         self.Config.allow_mutation = True
 
 
-class ModelEvalData(BaseModel):
+class ModelEvalData(PSYCOPBaseModel):
     """Dataclass for model evaluation data."""
 
     eval_dataset: EvalDataset

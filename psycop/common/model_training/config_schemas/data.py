@@ -2,10 +2,10 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal, Optional, Union
 
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 
-class ColumnNamesSchema(BaseModel):
+class ColumnNamesSchema(PSYCOPBaseModel):
     """Column names in the data."""
 
     pred_timestamp: str = "timestamp"  # Column name for prediction times
@@ -24,7 +24,7 @@ class ColumnNamesSchema(BaseModel):
     custom_columns: Optional[list[str]] = None
 
 
-class DataSchema(BaseModel):
+class DataSchema(PSYCOPBaseModel):
     """Data configuration."""
 
     dir: Union[Path, str]  # Location of the dataset # noqa

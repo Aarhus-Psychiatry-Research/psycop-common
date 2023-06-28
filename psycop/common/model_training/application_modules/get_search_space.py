@@ -3,7 +3,7 @@ import random
 import pandas as pd
 from wasabi import Printer
 
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.utils.col_name_inference import (
     infer_look_distance,
@@ -11,7 +11,7 @@ from psycop.common.model_training.utils.col_name_inference import (
 )
 
 
-class TrainerSpec(BaseModel):
+class TrainerSpec(PSYCOPBaseModel):
     """Specification for starting a trainer.
 
     Provides overrides for the config file.

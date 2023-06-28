@@ -7,7 +7,7 @@ from typing import Optional
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
 
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 
@@ -86,7 +86,7 @@ def load_test_cfg_as_pydantic(
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
 
 
-class WatcherSchema(BaseModel):
+class WatcherSchema(PSYCOPBaseModel):
     """Configuration for watchers."""
 
     archive_all: bool

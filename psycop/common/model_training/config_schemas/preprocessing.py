@@ -2,10 +2,10 @@
 from datetime import datetime
 from typing import Literal, Optional, Union
 
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 
-class FeatureSelectionSchema(BaseModel):
+class FeatureSelectionSchema(PSYCOPBaseModel):
     """Configuration for feature selection methods."""
 
     name: Optional[str] = None
@@ -15,7 +15,7 @@ class FeatureSelectionSchema(BaseModel):
     # Parameters for the feature selection method.
 
 
-class PreSplitPreprocessingConfigSchema(BaseModel):
+class PreSplitPreprocessingConfigSchema(PSYCOPBaseModel):
     """Pre split preprocessing config."""
 
     drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]] = None
@@ -62,7 +62,7 @@ class PreSplitPreprocessingConfigSchema(BaseModel):
     # Whether to keep only one outcome column, or all of them. If True, keeps the outcome column that matches the min_lookahead_days.
 
 
-class PostSplitPreprocessingConfigSchema(BaseModel):
+class PostSplitPreprocessingConfigSchema(PSYCOPBaseModel):
     """Post split preprocessing config."""
 
     imputation_method: Optional[Literal["most_frequent", "mean", "median", "null"]]
@@ -75,7 +75,7 @@ class PostSplitPreprocessingConfigSchema(BaseModel):
     feature_selection: FeatureSelectionSchema
 
 
-class PreprocessingConfigSchema(BaseModel):
+class PreprocessingConfigSchema(PSYCOPBaseModel):
     """Preprocessing config."""
 
     pre_split: PreSplitPreprocessingConfigSchema

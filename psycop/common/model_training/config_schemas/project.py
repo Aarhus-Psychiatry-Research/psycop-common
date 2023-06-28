@@ -1,10 +1,10 @@
 """Project configuration schemas."""
 from pathlib import Path
 
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 
-class WandbSchema(BaseModel):
+class WandbSchema(PSYCOPBaseModel):
     """Configuration for weights and biases."""
 
     group: str
@@ -12,7 +12,7 @@ class WandbSchema(BaseModel):
     entity: str
 
 
-class ProjectSchema(BaseModel):
+class ProjectSchema(PSYCOPBaseModel):
     """Project configuration."""
 
     wandb: WandbSchema
