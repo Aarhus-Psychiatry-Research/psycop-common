@@ -18,5 +18,5 @@ class PolarsDataframeBundle:
         for _, col_name in asdict(self._cols).items():
             if col_name not in self._df.columns:
                 raise pl.ColumnNotFoundError(
-                    f"Column {col_name} found in _cols but not in dataframe, columns in df: {self._df.columns}"
+                    f"Column {col_name} found in _cols but not in dataframe, columns in df: {self._df.columns}",
                 )

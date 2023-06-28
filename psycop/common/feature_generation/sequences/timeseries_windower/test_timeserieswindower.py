@@ -1,13 +1,13 @@
 import datetime
 import random
-from typing import Sequence, TypeVar
+from collections.abc import Sequence
+from typing import TypeVar
 
 import polars as pl
 import pytest
 
 from psycop.common.feature_generation.sequences.timeseries_windower.types.event_dataframe import (
     EventDataframeBundle,
-    EventDataframeColumns,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.prediction_time_dataframe import (
     PredictiontimeDataframeBundle,
@@ -23,7 +23,9 @@ PolarsFrame = TypeVar("PolarsFrame", pl.DataFrame, pl.LazyFrame)
 
 
 def create_random_timestamps_series(
-    n_rows: int, start_datetime: datetime.datetime, end_datetime: datetime.datetime
+    n_rows: int,
+    start_datetime: datetime.datetime,
+    end_datetime: datetime.datetime,
 ) -> pl.Series:
     start_timestamp_int = int(start_datetime.timestamp())
     end_timestamp_int = int(end_datetime.timestamp())
@@ -32,7 +34,7 @@ def create_random_timestamps_series(
         name="timestamps",
         values=[
             datetime.datetime.fromtimestamp(
-                random.uniform(start_timestamp_int, end_timestamp_int)
+                random.uniform(start_timestamp_int, end_timestamp_int),
             )
             for _ in range(n_rows)
         ],
@@ -57,7 +59,7 @@ class TestTimeserieswindower:
         prediction_times_df_with_timestamps = pl.DataFrame(
             {
                 "entity_id": list(range(n_patients)),
-            }
+            },
         )
 
         prediction_times_df_with_timestamps = (
@@ -75,9 +77,9 @@ class TestTimeserieswindower:
             )
         )
 
-        event_df = pl.DataFrame(  # type: ignore
-            {"entity_id": list(range(n_patients))}
-        ).with_columns(  # noqa
+        pl.DataFrame(  # type: ignore
+            {"entity_id": list(range(n_patients))},
+        ).with_columns(
             create_random_timestamps_series(
                 n_rows=n_patients,
                 start_datetime=d1,
@@ -91,26 +93,26 @@ class TestTimeserieswindower:
         prediction_times_df = str_to_pl_df(
             f"""{c.entity_id},{c.pred_timestamp},
             1,2021-01-10 00:00:00,
-            2,2021-01-10 00:00:00,"""
+            2,2021-01-10 00:00:00,""",
         ).with_columns(
             get_pred_time_uuids(
                 entity_id_col_name=f"{c.entity_id}",
                 timestamp_col_name=f"{c.pred_timestamp}",
-            ).alias("pred_time_uuid")
+            ).alias("pred_time_uuid"),
         )
 
         bp_events = str_to_pl_df(
             f"""{c.entity_id},{c.event_type},{c.event_timestamp},{c.event_source},{c.event_value},
             1,bp,2021-01-10 00:00:00,lab,1,
             1,bp,2021-01-10 00:00:01,lab,0,
-            """
+            """,
         )
 
         hba1c_events = str_to_pl_df(
             f"""{c.entity_id},{c.event_type},{c.event_timestamp},{c.event_source},{c.event_value},
             1,hba1c,2021-01-10 00:00:00,lab,1,
             1,hba1c,2021-01-10 00:00:01,lab,0,
-        """
+        """,
         )
 
         result_df, result_cols = window_timeseries(
@@ -131,7 +133,7 @@ class TestTimeserieswindower:
             _df=str_to_pl_df(
                 f"""{c.entity_id},{c.pred_timestamp},
             1,2020-01-10 00:00:00,
-            """
+            """,
             ).lazy(),
         )
         lookbehind = datetime.timedelta(days=1)
@@ -141,7 +143,7 @@ class TestTimeserieswindower:
                 f"""{c.entity_id},{c.event_type},{c.event_source},{c.event_timestamp},{c.event_value},
             1,bp,bedside,2020-01-09 00:00:00,1, # Dropped
             1,bp,bedside,2020-01-09 00:00:01,1, # Kept
-            """
+            """,
             ).lazy(),
         )
 
@@ -170,11 +172,12 @@ def window_timeseries(
         if lookbehind is not None:
             exploded_df = exploded_df.filter(
                 pl.col(event_cols.timestamp)
-                > (pl.col(pred_time_cols.timestamp) - lookbehind)
+                > (pl.col(pred_time_cols.timestamp) - lookbehind),
             )
 
         exploded_dfs.append(exploded_df)
 
     return SequenceDataframeBundle(
-        _df=pl.concat(exploded_dfs).drop_nulls(), _cols=SequenceDataframeColumns()
+        _df=pl.concat(exploded_dfs).drop_nulls(),
+        _cols=SequenceDataframeColumns(),
     )

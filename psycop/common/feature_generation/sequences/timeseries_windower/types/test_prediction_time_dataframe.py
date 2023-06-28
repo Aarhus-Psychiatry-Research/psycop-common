@@ -12,16 +12,18 @@ class TestPredictionTimeBundle:
     @staticmethod
     def test_columns_do_not_exist():
         with pytest.raises(
-            ColumnNotFoundError, match=r"entity_id"
+            ColumnNotFoundError,
+            match=r"entity_id",
         ):
             PredictiontimeDataframeBundle(
                 _df=str_to_pl_df(
                     """e,timestamp
                     1,2021-01-01 00:00:00
                     1,2021-01-01 00:00:00
-                    """
+                    """,
                 ).lazy(),
                 _cols=PredictionTimeColumns(
-                    entity_id="entity_id", timestamp="timestamp"
+                    entity_id="entity_id",
+                    timestamp="timestamp",
                 ),
             ).unpack()

@@ -24,7 +24,6 @@ class PredictionTimeColumns(ColumnBundle):
 
 @dataclass(frozen=True)
 class PredictiontimeDataframeBundle(PolarsDataframeBundle):
-
     _df: pl.LazyFrame
     _cols: PredictionTimeColumns = PredictionTimeColumns()  # noqa: RUF009
 
@@ -34,7 +33,7 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
                 get_pred_time_uuids(
                     entity_id_col_name=self._cols.entity_id,
                     timestamp_col_name=self._cols.timestamp,
-                ).alias(self._cols.pred_time_uuid)
+                ).alias(self._cols.pred_time_uuid),
             )
         else:
             df = self._df
@@ -42,7 +41,7 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
         for _, col_name in asdict(self._cols).items():
             if col_name not in df.columns:
                 raise pl.ColumnNotFoundError(
-                    f"Column {col_name} not found in dataframe"
+                    f"Column {col_name} not found in dataframe",
                 )
 
         return (
