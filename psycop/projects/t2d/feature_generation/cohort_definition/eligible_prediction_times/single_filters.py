@@ -7,22 +7,18 @@ from psycop.common.feature_generation.application_modules.filter_prediction_time
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.combined_filters import (
+from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.add_age import (
     add_age,
 )
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.eligible_config import (
+from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
     MIN_AGE,
     MIN_DATE,
 )
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.tooling import (
-    add_stepdelta_from_df,
-    add_stepdelta_manual,
-)
-from psycop.projects.t2d.feature_generation.outcome_specification.combined import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.lab_results import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
 
@@ -31,7 +27,6 @@ class T2DMinDateFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
-        add_stepdelta_from_df(step_name="min_date", before_df=df, after_df=after_df)
         return after_df
 
 
@@ -40,7 +35,6 @@ class T2DMinAgeFilter(PredictionTimeFilter):
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         df = add_age(df)
         after_df = df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
-        add_stepdelta_from_df(step_name="min_age", before_df=df, after_df=after_df)
         return after_df
 
 
@@ -64,22 +58,15 @@ class WithoutPrevalentDiabetes(PredictionTimeFilter):
         ).count()
 
         for indicator in hit_indicator.rows(named=True):
-            add_stepdelta_manual(
-                step_name=indicator["source"],
-                n_before=df.shape[0],
-                n_after=df.shape[0] - indicator["count"],
-            )
+            print(f"step_name: {indicator['source']}")
+            print(f"n_before: {df.shape[0]}")
+            print(f"n_after: {df.shape[0] - indicator['count']}")
+            print(f"n_hit: {indicator['count']}")
 
         no_prevalent_diabetes = df.join(
             prediction_times_from_patients_with_diabetes,
             on="dw_ek_borger",
             how="anti",
-        )
-
-        add_stepdelta_from_df(
-            step_name="No prevalent diabetes",
-            before_df=df,
-            after_df=no_prevalent_diabetes,
         )
 
         return no_prevalent_diabetes
@@ -109,12 +96,6 @@ class NoIncidentDiabetes(PredictionTimeFilter):
             how="anti",
         )
 
-        add_stepdelta_from_df(
-            step_name="no_incident_diabetes",
-            before_df=df,
-            after_df=not_after_incident_diabetes,
-        )
-
         return not_after_incident_diabetes
 
 
@@ -129,12 +110,6 @@ class T2DWashoutMove(PredictionTimeFilter):
                 quarantine_interval_days=730,
                 timestamp_col_name="timestamp",
             ).run_filter(),
-        )
-
-        add_stepdelta_from_df(
-            step_name="washout_move",
-            before_df=df,
-            after_df=not_within_two_years_from_move,
         )
 
         return not_within_two_years_from_move

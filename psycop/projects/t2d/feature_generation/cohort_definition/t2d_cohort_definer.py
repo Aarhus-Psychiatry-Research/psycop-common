@@ -2,28 +2,33 @@ import polars as pl
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
-    FilteredPredictionTimes,
+    FilteredPredictionTimeBundle,
     filter_prediction_times,
 )
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
-    get_unfiltered_t2d_prediction_times_as_polars,
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    physical_visits_to_psychiatry,
 )
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.single_filters import (
+from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     NoIncidentDiabetes,
     T2DMinAgeFilter,
     T2DMinDateFilter,
     T2DWashoutMove,
     WithoutPrevalentDiabetes,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.combined import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
 
 
 class T2DCohortDefiner(CohortDefiner):
     @staticmethod
-    def get_eligible_prediction_times() -> FilteredPredictionTimes:
-        unfiltered_prediction_times = get_unfiltered_t2d_prediction_times_as_polars()
+    def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
+        unfiltered_prediction_times = pl.from_pandas(
+            physical_visits_to_psychiatry(
+                timestamps_only=True,
+                timestamp_for_output="start",
+            ),
+        )
 
         return filter_prediction_times(
             prediction_times=unfiltered_prediction_times,

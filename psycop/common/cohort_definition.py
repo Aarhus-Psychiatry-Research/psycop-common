@@ -29,7 +29,7 @@ class StepDelta(PSYCOPBaseModel):
         return self.n_before - self.n_after
 
 
-class FilteredPredictionTimes(PSYCOPBaseModel):
+class FilteredPredictionTimeBundle(PSYCOPBaseModel):
     prediction_times: pl.DataFrame
     filter_steps: list[StepDelta]
 
@@ -37,7 +37,7 @@ class FilteredPredictionTimes(PSYCOPBaseModel):
 class CohortDefiner(ABC):
     @staticmethod
     @abstractmethod
-    def get_eligible_prediction_times() -> FilteredPredictionTimes:
+    def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         ...
 
     @staticmethod
@@ -49,7 +49,7 @@ class CohortDefiner(ABC):
 def filter_prediction_times(
     prediction_times: pl.DataFrame,
     filtering_steps: Iterable[PredictionTimeFilter],
-) -> FilteredPredictionTimes:
+) -> FilteredPredictionTimeBundle:
     stepdeltas: list[StepDelta] = []
     for i, filter_step in enumerate(filtering_steps):
         n_before = prediction_times.shape[0]
@@ -63,7 +63,7 @@ def filter_prediction_times(
             ),
         )
 
-    return FilteredPredictionTimes(
+    return FilteredPredictionTimeBundle(
         prediction_times=prediction_times,
         filter_steps=stepdeltas,
     )
