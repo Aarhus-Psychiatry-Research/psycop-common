@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Iterable, TypeVar
+from collections.abc import Iterable
 
-import pandas as pd
 import polars as pl
-from pydantic import BaseModel
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
@@ -50,7 +47,8 @@ class CohortDefiner(ABC):
 
 
 def filter_prediction_times(
-    prediction_times: pl.DataFrame, filtering_steps: Iterable[PredictionTimeFilter]
+    prediction_times: pl.DataFrame,
+    filtering_steps: Iterable[PredictionTimeFilter],
 ) -> FilteredPredictionTimes:
     stepdeltas: list[StepDelta] = []
     for i, filter_step in enumerate(filtering_steps):
@@ -66,5 +64,6 @@ def filter_prediction_times(
         )
 
     return FilteredPredictionTimes(
-        prediction_times=prediction_times, filter_steps=stepdeltas
+        prediction_times=prediction_times,
+        filter_steps=stepdeltas,
     )

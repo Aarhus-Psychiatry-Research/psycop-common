@@ -6,7 +6,6 @@ from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimes,
     PredictionTimeFilter,
-    StepDelta,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
