@@ -4,7 +4,7 @@ import polars as pl
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
-    FilteredPredictionTimes,
+    FilteredPredictionTimeBundle,
     PredictionTimeFilter,
     filter_prediction_times,
 )
@@ -25,7 +25,7 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
 
 class SczBpCohort(CohortDefiner):
     @staticmethod
-    def get_eligible_prediction_times() -> FilteredPredictionTimes:
+    def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         # prediction times are right before an ambulatory visit
         prediction_times = pl.from_pandas(
             ambulatory_visits(
@@ -63,7 +63,7 @@ class SczBpCohort(CohortDefiner):
 
 
 if __name__ == "__main__":
-    filtered_prediction_times = SczBpCohort.get_eligible_prediction_times()
+    filtered_prediction_times = SczBpCohort.get_filtered_prediction_times_bundle()
     for stepdelta in filtered_prediction_times.filter_steps:
         print(
             f"{stepdelta.step_name} dropped {stepdelta.n_dropped}, remaining: {stepdelta.n_after}",

@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.87.0 (2023-06-28)
+
+### Feature
+
+* Add INP and TCH rules ([`4a3d02a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4a3d02a37c8cb0eb0dcafb793c458d799d82f243))
+
 ## v0.86.0 (2023-06-28)
 
 ### Feature
