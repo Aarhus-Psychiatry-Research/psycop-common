@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def load_ids(split: str, n_rows: int | None = None) -> pd.DataFrame:

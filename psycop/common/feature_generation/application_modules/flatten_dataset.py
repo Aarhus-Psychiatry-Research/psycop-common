@@ -2,18 +2,13 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
-import pandas as pd
 import psutil
-from timeseriesflattener.feature_specs.single_specs import AnySpec
 from timeseriesflattener.flattened_dataset import TimeseriesFlattener
 
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
-)
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
 )
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
@@ -22,6 +17,16 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    import pandas as pd
+    from timeseriesflattener.feature_specs.single_specs import AnySpec
+
+    from psycop.common.feature_generation.application_modules.project_setup import (
+        ProjectInfo,
+    )
 
 log = logging.getLogger(__name__)
 

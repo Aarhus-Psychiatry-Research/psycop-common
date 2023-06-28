@@ -5,7 +5,10 @@ This function takes a df and coerces all strings into numerical.
 """
 from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def multiply_inequalities_in_df(

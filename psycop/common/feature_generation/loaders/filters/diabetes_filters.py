@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def keep_rows_where_col_name_matches_pattern(
