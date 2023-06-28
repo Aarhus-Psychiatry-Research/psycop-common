@@ -140,7 +140,7 @@ def check_raw_df(
     required_columns: Sequence[str] | None = None,
     allowed_nan_value_prop: float = 0.0,
     expected_val_dtypes: Sequence[str] | None = None,
-    subset_duplicates_columns: Sequence | str = "all",
+    subset_duplicates_columns: Sequence[str] | str = "all",
     raise_error: bool = True,
 ) -> tuple[list[str], Any]:
     """Check that the raw df conforms to the required format and doesn't

@@ -151,7 +151,7 @@ def physical_visits(
         subset=[output_timestamp_col_name, "dw_ek_borger"],
         keep="first",
     )
-    output_df = output_df.dropna(subset=[output_timestamp_col_name])
+    output_df = output_df.dropna(subset=[output_timestamp_col_name])  # type: ignore
 
     # Change value column to length of admission in days
     if return_value_as_visit_length_days:

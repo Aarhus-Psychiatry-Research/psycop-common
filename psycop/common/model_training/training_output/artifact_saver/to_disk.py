@@ -58,7 +58,7 @@ class ArtifactsToDiskSaver:
             df_template |= {
                 col_name: series
                 for col_name, series in eval_dataset.custom_columns.items()
-                if series is not None
+                if series is not None  # type: ignore
             }
 
         # Remove items that aren't series, e.g. the top level CustomColumns object
@@ -110,18 +110,16 @@ class ArtifactsToDiskSaver:
     ) -> None:
         """Saves prediction dataframe, hydra config and feature names to
         disk."""
-        if eval_dataset is not None:
-            self.eval_dataset_to_disk(
-                eval_dataset,
-                self.dir_path / "evaluation_dataset.parquet",
-            )
+        self.eval_dataset_to_disk(
+            eval_dataset,
+            self.dir_path / "evaluation_dataset.parquet",
+        )
 
-        if cfg is not None:
-            dump_to_pickle(cfg, self.dir_path / "cfg.pkl")
+        dump_to_pickle(cfg, self.dir_path / "cfg.pkl")
 
-            with (self.dir_path / "cfg.json").open(mode="w") as f:
-                cfg_dict = cfg.json()
-                json.dump(cfg_dict, f)
+        with (self.dir_path / "cfg.json").open(mode="w") as f:
+            cfg_dict = cfg.json()
+            json.dump(cfg_dict, f)
 
         if pipe_metadata is not None:
             dump_to_pickle(pipe_metadata, self.dir_path / "pipe_metadata.pkl")

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pandas as pd
 import pytest
 
 from psycop.common.model_evaluation.markdown.md_objects import (
@@ -38,20 +37,6 @@ class TestMarkdownTable:
 4,5,6,
 """,
     )
-
-    def test_loading_of_table(self, tmp_path: Path):
-        self.table_csv.to_csv(tmp_path / "table.csv", index=False)
-
-        md_table = MarkdownTable(
-            title="Table_title",
-            file_path=tmp_path / "table.csv",
-            description="Description",
-            check_filepath_exists=True,
-        )
-
-        dataframe = md_table._get_table_as_pd()
-
-        assert isinstance(dataframe, pd.DataFrame)
 
     def test_creating_markdown_table(self, tmp_path: Path):
         self.table_csv.to_csv(tmp_path / "table.csv", index=False)

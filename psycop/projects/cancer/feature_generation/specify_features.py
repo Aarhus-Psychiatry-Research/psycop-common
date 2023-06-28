@@ -77,7 +77,7 @@ from psycop.projects.cancer.feature_generation.outcome_specification.cancer_load
 log = logging.getLogger(__name__)
 
 
-class SpecSet(BaseModel):
+class SpecSet(BaseModel):  # type: ignore
     """A set of unresolved specs, ready for resolving."""
 
     temporal_predictors: list[PredictorSpec]

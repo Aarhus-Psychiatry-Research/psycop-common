@@ -33,7 +33,7 @@ def sensitivity_pipeline(run: Run, path: Path):
         eval_ds.custom_columns["outcome_coercion_type_within_2_days"],  # type: ignore
     ).value_counts()
 
-    output_df = output_df.merge(types, left_on="outcome_type", right_on=types.index)
+    output_df = output_df.merge(types, left_on="outcome_type", right_on=types.index)  # type: ignore
 
     output_df["outcome_type"] = output_df["outcome_type"].replace(
         {

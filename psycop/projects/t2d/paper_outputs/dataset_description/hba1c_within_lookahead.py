@@ -65,7 +65,7 @@ class AbstractPlot(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _create_plot(self, df: pd.DataFrame) -> pn.ggplot:
+    def _create_plot(self, df: pl.DataFrame, run: PipelineRun) -> pn.ggplot:
         raise NotImplementedError
 
     @abstractmethod
@@ -77,7 +77,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
     def __init__(self):
         pass
 
-    def get_dataset(self, run: PipelineRun) -> pd.DataFrame:
+    def get_dataset(self, run: PipelineRun) -> pl.DataFrame:
         prediction_times_eligible_for_pipeline = (
             get_eligible_prediction_times_for_pipeline(
                 run=run,
@@ -168,13 +168,11 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
             plot_df[plot_df_col_name] = plot_df[plot_df_col_name].fillna(9999)
 
-        return plot_df
+        return pl.from_dataframe(plot_df)
 
-    def _create_plot(self, input_df: pd.DataFrame, run: PipelineRun) -> pn.ggplot:
-        pl_df = pl.from_pandas(input_df)
-
-        plot_df = (
-            pl_df.select(
+    def _create_plot(self, df: pl.DataFrame, run: PipelineRun) -> pn.ggplot:
+        df = (
+            df.select(
                 [
                     "prediction_time_uuid",
                     "y",
@@ -206,7 +204,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
         ).filter(pl.col("prediction") == "False positive")
 
         plot = (
-            pn.ggplot(data=plot_df)
+            pn.ggplot(data=df)
             + pn.stat_ecdf(mapping=pn.aes(x="value", color="variable"))
             + pn.scale_color_brewer(type="qual", palette=2)
             + pn.facet_wrap("prediction", nrow=2)
@@ -234,7 +232,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
     def get_plot(self, run: PipelineRun) -> pn.ggplot:
         df = self.get_dataset(run=run)
 
-        plot = self._create_plot(input_df=df, run=run)
+        plot = self._create_plot(df=df, run=run)
         plot.draw()
 
         return plot

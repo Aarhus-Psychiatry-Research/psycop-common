@@ -158,15 +158,17 @@ def generate_feature_description_row(
         dict: dictionary with feature description.
     """
 
-    if isinstance(predictor_spec, StaticSpec):
-        return generate_static_feature_description(series, predictor_spec)
-    if isinstance(predictor_spec, PredictorSpec):
-        return generate_temporal_feature_description(
-            series,
-            predictor_spec,
-            feature_name=feature_name,
-        )
-    raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
+    match predictor_spec:
+        case StaticSpec():
+            return generate_static_feature_description(series, predictor_spec)
+        case PredictorSpec():
+            return generate_temporal_feature_description(
+                series,
+                predictor_spec,
+                feature_name=feature_name,
+            )
+        case _:  # type: ignore
+            raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
 
 
 def generate_feature_description_df(
@@ -208,7 +210,7 @@ def generate_feature_description_df(
                     ),
                 )
 
-        elif isinstance(spec, (StaticSpec, PredictorSpec)):
+        elif isinstance(spec, (StaticSpec, PredictorSpec)):  # type: ignore
             rows.append(
                 generate_feature_description_row(
                     series=df[column_name],

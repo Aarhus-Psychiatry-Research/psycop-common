@@ -1,4 +1,5 @@
 {
+    "python.analysis.typeCheckingMode": "strict"
     "python.testing.pytestArgs": [
         "psycop"
     ],

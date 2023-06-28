@@ -21,7 +21,7 @@ def get_predictions_for_positive_rate(
 
     actual_positive_rate = y_hat_int.mean()
 
-    return y_hat_int, actual_positive_rate
+    return y_hat_int, actual_positive_rate  # type: ignore
 
 
 class EvalDataset(PSYCOPBaseModel):

@@ -30,7 +30,7 @@ def test_offset_so_no_negative_values():
         },
     )
 
-    df = PreSplitValueCleaner._offset_so_no_negative_values(df)
+    df = PreSplitValueCleaner._offset_so_no_negative_values(df)  # type: ignore
 
     for col in df.columns:
         pd.testing.assert_series_equal(df[col], expected_df[col])

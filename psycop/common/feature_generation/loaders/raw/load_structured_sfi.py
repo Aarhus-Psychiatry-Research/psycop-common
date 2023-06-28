@@ -41,12 +41,12 @@ def sfi_loader(
 
     # Drop rows with duplicate dw_ek_borger and datotid_resultat_udfoert
     # Data contained rows with scores reported at the same time for the same patient but with different values
-    df = df.drop_duplicates(
+    df = df.drop_duplicates(  # type: ignore
         subset=["datotid_resultat_udfoert", "dw_ek_borger"],
         keep="first",
     )
 
-    df = df.rename(
+    df = df.rename(  # type: ignore
         columns={
             "datotid_resultat_udfoert": "timestamp",
             value_col: "value",

@@ -332,7 +332,7 @@ def unpack_intervals(
     )
 
     # drop duplicates (when start and/or end time = 00:00:00)
-    df = df.drop_duplicates(keep="first")
+    df = df.drop_duplicates(keep="first")  # type: ignore
 
     # reset index
     df = df.reset_index(drop=True)

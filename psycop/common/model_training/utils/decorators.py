@@ -12,11 +12,11 @@ import wandb
 from wasabi import Printer
 
 
-def print_df_dimensions_diff(func):  # noqa
+def print_df_dimensions_diff(func):  # noqa # type: ignore
     """Print the difference in rows between the input and output dataframes."""
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):  # noqa
+    def wrapper(*args, **kwargs):  # noqa # type: ignore
         msg = Printer(timestamp=True)
 
         start_time = time.time()
@@ -61,11 +61,11 @@ def print_df_dimensions_diff(func):  # noqa
     return wrapper
 
 
-def wandb_alert_on_exception_return_terrible_auc(func):  # noqa
+def wandb_alert_on_exception_return_terrible_auc(func):  # noqa # type: ignore
     """Alerts wandb on exception."""
 
     @wraps(func)
-    def wrapper(*args, **kwargs):  # noqa
+    def wrapper(*args, **kwargs):  # noqa # type: ignore
         try:
             return func(*args, **kwargs)
         except Exception:

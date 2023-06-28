@@ -290,7 +290,7 @@ def install(
     msg: bool = True,
     venv_path: Optional[str] = None,
 ):
-    """Install the project in editable mode using pip install"""
+    """Install project dependencies in venv path"""
     if msg:
         echo_header(f"{msg_type.DOING} Installing project")
 

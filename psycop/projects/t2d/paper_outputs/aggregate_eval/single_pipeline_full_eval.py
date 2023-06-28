@@ -19,7 +19,7 @@ from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
 msg = Printer(timestamp=True)
 
 
-def _t2d_create_markdown_artifacts(pipeline: PipelineRun) -> list[MarkdownArtifact]:
+def t2d_create_markdown_artifacts(pipeline: PipelineRun) -> list[MarkdownArtifact]:
     relative_to = pipeline.paper_outputs.artifact_path.parent
     pos_rate_percent = f"{int(pipeline.paper_outputs.pos_rate * 100)}%"
     lookahead_years = int(
@@ -61,7 +61,7 @@ def _t2d_create_markdown_artifacts(pipeline: PipelineRun) -> list[MarkdownArtifa
         ),
     ]
 
-    return artifacts
+    return artifacts  # type: ignore
 
 
 def t2d_main_manuscript_eval(pipeline: PipelineRun) -> list[MarkdownArtifact]:
@@ -76,7 +76,7 @@ def t2d_main_manuscript_eval(pipeline: PipelineRun) -> list[MarkdownArtifact]:
     t2d_create_main_performance_figure(run=pipeline)
     t2d_create_main_robustness_figure(run=pipeline)
 
-    return _t2d_create_markdown_artifacts(pipeline=pipeline)
+    return t2d_create_markdown_artifacts(pipeline=pipeline)
 
 
 if __name__ == "__main__":
