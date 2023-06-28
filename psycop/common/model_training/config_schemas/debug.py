@@ -1,7 +1,7 @@
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 
-class DebugConfSchema(BaseModel):
+class DebugConfSchema(PSYCOPBaseModel):
     """Configuration options for testing and debugging."""
 
     class Config:

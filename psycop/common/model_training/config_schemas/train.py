@@ -1,7 +1,7 @@
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 
-class TrainConfSchema(BaseModel):
+class TrainConfSchema(PSYCOPBaseModel):
     """Training configuration."""
 
     # training is done using crossvalidation if splits_for_evaluation is None in DataSchema. If splits are provided for splits_for_evaluation, the trained model is validated on the specified split(s).

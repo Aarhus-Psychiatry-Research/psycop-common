@@ -2,10 +2,10 @@ from typing import Optional
 
 import pandas as pd
 
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 
-class SplitDataset(BaseModel):
+class SplitDataset(PSYCOPBaseModel):
     """A dataset split into train, test and optionally validation."""
 
     class Config:

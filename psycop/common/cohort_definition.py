@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import TypeVar
 
+import pandas as pd
 import polars as pl
 from pydantic import BaseModel
 
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
-@dataclass(frozen=True)
-class StepDelta:
+
+class StepDelta(PSYCOPBaseModel):
     step_name: str
     n_before: int
     n_after: int
@@ -17,19 +20,12 @@ class StepDelta:
         return self.n_before - self.n_after
 
 
-class FilteredPredictionTimes(BaseModel):
-    """A filtered cohort is a cohort that has been filtered by a set of criteria."""
-
+class FilteredPredictionTimes(PSYCOPBaseModel):
     prediction_times: pl.DataFrame
     filter_steps: list[StepDelta]
 
-    class Config:
-        arbitrary_types_allowed = True
-
 
 class CohortDefiner(ABC):
-    """Interface for a cohort definition."""
-
     @staticmethod
     @abstractmethod
     def get_eligible_prediction_times() -> FilteredPredictionTimes:

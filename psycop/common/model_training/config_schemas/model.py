@@ -1,8 +1,8 @@
 """Model configuration schemas."""
-from psycop.common.model_training.config_schemas.basemodel import BaseModel
+from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
 
-class ModelConfSchema(BaseModel):
+class ModelConfSchema(PSYCOPBaseModel):
     """Model configuration."""
 
     name: str  # Model, can currently take xgboost
