@@ -12,7 +12,7 @@ from psycop.projects.t2d.feature_generation.eligible_prediction_times.tooling im
 from psycop.projects.t2d.t2d_config import get_t2d_eligible_prediction_times_as_pandas
 
 
-def get_eligible_prediction_times_as_polars() -> pl.DataFrame:
+def get_unfiltered_t2d_prediction_times_as_polars() -> pl.DataFrame:
     df = pl.from_pandas(
         physical_visits_to_psychiatry(
             timestamps_only=True,

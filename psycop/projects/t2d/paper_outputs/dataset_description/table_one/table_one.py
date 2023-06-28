@@ -5,7 +5,7 @@
 import polars as pl
 
 from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
-    get_eligible_prediction_times_as_polars,
+    get_unfiltered_t2d_prediction_times_as_polars,
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 
@@ -28,7 +28,7 @@ flattened_combined = pl.concat([model_train_df, test_dataset], how="vertical").r
 )
 
 # %%
-pred_times_to_keep = get_eligible_prediction_times_as_polars()
+pred_times_to_keep = get_unfiltered_t2d_prediction_times_as_polars()
 
 
 # %%
