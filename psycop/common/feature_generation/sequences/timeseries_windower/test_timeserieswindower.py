@@ -95,11 +95,11 @@ class TestTimeserieswindower:
         n_events_per_df = n_patients * events_per_patient
 
         msg.info(
-            f"Generating {n_event_dfs} event dataframes with {n_events_per_df} events per df..."
+            f"Generating {n_event_dfs} event dataframes with {n_events_per_df} events per df...",
         )
 
         df = pl.DataFrame(
-            {c.entity_id: list(range(n_patients)) * events_per_patient}
+            {c.entity_id: list(range(n_patients)) * events_per_patient},
         ).with_columns(
             create_random_timestamps_series(
                 n_rows=n_events_per_df,
@@ -110,7 +110,7 @@ class TestTimeserieswindower:
             pl.lit("type").alias(c.event_type),
             pl.lit("source").alias(c.event_source),
             pl.Series([random.random() for _ in range(n_events_per_df)]).alias(
-                c.event_value
+                c.event_value,
             ),
         )
 
@@ -124,7 +124,8 @@ class TestTimeserieswindower:
         ##################
 
         windowed = window_timeseries(
-            prediction_times_bundle=prediction_times_bundle, event_bundles=event_bundles
+            prediction_times_bundle=prediction_times_bundle,
+            event_bundles=event_bundles,
         )
 
         df, cols = windowed.unpack()
