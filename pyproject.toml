@@ -57,6 +57,7 @@ reportMissingTypeStubs = "none"
 reportMissingTypeArgument = "none"
 reportUntypedFunctionDecorator = "none"
 reportIncompatibleVariableOverride = "none"
+reportUnusedImport = "none"
 
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.

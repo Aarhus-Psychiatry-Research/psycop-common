@@ -4,6 +4,48 @@ from typing import Callable
 
 import numpy as np
 import polars as pl
+
+from psycop.common.feature_generation.application_modules.project_setup import (
+    ProjectInfo,
+)
+from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
+from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    f0_disorders,
+    f1_disorders,
+    f2_disorders,
+    f3_disorders,
+    f4_disorders,
+    f5_disorders,
+    f6_disorders,
+    f7_disorders,
+    f8_disorders,
+    f9_disorders,
+)
+from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
+from psycop.common.feature_generation.loaders.raw.load_medications import (
+    antipsychotics,
+    benzodiazepine_related_sleeping_agents,
+    benzodiazepines,
+    clozapine,
+    lamotrigine,
+    lithium,
+    pregabaline,
+    selected_nassa,
+    snri,
+    ssri,
+    tca,
+    valproate,
+)
+from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
+from psycop.common.feature_generation.text_models.utils import load_text_model
+from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
+    SczBpCohort,
+)
+from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
+    get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin,
+    get_first_scz_bp_diagnosis_after_washin,
+    get_time_of_first_scz_or_bp_diagnosis_after_washin,
+)
 from timeseriesflattener.aggregation_fns import (
     concatenate,
     latest,
@@ -25,48 +67,6 @@ from timeseriesflattener.feature_specs.single_specs import (
     TextPredictorSpec,
 )
 from timeseriesflattener.text_embedding_functions import sklearn_embedding
-
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
-from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    f0_disorders,
-    f1_disorders,
-    f2_disorders,
-    f3_disorders,
-    f4_disorders,
-    f5_disorders,
-    f6_disorders,
-    f7_disorders,
-    f8_disorders,
-    f9_disorders,
-)
-from psycop.common.feature_generation.loaders.raw.load_lab_results import (
-    hba1c,
-)
-from psycop.common.feature_generation.loaders.raw.load_medications import (
-    antipsychotics,
-    benzodiazepine_related_sleeping_agents,
-    benzodiazepines,
-    clozapine,
-    lamotrigine,
-    lithium,
-    pregabaline,
-    selected_nassa,
-    snri,
-    ssri,
-    tca,
-    valproate,
-)
-from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
-from psycop.common.feature_generation.text_models.utils import load_text_model
-from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
-    SczBpCohort,
-)
-from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
-    get_first_scz_bp_diagnosis_after_washin,
-)
 
 log = logging.getLogger(__name__)
 
@@ -99,27 +99,21 @@ class SczBpFeatureSpecifier:
         if self.min_set_for_debug:
             return [
                 StaticSpec(
-                    feature_base_name="first_scz_or_bp_indicator",
-                    timeseries_df=get_first_scz_bp_diagnosis_after_washin().to_pandas(),
+                    feature_base_name="scz_or_bp_indicator",
+                    timeseries_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().to_pandas(),
                     prefix="",
                 ),
             ]
 
         return [
+          StaticSpec(
+                    feature_base_name="scz_or_bp_indicator",
+                    timeseries_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().to_pandas(),
+                    prefix="",
+                ),
             StaticSpec(
-                feature_base_name="first_scz_or_bp_indicator",
-                timeseries_df=get_first_scz_bp_diagnosis_after_washin().to_pandas(),
-                prefix="",
-            ),
-            StaticSpec(
-                feature_base_name="scz_or_bp_indicator",
-                timeseries_df=get_first_scz_bp_diagnosis_after_washin()
-                .select(
-                    pl.col("dw_ek_borger"),
-                    pl.col("timestamp"),
-                    pl.col("source").alias("value"),
-                )
-                .to_pandas(),
+                feature_base_name="time_of_diagnosis",
+                timeseries_df=get_time_of_first_scz_or_bp_diagnosis_after_washin().to_pandas(),
                 prefix="",
             ),
         ]
@@ -255,7 +249,7 @@ class SczBpFeatureSpecifier:
                     feature_base_name="hba1c",
                     timeseries_df=hba1c(),
                     lookbehind_days=9999,
-                    aggregation_fn=max,
+                    aggregation_fn=maximum,
                     fallback=np.nan,
                     prefix=self.project_info.prefix.predictor,
                 ),

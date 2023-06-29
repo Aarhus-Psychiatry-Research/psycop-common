@@ -21,7 +21,6 @@ class Prefixes(BaseModel):
     outcome: str = "outc"
     eval: str = "eval"  # noqa
 
-
 class ColNames(BaseModel):
     """Column names for feature specs."""
 

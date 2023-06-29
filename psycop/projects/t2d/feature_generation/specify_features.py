@@ -3,19 +3,6 @@ import logging
 from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    OutcomeGroupSpec,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-    BaseModel,
-    OutcomeSpec,
-    PredictorSpec,
-    StaticSpec,
-)
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
@@ -84,6 +71,19 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 )
 from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
+)
+from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum
+from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
+    OutcomeGroupSpec,
+    PredictorGroupSpec,
+)
+from timeseriesflattener.feature_specs.single_specs import (
+    AnySpec,
+    BaseModel,
+    OutcomeSpec,
+    PredictorSpec,
+    StaticSpec,
 )
 
 log = logging.getLogger(__name__)
@@ -163,7 +163,7 @@ class FeatureSpecifier:
                     feature_base_name="first_diabetes_lab_result",
                     timeseries_df=get_first_diabetes_lab_result_above_threshold(),
                     lookahead_days=365,
-                    aggregation_fn=max,
+                    aggregation_fn=maximum,
                     fallback=0,
                     incident=True,
                     prefix=self.project_info.prefix.outcome,
@@ -334,7 +334,7 @@ class FeatureSpecifier:
                     feature_base_name="hba1c",
                     timeseries_df=hba1c(),
                     lookbehind_days=9999,
-                    aggregation_fn=max,
+                    aggregation_fn=maximum,
                     fallback=np.nan,
                     prefix=self.project_info.prefix.predictor,
                 ),
