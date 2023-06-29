@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass
+from typing import Any
 
 import polars as pl
 
@@ -38,3 +39,11 @@ class PolarsDataframeBundle:
     Columns in {cols_attr_string}: {[c for _, c in self._cols.__dict__.items()]}
 """,
                 )
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        # Check if self._frozen exists and is True
+        if getattr(self, "_frozen", False):
+            raise AttributeError(
+                f"Trying to set attribute on a frozen instance of {self.__class__.__name__}"
+            )
+        return super().__setattr__(name, value)

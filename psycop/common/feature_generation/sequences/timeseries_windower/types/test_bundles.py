@@ -1,3 +1,5 @@
+from re import S
+
 import pytest
 from polars import ColumnNotFoundError
 
@@ -33,6 +35,24 @@ class TestSequenceDataframeBundle:
                 cols=SequenceColumns(),
                 validate_cols_exist_on_init=True,
             ).unpack()
+
+    @staticmethod
+    def test_should_be_frozen():
+        with pytest.raises(  # noqa: PT012
+            AttributeError,
+            match=r"frozen",
+        ):
+            bundle = SequenceDataframeBundle(
+                df=str_to_pl_df(
+                    """e,timestamp
+                    1,2021-01-01 00:00:00
+                    """
+                ).lazy(),
+                cols=SequenceColumns(),
+                validate_cols_exist_on_init=False,
+            )
+
+            bundle._cols = SequenceColumns()  # type: ignore
 
 
 class TestEventDataframeBundle:
