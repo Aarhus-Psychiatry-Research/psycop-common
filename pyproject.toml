@@ -1,6 +1,6 @@
 [project]
 name = "psycop"
-version = "0.85.1"
+version = "0.87.0"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"}
 ]
@@ -88,6 +88,7 @@ select = [
   "RET",
   "RUF",
   "SIM",
+  "TCH",
   "W"
 ]
 ignore = [

@@ -2,6 +2,25 @@
 
 <!--next-version-placeholder-->
 
+## v0.87.0 (2023-06-28)
+
+### Feature
+
+* Add INP and TCH rules ([`4a3d02a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4a3d02a37c8cb0eb0dcafb793c458d799d82f243))
+
+## v0.86.0 (2023-06-28)
+
+### Feature
+
+* Misc from review (wip) ([`62342b3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/62342b305e7cde6df09dcdc73900d7cb82dbc8de))
+* Add cohort abc ([`387aa6e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/387aa6e93825aab3fb1371167a104be562ac69e9))
+* Outcome def for scz_bp ([`79d057d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/79d057d85906c150ee9fa640f38456f6d71e4cc7))
+
+### Fix
+
+* Misc review ([`1c2ed6b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1c2ed6bcbaa979fe2e8d07973201faa9e4d96144))
+* Create wandb folder the right place ([`081c8c0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/081c8c01e71b4cbf51d52ee63f1f0339fcfeac5c))
+
 ## v0.85.1 (2023-06-27)
 
 ### Fix

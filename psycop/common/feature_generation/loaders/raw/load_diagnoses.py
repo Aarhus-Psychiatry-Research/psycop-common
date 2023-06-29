@@ -6,9 +6,7 @@ files (e.g. psychiatric, cardiovascular, metabolic etc.) over time.
 from __future__ import annotations
 
 import logging
-from typing import Literal
-
-import pandas as pd
+from typing import TYPE_CHECKING, Literal
 
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t1d_diag,
@@ -16,6 +14,9 @@ from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
 )
 from psycop.common.feature_generation.loaders.raw.utils import load_from_codes
 from psycop.common.feature_generation.utils import data_loaders
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 log = logging.getLogger(__name__)
 

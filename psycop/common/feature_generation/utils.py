@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import os
 from collections.abc import Hashable
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import catalogue
 import pandas as pd
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 data_loaders = catalogue.create("timeseriesflattener", "data_loaders")
 

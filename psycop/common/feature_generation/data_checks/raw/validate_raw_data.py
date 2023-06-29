@@ -2,7 +2,7 @@
 loader."""
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -19,6 +19,9 @@ from psycop.common.feature_generation.data_checks.flattened.feature_describer im
 from psycop.common.feature_generation.data_checks.utils import (
     save_df_to_pretty_html_table,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def median_absolute_deviation(series: pd.Series) -> float:

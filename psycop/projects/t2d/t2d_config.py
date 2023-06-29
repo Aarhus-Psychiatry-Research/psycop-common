@@ -1,13 +1,9 @@
-import pandas as pd
 from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.t2d.feature_generation.eligible_prediction_times.loader import (
-    get_eligible_prediction_times_as_polars,
-)
 from psycop.projects.t2d.feature_generation.specify_features import FeatureSpecifier
 
 
@@ -16,10 +12,6 @@ def get_t2d_project_info() -> ProjectInfo:
         project_name="t2d",
         project_path=OVARTACI_SHARED_DIR / "t2d",  # type: ignore
     )
-
-
-def get_t2d_eligible_prediction_times_as_pandas() -> pd.DataFrame:
-    return get_eligible_prediction_times_as_polars().to_pandas()
 
 
 def get_t2d_feature_specifications() -> list[AnySpec]:

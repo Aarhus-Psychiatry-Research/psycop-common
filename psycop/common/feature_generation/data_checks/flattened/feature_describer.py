@@ -3,9 +3,7 @@ df."""
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
@@ -22,6 +20,10 @@ from psycop.common.feature_generation.data_checks.utils import (
 from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import (
     load_split,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
 
 UNICODE_HIST = {
     0: " ",

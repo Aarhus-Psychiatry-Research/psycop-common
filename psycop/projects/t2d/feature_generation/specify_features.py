@@ -79,10 +79,10 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     height_in_cm,
     weight_in_kg,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.combined import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
-from psycop.projects.t2d.feature_generation.outcome_specification.lab_results import (
+from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
 
@@ -163,7 +163,7 @@ class FeatureSpecifier:
                     feature_base_name="first_diabetes_lab_result",
                     timeseries_df=get_first_diabetes_lab_result_above_threshold(),
                     lookahead_days=365,
-                    aggregation_fn=max,
+                    aggregation_fn=maximum,
                     fallback=0,
                     incident=True,
                     prefix=self.project_info.prefix.outcome,
@@ -334,7 +334,7 @@ class FeatureSpecifier:
                     feature_base_name="hba1c",
                     timeseries_df=hba1c(),
                     lookbehind_days=9999,
-                    aggregation_fn=max,
+                    aggregation_fn=maximum,
                     fallback=np.nan,
                     prefix=self.project_info.prefix.predictor,
                 ),

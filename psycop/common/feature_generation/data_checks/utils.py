@@ -1,9 +1,12 @@
 """Utilities for data checks."""
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pandas as pd
 
 # Templates for saving dataframes as pretty html tables
 HTML_TEMPLATE1 = """

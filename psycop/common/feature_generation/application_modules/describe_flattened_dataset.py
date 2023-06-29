@@ -2,14 +2,11 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
 from timeseriesflattener.flattened_dataset import PredictorSpec
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
@@ -19,6 +16,13 @@ from psycop.common.feature_generation.data_checks.flattened.data_integrity impor
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from psycop.common.feature_generation.application_modules.project_setup import (
+        ProjectInfo,
+    )
 
 log = logging.getLogger(__name__)
 

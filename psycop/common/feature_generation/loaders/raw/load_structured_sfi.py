@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def sfi_loader(
