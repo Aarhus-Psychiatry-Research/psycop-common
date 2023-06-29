@@ -10,8 +10,9 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.event_
     EventDataframeBundle,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.prediction_time_dataframe import (
+    PredictionTimeColumns,
     PredictiontimeDataframeBundle,
-    get_pred_time_uuids,
+    create_pred_time_uuids,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.sequence_dataframe import (
     SequenceDataframeBundle,
@@ -21,17 +22,22 @@ from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 PolarsFrame = TypeVar("PolarsFrame", pl.DataFrame, pl.LazyFrame)
 
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
+
 
 def create_random_timestamps_series(
     n_rows: int,
     start_datetime: datetime.datetime,
     end_datetime: datetime.datetime,
+    name: str = "timestamp",
 ) -> pl.Series:
     start_timestamp_int = int(start_datetime.timestamp())
     end_timestamp_int = int(end_datetime.timestamp())
 
     return pl.Series(
-        name="timestamps",
+        name=name,
         values=[
             datetime.datetime.fromtimestamp(
                 random.uniform(start_timestamp_int, end_timestamp_int),
@@ -47,18 +53,24 @@ def c() -> SequenceDataframeColumns:
 
 
 class TestTimeserieswindower:
-    # TODO: Ensure that all prediction times are represented, even if they have no events?
-
     @staticmethod
-    def test_scaling():
+    def test_windowing_should_be_fast(
+        c: SequenceDataframeColumns,
+        n_patients: int = 1000,
+        n_event_dfs: int = 15,
+        events_per_patient: int = 50,
+    ):
+        ##############
+        # Test setup #
+        ##############
         # Create transaction date in range
         d1 = datetime.datetime.strptime("1/1/2100", "%m/%d/%Y")
         d2 = datetime.datetime.strptime("1/1/2105", "%m/%d/%Y")
 
-        n_patients = 100
+        msg.info("Generating prediction times...")
         prediction_times_df_with_timestamps = pl.DataFrame(
             {
-                "entity_id": list(range(n_patients)),
+                c.entity_id: list(range(n_patients)),
             },
         )
 
@@ -68,34 +80,75 @@ class TestTimeserieswindower:
                     n_rows=n_patients,
                     start_datetime=d1,
                     end_datetime=d2,
+                    name=c.pred_timestamp,
                 ),
-            ).with_columns(
-                get_pred_time_uuids(
-                    entity_id_col_name="entity_id",
-                    timestamp_col_name="timestamps",
-                ).alias("pred_time_uuid"),
             )
         )
 
-        pl.DataFrame(  # type: ignore
-            {"entity_id": list(range(n_patients))},
-        ).with_columns(
-            create_random_timestamps_series(
-                n_rows=n_patients,
-                start_datetime=d1,
-                end_datetime=d2,
-            ),
-            pl.Series([random.random() for _ in range(n_patients)]).alias("value"),
+        prediction_times_bundle = PredictiontimeDataframeBundle(
+            _df=prediction_times_df_with_timestamps.lazy(),
+            _cols=PredictionTimeColumns(),
         )
 
+        event_bundles = []
+
+        n_events_per_df = n_patients * events_per_patient
+
+        msg.info(
+            f"Generating {n_event_dfs} event dataframes with {n_events_per_df} events per df..."
+        )
+
+        df = pl.DataFrame(
+            {c.entity_id: list(range(n_patients)) * events_per_patient}
+        ).with_columns(
+            create_random_timestamps_series(
+                n_rows=n_events_per_df,
+                start_datetime=d1,
+                end_datetime=d2,
+                name=c.event_timestamp,
+            ),
+            pl.lit("type").alias(c.event_type),
+            pl.lit("source").alias(c.event_source),
+            pl.Series([random.random() for _ in range(n_events_per_df)]).alias(
+                c.event_value
+            ),
+        )
+
+        for i in range(n_event_dfs):
+            msg.info(f"Generating event dataframe {i}...")
+
+            event_bundles.append(EventDataframeBundle(_df=df.lazy()))
+
+        ##################
+        # Actual testing #
+        ##################
+
+        windowed = window_timeseries(
+            prediction_times_bundle=prediction_times_bundle, event_bundles=event_bundles
+        )
+
+        df, cols = windowed.unpack()
+
+        start_time = datetime.datetime.now()
+        msg.info("Collecting windowed dataframe...")
+        df_collected = df.collect()
+        end_time = datetime.datetime.now()
+
+        duration_seconds = (end_time - start_time).total_seconds()
+        msg.info(f"Windowing took: {duration_seconds} seconds")
+
+        assert len(df_collected) == n_patients * n_event_dfs * events_per_patient
+
     @staticmethod
-    def test_multiple_event_dfs(c: SequenceDataframeColumns):
+    def test_event_dataframes_should_add_events_x_prediction_times_rows(
+        c: SequenceDataframeColumns,
+    ):
         prediction_times_df = str_to_pl_df(
             f"""{c.entity_id},{c.pred_timestamp},
             1,2021-01-10 00:00:00,
             2,2021-01-10 00:00:00,""",
         ).with_columns(
-            get_pred_time_uuids(
+            create_pred_time_uuids(
                 entity_id_col_name=f"{c.entity_id}",
                 timestamp_col_name=f"{c.pred_timestamp}",
             ).alias("pred_time_uuid"),
@@ -128,7 +181,7 @@ class TestTimeserieswindower:
         assert len(result_df.collect()) == 4
 
     @staticmethod
-    def test_windowing(c: SequenceDataframeColumns):
+    def test_windowing_should_cut_between_timestamps(c: SequenceDataframeColumns):
         prediction_times_df_bundle = PredictiontimeDataframeBundle(
             _df=str_to_pl_df(
                 f"""{c.entity_id},{c.pred_timestamp},

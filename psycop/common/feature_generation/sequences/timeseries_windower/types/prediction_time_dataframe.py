@@ -8,7 +8,7 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.abstra
 )
 
 
-def get_pred_time_uuids(entity_id_col_name: str, timestamp_col_name: str) -> pl.Expr:
+def create_pred_time_uuids(entity_id_col_name: str, timestamp_col_name: str) -> pl.Expr:
     return pl.concat_str(
         pl.col(entity_id_col_name),
         pl.lit("_"),
@@ -30,7 +30,7 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
     def unpack(self) -> tuple[pl.LazyFrame, PredictionTimeColumns]:
         if self._cols.pred_time_uuid not in self._df.columns:
             df = self._df.with_columns(
-                get_pred_time_uuids(
+                create_pred_time_uuids(
                     entity_id_col_name=self._cols.entity_id,
                     timestamp_col_name=self._cols.timestamp,
                 ).alias(self._cols.pred_time_uuid),
