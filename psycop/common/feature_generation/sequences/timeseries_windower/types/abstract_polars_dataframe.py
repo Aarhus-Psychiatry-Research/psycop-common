@@ -24,21 +24,19 @@ class PolarsDataframeBundle:
 
     def _validate_cols_exist(self):
         # Check col_names exist
-        for _, col_name in asdict(self._cols).items():
-            missing_cols = []
+        bundle_cols = set(asdict(self._cols).values())
+        df_cols = set(self._df.columns)
+        missing_cols = bundle_cols - df_cols
 
-            if col_name not in self._df.columns:
-                missing_cols.append(col_name)
-
-            if len(missing_cols) > 0:
-                cols_attr_string = f"{self.__class__.__name__}._cols"
-                df_attr_string = f"{self.__class__.__name__}._df"
-                raise pl.ColumnNotFoundError(
-                    f"""Column(s) {missing_cols} required by {cols_attr_string} but missing in {df_attr_string}.
-    Columns in {df_attr_string}: {self._df.columns}
-    Columns in {cols_attr_string}: {[c for _, c in self._cols.__dict__.items()]}
+        if len(missing_cols) > 0:
+            cols_attr_string = f"{self.__class__.__name__}._cols"
+            df_attr_string = f"{self.__class__.__name__}._df"
+            raise pl.ColumnNotFoundError(
+                f"""Column(s) {missing_cols} required by {cols_attr_string} but missing in {df_attr_string}.
+Columns required by {cols_attr_string}: {bundle_cols}
+Columns in {df_attr_string}: {df_cols}
 """,
-                )
+            )
 
     def __setattr__(self, name: str, value: Any) -> None:
         # Check if self._frozen exists and is True
