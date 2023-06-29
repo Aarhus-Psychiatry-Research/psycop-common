@@ -1,5 +1,3 @@
-from re import S
-
 import pytest
 from polars import ColumnNotFoundError
 
@@ -46,7 +44,7 @@ class TestSequenceDataframeBundle:
                 df=str_to_pl_df(
                     """e,timestamp
                     1,2021-01-01 00:00:00
-                    """
+                    """,
                 ).lazy(),
                 cols=SequenceColumns(),
                 validate_cols_exist_on_init=False,

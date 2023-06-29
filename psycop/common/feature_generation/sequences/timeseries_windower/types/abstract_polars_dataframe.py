@@ -44,6 +44,6 @@ class PolarsDataframeBundle:
         # Check if self._frozen exists and is True
         if getattr(self, "_frozen", False):
             raise AttributeError(
-                f"Trying to set attribute on a frozen instance of {self.__class__.__name__}"
+                f"Trying to set attribute on a frozen instance of {self.__class__.__name__}",
             )
         return super().__setattr__(name, value)
