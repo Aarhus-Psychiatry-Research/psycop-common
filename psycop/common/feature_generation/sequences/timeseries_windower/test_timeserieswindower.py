@@ -66,7 +66,7 @@ class TestTimeserieswindower:
         ##############
         # Create transaction date in range
         d1 = datetime.datetime.strptime("1/1/2100", "%m/%d/%Y")
-        d2 = datetime.datetime.strptime("1/1/2105", "%m/%d/%Y")
+        d2 = datetime.datetime.strptime("1/1/2101", "%m/%d/%Y")
 
         msg.info("Generating prediction times...")
         prediction_times_df_with_timestamps = pl.DataFrame(
@@ -127,6 +127,7 @@ class TestTimeserieswindower:
         windowed = window_timeseries(
             prediction_times_bundle=prediction_times_bundle,
             event_bundles=event_bundles,
+            lookbehind=datetime.timedelta(days=368),
         )
 
         df, cols = windowed.unpack()
@@ -138,6 +139,8 @@ class TestTimeserieswindower:
 
         duration_seconds = (end_time - start_time).total_seconds()
         msg.info(f"Windowing took: {duration_seconds} seconds")
+        # 13 seconds for 120_000 patients · 15 event dataframes · 50 events per patient
+        # on an M1 MacBook Pro
 
         assert len(df_collected) == n_patients * n_event_dfs * events_per_patient
 
@@ -178,6 +181,7 @@ class TestTimeserieswindower:
                 EventDataframeBundle(df=bp_events.lazy()),
                 EventDataframeBundle(df=hba1c_events.lazy()),
             ],
+            lookbehind=None,
         ).unpack()
 
         assert len(result_df.collect()) == 4
