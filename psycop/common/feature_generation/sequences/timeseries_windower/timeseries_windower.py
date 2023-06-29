@@ -18,8 +18,18 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.sequen
 def window_timeseries(
     prediction_times_bundle: PredictiontimeDataframeBundle,
     event_bundles: Sequence[EventDataframeBundle],
-    lookbehind: datetime.timedelta | None = None,
+    lookbehind: datetime.timedelta | None,
 ) -> SequenceDataframeBundle:
+    """Take a list of prediction times and a list of events. Map those onto one another based on entity_id, and generate sequences with events within the lookbehind window. See also the tests for example behavior.
+
+    Args:
+        prediction_times_bundle (PredictiontimeDataframeBundle): Prediction times. See the object for requirec columns.
+        event_bundles (Sequence[EventDataframeBundle]): Events to map onto prediction times. See the object for required columns.
+        lookbehind (datetime.timedelta | None): How far back to look for events.
+
+    Returns:
+        SequenceDataframeBundle: The output dataframe sequence. See the object for required columns.
+    """
     pred_time_df, pred_time_cols = prediction_times_bundle.unpack()
     exploded_dfs = []
 
@@ -30,8 +40,10 @@ def window_timeseries(
 
         if lookbehind is not None:
             exploded_df = exploded_df.filter(
-                pl.col(event_cols.timestamp)
-                > (pl.col(pred_time_cols.timestamp) - lookbehind),
+                (
+                    pl.col(event_cols.timestamp)
+                    > (pl.col(pred_time_cols.timestamp) - lookbehind)
+                )
             )
 
         exploded_dfs.append(exploded_df)
