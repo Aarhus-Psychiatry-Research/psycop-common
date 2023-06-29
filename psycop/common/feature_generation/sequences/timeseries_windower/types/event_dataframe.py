@@ -20,7 +20,7 @@ class EventDataframeBundle(PolarsDataframeBundle):
     def __init__(
         self,
         df: pl.LazyFrame,
-        cols: EventColumns,
+        cols: EventColumns = EventColumns(),  # noqa: B008
         validate_cols_exist_on_init: bool = True,
     ):
         super().__init__(

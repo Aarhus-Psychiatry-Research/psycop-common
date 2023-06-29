@@ -86,8 +86,8 @@ class TestTimeserieswindower:
         )
 
         prediction_times_bundle = PredictiontimeDataframeBundle(
-            _df=prediction_times_df_with_timestamps.lazy(),
-            _cols=PredictiontimeColumns(),
+            df=prediction_times_df_with_timestamps.lazy(),
+            cols=PredictiontimeColumns(),
         )
 
         event_bundles = []
@@ -117,7 +117,7 @@ class TestTimeserieswindower:
         for i in range(n_event_dfs):
             msg.info(f"Generating event dataframe {i}...")
 
-            event_bundles.append(EventDataframeBundle(_df=df.lazy()))
+            event_bundles.append(EventDataframeBundle(df=df.lazy()))
 
         ##################
         # Actual testing #
@@ -171,11 +171,11 @@ class TestTimeserieswindower:
 
         result_df, result_cols = window_timeseries(
             prediction_times_bundle=PredictiontimeDataframeBundle(
-                _df=prediction_times_df.lazy(),
+                df=prediction_times_df.lazy(),
             ),
             event_bundles=[
-                EventDataframeBundle(_df=bp_events.lazy()),
-                EventDataframeBundle(_df=hba1c_events.lazy()),
+                EventDataframeBundle(df=bp_events.lazy()),
+                EventDataframeBundle(df=hba1c_events.lazy()),
             ],
         ).unpack()
 
@@ -184,7 +184,7 @@ class TestTimeserieswindower:
     @staticmethod
     def test_windowing_should_cut_between_timestamps(c: SequenceColumns):
         prediction_times_df_bundle = PredictiontimeDataframeBundle(
-            _df=str_to_pl_df(
+            df=str_to_pl_df(
                 f"""{c.entity_id},{c.pred_timestamp},
             1,2020-01-10 00:00:00,
             """,
@@ -193,7 +193,7 @@ class TestTimeserieswindower:
         lookbehind = datetime.timedelta(days=1)
 
         events = EventDataframeBundle(
-            _df=str_to_pl_df(
+            df=str_to_pl_df(
                 f"""{c.entity_id},{c.event_type},{c.event_source},{c.event_timestamp},{c.event_value},
             1,bp,bedside,2020-01-09 00:00:00,1, # Dropped
             1,bp,bedside,2020-01-09 00:00:01,1, # Kept
@@ -232,6 +232,6 @@ def window_timeseries(
         exploded_dfs.append(exploded_df)
 
     return SequenceDataframeBundle(
-        _df=pl.concat(exploded_dfs).drop_nulls(),
-        _cols=SequenceColumns(),
+        df=pl.concat(exploded_dfs).drop_nulls(),
+        cols=SequenceColumns(),
     )

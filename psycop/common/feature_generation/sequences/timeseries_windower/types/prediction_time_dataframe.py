@@ -26,7 +26,7 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
     def __init__(
         self,
         df: pl.LazyFrame,
-        cols: PredictiontimeColumns,
+        cols: PredictiontimeColumns = PredictiontimeColumns(),  # noqa: B008
         validate_cols_exist_on_init: bool = True,
     ):
         self._df = df
