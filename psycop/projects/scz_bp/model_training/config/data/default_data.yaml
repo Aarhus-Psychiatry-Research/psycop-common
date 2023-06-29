@@ -1,0 +1,24 @@
+# @package _global_
+data:
+  # General config
+  n_training_samples: null
+  dir: "E:/shared_resources/t2d/feature_sets/psycop_t2d_adminmanber_features_2023_04_27_14_25"
+  suffix: parquet
+
+  # Feature specs
+  pred_prefix: pred_
+  outc_prefix: outc_
+
+  splits_for_training: ["train", "val"]
+  splits_for_evaluation: null
+
+  col_name:
+    pred_timestamp: timestamp
+    outcome_timestamp: timestamp_first_diabetes_lab_result
+    id: dw_ek_borger
+    age: pred_age_in_years
+    is_female: pred_sex_female
+    exclusion_timestamp: first_diabetes_indicator
+    pred_time_uuid: prediction_time_uuid
+    custom_columns:
+      - eval_hba1c_within_9999_days_count_fallback_nan
