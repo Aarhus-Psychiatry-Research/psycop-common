@@ -59,6 +59,7 @@ def save_flattened_dataset_description_to_disk(
             s for s in feature_specs if isinstance(s, (StaticSpec, PredictorSpec))
         ],
         file_suffix=".parquet",
+        prefixes_to_describe=set(project_info.prefix.__dict__.values())
     )
 
     save_feature_set_integrity_checks_from_dir(
