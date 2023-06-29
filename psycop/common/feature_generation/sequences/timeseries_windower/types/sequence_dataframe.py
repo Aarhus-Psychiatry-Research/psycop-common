@@ -10,13 +10,15 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.abstra
 
 @dataclass(frozen=True)
 class SequenceColumns(ColumnBundle):
-    entity_id: str = "entity_id"
-    pred_timestamp: str = "pred_timestamp"
+    entity_id: str = "entity_id"  # E.g. patient ID
+    pred_timestamp: str = "pred_timestamp"  # Timestamp for the prediction time
     pred_time_uuid: str = "pred_time_uuid"
-    event_type: str = "event_type"
+    event_source: str = "event_source"  # Values are e.g. "lab"/"diagnosis"/"medication"
+    event_type: str = "event_type"  # Values are e.g. "Hba1c"/"Hypertension"/"Metformin"
     event_timestamp: str = "event_timestamp"
-    event_source: str = "event_source"
-    event_value: str = "event_value"
+    event_value: str = (
+        "event_value"  # 1/0 for booleans, numeric value for numeric events
+    )
 
 
 class SequenceDataframeBundle(PolarsDataframeBundle):
