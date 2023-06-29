@@ -69,7 +69,7 @@ class WithoutPrevalentDiabetes(PredictionTimeFilter):
             how="anti",
         )
 
-        return no_prevalent_diabetes
+        return no_prevalent_diabetes.drop(["age"])
 
 
 class NoIncidentDiabetes(PredictionTimeFilter):
@@ -96,7 +96,7 @@ class NoIncidentDiabetes(PredictionTimeFilter):
             how="anti",
         )
 
-        return not_after_incident_diabetes
+        return not_after_incident_diabetes.drop(["timestamp_result", "value"])
 
 
 class T2DWashoutMove(PredictionTimeFilter):

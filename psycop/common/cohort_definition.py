@@ -54,6 +54,7 @@ def filter_prediction_times(
     for i, filter_step in enumerate(filtering_steps):
         n_before = prediction_times.shape[0]
         prediction_times = filter_step.apply(prediction_times)
+        print(f"Applying filter: {filter_step.__class__.__name__}")
         stepdeltas.append(
             StepDelta(
                 step_name=filter_step.__class__.__name__,
