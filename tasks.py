@@ -147,7 +147,7 @@ def _add_commit(c: Context, msg: Optional[str] = None):
         print(f"{msg_type.GOOD} Commit amended")
     elif msg == "-a":
         print(
-            f"{msg_type.FAIL} You typed '-a'. Did you mean '--a' to amend the previous commit?"
+            f"{msg_type.FAIL} You typed '-a'. Did you mean '--a' to amend the previous commit?",
         )
     else:
         c.run(f'git commit -m "{msg}"', pty=NOT_WINDOWS, hide=True)
