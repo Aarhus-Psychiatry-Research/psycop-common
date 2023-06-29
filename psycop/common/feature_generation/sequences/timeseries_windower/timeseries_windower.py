@@ -25,7 +25,7 @@ def window_timeseries(
     Args:
         prediction_times_bundle (PredictiontimeDataframeBundle): Prediction times. See the object for requirec columns.
         event_bundles (Sequence[EventDataframeBundle]): Events to map onto prediction times. See the object for required columns.
-        lookbehind (datetime.timedelta | None): How far back to look for events.
+        lookbehind (datetime.timedelta | None): How far back to look for events. If None, includes all events before the prediction time.
 
     Returns:
         SequenceDataframeBundle: The output dataframe sequence. See the object for required columns.
