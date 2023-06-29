@@ -9,18 +9,28 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.abstra
 
 
 @dataclass(frozen=True)
-class EventDataframeColumns(ColumnBundle):
+class EventColumns(ColumnBundle):
     timestamp: str = "event_timestamp"
     event_type: str = "event_type"
     event_source: str = "event_source"
     event_value: str = "event_value"
 
 
-@dataclass(frozen=True)
 class EventDataframeBundle(PolarsDataframeBundle):
-    _df: pl.LazyFrame
-    _cols: EventDataframeColumns = EventDataframeColumns()  # noqa: RUF009
+    def __init__(
+        self,
+        df: pl.LazyFrame,
+        cols: EventColumns,
+        validate_cols_exist_on_init: bool = True,
+    ):
+        super().__init__(
+            df=df,
+            cols=cols,
+            validate_cols_exist_on_init=validate_cols_exist_on_init,
+        )
 
-    def unpack(self) -> tuple[pl.LazyFrame, EventDataframeColumns]:
-        self._validate_col_names()
+        self._cols = cols
+        self._frozen = True
+
+    def unpack(self) -> tuple[pl.LazyFrame, EventColumns]:
         return self._df, self._cols

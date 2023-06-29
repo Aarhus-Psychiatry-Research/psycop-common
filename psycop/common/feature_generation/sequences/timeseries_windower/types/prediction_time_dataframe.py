@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 
 import polars as pl
 
@@ -17,19 +17,23 @@ def create_pred_time_uuids(entity_id_col_name: str, timestamp_col_name: str) -> 
 
 
 @dataclass(frozen=True)
-class PredictionTimeColumns(ColumnBundle):
+class PredictiontimeColumns(ColumnBundle):
     timestamp: str = "pred_timestamp"
     pred_time_uuid: str = "pred_time_uuid"
 
 
-@dataclass(frozen=True)
 class PredictiontimeDataframeBundle(PolarsDataframeBundle):
-    _df: pl.LazyFrame
-    _cols: PredictionTimeColumns = PredictionTimeColumns()  # noqa: RUF009
+    def __init__(
+        self,
+        df: pl.LazyFrame,
+        cols: PredictiontimeColumns,
+        validate_cols_exist_on_init: bool = True,
+    ):
+        self._df = df
+        self._cols = cols
 
-    def unpack(self) -> tuple[pl.LazyFrame, PredictionTimeColumns]:
         if self._cols.pred_time_uuid not in self._df.columns:
-            df = self._df.with_columns(
+            self._df = self._df.with_columns(
                 create_pred_time_uuids(
                     entity_id_col_name=self._cols.entity_id,
                     timestamp_col_name=self._cols.timestamp,
@@ -38,13 +42,10 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
         else:
             df = self._df
 
-        for _, col_name in asdict(self._cols).items():
-            if col_name not in df.columns:
-                raise pl.ColumnNotFoundError(
-                    f"Column {col_name} not found in dataframe",
-                )
+        if validate_cols_exist_on_init:
+            self._validate_cols_exist()
 
-        return (
-            df,
-            self._cols,
-        )
+        self._frozen = True
+
+    def unpack(self) -> tuple[pl.LazyFrame, PredictiontimeColumns]:
+        return self._df, self._cols

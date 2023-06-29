@@ -8,15 +8,33 @@ class ColumnBundle:
     entity_id: str = "entity_id"
 
 
-@dataclass(frozen=True)
 class PolarsDataframeBundle:
-    _df: pl.LazyFrame
-    _cols: ColumnBundle
+    def __init__(
+        self,
+        df: pl.LazyFrame,
+        cols: ColumnBundle,
+        validate_cols_exist_on_init: bool = True,
+    ):
+        self._df = df
+        self._cols = cols
 
-    def _validate_col_names(self):
+        if validate_cols_exist_on_init:
+            self._validate_cols_exist()
+
+    def _validate_cols_exist(self):
         # Check col_names exist
         for _, col_name in asdict(self._cols).items():
+            missing_cols = []
+
             if col_name not in self._df.columns:
+                missing_cols.append(col_name)
+
+            if len(missing_cols) > 0:
+                cols_attr_string = f"{self.__class__.__name__}._cols"
+                df_attr_string = f"{self.__class__.__name__}._df"
                 raise pl.ColumnNotFoundError(
-                    f"Column {col_name} found in _cols but not in dataframe, columns in df: {self._df.columns}",
+                    f"""Column(s) {missing_cols} required by {cols_attr_string} but missing in {df_attr_string}. 
+    Columns in {df_attr_string}: {self._df.columns}
+    Columns in {cols_attr_string}: {[c for _, c in self._cols.__dict__.items()]}
+""",
                 )

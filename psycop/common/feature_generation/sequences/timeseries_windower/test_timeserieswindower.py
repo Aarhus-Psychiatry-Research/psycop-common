@@ -10,13 +10,13 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.event_
     EventDataframeBundle,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.prediction_time_dataframe import (
-    PredictionTimeColumns,
+    PredictiontimeColumns,
     PredictiontimeDataframeBundle,
     create_pred_time_uuids,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.sequence_dataframe import (
+    SequenceColumns,
     SequenceDataframeBundle,
-    SequenceDataframeColumns,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -48,14 +48,14 @@ def create_random_timestamps_series(
 
 
 @pytest.fixture(scope="module")
-def c() -> SequenceDataframeColumns:
-    return SequenceDataframeColumns()
+def c() -> SequenceColumns:
+    return SequenceColumns()
 
 
 class TestTimeserieswindower:
     @staticmethod
     def test_windowing_should_be_fast(
-        c: SequenceDataframeColumns,
+        c: SequenceColumns,
         n_patients: int = 1000,
         n_event_dfs: int = 15,
         events_per_patient: int = 50,
@@ -87,7 +87,7 @@ class TestTimeserieswindower:
 
         prediction_times_bundle = PredictiontimeDataframeBundle(
             _df=prediction_times_df_with_timestamps.lazy(),
-            _cols=PredictionTimeColumns(),
+            _cols=PredictiontimeColumns(),
         )
 
         event_bundles = []
@@ -142,7 +142,7 @@ class TestTimeserieswindower:
 
     @staticmethod
     def test_event_dataframes_should_add_events_x_prediction_times_rows(
-        c: SequenceDataframeColumns,
+        c: SequenceColumns,
     ):
         prediction_times_df = str_to_pl_df(
             f"""{c.entity_id},{c.pred_timestamp},
@@ -182,7 +182,7 @@ class TestTimeserieswindower:
         assert len(result_df.collect()) == 4
 
     @staticmethod
-    def test_windowing_should_cut_between_timestamps(c: SequenceDataframeColumns):
+    def test_windowing_should_cut_between_timestamps(c: SequenceColumns):
         prediction_times_df_bundle = PredictiontimeDataframeBundle(
             _df=str_to_pl_df(
                 f"""{c.entity_id},{c.pred_timestamp},
@@ -233,5 +233,5 @@ def window_timeseries(
 
     return SequenceDataframeBundle(
         _df=pl.concat(exploded_dfs).drop_nulls(),
-        _cols=SequenceDataframeColumns(),
+        _cols=SequenceColumns(),
     )

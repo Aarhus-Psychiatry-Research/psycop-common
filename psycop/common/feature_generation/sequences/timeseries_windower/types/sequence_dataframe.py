@@ -9,7 +9,7 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.abstra
 
 
 @dataclass(frozen=True)
-class SequenceDataframeColumns(ColumnBundle):
+class SequenceColumns(ColumnBundle):
     entity_id: str = "entity_id"
     pred_timestamp: str = "pred_timestamp"
     pred_time_uuid: str = "pred_time_uuid"
@@ -19,11 +19,21 @@ class SequenceDataframeColumns(ColumnBundle):
     event_value: str = "event_value"
 
 
-@dataclass(frozen=True)
 class SequenceDataframeBundle(PolarsDataframeBundle):
-    _df: pl.LazyFrame
-    _cols: SequenceDataframeColumns
+    def __init__(
+        self,
+        df: pl.LazyFrame,
+        cols: SequenceColumns,
+        validate_cols_exist_on_init: bool = True,
+    ):
+        super().__init__(
+            df=df,
+            cols=cols,
+            validate_cols_exist_on_init=validate_cols_exist_on_init,
+        )
 
-    def unpack(self) -> tuple[pl.LazyFrame, SequenceDataframeColumns]:
-        self._validate_col_names()
+        self._cols = cols
+        self._frozen = True
+
+    def unpack(self) -> tuple[pl.LazyFrame, SequenceColumns]:
         return self._df, self._cols
