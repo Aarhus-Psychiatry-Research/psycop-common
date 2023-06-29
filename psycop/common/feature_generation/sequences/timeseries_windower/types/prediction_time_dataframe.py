@@ -39,8 +39,6 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
                     timestamp_col_name=self._cols.timestamp,
                 ).alias(self._cols.pred_time_uuid),
             )
-        else:
-            df = self._df
 
         if validate_cols_exist_on_init:
             self._validate_cols_exist()
