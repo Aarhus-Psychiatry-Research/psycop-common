@@ -11,9 +11,11 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.abstra
 @dataclass(frozen=True)
 class EventColumns(ColumnBundle):
     timestamp: str = "event_timestamp"
-    event_type: str = "event_type"
-    event_source: str = "event_source"
-    event_value: str = "event_value"
+    event_source: str = "event_source"  # Values are e.g. "lab"/"diagnosis"/"medication"
+    event_type: str = "event_type"  # Values are e.g. "Hba1c"/"Hypertension"/"Metformin"
+    event_value: str = (
+        "event_value"  # 1/0 for booleans, numeric value for numeric events
+    )
 
 
 class EventDataframeBundle(PolarsDataframeBundle):
