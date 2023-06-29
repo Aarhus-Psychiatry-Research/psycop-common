@@ -194,3 +194,4 @@ multirun
 **/outputs_for_publishing
 pytest.xml
 joblib
+/outputs

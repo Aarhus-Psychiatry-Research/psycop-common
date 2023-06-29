@@ -54,6 +54,7 @@ def filter_by_split_ids(
     )
 
     split_df = pd.merge(df_to_split, split_id_df, how="inner", validate="m:1")
+    log.info(f"{split_df[split_id_col].nunique()} unique ids left in split")
     return split_df
 
 

@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: "E:/shared_resources/t2d/feature_sets/psycop_t2d_adminmanber_features_2023_04_27_14_25"
+  dir: "E:/shared_resources/scz_bp/flattened_datasets"
   suffix: parquet
 
   # Feature specs
@@ -14,11 +14,11 @@ data:
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: timestamp_first_diabetes_lab_result
+    outcome_timestamp: _time_of_diagnosis
     id: dw_ek_borger
-    age: pred_age_in_years
+    age: age
     is_female: pred_sex_female
-    exclusion_timestamp: first_diabetes_indicator
+    exclusion_timestamp: null
     pred_time_uuid: prediction_time_uuid
     custom_columns:
-      - eval_hba1c_within_9999_days_count_fallback_nan
+      - meta_scz_or_bp_indicator

@@ -4,6 +4,27 @@ from typing import Callable
 
 import numpy as np
 import polars as pl
+from timeseriesflattener.aggregation_fns import (
+    concatenate,
+    latest,
+    maximum,
+    mean,
+    minimum,
+)
+from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
+    OutcomeGroupSpec,
+    PredictorGroupSpec,
+    TextPredictorGroupSpec,
+)
+from timeseriesflattener.feature_specs.single_specs import (
+    AnySpec,
+    OutcomeSpec,
+    PredictorSpec,
+    StaticSpec,
+    TextPredictorSpec,
+)
+from timeseriesflattener.text_embedding_functions import sklearn_embedding
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
@@ -46,27 +67,6 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
     get_first_scz_bp_diagnosis_after_washin,
     get_time_of_first_scz_or_bp_diagnosis_after_washin,
 )
-from timeseriesflattener.aggregation_fns import (
-    concatenate,
-    latest,
-    maximum,
-    mean,
-    minimum,
-)
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    OutcomeGroupSpec,
-    PredictorGroupSpec,
-    TextPredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-    OutcomeSpec,
-    PredictorSpec,
-    StaticSpec,
-    TextPredictorSpec,
-)
-from timeseriesflattener.text_embedding_functions import sklearn_embedding
 
 log = logging.getLogger(__name__)
 
@@ -96,20 +96,12 @@ class SczBpFeatureSpecifier:
         """Get metadata specs."""
         log.info("-------- Generating metadata specs --------")
 
-        if self.min_set_for_debug:
-            return [
-                StaticSpec(
-                    feature_base_name="scz_or_bp_indicator",
-                    timeseries_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().to_pandas(),
-                    prefix="",
-                ),
-            ]
 
         return [
           StaticSpec(
                     feature_base_name="scz_or_bp_indicator",
                     timeseries_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().to_pandas(),
-                    prefix="",
+                    prefix="meta",
                 ),
             StaticSpec(
                 feature_base_name="time_of_diagnosis",
@@ -248,7 +240,7 @@ class SczBpFeatureSpecifier:
                 PredictorSpec(
                     feature_base_name="hba1c",
                     timeseries_df=hba1c(),
-                    lookbehind_days=9999,
+                    lookbehind_days=180,
                     aggregation_fn=maximum,
                     fallback=np.nan,
                     prefix=self.project_info.prefix.predictor,
@@ -282,12 +274,6 @@ class SczBpFeatureSpecifier:
             log.warning(
                 "--- !!! Using the minimum set of features for debugging !!! ---",
             )
-            return (
-                self._get_temporal_predictor_specs()
-                + self._get_outcome_specs()
-                + self._get_metadata_specs()
-            )
-
         return (
             self._get_temporal_predictor_specs()
             + self._get_static_predictor_specs()

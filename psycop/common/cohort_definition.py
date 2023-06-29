@@ -20,13 +20,20 @@ class PredictionTimeFilter(ABC):
 
 class StepDelta(PSYCOPBaseModel):
     step_name: str
-    n_before: int
-    n_after: int
+    n_prediction_times_before: int
+    n_prediction_times_after: int
+    n_ids_before: int
+    n_ids_after: int
     step_index: int
 
     @property
-    def n_dropped(self) -> int:
-        return self.n_before - self.n_after
+    def n_dropped_prediction_times(self) -> int:
+        return self.n_prediction_times_before - self.n_prediction_times_after
+
+    @property
+    def n_dropped_ids(self) -> int:
+        return self.n_ids_before - self.n_ids_after
+
 
 
 class FilteredPredictionTimeBundle(PSYCOPBaseModel):
@@ -49,17 +56,22 @@ class CohortDefiner(ABC):
 def filter_prediction_times(
     prediction_times: pl.DataFrame,
     filtering_steps: Iterable[PredictionTimeFilter],
+    entity_id_col_name: str,
 ) -> FilteredPredictionTimeBundle:
     stepdeltas: list[StepDelta] = []
     for i, filter_step in enumerate(filtering_steps):
-        n_before = prediction_times.shape[0]
+        n_prediction_times_before = prediction_times.shape[0]
+        n_ids_before = prediction_times[entity_id_col_name].n_unique()
         prediction_times = filter_step.apply(prediction_times)
         stepdeltas.append(
             StepDelta(
                 step_name=filter_step.__class__.__name__,
-                n_before=n_before,
-                n_after=prediction_times.shape[0],
+                n_prediction_times_before=n_prediction_times_before,
+                n_prediction_times_after=prediction_times.shape[0],
+                n_ids_before=n_ids_before,
+                n_ids_after=prediction_times[entity_id_col_name].n_unique(),
                 step_index=i,
+                
             ),
         )
 

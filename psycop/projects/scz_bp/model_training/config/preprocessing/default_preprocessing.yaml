@@ -8,14 +8,14 @@ preprocessing:
     drop_patient_if_exclusion_before_date: null # Replaced by get_eligible_prediction_times
     drop_visits_after_exclusion_timestamp: false # Replaced by get_eligible_prediction_times
     min_prediction_time_date: null # Replaced by get_eligible_prediction_times
-    min_lookahead_days: 1825
+    min_lookahead_days: 365
     lookbehind_combination: [30, 180, 730]
     min_age: null # Replaced by get_eligible_prediction_times
   post_split:
-    imputation_method: most_frequent
+    imputation_method: null
     scaling: z-score-normalisation
     feature_selection:
-      name: chi2
+      name: null
       params:
         percentile: 20 # (int): Percent of features to keep. Defaults to 10.
 
