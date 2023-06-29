@@ -40,10 +40,8 @@ def window_timeseries(
 
         if lookbehind is not None:
             exploded_df = exploded_df.filter(
-                (
-                    pl.col(event_cols.timestamp)
-                    > (pl.col(pred_time_cols.timestamp) - lookbehind)
-                )
+                pl.col(event_cols.timestamp)
+                > (pl.col(pred_time_cols.timestamp) - lookbehind),
             )
 
         exploded_dfs.append(exploded_df)
