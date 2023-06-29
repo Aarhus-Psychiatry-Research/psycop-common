@@ -33,7 +33,7 @@ class PolarsDataframeBundle:
                 cols_attr_string = f"{self.__class__.__name__}._cols"
                 df_attr_string = f"{self.__class__.__name__}._df"
                 raise pl.ColumnNotFoundError(
-                    f"""Column(s) {missing_cols} required by {cols_attr_string} but missing in {df_attr_string}. 
+                    f"""Column(s) {missing_cols} required by {cols_attr_string} but missing in {df_attr_string}.
     Columns in {df_attr_string}: {self._df.columns}
     Columns in {cols_attr_string}: {[c for _, c in self._cols.__dict__.items()]}
 """,
