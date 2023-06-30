@@ -3,13 +3,13 @@ from dataclasses import dataclass
 import polars as pl
 
 from psycop.common.feature_generation.sequences.timeseries_windower.types.abstract_polars_dataframe import (
-    ColumnBundle,
+    ColumnnamesBundle,
     PolarsDataframeBundle,
 )
 
 
 @dataclass(frozen=True)
-class SequenceColumns(ColumnBundle):
+class SequenceColumns(ColumnnamesBundle):
     entity_id: str = "entity_id"  # E.g. patient ID
     pred_timestamp: str = "pred_timestamp"  # Timestamp for the prediction time
     pred_time_uuid: str = "pred_time_uuid"

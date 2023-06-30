@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import polars as pl
 
 from psycop.common.feature_generation.sequences.timeseries_windower.types.abstract_polars_dataframe import (
-    ColumnBundle,
+    ColumnnamesBundle,
     PolarsDataframeBundle,
 )
 
@@ -17,7 +17,7 @@ def create_pred_time_uuids(entity_id_col_name: str, timestamp_col_name: str) -> 
 
 
 @dataclass(frozen=True)
-class PredictiontimeColumns(ColumnBundle):
+class PredictiontimeColumns(ColumnnamesBundle):
     timestamp: str = "pred_timestamp"
     pred_time_uuid: str = "pred_time_uuid"
 

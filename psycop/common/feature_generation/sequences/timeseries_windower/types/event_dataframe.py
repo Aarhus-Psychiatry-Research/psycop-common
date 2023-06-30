@@ -3,13 +3,13 @@ from dataclasses import dataclass
 import polars as pl
 
 from psycop.common.feature_generation.sequences.timeseries_windower.types.abstract_polars_dataframe import (
-    ColumnBundle,
+    ColumnnamesBundle,
     PolarsDataframeBundle,
 )
 
 
 @dataclass(frozen=True)
-class EventColumns(ColumnBundle):
+class EventColumns(ColumnnamesBundle):
     timestamp: str = "event_timestamp"
     event_source: str = "event_source"  # Values are e.g. "lab"/"diagnosis"/"medication"
     event_type: str = "event_type"  # Values are e.g. "Hba1c"/"Hypertension"/"Metformin"
