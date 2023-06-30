@@ -58,7 +58,7 @@ def flatten_dataset_to_disk(
     )
 
 
-@wandb_alert_on_exception
+#@wandb_alert_on_exception
 def create_flattened_dataset(
     project_info: ProjectInfo,
     feature_specs: list[AnySpec],

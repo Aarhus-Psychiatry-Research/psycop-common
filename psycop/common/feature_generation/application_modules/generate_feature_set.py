@@ -26,7 +26,7 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
 
 log = logging.getLogger()
 
-@wandb_alert_on_exception
+#@wandb_alert_on_exception
 def _generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
@@ -73,9 +73,9 @@ def init_wandb_and_generate_feature_set(
     # Use wandb to keep track of your dataset generations
     # Makes it easier to find paths on wandb, as well as
     # allows monitoring and automatic slack alert on failure
-    init_wandb(
-        project_info=project_info,
-    )
+    # init_wandb(
+    #     project_info=project_info,
+    # )
 
     return _generate_feature_set(
         project_info=project_info,

@@ -24,30 +24,31 @@ if __name__ == "__main__":
 
     
 
-    (
-    pn.ggplot(
-        first_eligible_outcome, pn.aes(x="age_outcome")
-        )
-    + pn.geom_histogram()
-    + pn.labs(x="Age at diagnosis", y="Count")
-    + pn.geom_vline(pn.aes(xintercept=40))
-    + pn.geom_vline(pn.aes(xintercept=18))
-    ).save("age_dist.png")
+    # (
+    # pn.ggplot(
+    #     first_eligible_outcome, pn.aes(x="age_outcome")
+    #     )
+    # + pn.geom_histogram()
+    # + pn.labs(x="Age at diagnosis", y="Count")
+    # + pn.geom_vline(pn.aes(xintercept=40))
+    # + pn.geom_vline(pn.aes(xintercept=18))
+    # ).save("age_dist.png")
 
 
-    (
-    pn.ggplot(
-        first_eligible_outcome, pn.aes(x="age_outcome")
-        )
-    + pn.stat_ecdf() 
-    + pn.labs(x="Age at diagnosis", y="Cumulative proportion")
-    + pn.geom_vline(pn.aes(xintercept=40))
-    + pn.geom_vline(pn.aes(xintercept=18))
-    ).save("age_dist_cum.png")
+    # (
+    # pn.ggplot(
+    #     first_eligible_outcome, pn.aes(x="age_outcome")
+    #     )
+    # + pn.stat_ecdf() 
+    # + pn.labs(x="Age at diagnosis", y="Cumulative proportion")
+    # + pn.geom_vline(pn.aes(xintercept=40))
+    # + pn.geom_vline(pn.aes(xintercept=18))
+    # ).save("age_dist_cum.png")
 
 
-    pass
-    ).save("age_dist_cum.png")
-
-
-    pass
+    for max_age in [40, 50, 60]:
+        filtered_by_age = first_eligible_outcome.filter(pl.col("age_outcome") < max_age)
+        print(f"Max age: {max_age}")
+        print(f"\tN positive cases: {filtered_by_age.shape[0]}")
+    print("No max age")
+    print(f"\tN positive cases: {first_eligible_outcome.shape[0]}")
