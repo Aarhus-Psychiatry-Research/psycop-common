@@ -1,6 +1,6 @@
 import datetime
 import random
-from typing import TypeVar
+from typing import List, TypeVar
 
 import polars as pl
 import pytest
@@ -53,6 +53,77 @@ def c() -> SequenceColumns:
     return SequenceColumns()
 
 
+def generate_prediction_times_bundles(
+    c: SequenceColumns,
+    n_patients: int,
+    d1: datetime.datetime,
+    d2: datetime.datetime,
+) -> PredictiontimeDataframeBundle:
+    msg.info("Generating prediction times...")
+    prediction_times_df_with_timestamps = pl.DataFrame(
+        {
+            c.entity_id: list(range(n_patients)),
+        },
+    )
+
+    prediction_times_df_with_timestamps = (
+        prediction_times_df_with_timestamps.with_columns(
+            create_random_timestamps_series(
+                n_rows=n_patients,
+                start_datetime=d1,
+                end_datetime=d2,
+                name=c.pred_timestamp,
+            ),
+        )
+    )
+
+    prediction_times_bundle = PredictiontimeDataframeBundle(
+        df=prediction_times_df_with_timestamps.lazy(),
+        cols=PredictiontimeColumns(),
+    )
+
+    return prediction_times_bundle
+
+
+def generate_event_bundles(
+    c: SequenceColumns,
+    n_patients: int,
+    n_event_dfs: int,
+    events_per_patient: int,
+    d1: datetime.datetime,
+    d2: datetime.datetime,
+    n_events_per_df: int,
+) -> List[EventDataframeBundle]:
+    msg.info(
+        f"Generating {n_event_dfs} event dataframes with {n_events_per_df} events per df...",
+    )
+
+    df = pl.DataFrame(
+        {c.entity_id: list(range(n_patients)) * events_per_patient},
+    ).with_columns(
+        create_random_timestamps_series(
+            n_rows=n_events_per_df,
+            start_datetime=d1,
+            end_datetime=d2,
+            name=c.event_timestamp,
+        ),
+        pl.lit("type").alias(c.event_type),
+        pl.lit("source").alias(c.event_source),
+        pl.Series([random.random() for _ in range(n_events_per_df)]).alias(
+            c.event_value,
+        ),
+    )
+
+    event_bundles: List[EventDataframeBundle] = []
+
+    for i in range(n_event_dfs):
+        msg.info(f"Generating event dataframe {i}...")
+
+        event_bundles.append(EventDataframeBundle(df=df.lazy()))
+
+    return event_bundles
+
+
 class TestTimeserieswindower:
     @staticmethod
     def test_windowing_should_be_fast(
@@ -61,69 +132,35 @@ class TestTimeserieswindower:
         n_event_dfs: int = 15,
         events_per_patient: int = 50,
     ):
+        """
+        Allow manual benchmarking of windowing function.
+        Have decided against performance assertions since the variation in github actions runners' performance is too high.
+        """
         ##############
         # Test setup #
         ##############
-        # Create transaction date in range
+        # Create prediction time date-range
         d1 = datetime.datetime.strptime("1/1/2100", "%m/%d/%Y")
         d2 = datetime.datetime.strptime("1/1/2101", "%m/%d/%Y")
 
-        msg.info("Generating prediction times...")
-        prediction_times_df_with_timestamps = pl.DataFrame(
-            {
-                c.entity_id: list(range(n_patients)),
-            },
+        prediction_times_bundle = generate_prediction_times_bundles(
+            c=c, n_patients=n_patients, d1=d1, d2=d2
         )
-
-        prediction_times_df_with_timestamps = (
-            prediction_times_df_with_timestamps.with_columns(
-                create_random_timestamps_series(
-                    n_rows=n_patients,
-                    start_datetime=d1,
-                    end_datetime=d2,
-                    name=c.pred_timestamp,
-                ),
-            )
-        )
-
-        prediction_times_bundle = PredictiontimeDataframeBundle(
-            df=prediction_times_df_with_timestamps.lazy(),
-            cols=PredictiontimeColumns(),
-        )
-
-        event_bundles = []
 
         n_events_per_df = n_patients * events_per_patient
-
-        msg.info(
-            f"Generating {n_event_dfs} event dataframes with {n_events_per_df} events per df...",
+        event_bundles = generate_event_bundles(
+            c=c,
+            n_patients=n_patients,
+            n_event_dfs=n_event_dfs,
+            events_per_patient=events_per_patient,
+            d1=d1,
+            d2=d2,
+            n_events_per_df=n_events_per_df,
         )
-
-        df = pl.DataFrame(
-            {c.entity_id: list(range(n_patients)) * events_per_patient},
-        ).with_columns(
-            create_random_timestamps_series(
-                n_rows=n_events_per_df,
-                start_datetime=d1,
-                end_datetime=d2,
-                name=c.event_timestamp,
-            ),
-            pl.lit("type").alias(c.event_type),
-            pl.lit("source").alias(c.event_source),
-            pl.Series([random.random() for _ in range(n_events_per_df)]).alias(
-                c.event_value,
-            ),
-        )
-
-        for i in range(n_event_dfs):
-            msg.info(f"Generating event dataframe {i}...")
-
-            event_bundles.append(EventDataframeBundle(df=df.lazy()))
 
         ##################
         # Actual testing #
         ##################
-
         windowed = window_timeseries(
             prediction_times_bundle=prediction_times_bundle,
             event_bundles=event_bundles,
@@ -145,13 +182,14 @@ class TestTimeserieswindower:
         assert len(df_collected) == n_patients * n_event_dfs * events_per_patient
 
     @staticmethod
-    def test_event_dataframes_should_add_events_x_prediction_times_rows(
+    def test_event_dataframes_add_correct_number_of_rows(
         c: SequenceColumns,
     ):
         prediction_times_df = str_to_pl_df(
             f"""{c.entity_id},{c.pred_timestamp},
-            1,2021-01-10 00:00:00,
-            2,2021-01-10 00:00:00,""",
+            1,2021-01-10 00:00:00, # Included, since some events match
+            2,2021-01-10 00:00:00, # Not included, since no events match
+            """,
         ).with_columns(
             create_pred_time_uuids(
                 entity_id_col_name=f"{c.entity_id}",
@@ -184,7 +222,11 @@ class TestTimeserieswindower:
             lookbehind=None,
         ).unpack()
 
-        assert len(result_df.collect()) == 4
+        # Ensure that the resulting dataframe is number of prediction times for an ID · number of events for that ID.
+        # Prediction times with no events should be dropped. E.g. for entity_id == 2 is dropped.
+        assert len(result_df.collect()) == (len(prediction_times_df) - 1) * len(
+            bp_events
+        ) + len(hba1c_events)
 
     @staticmethod
     def test_windowing_should_cut_between_timestamps(c: SequenceColumns):

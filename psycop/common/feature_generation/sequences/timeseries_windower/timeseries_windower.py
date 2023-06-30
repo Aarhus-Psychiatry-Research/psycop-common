@@ -23,9 +23,9 @@ def window_timeseries(
     """Take a list of prediction times and a list of events. Map those onto one another based on entity_id, and generate sequences with events within the lookbehind window. See also the tests for example behavior.
 
     Args:
-        prediction_times_bundle (PredictiontimeDataframeBundle): Prediction times. See the object for requirec columns.
-        event_bundles (Sequence[EventDataframeBundle]): Events to map onto prediction times. See the object for required columns.
-        lookbehind (datetime.timedelta | None): How far back to look for events. If None, includes all events before the prediction time.
+        prediction_times_bundle: Prediction times. See the object for requirec columns.
+        event_bundles: Events to map onto prediction times. See the object for required columns.
+        lookbehind: How far back to look for events. If None, includes all events before the prediction time.
 
     Returns:
         SequenceDataframeBundle: The output dataframe sequence. See the object for required columns.
