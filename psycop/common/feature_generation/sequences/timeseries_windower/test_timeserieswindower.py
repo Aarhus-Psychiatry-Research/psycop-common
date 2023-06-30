@@ -1,6 +1,6 @@
 import datetime
 import random
-from typing import List, TypeVar
+from typing import TypeVar
 
 import polars as pl
 import pytest
@@ -93,7 +93,7 @@ def generate_event_bundles(
     d1: datetime.datetime,
     d2: datetime.datetime,
     n_events_per_df: int,
-) -> List[EventDataframeBundle]:
+) -> list[EventDataframeBundle]:
     msg.info(
         f"Generating {n_event_dfs} event dataframes with {n_events_per_df} events per df...",
     )
@@ -114,7 +114,7 @@ def generate_event_bundles(
         ),
     )
 
-    event_bundles: List[EventDataframeBundle] = []
+    event_bundles: list[EventDataframeBundle] = []
 
     for i in range(n_event_dfs):
         msg.info(f"Generating event dataframe {i}...")
@@ -144,7 +144,10 @@ class TestTimeserieswindower:
         d2 = datetime.datetime.strptime("1/1/2101", "%m/%d/%Y")
 
         prediction_times_bundle = generate_prediction_times_bundles(
-            c=c, n_patients=n_patients, d1=d1, d2=d2
+            c=c,
+            n_patients=n_patients,
+            d1=d1,
+            d2=d2,
         )
 
         n_events_per_df = n_patients * events_per_patient
@@ -225,7 +228,7 @@ class TestTimeserieswindower:
         # Ensure that the resulting dataframe is number of prediction times for an ID · number of events for that ID.
         # Prediction times with no events should be dropped. E.g. for entity_id == 2 is dropped.
         assert len(result_df.collect()) == (len(prediction_times_df) - 1) * len(
-            bp_events
+            bp_events,
         ) + len(hba1c_events)
 
     @staticmethod
