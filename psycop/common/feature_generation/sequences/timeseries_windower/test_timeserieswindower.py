@@ -12,12 +12,12 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.event_
     EventDataframeBundle,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.prediction_time_dataframe import (
-    PredictiontimeColumns,
+    PredictiontimeColumnNames,
     PredictiontimeDataframeBundle,
     create_pred_time_uuids,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.sequence_dataframe import (
-    SequenceColumns,
+    SequenceColumnNames,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -49,12 +49,12 @@ def create_random_timestamps_series(
 
 
 @pytest.fixture(scope="module")
-def c() -> SequenceColumns:
-    return SequenceColumns()
+def c() -> SequenceColumnNames:
+    return SequenceColumnNames()
 
 
 def generate_prediction_times_bundles(
-    c: SequenceColumns,
+    c: SequenceColumnNames,
     n_patients: int,
     d1: datetime.datetime,
     d2: datetime.datetime,
@@ -79,14 +79,14 @@ def generate_prediction_times_bundles(
 
     prediction_times_bundle = PredictiontimeDataframeBundle(
         df=prediction_times_df_with_timestamps.lazy(),
-        cols=PredictiontimeColumns(),
+        cols=PredictiontimeColumnNames(),
     )
 
     return prediction_times_bundle
 
 
 def generate_event_bundles(
-    c: SequenceColumns,
+    c: SequenceColumnNames,
     n_patients: int,
     n_event_dfs: int,
     events_per_patient: int,
@@ -127,7 +127,7 @@ def generate_event_bundles(
 class TestTimeserieswindower:
     @staticmethod
     def test_windowing_should_be_fast(
-        c: SequenceColumns,
+        c: SequenceColumnNames,
         n_patients: int = 1000,
         n_event_dfs: int = 15,
         events_per_patient: int = 50,
@@ -183,7 +183,7 @@ class TestTimeserieswindower:
 
     @staticmethod
     def test_event_dataframes_add_correct_number_of_rows(
-        c: SequenceColumns,
+        c: SequenceColumnNames,
     ):
         prediction_times_df = str_to_pl_df(
             f"""{c.entity_id},{c.pred_timestamp},
@@ -229,7 +229,7 @@ class TestTimeserieswindower:
         ) + len(hba1c_events)
 
     @staticmethod
-    def test_windowing_should_cut_between_timestamps(c: SequenceColumns):
+    def test_windowing_should_cut_between_timestamps(c: SequenceColumnNames):
         prediction_times_df_bundle = PredictiontimeDataframeBundle(
             df=str_to_pl_df(
                 f"""{c.entity_id},{c.pred_timestamp},

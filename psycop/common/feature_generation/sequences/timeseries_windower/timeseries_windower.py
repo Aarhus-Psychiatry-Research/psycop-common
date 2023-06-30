@@ -10,7 +10,7 @@ from psycop.common.feature_generation.sequences.timeseries_windower.types.predic
     PredictiontimeDataframeBundle,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.sequence_dataframe import (
-    SequenceColumns,
+    SequenceColumnNames,
     SequenceDataframeBundle,
 )
 
@@ -48,5 +48,5 @@ def window_timeseries(
 
     return SequenceDataframeBundle(
         df=pl.concat(exploded_dfs).drop_nulls(),
-        cols=SequenceColumns(),
+        cols=SequenceColumnNames(),
     )

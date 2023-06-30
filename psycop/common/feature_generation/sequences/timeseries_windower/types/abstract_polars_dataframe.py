@@ -5,7 +5,7 @@ import polars as pl
 
 
 @dataclass(frozen=True)
-class ColumnnamesBundle:
+class ColumnNames:
     """A bundle of column names."""
 
     entity_id: str = "entity_id"
@@ -15,7 +15,7 @@ class PolarsDataframeBundle:
     def __init__(
         self,
         df: pl.LazyFrame,
-        cols: ColumnnamesBundle,
+        cols: ColumnNames,
         validate_cols_exist_on_init: bool = True,
     ):
         self._df = df

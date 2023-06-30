@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import polars as pl
 
 from psycop.common.feature_generation.sequences.timeseries_windower.types.abstract_polars_dataframe import (
-    ColumnnamesBundle,
+    ColumnNames,
     PolarsDataframeBundle,
 )
 
@@ -17,7 +17,7 @@ def create_pred_time_uuids(entity_id_col_name: str, timestamp_col_name: str) -> 
 
 
 @dataclass(frozen=True)
-class PredictiontimeColumns(ColumnnamesBundle):
+class PredictiontimeColumnNames(ColumnNames):
     timestamp: str = "pred_timestamp"
     pred_time_uuid: str = "pred_time_uuid"
 
@@ -26,7 +26,7 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
     def __init__(
         self,
         df: pl.LazyFrame,
-        cols: PredictiontimeColumns = PredictiontimeColumns(),  # noqa: B008
+        cols: PredictiontimeColumnNames = PredictiontimeColumnNames(),  # noqa: B008
         validate_cols_exist_on_init: bool = True,
     ):
         self._df = df
@@ -45,5 +45,5 @@ class PredictiontimeDataframeBundle(PolarsDataframeBundle):
 
         self._frozen = True
 
-    def unpack(self) -> tuple[pl.LazyFrame, PredictiontimeColumns]:
+    def unpack(self) -> tuple[pl.LazyFrame, PredictiontimeColumnNames]:
         return self._df, self._cols

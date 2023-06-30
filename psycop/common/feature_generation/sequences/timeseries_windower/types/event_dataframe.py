@@ -3,13 +3,13 @@ from dataclasses import dataclass
 import polars as pl
 
 from psycop.common.feature_generation.sequences.timeseries_windower.types.abstract_polars_dataframe import (
-    ColumnnamesBundle,
+    ColumnNames,
     PolarsDataframeBundle,
 )
 
 
 @dataclass(frozen=True)
-class EventColumns(ColumnnamesBundle):
+class EventColumnNames(ColumnNames):
     timestamp: str = "event_timestamp"
     event_source: str = "event_source"  # Values are e.g. "lab"/"diagnosis"/"medication"
     event_type: str = "event_type"  # Values are e.g. "Hba1c"/"Hypertension"/"Metformin"
@@ -22,7 +22,7 @@ class EventDataframeBundle(PolarsDataframeBundle):
     def __init__(
         self,
         df: pl.LazyFrame,
-        cols: EventColumns = EventColumns(),  # noqa: B008
+        cols: EventColumnNames = EventColumnNames(),  # noqa: B008
         validate_cols_exist_on_init: bool = True,
     ):
         super().__init__(
@@ -34,5 +34,5 @@ class EventDataframeBundle(PolarsDataframeBundle):
         self._cols = cols
         self._frozen = True
 
-    def unpack(self) -> tuple[pl.LazyFrame, EventColumns]:
+    def unpack(self) -> tuple[pl.LazyFrame, EventColumnNames]:
         return self._df, self._cols

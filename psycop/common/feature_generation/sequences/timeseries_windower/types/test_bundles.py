@@ -2,15 +2,15 @@ import pytest
 from polars import ColumnNotFoundError
 
 from psycop.common.feature_generation.sequences.timeseries_windower.types.event_dataframe import (
-    EventColumns,
+    EventColumnNames,
     EventDataframeBundle,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.prediction_time_dataframe import (
-    PredictiontimeColumns,
+    PredictiontimeColumnNames,
     PredictiontimeDataframeBundle,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower.types.sequence_dataframe import (
-    SequenceColumns,
+    SequenceColumnNames,
     SequenceDataframeBundle,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
@@ -30,7 +30,7 @@ class TestSequenceDataframeBundle:
                     1,2021-01-01 00:00:00
                     """,
                 ).lazy(),
-                cols=SequenceColumns(),
+                cols=SequenceColumnNames(),
                 validate_cols_exist_on_init=True,
             ).unpack()
 
@@ -46,11 +46,11 @@ class TestSequenceDataframeBundle:
                     1,2021-01-01 00:00:00
                     """,
                 ).lazy(),
-                cols=SequenceColumns(),
+                cols=SequenceColumnNames(),
                 validate_cols_exist_on_init=False,
             )
 
-            bundle._cols = SequenceColumns()  # type: ignore
+            bundle._cols = SequenceColumnNames()  # type: ignore
 
 
 class TestEventDataframeBundle:
@@ -67,7 +67,7 @@ class TestEventDataframeBundle:
                     1,2021-01-01 00:00:00
                     """,
                 ).lazy(),
-                cols=EventColumns(),
+                cols=EventColumnNames(),
                 validate_cols_exist_on_init=True,
             ).unpack()
 
@@ -86,7 +86,7 @@ class TestPredictionTimeBundle:
                     1,2021-01-01 00:00:00
                     """,
                 ).lazy(),
-                cols=PredictiontimeColumns(
+                cols=PredictiontimeColumnNames(
                     entity_id="entity_id",
                     timestamp="timestamp",
                 ),
