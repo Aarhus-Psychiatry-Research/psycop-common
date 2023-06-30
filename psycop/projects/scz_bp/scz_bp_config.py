@@ -16,7 +16,7 @@ def get_scz_bp_project_info() -> ProjectInfo:
 def get_scz_bp_feature_specifications() -> list[AnySpec]:
     return SczBpFeatureSpecifier(
         project_info=get_scz_bp_project_info(),
-        min_set_for_debug=True,  # Remember to set to False when generating full dataset
+        min_set_for_debug=False,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
 

@@ -64,7 +64,6 @@ from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
     get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin,
-    get_first_scz_bp_diagnosis_after_washin,
     get_time_of_first_scz_or_bp_diagnosis_after_washin,
 )
 
