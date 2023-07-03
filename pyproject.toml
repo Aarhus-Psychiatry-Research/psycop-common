@@ -57,6 +57,8 @@ reportMissingTypeStubs = "none"
 reportMissingTypeArgument = "none"
 reportUntypedFunctionDecorator = "none"
 reportIncompatibleVariableOverride = "none"
+reportUnusedVariable = "none"
+reportUnusedImports = "none"
 
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
@@ -92,6 +94,7 @@ select = [
 ignore = [
   "ANN101",
   "ANN401",
+  "B007",
   "E402",
   "E501",
   "F401",
