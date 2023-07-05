@@ -21,13 +21,13 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
-from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     load_coercion_prediction_times,
 )
 from psycop.projects.restraint.feature_generation.modules.specify_features import (
     FeatureSpecifier,
 )
+from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
 log = logging.getLogger()
 
