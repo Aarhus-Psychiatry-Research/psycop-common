@@ -144,8 +144,8 @@ known-third-party = ["wandb", "joblib"]
 max-complexity = 10
 
 [tool.ruff.per-file-ignores]
-"psycop/projects/care_ml/model_evaluation/figures/feature_importance/shap/get_shap_values.py" = ["I001"]
-"psycop/projects/care_ml/model_evaluation/data/load_true_data.py" = ["I001"]
+"psycop/projects/restraint/model_evaluation/figures/feature_importance/shap/get_shap_values.py" = ["I001"]
+"psycop/projects/restraint/model_evaluation/data/load_true_data.py" = ["I001"]
 "psycop/common/global_utils/cache.py" = ["I001"]
 
 
