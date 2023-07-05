@@ -23,6 +23,8 @@ def load_coercion_prediction_times(
     if timestamps_only:
         df = df[["dw_ek_borger", "timestamp"]]
 
+    df = df.rename(columns={"outcome_timestamp": "timestamp_outcome"})
+
     msg.good(
         "Finished loading data frame for coercion with prediction times and outcomes.",
     )

@@ -1,6 +1,5 @@
 """Feature specification module."""
 import logging
-from collections.abc import Sequence
 from typing import Callable, Union
 
 import numpy as np
@@ -9,9 +8,10 @@ from timeseriesflattener.aggregation_fns import (
     change_per_day,
     count,
     latest,
+    maximum,
+    minimum,
+    summed,
     mean,
-    mean_number_of_characters,
-    type_token_ratio,
     variance,
 )
 from timeseriesflattener.feature_specs.group_specs import (
@@ -19,13 +19,8 @@ from timeseriesflattener.feature_specs.group_specs import (
     PredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
-    BaseModel,
     PredictorSpec,
     StaticSpec,
-    TextPredictorSpec,
-)
-from timeseriesflattener.text_embedding_functions import (
-    sklearn_embedding,
 )
 
 from psycop.common.feature_generation.application_modules.project_setup import (
@@ -79,22 +74,13 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     selvmordsrisiko,
     weight_in_kg,
 )
-from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits,
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.common.feature_generation.text_models.utils import load_text_model
 
 log = logging.getLogger(__name__)
-
-
-class SpecSet(BaseModel):
-    """A set of unresolved specs, ready for resolving."""
-
-    temporal_predictors: list[PredictorSpec]
-    static_predictors: list[StaticSpec]
 
 
 class FeatureSpecifier:
@@ -372,65 +358,6 @@ class FeatureSpecifier:
 
         return structured_sfi
 
-    def _get_text_features_specs(
-        self,
-        resolve_multiple: list[Callable],
-        interval_days: list[float],
-    ) -> list[PredictorSpec]:
-        """Get mean character length sfis specs"""
-        log.info("-------- Generating mean character length all sfis specs --------")
-
-        text_features = PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(df=load_aktuel_psykisk(), name="aktuelt_psykisk"),
-            ),
-            lookbehind_days=interval_days,
-            fallback=[np.nan],
-            aggregation_fns=resolve_multiple,
-        ).create_combinations()
-
-        return text_features
-
-    def _get_text_embedding_features_specs(
-        self,
-        interval_days: Sequence[float],
-    ) -> list[TextPredictorSpec]:
-        """Get bow all sfis specs"""
-        log.info("-------- Generating bow all sfis specs --------")
-
-        bow_model = load_text_model(
-            filename="bow_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
-        )
-        tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
-        )
-
-        return_list = []
-
-        for i in interval_days:
-            return_list.append(
-                [
-                    TextPredictorSpec(
-                        timeseries_df=load_aktuel_psykisk(),
-                        lookbehind_days=i,
-                        feature_base_name="bow",
-                        embedding_fn=[sklearn_embedding],  # type: ignore
-                        embedding_fn_kwargs=[{"model": bow_model}],  # type: ignore
-                        fallback=np.nan,
-                    ),
-                    TextPredictorSpec(
-                        timeseries_df=load_aktuel_psykisk(),
-                        lookbehind_days=i,
-                        feature_base_name="tfidf_model",
-                        embedding_fn=[sklearn_embedding],  # type: ignore
-                        embedding_fn_kwargs=[{"model": tfidf_model}],  # type: ignore
-                        fallback=np.nan,
-                    ),
-                ],
-            )
-
-        return return_list
-
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("-------- Generating temporal predictor specs --------")
@@ -456,7 +383,7 @@ class FeatureSpecifier:
         )
 
         visits = self._get_visits_specs(
-            resolve_multiple=[*resolve_multiple, sum],
+            resolve_multiple=[*resolve_multiple, summed],
             interval_days=interval_days,
         )
 
@@ -471,7 +398,7 @@ class FeatureSpecifier:
         )
 
         schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
-            resolve_multiple=[*resolve_multiple, sum],
+            resolve_multiple=[*resolve_multiple, summed],
             interval_days=[7, *interval_days],
         )
 
@@ -483,7 +410,7 @@ class FeatureSpecifier:
         )
 
         schema_3_coercion = self._get_schema_3_specs(
-            resolve_multiple=[*resolve_multiple, sum],
+            resolve_multiple=[*resolve_multiple, summed],
             interval_days=[730],
         )
 
@@ -493,7 +420,7 @@ class FeatureSpecifier:
         )
 
         structured_sfi = self._get_structured_sfi_specs(
-            resolve_multiple=[mean, max, min, change_per_day, variance],
+            resolve_multiple=[mean, maximum, minimum, change_per_day, variance],
             interval_days=[1, 3, 7, *interval_days],
         )
 
@@ -509,41 +436,16 @@ class FeatureSpecifier:
             + structured_sfi
         )
 
-    def _get_text_predictor_specs(
-        self,
-    ) -> list[Union[TextPredictorSpec, PredictorSpec]]:
-        """Generate text predictor spec list."""
-        log.info("-------- Generating text predictor specs --------")
-
-        if self.min_set_for_debug:
-            return self._get_text_features_specs(
-                resolve_multiple=[mean_number_of_characters],
-                interval_days=[7],
-            )  # type: ignore
-
-        interval_days = [7.0, 30.0]
-
-        text_features = self._get_text_features_specs(
-            resolve_multiple=[mean_number_of_characters, type_token_ratio],
-            interval_days=interval_days,
-        )
-
-        text_embedding_features = self._get_text_embedding_features_specs(
-            interval_days=interval_days,
-        )
-
-        return text_features + text_embedding_features
 
     def get_feature_specs(
         self,
-    ) -> list[Union[TextPredictorSpec, StaticSpec, PredictorSpec]]:
+    ) -> list[Union[StaticSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_text_predictor_specs()
+            return self._get_diagnoses_specs(resolve_multiple=[boolean], interval_days=[30]) # type: ignore
 
         return (
             self._get_static_predictor_specs()
             + self._get_temporal_predictor_specs()
-            + self._get_text_predictor_specs()
         )
