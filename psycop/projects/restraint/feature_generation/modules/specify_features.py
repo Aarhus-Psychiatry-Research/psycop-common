@@ -73,11 +73,18 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     mas_m,
     selvmordsrisiko,
     weight_in_kg,
+    no_temporary_leave,
+    temporary_leave,
+    supervised_temporary_leave,
+    unsupervised_temporary_leave,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits,
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
+    admissions,
+    ambulatory_visits,
+    emergency_visits,
 )
 
 log = logging.getLogger(__name__)
@@ -141,6 +148,42 @@ class FeatureSpecifier:
                     df=physical_visits_to_somatic(),
                     name="physical_visits_to_somatic",
                 ),
+                NamedDataframe(
+                    df=admissions(),
+                    name="admissions",
+                ),
+                NamedDataframe(
+                    df=ambulatory_visits(),
+                    name="ambulatory_visits",
+                ),
+                NamedDataframe(
+                    df=emergency_visits(),
+                    name="emergency_visits",
+                ),
+                NamedDataframe(
+                    df=admissions(shak_code=6600, shak_sql_operator="="),
+                    name="admissions_to_psychiatry",
+                ),
+                NamedDataframe(
+                    df=admissions(shak_code=6600, shak_sql_operator="!="),
+                    name="admissions_to_somatic",
+                ),
+                NamedDataframe(
+                    df=ambulatory_visits(shak_code=6600, shak_sql_operator="="),
+                    name="ambulatory_visits_to_psychiatry",
+                ),
+                NamedDataframe(
+                    df=ambulatory_visits(shak_code=6600, shak_sql_operator="!="),
+                    name="ambulatory_visits_to_somatic",
+                ),
+                NamedDataframe(
+                    df=emergency_visits(shak_code=6600, shak_sql_operator="="),
+                    name="emergency_visits_to_psychiatry",
+                ),
+                NamedDataframe(
+                    df=emergency_visits(shak_code=6600, shak_sql_operator="!="),
+                    name="emergency_visits_to_somatic",
+                ),
             ),
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
@@ -188,8 +231,20 @@ class FeatureSpecifier:
         psychiatric_medications = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=antipsychotics(), name="antipsychotics"),
+                NamedDataframe(df=antipsychotics(administration_method="Fast"), name="antipsychotics_fast"),
+                NamedDataframe(df=antipsychotics(administration_method="PN"), name="antipsychotics_pn"),
+                NamedDataframe(df=antipsychotics(administration_route="IM"), name="antipsychotics_im"),
+                NamedDataframe(df=antipsychotics(administration_route="PO"), name="antipsychotics_po"),
+                NamedDataframe(df=antipsychotics(administration_method="Fast", administration_route="IM"), name="antipsychotics_fast_im"),
+                NamedDataframe(df=antipsychotics(administration_method="Fast", administration_route="PO"), name="antipsychotics_fast_po"),
+                NamedDataframe(df=antipsychotics(administration_method="PN", administration_route="IM"), name="antipsychotics_pn_im"),
+                NamedDataframe(df=antipsychotics(administration_method="PN", administration_route="PO"), name="antipsychotics_pn_po"),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
+                NamedDataframe(df=anxiolytics(administration_method="Fast"), name="anxiolytics_fast"),
+                NamedDataframe(df=anxiolytics(administration_method="PN"), name="anxiolytics_pn"),
                 NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
+                NamedDataframe(df=hypnotics(administration_method="Fast"), name="hypnotics and sedatives_fast"),
+                NamedDataframe(df=hypnotics(administration_method="PN"), name="hypnotics and sedatives_pn"),
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
                 NamedDataframe(df=lithium(), name="lithium"),
                 NamedDataframe(df=alcohol_abstinence(), name="alcohol_abstinence"),
@@ -357,6 +412,28 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return structured_sfi
+    
+    def _get_temporary_leave_specs(
+        self,
+        resolve_multiple: list[Callable],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
+        """Get structured sfi specs."""
+        log.info("-------- Generating temporary leave specs --------")
+
+        temporary_leave_specs = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(df=no_temporary_leave(),name="no_temporary_leave",),
+                NamedDataframe(df=temporary_leave(), name="temporary_leave"),
+                NamedDataframe(df=supervised_temporary_leave(), name="supervised_temporary_leave"),
+                NamedDataframe(df=unsupervised_temporary_leave(), name="unsupervised_temporary_leave"),
+            ),
+            lookbehind_days=interval_days,
+            aggregation_fns=resolve_multiple,
+            fallback=[0],
+        ).create_combinations()
+
+        return temporary_leave_specs
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -424,6 +501,11 @@ class FeatureSpecifier:
             interval_days=[1, 3, 7, *interval_days],
         )
 
+        temporary_leave = self._get_temporary_leave_specs(
+            resolve_multiple=resolve_multiple,
+            interval_days=[1, 3, 7, *interval_days],
+        )
+
         return (
             latest_weight_height_bmi
             + visits
@@ -434,6 +516,7 @@ class FeatureSpecifier:
             + schema_3_coercion
             + forced_medication_coercion
             + structured_sfi
+            + temporary_leave
         )
 
 
