@@ -171,6 +171,7 @@ def bmi(n_rows: int | None = None) -> pd.DataFrame:
 
     return df
 
+
 @data_loaders.register("no_temporary_leave")
 def no_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
@@ -185,6 +186,7 @@ def no_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
 
     return df
 
+
 @data_loaders.register("temporary_leave")
 def temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
@@ -194,10 +196,15 @@ def temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
         value_col="elementvaerdi",
     )
 
-    df = df[(df["value"] == "Ledsaget udgang med følge af personale") | (df["value"] == "Ledsaget udgang med følge af pårørende") | (df["value"] == "Uledsaget udgang efter aftale med personale")]
+    df = df[
+        (df["value"] == "Ledsaget udgang med følge af personale")
+        | (df["value"] == "Ledsaget udgang med følge af pårørende")
+        | (df["value"] == "Uledsaget udgang efter aftale med personale")
+    ]
     df["value"] = 1
 
     return df
+
 
 @data_loaders.register("supervised_temporary_leave")
 def supervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
@@ -208,10 +215,14 @@ def supervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
         value_col="elementvaerdi",
     )
 
-    df = df[(df["value"] == "Ledsaget udgang med følge af personale") | (df["value"] == "Ledsaget udgang med følge af pårørende")]
+    df = df[
+        (df["value"] == "Ledsaget udgang med følge af personale")
+        | (df["value"] == "Ledsaget udgang med følge af pårørende")
+    ]
     df["value"] = 1
 
     return df
+
 
 @data_loaders.register("unsupervised_temporary_leave")
 def unsupervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
