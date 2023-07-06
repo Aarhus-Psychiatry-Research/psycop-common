@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.89.0 (2023-07-06)
+
+### Feature
+
+* Add loader for therapeutic leave ([`a9f95ec`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a9f95ec98fd9b8eedc3cc2fc40040aa444547908))
+
 ## v0.88.0 (2023-07-03)
 
 ### Feature
