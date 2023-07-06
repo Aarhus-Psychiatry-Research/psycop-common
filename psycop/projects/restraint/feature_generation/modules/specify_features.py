@@ -9,9 +9,9 @@ from timeseriesflattener.aggregation_fns import (
     count,
     latest,
     maximum,
+    mean,
     minimum,
     summed,
-    mean,
     variance,
 )
 from timeseriesflattener.feature_specs.group_specs import (
@@ -43,7 +43,10 @@ from psycop.common.feature_generation.loaders.raw.load_coercion import (
     tvangsindlaeggelse,
     tvangstilbageholdelse,
 )
-from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
+from psycop.common.feature_generation.loaders.raw.load_demographic import (
+    birthdays,
+    sex_female,
+)
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f0_disorders,
     f1_disorders,
@@ -71,20 +74,20 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     hamilton_d17,
     height_in_cm,
     mas_m,
-    selvmordsrisiko,
-    weight_in_kg,
     no_temporary_leave,
-    temporary_leave,
+    selvmordsrisiko,
     supervised_temporary_leave,
+    temporary_leave,
     unsupervised_temporary_leave,
+    weight_in_kg,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
-    physical_visits,
-    physical_visits_to_psychiatry,
-    physical_visits_to_somatic,
     admissions,
     ambulatory_visits,
     emergency_visits,
+    physical_visits,
+    physical_visits_to_psychiatry,
+    physical_visits_to_somatic,
 )
 
 log = logging.getLogger(__name__)
@@ -100,7 +103,11 @@ class FeatureSpecifier:
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
         return [
-            StaticSpec(timeseries_df=birthdays(), feature_base_name="birthday", prefix=self.project_info.prefix.predictor,),
+            StaticSpec(
+                timeseries_df=birthdays(),
+                feature_base_name="birthday",
+                prefix=self.project_info.prefix.predictor,
+            ),
             StaticSpec(
                 timeseries_df=sex_female(),
                 feature_base_name="sex_female",
@@ -232,20 +239,68 @@ class FeatureSpecifier:
         psychiatric_medications = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=antipsychotics(), name="antipsychotics"),
-                NamedDataframe(df=antipsychotics(administration_method="Fast"), name="antipsychotics_fast"),
-                NamedDataframe(df=antipsychotics(administration_method="PN"), name="antipsychotics_pn"),
-                NamedDataframe(df=antipsychotics(administration_route="IM"), name="antipsychotics_im"),
-                NamedDataframe(df=antipsychotics(administration_route="PO"), name="antipsychotics_po"),
-                NamedDataframe(df=antipsychotics(administration_method="Fast", administration_route="IM"), name="antipsychotics_fast_im"),
-                NamedDataframe(df=antipsychotics(administration_method="Fast", administration_route="PO"), name="antipsychotics_fast_po"),
-                NamedDataframe(df=antipsychotics(administration_method="PN", administration_route="IM"), name="antipsychotics_pn_im"),
-                NamedDataframe(df=antipsychotics(administration_method="PN", administration_route="PO"), name="antipsychotics_pn_po"),
+                NamedDataframe(
+                    df=antipsychotics(administration_method="Fast"),
+                    name="antipsychotics_fast",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(administration_method="PN"),
+                    name="antipsychotics_pn",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(administration_route="IM"),
+                    name="antipsychotics_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(administration_route="PO"),
+                    name="antipsychotics_po",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Fast",
+                        administration_route="IM",
+                    ),
+                    name="antipsychotics_fast_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Fast",
+                        administration_route="PO",
+                    ),
+                    name="antipsychotics_fast_po",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="PN",
+                        administration_route="IM",
+                    ),
+                    name="antipsychotics_pn_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="PN",
+                        administration_route="PO",
+                    ),
+                    name="antipsychotics_pn_po",
+                ),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
-                NamedDataframe(df=anxiolytics(administration_method="Fast"), name="anxiolytics_fast"),
-                NamedDataframe(df=anxiolytics(administration_method="PN"), name="anxiolytics_pn"),
+                NamedDataframe(
+                    df=anxiolytics(administration_method="Fast"),
+                    name="anxiolytics_fast",
+                ),
+                NamedDataframe(
+                    df=anxiolytics(administration_method="PN"),
+                    name="anxiolytics_pn",
+                ),
                 NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
-                NamedDataframe(df=hypnotics(administration_method="Fast"), name="hypnotics and sedatives_fast"),
-                NamedDataframe(df=hypnotics(administration_method="PN"), name="hypnotics and sedatives_pn"),
+                NamedDataframe(
+                    df=hypnotics(administration_method="Fast"),
+                    name="hypnotics and sedatives_fast",
+                ),
+                NamedDataframe(
+                    df=hypnotics(administration_method="PN"),
+                    name="hypnotics and sedatives_pn",
+                ),
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
                 NamedDataframe(df=lithium(), name="lithium"),
                 NamedDataframe(df=alcohol_abstinence(), name="alcohol_abstinence"),
@@ -413,7 +468,7 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return structured_sfi
-    
+
     def _get_temporary_leave_specs(
         self,
         resolve_multiple: list[Callable],
@@ -424,10 +479,16 @@ class FeatureSpecifier:
 
         temporary_leave_specs = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(df=no_temporary_leave(),name="no_temporary_leave",),
+                NamedDataframe(df=no_temporary_leave(), name="no_temporary_leave"),
                 NamedDataframe(df=temporary_leave(), name="temporary_leave"),
-                NamedDataframe(df=supervised_temporary_leave(), name="supervised_temporary_leave"),
-                NamedDataframe(df=unsupervised_temporary_leave(), name="unsupervised_temporary_leave"),
+                NamedDataframe(
+                    df=supervised_temporary_leave(),
+                    name="supervised_temporary_leave",
+                ),
+                NamedDataframe(
+                    df=unsupervised_temporary_leave(),
+                    name="unsupervised_temporary_leave",
+                ),
             ),
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
@@ -520,16 +581,12 @@ class FeatureSpecifier:
             + temporary_leave
         )
 
-
     def get_feature_specs(
         self,
     ) -> list[Union[StaticSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_diagnoses_specs(resolve_multiple=[boolean], interval_days=[30]) # type: ignore
+            return self._get_diagnoses_specs(resolve_multiple=[boolean], interval_days=[30])  # type: ignore
 
-        return (
-            self._get_static_predictor_specs()
-            + self._get_temporal_predictor_specs()
-        )
+        return self._get_static_predictor_specs() + self._get_temporal_predictor_specs()

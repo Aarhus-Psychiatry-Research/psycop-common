@@ -23,9 +23,7 @@ from timeseriesflattener.text_embedding_functions import (
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
-
 from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
-
 from psycop.common.feature_generation.text_models.utils import load_text_model
 
 log = logging.getLogger(__name__)
@@ -96,7 +94,7 @@ class TextFeatureSpecifier:
             )
 
         return return_list
-    
+
     def _get_text_feature_specs(
         self,
     ) -> list[Union[TextPredictorSpec, PredictorSpec]]:
