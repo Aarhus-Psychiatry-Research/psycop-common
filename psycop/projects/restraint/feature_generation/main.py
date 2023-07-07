@@ -48,6 +48,7 @@ def main():
         prediction_times_df=load_coercion_prediction_times(),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
+        add_birthdays=True,
     )
 
     split_and_save_dataset_to_disk(
