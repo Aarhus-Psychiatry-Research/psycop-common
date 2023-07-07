@@ -24,6 +24,8 @@ class HealthPrintPredictionTime:
     output_dir: Path
     x_min: float
     x_max: float
+    y_min: float
+    y_max: float
     x_axis: str = "rel_time"
     y_axis: str = "type"
     color: str = "value"
@@ -68,7 +70,13 @@ def save_health_print(
     data: HealthPrintPredictionTime,
 ):
     df = data.df
-    plt.scatter(df[data.x_axis], df[data.y_axis], c=df[data.color])
+    plt.scatter(
+        df[data.x_axis],
+        df[data.y_axis],
+        c=df[data.color],
+        vmin=data.y_min,
+        vmax=data.y_max,
+    )
     plt.xlim(data.x_min, data.x_max)
 
     data.output_dir.mkdir(exist_ok=True, parents=True)
