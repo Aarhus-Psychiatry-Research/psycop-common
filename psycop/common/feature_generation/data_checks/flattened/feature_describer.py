@@ -139,7 +139,7 @@ def generate_static_feature_description(
         "N unique": series.nunique(),
         "Fallback strategy": "N/A",
         "Proportion missing": series.isna().mean(),
-        "Mean": round(series.mean(), 2),
+        "Mean": series.mean(),
         "Proportion using fallback": "N/A",
     }
 
