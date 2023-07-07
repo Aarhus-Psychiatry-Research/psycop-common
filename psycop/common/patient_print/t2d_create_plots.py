@@ -9,7 +9,13 @@ from psycop.common.patient_print.test_patient_printer import (
 )
 
 
-def create_plots_from_dataset(dataset_path: Path, subtype: str):
+def create_plots_from_dataset(
+    dataset_path: Path,
+    subtype: str,
+    y_min: float,
+    y_max: float,
+    output_dir: Path,
+):
     dataset = pl.read_parquet(dataset_path)
 
     massaged_ds = (
@@ -33,8 +39,10 @@ def create_plots_from_dataset(dataset_path: Path, subtype: str):
             i=i,
             x_max=-0,
             x_min=(-365 * 5),
+            y_min=y_min,
+            y_max=y_max,
             subtype=subtype,
-            output_dir=Path(HEALTHPRINTS_DATASETS_DIR / "plots"),
+            output_dir=output_dir,
         )
         for i, k in enumerate(patient_dicts)
     ]
@@ -43,13 +51,26 @@ def create_plots_from_dataset(dataset_path: Path, subtype: str):
 
 
 if __name__ == "__main__":
+    subtypes = ("negative", "positive")
     assert all(
         (HEALTHPRINTS_DATASETS_DIR / f"{subtype}.parquet").exists()
-        for subtype in ("positive", "negative")
+        for subtype in subtypes
     )
 
-    for subtype in ("negative", "positive"):
+    combined_ds = pl.concat(
+        [
+            pl.read_parquet(HEALTHPRINTS_DATASETS_DIR / f"{subtype}.parquet")
+            for subtype in subtypes
+        ]
+    )
+    y_min: float = combined_ds.get_column("event_value").min()  # type: ignore
+    y_max: float = combined_ds.get_column("event_value").max()  # type: ignore
+
+    for subtype in subtypes:
         create_plots_from_dataset(
             dataset_path=HEALTHPRINTS_DATASETS_DIR / f"{subtype}.parquet",
             subtype=subtype,
+            y_min=y_min,
+            y_max=y_max,
+            output_dir=Path(HEALTHPRINTS_DATASETS_DIR / "plots"),
         )

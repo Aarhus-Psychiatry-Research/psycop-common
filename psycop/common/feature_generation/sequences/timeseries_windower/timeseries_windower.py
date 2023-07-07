@@ -19,6 +19,7 @@ def window_timeseries(
     prediction_times_bundle: PredictiontimeDataframeBundle,
     event_bundles: Sequence[EventDataframeBundle],
     lookbehind: datetime.timedelta | None,
+    lookbehind_buffer: datetime.timedelta = datetime.timedelta(days=1),
 ) -> SequenceDataframeBundle:
     """Take a list of prediction times and a list of events. Map those onto one another based on entity_id, and generate sequences with events within the lookbehind window. See also the tests for example behavior.
 
@@ -32,14 +33,14 @@ def window_timeseries(
     """
     pred_time_df, pred_time_cols = prediction_times_bundle.unpack()
     exploded_dfs = []
-    output_col_names = SequenceColumnNames()
+    o = SequenceColumnNames()
 
     # Standardise column names
     pred_time_df = pred_time_df.rename(
         {
-            pred_time_cols.entity_id: output_col_names.entity_id,
-            pred_time_cols.pred_time_uuid: output_col_names.pred_time_uuid,
-            pred_time_cols.timestamp: output_col_names.pred_timestamp,
+            pred_time_cols.entity_id: o.entity_id,
+            pred_time_cols.pred_time_uuid: o.pred_time_uuid,
+            pred_time_cols.timestamp: o.pred_timestamp,
         }
     )
 
@@ -48,22 +49,25 @@ def window_timeseries(
 
         event_df = event_df.rename(
             {
-                event_cols.entity_id: output_col_names.entity_id,
-                event_cols.timestamp: output_col_names.event_timestamp,
-                event_cols.event_type: output_col_names.event_type,
-                event_cols.event_value: output_col_names.event_value,
-                event_cols.event_source: output_col_names.event_source,
+                event_cols.entity_id: o.entity_id,
+                event_cols.timestamp: o.event_timestamp,
+                event_cols.event_type: o.event_type,
+                event_cols.event_value: o.event_value,
+                event_cols.event_source: o.event_source,
             }
         )
 
         exploded_df = pred_time_df.join(
-            event_df, on=output_col_names.entity_id, how="left", suffix="_event"
+            event_df, on=o.entity_id, how="left", suffix="_event"
         )
 
         if lookbehind is not None:
             exploded_df = exploded_df.filter(
-                (pl.col(output_col_names.event_timestamp)
-                > (pl.col(output_col_names.pred_timestamp) - lookbehind)) & (pl.col(output_col_names.event_timestamp) < pl.col(output_col_names.pred_timestamp)),
+                (pl.col(o.event_timestamp) > (pl.col(o.pred_timestamp) - lookbehind))
+                & (
+                    pl.col(o.event_timestamp)
+                    < (pl.col(o.pred_timestamp) - lookbehind_buffer)
+                ),
             )
 
         exploded_dfs.append(exploded_df)
