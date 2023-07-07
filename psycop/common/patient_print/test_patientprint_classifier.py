@@ -22,9 +22,12 @@ def test_train_patientprinter_classifier():
         plots_base_path,
         files,
         diabetes_labeller,
-        item_tfms=Resize(224, method="squish"),
     )
 
     learn = vision_learner(dls, vision.xresnet34, metrics=vision.error_rate)
 
-    learn.fine_tune(1)
+    learn.fine_tune(100)
+
+
+if __name__ == "__main__":
+    test_train_patientprinter_classifier()

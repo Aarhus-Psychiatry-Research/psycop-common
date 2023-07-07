@@ -1,5 +1,6 @@
 import time
 from dataclasses import dataclass
+from typing import Sequence
 
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
@@ -12,13 +13,20 @@ import multiprocessing
 from pathlib import Path
 
 import pytest
+import tqdm
 
 
 @dataclass(frozen=True)
-class DataframeContainer:
+class HealthPrintPredictionTime:
     df: pl.DataFrame
     i: int
-    folder: str
+    subtype: str
+    output_dir: Path
+    x_min: float
+    x_max: float
+    x_axis: str = "rel_time"
+    y_axis: str = "type"
+    color: str = "value"
 
 
 @dataclass(frozen=True)
@@ -56,14 +64,16 @@ no_diabetes_patient = PatientType(
 )
 
 
-def plot(data: DataframeContainer):
+def save_health_print(
+    data: HealthPrintPredictionTime,
+):
     df = data.df
-    plt.scatter(df["rel_time"], df["type"], c=df["value"])
+    plt.scatter(df[data.x_axis], df[data.y_axis], c=df[data.color])
+    plt.xlim(data.x_min, data.x_max)
 
-    folder = Path("plots") / data.folder
-    folder.mkdir(exist_ok=True, parents=True)
+    data.output_dir.mkdir(exist_ok=True, parents=True)
 
-    plt.savefig(f"{folder}/test_{data.i}.jpg")
+    plt.savefig(f"{data.output_dir}/{data.subtype}_{data.i}.jpg")
     plt.close()
 
 
@@ -75,30 +85,34 @@ def plot(data: DataframeContainer):
     "patient",
     [diabetes_patient, no_diabetes_patient],
 )
-def test_patient_print(n_plots: int, patient: PatientType):
+def test_patient_print(n_plots: int, patient: PatientType, tmp_path: Path):
     dataframe_containers = [
-        DataframeContainer(
+        HealthPrintPredictionTime(
             df=patient.data,
             i=i,
-            folder="diabetes" if patient.diabetes else "no_diabetes",
+            x_min=0,
+            x_max=-365,
+            subtype="diabetes" if patient.diabetes else "control",
+            output_dir=tmp_path,
         )
         for i in range(n_plots)
     ]
 
-    # Map dataframes to plotting function
-    start_time = time.time()
+    create_health_prints_from_patients(dataframe_containers)
 
-    chunk_size = len(dataframe_containers) // (multiprocessing.cpu_count() * 2)
+
+def create_health_prints_from_patients(patients: Sequence[HealthPrintPredictionTime]):
+    # Map dataframes to plotting function
+    chunk_size = (len(patients) // (multiprocessing.cpu_count())) * 2
 
     with multiprocessing.Pool() as pool:
-        pool.map(plot, dataframe_containers, chunk_size)
-
-    end_time = time.time()
-
-    # Write time taken to benchmark.txt
-    with Path("benchmark.txt").open("a") as f:
-        f.write(
-            f"Time taken to plot {n_plots} plots: {end_time - start_time} seconds\n"
+        var = list(
+            tqdm.tqdm(
+                pool.imap(
+                    save_health_print,
+                    patients,
+                    chunk_size,
+                ),
+                total=len(patients),
+            )
         )
-
-    pass

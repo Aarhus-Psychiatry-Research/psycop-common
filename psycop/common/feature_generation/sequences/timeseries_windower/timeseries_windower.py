@@ -32,21 +32,45 @@ def window_timeseries(
     """
     pred_time_df, pred_time_cols = prediction_times_bundle.unpack()
     exploded_dfs = []
+    output_col_names = SequenceColumnNames()
+
+    # Standardise column names
+    pred_time_df = pred_time_df.rename(
+        {
+            pred_time_cols.entity_id: output_col_names.entity_id,
+            pred_time_cols.pred_time_uuid: output_col_names.pred_time_uuid,
+            pred_time_cols.timestamp: output_col_names.pred_timestamp,
+        }
+    )
 
     for event_bundle in event_bundles:
         event_df, event_cols = event_bundle.unpack()
 
-        exploded_df = pred_time_df.join(event_df, on=event_cols.entity_id, how="left")
+        event_df = event_df.rename(
+            {
+                event_cols.entity_id: output_col_names.entity_id,
+                event_cols.timestamp: output_col_names.event_timestamp,
+                event_cols.event_type: output_col_names.event_type,
+                event_cols.event_value: output_col_names.event_value,
+                event_cols.event_source: output_col_names.event_source,
+            }
+        )
+
+        exploded_df = pred_time_df.join(
+            event_df, on=output_col_names.entity_id, how="left", suffix="_event"
+        )
 
         if lookbehind is not None:
             exploded_df = exploded_df.filter(
-                pl.col(event_cols.timestamp)
-                > (pl.col(pred_time_cols.timestamp) - lookbehind),
+                (pl.col(output_col_names.event_timestamp)
+                > (pl.col(output_col_names.pred_timestamp) - lookbehind)) & (pl.col(output_col_names.event_timestamp) < pl.col(output_col_names.pred_timestamp)),
             )
 
         exploded_dfs.append(exploded_df)
 
+    concatenated_dfs = pl.concat(exploded_dfs)
+
     return SequenceDataframeBundle(
-        df=pl.concat(exploded_dfs).drop_nulls(),
+        df=concatenated_dfs,
         cols=SequenceColumnNames(),
     )

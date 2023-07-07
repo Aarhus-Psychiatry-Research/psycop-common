@@ -194,4 +194,6 @@ multirun
 **/outputs_for_publishing
 pytest.xml
 joblib
-*.txt
+*.whl
+*.pth
+benchmark.txt
