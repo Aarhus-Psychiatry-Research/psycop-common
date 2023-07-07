@@ -44,7 +44,6 @@ from psycop.common.feature_generation.loaders.raw.load_coercion import (
     tvangstilbageholdelse,
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import (
-    birthdays,
     sex_female,
 )
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
@@ -103,11 +102,6 @@ class FeatureSpecifier:
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
         return [
-            StaticSpec(
-                timeseries_df=birthdays(),
-                feature_base_name="birthday",
-                prefix=self.project_info.prefix.predictor,
-            ),
             StaticSpec(
                 timeseries_df=sex_female(),
                 feature_base_name="sex_female",
