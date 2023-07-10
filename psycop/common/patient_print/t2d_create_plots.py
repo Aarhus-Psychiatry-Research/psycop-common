@@ -2,7 +2,10 @@ from pathlib import Path
 
 import polars as pl
 
-from psycop.common.patient_print.healthprints_config import HEALTHPRINTS_DATASETS_DIR
+from psycop.common.patient_print.healthprints_config import (
+    HEALTHPRINT_PLOTS_DIR,
+    HEALTHPRINTS_DATASETS_DIR,
+)
 from psycop.common.patient_print.test_patient_printer import (
     HealthPrintPredictionTime,
     create_health_prints_from_patients,
@@ -72,5 +75,5 @@ if __name__ == "__main__":
             subtype=subtype,
             y_min=y_min,
             y_max=y_max,
-            output_dir=Path(HEALTHPRINTS_DATASETS_DIR / "plots"),
+            output_dir=Path(HEALTHPRINT_PLOTS_DIR),
         )

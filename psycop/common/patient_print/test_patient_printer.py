@@ -100,6 +100,8 @@ def test_patient_print(n_plots: int, patient: PatientType, tmp_path: Path):
             i=i,
             x_min=0,
             x_max=-365,
+            y_min=2,
+            y_max=4,
             subtype="diabetes" if patient.diabetes else "control",
             output_dir=tmp_path,
         )
