@@ -200,8 +200,10 @@ class PresSplitColFilter:
         """How many outcome columns there are in a dataframe."""
         return len(
             infer_outcome_col_name(
-                df=df, allow_multiple=True, prefix=self.data_cfg.outc_prefix
-            )
+                df=df,
+                allow_multiple=True,
+                prefix=self.data_cfg.outc_prefix,
+            ),
         )
 
     def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
