@@ -198,7 +198,11 @@ class PresSplitColFilter:
     @print_df_dimensions_diff
     def n_outcome_col_names(self, df: pd.DataFrame) -> int:
         """How many outcome columns there are in a dataframe."""
-        return len(infer_outcome_col_name(df=df, allow_multiple=True, prefix=self.data_cfg.outc_prefix))
+        return len(
+            infer_outcome_col_name(
+                df=df, allow_multiple=True, prefix=self.data_cfg.outc_prefix
+            )
+        )
 
     def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Filter a dataframe based on the config."""
