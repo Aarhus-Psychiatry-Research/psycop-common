@@ -1,6 +1,5 @@
 """Feature specification module."""
 import logging
-from collections.abc import Sequence
 from typing import Callable, Union
 
 import numpy as np
@@ -9,9 +8,10 @@ from timeseriesflattener.aggregation_fns import (
     change_per_day,
     count,
     latest,
+    maximum,
     mean,
-    mean_number_of_characters,
-    type_token_ratio,
+    minimum,
+    summed,
     variance,
 )
 from timeseriesflattener.feature_specs.group_specs import (
@@ -19,13 +19,8 @@ from timeseriesflattener.feature_specs.group_specs import (
     PredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
-    BaseModel,
     PredictorSpec,
     StaticSpec,
-    TextPredictorSpec,
-)
-from timeseriesflattener.text_embedding_functions import (
-    sklearn_embedding,
 )
 
 from psycop.common.feature_generation.application_modules.project_setup import (
@@ -48,8 +43,11 @@ from psycop.common.feature_generation.loaders.raw.load_coercion import (
     tvangsindlaeggelse,
     tvangstilbageholdelse,
 )
-from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
+from psycop.common.feature_generation.loaders.raw.load_demographic import (
+    sex_female,
+)
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    depressive_disorders,
     f0_disorders,
     f1_disorders,
     f2_disorders,
@@ -60,6 +58,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
     f9_disorders,
+    manic_and_bipolar,
 )
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     alcohol_abstinence,
@@ -76,25 +75,23 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     hamilton_d17,
     height_in_cm,
     mas_m,
+    no_temporary_leave,
     selvmordsrisiko,
+    supervised_temporary_leave,
+    temporary_leave,
+    unsupervised_temporary_leave,
     weight_in_kg,
 )
-from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
 from psycop.common.feature_generation.loaders.raw.load_visits import (
+    admissions,
+    ambulatory_visits,
+    emergency_visits,
     physical_visits,
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.common.feature_generation.text_models.utils import load_text_model
 
 log = logging.getLogger(__name__)
-
-
-class SpecSet(BaseModel):
-    """A set of unresolved specs, ready for resolving."""
-
-    temporal_predictors: list[PredictorSpec]
-    static_predictors: list[StaticSpec]
 
 
 class FeatureSpecifier:
@@ -155,6 +152,42 @@ class FeatureSpecifier:
                     df=physical_visits_to_somatic(),
                     name="physical_visits_to_somatic",
                 ),
+                NamedDataframe(
+                    df=admissions(),
+                    name="admissions",
+                ),
+                NamedDataframe(
+                    df=ambulatory_visits(),
+                    name="ambulatory_visits",
+                ),
+                NamedDataframe(
+                    df=emergency_visits(),
+                    name="emergency_visits",
+                ),
+                NamedDataframe(
+                    df=admissions(shak_code=6600, shak_sql_operator="="),
+                    name="admissions_to_psychiatry",
+                ),
+                NamedDataframe(
+                    df=admissions(shak_code=6600, shak_sql_operator="!="),
+                    name="admissions_to_somatic",
+                ),
+                NamedDataframe(
+                    df=ambulatory_visits(shak_code=6600, shak_sql_operator="="),
+                    name="ambulatory_visits_to_psychiatry",
+                ),
+                NamedDataframe(
+                    df=ambulatory_visits(shak_code=6600, shak_sql_operator="!="),
+                    name="ambulatory_visits_to_somatic",
+                ),
+                NamedDataframe(
+                    df=emergency_visits(shak_code=6600, shak_sql_operator="="),
+                    name="emergency_visits_to_psychiatry",
+                ),
+                NamedDataframe(
+                    df=emergency_visits(shak_code=6600, shak_sql_operator="!="),
+                    name="emergency_visits_to_somatic",
+                ),
             ),
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
@@ -177,6 +210,8 @@ class FeatureSpecifier:
                 NamedDataframe(df=f1_disorders(), name="f1_disorders"),
                 NamedDataframe(df=f2_disorders(), name="f2_disorders"),
                 NamedDataframe(df=f3_disorders(), name="f3_disorders"),
+                NamedDataframe(df=manic_and_bipolar(), name="manic_and_bipolar"),
+                NamedDataframe(df=depressive_disorders(), name="depressive_disorders"),
                 NamedDataframe(df=f4_disorders(), name="f4_disorders"),
                 NamedDataframe(df=f5_disorders(), name="f5_disorders"),
                 NamedDataframe(df=f6_disorders(), name="f6_disorders"),
@@ -202,8 +237,94 @@ class FeatureSpecifier:
         psychiatric_medications = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=antipsychotics(), name="antipsychotics"),
+                NamedDataframe(
+                    df=antipsychotics(administration_method="Fast"),
+                    name="antipsychotics_fast",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(administration_method="PN"),
+                    name="antipsychotics_pn",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(administration_method="Engangs"),
+                    name="antipsychotics_engangs",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(administration_route="IM"),
+                    name="antipsychotics_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(administration_route="PO"),
+                    name="antipsychotics_po",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Fast",
+                        administration_route="IM",
+                    ),
+                    name="antipsychotics_fast_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Fast",
+                        administration_route="PO",
+                    ),
+                    name="antipsychotics_fast_po",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="PN",
+                        administration_route="IM",
+                    ),
+                    name="antipsychotics_pn_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="PN",
+                        administration_route="PO",
+                    ),
+                    name="antipsychotics_pn_po",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Engangs",
+                        administration_route="IM",
+                    ),
+                    name="antipsychotics_engangs_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Engangs",
+                        administration_route="PO",
+                    ),
+                    name="antipsychotics_engangs_po",
+                ),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
+                NamedDataframe(
+                    df=anxiolytics(administration_method="Fast"),
+                    name="anxiolytics_fast",
+                ),
+                NamedDataframe(
+                    df=anxiolytics(administration_method="PN"),
+                    name="anxiolytics_pn",
+                ),
+                NamedDataframe(
+                    df=anxiolytics(administration_method="Engangs"),
+                    name="anxiolytics_engangs",
+                ),
                 NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
+                NamedDataframe(
+                    df=hypnotics(administration_method="Fast"),
+                    name="hypnotics and sedatives_fast",
+                ),
+                NamedDataframe(
+                    df=hypnotics(administration_method="PN"),
+                    name="hypnotics and sedatives_pn",
+                ),
+                NamedDataframe(
+                    df=hypnotics(administration_method="Engangs"),
+                    name="hypnotics and sedatives_engangs",
+                ),
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
                 NamedDataframe(df=lithium(), name="lithium"),
                 NamedDataframe(df=alcohol_abstinence(), name="alcohol_abstinence"),
@@ -372,64 +493,33 @@ class FeatureSpecifier:
 
         return structured_sfi
 
-    def _get_text_features_specs(
+    def _get_temporary_leave_specs(
         self,
         resolve_multiple: list[Callable],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
-        """Get mean character length sfis specs"""
-        log.info("-------- Generating mean character length all sfis specs --------")
+        """Get structured sfi specs."""
+        log.info("-------- Generating temporary leave specs --------")
 
-        text_features = PredictorGroupSpec(
+        temporary_leave_specs = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(df=load_aktuel_psykisk(), name="aktuelt_psykisk"),
+                NamedDataframe(df=no_temporary_leave(), name="no_temporary_leave"),
+                NamedDataframe(df=temporary_leave(), name="temporary_leave"),
+                NamedDataframe(
+                    df=supervised_temporary_leave(),
+                    name="supervised_temporary_leave",
+                ),
+                NamedDataframe(
+                    df=unsupervised_temporary_leave(),
+                    name="unsupervised_temporary_leave",
+                ),
             ),
             lookbehind_days=interval_days,
-            fallback=[np.nan],
             aggregation_fns=resolve_multiple,
+            fallback=[0],
         ).create_combinations()
 
-        return text_features
-
-    def _get_text_embedding_features_specs(
-        self,
-        interval_days: Sequence[float],
-    ) -> list[TextPredictorSpec]:
-        """Get bow all sfis specs"""
-        log.info("-------- Generating bow all sfis specs --------")
-
-        bow_model = load_text_model(
-            filename="bow_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
-        )
-        tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
-        )
-
-        return_list = []
-
-        for i in interval_days:
-            return_list.append(
-                [
-                    TextPredictorSpec(
-                        timeseries_df=load_aktuel_psykisk(),
-                        lookbehind_days=i,
-                        feature_base_name="bow",
-                        embedding_fn=[sklearn_embedding],  # type: ignore
-                        embedding_fn_kwargs=[{"model": bow_model}],  # type: ignore
-                        fallback=np.nan,
-                    ),
-                    TextPredictorSpec(
-                        timeseries_df=load_aktuel_psykisk(),
-                        lookbehind_days=i,
-                        feature_base_name="tfidf_model",
-                        embedding_fn=[sklearn_embedding],  # type: ignore
-                        embedding_fn_kwargs=[{"model": tfidf_model}],  # type: ignore
-                        fallback=np.nan,
-                    ),
-                ],
-            )
-
-        return return_list
+        return temporary_leave_specs
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -456,7 +546,7 @@ class FeatureSpecifier:
         )
 
         visits = self._get_visits_specs(
-            resolve_multiple=[*resolve_multiple, sum],
+            resolve_multiple=[*resolve_multiple, summed],
             interval_days=interval_days,
         )
 
@@ -471,7 +561,7 @@ class FeatureSpecifier:
         )
 
         schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
-            resolve_multiple=[*resolve_multiple, sum],
+            resolve_multiple=[*resolve_multiple, summed],
             interval_days=[7, *interval_days],
         )
 
@@ -483,7 +573,7 @@ class FeatureSpecifier:
         )
 
         schema_3_coercion = self._get_schema_3_specs(
-            resolve_multiple=[*resolve_multiple, sum],
+            resolve_multiple=[*resolve_multiple, summed],
             interval_days=[730],
         )
 
@@ -493,7 +583,12 @@ class FeatureSpecifier:
         )
 
         structured_sfi = self._get_structured_sfi_specs(
-            resolve_multiple=[mean, max, min, change_per_day, variance],
+            resolve_multiple=[mean, maximum, minimum, change_per_day, variance],
+            interval_days=[1, 3, 7, *interval_days],
+        )
+
+        temporary_leave = self._get_temporary_leave_specs(
+            resolve_multiple=resolve_multiple,
             interval_days=[1, 3, 7, *interval_days],
         )
 
@@ -507,43 +602,15 @@ class FeatureSpecifier:
             + schema_3_coercion
             + forced_medication_coercion
             + structured_sfi
+            + temporary_leave
         )
-
-    def _get_text_predictor_specs(
-        self,
-    ) -> list[Union[TextPredictorSpec, PredictorSpec]]:
-        """Generate text predictor spec list."""
-        log.info("-------- Generating text predictor specs --------")
-
-        if self.min_set_for_debug:
-            return self._get_text_features_specs(
-                resolve_multiple=[mean_number_of_characters],
-                interval_days=[7],
-            )  # type: ignore
-
-        interval_days = [7.0, 30.0]
-
-        text_features = self._get_text_features_specs(
-            resolve_multiple=[mean_number_of_characters, type_token_ratio],
-            interval_days=interval_days,
-        )
-
-        text_embedding_features = self._get_text_embedding_features_specs(
-            interval_days=interval_days,
-        )
-
-        return text_features + text_embedding_features
 
     def get_feature_specs(
         self,
-    ) -> list[Union[TextPredictorSpec, StaticSpec, PredictorSpec]]:
+    ) -> list[Union[StaticSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_text_predictor_specs()
+            return self._get_diagnoses_specs(resolve_multiple=[boolean], interval_days=[30])  # type: ignore
 
-        return (
-            self._get_static_predictor_specs()
-            + self._get_temporal_predictor_specs()
-            + self._get_text_predictor_specs()
-        )
+        return self._get_static_predictor_specs() + self._get_temporal_predictor_specs()

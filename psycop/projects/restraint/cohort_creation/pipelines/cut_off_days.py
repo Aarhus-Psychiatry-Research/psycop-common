@@ -19,11 +19,11 @@ df_cohort = sql_load(query="SELECT * FROM fct.[psycop_coercion_within_2_days_feb
 
 # Load train (to find cut-off)
 df_train = pd.read_parquet(
-    path="E:/shared_resources/coercion/feature_sets/psycop_coercion_adminsignbe_features_2023_03_31_13_39/psycop_coercion_adminsignbe_features_2023_03_31_13_39_train.parquet",
+    path="E:/shared_resources/coercion/flattened_datasets/train.parquet",
 )
 
 df_val = pd.read_parquet(
-    path="E:/shared_resources/coercion/feature_sets/psycop_coercion_adminsignbe_features_2023_03_31_13_39/psycop_coercion_adminsignbe_features_2023_03_31_13_39_val.parquet",
+    path="E:/shared_resources/coercion/flattened_datasets/val.parquet",
 )
 
 df_train = pd.concat([df_train, df_val])
@@ -38,7 +38,7 @@ df_adm_grain = df_train[
         "dw_ek_borger",
         "timestamp_admission",
         "timestamp_discharge",
-        "outcome_timestamp",
+        "timestamp_outcome",
     ]
 ].drop_duplicates(keep="first")
 

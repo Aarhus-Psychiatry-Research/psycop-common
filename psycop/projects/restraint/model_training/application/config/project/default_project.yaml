@@ -1,4 +1,5 @@
 name: coercion
+project_path: E:/sara/psycop-common/psycop/projects/restraint/model_training
 seed: 42
 
 wandb:
