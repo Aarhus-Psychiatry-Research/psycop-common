@@ -27,9 +27,6 @@ if TYPE_CHECKING:
     from psycop.common.feature_generation.application_modules.project_setup import (
         ProjectInfo,
     )
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
-)
 
 log = logging.getLogger(__name__)
 
