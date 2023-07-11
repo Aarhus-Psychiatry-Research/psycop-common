@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.89.1 (2023-07-07)
+
+### Fix
+
+* Add birthdays as default ([`17bdc01`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/17bdc0165117d03d9cda184c74a767de6673919d))
+
 ## v0.89.0 (2023-07-06)
 
 ### Feature

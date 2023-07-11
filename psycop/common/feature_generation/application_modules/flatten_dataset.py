@@ -63,7 +63,7 @@ def create_flattened_dataset(
     project_info: ProjectInfo,
     feature_specs: list[AnySpec],
     prediction_times_df: pd.DataFrame,
-    add_birthdays: bool = False,
+    add_birthdays: bool = True,
     drop_pred_times_with_insufficient_look_distance: bool = False,
     quarantine_df: pd.DataFrame | None = None,
     quarantine_days: int | None = None,
