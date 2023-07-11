@@ -47,6 +47,7 @@ from psycop.common.feature_generation.loaders.raw.load_demographic import (
     sex_female,
 )
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
+    depressive_disorders,
     f0_disorders,
     f1_disorders,
     f2_disorders,
@@ -57,6 +58,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
     f9_disorders,
+    manic_and_bipolar,
 )
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     alcohol_abstinence,
@@ -208,6 +210,8 @@ class FeatureSpecifier:
                 NamedDataframe(df=f1_disorders(), name="f1_disorders"),
                 NamedDataframe(df=f2_disorders(), name="f2_disorders"),
                 NamedDataframe(df=f3_disorders(), name="f3_disorders"),
+                NamedDataframe(df=manic_and_bipolar(), name="manic_and_bipolar"),
+                NamedDataframe(df=depressive_disorders(), name="depressive_disorders"),
                 NamedDataframe(df=f4_disorders(), name="f4_disorders"),
                 NamedDataframe(df=f5_disorders(), name="f5_disorders"),
                 NamedDataframe(df=f6_disorders(), name="f6_disorders"),
