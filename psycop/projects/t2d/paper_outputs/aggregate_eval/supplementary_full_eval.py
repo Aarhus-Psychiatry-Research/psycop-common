@@ -68,6 +68,8 @@ def get_test_artifacts_for_pipeline(
 
     run_md = create_supplementary_from_markdown_artifacts(
         artifacts=current_run_artifacts,
+        table_title_prefix="Supplementary Table",
+        figure_title_prefix="Supplementary Figure",
     )
 
     with (
