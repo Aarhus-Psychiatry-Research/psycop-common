@@ -45,3 +45,9 @@ class T2DCohortDefiner(CohortDefiner):
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
         return pl.from_pandas(get_first_diabetes_indicator())
+
+
+if __name__ == "__main__":
+    bundle = T2DCohortDefiner.get_filtered_prediction_times_bundle()
+
+    df = bundle.prediction_times

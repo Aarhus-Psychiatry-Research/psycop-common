@@ -2,6 +2,36 @@
 
 <!--next-version-placeholder-->
 
+## v0.89.1 (2023-07-07)
+
+### Fix
+
+* Add birthdays as default ([`17bdc01`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/17bdc0165117d03d9cda184c74a767de6673919d))
+
+## v0.89.0 (2023-07-06)
+
+### Feature
+
+* Add loader for therapeutic leave ([`a9f95ec`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a9f95ec98fd9b8eedc3cc2fc40040aa444547908))
+
+## v0.88.0 (2023-07-03)
+
+### Feature
+
+* Freeze DataframeBundles ([`8a1f29b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8a1f29be5e5e6e7edfd3e76d9da23f15b99293b7))
+* First stab at types and tests for sequence windower ([`a68afd7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a68afd7c67efe583216dcc5452d8379935acc8aa))
+
+### Fix
+
+* Correct types for aggregation funcs in t2d specify features ([`6796f0a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6796f0ae7e2bffe7b39b4dee644e4f4f261bfe41))
+
+### Documentation
+
+* Add docs to eventcolumns ([`e6585a2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e6585a2c4873d1a1d1f98786d47c562d7dd94bd7))
+* Explain sequence columns ([`be1f89d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/be1f89ded0cb0a8d6aa2ceb5cf3a50b9ecc5d418))
+* Define behaviour if lookbehind is none ([`26a7f0c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/26a7f0c9bd15cb6c4b0a418a2a3ef2a88e244694))
+* Add docstring ([`fe5fd2e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fe5fd2e9897619725332a24a738ca2717a8a62ce))
+
 ## v0.87.0 (2023-06-28)
 
 ### Feature

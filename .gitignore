@@ -170,6 +170,7 @@ tests/outputs_from_tests
 *.png
 *.jpg
 *.tiff
+outputs/
 
 # Data tables
 *.parquet

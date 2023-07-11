@@ -62,6 +62,7 @@ def filter_prediction_times(
         n_prediction_times_before = prediction_times.shape[0]
         n_ids_before = prediction_times[entity_id_col_name].n_unique()
         prediction_times = filter_step.apply(prediction_times)
+        print(f"Applying filter: {filter_step.__class__.__name__}")
         stepdeltas.append(
             StepDelta(
                 step_name=filter_step.__class__.__name__,
