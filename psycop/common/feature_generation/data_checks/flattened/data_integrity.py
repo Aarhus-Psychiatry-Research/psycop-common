@@ -319,7 +319,7 @@ def run_validation_requiring_split_comparison(
     """
     msg = Printer(timestamp=True)
 
-    failed_checks = {}
+    checks = {}
 
     validation_suite = custom_train_test_validation()
 
@@ -342,9 +342,9 @@ def run_validation_requiring_split_comparison(
             file_suffix="integrity",
         )
 
-        failed_checks[
-            f"{split_pair[0]}_{split_pair[1]}_integrity"
-        ] = get_failed_check_names(suite_results)
+        checks[f"{split_pair[0]}_{split_pair[1]}_integrity"] = get_failed_check_names(
+            suite_results,
+        )
 
     for split_name, split_contents in split_dicts.items():
         # don't check train/train
@@ -385,14 +385,16 @@ def run_validation_requiring_split_comparison(
                 file_suffix=f"{outcome_col}_check",
             )
 
-            failed_checks[
-                f"train_{split_name}_{outcome_col}_check"
-            ] = get_failed_check_names(suite_results)
+            checks[f"train_{split_name}_{outcome_col}_check"] = get_failed_check_names(
+                suite_results,
+            )
 
         msg.good(f"All data checks done! Saved to {out_dir}")
 
-        if len(failed_checks.keys()) > 0:
-            msg.warn(f"Failed checks: {failed_checks}")
+        if any(
+            failed_checks for failed_checks in checks.values() if len(failed_checks) > 0
+        ):
+            msg.warn(f"Failed checks: {checks}")
 
 
 def save_feature_set_integrity_checks_from_dir(

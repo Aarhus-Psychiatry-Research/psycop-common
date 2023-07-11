@@ -38,7 +38,7 @@ class SczBpMaxAgeFilter(PredictionTimeFilter):
         return df.filter(pl.col(AGE_COL_NAME) <= MAX_AGE)
 
 
-class SczBpAddAgeFilter(PredictionTimeFilter):
+class SczBpAddAge(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         birthday_df = pl.from_pandas(birthdays())

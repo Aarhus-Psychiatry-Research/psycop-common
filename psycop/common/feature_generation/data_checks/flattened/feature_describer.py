@@ -97,7 +97,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
 
 def generate_temporal_feature_description(
     series: pd.Series,
-    predictor_spec: PredictorSpec,
+    predictor_spec: PredictorSpec | TextPredictorSpec,
     feature_name: str | None = None,
 ) -> dict[str, Any]:
     """Generate a row with feature description for a temporal predictor."""
@@ -146,7 +146,7 @@ def generate_static_feature_description(
 
 def generate_feature_description_row(
     series: pd.Series,
-    predictor_spec: StaticSpec | PredictorSpec,
+    predictor_spec: StaticSpec | PredictorSpec | TextPredictorSpec,
     feature_name: str | None = None,
 ) -> dict:
     """Generate a row with feature description.
@@ -163,7 +163,7 @@ def generate_feature_description_row(
     match predictor_spec:
         case StaticSpec():
             return generate_static_feature_description(series, predictor_spec)
-        case PredictorSpec():
+        case PredictorSpec() | TextPredictorSpec():
             return generate_temporal_feature_description(
                 series,
                 predictor_spec,
@@ -175,13 +175,15 @@ def generate_feature_description_row(
 
 def generate_feature_description_df(
     df: pd.DataFrame,
-    predictor_specs: list[PredictorSpec | StaticSpec],
+    predictor_specs: list[PredictorSpec | StaticSpec | TextPredictorSpec],
+    prefixes_to_describe: set[str],
 ) -> pd.DataFrame:
     """Generate a data frame with feature descriptions.
 
     Args:
         df (pd.DataFrame): Data frame with data to describe.
         predictor_specs (Union[PredictorSpec, StaticSpec, TemporalSpec]): Predictor specifications.
+        prefixes_to_describe: which column name prefixes to create feature descriptions for
 
     Returns:
         pd.DataFrame: Data frame with feature descriptions.
@@ -212,7 +214,7 @@ def generate_feature_description_df(
                     ),
                 )
 
-        elif isinstance(spec, (StaticSpec, PredictorSpec)):  # type: ignore
+        elif spec.prefix in prefixes_to_describe:
             rows.append(
                 generate_feature_description_row(
                     series=df[column_name],
@@ -233,6 +235,7 @@ def save_feature_descriptive_stats_from_dir(
     feature_set_dir: Path,
     feature_specs: list[PredictorSpec | StaticSpec],
     file_suffix: str,
+    prefixes_to_describe: set[str],
     splits: Sequence[str] = ("train",),
     out_dir: Path | None = None,
 ):
@@ -244,6 +247,7 @@ def save_feature_descriptive_stats_from_dir(
         file_suffix (str): Suffix of the data frames to load. Must be either ".csv" or ".parquet".
         splits (tuple[str]): tuple of splits to include in the description. Defaults to ("train").
         out_dir (Path): Path to directory where to save the feature description. Defaults to None.
+        prefixes_to_describe: Which prefixes for column names to make feature descriptions for.
     """
     msg = Printer(timestamp=True)
 
@@ -266,6 +270,7 @@ def save_feature_descriptive_stats_from_dir(
         feature_descriptive_stats = generate_feature_description_df(
             df=dataset,
             predictor_specs=feature_specs,
+            prefixes_to_describe=prefixes_to_describe,
         )
 
         msg.info(f"{split}: Writing descriptive stats dataframe to disk")
