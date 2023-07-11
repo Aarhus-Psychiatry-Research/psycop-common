@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.90.0 (2023-07-11)
+
+### Feature
+
+* Only print failed checks if there are any ([`ba645ec`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ba645ec44f52937a4575876980fe5b82b32818aa))
+* Only do feature description of columns matching prefix ([`dc45ab7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dc45ab754e82357838b19ba2171ffb58c9e88ca7))
+
 ## v0.89.1 (2023-07-07)
 
 ### Fix
