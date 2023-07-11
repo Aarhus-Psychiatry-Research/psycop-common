@@ -1,5 +1,7 @@
 """Utility functions for cohort creation"""
 
+from typing import Optional, Union
+
 import pandas as pd
 
 
@@ -171,18 +173,29 @@ def unpack_adm_days(
     return days_unpacked.drop(columns=0)
 
 
-def cut_off_check(df: pd.DataFrame, df_adm_grain: pd.DataFrame, std: int = 1):
+def cut_off_check(
+    df: pd.DataFrame,
+    df_adm_grain: pd.DataFrame,
+    std: Optional[Union[int, None]] = None,
+    cut_off_day: Optional[Union[int, None]] = None,
+):
     """Check cut-offs based on standard deviations
 
     Args:
         df (pd.DataFrame): Dataframe with admissions on day grain
         df_adm_grain (pd.DataFrame): Dataframe with admissions on admission grain
-        std (int, optional): Standard deviation to cut by. Defaults to 1.
+        std (int, optional): Standard deviation to cut by. Defaults to None.
+        cut_off_day: (int, optional): Number of day in admission to cut by. Defaults to None.
     """
-    cut_off = (
-        df_adm_grain["adm_duration"].mean() + df_adm_grain["adm_duration"].std() * std
-    )
-    print(f"Cut_off: Mean + Std x {std} =", cut_off)
+    if std is not None:
+        cut_off = (
+            df_adm_grain["adm_duration"].mean()
+            + df_adm_grain["adm_duration"].std() * std
+        )
+        print(f"Cut_off: Mean + Std x {std} =", cut_off)
+
+    if cut_off_day is not None:
+        cut_off = pd.to_timedelta(cut_off_day, unit="D")
 
     n_excl_days = df[pd.to_timedelta(df["pred_adm_day_count"], "days") > cut_off].shape[  # type: ignore
         0

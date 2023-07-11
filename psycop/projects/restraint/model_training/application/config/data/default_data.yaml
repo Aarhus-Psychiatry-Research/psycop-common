@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:/shared_resources/coercion/feature_sets/psycop_coercion_adminsakold_features_2023_05_12_11_31
+  dir: E:/shared_resources/coercion/flattened_datasets
   suffix: parquet
 
   # Feature specs
@@ -14,7 +14,7 @@ data:
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: outcome_timestamp
+    outcome_timestamp: timestamp_outcome
     id: dw_ek_borger
     age: pred_age_in_years
     exclusion_timestamp: 
