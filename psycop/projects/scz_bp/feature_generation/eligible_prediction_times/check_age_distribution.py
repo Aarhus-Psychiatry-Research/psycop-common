@@ -1,3 +1,4 @@
+import plotnine as pn
 import polars as pl
 
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
@@ -6,7 +7,6 @@ from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
     SczBpAddAge,
 )
-import plotnine as pn
 
 if __name__ == "__main__":
     pred_times = SczBpCohort.get_filtered_prediction_times_bundle().prediction_times
@@ -28,23 +28,25 @@ if __name__ == "__main__":
     )
 
     (
-    pn.ggplot(
-        first_eligible_outcome, pn.aes(x="age_outcome")
+        pn.ggplot(
+            first_eligible_outcome,
+            pn.aes(x="age_outcome"),
         )
-    + pn.geom_histogram()
-    + pn.labs(x="Age at diagnosis", y="Count")
-    + pn.geom_vline(pn.aes(xintercept=40))
-    + pn.geom_vline(pn.aes(xintercept=18))
+        + pn.geom_histogram()
+        + pn.labs(x="Age at diagnosis", y="Count")
+        + pn.geom_vline(pn.aes(xintercept=40))
+        + pn.geom_vline(pn.aes(xintercept=18))
     ).save("age_dist.png")
 
     (
-    pn.ggplot(
-        first_eligible_outcome, pn.aes(x="age_outcome")
+        pn.ggplot(
+            first_eligible_outcome,
+            pn.aes(x="age_outcome"),
         )
-    + pn.stat_ecdf()
-    + pn.labs(x="Age at diagnosis", y="Cumulative proportion")
-    + pn.geom_vline(pn.aes(xintercept=40))
-    + pn.geom_vline(pn.aes(xintercept=18))
+        + pn.stat_ecdf()
+        + pn.labs(x="Age at diagnosis", y="Cumulative proportion")
+        + pn.geom_vline(pn.aes(xintercept=40))
+        + pn.geom_vline(pn.aes(xintercept=18))
     ).save("age_dist_cum.png")
 
     for max_age in [40, 50, 60]:

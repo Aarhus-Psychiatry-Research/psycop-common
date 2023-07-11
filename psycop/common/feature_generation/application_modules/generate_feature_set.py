@@ -20,7 +20,9 @@ from psycop.common.feature_generation.application_modules.project_setup import (
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop.common.feature_generation.application_modules.wandb_utils import wandb_alert_on_exception
+from psycop.common.feature_generation.application_modules.wandb_utils import (
+    wandb_alert_on_exception,
+)
 
 log = logging.getLogger()
 
