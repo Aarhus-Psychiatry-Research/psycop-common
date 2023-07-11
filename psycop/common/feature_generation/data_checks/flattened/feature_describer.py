@@ -214,9 +214,7 @@ def generate_feature_description_df(
                     ),
                 )
 
-        elif (
-            spec.prefix in prefixes_to_describe
-        ):
+        elif spec.prefix in prefixes_to_describe:
             rows.append(
                 generate_feature_description_row(
                     series=df[column_name],
