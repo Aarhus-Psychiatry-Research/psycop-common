@@ -87,6 +87,7 @@ def test_save_feature_descriptive_stats_from_dir(
         file_suffix="parquet",
         splits=("train",),
         out_dir=tmp_path,
+        prefixes_to_describe={"pred_"},
     )
 
 
