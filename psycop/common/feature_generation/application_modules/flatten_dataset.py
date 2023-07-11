@@ -13,9 +13,6 @@ from psycop.common.feature_generation.application_modules.filter_prediction_time
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
-)
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 
 if TYPE_CHECKING:
@@ -58,7 +55,7 @@ def flatten_dataset_to_disk(
     )
 
 
-#@wandb_alert_on_exception
+@wandb_alert_on_exception
 def create_flattened_dataset(
     project_info: ProjectInfo,
     feature_specs: list[AnySpec],

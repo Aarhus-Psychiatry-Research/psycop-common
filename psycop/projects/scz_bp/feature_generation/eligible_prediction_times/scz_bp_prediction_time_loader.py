@@ -26,6 +26,7 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
 
 log = logging.getLogger(__name__)
 
+
 class SczBpCohort(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
@@ -43,7 +44,7 @@ class SczBpCohort(CohortDefiner):
             pl.col("timestamp") - pl.duration(days=1),
         )
 
-        filtered_prediction_time_bundle= filter_prediction_times(
+        filtered_prediction_time_bundle = filter_prediction_times(
             prediction_times=prediction_times,
             filtering_steps=SczBpCohort._get_filtering_steps(),
             entity_id_col_name="dw_ek_borger",
@@ -52,9 +53,15 @@ class SczBpCohort(CohortDefiner):
         msg.divider("Loaded SczBp eligible prediction times")
         msg.info("N prediction times and ids after filtering:\n")
         for filtering_step in filtered_prediction_time_bundle.filter_steps:
-            msg.info(f"Filter step {filtering_step.step_index} {filtering_step.step_name}")
-            msg.info(f"\tPrediction times: {filtering_step.n_prediction_times_before} - {filtering_step.n_prediction_times_after} = {filtering_step.n_dropped_prediction_times} dropped prediction times")
-            msg.info(f"\tUnique patients: {filtering_step.n_ids_before} - {filtering_step.n_ids_after} = {filtering_step.n_dropped_ids} dropped ids")
+            msg.info(
+                f"Filter step {filtering_step.step_index} {filtering_step.step_name}",
+            )
+            msg.info(
+                f"\tPrediction times: {filtering_step.n_prediction_times_before} - {filtering_step.n_prediction_times_after} = {filtering_step.n_dropped_prediction_times} dropped prediction times",
+            )
+            msg.info(
+                f"\tUnique patients: {filtering_step.n_ids_before} - {filtering_step.n_ids_after} = {filtering_step.n_dropped_ids} dropped ids",
+            )
 
         return filtered_prediction_time_bundle
 

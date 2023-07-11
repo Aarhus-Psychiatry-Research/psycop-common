@@ -77,6 +77,7 @@ def get_time_of_first_scz_or_bp_diagnosis_after_washin() -> pl.DataFrame:
         pl.col("time_from_first_visit") >= pl.duration(days=N_DAYS_WASHIN),
     ).select("dw_ek_borger", "timestamp")
 
+
 if __name__ == "__main__":
     df = get_first_scz_bp_diagnosis_after_washin()
     excluded = get_scz_bp_patients_excluded_by_washin()

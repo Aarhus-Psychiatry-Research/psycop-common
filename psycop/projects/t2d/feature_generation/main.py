@@ -1,6 +1,5 @@
 """Main feature generation."""
 
-import logging
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     init_wandb_and_generate_feature_set,
@@ -12,9 +11,6 @@ from psycop.projects.t2d.t2d_config import (
     get_t2d_feature_specifications,
     get_t2d_project_info,
 )
-
-
-
 
 if __name__ == "__main__":
     init_wandb_and_generate_feature_set(

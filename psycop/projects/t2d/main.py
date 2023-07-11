@@ -19,5 +19,3 @@ if __name__ == "__main__":
         feature_specs=get_t2d_feature_specifications(),
     )
     train_models_in_parallel(dataset_override_path=feature_set_path)
-    )
-    train_models_in_parallel(dataset_override_path=feature_set_path)

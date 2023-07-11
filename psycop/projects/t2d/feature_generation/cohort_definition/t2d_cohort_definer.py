@@ -39,7 +39,7 @@ class T2DCohortDefiner(CohortDefiner):
                 NoIncidentDiabetes(),
                 T2DWashoutMove(),
             ),
-            entity_id_col_name="dw_ek_borger"
+            entity_id_col_name="dw_ek_borger",
         )
 
     @staticmethod

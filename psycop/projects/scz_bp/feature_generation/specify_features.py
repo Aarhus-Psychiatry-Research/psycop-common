@@ -3,7 +3,6 @@ import logging
 from typing import Callable
 
 import numpy as np
-import polars as pl
 from timeseriesflattener.aggregation_fns import (
     concatenate,
     latest,
@@ -95,13 +94,12 @@ class SczBpFeatureSpecifier:
         """Get metadata specs."""
         log.info("-------- Generating metadata specs --------")
 
-
         return [
-          StaticSpec(
-                    feature_base_name="scz_or_bp_indicator",
-                    timeseries_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().to_pandas(),
-                    prefix="meta",
-                ),
+            StaticSpec(
+                feature_base_name="scz_or_bp_indicator",
+                timeseries_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().to_pandas(),
+                prefix="meta",
+            ),
             StaticSpec(
                 feature_base_name="time_of_diagnosis",
                 timeseries_df=get_time_of_first_scz_or_bp_diagnosis_after_washin().to_pandas(),
@@ -216,7 +214,7 @@ class SczBpFeatureSpecifier:
             return []
         tfidf_specs = TextPredictorGroupSpec(
             named_dataframes=[
-                NamedDataframe(df=load_aktuel_psykisk(), name="aktuel_psykisk")
+                NamedDataframe(df=load_aktuel_psykisk(), name="aktuel_psykisk"),
             ],
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,

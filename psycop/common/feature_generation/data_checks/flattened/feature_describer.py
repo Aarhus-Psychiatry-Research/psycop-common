@@ -7,6 +7,11 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
+from timeseriesflattener.feature_specs.single_specs import (
+    PredictorSpec,
+    StaticSpec,
+    TextPredictorSpec,
+)
 from wasabi import Printer
 
 from psycop.common.feature_generation.data_checks.utils import (
@@ -14,11 +19,6 @@ from psycop.common.feature_generation.data_checks.utils import (
 )
 from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import (
     load_split,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    PredictorSpec,
-    StaticSpec,
-    TextPredictorSpec,
 )
 
 if TYPE_CHECKING:
@@ -176,7 +176,7 @@ def generate_feature_description_row(
 def generate_feature_description_df(
     df: pd.DataFrame,
     predictor_specs: list[PredictorSpec | StaticSpec | TextPredictorSpec],
-    prefixes_to_describe: set[str]
+    prefixes_to_describe: set[str],
 ) -> pd.DataFrame:
     """Generate a data frame with feature descriptions.
 
@@ -214,13 +214,16 @@ def generate_feature_description_df(
                     ),
                 )
 
-        elif isinstance(spec, (StaticSpec, PredictorSpec)) and spec.prefix in prefixes_to_describe:  
+        elif (
+            isinstance(spec, (StaticSpec, PredictorSpec))
+            and spec.prefix in prefixes_to_describe
+        ):
             rows.append(
-                    generate_feature_description_row(
-                        series=df[column_name],
-                        predictor_spec=spec,
-                    ),
-                )
+                generate_feature_description_row(
+                    series=df[column_name],
+                    predictor_spec=spec,
+                ),
+            )
 
     # Convert to dataframe
     feature_description_df = pd.DataFrame(rows)
@@ -270,7 +273,7 @@ def save_feature_descriptive_stats_from_dir(
         feature_descriptive_stats = generate_feature_description_df(
             df=dataset,
             predictor_specs=feature_specs,
-            prefixes_to_describe=prefixes_to_describe
+            prefixes_to_describe=prefixes_to_describe,
         )
 
         msg.info(f"{split}: Writing descriptive stats dataframe to disk")

@@ -4,7 +4,9 @@ from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.scz_bp.feature_generation.specify_features import SczBpFeatureSpecifier
+from psycop.projects.scz_bp.feature_generation.specify_features import (
+    SczBpFeatureSpecifier,
+)
 
 
 def get_scz_bp_project_info() -> ProjectInfo:
@@ -12,6 +14,7 @@ def get_scz_bp_project_info() -> ProjectInfo:
         project_name="scz_bp",
         project_path=OVARTACI_SHARED_DIR / "scz_bp",
     )
+
 
 def get_scz_bp_feature_specifications() -> list[AnySpec]:
     return SczBpFeatureSpecifier(
@@ -23,5 +26,4 @@ def get_scz_bp_feature_specifications() -> list[AnySpec]:
 # For model training configuration, see psycop/projects/scz_bp/model_training/config/*
 
 if __name__ == "__main__":
-
     spesc = get_scz_bp_feature_specifications()

@@ -35,7 +35,6 @@ class StepDelta(PSYCOPBaseModel):
         return self.n_ids_before - self.n_ids_after
 
 
-
 class FilteredPredictionTimeBundle(PSYCOPBaseModel):
     prediction_times: pl.DataFrame
     filter_steps: list[StepDelta]
@@ -71,7 +70,6 @@ def filter_prediction_times(
                 n_ids_before=n_ids_before,
                 n_ids_after=prediction_times[entity_id_col_name].n_unique(),
                 step_index=i,
-                
             ),
         )
 
