@@ -242,6 +242,10 @@ class FeatureSpecifier:
                     name="antipsychotics_pn",
                 ),
                 NamedDataframe(
+                    df=antipsychotics(administration_method="Engangs"),
+                    name="antipsychotics_engangs",
+                ),
+                NamedDataframe(
                     df=antipsychotics(administration_route="IM"),
                     name="antipsychotics_im",
                 ),
@@ -277,6 +281,20 @@ class FeatureSpecifier:
                     ),
                     name="antipsychotics_pn_po",
                 ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Engangs",
+                        administration_route="IM",
+                    ),
+                    name="antipsychotics_engangs_im",
+                ),
+                NamedDataframe(
+                    df=antipsychotics(
+                        administration_method="Engangs",
+                        administration_route="PO",
+                    ),
+                    name="antipsychotics_engangs_po",
+                ),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
                 NamedDataframe(
                     df=anxiolytics(administration_method="Fast"),
@@ -286,6 +304,10 @@ class FeatureSpecifier:
                     df=anxiolytics(administration_method="PN"),
                     name="anxiolytics_pn",
                 ),
+                NamedDataframe(
+                    df=anxiolytics(administration_method="Engangs"),
+                    name="anxiolytics_engangs",
+                ),
                 NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
                 NamedDataframe(
                     df=hypnotics(administration_method="Fast"),
@@ -294,6 +316,10 @@ class FeatureSpecifier:
                 NamedDataframe(
                     df=hypnotics(administration_method="PN"),
                     name="hypnotics and sedatives_pn",
+                ),
+                NamedDataframe(
+                    df=hypnotics(administration_method="Engangs"),
+                    name="hypnotics and sedatives_engangs",
                 ),
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
                 NamedDataframe(df=lithium(), name="lithium"),
