@@ -48,7 +48,7 @@ def train_e2e(cfg: FullConfigSchema):
                 data_cfg=cfg.data,
                 pre_split_cfg=cfg.preprocessing.pre_split,
                 split=cfg.data.splits_for_training[0],
-            )
+            ),
         ],
         ignore_index=True,
     )
@@ -57,7 +57,7 @@ def train_e2e(cfg: FullConfigSchema):
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
     pred_types = np.unique(
-        [re.findall(r"pred_(.+)?_within", x) for x in train_col_names]
+        [re.findall(r"pred_(.+)?_within", x) for x in train_col_names],
     )
     pred_types = [x for x in pred_types if x != []]
     predictor_names = [
