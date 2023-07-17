@@ -268,6 +268,55 @@ def top_10_weight_gaining_antipsychotics(
     )
 
 
+@data_loaders.register("sedative_antipsychotics")
+def sedative_antipsychotics(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code=[
+            "N05AH03",
+            "N05AD01",
+            "N05AF05",
+            "N05AH04",
+        ],
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method=administration_method,
+    )
+
+
+@data_loaders.register("non_sedative_antipsychotics")
+def non_sedative_antipsychotics(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code="N05A",
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method=administration_method,
+        exclude_atc_codes=[
+            "N05AH03",
+            "N05AD01",
+            "N05AF05",
+            "N05AH04",
+        ],
+    )
+
+
 @data_loaders.register("olanzapine_depot")
 def olanzapine_depot(
     n_rows: int | None = None,
@@ -638,7 +687,7 @@ def naxolone(
     )
 
 
-@data_loaders.register("hypnotics and sedatives")
+@data_loaders.register("hypnotics_and_sedatives")
 def hypnotics(
     n_rows: int | None = None,
     load_prescribed: bool = False,
@@ -651,6 +700,86 @@ def hypnotics(
         load_prescribed=load_prescribed,
         load_administered=load_administered,
         wildcard_code=True,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method=administration_method,
+    )
+
+
+@data_loaders.register("hypnotics_and_sedatives_with_rivotril")
+def hypnotics_and_rivotril(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code=[
+            "N05CD08",
+            "N05CF01",
+            "N05CF02",
+            "N05CH01",
+            "N05CD02",
+            "N05CD05",
+            "N05CD06",
+            "N05CA01",
+            "N05CM18",
+            "N05CC01",
+            "N05CD03",
+            "N05CA04",
+            "N03AE01",
+        ],
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method=administration_method,
+    )
+
+
+@data_loaders.register("mood_stabilisers")
+def mood_stabilisers(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code=[
+            "N03AX09",
+            "N03AG01",
+            "N03AF01",
+            "N03AX12",
+        ],
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
+        n_rows=n_rows,
+        administration_route=administration_route,
+        administration_method=administration_method,
+    )
+
+
+@data_loaders.register("nervous_system_stimulants")
+def nervous_system_stimulants(
+    n_rows: int | None = None,
+    load_prescribed: bool = False,
+    load_administered: bool = True,
+    administration_route: str | None = None,
+    administration_method: str | None = None,
+) -> pd.DataFrame:
+    return load(
+        atc_code=[
+            "N06BA04",
+            "N06BA09",
+            "C02AC02",
+        ],
+        load_prescribed=load_prescribed,
+        load_administered=load_administered,
+        wildcard_code=False,
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
