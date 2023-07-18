@@ -69,14 +69,14 @@ def scz_bp_get_sensitivity_by_time_to_event_df(
             pl.Series(
                 name="y_hat",
                 values=eval_dataset.get_predictions_for_positive_rate(
-                    desired_positive_rate=ppr
+                    desired_positive_rate=ppr,
                 )[0],
-            )
+            ),
         )
         for diagnosis_subset in ["scz", "bp", "both"]:
             if diagnosis_subset != "both":
                 filtered_df = eval_dataset_df.filter(
-                    pl.col("meta_scz_or_bp_indicator") == diagnosis_subset
+                    pl.col("meta_scz_or_bp_indicator") == diagnosis_subset,
                 )
             else:
                 filtered_df = eval_dataset_df
@@ -105,7 +105,9 @@ def scz_bp_plot_sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.gg
     plot_df = reverse_x_axis_categories(plot_df)
 
     p = _plot_metric_by_time_to_event(df=plot_df, metric="sensitivity") + pn.labs(
-        x="Months to outcome", y="Sensitivitiy", color="Predicted Positive Rate"
+        x="Months to outcome",
+        y="Sensitivitiy",
+        color="Predicted Positive Rate",
     )
 
     return p
@@ -113,12 +115,14 @@ def scz_bp_plot_sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.gg
 
 def scz_bp_sensitivity_by_time_to_event(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset(
-        custom_columns=SCZ_BP_CUSTOM_COLUMNS
+        custom_columns=SCZ_BP_CUSTOM_COLUMNS,
     )
     p = scz_bp_plot_sensitivity_by_time_to_event(eval_dataset=eval_ds)
 
     p.save(
-        run.paper_outputs.paths.figures / "recall_by_time_to_event", width=7, height=7
+        run.paper_outputs.paths.figures / "recall_by_time_to_event",
+        width=7,
+        height=7,
     )
 
     return p

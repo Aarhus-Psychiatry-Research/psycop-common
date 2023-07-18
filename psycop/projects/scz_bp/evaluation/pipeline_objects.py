@@ -52,7 +52,7 @@ class RunGroup:
     @property
     def group_dir(self) -> Path:
         return Path(
-            f"E:/shared_resources/{self.project_name}/pipeline_eval/{self.name}"
+            f"E:/shared_resources/{self.project_name}/pipeline_eval/{self.name}",
         )
 
     @property

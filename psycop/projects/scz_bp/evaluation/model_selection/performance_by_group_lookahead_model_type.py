@@ -44,7 +44,7 @@ def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
 def get_median_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -> float:
     return days_from_first_positive_to_diagnosis(
         eval_dataset=run.pipeline_outputs.get_eval_dataset(
-            custom_columns=SCZ_BP_CUSTOM_COLUMNS
+            custom_columns=SCZ_BP_CUSTOM_COLUMNS,
         ),
         positive_rate=run.paper_outputs.pos_rate,
         aggregation_method="median",
