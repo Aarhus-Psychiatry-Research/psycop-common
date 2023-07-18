@@ -24,5 +24,6 @@
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"
     },
-    "explorerExclude.backup": {}
+    "explorerExclude.backup": {},
+    "jupyter.notebookFileRoot": "${workspaceFolder}"
 }
