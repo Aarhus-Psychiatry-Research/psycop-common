@@ -2,6 +2,7 @@
 from typing import Any, Optional, Union
 
 import pandas as pd
+import polars as pl
 from numpy import float64
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
@@ -22,6 +23,14 @@ def get_predictions_for_positive_rate(
     actual_positive_rate = y_hat_int.mean()
 
     return y_hat_int, actual_positive_rate  # type: ignore
+
+
+def get_predictions_for_threshold(
+    desired_threshold: float,
+    y_hat_probs: pd.Series,
+) -> tuple[pd.Series, float]:
+    y_hat_int = (y_hat_probs > desired_threshold).astype(int)
+    return y_hat_int, desired_threshold
 
 
 class EvalDataset(PSYCOPBaseModel):
@@ -59,6 +68,33 @@ class EvalDataset(PSYCOPBaseModel):
             desired_positive_rate=desired_positive_rate,
             y_hat_probs=self.y_hat_probs,
         )
+
+    def get_predictions_for_threshold(
+        self,
+        desired_threshold: float,
+    ) -> tuple[pd.Series, float]:
+        """Turns predictions above `desired_threshold` to 1, rest to 0"""
+        return get_predictions_for_threshold(
+            desired_threshold=desired_threshold, y_hat_probs=self.y_hat_probs
+        )
+
+    def to_pandas(self) -> pd.DataFrame:
+        """Converts to a dataframe. Ignores attributes that are not set and
+        unpacks the columns in custom_columns.
+        """
+        as_dict = self.dict()
+        # remove custom_column to avoid appending a row for each custom column
+        as_dict.pop("custom_columns")
+        df = pd.DataFrame(as_dict)
+        if self.custom_columns is not None:
+            for col_name, col in self.custom_columns.items():
+                df[col_name] = col
+        # remove columns which are not set
+        df = df.dropna(axis=1, how="all")
+        return df
+
+    def to_polars(self) -> pl.DataFrame:
+        return pl.from_pandas(self.to_pandas())
 
 
 class PipeMetadata(PSYCOPBaseModel):
