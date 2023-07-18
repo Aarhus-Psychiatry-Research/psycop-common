@@ -23,6 +23,8 @@ def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
         },
     )
 
+    # @Martin - correct me if I'm wrong, but isn't this rather the first prediction
+    # time than the first visit?
     first_visit = (
         df.sort("pred_timestamp", descending=False)
         .groupby("id")
