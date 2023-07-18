@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.92.0 (2023-07-18)
+
+### Feature
+
+* To polars|pandas method for EvalDataset + fixed threshold ([`52fe185`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/52fe185099e4d1478759a01324bf55b17684b15c))
+* Add loader for first visit to psychiatry ([`9ee9727`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9ee97276624d144a1d5b53ab8aa2d9fd8ff2e018))
+
+### Fix
+
+* Set pythonpath for interactive session ([`ded552d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ded552d6d44a08869df3097212485725b0863f44))
+
 ## v0.91.0 (2023-07-18)
 
 ### Feature
