@@ -4,12 +4,13 @@ import polars as pl
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_auroc_by_timedelta_df,
 )
+from psycop.projects.scz_bp.evaluation.pipeline_objects import PipelineRun
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.scz_bp.evaluation.pipeline_objects import PipelineRun
 
 #### TODO: re-run feature generation to get the first visit column and rewrite this
+
 
 def scz_bp_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
@@ -22,7 +23,7 @@ def scz_bp_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
             "pred_timestamp": eval_ds.pred_timestamps,
         },
     )
- 
+
     first_visit = (
         df.sort("pred_timestamp", descending=False)
         .groupby("id")

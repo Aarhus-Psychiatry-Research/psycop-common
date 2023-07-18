@@ -32,4 +32,5 @@ if __name__ == "__main__":
     from psycop.projects.scz_bp.evaluation.model_selection.performance_by_group_lookahead_model_type import (
         DEVELOPMENT_PIPELINE_RUN,
     )
+
     scz_bp_auroc_by_quarter(run=DEVELOPMENT_PIPELINE_RUN)

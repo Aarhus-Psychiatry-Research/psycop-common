@@ -75,7 +75,8 @@ class EvalDataset(PSYCOPBaseModel):
     ) -> tuple[pd.Series, float]:
         """Turns predictions above `desired_threshold` to 1, rest to 0"""
         return get_predictions_for_threshold(
-            desired_threshold=desired_threshold, y_hat_probs=self.y_hat_probs
+            desired_threshold=desired_threshold,
+            y_hat_probs=self.y_hat_probs,
         )
 
     def to_pandas(self) -> pd.DataFrame:

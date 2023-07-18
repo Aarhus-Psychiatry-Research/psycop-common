@@ -15,8 +15,7 @@ BEST_POS_RATE = 0.03
 EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME, project_name="scz_bp")
 
-SCZ_BP_CUSTOM_COLUMNS = ["meta_scz_or_bp_indicator"]#, "meta_first_visit"]
-
+SCZ_BP_CUSTOM_COLUMNS = ["meta_scz_or_bp_indicator"]  # , "meta_first_visit"]
 
 
 ################

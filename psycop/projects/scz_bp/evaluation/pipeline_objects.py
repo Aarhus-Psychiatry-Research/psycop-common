@@ -51,7 +51,9 @@ class RunGroup:
 
     @property
     def group_dir(self) -> Path:
-        return Path(f"E:/shared_resources/{self.project_name}/pipeline_eval/{self.name}")
+        return Path(
+            f"E:/shared_resources/{self.project_name}/pipeline_eval/{self.name}"
+        )
 
     @property
     def flattened_ds_dir(self) -> Path:
@@ -91,7 +93,7 @@ SplitNames = Literal["train", "test", "val"]
 @dataclass
 class PipelineInputs:
     group: RunGroup
-    eval_dir: Path # path to directory of the specific run
+    eval_dir: Path  # path to directory of the specific run
 
     def get_cfg_as_json(self) -> FullConfigSchema:
         # Load json

@@ -35,7 +35,8 @@ def test_get_predictions_for_threshold(desired_threshold: float):
     )
 
     df["y_hat"] = get_predictions_for_threshold(
-        desired_threshold=desired_threshold, y_hat_probs=df["y_hat_probs"]
+        desired_threshold=desired_threshold,
+        y_hat_probs=df["y_hat_probs"],
     )[0]
 
     assert df["y_hat"].sum() == np.ceil((1 - desired_threshold) * 10)

@@ -43,7 +43,9 @@ def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
 
 def get_median_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -> float:
     return days_from_first_positive_to_diagnosis(
-        eval_dataset=run.pipeline_outputs.get_eval_dataset(custom_columns=SCZ_BP_CUSTOM_COLUMNS),
+        eval_dataset=run.pipeline_outputs.get_eval_dataset(
+            custom_columns=SCZ_BP_CUSTOM_COLUMNS
+        ),
         positive_rate=run.paper_outputs.pos_rate,
         aggregation_method="median",
     )
@@ -82,16 +84,21 @@ def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataF
 
     return df
 
+
 run_group = DEVELOPMENT_GROUP
 
 best_runs_in_group = get_performance_for_group(DEVELOPMENT_GROUP, pos_rate=0.03)
-run_with_max_auc = best_runs_in_group.filter(pl.col("auroc") == pl.col("auroc").max()).select("run_name").item()
+run_with_max_auc = (
+    best_runs_in_group.filter(pl.col("auroc") == pl.col("auroc").max())
+    .select("run_name")
+    .item()
+)
 
 DEVELOPMENT_PIPELINE_RUN = PipelineRun(
     group=DEVELOPMENT_GROUP,
     name=run_with_max_auc,
     pos_rate=0.03,
-    )
+)
 
 if __name__ == "__main__":
     df = get_publication_ready_performance_for_group(run_group=run_group)
