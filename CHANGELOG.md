@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.91.0 (2023-07-18)
+
+### Feature
+
+* Change prefix for supplementary outputs ([`9b2a15d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9b2a15d9408d88d8c54fa876284ac6f3acb7d709))
+
 ## v0.90.0 (2023-07-11)
 
 ### Feature
