@@ -49,7 +49,9 @@ def bootstrap_pr(
 def precision_recall_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
-    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(eval_ds.y_hat_probs, pd.DataFrame):
+    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(
+        eval_ds.y_hat_probs, pd.DataFrame
+    ):
         raise TypeError
 
     recs_bootstrapped, prec_bootstrapped, base_fpr = bootstrap_pr(
