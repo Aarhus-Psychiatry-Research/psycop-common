@@ -63,7 +63,7 @@ def train_remove_days(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
     pipe = create_post_split_pipeline(cfg)
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
-    for day in range(160, 16, -10):
+    for day in range(1860, 60, -100):
         train_dataset = train_datasets[
             train_datasets.pred_adm_day_count < day
         ].reset_index(drop=True)
@@ -168,7 +168,7 @@ def train_multilabel(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
         columns=[
             "outcome_coercion_bool_within_2_days",
             "outcome_coercion_type_within_2_days",
-        ],
+        ]
     )
 
     eval_dataset = train_and_predict(
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     project_info = ProjectInfo(
         project_name="e2e",
         project_path=Path("E:/shared_resources/coercion/e2e"),
-        prefix=Prefixes(outcome="outcome_coercion_bool"),
+        prefix=Prefixes(outcome="outcome_restraint"),
     )
 
     cfg = FullConfigSchema(
@@ -233,6 +233,7 @@ if __name__ == "__main__":
                 lookbehind_combination=[1, 3, 7, 10, 30, 180, 365, 730],
                 drop_visits_after_exclusion_timestamp=False,
                 drop_rows_after_outcome=False,
+                keep_only_one_outcome_col=False,
             ),
             post_split=PostSplitPreprocessingConfigSchema(
                 imputation_method=None,
@@ -249,6 +250,6 @@ if __name__ == "__main__":
     )
 
     data = load_datasets(cfg)
-    train_remove_days(cfg, data)
+    train_multilabel(cfg, data)
 
     print("pause")

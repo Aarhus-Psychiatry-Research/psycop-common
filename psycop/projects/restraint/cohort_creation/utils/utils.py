@@ -39,8 +39,7 @@ def concat_readmissions(
     # if the patients have any readmissions, the affected rows are subsetted
     if df_patient["end_readmission"].any() & df_patient["start_readmission"].any():
         readmissions = df_patient[
-            (df_patient["end_readmission"] is True)
-            | (df_patient["start_readmission"] is True)
+            df_patient["end_readmission"] | df_patient["start_readmission"]
         ]
 
         # if there are multiple subsequent readmissions (i.e., both 'end_readmission' and 'start_readmission' == True), all but the first and last are excluded
@@ -56,9 +55,7 @@ def concat_readmissions(
         ] = readmissions_subset["datotid_slut"].shift(-1)
 
         # keep only the first admission
-        readmissions_subset = readmissions_subset[
-            readmissions_subset.end_readmission is True
-        ]
+        readmissions_subset = readmissions_subset[readmissions_subset.end_readmission]
 
         # remove readmissions from the original data
         df_patient_no_readmissions = df_patient.merge(

@@ -16,8 +16,8 @@ from psycop.projects.restraint.cohort_creation.utils.cohort_hyperparameters impo
 )
 
 df_cohort = sql_load(
-    "psycop_coercion_cohort_with_all_days_without_labels_feb2022",
-)  ## change to load from sql database when we have uploaded the cohort
+    "SELECT * FROM fct.[psycop_coercion_cohort_with_all_days_without_labels_feb2022]",
+)
 
 lookahead_days = 2
 
@@ -60,7 +60,7 @@ df_cohort = (
         columns={
             "datotid_start": "timestamp_admission",
             "datotid_slut": "timestamp_discharge",
-            "datotid_start_sei": "outcome_timestamp",
+            "datotid_start_sei": "timestamp_outcome",
             "pred_time": "timestamp",
         },
     )
