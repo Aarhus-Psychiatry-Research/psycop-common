@@ -133,13 +133,13 @@ def multilabel_cross_validation(
         y_pred = pipe.predict_proba(X_train)
 
         msg.info(
-            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, np.asarray([y_pred[x][:,1] for x in range(0, len(y_pred))]).T), 3)}",
+            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, np.asarray([y_pred[x][:,1] for x in range(0, len(y_pred))]).T), 3)}", # type: ignore
         )
 
         oof_y_pred = pipe.predict_proba(X.loc[val_idxs])
 
         msg.info(
-            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs], np.asarray([oof_y_pred[x][:,1] for x in range(0, len(oof_y_pred))]).T), 3)}",
+            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs], np.asarray([oof_y_pred[x][:,1] for x in range(0, len(oof_y_pred))]).T), 3)}", # type: ignore
         )
 
         train_df.loc[
@@ -301,7 +301,7 @@ def multilabel_train_validate(
     y_val_hat_prob = pipe.predict_proba(X_val)
 
     print(
-        f"Performance on train: {round(roc_auc_score(y_train, np.asarray([y_train_hat_prob[x][:,1] for x in range(0, len(y_train_hat_prob))]).T), 3)}",
+        f"Performance on train: {round(roc_auc_score(y_train, np.asarray([y_train_hat_prob[x][:,1] for x in range(0, len(y_train_hat_prob))]).T), 3)}", # type: ignore
     )
 
     df = val
