@@ -11,17 +11,22 @@ from psycop.common.feature_generation.loaders.raw.load_text import load_all_note
 LOGFILE = Path("log.csv")
 OPTIONS = "[G]ood sample, [B]ad sample, [Q]uit, [I]nput text"
 
+
 @dataclass
 class DfValues:
     sfi: str
     text: str
     index: int
 
+
 def sample_sfi(df: pd.DataFrame) -> DfValues:
     """Sample a random sfi name and text from the data"""
     sample = df.sample(1)
-    return DfValues(sfi=sample["overskrift"].item(), text=sample["value"].item(), index=sample.index.item())
-
+    return DfValues(
+        sfi=sample["overskrift"].item(),
+        text=sample["value"].item(),
+        index=sample.index.item(),
+    )
 
 
 def make_text_output(cur_sfi: str, cur_text: str) -> str:
@@ -32,11 +37,12 @@ def make_text_output(cur_sfi: str, cur_text: str) -> str:
 """
 
 
-def write_to_file(sfi: str, index: int, useful: bool, notes: str):
+def write_to_file(sfi: str, index: str, useful: bool, notes: str):
     if not LOGFILE.exists():
         LOGFILE.write_text("overskrift,index,useful,notes\n")
-    with open(LOGFILE, "a") as f:
-        f.write(f"{sfi},{str(index)}{useful},{notes}\n")
+    with LOGFILE.open("a") as f:
+        f.write(f"{sfi},{index}{useful},{notes}\n")
+
 
 def main(df: pd.DataFrame):
     for index, row in df.iterrows():
@@ -44,37 +50,48 @@ def main(df: pd.DataFrame):
         print(OPTIONS)
         user_input = input("Input: ")
         if user_input == "g":
-            write_to_file(sfi=row["overskrift"], index=index, useful=True, notes="")
+            write_to_file(sfi=row["overskrift"], index=str(index), useful=True, notes="") 
         elif user_input == "b":
-            write_to_file(sfi=row["overskrift"], index=index, useful=False, notes="")
+            write_to_file(sfi=row["overskrift"], index=str(index), useful=False, notes="")
         elif user_input == "q":
             break
         elif user_input == "i":
             notes = input("Input text: ")
             quality = input("Is the text [g]ood or [b]ad?")
             if quality == "g":
-                write_to_file(sfi=row["overskrift"], index=index, useful=True, notes=notes)
+                write_to_file(
+                    sfi=row["overskrift"],
+                    index=str(index),
+                    useful=True,
+                    notes=notes,
+                )
             elif quality == "b":
-                write_to_file(sfi=row["overskrift"], index=index, useful=False, notes=notes)
+                write_to_file(
+                    sfi=row["overskrift"],
+                    index=str(index),
+                    useful=False,
+                    notes=notes,
+                )
             else:
                 print("Invalid input")
         else:
             print("Invalid input")
 
+
 if __name__ == "__main__":
-    SAMPLE_SIZE = 15    
-    
+    SAMPLE_SIZE = 15
+
     DEV = False
 
     if DEV:
         DF = pd.DataFrame(
-                {
-                    "text": ["test1", "test2", "test3"],
-                    "overskrift": ["test1", "test2", "test3"],
-                }
-            )
+            {
+                "text": ["test1", "test2", "test3"],
+                "overskrift": ["test1", "test2", "test3"],
+            },
+        )
     else:
-        DF = load_all_notes(include_sfi_name=True) # type: ignore
+        DF = load_all_notes(include_sfi_name=True)  # type: ignore
 
     # sample an even number of texts from each overskrift
     samples = DF.groupby("overskrift").apply(lambda x: x.sample(SAMPLE_SIZE))
@@ -83,5 +100,3 @@ if __name__ == "__main__":
     # shuffle it up
     sample = samples.sample(frac=1, replace=False)
     main(df=samples)
-
-
