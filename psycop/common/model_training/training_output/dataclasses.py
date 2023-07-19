@@ -81,7 +81,7 @@ class EvalDataset(PSYCOPBaseModel):
         """Turns predictions above `desired_threshold` to 1, rest to 0"""
         if isinstance(self.y_hat_probs, pd.Series):
             self.y_hat_probs = self.y_hat_probs.to_frame(name="y_hat_probs")
-        
+
         return get_predictions_for_threshold(
             desired_threshold=desired_threshold,
             y_hat_probs=self.y_hat_probs[y_hat_probs_column],
