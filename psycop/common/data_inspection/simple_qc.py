@@ -50,9 +50,19 @@ def main(df: pd.DataFrame):
         print(OPTIONS)
         user_input = input("Input: ")
         if user_input == "g":
-            write_to_file(sfi=row["overskrift"], index=str(index), useful=True, notes="") 
+            write_to_file(
+                sfi=row["overskrift"],
+                index=str(index),
+                useful=True,
+                notes="",
+            )
         elif user_input == "b":
-            write_to_file(sfi=row["overskrift"], index=str(index), useful=False, notes="")
+            write_to_file(
+                sfi=row["overskrift"],
+                index=str(index),
+                useful=False,
+                notes="",
+            )
         elif user_input == "q":
             break
         elif user_input == "i":
