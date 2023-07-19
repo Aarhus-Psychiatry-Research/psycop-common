@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import Literal, Union
 
 import pandas as pd
+import polars as pl
 from pydantic import BaseModel
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
@@ -289,3 +290,19 @@ def ambulatory_and_emergency_visits(
         shak_code=shak_code,
         shak_sql_operator=shak_sql_operator,
     )
+
+
+def get_time_of_first_visit_to_psychiatry() -> pl.DataFrame:
+    first_visit = (
+        pl.from_pandas(
+            physical_visits_to_psychiatry(
+                n_rows=None,
+                timestamps_only=False,
+                return_value_as_visit_length_days=False,
+                timestamp_for_output="start",
+            ),
+        )
+        .groupby("dw_ek_borger")
+        .agg(pl.col("timestamp").min())
+    )
+    return first_visit
