@@ -1,30 +1,27 @@
 """Quick and dirty script to quality check the SFI's and assess their usefullness
 for the project"""
 
+from dataclasses import dataclass
 from pathlib import Path
-import polars as pl
+
+import pandas as pd
+
 from psycop.common.feature_generation.loaders.raw.load_text import load_all_notes
-
-DEV = True
-
-if DEV:
-    DF = pl.DataFrame(
-            {
-                "text": ["test1", "test2", "test3"],
-                "overskrift": ["test1", "test2", "test3"],
-            }
-        )
-else:
-    DF = pl.from_dataframe(load_all_notes(include_sfi_name=True)) # type: ignore
 
 LOGFILE = Path("log.csv")
 OPTIONS = "[G]ood sample, [B]ad sample, [Q]uit, [I]nput text"
 
+@dataclass
+class DfValues:
+    sfi: str
+    text: str
+    index: int
 
-def sample_sfi() -> tuple[str, str]:
+def sample_sfi(df: pd.DataFrame) -> DfValues:
     """Sample a random sfi name and text from the data"""
-    sample = DF.sample(1)
-    return sample["text"].item(), sample["overskrift"].item()
+    sample = df.sample(1)
+    return DfValues(sfi=sample["overskrift"].item(), text=sample["value"].item(), index=sample.index.item())
+
 
 
 def make_text_output(cur_sfi: str, cur_text: str) -> str:
@@ -35,37 +32,56 @@ def make_text_output(cur_sfi: str, cur_text: str) -> str:
 """
 
 
-def write_to_file(cur_text: str, cur_sfi: str, useful: bool, notes: str):
+def write_to_file(sfi: str, index: int, useful: bool, notes: str):
     if not LOGFILE.exists():
-        LOGFILE.write_text("text,overskrift,useful,notes\n")
+        LOGFILE.write_text("overskrift,index,useful,notes\n")
     with open(LOGFILE, "a") as f:
-        f.write(f"{cur_text},{cur_sfi},{useful},{notes}\n")
+        f.write(f"{sfi},{str(index)}{useful},{notes}\n")
 
-def main():
-    while True:
-        cur_text, cur_sfi = sample_sfi()
-        print(make_text_output(cur_sfi=cur_sfi, cur_text=cur_text))
+def main(df: pd.DataFrame):
+    for index, row in df.iterrows():
+        print(make_text_output(cur_sfi=row["overskrift"], cur_text=row["value"]))
         print(OPTIONS)
         user_input = input("Input: ")
         if user_input == "g":
-            write_to_file(cur_text=cur_text, cur_sfi=cur_sfi, useful=True, notes="")
+            write_to_file(sfi=row["overskrift"], index=index, useful=True, notes="")
         elif user_input == "b":
-            write_to_file(cur_text=cur_text, cur_sfi=cur_sfi, useful=False, notes="")
+            write_to_file(sfi=row["overskrift"], index=index, useful=False, notes="")
         elif user_input == "q":
             break
         elif user_input == "i":
             notes = input("Input text: ")
             quality = input("Is the text [g]ood or [b]ad?")
             if quality == "g":
-                write_to_file(cur_text=cur_text, cur_sfi=cur_sfi, useful=True, notes=notes)
+                write_to_file(sfi=row["overskrift"], index=index, useful=True, notes=notes)
             elif quality == "b":
-                write_to_file(cur_text=cur_text, cur_sfi=cur_sfi, useful=False, notes=notes)
+                write_to_file(sfi=row["overskrift"], index=index, useful=False, notes=notes)
             else:
                 print("Invalid input")
         else:
             print("Invalid input")
 
 if __name__ == "__main__":
-    main()
+    SAMPLE_SIZE = 15    
+    
+    DEV = False
+
+    if DEV:
+        DF = pd.DataFrame(
+                {
+                    "text": ["test1", "test2", "test3"],
+                    "overskrift": ["test1", "test2", "test3"],
+                }
+            )
+    else:
+        DF = load_all_notes(include_sfi_name=True) # type: ignore
+
+    # sample an even number of texts from each overskrift
+    samples = DF.groupby("overskrift").apply(lambda x: x.sample(SAMPLE_SIZE))
+    # return to df form
+    samples = samples.drop(columns=["overskrift"]).reset_index().set_index("level_1")
+    # shuffle it up
+    sample = samples.sample(frac=1, replace=False)
+    main(df=samples)
 
 
