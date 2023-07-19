@@ -184,11 +184,13 @@ def load_text_split(
 @data_loaders.register("all_notes")
 def load_all_notes(
     n_rows: int | None = None,
+    include_sfi_name: bool = False,
 ) -> pd.DataFrame:
     """Returns all notes from all years.
 
     Args:
         n_rows (Optional[int], optional): Number of rows to load. Defaults to None.
+        include_sfi_name (bool, optional): Whether to include column with sfi name ("overskrift"). Defaults to False.
 
     Returns:
         pd.DataFrame: (Featurized) notes
@@ -196,6 +198,7 @@ def load_all_notes(
     return load_text_sfis(
         text_sfi_names=get_valid_text_sfi_names(),
         n_rows=n_rows,
+        include_sfi_name=include_sfi_name,
     )
 
 
