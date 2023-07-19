@@ -57,6 +57,9 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     valproate,
 )
 from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
+from psycop.common.feature_generation.loaders.raw.load_visits import (
+    get_time_of_first_visit_to_psychiatry,
+)
 from psycop.common.feature_generation.text_models.utils import load_text_model
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
@@ -104,6 +107,11 @@ class SczBpFeatureSpecifier:
                 feature_base_name="time_of_diagnosis",
                 timeseries_df=get_time_of_first_scz_or_bp_diagnosis_after_washin().to_pandas(),
                 prefix="",
+            ),
+            StaticSpec(
+                feature_base_name="first_visit",
+                timeseries_df=get_time_of_first_visit_to_psychiatry().to_pandas(),
+                prefix="meta",
             ),
         ]
 
