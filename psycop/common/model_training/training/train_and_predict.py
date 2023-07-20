@@ -116,6 +116,10 @@ def multilabel_cross_validation(
         groups=train_df[cfg.data.col_name.id],
     )
 
+    msg.info(
+            f"Stratifying by {y[outcome_col_name[0]]}",  # type: ignore
+        )
+
     # Perform CV and get out of fold predictions
     train_df["oof_y_hat"] = np.nan
 
