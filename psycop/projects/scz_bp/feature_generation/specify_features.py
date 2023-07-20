@@ -60,7 +60,6 @@ from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_p
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,
 )
-from psycop.common.feature_generation.text_models.utils import load_text_model
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
@@ -218,7 +217,10 @@ class SczBpFeatureSpecifier:
             return []
         tfidf_specs = TextPredictorGroupSpec(
             named_dataframes=[
-                NamedDataframe(df=load_aktuel_psykisk(), name="aktuel_psykisk"), # change
+                NamedDataframe(
+                    df=load_aktuel_psykisk(),
+                    name="aktuel_psykisk",
+                ),  # change
             ],
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,

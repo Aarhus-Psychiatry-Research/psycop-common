@@ -8,8 +8,9 @@ from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 
 def embed_text_to_df(model: SentenceTransformer, text: list[str]) -> pl.DataFrame:
     embeddings = model.encode(text)
-    return pl.DataFrame(embeddings).select(pl.all().map_alias(lambda c: c.replace("column", "emb")))
-
+    return pl.DataFrame(embeddings).select(
+        pl.all().map_alias(lambda c: c.replace("column", "emb")),
+    )
 
 
 if __name__ == "__main__":
@@ -17,11 +18,13 @@ if __name__ == "__main__":
 
     all_notes = pl.from_pandas(load_all_notes(n_rows=100, include_sfi_name=True))
 
-    model = SentenceTransformer(model_str)    
+    model = SentenceTransformer(model_str)
     embeddings = embed_text_to_df(model, all_notes["value"].to_list())
-    
+
     all_notes = all_notes.drop(columns=["value"])
 
     embedded_notes = pl.concat([all_notes, embeddings], how="horizontal")
 
-    embedded_notes.write_parquet(TEXT_EMBEDDINGS_DIR / f"text_embeddings_{model_str}.parquet")
+    embedded_notes.write_parquet(
+        TEXT_EMBEDDINGS_DIR / f"text_embeddings_{model_str}.parquet",
+    )
