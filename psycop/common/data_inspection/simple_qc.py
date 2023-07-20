@@ -46,19 +46,19 @@ def write_to_file(sfi: str, index: str, useful: bool, notes: str):
 
 def main(df: pd.DataFrame):
     for index, row in df.iterrows():
-        print(make_text_output(cur_sfi=row["overskrift"], cur_text=row["value"]))
+        print(make_text_output(cur_sfi=row["overskrift"], cur_text=row["value"]))  # type: ignore
         print(OPTIONS)
         user_input = input("Input: ")
         if user_input == "g":
             write_to_file(
-                sfi=row["overskrift"],
+                sfi=row["overskrift"],  # type: ignore
                 index=str(index),
                 useful=True,
                 notes="",
             )
         elif user_input == "b":
             write_to_file(
-                sfi=row["overskrift"],
+                sfi=row["overskrift"],  # type: ignore
                 index=str(index),
                 useful=False,
                 notes="",
@@ -70,14 +70,14 @@ def main(df: pd.DataFrame):
             quality = input("Is the text [g]ood or [b]ad?")
             if quality == "g":
                 write_to_file(
-                    sfi=row["overskrift"],
+                    sfi=row["overskrift"],  # type: ignore
                     index=str(index),
                     useful=True,
                     notes=notes,
                 )
             elif quality == "b":
                 write_to_file(
-                    sfi=row["overskrift"],
+                    sfi=row["overskrift"],  # type: ignore
                     index=str(index),
                     useful=False,
                     notes=notes,
@@ -107,6 +107,4 @@ if __name__ == "__main__":
     samples = DF.groupby("overskrift").apply(lambda x: x.sample(SAMPLE_SIZE))
     # return to df form
     samples = samples.drop(columns=["overskrift"]).reset_index().set_index("level_1")
-    # shuffle it up
-    sample = samples.sample(frac=1, replace=False)
     main(df=samples)
