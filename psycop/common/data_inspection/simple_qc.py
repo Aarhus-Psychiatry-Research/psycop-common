@@ -41,7 +41,7 @@ def write_to_file(sfi: str, index: str, useful: int, notes: str):
     if not LOGFILE.exists():
         LOGFILE.write_text("overskrift;index;useful;notes\n")
     with LOGFILE.open("a") as f:
-        f.write(f"{sfi};{index};{str(useful)};{notes}\n")
+        f.write(f"{sfi};{index};{useful!s};{notes}\n")
 
 
 def main(df: pd.DataFrame):

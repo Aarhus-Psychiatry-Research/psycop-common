@@ -227,7 +227,7 @@ class SczBpFeatureSpecifier:
             embedding_fn_name="tfidf",
             fallback=[np.nan],
             embedding_fn=[sklearn_embedding],
-            embedding_fn_kwargs=[{"model": tfidf_model}],
+            embedding_fn_kwargs=[{"model": None}],
         ).create_combinations()
 
         # add sentence transformers once we have torch on the server..

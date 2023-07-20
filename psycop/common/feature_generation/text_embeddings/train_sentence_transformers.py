@@ -1,5 +1,6 @@
 """Train sentence transformer model using SimCSE loss on our data."""
-from typing import Literal, Sequence
+from collections.abc import Sequence
+from typing import Literal
 
 from sentence_transformers import InputExample, SentenceTransformer, losses
 from torch.utils.data import DataLoader
@@ -14,7 +15,9 @@ def get_train_text(
     train_splits: Sequence[Literal["train", "val"]],
 ) -> list[str]:
     text_df = load_text_split(
-        text_sfi_names=text_sfi_names, n_rows=n_rows, split_name=train_splits
+        text_sfi_names=text_sfi_names,
+        n_rows=n_rows,
+        split_name=train_splits,
     )
     return text_df["value"].tolist()
 
@@ -37,7 +40,10 @@ def make_data_loader(train_data: list[InputExample], batch_size: int) -> DataLoa
 
 
 def train_simcse_model(
-    dataloader: DataLoader, model: SentenceTransformer, epochs: int, model_name: str
+    dataloader: DataLoader,
+    model: SentenceTransformer,
+    epochs: int,
+    model_name: str,
 ):
     save_dir = TEXT_EMBEDDING_MODELS_DIR / model_name
     save_dir.mkdir(exist_ok=True, parents=True)
@@ -72,7 +78,10 @@ def train_simcse_model_from_text(
     train_data = convert_list_of_texts_to_sentence_pairs(texts=train_text)
     dataloader = make_data_loader(train_data=train_data, batch_size=batch_size)
     train_simcse_model(
-        dataloader=dataloader, model=model, epochs=epochs, model_name=model_save_name
+        dataloader=dataloader,
+        model=model,
+        epochs=epochs,
+        model_name=model_save_name,
     )
 
 
@@ -95,18 +104,20 @@ if __name__ == "__main__":
     EPOCHS = 1
     N_ROWS = 200
     TRAIN_SPLITS: Sequence[Literal["train", "val"]] = ["train"]
+    MODEL = "miniLM"
     # Exp 1: continue pretraining paraphrase-multilingual-MiniLM-L12-v2
-    model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
-    # Exp 2: continue pretraining model larger sequence length (e.g.
-    # NbAiLab/nb-roberta-base-scandi or chcaa/dfm-encoder-large-v1)
-    # model = SentenceTransformer("NbAiLab/nb-roberta-base-scandi")
+    model_options = {
+        "miniLM": "paraphrase-multilingual-MiniLM-L12-v2",
+        "scandi": "NbAiLab/nb-roberta-base-scandi",
+    }
+    model = SentenceTransformer(model_options[MODEL])
 
     train_simcse_model_from_text(
         model=model,
         text_sfi_names=TRAIN_SFIS,
         epochs=EPOCHS,
         batch_size=BATCH_SIZE,
-        model_save_name=f"{model}-finetuned-debug-{str(DEBUG)}",
+        model_save_name=f"{model_options[MODEL]}-finetuned-debug-{DEBUG!s}",
         n_rows=N_ROWS,
         train_splits=TRAIN_SPLITS,
         debug=DEBUG,
