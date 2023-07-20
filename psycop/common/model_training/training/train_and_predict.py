@@ -5,7 +5,7 @@ from typing import Any, Optional, Union
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import GroupKFold, StratifiedGroupKFold
+from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
@@ -109,9 +109,10 @@ def multilabel_cross_validation(
     msg.info("Creating folds")
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
 
-    folds = GroupKFold(n_splits=cfg.n_crossval_splits).split(
+    # stratify by first outcome column
+    folds = StratifiedGroupKFold(n_splits=cfg.n_crossval_splits).split(
         X=X,
-        y=y,
+        y=y[outcome_col_name[0]],
         groups=train_df[cfg.data.col_name.id],
     )
 
