@@ -223,8 +223,8 @@ def test_e2e_multilabel(tmp_path: Path):
 2,2020-01-03,0
 3,2020-01-03,1
 4,2020-01-03,0
-5,2020-01-03,0
-6,2020-01-03,1
+5,2020-01-03,1
+6,2020-01-03,0
 """,
     )
 
@@ -317,4 +317,4 @@ def test_e2e_multilabel(tmp_path: Path):
         split_names=["train"],
     )
 
-    assert round(auroc, 1) == 0.8
+    assert auroc == 1
