@@ -37,11 +37,11 @@ def make_text_output(cur_sfi: str, cur_text: str) -> str:
 """
 
 
-def write_to_file(sfi: str, index: str, useful: bool, notes: str):
+def write_to_file(sfi: str, index: str, useful: int, notes: str):
     if not LOGFILE.exists():
-        LOGFILE.write_text("overskrift,index,useful,notes\n")
+        LOGFILE.write_text("overskrift;index;useful;notes\n")
     with LOGFILE.open("a") as f:
-        f.write(f"{sfi},{index}{useful},{notes}\n")
+        f.write(f"{sfi};{index};{str(useful)};{notes}\n")
 
 
 def main(df: pd.DataFrame):
@@ -53,14 +53,14 @@ def main(df: pd.DataFrame):
             write_to_file(
                 sfi=row["overskrift"],
                 index=str(index),
-                useful=True,
+                useful=1,
                 notes="",
             )
         elif user_input == "b":
             write_to_file(
                 sfi=row["overskrift"],
                 index=str(index),
-                useful=False,
+                useful=0,
                 notes="",
             )
         elif user_input == "q":
@@ -72,14 +72,14 @@ def main(df: pd.DataFrame):
                 write_to_file(
                     sfi=row["overskrift"],
                     index=str(index),
-                    useful=True,
+                    useful=1,
                     notes=notes,
                 )
             elif quality == "b":
                 write_to_file(
                     sfi=row["overskrift"],
                     index=str(index),
-                    useful=False,
+                    useful=0,
                     notes=notes,
                 )
             else:
