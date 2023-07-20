@@ -214,15 +214,11 @@ class SczBpFeatureSpecifier:
     ) -> list[TextPredictorSpec]:
         log.info("-------- Generating text specs --------")
 
-        tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
-        )
-
         if self.min_set_for_debug:
             return []
         tfidf_specs = TextPredictorGroupSpec(
             named_dataframes=[
-                NamedDataframe(df=load_aktuel_psykisk(), name="aktuel_psykisk"),
+                NamedDataframe(df=load_aktuel_psykisk(), name="aktuel_psykisk"), # change
             ],
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
