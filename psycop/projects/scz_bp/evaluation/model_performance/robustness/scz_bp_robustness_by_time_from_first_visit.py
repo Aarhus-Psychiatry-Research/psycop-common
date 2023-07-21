@@ -4,14 +4,15 @@ import polars as pl
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_auroc_by_timedelta_df,
 )
+from psycop.projects.scz_bp.evaluation.pipeline_objects import PipelineRun
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+
+#### TODO: re-run feature generation to get the first visit column and rewrite this
 
 
-def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
+def scz_bp_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pl.DataFrame(
@@ -23,8 +24,6 @@ def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
         },
     )
 
-    # @Martin - correct me if I'm wrong, but isn't this rather the first prediction
-    # time than the first visit?
     first_visit = (
         df.sort("pred_timestamp", descending=False)
         .groupby("id")
@@ -51,6 +50,8 @@ def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
         ),
     )
 
+    print("RERUN FEATURE GENERATION AND USE CORRECT TIMES FOR FIRST VISIT")
+
     return t2d_plot_robustness(
         plot_df,
         x_column="unit_from_event_binned",
@@ -60,4 +61,8 @@ def t2d_auroc_by_time_from_first_visit(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_time_from_first_visit(run=BEST_EVAL_PIPELINE)
+    from psycop.projects.scz_bp.evaluation.model_selection.performance_by_group_lookahead_model_type import (
+        DEVELOPMENT_PIPELINE_RUN,
+    )
+
+    scz_bp_auroc_by_time_from_first_visit(run=DEVELOPMENT_PIPELINE_RUN)

@@ -30,12 +30,16 @@ def get_col_names(
         and str(cfg.preprocessing.pre_split.min_lookahead_days) in c
     ]
 
-    if len(potential_outcome_col_names) != 1:
-        raise ValueError(
-            "More than one outcome column found. Please make outcome column names unambiguous.",
-        )
+    if cfg.preprocessing.pre_split.keep_only_one_outcome_col:
+        if len(potential_outcome_col_names) != 1:
+            raise ValueError(
+                "More than one outcome column found. Please make outcome column names unambiguous.",
+            )
 
-    outcome_col_name = potential_outcome_col_names[0]
+        outcome_col_name = potential_outcome_col_names[0]
+
+    else:
+        outcome_col_name = potential_outcome_col_names
 
     train_col_names = [
         c
@@ -43,7 +47,7 @@ def get_col_names(
         if c.startswith(cfg.data.pred_prefix) and "uuid" not in c
     ]
 
-    return outcome_col_name, train_col_names
+    return outcome_col_name, train_col_names  # type: ignore
 
 
 def infer_look_distance(
