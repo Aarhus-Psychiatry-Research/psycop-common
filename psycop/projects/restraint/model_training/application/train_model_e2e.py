@@ -42,7 +42,7 @@ from psycop.common.model_training.utils.col_name_inference import get_col_names
 log = logging.getLogger(__name__)
 
 
-def load_datasets(cfg: FullConfigSchema):
+def load_datasets(cfg: FullConfigSchema) -> pd.DataFrame:
     train_datasets = pd.concat(
         [
             load_and_filter_split_from_cfg(
@@ -87,7 +87,7 @@ def train_remove_days(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
             train_col_names=train_col_names,
         ).evaluate_and_save_eval_data()
 
-        with open("outputs/log.log", "a+") as log:
+        with Path.open("outputs/log.log", "a+") as log:  # type: ignore
             log.write(f"{day}: {auroc}\n")
 
 
@@ -127,7 +127,7 @@ def train_add_features(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
         train_col_names=predictor_names,
     ).evaluate_and_save_eval_data()
 
-    with open("outputs/log.log", "a+") as log:
+    with Path.open("outputs/log.log", "a+") as log:  # type: ignore
         log.write(f"Baseline: {auroc}\n")
 
     for pred_type in pred_types:
@@ -154,7 +154,7 @@ def train_add_features(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
             train_col_names=predictor_names,
         ).evaluate_and_save_eval_data()
 
-        with open("outputs/log.log", "a+") as log:
+        with Path.open("outputs/log.log", "a+") as log:  # type: ignore
             log.write(f"{pred_type}: {auroc}\n")
 
 
