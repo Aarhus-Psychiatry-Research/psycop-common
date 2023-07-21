@@ -31,7 +31,7 @@ def main(
     trainer_specs = SearchSpaceInferrer(
         cfg=cfg,
         train_df=train_df,
-        model_names=["xgboost", "logistic-regression"],
+        model_names=["xgboost"],
     ).get_trainer_specs()
 
     spawn_trainers(
@@ -40,7 +40,7 @@ def main(
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
         train_single_model_file_path=Path(
-            "src/restraint/model_training/application/train_model_from_application_module.py",
+            "psycop/projects/restraint/model_training/application/train_model_from_application_module.py",
         ),
     )
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # before adding wandb_alert_on_exception decorator
     cfg, wandb_group = setup(
         config_file_name=CONFIG_FILE_NAME,
-        application_config_dir_relative_path="../../../../../../restraint/model_training/application/config/",
+        application_config_dir_relative_path="../../../projects/restraint/model_training/application/config/",
     )
 
     main(cfg=cfg, wandb_group=wandb_group)

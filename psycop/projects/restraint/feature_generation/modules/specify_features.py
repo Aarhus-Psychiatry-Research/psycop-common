@@ -67,9 +67,14 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     anxiolytics,
     clozapine,
     hypnotics,
+    hypnotics_and_rivotril,
     lithium,
+    mood_stabilisers,
+    nervous_system_stimulants,
+    non_sedative_antipsychotics,
     opioid_dependence,
     pregabaline,
+    sedative_antipsychotics,
 )
 from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     bmi,
@@ -266,47 +271,65 @@ class FeatureSpecifier:
                     name="antipsychotics_po",
                 ),
                 NamedDataframe(
-                    df=antipsychotics(
-                        administration_method="Fast",
-                        administration_route="IM",
-                    ),
-                    name="antipsychotics_fast_im",
+                    df=sedative_antipsychotics(administration_method="Fast"),
+                    name="sedative_antipsychotics_fast",
                 ),
                 NamedDataframe(
-                    df=antipsychotics(
-                        administration_method="Fast",
-                        administration_route="PO",
-                    ),
-                    name="antipsychotics_fast_po",
+                    df=sedative_antipsychotics(administration_method="PN"),
+                    name="sedative_antipsychotics_pn",
                 ),
                 NamedDataframe(
-                    df=antipsychotics(
-                        administration_method="PN",
-                        administration_route="IM",
-                    ),
-                    name="antipsychotics_pn_im",
+                    df=sedative_antipsychotics(administration_method="Engangs"),
+                    name="sedative_antipsychotics_engangs",
                 ),
                 NamedDataframe(
-                    df=antipsychotics(
-                        administration_method="PN",
-                        administration_route="PO",
-                    ),
-                    name="antipsychotics_pn_po",
+                    df=sedative_antipsychotics(administration_route="IM"),
+                    name="sedative_antipsychotics_im",
                 ),
                 NamedDataframe(
-                    df=antipsychotics(
-                        administration_method="Engangs",
-                        administration_route="IM",
-                    ),
-                    name="antipsychotics_engangs_im",
+                    df=sedative_antipsychotics(administration_route="PO"),
+                    name="sedative_antipsychotics_po",
                 ),
-                # NamedDataframe(
-                #     df=antipsychotics(
-                #         administration_method="Engangs",
-                #         administration_route="PO",
-                #     ),
-                #     name="antipsychotics_engangs_po",
-                # ),
+                NamedDataframe(
+                    df=non_sedative_antipsychotics(administration_method="Fast"),
+                    name="non_sedative_antipsychotics_fast",
+                ),
+                NamedDataframe(
+                    df=non_sedative_antipsychotics(administration_method="PN"),
+                    name="non_sedative_antipsychotics_pn",
+                ),
+                NamedDataframe(
+                    df=non_sedative_antipsychotics(administration_method="Engangs"),
+                    name="non_sedative_antipsychotics_engangs",
+                ),
+                NamedDataframe(
+                    df=non_sedative_antipsychotics(administration_route="IM"),
+                    name="non_sedative_antipsychotics_im",
+                ),
+                NamedDataframe(
+                    df=non_sedative_antipsychotics(administration_route="PO"),
+                    name="non_sedative_antipsychotics_po",
+                ),
+                NamedDataframe(
+                    df=clozapine(administration_method="Fast"),
+                    name="clozapine_fast",
+                ),
+                NamedDataframe(
+                    df=clozapine(administration_method="PN"),
+                    name="clozapine_pn",
+                ),
+                NamedDataframe(
+                    df=clozapine(administration_method="Engangs"),
+                    name="clozapine_engangs",
+                ),
+                NamedDataframe(
+                    df=clozapine(administration_route="IM"),
+                    name="clozapine_im",
+                ),
+                NamedDataframe(
+                    df=clozapine(administration_route="PO"),
+                    name="clozapine_po",
+                ),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
                 NamedDataframe(
                     df=anxiolytics(administration_method="Fast"),
@@ -319,6 +342,18 @@ class FeatureSpecifier:
                 NamedDataframe(
                     df=anxiolytics(administration_method="Engangs"),
                     name="anxiolytics_engangs",
+                ),
+                NamedDataframe(
+                    df=pregabaline(administration_method="Fast"),
+                    name="pregabaline_fast",
+                ),
+                NamedDataframe(
+                    df=pregabaline(administration_method="PN"),
+                    name="pregabaline_pn",
+                ),
+                NamedDataframe(
+                    df=pregabaline(administration_method="Engangs"),
+                    name="pregabaline_engangs",
                 ),
                 NamedDataframe(df=hypnotics(), name="hypnotics_and_sedatives"),
                 NamedDataframe(
@@ -352,6 +387,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
                 NamedDataframe(df=lithium(), name="lithium"),
                 NamedDataframe(df=alcohol_abstinence(), name="alcohol_abstinence"),
+                NamedDataframe(df=opioid_dependence(), name="opioid_dependence"),
                 NamedDataframe(df=clozapine(), name="clozapine"),
                 NamedDataframe(df=pregabaline(), name="pregabaline"),
                 NamedDataframe(df=mood_stabilisers(), name="mood_stabilisers"),
