@@ -103,7 +103,7 @@ def multilabel_cross_validation(
     """Performs stratified and grouped cross validation using the pipeline."""
     if cfg.model.name not in SUPPORTS_MULTILABEL_CLASSIFICATION:
         raise ValueError(
-            f"{cfg.model.name} does not support multilabel classification. Models that support multilabel classification include: {SUPPORTS_MULTILABEL_CLASSIFICATION}."
+            f"{cfg.model.name} does not support multilabel classification. Models that support multilabel classification include: {SUPPORTS_MULTILABEL_CLASSIFICATION}.",
         )
 
     msg = Printer(timestamp=True)

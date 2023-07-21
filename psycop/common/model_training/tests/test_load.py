@@ -85,7 +85,8 @@ def test_validate_classification_objective(muteable_test_config: FullConfigSchem
     if cfg.preprocessing.pre_split.classification_objective == "binary":
         with pytest.raises(AssertionError):
             validate_classification_objective(
-                cfg=cfg, col_names=["outc_event1", "outc_event2"]
+                cfg=cfg,
+                col_names=["outc_event1", "outc_event2"],
             )
 
         assert (
@@ -98,7 +99,8 @@ def test_validate_classification_objective(muteable_test_config: FullConfigSchem
 
         assert (
             validate_classification_objective(
-                cfg=cfg, col_names=["outc_event1", "outc_event2"]
+                cfg=cfg,
+                col_names=["outc_event1", "outc_event2"],
             )
             is None
         )

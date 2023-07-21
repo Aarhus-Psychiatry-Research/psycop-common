@@ -87,7 +87,8 @@ def load_test_cfg_as_pydantic(
 
 
 def validate_classification_objective(
-    cfg: FullConfigSchema, col_names: Union[str, list[str]]
+    cfg: FullConfigSchema,
+    col_names: Union[str, list[str]],
 ):
     if cfg.preprocessing.pre_split.classification_objective == "binary":
         if isinstance(col_names, str):
