@@ -1,3 +1,4 @@
+import logging
 import re
 from pathlib import Path
 
@@ -38,10 +39,10 @@ from psycop.common.model_training.training.train_and_predict import train_and_pr
 from psycop.common.model_training.training_output.model_evaluator import ModelEvaluator
 from psycop.common.model_training.utils.col_name_inference import get_col_names
 
+log = logging.getLogger(__name__)
 
-def train_e2e(cfg: FullConfigSchema):
-    WandbHandler(cfg=cfg).setup_wandb()
 
+def load_datasets(cfg: FullConfigSchema) -> pd.DataFrame:
     train_datasets = pd.concat(
         [
             load_and_filter_split_from_cfg(
@@ -53,6 +54,45 @@ def train_e2e(cfg: FullConfigSchema):
         ignore_index=True,
     )
 
+    return train_datasets
+
+
+def train_remove_days(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
+    WandbHandler(cfg=cfg).setup_wandb()
+
+    pipe = create_post_split_pipeline(cfg)
+    outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
+
+    for day in range(160, 16, -10):
+        train_dataset = train_datasets[
+            train_datasets.pred_adm_day_count < day
+        ].reset_index(drop=True)
+
+        eval_dataset = train_and_predict(
+            cfg=cfg,
+            train_datasets=train_dataset,
+            pipe=pipe,
+            outcome_col_name=outcome_col_name,
+            train_col_names=train_col_names,
+        )
+
+        eval_dir = get_eval_dir(cfg)
+
+        auroc = ModelEvaluator(
+            eval_dir_path=eval_dir,
+            cfg=cfg,
+            pipe=pipe,
+            eval_ds=eval_dataset,
+            outcome_col_name=outcome_col_name,
+            train_col_names=train_col_names,
+        ).evaluate_and_save_eval_data()
+
+        with Path.open("outputs/log.log", "a+") as log:  # type: ignore
+            log.write(f"{day}: {auroc}\n")
+
+
+def train_add_features(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
+    WandbHandler(cfg=cfg).setup_wandb()
     pipe = create_post_split_pipeline(cfg)
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
@@ -86,6 +126,9 @@ def train_e2e(cfg: FullConfigSchema):
         train_col_names=predictor_names,
     ).evaluate_and_save_eval_data()
 
+    with Path.open("outputs/log.log", "a+") as log:  # type: ignore
+        log.write(f"Baseline: {auroc}\n")
+
     for pred_type in pred_types:
         predictor_names += [
             c for c in train_col_names if pred_type[0] in c and c not in predictor_names
@@ -110,7 +153,43 @@ def train_e2e(cfg: FullConfigSchema):
             train_col_names=predictor_names,
         ).evaluate_and_save_eval_data()
 
-        print(pred_type, auroc)
+        with Path.open("outputs/log.log", "a+") as log:  # type: ignore
+            log.write(f"{pred_type}: {auroc}\n")
+
+
+def train_multilabel(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
+    WandbHandler(cfg=cfg).setup_wandb()
+
+    pipe = create_post_split_pipeline(cfg)
+    outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
+
+    train_datasets = train_datasets.drop(
+        columns=[
+            "outcome_coercion_bool_within_2_days",
+            "outcome_coercion_type_within_2_days",
+        ],
+    )
+
+    eval_dataset = train_and_predict(
+        cfg=cfg,
+        train_datasets=train_datasets,
+        pipe=pipe,
+        outcome_col_name=outcome_col_name,
+        train_col_names=train_col_names,
+    )
+
+    eval_dir = get_eval_dir(cfg)
+
+    auroc = ModelEvaluator(
+        eval_dir_path=eval_dir,
+        cfg=cfg,
+        pipe=pipe,
+        eval_ds=eval_dataset,
+        outcome_col_name=outcome_col_name,
+        train_col_names=train_col_names,
+    ).evaluate_and_save_eval_data()
+
+    print(auroc)
 
 
 if __name__ == "__main__":
@@ -123,7 +202,7 @@ if __name__ == "__main__":
     cfg = FullConfigSchema(
         project=ProjectSchema(
             wandb=WandbSchema(
-                group="test_group",
+                group="days",
                 mode="offline",
                 entity="test_entity",
             ),
@@ -139,7 +218,7 @@ if __name__ == "__main__":
                 age="pred_age_in_years",
                 is_female="pred_sex_female",
                 id="dw_ek_borger",
-                outcome_timestamp="outcome_timestamp",  # outcome_timestamp="timestamp_outcome",
+                outcome_timestamp="timestamp_outcome",
             ),
             pred_prefix=project_info.prefix.predictor,
             outc_prefix=project_info.prefix.outcome,
@@ -165,7 +244,8 @@ if __name__ == "__main__":
             require_imputation=False,
             args={},
         ),
-        n_crossval_splits=5,
+        n_crossval_splits=3,
     )
 
-    train_e2e(cfg)
+    data = load_datasets(cfg)
+    train_remove_days(cfg, data)

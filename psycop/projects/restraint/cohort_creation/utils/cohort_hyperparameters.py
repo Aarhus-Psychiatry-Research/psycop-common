@@ -102,6 +102,28 @@ def create_binary_and_categorical_labels_with_lookahead(
         f"outcome_coercion_bool_within_{lookahead_days}_days",
     ] = 1
 
+    # Mechanical restraint bool
+    df[f"outcome_mechanical_restraint_bool_within_{lookahead_days}_days"] = 0
+    df.loc[
+        (
+            df["diff_first_mechanical_restraint"]
+            < pd.Timedelta(f"{lookahead_days} days")
+        ),
+        f"outcome_mechanical_restraint_bool_within_{lookahead_days}_days",
+    ] = 1
+
+    df[f"outcome_chemical_restraint_bool_within_{lookahead_days}_days"] = 0
+    df.loc[
+        (df["diff_first_forced_medication"] < pd.Timedelta(f"{lookahead_days} days")),
+        f"outcome_chemical_restraint_bool_within_{lookahead_days}_days",
+    ] = 1
+
+    df[f"outcome_manual_restraint_bool_within_{lookahead_days}_days"] = 0
+    df.loc[
+        (df["diff_first_manual_restraint"] < pd.Timedelta(f"{lookahead_days} days")),
+        f"outcome_manual_restraint_bool_within_{lookahead_days}_days",
+    ] = 1
+
     # Outcome type
     df[f"outcome_coercion_type_within_{lookahead_days}_days"] = 0
 
