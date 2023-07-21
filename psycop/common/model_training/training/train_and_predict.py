@@ -15,6 +15,7 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 from psycop.common.model_training.training.model_specs import MODELS
 from psycop.common.model_training.training.utils import create_eval_dataset
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.common.model_training.utils.utils import SUPPORTS_MULTILABEL_CLASSIFICATION
 
 CONFIG_PATH = PSYCOP_PKG_ROOT / "application" / "config"
 
@@ -33,7 +34,7 @@ def create_model(cfg: FullConfigSchema) -> Any:
     training_arguments = cfg.model.args
     model_args.update(training_arguments)
 
-    if cfg.preprocessing.pre_split.keep_only_one_outcome_col is False:
+    if cfg.preprocessing.pre_split.classification_objective == "multilabel":
         return MultiOutputClassifier(model_dict["model"](**model_args))
 
     return model_dict["model"](**model_args)
@@ -100,6 +101,11 @@ def multilabel_cross_validation(
     outcome_col_name: list[str],
 ) -> pd.DataFrame:
     """Performs stratified and grouped cross validation using the pipeline."""
+    if cfg.model.name not in SUPPORTS_MULTILABEL_CLASSIFICATION:
+        raise ValueError(
+            f"{cfg.model.name} does not support multilabel classification. Models that support multilabel classification include: {SUPPORTS_MULTILABEL_CLASSIFICATION}."
+        )
+
     msg = Printer(timestamp=True)
 
     X = train_df[train_col_names]
@@ -349,14 +355,14 @@ def train_and_predict(
     if cfg.model.name in ("ebm", "xgboost"):
         pipe["model"].feature_names = train_col_names  # type: ignore
 
-    if isinstance(outcome_col_name, str):
+    if cfg.preprocessing.pre_split.classification_objective == "binary":
         if val_datasets is not None:  # train on pre-defined splits
             eval_dataset = train_validate(
                 cfg=cfg,
                 train=train_datasets,
                 val=val_datasets,
                 pipe=pipe,
-                outcome_col_name=outcome_col_name,
+                outcome_col_name=outcome_col_name,  # type: ignore
                 train_col_names=train_col_names,
             )
         else:
@@ -364,18 +370,18 @@ def train_and_predict(
                 cfg=cfg,
                 train=train_datasets,
                 pipe=pipe,
-                outcome_col_name=outcome_col_name,
+                outcome_col_name=outcome_col_name,  # type: ignore
                 train_col_names=train_col_names,
             )
 
-    else:
+    elif cfg.preprocessing.pre_split.classification_objective == "multilabel":
         if val_datasets is not None:
             eval_dataset = multilabel_train_validate(
                 cfg=cfg,
                 train=train_datasets,
                 val=val_datasets,
                 pipe=pipe,
-                outcome_col_name=outcome_col_name,
+                outcome_col_name=outcome_col_name,  # type: ignore
                 train_col_names=train_col_names,
             )
         else:
@@ -383,8 +389,8 @@ def train_and_predict(
                 cfg=cfg,
                 train=train_datasets,
                 pipe=pipe,
-                outcome_col_name=outcome_col_name,
+                outcome_col_name=outcome_col_name,  # type: ignore
                 train_col_names=train_col_names,
             )
 
-    return eval_dataset
+    return eval_dataset  # type: ignore
