@@ -292,6 +292,7 @@ def test_e2e_multilabel(tmp_path: Path):
                 drop_visits_after_exclusion_timestamp=False,
                 drop_rows_after_outcome=False,
                 keep_only_one_outcome_col=False,
+                classification_objective="multilabel",
             ),
             post_split=PostSplitPreprocessingConfigSchema(
                 imputation_method=None,
@@ -317,4 +318,4 @@ def test_e2e_multilabel(tmp_path: Path):
         split_names=["train"],
     )
 
-    assert auroc == 0.5
+    assert auroc == 1
