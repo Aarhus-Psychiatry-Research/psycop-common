@@ -15,7 +15,7 @@ class EmbeddedTextLoader:
         ]
         if invalid_sfi_names:
             raise ValueError(
-                f"Invalid sfi names: {invalid_sfi_names}. Valid sfi names are: {valid_sfi_names}"
+                f"Invalid sfi names: {invalid_sfi_names}. Valid sfi names are: {valid_sfi_names}",
             )
 
     @staticmethod
@@ -23,7 +23,7 @@ class EmbeddedTextLoader:
         EmbeddedTextLoader._validate_sfi_names(text_sfi_names=text_sfi_names)
         if not (TEXT_EMBEDDINGS_DIR / filename).exists():
             raise FileNotFoundError(
-                f"File {filename} not found in {TEXT_EMBEDDINGS_DIR}"
+                f"File {filename} not found in {TEXT_EMBEDDINGS_DIR}",
             )
 
     @staticmethod
@@ -50,7 +50,7 @@ class EmbeddedTextLoader:
         )
 
         embedded_text_df = pl.scan_parquet(TEXT_EMBEDDINGS_DIR / filename).filter(
-            pl.col("overskrift").is_in(text_sfi_names)
+            pl.col("overskrift").is_in(text_sfi_names),
         )
         if n_rows is not None:
             embedded_text_df = embedded_text_df.head(n_rows)
