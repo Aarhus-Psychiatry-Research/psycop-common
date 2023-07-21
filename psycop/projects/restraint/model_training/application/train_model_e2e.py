@@ -250,4 +250,3 @@ if __name__ == "__main__":
 
     data = load_datasets(cfg)
     train_remove_days(cfg, data)
-

@@ -245,10 +245,12 @@ class FeatureSpecifier:
             named_dataframes=(
                 NamedDataframe(df=antipsychotics(), name="antipsychotics"),
                 NamedDataframe(
-                    df=sedative_antipsychotics(), name="sedative_antipsychotics"
+                    df=sedative_antipsychotics(),
+                    name="sedative_antipsychotics",
                 ),
                 NamedDataframe(
-                    df=non_sedative_antipsychotics(), name="non_sedative_antipsychotics"
+                    df=non_sedative_antipsychotics(),
+                    name="non_sedative_antipsychotics",
                 ),
                 NamedDataframe(
                     df=antipsychotics(administration_method="Fast"),
@@ -392,7 +394,8 @@ class FeatureSpecifier:
                 NamedDataframe(df=pregabaline(), name="pregabaline"),
                 NamedDataframe(df=mood_stabilisers(), name="mood_stabilisers"),
                 NamedDataframe(
-                    df=nervous_system_stimulants(), name="nervous_system_stimulants"
+                    df=nervous_system_stimulants(),
+                    name="nervous_system_stimulants",
                 ),
             ),
             lookbehind_days=interval_days,

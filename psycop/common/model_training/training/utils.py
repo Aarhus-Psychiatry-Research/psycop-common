@@ -1,5 +1,6 @@
 """Utility functions for model training."""
 from typing import Union
+
 import pandas as pd
 
 from psycop.common.model_training.config_schemas.data import ColumnNamesSchema
