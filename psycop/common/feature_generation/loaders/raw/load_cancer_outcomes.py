@@ -1,13 +1,8 @@
 """Loaders for cancer outcomes."""
 #from __future__ import annotations
-
-from typing import Literal
-
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import from_contacts
-from psycop.common.feature_generation.utils import data_loaders
 
 
 # LPR3, both in and outpatient
@@ -46,7 +41,23 @@ df_lpr2_outp_preproc.rename(columns={
 
 
 # Combine all
-all_visits_combined = pd.concat([df_lpr3_preproc, df_lpr2_inp_preproc, df_lpr2_outp_preproc])
+all_visits_combined = pd.concat([df_lpr3_preproc, df_lpr2_inp_preproc, df_lpr2_outp_preproc], ignore_index=True)
 
-df_first_psych_visit = 
+#extract first visit to psych in RM
+df_first_psych_visit = all_visits_combined[all_visits_combined["shakafskode"].str.startswith("6600")].groupby(["dw_ek_borger"])["datotid_start"].min().to_frame().reset_index()
+df_first_psych_visit.rename(columns={"datotid_start": "datotid_first_psych_visit"}, inplace = True)
 
+
+# Extract cancer diagnosis
+DIAGNOSIS_CODE = "DC"
+
+df_cancer_visits = all_visits_combined[all_visits_combined["adiagnosekode"].str.startswith(DIAGNOSIS_CODE, na=False)]
+
+#only include patient that have been diagnosed with cancer after their first visit to psychiatry and after 2013
+df_cancer_visits_ = df_cancer_visits.merge(df_first_psych_visit, on="dw_ek_borger")
+
+df_cancer_visits_after_first_psych_visit = df_cancer_visits_[(df_cancer_visits_["datotid_start"] > df_cancer_visits_["datotid_first_psych_visit"]) & (df_cancer_visits_["datotid_start"] > "2013-01-01")]
+
+
+# Extract only the first visit
+df_cancer_visits_after_first_psych_visit_only_first = df_cancer_visits_after_first_psych_visit.loc[df_cancer_visits_after_first_psych_visit.groupby(["dw_ek_borger"])["datotid_start"].idxmin()].reset_index(drop=True)
