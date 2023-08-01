@@ -13,17 +13,17 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
 from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     CancerMinAgeFilter,
     CancerMinDateFilter,
-    CancerWashoutMoveFilter,
+#    CancerWashoutMoveFilter,
     CancerPrevalentFilter,
-
+)
 from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.first_cancer_diagnosis import(
-    get_first_cancer_diagnosis
+    get_first_cancer_diagnosis,
 )
 
 
 class CancerCohortDefiner(CohortDefiner):
     @staticmethod
-    def get_filtered_prediction_times_bundle(): -> FilteredPredictionTimeBundle:
+    def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.from_pandas(
             physical_visits_to_psychiatry(
                 timestamps_only=True,

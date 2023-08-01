@@ -9,11 +9,11 @@ from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
 
-from psycop.projects.cancer.feature_generation.eligible_prediction_times.add_age import(
+from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.add_age import(
     add_age,
 )
 
-from psycop.projects.cancer.feature_generation.eligible_prediction_times.cancer_eligible_config import (
+from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.cancer_eligible_config import (
     AGE_COL_NAME,
     MIN_AGE,
     MIN_DATE,
@@ -50,12 +50,12 @@ class CancerWashoutMoveFilter(PredictionTimeFilter):
         )
 
         return not_within_two_years_from_move
-    
+
 
 class CancerPrevalentFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
-        first_cancer_diagnosis = get_first_cancer_diagnosis().select(
+        first_cancer_diagnosis = pl.from_pandas(get_first_cancer_diagnosis()).select(
             pl.col("timestamp").alias("timestamp_outcome"),
             pl.col("dw_ek_borger"),
         )

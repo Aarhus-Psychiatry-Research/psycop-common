@@ -4,11 +4,10 @@ from typing import Callable
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import (
-    count, 
-    latest, 
-    maximum, 
-    mean, 
-    minimum
+    latest,
+    maximum,
+    mean,
+    minimum,
 )
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
@@ -72,16 +71,12 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     height_in_cm,
     weight_in_kg,
 )
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    get_time_of_first_visit_to_psychiatry,
-)
+
 from psycop.projects.cancer.feature_generation.cohort_definition.cancer_cohort_definer import (
     CancerCohortDefiner,
 )
-from psycop.projects.cancer.feature_generation.outcome_specification.first_cancer_diagnosis import (
-    get_first_cancer_diagnosis,
+from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.first_cancer_diagnosis import (
     get_type_of_first_cancer_diagnosis,
-    get_time_of_first_cancer_diagnosis,
 )
 
 log = logging.getLogger(__name__)
@@ -124,17 +119,7 @@ class FeatureSpecifier:
         return [
             StaticSpec(
                 feature_base_name="cancer_type_indicator",
-                timeseries_df=get_type_of_first_cancer_diagnosis().to_pandas(),
-                prefix="meta",
-            ),
-            StaticSpec(
-                feature_base_name="time_of_diagnosis",
-                timeseries_df=get_time_of_first_cancer_diagnosis().to_pandas(),
-                prefix="",
-            ),
-            StaticSpec(
-                feature_base_name="first_visit",
-                timeseries_df=get_time_of_first_visit_to_psychiatry().to_pandas(),
+                timeseries_df=get_type_of_first_cancer_diagnosis(),
                 prefix="meta",
             ),
         ]
@@ -268,7 +253,7 @@ class FeatureSpecifier:
             fallback=[np.nan],
         ).create_combinations()
 
-        return general_lab_results  # + diabetes_lab_results
+        return general_lab_results
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -286,7 +271,7 @@ class FeatureSpecifier:
                 ),
             ]
 
-        resolve_multiple = [maximum, minimum, mean, latest, count]
+        resolve_multiple = [maximum, minimum, mean, latest]
         interval_days: list[float] = [30, 180, 365, 730, 1095, 1460, 1825]
 
         lab_results = self._get_lab_result_specs(
