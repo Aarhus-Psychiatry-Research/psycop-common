@@ -1,5 +1,6 @@
 """Train sentence transformer model using SimCSE loss on our data."""
 from collections.abc import Sequence
+from time import time
 from typing import Literal
 
 from sentence_transformers import InputExample, SentenceTransformer, losses
@@ -49,12 +50,15 @@ def train_simcse_model(
     save_dir.mkdir(exist_ok=True, parents=True)
     # use SimCSE loss for unsupervised training
     train_loss = losses.MultipleNegativesRankingLoss(model)
+    t0 = time()
     model.fit(
         train_objectives=[(dataloader, train_loss)],
         epochs=epochs,
         show_progress_bar=True,
     )
     model.save(str(save_dir))
+    print(f"Model saved to {save_dir}")
+    print(f"Time taken: {time() - t0}")
 
 
 def train_simcse_model_from_text(
@@ -86,7 +90,7 @@ def train_simcse_model_from_text(
 
 
 if __name__ == "__main__":
-    DEBUG = True
+    DEBUG = False
     TRAIN_SFIS = [
         "Observation af patient, Psykiatri",
         "Samtale med behandlingssigte",
@@ -101,8 +105,8 @@ if __name__ == "__main__":
         "Vurdering/konklusion",
     ]
     BATCH_SIZE = 128
-    EPOCHS = 1
-    N_ROWS = 200
+    EPOCHS = 2
+    N_ROWS = None
     TRAIN_SPLITS: Sequence[Literal["train", "val"]] = ["train"]
     MODEL = "miniLM"
     # Exp 1: continue pretraining paraphrase-multilingual-MiniLM-L12-v2

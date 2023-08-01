@@ -41,6 +41,9 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f8_disorders,
     f9_disorders,
 )
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
+    EmbeddedTextLoader,
+)
 from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     antipsychotics,
@@ -59,6 +62,9 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
 from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,
+)
+from psycop.common.feature_generation.text_embeddings.train_sentence_transformers import (
+    TRAIN_SFIS,
 )
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
@@ -212,27 +218,34 @@ class SczBpFeatureSpecifier:
         interval_days: list[float],
     ) -> list[TextPredictorSpec]:
         log.info("-------- Generating text specs --------")
+        embedded_text_filename = (
+            "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
+        )
+        embedded_text = EmbeddedTextLoader.load_embedded_text(
+            filename=embedded_text_filename,
+            text_sfi_names=TRAIN_SFIS,
+            include_sfi_name=False,
+            n_rows=None,
+        )
+        embedded_text = df_with_multiple_values_to_named_dataframes(
+            df=embedded_text,
+            entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="timestamp",
+            name_prefix="sent_emb",
+        )
 
         if self.min_set_for_debug:
             return []
-        tfidf_specs = TextPredictorGroupSpec(
-            named_dataframes=[
-                NamedDataframe(
-                    df=load_aktuel_psykisk(),
-                    name="aktuel_psykisk",
-                ),  # change
-            ],
+        text_specs = PredictorGroupSpec(
+            named_dataframes=embedded_text,
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
-            embedding_fn_name="tfidf",
             fallback=[np.nan],
-            embedding_fn=[sklearn_embedding],
-            embedding_fn_kwargs=[{"model": None}],
         ).create_combinations()
 
         # add sentence transformers once we have torch on the server..
 
-        return tfidf_specs
+        return text_specs
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec | TextPredictorSpec]:
         """Generate predictor spec list."""
