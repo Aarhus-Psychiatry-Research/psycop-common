@@ -13,6 +13,13 @@ from psycop.projects.cancer.cancer_config import (
 )
 
 if __name__ == "__main__":
+    # will not run without this chunk, should be fixed properly at some point
+    if sys.platform == "win32":
+        (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
+            exist_ok=True,
+            parents=True,
+        )
+        
     init_wandb_and_generate_feature_set(
         project_info=get_cancer_project_info(),
         eligible_prediction_times=CancerCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),

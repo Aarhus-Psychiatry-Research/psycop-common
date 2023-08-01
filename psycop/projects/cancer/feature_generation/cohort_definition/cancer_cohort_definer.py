@@ -13,7 +13,7 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
 from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     CancerMinAgeFilter,
     CancerMinDateFilter,
-#    CancerWashoutMoveFilter,
+    CancerWashoutMoveFilter,
     CancerPrevalentFilter,
 )
 from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.first_cancer_diagnosis import(
@@ -32,10 +32,11 @@ class CancerCohortDefiner(CohortDefiner):
         )
     
         return filter_prediction_times(
-            prediction_times=unfiltered_prediction_times, 
+            prediction_times=unfiltered_prediction_times,
             filtering_steps=(
                 CancerMinDateFilter(),
                 CancerMinAgeFilter(),
+                CancerWashoutMoveFilter(),
                 CancerPrevalentFilter(),
             ),
             entity_id_col_name="dw_ek_borger",

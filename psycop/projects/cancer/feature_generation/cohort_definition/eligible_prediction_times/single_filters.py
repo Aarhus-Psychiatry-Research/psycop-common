@@ -39,17 +39,17 @@ class CancerMinAgeFilter(PredictionTimeFilter):
 class CancerWashoutMoveFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
-        not_within_two_years_from_move = pl.from_pandas(
+        not_within_half_a_year_from_move = pl.from_pandas(
             PredictionTimeFilterer(
                 prediction_times_df=df.to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
-                quarantine_interval_days=730,
+                quarantine_interval_days=182,
                 timestamp_col_name="timestamp",
             ).run_filter(),
         )
 
-        return not_within_two_years_from_move
+        return not_within_half_a_year_from_move
 
 
 class CancerPrevalentFilter(PredictionTimeFilter):
