@@ -10,6 +10,9 @@ from timeseriesflattener.aggregation_fns import (
     mean,
     minimum,
 )
+from timeseriesflattener.df_transforms import (
+    df_with_multiple_values_to_named_dataframes,
+)
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
@@ -216,7 +219,7 @@ class SczBpFeatureSpecifier:
         self,
         resolve_multiple: list[Callable],
         interval_days: list[float],
-    ) -> list[TextPredictorSpec]:
+    ) -> list[PredictorSpec]:
         log.info("-------- Generating text specs --------")
         embedded_text_filename = (
             "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
@@ -226,7 +229,8 @@ class SczBpFeatureSpecifier:
             text_sfi_names=TRAIN_SFIS,
             include_sfi_name=False,
             n_rows=None,
-        )
+        ).to_pandas()
+
         embedded_text = df_with_multiple_values_to_named_dataframes(
             df=embedded_text,
             entity_id_col_name="dw_ek_borger",
@@ -243,11 +247,10 @@ class SczBpFeatureSpecifier:
             fallback=[np.nan],
         ).create_combinations()
 
-        # add sentence transformers once we have torch on the server..
 
         return text_specs
 
-    def _get_temporal_predictor_specs(self) -> list[PredictorSpec | TextPredictorSpec]:
+    def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("-------- Generating temporal predictor specs --------")
 
