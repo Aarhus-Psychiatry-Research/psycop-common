@@ -115,11 +115,13 @@ def multilabel_cross_validation(
     msg.info("Creating folds")
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
 
+    y_joined = y.astype(int).astype(str).apply("".join, axis=1)
+
     # stratify by first outcome column
     folds = StratifiedGroupKFold(n_splits=cfg.n_crossval_splits).split(
         X=X,
         y=y[outcome_col_name[0]],
-        groups=train_df[cfg.data.col_name.id],
+        groups=y_joined,
     )
 
     msg.info(
