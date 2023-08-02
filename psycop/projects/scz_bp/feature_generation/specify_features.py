@@ -17,16 +17,13 @@ from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
     PredictorGroupSpec,
-    TextPredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
     AnySpec,
     OutcomeSpec,
     PredictorSpec,
     StaticSpec,
-    TextPredictorSpec,
 )
-from timeseriesflattener.text_embedding_functions import sklearn_embedding
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
@@ -62,12 +59,8 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     tca,
     valproate,
 )
-from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,
-)
-from psycop.common.feature_generation.text_embeddings.train_sentence_transformers import (
-    TRAIN_SFIS,
 )
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
@@ -224,9 +217,23 @@ class SczBpFeatureSpecifier:
         embedded_text_filename = (
             "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
         )
+        TEXT_SFIS = [
+        "Observation af patient, Psykiatri",
+        "Samtale med behandlingssigte",
+        "Aktuelt psykisk",
+        "Aktuelt socialt, Psykiatri",
+        "Aftaler, Psykiatri",
+        "Aktuelt somatisk, Psykiatri",
+        "Objektivt psykisk",
+        "Kontaktårsag",
+        "Telefonnotat",
+        "Semistruktureret diagnostisk interview",
+        "Vurdering/konklusion",
+    ]
+
         embedded_text = EmbeddedTextLoader.load_embedded_text(
             filename=embedded_text_filename,
-            text_sfi_names=TRAIN_SFIS,
+            text_sfi_names=TEXT_SFIS,
             include_sfi_name=False,
             n_rows=None,
         ).to_pandas()
@@ -235,7 +242,7 @@ class SczBpFeatureSpecifier:
             df=embedded_text,
             entity_id_col_name="dw_ek_borger",
             timestamp_col_name="timestamp",
-            name_prefix="sent_emb",
+            name_prefix="sent_",
         )
 
         if self.min_set_for_debug:
