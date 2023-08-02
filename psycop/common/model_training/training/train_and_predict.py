@@ -120,8 +120,8 @@ def multilabel_cross_validation(
     # stratify by first outcome column
     folds = StratifiedGroupKFold(n_splits=cfg.n_crossval_splits).split(
         X=X,
-        y=y[outcome_col_name[0]],
-        groups=y_joined,
+        y=y_joined,
+        groups=train_df[cfg.data.col_name.id],
     )
 
     msg.info(
