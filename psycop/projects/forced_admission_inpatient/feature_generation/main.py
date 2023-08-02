@@ -33,6 +33,9 @@ from psycop.projects.forced_admission_inpatient.feature_generation.modules.loade
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_features import (
     FeatureSpecifier,
 )
+from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_text_features import (
+    TextFeatureSpecifier,
+)
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.utils import (
     add_outcome_col,
 )
@@ -41,13 +44,21 @@ log = logging.getLogger()
 
 
 @wandb_alert_on_exception
-def main():
+def main(add_text_features: bool = True, min_set_for_debug: bool = True):
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
+        min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
+
+    if add_text_features:
+        text_feature_specs = TextFeatureSpecifier(
+            project_info=project_info,
+            min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
+        ).get_text_feature_specs()
+
+        feature_specs += text_feature_specs
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,  # type: ignore
