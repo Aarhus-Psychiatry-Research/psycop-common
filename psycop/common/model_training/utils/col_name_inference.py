@@ -47,7 +47,7 @@ def get_col_names(
         if c.startswith(cfg.data.pred_prefix) and "uuid" not in c
     ]
 
-    return outcome_col_name, train_col_names  # type: ignore
+    return outcome_col_name, train_col_names
 
 
 def infer_look_distance(
