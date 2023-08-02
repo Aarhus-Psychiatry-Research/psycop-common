@@ -56,6 +56,8 @@ def move_contents_of_dir_to_dir(
         file.rename(target_dir / file.name)
 
 
+# TODO: refactor to smaller functions -- test whether the concatenations are correct
+# against a join. Infer exclude cols 
 def merge_feature_sets_from_dirs(
     source_dirs: Iterable[Path],
     target_dir: Path,
@@ -64,13 +66,28 @@ def merge_feature_sets_from_dirs(
     """Merge all feature sets from source_dirs into target_dir"""
     target_dir.mkdir(exist_ok=True, parents=True)
     for split in splits:
-        split_df: pl.DataFrame = pl.DataFrame()
-        for source_dir in source_dirs:
-            split_df = split_df.join(
-                pl.read_parquet(source_dir / f"{split}.parquet"),
-                on="prediction_time_uuid",
-                validate="1:1",
+        dfs = [
+            pl.read_parquet(source_dir / f"{split}.parquet")
+            for source_dir in source_dirs
+        ]
+        # dataframes are sorted so can safely concat
+        # need to remove duplicate columns
+        dfs = [
+            df.select(
+                pl.exclude(
+                    [
+                        "dw_ek_borger",
+                        "timestamp",
+                        "prediction_time_uuid",
+                        "date_of_birth",
+                        "age",
+                    ]
+                )
             )
+            for i, df in enumerate(dfs)
+            if i != 0
+        ]
+        split_df = pl.concat(dfs, how="horizontal")
         split_df.write_parquet(target_dir / f"{split}.parquet")
 
 
