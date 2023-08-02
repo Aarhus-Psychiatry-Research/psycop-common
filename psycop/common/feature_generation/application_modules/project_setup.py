@@ -72,4 +72,5 @@ def init_wandb(
     wandb.init(
         project=f"{project_info.project_name}-feature-generation",
         config=feature_settings,
+        mode="offline",
     )
