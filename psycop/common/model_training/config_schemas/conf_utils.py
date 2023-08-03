@@ -2,7 +2,7 @@
 
 Very useful when testing.
 """
-from typing import Optional
+from typing import Optional, Union
 
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
@@ -84,6 +84,35 @@ def load_test_cfg_as_pydantic(
     )
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
+
+
+def validate_classification_objective(
+    cfg: FullConfigSchema,
+    col_names: Union[str, list[str]],
+):
+    if cfg.preprocessing.pre_split.classification_objective == "binary":
+        if not cfg.preprocessing.pre_split.keep_only_one_outcome_col:
+            raise ValueError(
+                "Only one outcome column can be used for binary classification tasks.",
+            )
+
+        if isinstance(col_names, str):
+            col_names = [col_names]
+        if len(col_names) != 1:
+            raise ValueError(
+                "Only one outcome column can be used for binary classification tasks.",
+            )
+
+    elif cfg.preprocessing.pre_split.classification_objective == "multilabel":
+        if cfg.preprocessing.pre_split.keep_only_one_outcome_col:
+            raise ValueError(
+                "Multiple outcome columns are needed for multilabel classification tasks.",
+            )
+
+        if len(col_names) == 1:
+            raise ValueError(
+                "Multiple outcome columns are needed for multilabel classification tasks.",
+            )
 
 
 class WatcherSchema(PSYCOPBaseModel):
