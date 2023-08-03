@@ -18,7 +18,7 @@ from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.projects.scz_bp.feature_generation.chunked_feature_generation import (
+from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,
 )
 

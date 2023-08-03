@@ -1,4 +1,4 @@
-from psycop.projects.scz_bp.feature_generation.chunked_feature_generation import (
+from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,
 )
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
