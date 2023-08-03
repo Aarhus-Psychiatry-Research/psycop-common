@@ -5,9 +5,7 @@ import tempfile
 from pathlib import Path
 
 import wandb
-from timeseriesflattener.feature_specs.single_specs import (
-    BaseModel,
-)
+from timeseriesflattener.feature_specs.single_specs import BaseModel
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
@@ -25,8 +23,8 @@ class Prefixes(BaseModel):
 class ColNames(BaseModel):
     """Column names for feature specs."""
 
-    timestamp = "timestamp"
-    id = "dw_ek_borger"  # noqa
+    timestamp: str = "timestamp"
+    id: str = "dw_ek_borger"  # noqa
 
 
 class ProjectInfo(BaseModel):
