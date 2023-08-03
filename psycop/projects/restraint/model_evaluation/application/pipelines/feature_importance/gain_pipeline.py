@@ -66,4 +66,3 @@ def gain_pipeline(model: Literal["baseline", "text"], top_n: int = 20):
 
 if __name__ == "__main__":
     gain_pipeline(model="baseline")
-    # gain_pipeline(model="text")
