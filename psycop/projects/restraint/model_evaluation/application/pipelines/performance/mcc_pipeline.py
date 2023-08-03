@@ -40,6 +40,12 @@ def bootstrap_mcc(
 def mcc_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
+    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(
+        eval_ds.y_hat_probs,
+        pd.DataFrame,
+    ):
+        raise TypeError
+
     mcc = bootstrap_mcc(
         eval_ds.y,
         eval_ds.get_predictions_for_positive_rate(

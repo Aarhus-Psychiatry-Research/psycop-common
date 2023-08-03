@@ -44,8 +44,8 @@ class EvalDataset(PSYCOPBaseModel):
     pred_time_uuids: pd.Series
     pred_timestamps: pd.Series
     outcome_timestamps: Optional[pd.Series] = None
-    y: pd.Series
-    y_hat_probs: pd.Series
+    y: Union[pd.Series, pd.DataFrame]
+    y_hat_probs: Union[pd.Series, pd.DataFrame]
     age: Optional[pd.Series] = None
     is_female: Optional[pd.Series] = None
     exclusion_timestamps: Optional[pd.Series] = None
@@ -58,25 +58,33 @@ class EvalDataset(PSYCOPBaseModel):
     def get_predictions_for_positive_rate(
         self,
         desired_positive_rate: float,
+        y_hat_probs_column: Optional[str] = "y_hat_probs",
     ) -> tuple[pd.Series, Union[float, float64]]:
         """Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
 
 
         Note that this won't always match the desired positive rate exactly for e.g tree-based models, where predicted probabilities are binned, but it'll get as close as possible.
         """
+        if isinstance(self.y_hat_probs, pd.Series):
+            self.y_hat_probs = self.y_hat_probs.to_frame(name="y_hat_probs")
+
         return get_predictions_for_positive_rate(
             desired_positive_rate=desired_positive_rate,
-            y_hat_probs=self.y_hat_probs,
+            y_hat_probs=self.y_hat_probs[y_hat_probs_column],
         )
 
     def get_predictions_for_threshold(
         self,
         desired_threshold: float,
+        y_hat_probs_column: Optional[str] = "y_hat_probs",
     ) -> tuple[pd.Series, float]:
         """Turns predictions above `desired_threshold` to 1, rest to 0"""
+        if isinstance(self.y_hat_probs, pd.Series):
+            self.y_hat_probs = self.y_hat_probs.to_frame(name="y_hat_probs")
+
         return get_predictions_for_threshold(
             desired_threshold=desired_threshold,
-            y_hat_probs=self.y_hat_probs,
+            y_hat_probs=self.y_hat_probs[y_hat_probs_column],
         )
 
     def to_pandas(self) -> pd.DataFrame:

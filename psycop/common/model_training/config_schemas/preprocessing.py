@@ -59,7 +59,10 @@ class PreSplitPreprocessingConfigSchema(PSYCOPBaseModel):
     # Which combination of features to use. Only uses features that have "within_X_days" in their column name, where X is any of the numbers in this list.
 
     keep_only_one_outcome_col: bool = True
-    # Whether to keep only one outcome column, or all of them. If True, keeps the outcome column that matches the min_lookahead_days.
+    # Whether to keep only one outcome column, or all of them. If True, keeps the outcome column that matches the min_lookahead_days. If false, keeps all columns that match the prefix and min_lookahead_days.
+
+    classification_objective: Literal["binary", "multilabel"] = "binary"
+    # whether there are multiple outcome labels
 
 
 class PostSplitPreprocessingConfigSchema(PSYCOPBaseModel):

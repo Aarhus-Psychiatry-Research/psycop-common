@@ -1,4 +1,6 @@
 """Utility functions for model training."""
+from typing import Union
+
 import pandas as pd
 
 from psycop.common.model_training.config_schemas.data import ColumnNamesSchema
@@ -7,7 +9,7 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 def create_eval_dataset(
     col_names: ColumnNamesSchema,
-    outcome_col_name: str,
+    outcome_col_name: Union[str, list[str]],
     df: pd.DataFrame,
 ) -> EvalDataset:
     """Create an evaluation dataset object from a dataframe and
@@ -34,7 +36,7 @@ def create_eval_dataset(
         ids=df[col_names.id],
         pred_time_uuids=df[col_names.pred_time_uuid],
         y=df[outcome_col_name],
-        y_hat_probs=df["y_hat_prob"],
+        y_hat_probs=pd.DataFrame(df.loc[:, df.columns.str.startswith("y_hat_prob")]),
         pred_timestamps=df[col_names.pred_timestamp],
         outcome_timestamps=df[col_names.outcome_timestamp]
         if col_names.outcome_timestamp
