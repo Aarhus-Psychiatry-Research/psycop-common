@@ -324,10 +324,6 @@ class FeatureSpecifier:
                     df=clozapine(administration_method="Engangs"),
                     name="clozapine_engangs",
                 ),
-                # NamedDataframe(
-                #     df=clozapine(administration_route="IM"),
-                #     name="clozapine_im",
-                # ),
                 NamedDataframe(
                     df=clozapine(administration_route="PO"),
                     name="clozapine_po",
