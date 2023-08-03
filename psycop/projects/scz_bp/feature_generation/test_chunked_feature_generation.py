@@ -10,6 +10,9 @@ from polars.testing import assert_series_equal
 from timeseriesflattener.aggregation_fns import mean
 from timeseriesflattener.feature_specs.single_specs import PredictorSpec
 
+from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
+    ChunkedFeatureGenerator,
+)
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
@@ -18,9 +21,6 @@ from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
-    ChunkedFeatureGenerator,
-)
 
 
 @pytest.fixture()
