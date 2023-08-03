@@ -64,7 +64,7 @@ def main(add_text_features: bool = True, min_set_for_debug: bool = True):
         feature_specs=feature_specs,  # type: ignore
         prediction_times_df=forced_admissions_inpatient(
             timestamps_only=True,
-        ),
+        ).iloc[:1000],
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
         quarantine_df=load_move_into_rm_for_exclusion(),
