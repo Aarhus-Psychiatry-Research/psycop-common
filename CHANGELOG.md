@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.94.0 (2023-08-03)
+
+### Feature
+
+* Multilabel classification ([`5285b2c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5285b2c00f63a74cb19b6051903fd85a0df75773))
+
 ## v0.93.0 (2023-07-20)
 
 ### Feature
