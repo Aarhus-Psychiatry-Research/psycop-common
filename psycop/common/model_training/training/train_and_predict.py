@@ -115,6 +115,7 @@ def multilabel_cross_validation(
     msg.info("Creating folds")
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
 
+    # StratifiedGroupKFold does not support stratification across multiple labels, so we create a concatenated label that represents all individual labels
     y_joined = y.astype(int).astype(str).apply("".join, axis=1)
 
     # stratify by first outcome column
