@@ -21,7 +21,7 @@ def generate_feature_importance_table(pipeline_run: PipelineRun) -> pl.DataFrame
     feature_names = [c for c in split_df.columns if "pred_" in c]
 
     if hasattr(pipeline.named_steps["model"], "feature_names"):
-        selected_feature_names = getattr(pipeline.named_steps["model"], "feature_names")
+        selected_feature_names = pipeline.named_steps["model"].feature_names
     else:
         selected_feature_names = feature_names
 

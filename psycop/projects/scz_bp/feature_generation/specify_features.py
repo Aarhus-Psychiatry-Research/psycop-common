@@ -218,18 +218,18 @@ class SczBpFeatureSpecifier:
             "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
         )
         TEXT_SFIS = [
-        "Observation af patient, Psykiatri",
-        "Samtale med behandlingssigte",
-        "Aktuelt psykisk",
-        "Aktuelt socialt, Psykiatri",
-        "Aftaler, Psykiatri",
-        "Aktuelt somatisk, Psykiatri",
-        "Objektivt psykisk",
-        "Kontaktårsag",
-        "Telefonnotat",
-        "Semistruktureret diagnostisk interview",
-        "Vurdering/konklusion",
-    ]
+            "Observation af patient, Psykiatri",
+            "Samtale med behandlingssigte",
+            "Aktuelt psykisk",
+            "Aktuelt socialt, Psykiatri",
+            "Aftaler, Psykiatri",
+            "Aktuelt somatisk, Psykiatri",
+            "Objektivt psykisk",
+            "Kontaktårsag",
+            "Telefonnotat",
+            "Semistruktureret diagnostisk interview",
+            "Vurdering/konklusion",
+        ]
 
         embedded_text = EmbeddedTextLoader.load_embedded_text(
             filename=embedded_text_filename,
@@ -253,7 +253,6 @@ class SczBpFeatureSpecifier:
             aggregation_fns=resolve_multiple,
             fallback=[np.nan],
         ).create_combinations()
-
 
         return text_specs
 

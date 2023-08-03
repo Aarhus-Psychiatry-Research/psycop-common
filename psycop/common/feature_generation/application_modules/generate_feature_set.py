@@ -28,7 +28,7 @@ log = logging.getLogger()
 
 
 @wandb_alert_on_exception
-def _generate_feature_set(
+def generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
     feature_specs: list[AnySpec],
@@ -64,6 +64,16 @@ def init_wandb_and_generate_feature_set(
     # then run the rest in main so you can wrap it all in
     # wandb_alert_on_exception, which will send a slack alert
     # if you have wandb alerts set up in wandb
+    init_logger_and_wandb(project_info)
+
+    return generate_feature_set(
+        project_info=project_info,
+        eligible_prediction_times=eligible_prediction_times,
+        feature_specs=feature_specs,
+    )
+
+
+def init_logger_and_wandb(project_info: ProjectInfo):
     init_root_logger(project_info=project_info)
 
     log.info(  # pylint: disable=logging-fstring-interpolation
@@ -76,10 +86,4 @@ def init_wandb_and_generate_feature_set(
     # allows monitoring and automatic slack alert on failure
     init_wandb(
         project_info=project_info,
-    )
-
-    return _generate_feature_set(
-        project_info=project_info,
-        eligible_prediction_times=eligible_prediction_times,
-        feature_specs=feature_specs,
     )  # allows monitoring and automatic slack alert on failure
