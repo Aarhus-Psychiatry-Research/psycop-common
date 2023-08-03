@@ -101,6 +101,6 @@ def plot_gain(  #
     )
 
     # save plot
-    p.save(filename="feature_importances_gain.png", path=save_path)
+    p.save(filename="feature_importances_gain.png", path=str(save_path))
 
     return (save_path, "feature_importances_gain.png")

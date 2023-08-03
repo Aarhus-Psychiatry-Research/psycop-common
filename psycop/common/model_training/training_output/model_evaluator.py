@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Union
 
 # Set matplotlib backend to Agg to avoid errors when running on a server in parallel
 import wandb
@@ -48,7 +49,7 @@ class ModelEvaluator:
         self,
         cfg: FullConfigSchema,
         eval_dir_path: Path,
-        outcome_col_name: str,
+        outcome_col_name: Union[str, list[str]],
         train_col_names: list[str],
         pipe: Pipeline,
         eval_ds: EvalDataset,
