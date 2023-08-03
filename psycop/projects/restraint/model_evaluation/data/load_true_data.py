@@ -11,7 +11,9 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 # create a memory cache with a directory to store the cache
 memory = Memory(
-    location=Path("E:/sara/psycop-common/psycop/projects/restraint/model_training/pipeline_eval"),
+    location=Path(
+        "E:/sara/psycop-common/psycop/projects/restraint/model_training/pipeline_eval",
+    ),
 )
 
 
