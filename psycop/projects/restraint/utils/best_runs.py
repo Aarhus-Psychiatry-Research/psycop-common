@@ -21,7 +21,7 @@ class RunGroup:
 
     @property
     def group_dir(self) -> Path:
-        return Path(f"E:/shared_resources/coercion/model_eval/{self.name}")
+        return Path(f"E:/sara/psycop-common/psycop/projects/restraint/model_training/pipeline_eval/{self.name}")
 
     @property
     def flattened_ds_dir(self) -> Path:

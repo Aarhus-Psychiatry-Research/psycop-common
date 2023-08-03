@@ -8,14 +8,14 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     get_confusion_matrix_cells_from_df,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.projects.forced_admission_inpatient.model_evaluation.config import (
+from psycop.projects.restraint.model_evaluation.config import (
     COLOURS,
-    EVAL_RUN,
+    BEST_DEV_RUN,
     MODEL_NAME,
     PN_THEME,
     TABLES_PATH,
 )
-from psycop.projects.forced_admission_inpatient.utils.best_runs import Run
+from psycop.projects.restraint.utils.best_runs import Run
 
 
 def plotnine_confusion_matrix(matrix: ConfusionMatrix, x_title: str) -> pn.ggplot:
@@ -115,4 +115,4 @@ def confusion_matrix_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    confusion_matrix_pipeline(EVAL_RUN, TABLES_PATH)
+    confusion_matrix_pipeline(BEST_DEV_RUN, TABLES_PATH)

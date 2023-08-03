@@ -6,7 +6,7 @@ from psycop.common.model_evaluation.feature_importance.feature_importance_table 
     generate_feature_importances_table,
 )
 from psycop.projects.restraint.model_evaluation.config import (
-    EVAL_RUN,
+    BEST_DEV_RUN,
     FIGURES_PATH,
     TABLES_PATH,
     TEXT_EVAL_RUN,
@@ -29,7 +29,7 @@ def gain_pipeline(model: Literal["baseline", "text"], top_n: int = 20):
         top_n (int, optional): How many features to include in gain plot. Defaults to 20
     """
     if model == "baseline":
-        run, f_path, t_path = EVAL_RUN, FIGURES_PATH, TABLES_PATH
+        run, f_path, t_path = BEST_DEV_RUN, FIGURES_PATH, TABLES_PATH
     elif model == "text":
         run, f_path, t_path = TEXT_EVAL_RUN, TEXT_FIGURES_PATH, TEXT_TABLES_PATH
     else:
@@ -66,4 +66,4 @@ def gain_pipeline(model: Literal["baseline", "text"], top_n: int = 20):
 
 if __name__ == "__main__":
     gain_pipeline(model="baseline")
-    gain_pipeline(model="text")
+    # gain_pipeline(model="text")
