@@ -4,6 +4,9 @@ from pathlib import Path
 import pandas as pd
 from timeseriesflattener.feature_specs.single_specs import AnySpec
 
+from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
+    ChunkedFeatureGenerator,
+)
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -32,15 +35,29 @@ def generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
     feature_specs: list[AnySpec],
+    generate_in_chunks: bool = True,
+    chunksize: int = 400,
 ) -> Path:
     """Main function for loading, generating and evaluating a flattened
-    dataset."""
-    flattened_df = create_flattened_dataset(
-        feature_specs=feature_specs,
-        prediction_times_df=eligible_prediction_times,
-        drop_pred_times_with_insufficient_look_distance=False,
-        project_info=project_info,
-    )
+    dataset.
+    If generate_in_chunks is True, features a generation is split into
+    multiple chunks toavoid memory issues with multiprocessing"""
+
+    if generate_in_chunks:
+        flattened_df = ChunkedFeatureGenerator.generate_feature_set(
+            project_info,
+            eligible_prediction_times,
+            feature_specs,
+            chunksize,
+        )
+
+    else:
+        flattened_df = create_flattened_dataset(
+            feature_specs=feature_specs,
+            prediction_times_df=eligible_prediction_times,
+            drop_pred_times_with_insufficient_look_distance=False,
+            project_info=project_info,
+        )
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
@@ -59,6 +76,8 @@ def init_wandb_and_generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
     feature_specs: list[AnySpec],
+    generate_in_chunks: bool = True,
+    chunksize: int = 400,
 ) -> Path:
     # Run elements that are required before wandb init first,
     # then run the rest in main so you can wrap it all in
@@ -70,6 +89,8 @@ def init_wandb_and_generate_feature_set(
         project_info=project_info,
         eligible_prediction_times=eligible_prediction_times,
         feature_specs=feature_specs,
+        generate_in_chunks=generate_in_chunks,
+        chunksize=chunksize,
     )
 
 

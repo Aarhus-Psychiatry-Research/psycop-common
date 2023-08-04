@@ -1,17 +1,18 @@
-from collections.abc import Iterable
+import glob
 from pathlib import Path
-from typing import Literal
 
 import pandas as pd
 import polars as pl
 from timeseriesflattener.feature_specs.single_specs import AnySpec
 
-from psycop.common.feature_generation.application_modules.generate_feature_set import (
-    generate_feature_set,
-    init_logger_and_wandb,
+from psycop.common.feature_generation.application_modules.flatten_dataset import (
+    create_flattened_dataset,
 )
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
+)
+from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
+    save_chunk_to_disk,
 )
 
 
@@ -22,43 +23,46 @@ class ChunkedFeatureGenerator:
         eligible_prediction_times: pd.DataFrame,
         feature_specs: list[AnySpec],
         chunksize: int = 400,
-    ) -> None:
+    ) -> pd.DataFrame:
         """Generate features in chunks to avoid memory issues with multiprocessing"""
-        init_logger_and_wandb(project_info=project_info)
+
+        ChunkedFeatureGenerator.remove_files_from_dir(  # Ensures that all saved chunks from previous crashed run are removed
+            project_info.flattened_dataset_dir,
+        )
+
         print(f"Generation features in chunks of {chunksize}")
         for i in range(0, len(feature_specs), chunksize):
             print(f"Generating features for chunk {i} to {i+chunksize}")
-            generate_feature_set(
-                project_info=project_info,
-                eligible_prediction_times=eligible_prediction_times,
+            flattened_df_chunk = create_flattened_dataset(
                 feature_specs=feature_specs[i : i + chunksize],
+                prediction_times_df=eligible_prediction_times,
+                drop_pred_times_with_insufficient_look_distance=False,
+                project_info=project_info,
             )
-            move_contents_of_dir_to_dir(
-                source_dir=project_info.project_path / "flattened_datasets",
-                target_dir=project_info.project_path / f"flattened_datasets_chunk_{i}",
-            )
+            save_chunk_to_disk(project_info, flattened_df_chunk, i)
+
         print("Feature generation done. Merging feature sets...")
-        ChunkedFeatureGenerator.merge_feature_sets_from_dirs(
-            source_dirs=project_info.project_path.glob("flattened_datasets_chunk_*"),
-            target_dir=project_info.project_path / "flattened_datasets",
-            splits=["train", "val", "test"],
+        df = ChunkedFeatureGenerator.merge_feature_sets_from_dirs(
+            project_info.flattened_dataset_dir,
         )
+
+        ChunkedFeatureGenerator.remove_files_from_dir(
+            project_info.flattened_dataset_dir,
+        )
+
+        return df.to_pandas()
 
     @staticmethod
     def merge_feature_sets_from_dirs(
-        source_dirs: Iterable[Path],
-        target_dir: Path,
-        splits: Iterable[Literal["train", "val", "test"]] = ("train", "val", "test"),
-    ) -> None:
+        feature_dir: Path,
+    ) -> pl.DataFrame:
         """Merge all feature sets from source_dirs into target_dir"""
-        target_dir.mkdir(exist_ok=True, parents=True)
-        for split in splits:
-            dfs = ChunkedFeatureGenerator._read_split_dataframes_from_dir(
-                source_dirs=source_dirs,
-                split=split,
-            )
-            split_df = ChunkedFeatureGenerator.merge_feature_dfs(dfs)
-            split_df.write_parquet(target_dir / f"{split}.parquet")
+        dfs = ChunkedFeatureGenerator._read_chunk_dfs_from_dir(
+            feature_dir=feature_dir,
+        )
+        df = ChunkedFeatureGenerator.merge_feature_dfs(dfs)
+
+        return df
 
     @staticmethod
     def merge_feature_dfs(dfs: list[pl.DataFrame]) -> pl.DataFrame:
@@ -69,8 +73,9 @@ class ChunkedFeatureGenerator:
             dfs=dfs,
             shared_cols=shared_cols,
         )
-        split_df = pl.concat(dfs, how="horizontal")
-        return split_df
+        df = pl.concat(dfs, how="horizontal")
+
+        return df
 
     @staticmethod
     def _remove_shared_cols_from_all_but_one_df(
@@ -83,14 +88,12 @@ class ChunkedFeatureGenerator:
         ]
 
     @staticmethod
-    def _read_split_dataframes_from_dir(
-        source_dirs: Iterable[Path],
-        split: Literal["train", "val", "test"],
+    def _read_chunk_dfs_from_dir(
+        feature_dir: Path,
     ) -> list[pl.DataFrame]:
-        return [
-            pl.read_parquet(source_dir / f"{split}.parquet")
-            for source_dir in source_dirs
-        ]
+        df_dirs = glob.glob(feature_dir / "flattened_dataset_chunk_*.parquet")  # type: ignore
+
+        return [pl.read_parquet(chunk_dir) for chunk_dir in df_dirs]  # type: ignore
 
     @staticmethod
     def _find_shared_cols(
@@ -98,15 +101,17 @@ class ChunkedFeatureGenerator:
     ) -> list[str]:
         """Find columns that are present in all dataframes in dfs. Only checks the
         first two dataframes in dfs"""
+        if len(dfs) < 2:
+            return []
+
         cols = set(dfs[0].columns).intersection(dfs[1].columns)
         return list(cols)
 
+    @staticmethod
+    def remove_files_from_dir(
+        feature_dir: Path,
+    ):
+        df_dirs = glob.glob(feature_dir / "flattened_dataset_chunk_*.parquet")  # type: ignore
 
-def move_contents_of_dir_to_dir(
-    source_dir: Path,
-    target_dir: Path,
-) -> None:
-    """Move all files and folders from source_dir to target_dir using pathlib"""
-    target_dir.mkdir(exist_ok=True, parents=True)
-    for file in source_dir.iterdir():
-        file.rename(target_dir / file.name)
+        for file in df_dirs:
+            Path.unlink(file)  # type: ignore
