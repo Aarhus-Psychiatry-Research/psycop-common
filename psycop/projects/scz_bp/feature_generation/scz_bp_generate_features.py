@@ -15,5 +15,5 @@ if __name__ == "__main__":
         eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
         feature_specs=get_scz_bp_feature_specifications(),
         generate_in_chunks=True,
-        chunksize=200,
+        chunksize=40,
     )
