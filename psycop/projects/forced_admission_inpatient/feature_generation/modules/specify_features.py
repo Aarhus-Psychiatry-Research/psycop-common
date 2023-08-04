@@ -124,11 +124,11 @@ class FeatureSpecifier:
         self,
         project_info: ProjectInfo,
         min_set_for_debug: bool = False,
-        sparse_feature_set: bool = False,
+        limited_feature_set: bool = False,
     ):
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
-        self.sparse_feature_set = sparse_feature_set
+        self.limited_feature_set = limited_feature_set
 
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
@@ -374,13 +374,13 @@ class FeatureSpecifier:
 
         return lab_results
 
-    def _get_sparse_feature_specs(
+    def _get_limited_feature_specs(
         self,
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
-        log.info("-------- Generating sparse feature set specs --------")
+        log.info("-------- Generating limited feature set specs --------")
 
-        sparse_feature_set = PredictorGroupSpec(
+        limited_feature_set = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=f0_disorders(), name="f0_disorders"),
                 NamedDataframe(df=f1_disorders(), name="f1_disorders"),
@@ -415,7 +415,7 @@ class FeatureSpecifier:
             fallback=[np.nan],
         ).create_combinations()
 
-        return sparse_feature_set
+        return limited_feature_set
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -494,7 +494,9 @@ class FeatureSpecifier:
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
             )
-        if self.sparse_feature_set:
-            return self._get_sparse_feature_specs() + self._get_static_predictor_specs()
+        if self.limited_feature_set:
+            return (
+                self._get_limited_feature_specs() + self._get_static_predictor_specs()
+            )
 
         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()
