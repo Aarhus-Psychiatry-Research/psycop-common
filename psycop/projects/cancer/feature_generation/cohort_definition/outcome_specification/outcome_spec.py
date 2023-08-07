@@ -41,7 +41,6 @@ df_lpr2_outp_preproc.rename(columns={
             }, inplace = True
         )
 
-
 # Combine all
 all_visits_combined = pd.concat([df_lpr3_preproc, df_lpr2_inp_preproc, df_lpr2_outp_preproc], ignore_index=True)
 
@@ -55,7 +54,7 @@ DIAGNOSIS_CODE = "DC"
 
 df_cancer_visits = all_visits_combined[all_visits_combined["adiagnosekode"].str.startswith(DIAGNOSIS_CODE, na=False)]
 
-#only include patient that have been diagnosed with cancer after their first visit to psychiatry and after 2013
+#only include patients that have been diagnosed with cancer after their first visit to psychiatry and after 2013
 df_cancer_visits_ = df_cancer_visits.merge(df_first_psych_visit, on="dw_ek_borger")
 
 df_cancer_visits_after_first_psych_visit = df_cancer_visits_[(df_cancer_visits_["datotid_start"] > df_cancer_visits_["datotid_first_psych_visit"]) & (df_cancer_visits_["datotid_start"] > "2013-01-01")]

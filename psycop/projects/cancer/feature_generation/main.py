@@ -1,5 +1,6 @@
 """Main feature generation."""
-
+import sys 
+from pathlib import Path
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     init_wandb_and_generate_feature_set,
@@ -19,7 +20,7 @@ if __name__ == "__main__":
             exist_ok=True,
             parents=True,
         )
-        
+
     init_wandb_and_generate_feature_set(
         project_info=get_cancer_project_info(),
         eligible_prediction_times=CancerCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),

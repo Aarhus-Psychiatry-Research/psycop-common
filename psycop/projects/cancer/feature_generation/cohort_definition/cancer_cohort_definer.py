@@ -30,7 +30,7 @@ class CancerCohortDefiner(CohortDefiner):
                 timestamp_for_output="start"
             ),
         )
-    
+
         return filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
             filtering_steps=(
