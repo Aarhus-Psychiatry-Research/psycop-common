@@ -21,7 +21,7 @@ def get_cancer_feature_specifications() -> list[AnySpec]:
     ).get_feature_specs()
 
 
-# For model training configuration, see psycop/projects/t2d/model_training/config/*
+# For model training configuration, see psycop/projects/cancer/model_training/config/*
 
 if __name__ == "__main__":
     specs = get_cancer_feature_specifications()
