@@ -40,7 +40,7 @@ def process_forced_pred_dfs(
     timestamps_only: bool = True,
 ) -> pd.DataFrame:
     df = sql_load(
-        f"SELECT * FROM [fct].[psycop_fa_outcome_all_disorders_forced_admission_{visit_type}_730.5d_0f_182d_2014_2021]",
+        f"SELECT * FROM [fct].[psycop_fa_outcome_all_disorders_forced_admission_{visit_type}_730.5d_0f_2014_2021]",
         database="USR_PS_FORSK",
     )
 
@@ -48,20 +48,30 @@ def process_forced_pred_dfs(
         [
             "dw_ek_borger",
             prediction_times_col_name,
+            "outc_91_days",
             "outc_182_days",
-            "outcome_timestamp",
+            "outc_365_days",
+            "outc_timestamp_91_days",
+            "outc_timestamp_182_days",
+            "outc_timestamp_365_days",
         ]
     ]
 
     df = df.rename(
         columns={
             prediction_times_col_name: "timestamp",
+            "outc_91_days": "outc_bool_within_91days",
             "outc_182_days": "outc_bool_within_182_days",
-            "outcome_timestamp": "outc_timestamp",
+            "outc_365_days": "outc_bool_within_365_days",
+            "outc_timestamp_91_days": "timestamp_outcome_91_days",
+            "outc_timestamp_182_days": "timestamp_outcome_182_days",
+            "outc_timestamp_365_days": "timestamp_outcome_365_days",
         },
     )
     df["timestamp"] = pd.to_datetime(df["timestamp"])
-    df["outc_timestamp"] = pd.to_datetime(df["outc_timestamp"])
+    df["timestamp_outcome_91_days"] = pd.to_datetime(df["timestamp_outcome_91_days"])
+    df["timestamp_outcome_182_days"] = pd.to_datetime(df["timestamp_outcome_182_days"])
+    df["timestamp_outcome_365_days"] = pd.to_datetime(df["timestamp_outcome_365_days"])
 
     if timestamps_only:
         df = df[["dw_ek_borger", "timestamp"]]

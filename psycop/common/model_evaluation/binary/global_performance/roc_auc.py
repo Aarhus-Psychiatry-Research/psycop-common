@@ -56,6 +56,9 @@ def plot_auc_roc(
     y = eval_dataset.y
     y_hat_probs = eval_dataset.y_hat_probs
 
+    if isinstance(y, pd.DataFrame) or isinstance(y_hat_probs, pd.DataFrame):
+        raise TypeError
+
     # We need a custom bootstrap implementation, because using scipy.bootstrap
     # on the roc_curve method will yield different fpr values for each resample,
     # and thus the tpr values will be interpolated on different fpr values. This

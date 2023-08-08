@@ -94,6 +94,12 @@ def plot_auc_roc(
 def roc_auc_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
+    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(
+        eval_ds.y_hat_probs,
+        pd.DataFrame,
+    ):
+        raise TypeError
+
     tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_results(
         y=eval_ds.y,
         y_hat_probs=eval_ds.y_hat_probs,
