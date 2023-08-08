@@ -3,13 +3,7 @@ import logging
 from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import (
-    concatenate,
-    latest,
-    maximum,
-    mean,
-    minimum,
-)
+from timeseriesflattener.aggregation_fns import latest, maximum, mean, minimum
 from timeseriesflattener.df_transforms import (
     df_with_multiple_values_to_named_dataframes,
 )
@@ -286,7 +280,7 @@ class SczBpFeatureSpecifier:
         )
 
         text = self._get_text_specs(
-            resolve_multiple=[concatenate],
+            resolve_multiple=[mean],
             interval_days=[60, 365, 730],
         )
 
