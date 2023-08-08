@@ -75,9 +75,6 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
 from psycop.projects.cancer.feature_generation.cohort_definition.cancer_cohort_definer import (
     CancerCohortDefiner,
 )
-# from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.first_cancer_diagnosis import (
-#     get_type_of_first_cancer_diagnosis,
-# )
 
 log = logging.getLogger(__name__)
 
@@ -111,18 +108,6 @@ class FeatureSpecifier:
                 prefix=self.project_info.prefix.predictor,
             ),
         ]
-
-    # def _get_metadata_specs(self) -> list[AnySpec]:
-    #     """Get metadata specs."""
-    #     log.info("-------- Generating metadata specs --------")
-
-    #     return [
-    #         StaticSpec(
-    #             feature_base_name="cancer_type_indicator",
-    #             timeseries_df=get_type_of_first_cancer_diagnosis(),
-    #             prefix="meta",
-    #         ),
-    #     ]
 
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
         """Get outcome specs."""
@@ -313,12 +298,10 @@ class FeatureSpecifier:
             return (
                 self._get_temporal_predictor_specs()
                 + self._get_outcome_specs()
-                # + self._get_metadata_specs()
             )
 
         return (
             self._get_temporal_predictor_specs()
             + self._get_static_predictor_specs()
             + self._get_outcome_specs()
-            # + self._get_metadata_specs()
         )

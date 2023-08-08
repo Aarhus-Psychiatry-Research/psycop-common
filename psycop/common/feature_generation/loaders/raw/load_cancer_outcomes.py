@@ -9,24 +9,6 @@ import pandas as pd
 from psycop.common.feature_generation.utils import data_loaders
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import from_contacts
 
-CANCER_DATA_DIR = Path(r"E:\shared_resources") / "cancer"
-
-
-@data_loaders.register("any_cancer_outcome_predefined")
-def any_cancer_predefined() -> pd.DataFrame:
-    """Loads the outcome variable for the cancer prediction project based on predefined cohort.
-    See `outcome_specification/outcome_spec.py` for details.
-    """
-    df = pd.read_csv(CANCER_DATA_DIR / "cancer_cohort.csv")
-    df.drop(columns="Unnamed: 0", inplace=True)
-    df = df.rename(columns={"datotid_start": "timestamp"})
-    df["timestamp"] = pd.to_datetime(df["timestamp"]).apply(
-        lambda x: x.replace(tzinfo=None),
-    )
-    df["value"] = 1
-
-    return df.reset_index(drop=True)
-
 
 @data_loaders.register("any_cancer_outcome")
 def any_cancer(
