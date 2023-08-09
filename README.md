@@ -2,134 +2,142 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/Aarhus-Psychiatry-Research/psycop-common/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                                                                                                |    Stmts |     Miss |   Cover |   Missing |
-|-------------------------------------------------------------------------------------------------------------------- | -------: | -------: | ------: | --------: |
-| src/\_\_init\_\_.py                                                                                                 |        0 |        0 |    100% |           |
-| src/psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/\_\_init\_\_.py                                                               |        0 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/application\_modules/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/application\_modules/filter\_prediction\_times.py                             |       42 |        2 |     95% |    43, 79 |
-| src/psycop/common/feature\_generation/application\_modules/flatten\_dataset.py                                      |       24 |        1 |     96% |       104 |
-| src/psycop/common/feature\_generation/application\_modules/project\_setup.py                                        |       29 |        5 |     83% |     54-71 |
-| src/psycop/common/feature\_generation/application\_modules/save\_dataset\_to\_disk.py                               |       34 |        3 |     91% | 61-65, 85 |
-| src/psycop/common/feature\_generation/application\_modules/wandb\_utils.py                                          |       10 |        3 |     70% |     13-15 |
-| src/psycop/common/feature\_generation/data\_checks/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/data\_checks/flattened/feature\_describer.py                                  |       75 |       21 |     72% |44, 57-59, 77-92, 102, 168, 191-202, 246 |
-| src/psycop/common/feature\_generation/data\_checks/raw/check\_raw\_df.py                                            |       62 |        8 |     87% |84, 168-173, 183, 214 |
-| src/psycop/common/feature\_generation/data\_checks/utils.py                                                         |       14 |        1 |     93% |        69 |
-| src/psycop/common/feature\_generation/loaders/\_\_init\_\_.py                                                       |        0 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/loaders/filters/\_\_init\_\_.py                                               |        0 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/loaders/filters/diabetes\_filters.py                                          |       12 |        3 |     75% |     38-45 |
-| src/psycop/common/feature\_generation/loaders/flattened/\_\_init\_\_.py                                             |        1 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/loaders/flattened/local\_feature\_loaders.py                                  |       16 |        5 |     69% |23-26, 72, 94, 114 |
-| src/psycop/common/feature\_generation/loaders/non\_numerical\_coercer.py                                            |       13 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/loaders/raw/\_\_init\_\_.py                                                   |       10 |        0 |    100% |           |
-| src/psycop/common/feature\_generation/loaders/raw/load\_coercion.py                                                 |      102 |       52 |     49% |32-74, 96-117, 126-135, 150, 165, 179, 193, 207, 223-232, 247-262, 276-288, 303-323, 341, 355, 369, 383, 397, 411, 425, 439, 453, 467, 481 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_demographic.py                                              |       21 |       13 |     38% |12-24, 29-42 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_diagnoses.py                                                |      196 |       73 |     63% |53-96, 107, 126, 148, 167, 186, 205, 224, 243-272, 283-312, 325, 344, 363, 382, 402, 421, 440, 459, 478, 497, 516, 535, 554, 576, 595, 614, 633, 655, 674, 693, 712, 734, 753, 772, 791, 813, 832, 851, 870, 890, 909, 928, 947, 966, 985, 1007, 1026, 1045, 1064, 1083, 1103, 1122, 1141, 1161, 1180, 1199, 1218, 1238 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_ids.py                                                      |        8 |        4 |     50% |     19-25 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_lab\_results.py                                             |      180 |       92 |     49% |30-53, 72-94, 112-138, 156-179, 197-237, 248, 260-307, 319, 331, 343-350, 362, 374, 386, 398, 410, 422, 434, 446, 458, 470, 482, 494, 506, 518, 530, 542, 554, 566, 578, 590, 602, 614, 626, 638, 650, 662, 674, 686, 698, 710, 722, 734, 746, 761 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_medications.py                                              |      186 |       72 |     61% |52-112, 134-143, 167, 188, 216, 253, 277, 301, 324, 347, 376, 402, 426, 452, 471, 490, 509, 528, 547, 567, 588, 608, 629, 648, 667, 687, 707, 727, 746, 765, 784, 803, 822, 841, 860, 880, 900, 919, 938, 957, 976, 995, 1014, 1033, 1052, 1071, 1090, 1109, 1128, 1147, 1166, 1185, 1204, 1223, 1243 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_structured\_sfi.py                                          |       48 |       27 |     44% |28-55, 60, 72-88, 93-110, 115, 125, 135, 145-154, 159-168 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_t2d\_outcomes.py                                            |       19 |       11 |     42% |12-23, 28-41 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_text.py                                                     |       52 |       31 |     40% |27, 72-82, 108-141, 162-178, 193, 211, 232, 257-269 |
-| src/psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       70 |       41 |     41% |63-167, 176, 190-201, 210, 226, 243, 260, 277 |
-| src/psycop/common/feature\_generation/loaders/raw/sql\_load.py                                                      |       21 |       13 |     38% |     41-69 |
-| src/psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       70 |       51 |     27% |26-37, 54-76, 132-282 |
-| src/psycop/common/feature\_generation/text\_models/fit\_text\_models.py                                             |       10 |        1 |     90% |        34 |
-| src/psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       21 |        5 |     76% |     69-89 |
-| src/psycop/common/feature\_generation/text\_models/utils.py                                                         |       12 |        5 |     58% |22-23, 36-40 |
-| src/psycop/common/feature\_generation/utils.py                                                                      |       47 |       22 |     53% |35, 62, 66, 70, 91-98, 111, 131, 135, 145-160 |
-| src/psycop/common/global\_utils/cache.py                                                                            |        8 |        1 |     88% |         9 |
-| src/psycop/common/global\_utils/paths.py                                                                            |        4 |        0 |    100% |           |
-| src/psycop/common/global\_utils/pickle.py                                                                           |       11 |        6 |     45% |7-10, 14-17 |
-| src/psycop/common/minimal\_pipeline.py                                                                              |       12 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/\_\_init\_\_.py                                                                 |        0 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/binary/bootstrap\_estimates.py                                                  |       18 |        3 |     83% |     35-37 |
-| src/psycop/common/model\_evaluation/binary/global\_performance/roc\_auc.py                                          |       33 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/binary/performance\_by\_ppr/performance\_by\_ppr.py                             |       55 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/binary/performance\_by\_ppr/prop\_of\_all\_events\_hit\_by\_true\_positive.py   |        9 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/binary/subgroup\_data.py                                                        |       15 |        1 |     93% |        46 |
-| src/psycop/common/model\_evaluation/binary/time/absolute\_data.py                                                   |        8 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/binary/time/timedelta\_data.py                                                  |       37 |        6 |     84% |38, 105, 148-170 |
-| src/psycop/common/model\_evaluation/binary/utils.py                                                                 |       35 |        6 |     83% |20, 65, 109-115 |
-| src/psycop/common/model\_evaluation/confusion\_matrix/confusion\_matrix.py                                          |       27 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/markdown/md\_objects.py                                                         |       56 |        5 |     91% |28, 83-88, 138 |
-| src/psycop/common/model\_evaluation/patchwork/patchwork\_grid.py                                                    |       35 |        0 |    100% |           |
-| src/psycop/common/model\_evaluation/utils.py                                                                        |      101 |       46 |     54% |54, 83-94, 114, 130-133, 161, 178, 187, 232-238, 250-251, 265-272, 284, 302-305, 312-317, 325-336, 341, 349-356 |
-| src/psycop/common/model\_training/\_\_init\_\_.py                                                                   |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/application\_modules/\_\_init\_\_.py                                              |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/application\_modules/train\_model/\_\_init\_\_.py                                 |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/application\_modules/train\_model/main.py                                         |       36 |        0 |    100% |           |
-| src/psycop/common/model\_training/application\_modules/wandb\_handler.py                                            |       34 |        2 |     94% |    46, 68 |
-| src/psycop/common/model\_training/config\_schemas/\_\_init\_\_.py                                                   |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/config\_schemas/basemodel.py                                                      |       18 |        1 |     94% |        25 |
-| src/psycop/common/model\_training/config\_schemas/conf\_utils.py                                                    |       29 |        2 |     93% |     65-71 |
-| src/psycop/common/model\_training/config\_schemas/data.py                                                           |       22 |        0 |    100% |           |
-| src/psycop/common/model\_training/config\_schemas/debug.py                                                          |        5 |        0 |    100% |           |
-| src/psycop/common/model\_training/config\_schemas/full\_config.py                                                   |       16 |        0 |    100% |           |
-| src/psycop/common/model\_training/config\_schemas/model.py                                                          |        5 |        0 |    100% |           |
-| src/psycop/common/model\_training/config\_schemas/preprocessing.py                                                  |       28 |        0 |    100% |           |
-| src/psycop/common/model\_training/config\_schemas/project.py                                                        |       12 |        0 |    100% |           |
-| src/psycop/common/model\_training/config\_schemas/train.py                                                          |        5 |        0 |    100% |           |
-| src/psycop/common/model\_training/data\_loader/\_\_init\_\_.py                                                      |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/data\_loader/col\_name\_checker.py                                                |       29 |        0 |    100% |           |
-| src/psycop/common/model\_training/data\_loader/data\_loader.py                                                      |       43 |        9 |     79% |42, 64, 70, 78, 102-110 |
-| src/psycop/common/model\_training/data\_loader/utils.py                                                             |       32 |       14 |     56% | 22, 80-97 |
-| src/psycop/common/model\_training/preprocessing/\_\_init\_\_.py                                                     |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/preprocessing/post\_split/\_\_init\_\_.py                                         |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/preprocessing/post\_split/create\_pipeline.py                                     |       31 |        5 |     84% |21, 59, 76-80, 114 |
-| src/psycop/common/model\_training/preprocessing/post\_split/pipeline.py                                             |       15 |        0 |    100% |           |
-| src/psycop/common/model\_training/preprocessing/pre\_split/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/preprocessing/pre\_split/full\_processor.py                                       |       34 |        0 |    100% |           |
-| src/psycop/common/model\_training/preprocessing/pre\_split/processors/col\_filter.py                                |       86 |       15 |     83% |47, 65-76, 145, 174-182, 201, 212-214 |
-| src/psycop/common/model\_training/preprocessing/pre\_split/processors/row\_filter.py                                |       84 |       12 |     86% |48, 84, 117, 131-136, 157-159, 170, 177, 186-190 |
-| src/psycop/common/model\_training/preprocessing/pre\_split/processors/value\_cleaner.py                             |       45 |        1 |     98% |       106 |
-| src/psycop/common/model\_training/preprocessing/pre\_split/processors/value\_transformer.py                         |       39 |       13 |     67% |39, 45-55, 64-75, 83, 86 |
-| src/psycop/common/model\_training/tests/\_\_init\_\_.py                                                             |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/tests/test\_data/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/training/\_\_init\_\_.py                                                          |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/training/model\_specs.py                                                          |       13 |        0 |    100% |           |
-| src/psycop/common/model\_training/training/train\_and\_predict.py                                                   |       62 |        0 |    100% |           |
-| src/psycop/common/model\_training/training/utils.py                                                                 |       13 |        2 |     85% |    20, 30 |
-| src/psycop/common/model\_training/training\_output/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/training\_output/artifact\_saver/to\_disk.py                                      |       51 |        1 |     98% |        57 |
-| src/psycop/common/model\_training/training\_output/dataclasses.py                                                   |       36 |        0 |    100% |           |
-| src/psycop/common/model\_training/training\_output/model\_evaluator.py                                              |       32 |        1 |     97% |        39 |
-| src/psycop/common/model\_training/utils/\_\_init\_\_.py                                                             |        0 |        0 |    100% |           |
-| src/psycop/common/model\_training/utils/col\_name\_inference.py                                                     |       39 |        9 |     77% |33, 62-63, 71, 91-96, 123 |
-| src/psycop/common/model\_training/utils/decorators.py                                                               |       43 |        1 |     98% |        31 |
-| src/psycop/common/model\_training/utils/utils.py                                                                    |       89 |       31 |     65% |39, 115-118, 144, 149-150, 158, 163, 167, 212-218, 230-231, 248, 252, 282-285, 293-297, 305-316, 328-332 |
-| src/psycop/common/test\_utils/str\_to\_df.py                                                                        |       31 |        1 |     97% |        75 |
-| src/psycop/common/test\_utils/test\_data/model\_eval/generate\_synthetic\_dataset\_for\_eval.py                     |       55 |       39 |     29% |37, 42, 61-65, 84-88, 92-170 |
-| src/psycop/conftest.py                                                                                              |       47 |        3 |     94% |32, 36, 103 |
-| src/psycop/projects/care\_ml/\_\_init\_\_.py                                                                        |        0 |        0 |    100% |           |
-| src/psycop/projects/care\_ml/model\_evaluation/config.py                                                            |       43 |        0 |    100% |           |
-| src/psycop/projects/care\_ml/model\_evaluation/figures/feature\_importance/shap/get\_shap\_values.py                |       73 |       41 |     44% |26-37, 42-54, 70, 78-92, 102-134, 164-172, 181-194 |
-| src/psycop/projects/care\_ml/model\_evaluation/figures/feature\_importance/shap/shap\_plots.py                      |       53 |       29 |     45% |40, 48, 74-86, 95-101, 117-147 |
-| src/psycop/projects/care\_ml/model\_evaluation/figures/feature\_importance/shap/shap\_table.py                      |        7 |        0 |    100% |           |
-| src/psycop/projects/care\_ml/model\_evaluation/utils/feature\_name\_to\_readable.py                                 |       53 |       11 |     79% |6-19, 74-82, 145 |
-| src/psycop/projects/care\_ml/test/\_\_init\_\_.py                                                                   |        0 |        0 |    100% |           |
-| src/psycop/projects/care\_ml/test/test\_model\_evaluation/\_\_init\_\_.py                                           |        0 |        0 |    100% |           |
-| src/psycop/projects/care\_ml/test/test\_model\_evaluation/conftest.py                                               |        7 |        0 |    100% |           |
-| src/psycop/projects/care\_ml/utils/best\_runs.py                                                                    |       76 |       33 |     57% |23, 27-35, 39-45, 48-50, 67-71, 74, 77, 83, 87, 91, 95-96, 102-106, 109-113, 117, 121-122, 130 |
-| src/psycop/projects/care\_ml/utils/feature\_name\_to\_readable.py                                                   |       26 |       22 |     15% |6-16, 21-54, 59-64 |
-| src/psycop/projects/forced\_admission\_inpatient/utils/feature\_name\_to\_readable.py                               |       26 |        5 |     81% | 15, 39-42 |
-| src/psycop/projects/t2d/paper\_outputs/config.py                                                                    |       18 |        0 |    100% |           |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/conftest.py                      |        7 |        0 |    100% |           |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/get\_shap\_values.py             |       59 |       33 |     44% |17-28, 33-45, 61, 69-83, 92-124, 152-160 |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/plot\_shap.py                    |       31 |        0 |    100% |           |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/shap\_table.py                   |        7 |        0 |    100% |           |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/performance/performance\_by\_ppr.py                       |       31 |        7 |     77% |71-83, 87-89 |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/performance/plotnine\_confusion\_matrix.py                |       12 |        1 |     92% |        24 |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/performance/sensitivity\_by\_time\_to\_event\_pipeline.py |       35 |       20 |     43% |47-55, 59-89, 93-99, 103-105 |
-| src/psycop/projects/t2d/paper\_outputs/model\_description/robustness/robustness\_plot.py                            |       12 |        1 |     92% |        50 |
-| src/psycop/projects/t2d/paper\_outputs/model\_permutation/boolean\_features.py                                      |       27 |       12 |     56% |31, 41-59, 63-67 |
-| src/psycop/projects/t2d/paper\_outputs/model\_permutation/modified\_dataset.py                                      |       40 |       26 |     35% |17, 28, 35-42, 50-93 |
-| src/psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |34-52, 87-112 |
-| src/psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
-| src/psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |20-21, 29, 51, 55-63, 67-73, 76-78, 95-96, 99-103, 106, 109, 116, 129-133, 136-138, 142, 154-161, 174-181, 196-206, 217 |
-|                                                                                                           **TOTAL** | **3846** | **1117** | **71%** |           |
+| Name                                                                                                            |    Stmts |     Miss |   Cover |   Missing |
+|---------------------------------------------------------------------------------------------------------------- | -------: | -------: | ------: | --------: |
+| psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
+| psycop/common/feature\_generation/\_\_init\_\_.py                                                               |        0 |        0 |    100% |           |
+| psycop/common/feature\_generation/application\_modules/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
+| psycop/common/feature\_generation/application\_modules/filter\_prediction\_times.py                             |       44 |        3 |     93% | 9, 45, 81 |
+| psycop/common/feature\_generation/application\_modules/flatten\_dataset.py                                      |       26 |        5 |     81% |22-27, 110 |
+| psycop/common/feature\_generation/application\_modules/project\_setup.py                                        |       29 |        5 |     83% |     55-72 |
+| psycop/common/feature\_generation/application\_modules/save\_dataset\_to\_disk.py                               |       34 |        3 |     91% | 62-66, 86 |
+| psycop/common/feature\_generation/application\_modules/wandb\_utils.py                                          |       10 |        3 |     70% |     13-15 |
+| psycop/common/feature\_generation/data\_checks/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
+| psycop/common/feature\_generation/data\_checks/flattened/feature\_describer.py                                  |       78 |       24 |     69% |25-26, 47, 60-62, 80-95, 105, 172-173, 198-209, 255 |
+| psycop/common/feature\_generation/data\_checks/raw/check\_raw\_df.py                                            |       63 |       10 |     84% |8-10, 86, 170-175, 185, 216 |
+| psycop/common/feature\_generation/data\_checks/utils.py                                                         |       16 |        3 |     81% |   7-9, 72 |
+| psycop/common/feature\_generation/loaders/\_\_init\_\_.py                                                       |        0 |        0 |    100% |           |
+| psycop/common/feature\_generation/loaders/filters/\_\_init\_\_.py                                               |        0 |        0 |    100% |           |
+| psycop/common/feature\_generation/loaders/filters/diabetes\_filters.py                                          |       14 |        4 |     71% |  6, 41-48 |
+| psycop/common/feature\_generation/loaders/flattened/\_\_init\_\_.py                                             |        1 |        0 |    100% |           |
+| psycop/common/feature\_generation/loaders/flattened/local\_feature\_loaders.py                                  |       18 |        7 |     61% |9-11, 27-30, 76, 98, 118 |
+| psycop/common/feature\_generation/loaders/non\_numerical\_coercer.py                                            |       15 |        1 |     93% |        11 |
+| psycop/common/feature\_generation/loaders/raw/\_\_init\_\_.py                                                   |       10 |        0 |    100% |           |
+| psycop/common/feature\_generation/loaders/raw/load\_coercion.py                                                 |      102 |       52 |     49% |33-75, 97-118, 127-136, 151, 166, 180, 194, 208, 224-233, 248-263, 277-289, 304-324, 342, 356, 370, 384, 398, 412, 426, 440, 454, 468, 482 |
+| psycop/common/feature\_generation/loaders/raw/load\_demographic.py                                              |       21 |       13 |     38% |13-25, 30-43 |
+| psycop/common/feature\_generation/loaders/raw/load\_diagnoses.py                                                |      197 |       74 |     62% |19, 55-98, 109, 128, 150, 169, 188, 207, 226, 245-274, 285-314, 327, 346, 365, 384, 404, 423, 442, 461, 480, 499, 518, 537, 556, 578, 597, 616, 635, 657, 676, 695, 714, 736, 755, 774, 793, 815, 834, 853, 872, 892, 911, 930, 949, 968, 987, 1009, 1028, 1047, 1066, 1085, 1105, 1124, 1143, 1163, 1182, 1201, 1220, 1240 |
+| psycop/common/feature\_generation/loaders/raw/load\_ids.py                                                      |       10 |        5 |     50% | 10, 23-29 |
+| psycop/common/feature\_generation/loaders/raw/load\_lab\_results.py                                             |      180 |       92 |     49% |31-54, 73-95, 113-139, 157-180, 198-238, 249, 261-308, 320, 332, 344-351, 363, 375, 387, 399, 411, 423, 435, 447, 459, 471, 483, 495, 507, 519, 531, 543, 555, 567, 579, 591, 603, 615, 627, 639, 651, 663, 675, 687, 699, 711, 723, 735, 747, 762 |
+| psycop/common/feature\_generation/loaders/raw/load\_medications.py                                              |      201 |       77 |     62% |53-113, 135-144, 168, 189, 217, 254, 279, 303, 327, 351, 374, 397, 426, 452, 476, 502, 521, 540, 559, 578, 597, 617, 638, 658, 679, 698, 717, 750, 774, 797, 817, 837, 857, 876, 895, 914, 933, 952, 971, 990, 1010, 1030, 1049, 1068, 1087, 1106, 1125, 1144, 1163, 1182, 1201, 1220, 1239, 1258, 1277, 1296, 1315, 1334, 1353, 1373 |
+| psycop/common/feature\_generation/loaders/raw/load\_structured\_sfi.py                                          |       74 |       44 |     41% |11, 32-59, 64, 76-92, 97-114, 119, 129, 139, 149-158, 163-172, 177-187, 192-206, 211-224, 229-239 |
+| psycop/common/feature\_generation/loaders/raw/load\_t2d\_outcomes.py                                            |       19 |       11 |     42% |13-24, 29-42 |
+| psycop/common/feature\_generation/loaders/raw/load\_text.py                                                     |       53 |       32 |     40% |18, 30, 75-85, 111-144, 165-181, 198, 217, 238, 263-275 |
+| psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       77 |       46 |     40% |65-169, 178, 192-203, 212, 228, 247-258, 269, 286, 296-308 |
+| psycop/common/feature\_generation/loaders/raw/sql\_load.py                                                      |       21 |       13 |     38% |     42-70 |
+| psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       70 |       51 |     27% |27-38, 55-77, 133-283 |
+| psycop/common/feature\_generation/sequences/timeseries\_windower/timeseries\_windower.py                        |       16 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/timeseries\_windower/types/abstract\_polars\_dataframe.py           |       24 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/timeseries\_windower/types/event\_dataframe.py                      |       16 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/timeseries\_windower/types/prediction\_time\_dataframe.py           |       20 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/timeseries\_windower/types/sequence\_dataframe.py                   |       19 |        0 |    100% |           |
+| psycop/common/feature\_generation/text\_models/fit\_text\_models.py                                             |       10 |        1 |     90% |        34 |
+| psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       21 |        5 |     76% |     70-90 |
+| psycop/common/feature\_generation/text\_models/utils.py                                                         |       12 |        4 |     67% |23-24, 37-38 |
+| psycop/common/feature\_generation/utils.py                                                                      |       48 |       23 |     52% |16, 37, 64, 68, 72, 93-100, 113, 133, 137, 147-162 |
+| psycop/common/global\_utils/cache.py                                                                            |        8 |        1 |     88% |         9 |
+| psycop/common/global\_utils/paths.py                                                                            |        4 |        0 |    100% |           |
+| psycop/common/global\_utils/pickle.py                                                                           |       11 |        6 |     45% |7-10, 14-17 |
+| psycop/common/global\_utils/pydantic\_basemodel.py                                                              |       18 |        1 |     94% |        25 |
+| psycop/common/global\_utils/synth\_data\_generator/\_\_init\_\_.py                                              |        0 |        0 |    100% |           |
+| psycop/common/global\_utils/synth\_data\_generator/synth\_col\_generators.py                                    |       63 |       21 |     67% |69-97, 126-135, 138, 148, 173, 241-255 |
+| psycop/common/global\_utils/synth\_data\_generator/synth\_prediction\_times\_generator.py                       |       18 |        0 |    100% |           |
+| psycop/common/global\_utils/synth\_data\_generator/utils.py                                                     |       11 |        0 |    100% |           |
+| psycop/common/minimal\_pipeline.py                                                                              |       12 |        0 |    100% |           |
+| psycop/common/model\_evaluation/\_\_init\_\_.py                                                                 |        0 |        0 |    100% |           |
+| psycop/common/model\_evaluation/binary/bootstrap\_estimates.py                                                  |       18 |        3 |     83% |     35-37 |
+| psycop/common/model\_evaluation/binary/global\_performance/roc\_auc.py                                          |       35 |        1 |     97% |        60 |
+| psycop/common/model\_evaluation/binary/performance\_by\_ppr/performance\_by\_ppr.py                             |       55 |        0 |    100% |           |
+| psycop/common/model\_evaluation/binary/performance\_by\_ppr/prop\_of\_all\_events\_hit\_by\_true\_positive.py   |        9 |        0 |    100% |           |
+| psycop/common/model\_evaluation/binary/subgroup\_data.py                                                        |       15 |        1 |     93% |        47 |
+| psycop/common/model\_evaluation/binary/time/absolute\_data.py                                                   |        8 |        0 |    100% |           |
+| psycop/common/model\_evaluation/binary/time/timedelta\_data.py                                                  |       37 |        6 |     84% |39, 106, 149-171 |
+| psycop/common/model\_evaluation/binary/utils.py                                                                 |       35 |        6 |     83% |21, 66, 110-116 |
+| psycop/common/model\_evaluation/confusion\_matrix/confusion\_matrix.py                                          |       27 |        0 |    100% |           |
+| psycop/common/model\_evaluation/markdown/md\_objects.py                                                         |       56 |        5 |     91% |28, 83-88, 138 |
+| psycop/common/model\_evaluation/patchwork/patchwork\_grid.py                                                    |       35 |        0 |    100% |           |
+| psycop/common/model\_evaluation/utils.py                                                                        |      100 |       44 |     56% |55, 84-95, 115, 131-134, 162, 179, 233-239, 251-252, 266-273, 285, 303-306, 313-318, 326-336, 341, 349-356 |
+| psycop/common/model\_training/\_\_init\_\_.py                                                                   |        0 |        0 |    100% |           |
+| psycop/common/model\_training/application\_modules/\_\_init\_\_.py                                              |        0 |        0 |    100% |           |
+| psycop/common/model\_training/application\_modules/train\_model/\_\_init\_\_.py                                 |        0 |        0 |    100% |           |
+| psycop/common/model\_training/application\_modules/train\_model/main.py                                         |       38 |        0 |    100% |           |
+| psycop/common/model\_training/application\_modules/wandb\_handler.py                                            |       34 |        2 |     94% |    47, 69 |
+| psycop/common/model\_training/config\_schemas/\_\_init\_\_.py                                                   |        0 |        0 |    100% |           |
+| psycop/common/model\_training/config\_schemas/conf\_utils.py                                                    |       42 |        5 |     88% |66-72, 95, 108, 113 |
+| psycop/common/model\_training/config\_schemas/data.py                                                           |       22 |        0 |    100% |           |
+| psycop/common/model\_training/config\_schemas/debug.py                                                          |        5 |        0 |    100% |           |
+| psycop/common/model\_training/config\_schemas/full\_config.py                                                   |       16 |        0 |    100% |           |
+| psycop/common/model\_training/config\_schemas/model.py                                                          |        5 |        0 |    100% |           |
+| psycop/common/model\_training/config\_schemas/preprocessing.py                                                  |       29 |        0 |    100% |           |
+| psycop/common/model\_training/config\_schemas/project.py                                                        |       12 |        0 |    100% |           |
+| psycop/common/model\_training/config\_schemas/train.py                                                          |        5 |        0 |    100% |           |
+| psycop/common/model\_training/data\_loader/\_\_init\_\_.py                                                      |        0 |        0 |    100% |           |
+| psycop/common/model\_training/data\_loader/col\_name\_checker.py                                                |       29 |        0 |    100% |           |
+| psycop/common/model\_training/data\_loader/data\_loader.py                                                      |       43 |        9 |     79% |43, 65, 71, 79, 103-111 |
+| psycop/common/model\_training/data\_loader/utils.py                                                             |       32 |       14 |     56% | 23, 81-98 |
+| psycop/common/model\_training/preprocessing/\_\_init\_\_.py                                                     |        0 |        0 |    100% |           |
+| psycop/common/model\_training/preprocessing/post\_split/\_\_init\_\_.py                                         |        0 |        0 |    100% |           |
+| psycop/common/model\_training/preprocessing/post\_split/create\_pipeline.py                                     |       31 |        5 |     84% |22, 60, 77-81, 115 |
+| psycop/common/model\_training/preprocessing/post\_split/pipeline.py                                             |       15 |        0 |    100% |           |
+| psycop/common/model\_training/preprocessing/pre\_split/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
+| psycop/common/model\_training/preprocessing/pre\_split/full\_processor.py                                       |       34 |        0 |    100% |           |
+| psycop/common/model\_training/preprocessing/pre\_split/processors/col\_filter.py                                |       82 |       14 |     83% |47, 65-76, 145, 174-182, 201, 217 |
+| psycop/common/model\_training/preprocessing/pre\_split/processors/row\_filter.py                                |       81 |       11 |     86% |49, 85, 118, 132-137, 157, 167, 174, 183-187 |
+| psycop/common/model\_training/preprocessing/pre\_split/processors/value\_cleaner.py                             |       45 |        1 |     98% |       107 |
+| psycop/common/model\_training/preprocessing/pre\_split/processors/value\_transformer.py                         |       39 |       13 |     67% |40, 46-56, 65-76, 84, 87 |
+| psycop/common/model\_training/tests/\_\_init\_\_.py                                                             |        0 |        0 |    100% |           |
+| psycop/common/model\_training/tests/test\_data/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
+| psycop/common/model\_training/training/\_\_init\_\_.py                                                          |        0 |        0 |    100% |           |
+| psycop/common/model\_training/training/model\_specs.py                                                          |       13 |        0 |    100% |           |
+| psycop/common/model\_training/training/train\_and\_predict.py                                                   |      110 |       12 |     89% |105, 308-327, 382 |
+| psycop/common/model\_training/training/utils.py                                                                 |       14 |        2 |     86% |    23, 33 |
+| psycop/common/model\_training/training\_output/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
+| psycop/common/model\_training/training\_output/artifact\_saver/to\_disk.py                                      |       49 |        1 |     98% |        58 |
+| psycop/common/model\_training/training\_output/dataclasses.py                                                   |       57 |       12 |     79% |82-85, 94-103, 106 |
+| psycop/common/model\_training/training\_output/model\_evaluator.py                                              |       33 |        1 |     97% |        41 |
+| psycop/common/model\_training/utils/\_\_init\_\_.py                                                             |        0 |        0 |    100% |           |
+| psycop/common/model\_training/utils/col\_name\_inference.py                                                     |       41 |        9 |     78% |35, 67-68, 76, 96-101, 128 |
+| psycop/common/model\_training/utils/decorators.py                                                               |       43 |        1 |     98% |        31 |
+| psycop/common/model\_training/utils/utils.py                                                                    |       89 |       29 |     67% |40, 116-119, 145, 150-151, 159, 164, 213-219, 231-232, 249, 253, 283-286, 294-298, 306-316, 328-332 |
+| psycop/common/test\_utils/str\_to\_df.py                                                                        |       31 |        1 |     97% |        75 |
+| psycop/common/test\_utils/test\_data/model\_eval/generate\_synthetic\_dataset\_for\_eval.py                     |       55 |       39 |     29% |37, 42, 61-65, 84-88, 92-170 |
+| psycop/conftest.py                                                                                              |       47 |        3 |     94% |33, 37, 104 |
+| psycop/projects/forced\_admission\_inpatient/utils/feature\_name\_to\_readable.py                               |       26 |        5 |     81% | 15, 39-42 |
+| psycop/projects/restraint/\_\_init\_\_.py                                                                       |        0 |        0 |    100% |           |
+| psycop/projects/restraint/model\_evaluation/config.py                                                           |       43 |        0 |    100% |           |
+| psycop/projects/restraint/model\_evaluation/figures/feature\_importance/shap/get\_shap\_values.py               |       73 |       41 |     44% |26-37, 42-54, 70, 78-92, 102-134, 164-172, 181-194 |
+| psycop/projects/restraint/model\_evaluation/figures/feature\_importance/shap/shap\_plots.py                     |       53 |       29 |     45% |41, 49, 75-87, 96-102, 118-148 |
+| psycop/projects/restraint/model\_evaluation/figures/feature\_importance/shap/shap\_table.py                     |        7 |        0 |    100% |           |
+| psycop/projects/restraint/model\_evaluation/utils/feature\_name\_to\_readable.py                                |       53 |       11 |     79% |6-19, 74-82, 145 |
+| psycop/projects/restraint/test/\_\_init\_\_.py                                                                  |        0 |        0 |    100% |           |
+| psycop/projects/restraint/test/test\_model\_evaluation/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
+| psycop/projects/restraint/test/test\_model\_evaluation/conftest.py                                              |        7 |        0 |    100% |           |
+| psycop/projects/restraint/utils/best\_runs.py                                                                   |       76 |       33 |     57% |24, 28-36, 40-46, 49-51, 68-72, 75, 78, 84, 88, 92, 96-97, 103-107, 110-114, 118, 122-123, 131 |
+| psycop/projects/restraint/utils/feature\_name\_to\_readable.py                                                  |       26 |       22 |     15% |6-16, 21-54, 59-64 |
+| psycop/projects/t2d/paper\_outputs/config.py                                                                    |       18 |        0 |    100% |           |
+| psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/conftest.py                      |        7 |        0 |    100% |           |
+| psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/get\_shap\_values.py             |       59 |       34 |     42% |18-29, 34-46, 62, 70-84, 93-125, 153-163 |
+| psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/plot\_shap.py                    |       31 |        0 |    100% |           |
+| psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/shap\_table.py                   |        7 |        0 |    100% |           |
+| psycop/projects/t2d/paper\_outputs/model\_description/performance/performance\_by\_ppr.py                       |       31 |        7 |     77% |72-84, 88-90 |
+| psycop/projects/t2d/paper\_outputs/model\_description/performance/plotnine\_confusion\_matrix.py                |       12 |        0 |    100% |           |
+| psycop/projects/t2d/paper\_outputs/model\_description/performance/sensitivity\_by\_time\_to\_event\_pipeline.py |       35 |       20 |     43% |48-56, 60-90, 94-100, 104-106 |
+| psycop/projects/t2d/paper\_outputs/model\_description/robustness/robustness\_plot.py                            |       12 |        1 |     92% |        51 |
+| psycop/projects/t2d/paper\_outputs/model\_permutation/boolean\_features.py                                      |       27 |       13 |     52% |32, 42-60, 64-73 |
+| psycop/projects/t2d/paper\_outputs/model\_permutation/modified\_dataset.py                                      |       40 |       26 |     35% |18, 29, 36-43, 51-94 |
+| psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
+| psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
+| psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
+|                                                                                                       **TOTAL** | **4183** | **1207** | **71%** |           |
 
 
 ## Setup coverage badge
