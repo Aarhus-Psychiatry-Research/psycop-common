@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from typing import Callable, Union
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import (
+from timeseriesflattener.aggregation_fns import (  # type: ignore
     mean_number_of_characters,
     type_token_ratio,
 )
@@ -12,11 +12,11 @@ from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
 )
-from timeseriesflattener.feature_specs.single_specs import (
+from timeseriesflattener.feature_specs.single_specs import (  # type: ignore
     PredictorSpec,
     TextPredictorSpec,
 )
-from timeseriesflattener.text_embedding_functions import (
+from timeseriesflattener.text_embedding_functions import (  # type: ignore
     sklearn_embedding,
 )
 
