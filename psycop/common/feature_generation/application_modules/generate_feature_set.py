@@ -35,16 +35,16 @@ def generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
     feature_specs: list[AnySpec],
-    generate_in_chunks: bool = True,
-    chunksize: int = 400,
+    generate_in_chunks: bool = False,
+    chunksize: int = 250,
 ) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset.
-    If generate_in_chunks is True, features a generation is split into
-    multiple chunks toavoid memory issues with multiprocessing"""
+    If generate_in_chunks is True, feature generation is split into
+    multiple chunks to avoid memory issues"""
 
     if generate_in_chunks:
-        flattened_df = ChunkedFeatureGenerator.generate_feature_set(
+        flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
             project_info,
             eligible_prediction_times,
             feature_specs,
@@ -76,7 +76,7 @@ def init_wandb_and_generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
     feature_specs: list[AnySpec],
-    generate_in_chunks: bool = True,
+    generate_in_chunks: bool = False,
     chunksize: int = 400,
 ) -> Path:
     # Run elements that are required before wandb init first,

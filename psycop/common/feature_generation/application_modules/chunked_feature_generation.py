@@ -18,19 +18,19 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 
 class ChunkedFeatureGenerator:
     @staticmethod
-    def generate_feature_set(
+    def create_flattened_dataset_with_chunking(
         project_info: ProjectInfo,
         eligible_prediction_times: pd.DataFrame,
         feature_specs: list[AnySpec],
         chunksize: int = 400,
     ) -> pd.DataFrame:
-        """Generate features in chunks to avoid memory issues with multiprocessing"""
+        """Generate features in chunks to avoid memory issues"""
 
         ChunkedFeatureGenerator.remove_files_from_dir(  # Ensures that all saved chunks from previous crashed run are removed
             project_info.flattened_dataset_dir,
         )
 
-        print(f"Generation features in chunks of {chunksize}")
+        print(f"Generating features in chunks of {chunksize}")
         for i in range(0, len(feature_specs), chunksize):
             print(f"Generating features for chunk {i} to {i+chunksize}")
             flattened_df_chunk = create_flattened_dataset(
