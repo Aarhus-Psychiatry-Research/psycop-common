@@ -7,13 +7,14 @@
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/\_\_init\_\_.py                                                               |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/application\_modules/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
+| psycop/common/feature\_generation/application\_modules/chunked\_feature\_generation.py                          |       50 |       19 |     62% |29-53, 60-65, 94-96, 105, 114-117 |
 | psycop/common/feature\_generation/application\_modules/filter\_prediction\_times.py                             |       44 |        3 |     93% | 9, 45, 81 |
 | psycop/common/feature\_generation/application\_modules/flatten\_dataset.py                                      |       26 |        5 |     81% |22-27, 110 |
-| psycop/common/feature\_generation/application\_modules/project\_setup.py                                        |       29 |        5 |     83% |     55-72 |
-| psycop/common/feature\_generation/application\_modules/save\_dataset\_to\_disk.py                               |       34 |        3 |     91% | 62-66, 86 |
+| psycop/common/feature\_generation/application\_modules/project\_setup.py                                        |       29 |        5 |     83% |     53-70 |
+| psycop/common/feature\_generation/application\_modules/save\_dataset\_to\_disk.py                               |       40 |        8 |     80% |28-34, 78-82, 102 |
 | psycop/common/feature\_generation/application\_modules/wandb\_utils.py                                          |       10 |        3 |     70% |     13-15 |
 | psycop/common/feature\_generation/data\_checks/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
-| psycop/common/feature\_generation/data\_checks/flattened/feature\_describer.py                                  |       78 |       24 |     69% |25-26, 47, 60-62, 80-95, 105, 172-173, 198-209, 255 |
+| psycop/common/feature\_generation/data\_checks/flattened/feature\_describer.py                                  |       70 |       18 |     74% |20-21, 42, 55-57, 75-90, 100, 167-168, 230 |
 | psycop/common/feature\_generation/data\_checks/raw/check\_raw\_df.py                                            |       63 |       10 |     84% |8-10, 86, 170-175, 185, 216 |
 | psycop/common/feature\_generation/data\_checks/utils.py                                                         |       16 |        3 |     81% |   7-9, 72 |
 | psycop/common/feature\_generation/loaders/\_\_init\_\_.py                                                       |        0 |        0 |    100% |           |
@@ -45,7 +46,7 @@
 | psycop/common/feature\_generation/text\_models/utils.py                                                         |       12 |        4 |     67% |23-24, 37-38 |
 | psycop/common/feature\_generation/utils.py                                                                      |       48 |       23 |     52% |16, 37, 64, 68, 72, 93-100, 113, 133, 137, 147-162 |
 | psycop/common/global\_utils/cache.py                                                                            |        8 |        1 |     88% |         9 |
-| psycop/common/global\_utils/paths.py                                                                            |        4 |        0 |    100% |           |
+| psycop/common/global\_utils/paths.py                                                                            |        6 |        0 |    100% |           |
 | psycop/common/global\_utils/pickle.py                                                                           |       11 |        6 |     45% |7-10, 14-17 |
 | psycop/common/global\_utils/pydantic\_basemodel.py                                                              |       18 |        1 |     94% |        25 |
 | psycop/common/global\_utils/synth\_data\_generator/\_\_init\_\_.py                                              |        0 |        0 |    100% |           |
@@ -137,7 +138,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4183** | **1207** | **71%** |           |
+|                                                                                                       **TOTAL** | **4233** | **1225** | **71%** |           |
 
 
 ## Setup coverage badge
