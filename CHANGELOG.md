@@ -2,6 +2,37 @@
 
 <!--next-version-placeholder-->
 
+## v0.95.0 (2023-08-10)
+
+### Feature
+
+* First stab at chunked feature gen ([`0a31a61`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0a31a613282d87927d4117992c6b9f46e7ee9c2c))
+* Add loader for embedded text ([`40c8271`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/40c8271bd7b45d5c9fbb68b661fd21f385a0aad3))
+* Train sentence transformer code ([`055a572`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/055a572e0151b6044db9a12f491b8d308307b281))
+* Sentence transformer embedding ready to train ([`40ce08a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/40ce08ab8baa429a7529506938b02015dcf7c50d))
+* Sentence transformer embedding ([`9b998f8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9b998f8cfd71e79a33cdd08024a45314923ee345))
+* Vis qc ([`ec8ff15`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ec8ff15dc22524137d2a0f4f753377c288a172c5))
+
+### Fix
+
+* Misc ([`df49d9b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/df49d9b3772daaf5017c560abfbdb267da4c8e22))
+* Ignore old import erros ([`d6a2105`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d6a210572a4d48abb8bfec4396f0668dee19e2f9))
+* Reinstate 'prefixes_to_describe' param ([`761c6f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/761c6f06ca34ec3b3f8ea7ee13f522285974e158))
+* Remove old param ([`4240440`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/424044086c361391fe2d93c9e6c524df466843e2))
+* Minor changes and typos ([`2341abd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2341abdec245c7558a961d53b3ba2a98374a2bbd))
+* Typo in requirements ([`d97aefe`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d97aefec0c37af65e26903313c274af091df2ee7))
+* Text feat specs resolve mltp to mean ([`9dd1065`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9dd1065e10d22a5f5db9eda2d1527b77549274f9))
+* Paths ([`b008a95`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b008a955c6d900ac089b6b85e9ca9295e86c16a6))
+* Change chunking pipeline ([`781d442`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/781d44229c450eabfcfc462a34ac5a6a6eac5c98))
+* Updating scz_bp feature gen ([`8b1ee14`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8b1ee142693cdf15faaa0540fba878f0cc894d7e))
+* Move chunk tests ([`df7834d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/df7834da0494684d0da6eaae9d15df243cd9c1da))
+* Move chunk tests ([`295e4c0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/295e4c045c06375ebe464db376bc6607bfcbec65))
+* Don't modify prediction_times_df in PredictionTimeFilterer ([`e1eae8c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e1eae8c96368d69346feb2cbccf6891af595e536))
+* Type hint for ColNames ([`0454b42`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0454b4265144b6749da2d35bfa8d144484ae1710))
+* Chunked feature gen ([`d8e2ac7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d8e2ac772ac583600d82692dfca56e73a895cfac))
+* Set wandb to offline during feature gen ([`5ce32be`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5ce32beea252c68dac9b6d7e454f1bc57141ef5e))
+* Print time taken for sentence embedding ([`ac4e8a2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ac4e8a2a76cd87a70db3677055d24236188e8106))
+
 ## v0.94.0 (2023-08-03)
 
 ### Feature
