@@ -26,6 +26,7 @@ tableone==0.8.0
 shap==0.41.0
 patchworklib==0.6.2
 transformers==4.24.0
-timeseriesflattener==1.5.0
+timeseriesflattener==1.6.0
 sentence-transformers==2.2.2
 torch==1.13.1
+s
