@@ -1,18 +1,18 @@
 # @package _global_
 data:
   # General config
-  dir: E:\shared_resources\forced_admissions_inpatient\feature_sets\psycop_forced_admissions_inpatient_adminERPERF_features_2023_04_25_13_43
+  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\
   suffix: parquet
   splits_for_training: ["train"]
-  splits_for_evaluation: 
+  splits_for_evaluation: null
 
   # Feature specs
   pred_prefix: pred_
-  outc_prefix: outc_bool
+  outc_prefix: outc_bool_within_182_days
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: outc_timestamp
+    outcome_timestamp: timestamp_outcome_182_days
     is_female: pred_sex_female
     id: dw_ek_borger
     age: pred_age_in_years
