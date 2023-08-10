@@ -171,12 +171,14 @@ def generate_feature_description_row(
 def generate_feature_description_df(
     df: pd.DataFrame,
     predictor_specs: list[PredictorSpec | StaticSpec],
+    prefixes_to_describe: set[str],
 ) -> pd.DataFrame:
     """Generate a data frame with feature descriptions.
 
     Args:
         df (pd.DataFrame): Data frame with data to describe.
-        predictor_specs (Union[PredictorSpec, StaticSpec, TemporalSpec]): Predictor specifications.
+        predictor_specs (Union[PredictorSpec, StaticSpec,]): Predictor specifications.
+        prefixes_to_describe: Which prefixes for column names to make feature descriptions for.
 
     Returns:
         pd.DataFrame: Data frame with feature descriptions.
@@ -187,12 +189,13 @@ def generate_feature_description_df(
     for spec in predictor_specs:
         column_name = spec.get_output_col_name()
 
-        rows.append(
-            generate_feature_description_row(
-                series=df[column_name],
-                predictor_spec=spec,
-            ),
-        )
+        if spec.prefix in prefixes_to_describe:
+            rows.append(
+                generate_feature_description_row(
+                    series=df[column_name],
+                    predictor_spec=spec,
+                ),
+            )
 
     # Convert to dataframe
     feature_description_df = pd.DataFrame(rows)
@@ -207,6 +210,7 @@ def save_feature_descriptive_stats_from_dir(
     feature_set_dir: Path,
     feature_specs: list[PredictorSpec | StaticSpec],
     file_suffix: str,
+    prefixes_to_describe: set[str],
     splits: Sequence[str] = ("train",),
     out_dir: Path | None = None,
 ):
@@ -216,6 +220,7 @@ def save_feature_descriptive_stats_from_dir(
         feature_set_dir (Path): Path to directory with data frames.
         feature_specs (list[PredictorSpec]): List of feature specifications.
         file_suffix (str): Suffix of the data frames to load. Must be either ".csv" or ".parquet".
+        prefixes_to_describe: Which prefixes for column names to make feature descriptions for.
         splits (tuple[str]): tuple of splits to include in the description. Defaults to ("train").
         out_dir (Path): Path to directory where to save the feature description. Defaults to None.
     """
@@ -240,6 +245,7 @@ def save_feature_descriptive_stats_from_dir(
         feature_descriptive_stats = generate_feature_description_df(
             df=dataset,
             predictor_specs=feature_specs,
+            prefixes_to_describe=prefixes_to_describe,
         )
 
         msg.info(f"{split}: Writing descriptive stats dataframe to disk")
