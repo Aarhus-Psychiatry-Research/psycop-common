@@ -37,6 +37,7 @@ def generate_feature_set(
     feature_specs: list[AnySpec],
     generate_in_chunks: bool = False,
     chunksize: int = 250,
+    feature_set_name: str | None = None,
 ) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset.
@@ -59,17 +60,38 @@ def generate_feature_set(
             project_info=project_info,
         )
 
+    if feature_set_name:
+        feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
+    else:
+        feature_set_dir = project_info.flattened_dataset_dir
+
+    if Path.exists(feature_set_dir):
+        while True:
+            response = input(
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): ",
+            )
+
+            if response.lower() == "yes":
+                print(f"Folder '{feature_set_dir}' will be overwritten.")
+            elif response in ["no", "n"]:
+                print("Process stopped.")
+                return feature_set_dir
+            else:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
         project_info=project_info,
+        feature_set_dir=feature_set_dir,
     )
 
     save_flattened_dataset_description_to_disk(
         project_info=project_info,
         feature_specs=feature_specs,  # type: ignore
+        feature_set_dir=feature_set_dir,
     )
 
-    return project_info.flattened_dataset_dir
+    return feature_set_dir
 
 
 def init_wandb_and_generate_feature_set(

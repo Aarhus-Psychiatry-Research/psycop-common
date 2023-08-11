@@ -1,6 +1,7 @@
 """Utilities for saving a dataset to disk."""
 import logging
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Literal, Optional, Union
 
 import numpy as np
@@ -35,14 +36,14 @@ def save_chunk_to_disk(
 
 
 def save_split_to_disk(
-    project_info: ProjectInfo,
     split_df: pd.DataFrame,
     split_name: str,
+    feature_set_dir: Path,
 ):
     """Save split to disk."""
     # Version table with current date and time
     filename = f"{split_name}.parquet"
-    file_path = project_info.flattened_dataset_dir / filename
+    file_path = feature_set_dir / filename
     log.info(f"Saving {file_path} to disk")
 
     write_df_to_file(df=split_df, file_path=file_path)
@@ -86,6 +87,7 @@ def get_split_id_df(split_name: Literal["train", "val", "test"]) -> pd.DataFrame
 def split_and_save_dataset_to_disk(
     flattened_df: pd.DataFrame,
     project_info: ProjectInfo,
+    feature_set_dir: Path,
     split_ids: Optional[dict[str, pd.DataFrame]] = None,
     split_names: Sequence[str] = ("train", "val", "test"),  # type: ignore
 ):
@@ -94,6 +96,7 @@ def split_and_save_dataset_to_disk(
     Args:
         flattened_df (pd.DataFrame): Flattened dataframe.
         project_info (ProjectInfo): Project info.
+        feature_set_dir (Path): Directory for saving feature sets
         split_ids (dict[str, pd.DataFrame]): Split ids.
         split_names (tuple[str], optional): Names of split to create. Defaults to ("train", "val", "test").
     """
@@ -111,7 +114,7 @@ def split_and_save_dataset_to_disk(
         )
 
         save_split_to_disk(
-            project_info=project_info,
             split_df=split_df,
             split_name=split_name,
+            feature_set_dir=feature_set_dir,
         )
