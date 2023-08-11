@@ -2,14 +2,14 @@ import datetime as dt
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_event import (
-    StaticEvent,
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
+    StaticFeature,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
     TemporalEvent,
 )
-from psycop.common.feature_generation.sequences.timeseries_windower_python.prediction_sequence import (
-    PredictionSequence,
+from psycop.common.feature_generation.sequences.timeseries_windower_python.prediction_time import (
+    PredictionTime,
 )
 
 
@@ -21,7 +21,7 @@ class Patient:
     temporal_events: Sequence[TemporalEvent]
     # TODO: Should we check that temporal events are sorted by timestamp on init?
 
-    static_events: Sequence[StaticEvent] | None
+    static_events: Sequence[StaticFeature] | None
 
     @staticmethod
     def _filter_events(
@@ -39,7 +39,7 @@ class Patient:
         lookbehind: dt.timedelta,
         outcome_timestamp: dt.datetime,
         prediction_timestamps: Sequence[dt.datetime],
-    ) -> list[PredictionSequence]:
+    ) -> list[PredictionTime]:
         # Map each prediction time to a prediction sequence:
         prediction_sequences = []
 
@@ -53,12 +53,11 @@ class Patient:
 
             # 2. Return prediction sequences
             prediction_sequences.append(
-                PredictionSequence(
-                    patient_id=self.patient_id,
+                PredictionTime(
+                    patient=self,
                     prediction_timestamp=prediction_timestamp,
                     temporal_events=filtered_events,
-                    outcome_timestamp=outcome_timestamp,
-                    static_events=self.static_events,
+                    outcome=outcome_timestamp,
                 ),
             )
 
