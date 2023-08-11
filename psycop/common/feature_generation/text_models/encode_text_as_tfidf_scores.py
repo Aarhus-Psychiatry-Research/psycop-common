@@ -20,7 +20,7 @@ def encode_tfidf_values_to_df(
     print("Start encoding")
     tfidf = model.transform(text)
     print(f"Encoding time: {time() - t0:.2f} seconds")
-    return pl.DataFrame(tfidf.toarray()).select(
+    return pl.DataFrame(tfidf.toarray()).select(  # type: ignore
         pl.all().map_alias(lambda c: c.replace("column", "tfidf")),
     )
 
