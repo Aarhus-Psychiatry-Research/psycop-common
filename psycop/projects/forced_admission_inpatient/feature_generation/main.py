@@ -49,7 +49,8 @@ def main(add_text_features: bool = True, min_set_for_debug: bool = True):
     dataset."""
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
+        min_set_for_debug=False,  # Remember to set to False when generating full dataset
+        limited_feature_set=True,
     ).get_feature_specs()
 
     if add_text_features:

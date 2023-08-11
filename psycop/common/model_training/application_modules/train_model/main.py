@@ -7,6 +7,9 @@ import wandb
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.application_modules.wandb_handler import WandbHandler
+from psycop.common.model_training.config_schemas.conf_utils import (
+    validate_classification_objective,
+)
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
@@ -75,6 +78,7 @@ def post_wandb_setup_train_model(
 
     pipe = create_post_split_pipeline(cfg)
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
+    validate_classification_objective(cfg=cfg, col_names=outcome_col_name)
 
     eval_dataset = train_and_predict(
         cfg=cfg,

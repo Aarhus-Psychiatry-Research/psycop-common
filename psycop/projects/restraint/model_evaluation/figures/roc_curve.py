@@ -22,6 +22,12 @@ def eval_ds_to_roc_plot_spec(
     legend_title: str,
 ) -> ROCPlotSpec:
     """Convert EvalDataset to ROCPlotSpec."""
+    if isinstance(eval_dataset.y, pd.DataFrame) or isinstance(
+        eval_dataset.y_hat_probs,
+        pd.DataFrame,
+    ):
+        raise TypeError
+
     return ROCPlotSpec(
         y=eval_dataset.y,
         y_hat_probs=eval_dataset.y_hat_probs,

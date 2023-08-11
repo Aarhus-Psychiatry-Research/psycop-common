@@ -339,3 +339,6 @@ def load_evaluation_data(model_data_dir: Path) -> ModelEvalData:
 def get_percent_lost(n_before: float, n_after: float) -> float:
     """Get the percent lost."""
     return round((100 * (1 - n_after / n_before)), 2)
+
+
+SUPPORTS_MULTILABEL_CLASSIFICATION = ["xgboost"]

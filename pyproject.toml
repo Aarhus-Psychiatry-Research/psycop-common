@@ -1,6 +1,6 @@
 [project]
 name = "psycop"
-version = "0.93.0"
+version = "0.95.0"
 authors = [
   {name = "Martin Bernstorff", email = "martinbernstorff@gmail.com"}
 ]
@@ -59,6 +59,7 @@ reportUntypedFunctionDecorator = "none"
 reportIncompatibleVariableOverride = "none"
 reportUnusedVariable = "none"
 reportUnusedImports = "none"
+reportPrivateImportUsage = "none"
 
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.

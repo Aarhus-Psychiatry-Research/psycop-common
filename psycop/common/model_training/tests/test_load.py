@@ -4,6 +4,9 @@
 import pandas as pd
 import pytest
 
+from psycop.common.model_training.config_schemas.conf_utils import (
+    validate_classification_objective,
+)
 from psycop.common.model_training.config_schemas.data import ColumnNamesSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.col_name_checker import (
@@ -74,3 +77,36 @@ def test_check_columns_exist_in_dataset():
 
     with pytest.raises(ValueError, match="custom2"):
         check_columns_exist_in_dataset(col_name_schema=test_schema, df=df)
+
+
+def test_validate_classification_objective(muteable_test_config: FullConfigSchema):
+    cfg = muteable_test_config
+
+    if cfg.preprocessing.pre_split.classification_objective == "binary":
+        with pytest.raises(
+            ValueError,
+            match="Only one outcome column can be used for binary classification tasks.",
+        ):
+            validate_classification_objective(
+                cfg=cfg,
+                col_names=["outc_event1", "outc_event2"],
+            )
+
+        assert (
+            validate_classification_objective(cfg=cfg, col_names="outc_event1") is None
+        )
+
+    elif cfg.preprocessing.pre_split.classification_objective == "multilabel":
+        with pytest.raises(
+            ValueError,
+            match="Multiple outcome columns are needed for multilabel classification tasks.",
+        ):
+            validate_classification_objective(cfg=cfg, col_names="outc_event1")
+
+        assert (
+            validate_classification_objective(
+                cfg=cfg,
+                col_names=["outc_event1", "outc_event2"],
+            )
+            is None
+        )
