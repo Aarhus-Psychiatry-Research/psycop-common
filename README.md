@@ -34,6 +34,8 @@ cd psycop-common
 
 <activate virtual environment (conda, .venv etc.) here> 
 
+pip install invoke
+
 inv install
 ```
 
