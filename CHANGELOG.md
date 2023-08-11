@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.96.0 (2023-08-11)
+
+### Feature
+
+* Encode tfidf values ([`14806f8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/14806f8ddaa6bccc1598ea0d4a3f559cc7f0b326))
+* Embed text with tfidf model ([`d3c8c25`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d3c8c255b4b0ce6691337c9e06ce4a36ccf98f48))
+
+### Fix
+
+* Ignore type check ([`17a3b45`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/17a3b45052dde0f5b6e94645d7c87b15d743ad0a))
+
 ## v0.95.0 (2023-08-10)
 
 ### Feature
