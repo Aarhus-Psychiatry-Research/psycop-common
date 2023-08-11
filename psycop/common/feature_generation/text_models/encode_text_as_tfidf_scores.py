@@ -27,15 +27,15 @@ def encode_tfidf_values_to_df(
 
 if __name__ == "__main__":
     tfidf_model = load_text_model(
-        "tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500",
+        "tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
     )
 
     corpus = pl.from_pandas(
         pd.read_parquet(
-            path=PREPROCESSED_TEXT_DIR
-            / "psycop_train_val_all_sfis_preprocessed.parquet",
+            path=PREPROCESSED_TEXT_DIR / "psycop_train_all_sfis_preprocessed.parquet",
         ),
     )
+
     tfidf_values = encode_tfidf_values_to_df(tfidf_model, corpus["value"].to_list())  # type: ignore
 
     corpus = corpus.drop(columns=["value"])
