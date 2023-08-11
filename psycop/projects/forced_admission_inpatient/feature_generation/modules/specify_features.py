@@ -10,6 +10,8 @@ from timeseriesflattener.aggregation_fns import (
     latest,
     maximum,
     mean,
+    minimum,
+    summed,
     variance,
 )
 from timeseriesflattener.feature_specs.group_specs import (
@@ -151,7 +153,9 @@ class FeatureSpecifier:
         visits = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=physical_visits_to_psychiatry(),
+                    df=physical_visits_to_psychiatry(
+                        return_value_as_visit_length_days=False,
+                    ),
                     name="physical_visits_to_psychiatry",
                 ),
                 NamedDataframe(
@@ -175,7 +179,12 @@ class FeatureSpecifier:
         log.info("-------- Generating admissions specs --------")
 
         admissions_df = PredictorGroupSpec(
-            named_dataframes=[NamedDataframe(df=admissions(), name="admissions")],
+            named_dataframes=[
+                NamedDataframe(
+                    df=admissions(return_value_as_visit_length_days=True),
+                    name="admissions",
+                ),
+            ],
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
             fallback=[0],
@@ -441,7 +450,7 @@ class FeatureSpecifier:
         )
 
         admissions = self._get_admissions_specs(
-            resolve_multiple=[count, sum],
+            resolve_multiple=[count, summed],
             interval_days=interval_days,
         )
 
@@ -461,17 +470,17 @@ class FeatureSpecifier:
         )
 
         coercion = self._get_coercion_specs(
-            resolve_multiple=[count, sum, boolean],
+            resolve_multiple=[count, summed, boolean],
             interval_days=interval_days,
         )
 
         structured_sfi = self._get_structured_sfi_specs(
-            resolve_multiple=[mean, max, min, change_per_day, variance],
+            resolve_multiple=[mean, maximum, minimum, change_per_day, variance],
             interval_days=interval_days,
         )
 
         lab_results = self._get_lab_result_specs(
-            resolve_multiple=[max, min, mean, latest],
+            resolve_multiple=[maximum, minimum, mean, latest],
             interval_days=interval_days,
         )
 
@@ -490,6 +499,9 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
+            log.warning(
+                "--- !!! Using the minimum set of features for debugging !!! ---",
+            )
             return (
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
