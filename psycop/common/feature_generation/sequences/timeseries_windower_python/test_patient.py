@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
     Patient,
 )
-from psycop.common.feature_generation.sequences.timeseries_windower_python.temporal_event import (
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
     TemporalEvent,
 )
 

@@ -2,14 +2,14 @@ import datetime as dt
 from dataclasses import dataclass
 from typing import Sequence
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.prediction_sequence import (
-    PredictionSequence,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.static_event import (
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_event import (
     StaticEvent,
 )
-from psycop.common.feature_generation.sequences.timeseries_windower_python.temporal_event import (
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
     TemporalEvent,
+)
+from psycop.common.feature_generation.sequences.timeseries_windower_python.prediction_sequence import (
+    PredictionSequence,
 )
 
 
@@ -19,6 +19,8 @@ class Patient:
 
     patient_id: str | int
     temporal_events: Sequence[TemporalEvent]
+    # TODO: Should we check that temporal events are sorted by timestamp on init?
+
     static_events: Sequence[StaticEvent] | None
 
     @staticmethod

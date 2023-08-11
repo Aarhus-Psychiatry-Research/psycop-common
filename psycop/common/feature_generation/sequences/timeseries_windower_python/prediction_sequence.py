@@ -2,10 +2,10 @@ import datetime as dt
 from dataclasses import dataclass
 from typing import Sequence
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.static_event import (
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_event import (
     StaticEvent,
 )
-from psycop.common.feature_generation.sequences.timeseries_windower_python.temporal_event import (
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
     TemporalEvent,
 )
 
