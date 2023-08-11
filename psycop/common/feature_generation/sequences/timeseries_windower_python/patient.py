@@ -1,6 +1,6 @@
 import datetime as dt
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_event import (
     StaticEvent,
@@ -25,7 +25,9 @@ class Patient:
 
     @staticmethod
     def _filter_events(
-        events: Sequence[TemporalEvent], start: dt.datetime, end: dt.datetime
+        events: Sequence[TemporalEvent],
+        start: dt.datetime,
+        end: dt.datetime,
     ) -> Sequence[TemporalEvent]:
         # This could be much faster if we assume that the events are already sorted.
         # Then we could implement binary search, which is O(log n) instead of O(n).
@@ -57,7 +59,7 @@ class Patient:
                     temporal_events=filtered_events,
                     outcome_timestamp=outcome_timestamp,
                     static_events=self.static_events,
-                )
+                ),
             )
 
         return prediction_sequences

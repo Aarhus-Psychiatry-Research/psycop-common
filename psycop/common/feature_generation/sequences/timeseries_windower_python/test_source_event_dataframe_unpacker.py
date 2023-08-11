@@ -14,11 +14,11 @@ from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 def test_unpacking():
     test_data = str_to_pl_df(
-        """patient_id,timestamp,source,value
+        """patient,timestamp,source,value
 1,2020-01-01 00:00:00,source1,0
 1,2020-01-01 00:00:00,source1,1
 2,2020-01-01 00:00:00,source1,2
-                             """
+                             """,
     )
 
     patient_1 = Patient(

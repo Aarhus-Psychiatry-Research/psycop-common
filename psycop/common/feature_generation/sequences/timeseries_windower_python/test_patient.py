@@ -1,17 +1,11 @@
 import datetime as dt
-from typing import TYPE_CHECKING
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
-    Patient,
-)
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
     TemporalEvent,
 )
-
-if TYPE_CHECKING:
-    from psycop.common.feature_generation.sequences.timeseries_windower_python.prediction_sequence import (
-        PredictionSequence,
-    )
+from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
+    Patient,
+)
 
 
 class TestPatientSequenceGenerator:
