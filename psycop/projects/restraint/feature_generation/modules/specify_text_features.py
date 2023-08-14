@@ -3,13 +3,19 @@ import logging
 from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import concatenate
+from timeseriesflattener.aggregation_fns import (
+    mean_number_of_characters,  # type: ignore
+    type_token_ratio,  # type: ignore
+)
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
-    TextPredictorGroupSpec,
+    PredictorGroupSpec,
 )
-from timeseriesflattener.feature_specs.single_specs import TextPredictorSpec
-from timeseriesflattener.text_embedding_functions import (
+from timeseriesflattener.feature_specs.single_specs import (
+    PredictorSpec,  # type: ignore
+    TextPredictorSpec,  # type: ignore
+)
+from timeseriesflattener.text_embedding_functions import (  # type: ignore
     sklearn_embedding,
 )
 
