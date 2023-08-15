@@ -6,9 +6,6 @@ name: static_type_checks
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.json'
   push:
     branches: [main]
 
