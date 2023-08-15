@@ -9,9 +9,9 @@
 | psycop/common/feature\_generation/application\_modules/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/application\_modules/chunked\_feature\_generation.py                          |       50 |       19 |     62% |29-53, 60-65, 94-96, 105, 114-117 |
 | psycop/common/feature\_generation/application\_modules/filter\_prediction\_times.py                             |       44 |        3 |     93% | 9, 45, 81 |
-| psycop/common/feature\_generation/application\_modules/flatten\_dataset.py                                      |       26 |        5 |     81% |22-27, 110 |
+| psycop/common/feature\_generation/application\_modules/flatten\_dataset.py                                      |       27 |        6 |     78% |22-28, 113 |
 | psycop/common/feature\_generation/application\_modules/project\_setup.py                                        |       29 |        5 |     83% |     53-70 |
-| psycop/common/feature\_generation/application\_modules/save\_dataset\_to\_disk.py                               |       40 |        8 |     80% |28-34, 78-82, 102 |
+| psycop/common/feature\_generation/application\_modules/save\_dataset\_to\_disk.py                               |       41 |        8 |     80% |29-35, 79-83, 105 |
 | psycop/common/feature\_generation/application\_modules/wandb\_utils.py                                          |       10 |        3 |     70% |     13-15 |
 | psycop/common/feature\_generation/data\_checks/\_\_init\_\_.py                                                  |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/data\_checks/flattened/feature\_describer.py                                  |       70 |       18 |     74% |20-21, 42, 55-57, 75-90, 100, 167-168, 230 |
@@ -138,7 +138,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4233** | **1225** | **71%** |           |
+|                                                                                                       **TOTAL** | **4235** | **1226** | **71%** |           |
 
 
 ## Setup coverage badge
