@@ -71,13 +71,14 @@ def generate_feature_set(
                 f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): ",
             )
 
-            if response.lower() == "yes":
-                print(f"Folder '{feature_set_dir}' will be overwritten.")
-            elif response in ["no", "n"]:
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
                 print("Process stopped.")
                 return feature_set_dir
-            else:
-                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["yes", "y"]:
+                print(f"Folder '{feature_set_dir}' will be overwritten.")
+                break
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
