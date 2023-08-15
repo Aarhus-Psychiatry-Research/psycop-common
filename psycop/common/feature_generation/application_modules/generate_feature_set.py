@@ -100,7 +100,8 @@ def init_wandb_and_generate_feature_set(
     eligible_prediction_times: pd.DataFrame,
     feature_specs: list[AnySpec],
     generate_in_chunks: bool = False,
-    chunksize: int = 400,
+    chunksize: int = 250,
+    feature_set_name: str | None = None,
 ) -> Path:
     # Run elements that are required before wandb init first,
     # then run the rest in main so you can wrap it all in
@@ -114,6 +115,7 @@ def init_wandb_and_generate_feature_set(
         feature_specs=feature_specs,
         generate_in_chunks=generate_in_chunks,
         chunksize=chunksize,
+        feature_set_name=feature_set_name,
     )
 
 
