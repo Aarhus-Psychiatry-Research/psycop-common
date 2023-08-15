@@ -54,6 +54,7 @@ def main(
     min_set_for_debug: bool = False,
     limited_feature_set: bool = True,
     generate_in_chunks: bool = True,
+    feature_set_name: str | None = None,
     chunksize: int = 10,
 ):
     """Main function for loading, generating and evaluating a flattened
