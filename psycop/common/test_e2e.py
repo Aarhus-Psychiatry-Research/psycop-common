@@ -2,10 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 from timeseriesflattener.aggregation_fns import maximum, minimum
-from timeseriesflattener.feature_specs.single_specs import (
-    OutcomeSpec,
-    PredictorSpec,
-)
+from timeseriesflattener.feature_specs.single_specs import OutcomeSpec, PredictorSpec
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ColNames,
@@ -155,7 +152,7 @@ def test_e2e(tmp_path: Path):
 
     auroc = minimal_pipeline(
         project_info=project_info,
-        feature_specs=feature_specs,
+        feature_specs=feature_specs,  # type: ignore
         prediction_times_df=prediction_times_df,
         add_birthdays=False,
         model_training_cfg=model_training_cfg,
@@ -310,7 +307,7 @@ def test_e2e_multilabel(tmp_path: Path):
 
     auroc = minimal_pipeline(
         project_info=project_info,
-        feature_specs=feature_specs,
+        feature_specs=feature_specs,  # type: ignore
         prediction_times_df=prediction_times_df,
         add_birthdays=False,
         model_training_cfg=model_training_cfg,
