@@ -30,6 +30,7 @@ def minimal_pipeline(
         feature_specs=feature_specs,
         add_birthdays=add_birthdays,
         prediction_times_df=prediction_times_df,
+        feature_set_dir=project_info.flattened_dataset_dir,
         split2ids_df=split2ids_df,
         split_names=split_names,
     )

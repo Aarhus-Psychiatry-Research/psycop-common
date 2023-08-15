@@ -1,6 +1,6 @@
 """ Utils for text_models  """
 
-from typing import Any, Union
+from typing import Any
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
@@ -26,7 +26,7 @@ def save_text_model_to_dir(
 
 def load_text_model(
     filename: str,
-) -> Union[CountVectorizer, TfidfVectorizer]:
+) -> CountVectorizer | TfidfVectorizer:
     """
     Loads a text model from a pickle file
 

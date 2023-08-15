@@ -2,6 +2,30 @@
 
 <!--next-version-placeholder-->
 
+## v0.97.0 (2023-08-15)
+
+### Feature
+
+* Add new dir param and user prompt ([`fe46dbf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fe46dbfc528fc83e00fdb371a70d2436c3fb4278))
+
+### Fix
+
+* Broken tests due to missing arg ([`74cd065`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/74cd0651711f0292b11c9dfe84f292e86bd3a119))
+* Add arg to general function ([`6395109`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/639510928f28221c8c0f0068efb90846b0c49a4d))
+* Update general function ([`81506ee`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/81506ee857188b1df32ac785b12d422f42701732))
+* Instructions in README.md ([`c2de501`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c2de50141da8bb0a6e85fe522ec8e2cb66687687))
+
+## v0.96.0 (2023-08-11)
+
+### Feature
+
+* Encode tfidf values ([`14806f8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/14806f8ddaa6bccc1598ea0d4a3f559cc7f0b326))
+* Embed text with tfidf model ([`d3c8c25`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d3c8c255b4b0ce6691337c9e06ce4a36ccf98f48))
+
+### Fix
+
+* Ignore type check ([`17a3b45`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/17a3b45052dde0f5b6e94645d7c87b15d743ad0a))
+
 ## v0.95.0 (2023-08-10)
 
 ### Feature
