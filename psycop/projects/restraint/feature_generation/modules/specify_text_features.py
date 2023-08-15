@@ -5,18 +5,18 @@ from typing import Callable, Union
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import (
-    mean_number_of_characters,
-    type_token_ratio,
+    mean_number_of_characters,  # type: ignore
+    type_token_ratio,  # type: ignore
 )
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
-    PredictorSpec,
-    TextPredictorSpec,
+    PredictorSpec,  # type: ignore
+    TextPredictorSpec,  # type: ignore
 )
-from timeseriesflattener.text_embedding_functions import (
+from timeseriesflattener.text_embedding_functions import (  # type: ignore
     sklearn_embedding,
 )
 
