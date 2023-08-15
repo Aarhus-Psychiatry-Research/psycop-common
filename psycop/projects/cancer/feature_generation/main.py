@@ -25,4 +25,6 @@ if __name__ == "__main__":
         project_info=get_cancer_project_info(),
         eligible_prediction_times=CancerCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
         feature_specs=get_cancer_feature_specifications(),
+        generate_in_chunks=True,
+        chunksize=200,
     )
