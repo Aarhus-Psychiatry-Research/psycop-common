@@ -2,18 +2,21 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\cancer\feature_sets\psycop_cancer_adminfrihae_features_2023_01_17_12_38
+  dir: E:\shared_resources\cancer\flattened_datasets
   suffix: parquet
 
   # Feature specs
   pred_prefix: pred_
   outc_prefix: outc_
 
+  splits_for_training: ["train", "val"]
+  splits_for_evaluation: null
+
   col_name:
     pred_timestamp: timestamp
     outcome_timestamp: timestamp_first_cancer_diagnosis
     id: dw_ek_borger
     age: pred_age_in_years
-#    exclusion_timestamp: timestamp_exclusion
-#    custom_columns:
-#      - eval_hba1c_within_9999_days_count_fallback_nan
+    is_female: pred_sex_female
+    exclusion_timestamp: null
+    pred_time_uuid: prediction_time_uuid
