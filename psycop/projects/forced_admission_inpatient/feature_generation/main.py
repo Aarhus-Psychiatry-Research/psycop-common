@@ -52,7 +52,7 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 def main(
     add_text_features: bool = True,
     min_set_for_debug: bool = False,
-    limited_feature_set: bool = True,
+    limited_feature_set: bool = False,
     generate_in_chunks: bool = True,
     feature_set_name: str | None = None,
     chunksize: int = 10,
@@ -167,4 +167,4 @@ if __name__ == "__main__":
         project_info=project_info,
     )
 
-    main(feature_set_name="min_dataset_for_debug")
+    main(feature_set_name="full_feature_set_with_sent_transformer_embeddings")
