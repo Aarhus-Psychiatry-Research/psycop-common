@@ -122,7 +122,7 @@
 | psycop/projects/restraint/test/\_\_init\_\_.py                                                                  |        0 |        0 |    100% |           |
 | psycop/projects/restraint/test/test\_model\_evaluation/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
 | psycop/projects/restraint/test/test\_model\_evaluation/conftest.py                                              |        7 |        0 |    100% |           |
-| psycop/projects/restraint/utils/best\_runs.py                                                                   |       76 |       33 |     57% |24, 28-36, 40-46, 49-51, 68-72, 75, 78, 84, 88, 92, 96-97, 103-107, 110-114, 118, 122-123, 131 |
+| psycop/projects/restraint/utils/best\_runs.py                                                                   |       76 |       33 |     57% |24, 30-38, 42-48, 51-53, 70-74, 77, 80, 86, 90, 94, 98-99, 105-109, 112-116, 120, 124-125, 133 |
 | psycop/projects/restraint/utils/feature\_name\_to\_readable.py                                                  |       26 |       22 |     15% |6-16, 21-54, 59-64 |
 | psycop/projects/t2d/paper\_outputs/config.py                                                                    |       18 |        0 |    100% |           |
 | psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/conftest.py                      |        7 |        0 |    100% |           |
