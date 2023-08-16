@@ -60,6 +60,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f9_disorders,
     manic_and_bipolar,
 )
+from psycop.common.feature_generation.loaders.raw.load_lab_results import cancelled_standard_lab_results, p_aripiprazol, p_clomipramine, p_clozapine, p_ethanol, p_haloperidol, p_lithium, p_nortriptyline, p_olanzapine, p_paliperidone, p_paracetamol, p_risperidone
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     alcohol_abstinence,
     antidepressives,
@@ -584,6 +585,39 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return temporary_leave_specs
+    
+    def _get_lab_result_specs(
+        self,
+        resolve_multiple: list[Callable],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
+        """Get lab result specs."""
+        log.info("-------- Generating lab result specs --------")
+
+        lab_results = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(df=p_lithium(), name="p_lithium"),
+                NamedDataframe(df=p_clozapine(), name="p_clozapine"),
+                NamedDataframe(df=p_olanzapine(), name="p_olanzapine"),
+                NamedDataframe(df=p_aripiprazol(), name="p_aripiprazol"),
+                NamedDataframe(df=p_risperidone(), name="p_risperidone"),
+                NamedDataframe(df=p_paliperidone(), name="p_paliperidone"),
+                NamedDataframe(df=p_haloperidol(), name="p_haloperidol"),
+                NamedDataframe(df=p_paracetamol(), name="p_paracetamol"),
+                NamedDataframe(df=p_ethanol(), name="p_ethanol"),
+                NamedDataframe(df=p_nortriptyline(), name="p_nortriptyline"),
+                NamedDataframe(df=p_clomipramine(), name="p_clomipramine"),
+                NamedDataframe(
+                    df=cancelled_standard_lab_results(),
+                    name="cancelled_standard_lab_results",
+                ),
+            ),
+            aggregation_fns=resolve_multiple,
+            lookbehind_days=interval_days,
+            fallback=[np.nan],
+        ).create_combinations()
+
+        return lab_results
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -656,6 +690,11 @@ class FeatureSpecifier:
             interval_days=[1, 3, 7, *interval_days],
         )
 
+        lab_results = self._get_lab_result_specs(
+            resolve_multiple=[max, min, mean, latest],
+            interval_days=interval_days,
+        )
+
         return (
             latest_weight_height_bmi
             + visits
@@ -667,6 +706,7 @@ class FeatureSpecifier:
             + forced_medication_coercion
             + structured_sfi
             + temporary_leave
+            + lab_results
         )
 
     def get_feature_specs(

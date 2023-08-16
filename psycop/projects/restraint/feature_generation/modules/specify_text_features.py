@@ -3,27 +3,21 @@ import logging
 from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import (
-    mean_number_of_characters,  # type: ignore
-    type_token_ratio,  # type: ignore
+from timeseriesflattener.df_transforms import (
+    df_with_multiple_values_to_named_dataframes,
 )
+from timeseriesflattener.aggregation_fns import mean
 from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
     PredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
     PredictorSpec,  # type: ignore
-    TextPredictorSpec,  # type: ignore
-)
-from timeseriesflattener.text_embedding_functions import (  # type: ignore
-    sklearn_embedding,
 )
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
-from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
-from psycop.common.feature_generation.text_models.utils import load_text_model
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
 
 log = logging.getLogger(__name__)
 
@@ -39,43 +33,75 @@ class TextFeatureSpecifier:
         self,
         resolve_multiple: list[Callable],
         interval_days: list[float],
-    ) -> list[TextPredictorSpec]:
-        """Get bow all sfis specs"""
-        log.info("-------- Generating tf-idf sfis specs --------")
+        embedded_text_filename: str,
+    ) -> list[PredictorSpec]:
+        log.info("-------- Generating tf-idf specs --------")
+        embedded_text_filename = embedded_text_filename
+        
+        TEXT_SFIS = [
+            "Observation af patient, Psykiatri",
+            "Samtale med behandlingssigte",
+            "Aktuelt psykisk",
+            "Aktuelt socialt, Psykiatri",
+            "Aftaler, Psykiatri",
+            "Aktuelt somatisk, Psykiatri",
+            "Objektivt psykisk",
+            "Kontaktårsag",
+            "Telefonnotat",
+            "Semistruktureret diagnostisk interview",
+            "Vurdering/konklusion",
+        ]
 
-        tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
+        embedded_text = EmbeddedTextLoader.load_embedded_text(
+            filename=embedded_text_filename,
+            text_sfi_names=TEXT_SFIS,
+            include_sfi_name=False,
+            n_rows=None,
+        ).to_pandas()
+
+        embedded_text = df_with_multiple_values_to_named_dataframes(
+            df=embedded_text,
+            entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="timestamp",
+            name_prefix="sent_",
         )
-
-        tfidf_specs = TextPredictorGroupSpec(
-            named_dataframes=[
-                NamedDataframe(df=load_aktuel_psykisk(), name="aktuel_psykisk"),
-            ],
+        
+        tfidf_specs = PredictorGroupSpec(
+            named_dataframes=embedded_text,
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
-            embedding_fn_name="tfidf",
             fallback=[np.nan],
-            embedding_fn=[sklearn_embedding],
-            embedding_fn_kwargs=[{"model": tfidf_model}],
         ).create_combinations()
 
         return tfidf_specs
 
+
     def get_feature_specs(
         self,
-    ) -> list[TextPredictorSpec]:
+    ) -> list[PredictorSpec]:
         """Generate text predictor spec list."""
         log.info("-------- Generating text predictor specs --------")
 
         if self.min_set_for_debug:
             return self._get_text_specs(
-                resolve_multiple=[concatenate],
-                interval_days=[7],
+                resolve_multiple=[mean],
+                interval_days=[1],
+                embedded_text_filename="text_tfidf.parquet",
             )  # type: ignore
 
-        text_features = self._get_text_specs(
-            resolve_multiple=[concatenate],
-            interval_days=[30.0, 180.0, 365.0, 730.0],
+        resolve_multiple = [mean]
+        interval_days = [60.0, 365.0, 730.0]
+
+        tfidf_features = self._get_text_specs(
+            resolve_multiple=resolve_multiple,
+            interval_days=interval_days,
+            embedded_text_filename="text_tfidf.parquet",
         )
 
-        return text_features
+        embedding_features = self._get_text_specs(
+            resolve_multiple=resolve_multiple,
+            interval_days=interval_days,
+            embedded_text_filename="text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet",
+        )
+
+        return tfidf_features
