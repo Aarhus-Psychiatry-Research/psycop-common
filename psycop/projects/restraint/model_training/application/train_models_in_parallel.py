@@ -31,7 +31,7 @@ def main(
     trainer_specs = SearchSpaceInferrer(
         cfg=cfg,
         train_df=train_df,
-        model_names=["xgboost", "logistic-regression"],
+        model_names=["xgboost"],
     ).get_trainer_specs()
 
     spawn_trainers(
