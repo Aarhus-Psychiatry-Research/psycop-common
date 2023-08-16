@@ -3,10 +3,10 @@ import logging
 from typing import Callable
 
 import numpy as np
+from timeseriesflattener.aggregation_fns import mean
 from timeseriesflattener.df_transforms import (
     df_with_multiple_values_to_named_dataframes,
 )
-from timeseriesflattener.aggregation_fns import mean
 from timeseriesflattener.feature_specs.group_specs import (
     PredictorGroupSpec,
 )
@@ -17,7 +17,9 @@ from timeseriesflattener.feature_specs.single_specs import (
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
-from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
+    EmbeddedTextLoader,
+)
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +39,7 @@ class TextFeatureSpecifier:
     ) -> list[PredictorSpec]:
         log.info("-------- Generating tf-idf specs --------")
         embedded_text_filename = embedded_text_filename
-        
+
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
@@ -65,7 +67,7 @@ class TextFeatureSpecifier:
             timestamp_col_name="timestamp",
             name_prefix="sent_",
         )
-        
+
         tfidf_specs = PredictorGroupSpec(
             named_dataframes=embedded_text,
             lookbehind_days=interval_days,
@@ -74,7 +76,6 @@ class TextFeatureSpecifier:
         ).create_combinations()
 
         return tfidf_specs
-
 
     def get_feature_specs(
         self,
@@ -98,7 +99,7 @@ class TextFeatureSpecifier:
             embedded_text_filename="text_tfidf.parquet",
         )
 
-        embedding_features = self._get_text_specs(
+        self._get_text_specs(
             resolve_multiple=resolve_multiple,
             interval_days=interval_days,
             embedded_text_filename="text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet",

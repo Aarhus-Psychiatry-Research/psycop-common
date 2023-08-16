@@ -60,7 +60,20 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f9_disorders,
     manic_and_bipolar,
 )
-from psycop.common.feature_generation.loaders.raw.load_lab_results import cancelled_standard_lab_results, p_aripiprazol, p_clomipramine, p_clozapine, p_ethanol, p_haloperidol, p_lithium, p_nortriptyline, p_olanzapine, p_paliperidone, p_paracetamol, p_risperidone
+from psycop.common.feature_generation.loaders.raw.load_lab_results import (
+    cancelled_standard_lab_results,
+    p_aripiprazol,
+    p_clomipramine,
+    p_clozapine,
+    p_ethanol,
+    p_haloperidol,
+    p_lithium,
+    p_nortriptyline,
+    p_olanzapine,
+    p_paliperidone,
+    p_paracetamol,
+    p_risperidone,
+)
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     alcohol_abstinence,
     antidepressives,
@@ -585,7 +598,7 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return temporary_leave_specs
-    
+
     def _get_lab_result_specs(
         self,
         resolve_multiple: list[Callable],
