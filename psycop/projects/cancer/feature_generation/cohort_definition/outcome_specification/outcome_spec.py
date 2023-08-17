@@ -1,4 +1,6 @@
-"""Script for creating cancer cohort."""
+"""Script for creating cancer cohort.
+Currently, the output of this file is not used as the cohort, though it might be necessary to use this approach for later work (e.g. when distinguishing between different types of cancer)
+"""
 
 from pathlib import Path
 
