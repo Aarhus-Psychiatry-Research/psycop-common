@@ -62,7 +62,8 @@ df_lpr2_outp_preproc = df_lpr2_outp_preproc.rename(
 
 # Combine all
 all_visits_combined = pd.concat(
-    [df_lpr3_preproc, df_lpr2_inp_preproc, df_lpr2_outp_preproc], ignore_index=True
+    [df_lpr3_preproc, df_lpr2_inp_preproc, df_lpr2_outp_preproc],
+    ignore_index=True,
 )
 
 # extract first visit to psych in RM
@@ -74,7 +75,7 @@ df_first_psych_visit = (
     .reset_index()
 )
 df_first_psych_visit = df_first_psych_visit.rename(
-    columns={"datotid_start": "datotid_first_psych_visit"}
+    columns={"datotid_start": "datotid_first_psych_visit"},
 )
 
 
