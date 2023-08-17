@@ -1,7 +1,6 @@
 """Loaders that are specific to the cancer project."""
 # pylint: disable=missing-function-docstring
 
-from pathlib import Path
 from typing import Literal
 
 import pandas as pd
@@ -18,7 +17,7 @@ def any_cancer(
     shak_sql_operator: str | None = None,
     timestamp_purpose: Literal["predictor", "outcome"] | None = "outcome",
 ) -> pd.DataFrame:
-    """Loads the outcome variable for the cancer prediction project using the common code for loading diagnoses.
+    """Loads the outcome variable for the cancer prediction project.
     """
     return from_contacts(
         icd_code="c",
