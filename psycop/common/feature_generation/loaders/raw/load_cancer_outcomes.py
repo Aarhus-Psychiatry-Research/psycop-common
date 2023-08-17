@@ -19,7 +19,6 @@ def any_cancer(
     timestamp_purpose: Literal["predictor", "outcome"] | None = "outcome",
 ) -> pd.DataFrame:
     """Loads the outcome variable for the cancer prediction project using the common code for loading diagnoses.
-    This approach gives fewer rows than the approach above (uses "FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022").  
     """
     return from_contacts(
         icd_code="c",
