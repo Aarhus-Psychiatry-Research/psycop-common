@@ -40,17 +40,15 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
 )
-
 from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
     EmbeddedTextLoader,
 )
-
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     alat,
     crp,
     fasting_ldl,
-    hdl,
     hba1c,
+    hdl,
     ldl,
     triglycerides,
 )
@@ -78,7 +76,6 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     height_in_cm,
     weight_in_kg,
 )
-
 from psycop.projects.cancer.feature_generation.cohort_definition.cancer_cohort_definer import (
     CancerCohortDefiner,
 )
@@ -137,7 +134,7 @@ class FeatureSpecifier:
             named_dataframes=[
                 NamedDataframe(
                     df=CancerCohortDefiner.get_outcome_timestamps().to_pandas(),
-                    name="first_cancer_diagnosis"
+                    name="first_cancer_diagnosis",
                 ),
             ],
             lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
@@ -342,7 +339,6 @@ class FeatureSpecifier:
             interval_days=[30, 60, 365],
         )
 
-
         return lab_results + medications + diagnoses + demographics + text
 
     def get_feature_specs(self) -> list[AnySpec]:
@@ -352,10 +348,7 @@ class FeatureSpecifier:
             log.warning(
                 "--- !!! Using the minimum set of features for debugging !!! ---",
             )
-            return (
-                self._get_temporal_predictor_specs()
-                + self._get_outcome_specs()
-            )
+            return self._get_temporal_predictor_specs() + self._get_outcome_specs()
 
         return (
             self._get_temporal_predictor_specs()

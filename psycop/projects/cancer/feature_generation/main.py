@@ -1,16 +1,16 @@
 """Main feature generation."""
-import sys 
+import sys
 from pathlib import Path
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     init_wandb_and_generate_feature_set,
 )
-from psycop.projects.cancer.feature_generation.cohort_definition.cancer_cohort_definer import (
-    CancerCohortDefiner,
-)
 from psycop.projects.cancer.cancer_config import (
     get_cancer_feature_specifications,
     get_cancer_project_info,
+)
+from psycop.projects.cancer.feature_generation.cohort_definition.cancer_cohort_definer import (
+    CancerCohortDefiner,
 )
 
 if __name__ == "__main__":
