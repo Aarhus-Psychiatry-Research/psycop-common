@@ -339,7 +339,7 @@ class FeatureSpecifier:
 
         text = self._get_text_specs(
             resolve_multiple=[mean],
-            interval_days=[60, 365, 730],
+            interval_days=[30, 60, 365],
         )
 
 

@@ -114,4 +114,4 @@ class ChunkedFeatureGenerator:
         df_dirs = glob.glob(str(feature_dir / "flattened_dataset_chunk_*.parquet"))
 
         for file in df_dirs:
-            Path.unlink(file)  # type: ignore
+            Path.unlink(Path(file))  # type: ignore
