@@ -27,7 +27,9 @@ class SourceEventDataframeUnpacker:
         )
 
     def _unpack_events(
-        self, patient: Patient, event_row: dict[str, Any]
+        self,
+        patient: Patient,
+        event_row: dict[str, Any],
     ) -> TemporalEvent:
         return TemporalEvent(
             patient=patient,
@@ -59,7 +61,8 @@ class SourceEventDataframeUnpacker:
         source_event_dataframe: pl.DataFrame,
     ) -> list[Patient]:
         patient_dfs = source_event_dataframe.partition_by(
-            by=self._column_names.patient_id_col_name, maintain_order=True
+            by=self._column_names.patient_id_col_name,
+            maintain_order=True,
         )
         unpacked_patients = [
             self._unpack_patient_events(

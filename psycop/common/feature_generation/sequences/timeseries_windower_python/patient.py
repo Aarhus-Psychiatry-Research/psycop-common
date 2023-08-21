@@ -1,7 +1,6 @@
 import datetime as dt
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import List
 
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
     StaticFeature,
@@ -19,8 +18,8 @@ class Patient:
     """All task-agnostic data for a patient."""
 
     patient_id: str | int
-    _temporal_events: List[TemporalEvent] = field(default_factory=list)
-    _static_features: List[StaticFeature] = field(default_factory=list)
+    _temporal_events: list[TemporalEvent] = field(default_factory=list)
+    _static_features: list[StaticFeature] = field(default_factory=list)
 
     @staticmethod
     def _filter_events(
@@ -33,14 +32,14 @@ class Patient:
         # However, this might be plenty fast. We can always optimize later.
         return [event for event in events if start <= event.timestamp < end]
 
-    def add_temporal_events(self, events: List[TemporalEvent]):
+    def add_temporal_events(self, events: list[TemporalEvent]):
         self._temporal_events += events
 
     def get_temporal_events(self) -> Sequence[TemporalEvent]:
         self._temporal_events.sort(key=lambda event: event.timestamp)
         return self._temporal_events
 
-    def add_static_events(self, features: List[StaticFeature]):
+    def add_static_events(self, features: list[StaticFeature]):
         self._static_features += features
 
     def get_static_events(self) -> Sequence[StaticFeature]:

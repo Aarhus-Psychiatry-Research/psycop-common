@@ -41,7 +41,7 @@ def test_unpacking():
                 source="source1",
                 name=None,
             ),
-        ]
+        ],
     )
 
     patient_2 = Patient(
@@ -55,12 +55,12 @@ def test_unpacking():
                 value=2,
                 source="source1",
                 name=None,
-            )
-        ]
+            ),
+        ],
     )
     expected_patients = [patient_1, patient_2]
 
     unpacked = SourceEventDataframeUnpacker(column_names=None).unpack(
-        source_event_dataframe=test_data
+        source_event_dataframe=test_data,
     )
     assert unpacked == expected_patients
