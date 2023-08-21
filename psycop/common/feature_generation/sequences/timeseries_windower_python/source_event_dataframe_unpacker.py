@@ -28,7 +28,7 @@ class SourceEventDataframeUnpacker:
 
     def _unpack_events(self, event_row: dict[str, Any]) -> TemporalEvent:
         return TemporalEvent(
-            patient_id=event_row[self._column_names.patient_id_col_name],
+            patient=event_row[self._column_names.patient_id_col_name],
             timestamp=event_row[self._column_names.timestamp_col_name],
             source=event_row[self._column_names.source_col_name],
             name=None,  # TODO: Will this remain None?
@@ -39,10 +39,12 @@ class SourceEventDataframeUnpacker:
         temporal_events = patient_events.iter_rows(named=True)
         unpacked_events = [self._unpack_events(e) for e in temporal_events]
 
+        first_row = next(temporal_events)
         return Patient(
-            patient_id=unpacked_events[0].patient_id,
-            temporal_events=unpacked_events,
-            static_events=None,
+            patient_id=first_row[self._column_names.patient_id_col_name],
+            _temporal_events=unpacked_events,
+            _static_features=[],
+            # TODO: Add static event unpacking
         )
 
     def unpack(

@@ -1,6 +1,7 @@
 import datetime as dt
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import List
 
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
     StaticFeature,
@@ -13,15 +14,13 @@ from psycop.common.feature_generation.sequences.timeseries_windower_python.predi
 )
 
 
-@dataclass(frozen=True)
+@dataclass
 class Patient:
     """All task-agnostic data for a patient."""
 
     patient_id: str | int
-    temporal_events: Sequence[TemporalEvent]
-    # TODO: Should we check that temporal events are sorted by timestamp on init?
-
-    static_events: Sequence[StaticFeature] | None
+    _temporal_events: List[TemporalEvent]
+    _static_features: List[StaticFeature]
 
     @staticmethod
     def _filter_events(
@@ -33,6 +32,19 @@ class Patient:
         # Then we could implement binary search, which is O(log n) instead of O(n).
         # However, this might be plenty fast. We can always optimize later.
         return [event for event in events if start <= event.timestamp < end]
+
+    def add_temporal_events(self, events: List[TemporalEvent]) -> Self:
+        self._temporal_events += events
+
+    def get_temporal_events(self) -> Sequence[TemporalEvent]:
+        self._temporal_events.sort(key=lambda event: event.timestamp)
+        return self._temporal_events
+
+    def add_static_events(self, features: List[StaticFeature]) -> Self:
+        self._static_features += features
+
+    def get_static_events(self) -> Sequence[StaticFeature]:
+        return self._static_features
 
     def to_prediction_sequences(
         self,
@@ -46,7 +58,7 @@ class Patient:
         for prediction_timestamp in prediction_timestamps:
             # 1. Filter the predictor events to those that are relevant to the prediction time. (Keep all static, drop all temporal that are outside the lookbehind window.)
             filtered_events = self._filter_events(
-                events=self.temporal_events,
+                events=self._temporal_events,
                 start=prediction_timestamp - lookbehind,
                 end=prediction_timestamp,
             )

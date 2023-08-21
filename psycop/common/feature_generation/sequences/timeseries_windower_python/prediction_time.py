@@ -25,9 +25,6 @@ class PredictionTime:
     # TODO: rename to PredictionTime and add pointer to Patient and drop slices
     patient: Patient
     temporal_events: Sequence[TemporalEvent]
+    static_features: Sequence[StaticFeature]
     prediction_timestamp: dt.datetime
     outcome: dt.datetime | None  # TODO: Maybe this should be a bool for the given lookahead window? Where do we want this parsing to happen?
-
-    @property
-    def static_features(self) -> Sequence[StaticFeature] | None:
-        return self.patient.static_events

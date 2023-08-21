@@ -28,8 +28,8 @@ class TestPatientSequenceGenerator:
 
         patient = Patient(
             patient_id=1,
-            temporal_events=temporal_events,
-            static_events=None,
+            _temporal_events=temporal_events,
+            _static_features=None,
         )
 
         prediction_sequences = patient.to_prediction_sequences(
