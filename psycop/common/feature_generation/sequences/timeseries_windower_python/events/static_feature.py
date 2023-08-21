@@ -13,4 +13,4 @@ if TYPE_CHECKING:
 class StaticFeature:
     name: str  # E.g. "date-of-birth"/"gender"
     patient: Patient
-    value: float | str | bool  # 1/0 for booleans, numeric value for numeric events
+    value: float | str | bool

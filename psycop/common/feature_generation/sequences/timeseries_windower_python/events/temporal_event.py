@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import datetime as dt
 
-if TYPE_CHECKING:
     from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
         Patient,
     )
@@ -16,7 +15,7 @@ if TYPE_CHECKING:
 class TemporalEvent:
     timestamp: dt.datetime
     source: str  # E.g. "lab"/"diagnosis"
-    name: str | None  # E.g. "Hba1c"/"hypertension"
+    name: str | None  # E.g. "Hba1c"/"hypertension". Is optional, since e.g. diagnoses don't have a name, only a source and value.
     value: float | str  # 1/0 for booleans, numeric value for numeric events
     patient: Patient | None = None
 

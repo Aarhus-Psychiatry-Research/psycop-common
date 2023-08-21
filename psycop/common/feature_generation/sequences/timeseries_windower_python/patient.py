@@ -35,14 +35,16 @@ class Patient:
     def add_temporal_events(self, events: list[TemporalEvent]):
         self._temporal_events += events
 
-    def get_temporal_events(self) -> Sequence[TemporalEvent]:
+    @property
+    def temporal_events(self) -> Sequence[TemporalEvent]:
         self._temporal_events.sort(key=lambda event: event.timestamp)
         return self._temporal_events
 
     def add_static_events(self, features: list[StaticFeature]):
         self._static_features += features
 
-    def get_static_events(self) -> Sequence[StaticFeature]:
+    @property
+    def static_events(self) -> Sequence[StaticFeature]:
         return self._static_features
 
     def to_prediction_times(
@@ -58,7 +60,7 @@ class Patient:
         for prediction_timestamp in prediction_timestamps:
             # 1. Filter the predictor events to those that are relevant to the prediction time. (Keep all static, drop all temporal that are outside the lookbehind window.)
             filtered_events = self._filter_events(
-                events=self.get_temporal_events(),
+                events=self.temporal_events,
                 start=prediction_timestamp - lookbehind,
                 end=prediction_timestamp,
             )
