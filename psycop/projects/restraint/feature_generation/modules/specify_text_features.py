@@ -1,9 +1,8 @@
 """Text-feature specification module."""
 import logging
-from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import mean
+from timeseriesflattener.aggregation_fns import AggregationFunType, mean
 from timeseriesflattener.df_transforms import (
     df_with_multiple_values_to_named_dataframes,
 )
@@ -33,7 +32,7 @@ class TextFeatureSpecifier:
 
     def _get_text_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
         embedded_text_filename: str,
     ) -> list[PredictorSpec]:

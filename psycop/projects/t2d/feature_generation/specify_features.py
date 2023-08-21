@@ -1,9 +1,15 @@
 """Feature specification module."""
 import logging
-from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum
+from timeseriesflattener.aggregation_fns import (
+    AggregationFunType,
+    count,
+    latest,
+    maximum,
+    mean,
+    minimum,
+)
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
@@ -186,7 +192,7 @@ class FeatureSpecifier:
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
@@ -235,7 +241,7 @@ class FeatureSpecifier:
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
@@ -282,7 +288,7 @@ class FeatureSpecifier:
 
     def _get_lab_result_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
