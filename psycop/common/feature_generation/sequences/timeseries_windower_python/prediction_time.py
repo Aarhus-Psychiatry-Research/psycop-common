@@ -1,16 +1,21 @@
-import datetime as dt
-from collections.abc import Sequence
-from dataclasses import dataclass
+from __future__ import annotations
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
-    StaticFeature,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
-    TemporalEvent,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
-    Patient,
-)
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import datetime as dt
+    from collections.abc import Sequence
+
+    from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
+        StaticFeature,
+    )
+    from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
+        TemporalEvent,
+    )
+    from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
+        Patient,
+    )
 
 
 @dataclass(frozen=True)

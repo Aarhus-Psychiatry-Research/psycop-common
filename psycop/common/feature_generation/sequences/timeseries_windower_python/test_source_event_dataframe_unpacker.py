@@ -25,12 +25,14 @@ def test_unpacking():
         patient_id=1,
         temporal_events=[
             TemporalEvent(
+                patient_id=1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=0,
                 source="source1",
                 name=None,
             ),
             TemporalEvent(
+                patient_id=1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=1,
                 source="source1",
@@ -44,6 +46,7 @@ def test_unpacking():
         patient_id=2,
         temporal_events=[
             TemporalEvent(
+                patient_id=2,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=2,
                 source="source1",
@@ -54,5 +57,7 @@ def test_unpacking():
     )
     expected_patients = [patient_1, patient_2]
 
-    unpacked = SourceEventDataframeUnpacker().unpack(source_event_dataframe=test_data)
+    unpacked = SourceEventDataframeUnpacker(column_names=None).unpack(
+        source_event_dataframe=test_data
+    )
     assert unpacked == expected_patients
