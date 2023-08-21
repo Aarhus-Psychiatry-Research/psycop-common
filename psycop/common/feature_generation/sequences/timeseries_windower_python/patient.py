@@ -46,9 +46,10 @@ class Patient:
     def get_static_events(self) -> Sequence[StaticFeature]:
         return self._static_features
 
-    def to_prediction_sequences(
+    def to_prediction_times(
         self,
         lookbehind: dt.timedelta,
+        lookahead: dt.timedelta,
         outcome_timestamp: dt.datetime,
         prediction_timestamps: Sequence[dt.datetime],
     ) -> list[PredictionTime]:
@@ -63,13 +64,17 @@ class Patient:
                 end=prediction_timestamp,
             )
 
+            outcome_within_lookahead = outcome_timestamp <= (
+                prediction_timestamp + lookahead
+            )
+
             # 2. Return prediction sequences
             prediction_sequences.append(
                 PredictionTime(
                     patient=self,
                     prediction_timestamp=prediction_timestamp,
                     temporal_events=filtered_events,
-                    outcome=outcome_timestamp,
+                    outcome=outcome_within_lookahead,
                     static_features=self._static_features,
                 ),
             )

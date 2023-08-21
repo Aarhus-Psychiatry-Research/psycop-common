@@ -22,9 +22,8 @@ if TYPE_CHECKING:
 class PredictionTime:
     """A cut sequence of events for a patient, ready to issue a prediction."""
 
-    # TODO: rename to PredictionTime and add pointer to Patient and drop slices
     patient: Patient
     temporal_events: Sequence[TemporalEvent]
     static_features: Sequence[StaticFeature]
     prediction_timestamp: dt.datetime
-    outcome: dt.datetime | None  # TODO: Maybe this should be a bool for the given lookahead window? Where do we want this parsing to happen?
+    outcome: bool

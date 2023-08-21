@@ -31,7 +31,7 @@ class TestPatientSequenceGenerator:
         )
         patient.add_temporal_events(temporal_events)
 
-        prediction_sequences = patient.to_prediction_sequences(
+        prediction_sequences = patient.to_prediction_times(
             lookbehind=dt.timedelta(days=2),
             prediction_timestamps=[dt.datetime(2021, 1, 2), dt.datetime(2021, 1, 4)],
             outcome_timestamp=dt.datetime(2021, 1, 5),
