@@ -3,6 +3,9 @@ from typing import Any
 
 import polars as pl
 
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
+    StaticFeature,
+)
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
     TemporalEvent,
 )
@@ -26,7 +29,7 @@ class SourceEventDataframeUnpacker:
 
     def _event_dict_to_event_obj(
         self,
-        patient: Patient,
+        patient: Patient | None,
         event_row: dict[str, Any],
     ) -> TemporalEvent:
         return TemporalEvent(
@@ -39,23 +42,24 @@ class SourceEventDataframeUnpacker:
             value=event_row[self._column_names.value_col_name],
         )
 
-    def _patient_df_to_patient_obj(self, patient_events: pl.DataFrame) -> Patient:
+    def _patient_df_to_patient_dict(
+        self, patient_events: pl.DataFrame
+    ) -> dict[str | int, list[TemporalEvent | StaticFeature]]:
         temporal_event_dicts = patient_events.iter_rows(named=True)
 
         first_row = next(patient_events.iter_rows(named=True))
-        cur_patient = Patient(
-            patient_id=first_row[self._column_names.patient_id_col_name],
-        )
 
         temporal_event_objs = [
-            self._event_dict_to_event_obj(event_row=e, patient=cur_patient)
+            self._event_dict_to_event_obj(event_row=e, patient=None)
             for e in temporal_event_dicts
         ]
-        cur_patient.add_temporal_events(temporal_event_objs)
 
-        return cur_patient
+        patient_id: str = first_row[self._column_names.patient_id_col_name]
+        patient_dict = {patient_id: temporal_event_objs}
+        # TODO: we want to generalise this function to handle both temporal and static events
+        return patient_dict  # type: ignore
 
-    def unpack(
+    def unpack_temporal(
         self,
         source_event_dataframe: pl.DataFrame,
     ) -> list[Patient]:
@@ -64,12 +68,23 @@ class SourceEventDataframeUnpacker:
             maintain_order=True,
         )
         patient_objs = [
-            self._patient_df_to_patient_obj(
+            self._patient_df_to_patient_dict(
                 patient_df,
             )
             for patient_df in patient_dfs
         ]
         return patient_objs
 
-    def unpack_static_events(self):
+    def unpack_static(
+        self,
+        source_event_dataframe: pl.DataFrame,
+        patients: list[Patient],
+    ) -> list[Patient]:
+        pass
+
+    def unpack(
+        self,
+        static_source_dfs: list[pl.DataFrame],
+        temporal_source_dfs: list[pl.DataFrame],
+    ) -> list[Patient]:
         pass

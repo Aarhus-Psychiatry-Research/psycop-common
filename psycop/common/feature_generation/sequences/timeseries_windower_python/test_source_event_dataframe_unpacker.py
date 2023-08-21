@@ -1,5 +1,8 @@
 import datetime as dt
 
+from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
+    StaticFeature,
+)
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
     TemporalEvent,
 )
@@ -60,7 +63,27 @@ def test_unpacking():
     )
     expected_patients = [patient_1, patient_2]
 
-    unpacked = SourceEventDataframeUnpacker(column_names=None).unpack(
+    unpacked = SourceEventDataframeUnpacker(column_names=None).unpack_temporal(
         source_event_dataframe=test_data,
     )
     assert unpacked == expected_patients
+
+
+def test_static_features():
+    test_data = str_to_pl_df(
+        """patient,name,value
+1,test,0
+                             """,
+    )
+
+    expected_patient = Patient(patient_id=1)
+
+    expected_patient.add_static_features(
+        StaticFeature(name="test", patient=expected_patient, value=0)
+    )
+
+    unpacked = SourceEventDataframeUnpacker().unpack_temporal(
+        static_features_df=test_data,
+    )
+
+    assert unpacked == expected_patient
