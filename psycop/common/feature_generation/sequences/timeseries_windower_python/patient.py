@@ -19,8 +19,8 @@ class Patient:
     """All task-agnostic data for a patient."""
 
     patient_id: str | int
-    _temporal_events: List[TemporalEvent]
-    _static_features: List[StaticFeature]
+    _temporal_events: List[TemporalEvent] = []  # noqa: RUF008
+    _static_features: List[StaticFeature] = []  # noqa: RUF008
 
     @staticmethod
     def _filter_events(
@@ -33,14 +33,14 @@ class Patient:
         # However, this might be plenty fast. We can always optimize later.
         return [event for event in events if start <= event.timestamp < end]
 
-    def add_temporal_events(self, events: List[TemporalEvent]) -> Self:
+    def add_temporal_events(self, events: List[TemporalEvent]):
         self._temporal_events += events
 
     def get_temporal_events(self) -> Sequence[TemporalEvent]:
         self._temporal_events.sort(key=lambda event: event.timestamp)
         return self._temporal_events
 
-    def add_static_events(self, features: List[StaticFeature]) -> Self:
+    def add_static_events(self, features: List[StaticFeature]):
         self._static_features += features
 
     def get_static_events(self) -> Sequence[StaticFeature]:
@@ -58,7 +58,7 @@ class Patient:
         for prediction_timestamp in prediction_timestamps:
             # 1. Filter the predictor events to those that are relevant to the prediction time. (Keep all static, drop all temporal that are outside the lookbehind window.)
             filtered_events = self._filter_events(
-                events=self._temporal_events,
+                events=self.get_temporal_events(),
                 start=prediction_timestamp - lookbehind,
                 end=prediction_timestamp,
             )
@@ -70,6 +70,7 @@ class Patient:
                     prediction_timestamp=prediction_timestamp,
                     temporal_events=filtered_events,
                     outcome=outcome_timestamp,
+                    static_features=self._static_features,
                 ),
             )
 

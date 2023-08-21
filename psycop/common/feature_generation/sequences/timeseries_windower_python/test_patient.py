@@ -13,12 +13,14 @@ class TestPatientSequenceGenerator:
         """Temporal event filtering should remove predictor events which are before the start of the lookbehind window, and after the prediction time."""
         temporal_events = [
             TemporalEvent(
+                patient_id=1,
                 timestamp=dt.datetime(2021, 1, 1),
                 value=1,
                 source="test_source",
                 name="test_name",
             ),
             TemporalEvent(
+                patient_id=1,
                 timestamp=dt.datetime(2021, 1, 3),
                 value=2,
                 source="test_source",
@@ -28,9 +30,8 @@ class TestPatientSequenceGenerator:
 
         patient = Patient(
             patient_id=1,
-            _temporal_events=temporal_events,
-            _static_features=None,
         )
+        patient.add_temporal_events(temporal_events)
 
         prediction_sequences = patient.to_prediction_sequences(
             lookbehind=dt.timedelta(days=2),

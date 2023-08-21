@@ -23,37 +23,40 @@ def test_unpacking():
 
     patient_1 = Patient(
         patient_id=1,
-        _temporal_events=[
+        _temporal_events=[],
+    )
+    patient_1.add_temporal_events(
+        [
             TemporalEvent(
-                patient=1,
+                patient_id=1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=0,
                 source="source1",
                 name=None,
             ),
             TemporalEvent(
-                patient=1,
+                patient_id=1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=1,
                 source="source1",
                 name=None,
             ),
-        ],
-        _static_features=None,
+        ]
     )
 
     patient_2 = Patient(
         patient_id=2,
-        _temporal_events=[
+    )
+    patient_2.add_temporal_events(
+        [
             TemporalEvent(
-                patient=2,
+                patient_id=2,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=2,
                 source="source1",
                 name=None,
-            ),
-        ],
-        _static_features=None,
+            )
+        ]
     )
     expected_patients = [patient_1, patient_2]
 

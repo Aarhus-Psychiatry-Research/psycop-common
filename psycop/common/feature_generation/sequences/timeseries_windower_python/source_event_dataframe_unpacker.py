@@ -28,10 +28,13 @@ class SourceEventDataframeUnpacker:
 
     def _unpack_events(self, event_row: dict[str, Any]) -> TemporalEvent:
         return TemporalEvent(
+            patient_id=event_row[self._column_names.patient_id_col_name],
             patient=event_row[self._column_names.patient_id_col_name],
             timestamp=event_row[self._column_names.timestamp_col_name],
             source=event_row[self._column_names.source_col_name],
-            name=None,  # TODO: Will this remain None?
+            name=event_row[self._column_names.name_col_name]
+            if self._column_names.name_col_name is not None
+            else None,
             value=event_row[self._column_names.value_col_name],
         )
 
