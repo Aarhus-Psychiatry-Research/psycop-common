@@ -28,14 +28,14 @@ def test_unpacking():
     patient_1.add_temporal_events(
         [
             TemporalEvent(
-                patient_id=1,
+                patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=0,
                 source="source1",
                 name=None,
             ),
             TemporalEvent(
-                patient_id=1,
+                patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=1,
                 source="source1",
@@ -50,7 +50,7 @@ def test_unpacking():
     patient_2.add_temporal_events(
         [
             TemporalEvent(
-                patient_id=2,
+                patient=patient_2,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=2,
                 source="source1",

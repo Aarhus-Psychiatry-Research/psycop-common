@@ -26,10 +26,11 @@ class SourceEventDataframeUnpacker:
             PatientColumnNames() if column_names is None else column_names
         )
 
-    def _unpack_events(self, event_row: dict[str, Any]) -> TemporalEvent:
+    def _unpack_events(
+        self, patient: Patient, event_row: dict[str, Any]
+    ) -> TemporalEvent:
         return TemporalEvent(
-            patient_id=event_row[self._column_names.patient_id_col_name],
-            patient=event_row[self._column_names.patient_id_col_name],
+            patient=patient,
             timestamp=event_row[self._column_names.timestamp_col_name],
             source=event_row[self._column_names.source_col_name],
             name=event_row[self._column_names.name_col_name]
@@ -40,15 +41,18 @@ class SourceEventDataframeUnpacker:
 
     def _unpack_patient_events(self, patient_events: pl.DataFrame) -> Patient:
         temporal_events = patient_events.iter_rows(named=True)
-        unpacked_events = [self._unpack_events(e) for e in temporal_events]
 
-        first_row = next(temporal_events)
-        return Patient(
+        first_row = next(patient_events.iter_rows(named=True))
+        patient = Patient(
             patient_id=first_row[self._column_names.patient_id_col_name],
-            _temporal_events=unpacked_events,
-            _static_features=[],
-            # TODO: Add static event unpacking
         )
+
+        unpacked_events = [
+            self._unpack_events(event_row=e, patient=patient) for e in temporal_events
+        ]
+        patient.add_temporal_events(unpacked_events)
+
+        return patient
 
     def unpack(
         self,

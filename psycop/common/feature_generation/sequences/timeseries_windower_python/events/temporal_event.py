@@ -14,9 +14,16 @@ if TYPE_CHECKING:
 
 @dataclass
 class TemporalEvent:
-    patient_id: int
     timestamp: dt.datetime
     source: str  # E.g. "lab"/"diagnosis"
     name: str | None  # E.g. "Hba1c"/"hypertension"
     value: float | str  # 1/0 for booleans, numeric value for numeric events
     patient: Patient | None = None
+
+    def __eq__(self, __value: TemporalEvent) -> bool:  # type: ignore
+        for attr in self.__dict__:
+            if attr == "patient":
+                continue
+            if getattr(self, attr) != getattr(__value, attr):
+                return False
+        return True

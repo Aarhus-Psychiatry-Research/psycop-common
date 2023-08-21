@@ -1,6 +1,6 @@
 import datetime as dt
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
@@ -19,8 +19,8 @@ class Patient:
     """All task-agnostic data for a patient."""
 
     patient_id: str | int
-    _temporal_events: List[TemporalEvent] = []  # noqa: RUF008
-    _static_features: List[StaticFeature] = []  # noqa: RUF008
+    _temporal_events: List[TemporalEvent] = field(default_factory=list)
+    _static_features: List[StaticFeature] = field(default_factory=list)
 
     @staticmethod
     def _filter_events(
