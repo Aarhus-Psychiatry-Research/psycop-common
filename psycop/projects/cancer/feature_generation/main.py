@@ -55,11 +55,13 @@ def _generate_feature_set(project_info: ProjectInfo) -> Path:
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
         project_info=project_info,
+        feature_set_dir=project_info.flattened_dataset_dir,
     )
 
     save_flattened_dataset_description_to_disk(
         project_info=project_info,
         feature_specs=feature_specs,  # type: ignore
+        feature_set_dir=project_info.flattened_dataset_dir,
     )
 
     return project_info.flattened_dataset_dir

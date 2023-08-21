@@ -20,6 +20,7 @@ from psycop.common.feature_generation.loaders.raw.load_demographic import birthd
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from pathlib import Path
 
     import pandas as pd
     from timeseriesflattener.feature_specs.single_specs import AnySpec
@@ -35,6 +36,7 @@ def flatten_dataset_to_disk(
     project_info: ProjectInfo,
     feature_specs: list[AnySpec],
     prediction_times_df: pd.DataFrame,
+    feature_set_dir: Path,
     quarantine_df: pd.DataFrame | None = None,
     quarantine_days: int | None = None,
     split2ids_df: dict[str, pd.DataFrame] | None = None,
@@ -53,6 +55,7 @@ def flatten_dataset_to_disk(
     split_and_save_dataset_to_disk(
         flattened_df=flattened_dataset,
         project_info=project_info,
+        feature_set_dir=feature_set_dir,
         split_ids=split2ids_df,
         split_names=split_names,
     )

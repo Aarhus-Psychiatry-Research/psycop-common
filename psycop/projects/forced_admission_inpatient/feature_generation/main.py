@@ -41,13 +41,13 @@ log = logging.getLogger()
 
 
 @wandb_alert_on_exception
-def main():
+def main(feature_set_name: str | None = None) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
-        limited_feature_set=True,
+        min_set_for_debug=True,  # Remember to set to False when generating full dataset
+        limited_feature_set=False,
     ).get_feature_specs()
 
     flattened_df = create_flattened_dataset(
@@ -66,15 +66,38 @@ def main():
         visit_type="inpatient",
     )
 
+    if feature_set_name:
+        feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
+    else:
+        feature_set_dir = project_info.flattened_dataset_dir
+
+    if Path.exists(feature_set_dir):
+        while True:
+            response = input(
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): ",
+            )
+
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
+                print("Process stopped.")
+                return feature_set_dir
+            if response.lower() in ["yes", "y"]:
+                print(f"Folder '{feature_set_dir}' will be overwritten.")
+                break
+
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
         project_info=project_info,
+        feature_set_dir=feature_set_dir,
     )
 
     save_flattened_dataset_description_to_disk(
-        feature_specs=feature_specs,  # type: ignore
         project_info=project_info,
+        feature_specs=feature_specs,  # type: ignore
+        feature_set_dir=feature_set_dir,
     )
+    return feature_set_dir
 
 
 if __name__ == "__main__":
@@ -108,4 +131,4 @@ if __name__ == "__main__":
         project_info=project_info,
     )
 
-    main()
+    main(feature_set_name="min_dataset_for_debug")
