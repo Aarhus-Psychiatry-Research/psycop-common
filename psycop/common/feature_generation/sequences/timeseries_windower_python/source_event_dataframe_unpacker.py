@@ -21,12 +21,10 @@ class PatientColumnNames:
 
 
 class SourceEventDataframeUnpacker:
-    def __init__(self, column_names: PatientColumnNames | None) -> None:
-        self._column_names = (
-            PatientColumnNames() if column_names is None else column_names
-        )
+    def __init__(self, column_names: PatientColumnNames) -> None:
+        self._column_names = column_names
 
-    def _unpack_events(
+    def _event_dict_to_event_obj(
         self,
         patient: Patient,
         event_row: dict[str, Any],
@@ -41,20 +39,21 @@ class SourceEventDataframeUnpacker:
             value=event_row[self._column_names.value_col_name],
         )
 
-    def _unpack_patient_events(self, patient_events: pl.DataFrame) -> Patient:
-        temporal_events = patient_events.iter_rows(named=True)
+    def _patient_df_to_patient_obj(self, patient_events: pl.DataFrame) -> Patient:
+        temporal_event_dicts = patient_events.iter_rows(named=True)
 
         first_row = next(patient_events.iter_rows(named=True))
-        patient = Patient(
+        cur_patient = Patient(
             patient_id=first_row[self._column_names.patient_id_col_name],
         )
 
-        unpacked_events = [
-            self._unpack_events(event_row=e, patient=patient) for e in temporal_events
+        temporal_event_objs = [
+            self._event_dict_to_event_obj(event_row=e, patient=cur_patient)
+            for e in temporal_event_dicts
         ]
-        patient.add_temporal_events(unpacked_events)
+        cur_patient.add_temporal_events(temporal_event_objs)
 
-        return patient
+        return cur_patient
 
     def unpack(
         self,
@@ -64,16 +63,13 @@ class SourceEventDataframeUnpacker:
             by=self._column_names.patient_id_col_name,
             maintain_order=True,
         )
-        unpacked_patients = [
-            self._unpack_patient_events(
+        patient_objs = [
+            self._patient_df_to_patient_obj(
                 patient_df,
             )
             for patient_df in patient_dfs
         ]
-        # Group by patient ID
-        # Convert to a native python object
-        # Parse to Patient objects
-        return unpacked_patients
+        return patient_objs
 
     def unpack_static_events(self):
         pass

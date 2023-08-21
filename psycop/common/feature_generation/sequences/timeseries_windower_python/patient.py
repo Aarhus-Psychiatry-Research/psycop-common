@@ -22,7 +22,7 @@ class Patient:
     _static_features: list[StaticFeature] = field(default_factory=list)
 
     @staticmethod
-    def _filter_events(
+    def _filter_events_within_time_interval(
         events: Sequence[TemporalEvent],
         start: dt.datetime,
         end: dt.datetime,
@@ -54,12 +54,13 @@ class Patient:
         outcome_timestamp: dt.datetime,
         prediction_timestamps: Sequence[dt.datetime],
     ) -> list[PredictionTime]:
+        """Converts a patient's task-agnostic data into an object specific for the given task. E.g. for the task of predicting whether a patient will be diagnosed with diabetes within the next year, this function will return a list of PredictionTime objects, each of which contains the patient's data for a specific prediction time (predictors, prediction timestamp and whether the outcome occurs within the lookahead)."""
         # Map each prediction time to a prediction sequence:
         prediction_sequences = []
 
         for prediction_timestamp in prediction_timestamps:
             # 1. Filter the predictor events to those that are relevant to the prediction time. (Keep all static, drop all temporal that are outside the lookbehind window.)
-            filtered_events = self._filter_events(
+            filtered_events = self._filter_events_within_time_interval(
                 events=self.temporal_events,
                 start=prediction_timestamp - lookbehind,
                 end=prediction_timestamp,
