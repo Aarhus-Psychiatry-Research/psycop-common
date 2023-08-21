@@ -43,7 +43,8 @@ class SourceEventDataframeUnpacker:
         )
 
     def _patient_df_to_patient_dict(
-        self, patient_events: pl.DataFrame
+        self,
+        patient_events: pl.DataFrame,
     ) -> dict[str | int, list[TemporalEvent | StaticFeature]]:
         temporal_event_dicts = patient_events.iter_rows(named=True)
 

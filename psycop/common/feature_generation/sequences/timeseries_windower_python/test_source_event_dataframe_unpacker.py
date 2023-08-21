@@ -79,7 +79,7 @@ def test_static_features():
     expected_patient = Patient(patient_id=1)
 
     expected_patient.add_static_features(
-        StaticFeature(name="test", patient=expected_patient, value=0)
+        StaticFeature(name="test", patient=expected_patient, value=0),
     )
 
     unpacked = SourceEventDataframeUnpacker().unpack_temporal(
