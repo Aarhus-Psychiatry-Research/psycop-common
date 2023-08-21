@@ -33,6 +33,7 @@ class TestPatientSequenceGenerator:
 
         prediction_sequences = patient.to_prediction_times(
             lookbehind=dt.timedelta(days=2),
+            lookahead=dt.timedelta(days=2),
             prediction_timestamps=[dt.datetime(2021, 1, 2), dt.datetime(2021, 1, 4)],
             outcome_timestamp=dt.datetime(2021, 1, 5),
         )
@@ -48,3 +49,9 @@ class TestPatientSequenceGenerator:
             temporal_events[1],
         ]
         assert exclude_events_before_start_of_lookbehind
+
+        outcome_not_within_lookahead = prediction_sequences[0].outcome is False
+        assert outcome_not_within_lookahead
+
+        outcome_within_lookahead = prediction_sequences[1].outcome is True
+        assert outcome_within_lookahead
