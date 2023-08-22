@@ -1,9 +1,10 @@
 """Feature specification module."""
 import logging
-from typing import Callable, Union
+from typing import Union
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import (
+    AggregationFunType,
     boolean,
     change_per_day,
     count,
@@ -134,7 +135,7 @@ class FeatureSpecifier:
 
     def _get_weight_and_height_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get weight and height specs."""
@@ -156,7 +157,7 @@ class FeatureSpecifier:
 
     def _get_visits_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get visits specs."""
@@ -219,7 +220,7 @@ class FeatureSpecifier:
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
@@ -249,7 +250,7 @@ class FeatureSpecifier:
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
@@ -417,7 +418,7 @@ class FeatureSpecifier:
 
     def _get_schema_1_and_2_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get schema 1 and schema 2 coercion specs."""
@@ -456,7 +457,7 @@ class FeatureSpecifier:
 
     def _get_schema_1_and_2_current_status_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get "current" status of schema 1 and schema 2 coercion."""
@@ -506,7 +507,7 @@ class FeatureSpecifier:
 
     def _get_schema_3_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get schema 3 coercion specs."""
@@ -529,7 +530,7 @@ class FeatureSpecifier:
 
     def _get_forced_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get forced medication coercion specs."""
@@ -548,7 +549,7 @@ class FeatureSpecifier:
 
     def _get_structured_sfi_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get structured sfi specs."""
@@ -573,7 +574,7 @@ class FeatureSpecifier:
 
     def _get_temporary_leave_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get structured sfi specs."""
@@ -601,7 +602,7 @@ class FeatureSpecifier:
 
     def _get_lab_result_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
@@ -704,7 +705,7 @@ class FeatureSpecifier:
         )
 
         lab_results = self._get_lab_result_specs(
-            resolve_multiple=[max, min, mean, latest],
+            resolve_multiple=[maximum, minimum, mean, latest],
             interval_days=interval_days,
         )
 
@@ -728,6 +729,6 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_diagnoses_specs(resolve_multiple=[boolean], interval_days=[30])  # type: ignore
+            return self._get_lab_result_specs(resolve_multiple=[boolean], interval_days=[30])  # type: ignore
 
         return self._get_static_predictor_specs() + self._get_temporal_predictor_specs()
