@@ -25,4 +25,4 @@ hydra:
       ++model.args.learning_rate: tag(log, interval(1e-8, 1)) # Multiplier during boosting, [0,1]. Lower numbers mean more conservative boosting. Default is 0.3
       ++model.args.gamma: tag(log, interval(1e-8, 0.001)) # Threshold for loss reduction per node split. If lower than threshold, stops adding nodes to branch.
       ++model.args.grow_policy: choice("depthwise", "lossguide")
-      ++model.args.scale_pos_weight: choice(1, 0.004766812677145065, 0.06904210800044466) # 1, count(negative examples)/count(positive examples), sqrt(count(negative examples)/count(positive examples))
+      ++model.args.scale_pos_weight: choice(1, 252.60956881275843, 15.893695882731569) # 1, count(negative examples)/count(positive examples), sqrt(count(negative examples)/count(positive examples))
