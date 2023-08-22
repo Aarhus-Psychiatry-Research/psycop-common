@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -19,14 +18,16 @@ PatientDict = dict[str | int, list[TemporalEvent | StaticFeature]]
 
 @dataclass(frozen=True)
 class PatientColumnNames:
-    patient_id_col_name: str = "patient"
+    patient_id_col_name: str = "dw_ek_borger"
     timestamp_col_name: str = "timestamp"
     source_col_name: str = "source"
     value_col_name: str = "value"
     name_col_name: str | None = None
 
 
-class SourceEventDataframeUnpacker:
+class EventDataFramesToPatients:
+    """Unpakcs a sequene of dataframes containing events into a list of patients."""
+
     def __init__(self, column_names: PatientColumnNames | None = None) -> None:
         self._column_names = (
             column_names if column_names is not None else PatientColumnNames()
@@ -40,8 +41,8 @@ class SourceEventDataframeUnpacker:
         return TemporalEvent(
             patient=patient,
             timestamp=event_row[self._column_names.timestamp_col_name],
-            source=event_row[self._column_names.source_col_name],
-            name=event_row[self._column_names.name_col_name]
+            source_type=event_row[self._column_names.source_col_name],
+            source_subtype=event_row[self._column_names.name_col_name]
             if self._column_names.name_col_name is not None
             else None,
             value=event_row[self._column_names.value_col_name],
@@ -54,7 +55,7 @@ class SourceEventDataframeUnpacker:
     ) -> StaticFeature:
         return StaticFeature(
             patient=patient,
-            source=event_row[self._column_names.source_col_name],
+            soure_type=event_row[self._column_names.source_col_name],
             value=event_row[self._column_names.value_col_name],
         )
 
@@ -80,8 +81,10 @@ class SourceEventDataframeUnpacker:
                 for e in event_dicts
             ]
 
-        first_row = next(patient_events.iter_rows(named=True))
-        patient_id: str = first_row[self._column_names.patient_id_col_name]
+        patient_id: str = patient_events.select(
+            pl.first(self._column_names.patient_id_col_name)
+        ).item()
+
         patient_dict = {patient_id: event_objects}
 
         return patient_dict  # type: ignore

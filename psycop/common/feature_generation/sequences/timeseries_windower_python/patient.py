@@ -50,7 +50,7 @@ class Patient:
         return self._temporal_events
 
     @property
-    def static_events(self) -> Sequence[StaticFeature]:
+    def static_features(self) -> Sequence[StaticFeature]:
         return self._static_features
 
     def to_prediction_times(
@@ -60,7 +60,7 @@ class Patient:
         outcome_timestamp: dt.datetime,
         prediction_timestamps: Sequence[dt.datetime],
     ) -> list[PredictionTime]:
-        """Converts a patient's task-agnostic data into an object specific for the given task. E.g. for the task of predicting whether a patient will be diagnosed with diabetes within the next year, this function will return a list of PredictionTime objects, each of which contains the patient's data for a specific prediction time (predictors, prediction timestamp and whether the outcome occurs within the lookahead)."""
+        """Creates prediction times for a boolean outome. E.g. for the task of predicting whether a patient will be diagnosed with diabetes within the next year, this function will return a list of PredictionTime objects, each of which contains the patient's data for a specific prediction time (predictors, prediction timestamp and whether the outcome occurs within the lookahead)."""
         # Map each prediction time to a prediction sequence:
         prediction_sequences = []
 

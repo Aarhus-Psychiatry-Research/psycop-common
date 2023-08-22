@@ -10,7 +10,7 @@ from psycop.common.feature_generation.sequences.timeseries_windower_python.patie
     Patient,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower_python.source_event_dataframe_unpacker import (
-    SourceEventDataframeUnpacker,
+    EventDataFramesToPatients,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -34,15 +34,15 @@ def test_temporal_events():
                 patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=0,
-                source="source1",
-                name=None,
+                source_type="source1",
+                source_subtype=None,
             ),
             TemporalEvent(
                 patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=1,
-                source="source1",
-                name=None,
+                source_type="source1",
+                source_subtype=None,
             ),
         ],
     )
@@ -56,14 +56,14 @@ def test_temporal_events():
                 patient=patient_2,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=2,
-                source="source1",
-                name=None,
+                source_type="source1",
+                source_subtype=None,
             ),
         ],
     )
     expected_patients = [patient_1, patient_2]
 
-    unpacked = SourceEventDataframeUnpacker().unpack(
+    unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data],
     )
     assert unpacked == expected_patients
@@ -79,10 +79,10 @@ def test_static_features():
     expected_patient = Patient(patient_id=1)
 
     expected_patient.add_events(
-        [StaticFeature(source="test", patient=expected_patient, value=0)],
+        [StaticFeature(soure_type="test", patient=expected_patient, value=0)],
     )
 
-    unpacked = SourceEventDataframeUnpacker().unpack(
+    unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data],
     )
 
@@ -106,18 +106,18 @@ def test_multiple_event_sources():
 
     expected_patient.add_events(
         [
-            StaticFeature(source="test", patient=expected_patient, value=0),
+            StaticFeature(soure_type="test", patient=expected_patient, value=0),
             TemporalEvent(
-                source="test2",
+                source_type="test2",
                 patient=expected_patient,
                 timestamp=dt.datetime(2023, 1, 1),
                 value=1,
-                name=None,
+                source_subtype=None,
             ),
         ],
     )
 
-    unpacked = SourceEventDataframeUnpacker().unpack(
+    unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data, test_data2],
     )
 

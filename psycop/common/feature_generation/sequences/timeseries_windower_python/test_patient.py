@@ -15,14 +15,14 @@ class TestPatientSequenceGenerator:
             TemporalEvent(
                 timestamp=dt.datetime(2021, 1, 1),
                 value=1,
-                source="test_source",
-                name="test_name",
+                source_type="test_source",
+                source_subtype="test_name",
             ),
             TemporalEvent(
                 timestamp=dt.datetime(2021, 1, 3),
                 value=2,
-                source="test_source",
-                name="test_name",
+                source_type="test_source",
+                source_subtype="test_name",
             ),
         ]
 
