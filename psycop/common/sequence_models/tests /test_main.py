@@ -25,17 +25,17 @@ def test_main(patients: list, tmp_path: Path):
     """
     Tests the general intended workflow
     """
-    emb = BEHRTEmbedder(d_model=384)  # probably some more args here
+    emb = BEHRTEmbedder(d_model=384)  # probably some more args here    # TODO
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    task = BEHRTMaskingTask(
+    task = BEHRTMaskingTask(                                            # TODO
         embedding_module=emb, encoder_module=encoder
     )  # this includes the loss and the MLM head
     # ^should masking be here?
 
     optimizer = torch.optim.Adam(task.parameters(), lr=1e-4)
 
-    train_dataset = PatientDataset(train_patients)
+    train_dataset = PatientDataset(train_patients)                      # TODO
     val_dataset = PatientDataset(val_patients)
 
     # chain two functions:
@@ -52,7 +52,7 @@ def test_main(patients: list, tmp_path: Path):
 
     emb.fit(train_patients)
 
-    trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)
+    trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)   # TODO
     trainer.train(steps=20)
     trainer.evaluate()
 
