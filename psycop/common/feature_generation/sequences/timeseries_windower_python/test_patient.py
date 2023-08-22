@@ -29,7 +29,7 @@ class TestPatientSequenceGenerator:
         patient = Patient(
             patient_id=1,
         )
-        patient.add_temporal_events(temporal_events)
+        patient.add_events(temporal_events)
 
         prediction_sequences = patient.to_prediction_times(
             lookbehind=dt.timedelta(days=2),

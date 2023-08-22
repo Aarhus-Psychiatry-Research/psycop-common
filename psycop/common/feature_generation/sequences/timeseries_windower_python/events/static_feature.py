@@ -9,8 +9,8 @@ if TYPE_CHECKING:
     )
 
 
-@dataclass(frozen=True)
+@dataclass
 class StaticFeature:
-    name: str  # E.g. "date-of-birth"/"gender"
-    patient: Patient
+    source: str  # E.g. "date-of-birth"/"gender"
+    patient: Patient | None
     value: float | str | bool

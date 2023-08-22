@@ -32,16 +32,18 @@ class Patient:
         # However, this might be plenty fast. We can always optimize later.
         return [event for event in events if start <= event.timestamp < end]
 
-    def add_temporal_events(self, events: list[TemporalEvent]):
-        self._temporal_events += events
+    def add_events(self, events: list[TemporalEvent | StaticFeature]):
+        # add patient reference to each event 
+        for event in events:
+            event.patient = self
+
+        self._temporal_events += [event for event in events if isinstance(event, TemporalEvent)]
+        self._static_features += [event for event in events if isinstance(event, StaticFeature)]
 
     @property
     def temporal_events(self) -> Sequence[TemporalEvent]:
         self._temporal_events.sort(key=lambda event: event.timestamp)
         return self._temporal_events
-
-    def add_static_events(self, features: list[StaticFeature]):
-        self._static_features += features
 
     @property
     def static_events(self) -> Sequence[StaticFeature]:

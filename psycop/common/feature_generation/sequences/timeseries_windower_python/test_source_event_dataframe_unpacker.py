@@ -28,7 +28,7 @@ def test_unpacking():
         patient_id=1,
         _temporal_events=[],
     )
-    patient_1.add_temporal_events(
+    patient_1.add_events(
         [
             TemporalEvent(
                 patient=patient_1,
@@ -50,7 +50,7 @@ def test_unpacking():
     patient_2 = Patient(
         patient_id=2,
     )
-    patient_2.add_temporal_events(
+    patient_2.add_events(
         [
             TemporalEvent(
                 patient=patient_2,
@@ -63,8 +63,8 @@ def test_unpacking():
     )
     expected_patients = [patient_1, patient_2]
 
-    unpacked = SourceEventDataframeUnpacker(column_names=None).unpack_temporal(
-        source_event_dataframe=test_data,
+    unpacked = SourceEventDataframeUnpacker(column_names=None).unpack(
+        source_event_dataframes=test_data,
     )
     assert unpacked == expected_patients
 
@@ -79,10 +79,10 @@ def test_static_features():
     expected_patient = Patient(patient_id=1)
 
     expected_patient.add_static_features(
-        StaticFeature(name="test", patient=expected_patient, value=0),
+        StaticFeature(source="test", patient=expected_patient, value=0),
     )
 
-    unpacked = SourceEventDataframeUnpacker().unpack_temporal(
+    unpacked = SourceEventDataframeUnpacker().unpack(
         static_features_df=test_data,
     )
 

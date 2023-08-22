@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Sequence
 
 import polars as pl
 
@@ -14,6 +14,8 @@ from psycop.common.feature_generation.sequences.timeseries_windower_python.patie
 )
 
 
+PatientDict = dict[str | int, list[TemporalEvent | StaticFeature]]
+
 @dataclass(frozen=True)
 class PatientColumnNames:
     patient_id_col_name: str = "patient"
@@ -27,7 +29,7 @@ class SourceEventDataframeUnpacker:
     def __init__(self, column_names: PatientColumnNames) -> None:
         self._column_names = column_names
 
-    def _event_dict_to_event_obj(
+    def _temporal_event_dict_to_event_obj(
         self,
         patient: Patient | None,
         event_row: dict[str, Any],
@@ -42,50 +44,81 @@ class SourceEventDataframeUnpacker:
             value=event_row[self._column_names.value_col_name],
         )
 
+    def _static_feature_dict_to_event_obj(
+        self,
+        patient: Patient | None,
+        event_row: dict[str, Any],
+    ) -> StaticFeature:
+        return StaticFeature(
+            patient=patient,
+            source=event_row[self._column_names.source_col_name],
+            value=event_row[self._column_names.value_col_name],
+        )
+
     def _patient_df_to_patient_dict(
         self,
         patient_events: pl.DataFrame,
-    ) -> dict[str | int, list[TemporalEvent | StaticFeature]]:
-        temporal_event_dicts = patient_events.iter_rows(named=True)
+    ) -> PatientDict:
+        
+        event_dicts = patient_events.iter_rows(named=True)
+        
+
+        is_temporal_events = self._column_names.timestamp_col_name in patient_events.columns
+
+        if is_temporal_events:
+            event_objects = [
+                self._temporal_event_dict_to_event_obj(event_row=e, patient=None)
+                for e in event_dicts
+            ]
+
+        else:
+            event_objects = [
+                self._static_feature_dict_to_event_obj(event_row=e, patient=None)
+                for e in event_dicts
+            ]
 
         first_row = next(patient_events.iter_rows(named=True))
-
-        temporal_event_objs = [
-            self._event_dict_to_event_obj(event_row=e, patient=None)
-            for e in temporal_event_dicts
-        ]
-
         patient_id: str = first_row[self._column_names.patient_id_col_name]
-        patient_dict = {patient_id: temporal_event_objs}
-        # TODO: we want to generalise this function to handle both temporal and static events
-        return patient_dict  # type: ignore
+        patient_dict = {patient_id: event_objects}
 
-    def unpack_temporal(
-        self,
-        source_event_dataframe: pl.DataFrame,
-    ) -> list[Patient]:
-        patient_dfs = source_event_dataframe.partition_by(
-            by=self._column_names.patient_id_col_name,
-            maintain_order=True,
-        )
-        patient_objs = [
-            self._patient_df_to_patient_dict(
-                patient_df,
-            )
-            for patient_df in patient_dfs
-        ]
-        return patient_objs
+        return patient_dict # type: ignore
 
-    def unpack_static(
-        self,
-        source_event_dataframe: pl.DataFrame,
-        patients: list[Patient],
-    ) -> list[Patient]:
-        pass
+    def _cohort_dict_to_patients(self, cohort_dict: PatientDict) -> list[Patient]:
+        patient_cohort = list()
+
+        for patient_id, patient_events in cohort_dict.items():
+            patient = Patient(patient_id=patient_id)
+            patient.add_events(patient_events)
+            patient_cohort.append(patient)
+
+        return patient_cohort
+
 
     def unpack(
         self,
-        static_source_dfs: list[pl.DataFrame],
-        temporal_source_dfs: list[pl.DataFrame],
+        source_event_dataframes: Sequence[pl.DataFrame],
     ) -> list[Patient]:
-        pass
+        patient_dfs_collections = [df.partition_by(
+            by=self._column_names.patient_id_col_name,
+            maintain_order=True,
+        ) for df in source_event_dataframes]
+        
+        patient_dicts = [
+            self._patient_df_to_patient_dict(
+                patient_df,
+            )
+            for collection in patient_dfs_collections for patient_df in collection
+        ] 
+        
+        cohort_dict = dict()
+        for patient_dict in patient_dicts:
+            patient_id = list(patient_dict.keys())[0]
+            if patient_id not in cohort_dict.keys():
+                cohort_dict.update(patient_dict)
+            else:
+                cohort_dict[patient_id] += list(patient_dict.values())
+
+        patient_cohort = self._cohort_dict_to_patients(cohort_dict = cohort_dict)
+                
+        return patient_cohort
+
