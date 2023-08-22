@@ -1,12 +1,17 @@
-from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from __future__ import annotations
 
-from psycop.common.feature_generation.sequences.mlm_sequence_loaders.diagnoses_sequences import (
-    EventDfLoader,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
-    Patient,
-)
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from psycop.common.feature_generation.sequences.mlm_sequence_loaders.diagnoses_sequences import (
+        EventDfLoader,
+    )
+    from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
+        Patient,
+    )
 
 
 class AbstractMLMDataLoader(ABC):
