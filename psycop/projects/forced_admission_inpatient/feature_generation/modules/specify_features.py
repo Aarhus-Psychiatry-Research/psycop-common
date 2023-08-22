@@ -1,9 +1,10 @@
 """Feature specification module."""
 import logging
-from typing import Callable, Union
+from typing import Union
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import (
+    AggregationFunType,
     boolean,
     change_per_day,
     count,
@@ -144,7 +145,7 @@ class FeatureSpecifier:
 
     def _get_visits_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get visits specs."""
@@ -172,7 +173,7 @@ class FeatureSpecifier:
 
     def _get_admissions_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get admissions specs."""
@@ -194,7 +195,7 @@ class FeatureSpecifier:
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
@@ -241,7 +242,7 @@ class FeatureSpecifier:
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
@@ -273,7 +274,7 @@ class FeatureSpecifier:
 
     def _get_coercion_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get coercion specs."""
@@ -308,7 +309,7 @@ class FeatureSpecifier:
 
     def _get_beroligende_medicin_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get beroligende medicin specs."""
@@ -327,7 +328,7 @@ class FeatureSpecifier:
 
     def _get_structured_sfi_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get structured sfi specs."""
@@ -352,7 +353,7 @@ class FeatureSpecifier:
 
     def _get_lab_result_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
