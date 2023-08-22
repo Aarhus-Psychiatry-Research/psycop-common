@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
 
 import polars as pl
 
@@ -13,8 +14,8 @@ from psycop.common.feature_generation.sequences.timeseries_windower_python.patie
     Patient,
 )
 
-
 PatientDict = dict[str | int, list[TemporalEvent | StaticFeature]]
+
 
 @dataclass(frozen=True)
 class PatientColumnNames:
@@ -27,7 +28,9 @@ class PatientColumnNames:
 
 class SourceEventDataframeUnpacker:
     def __init__(self, column_names: PatientColumnNames | None = None) -> None:
-        self._column_names = column_names if column_names is not None else PatientColumnNames()
+        self._column_names = (
+            column_names if column_names is not None else PatientColumnNames()
+        )
 
     def _temporal_event_dict_to_event_obj(
         self,
@@ -59,11 +62,11 @@ class SourceEventDataframeUnpacker:
         self,
         patient_events: pl.DataFrame,
     ) -> PatientDict:
-        
         event_dicts = patient_events.iter_rows(named=True)
-        
 
-        is_temporal_events = self._column_names.timestamp_col_name in patient_events.columns
+        is_temporal_events = (
+            self._column_names.timestamp_col_name in patient_events.columns
+        )
 
         if is_temporal_events:
             event_objects = [
@@ -81,10 +84,10 @@ class SourceEventDataframeUnpacker:
         patient_id: str = first_row[self._column_names.patient_id_col_name]
         patient_dict = {patient_id: event_objects}
 
-        return patient_dict # type: ignore
+        return patient_dict  # type: ignore
 
     def _cohort_dict_to_patients(self, cohort_dict: PatientDict) -> list[Patient]:
-        patient_cohort = list()
+        patient_cohort = []
 
         for patient_id, patient_events in cohort_dict.items():
             patient = Patient(patient_id=patient_id)
@@ -93,24 +96,27 @@ class SourceEventDataframeUnpacker:
 
         return patient_cohort
 
-
     def unpack(
         self,
         source_event_dataframes: Sequence[pl.DataFrame],
     ) -> list[Patient]:
-        patient_dfs_collections = [df.partition_by(
-            by=self._column_names.patient_id_col_name,
-            maintain_order=True,
-        ) for df in source_event_dataframes]
-        
+        patient_dfs_collections = [
+            df.partition_by(
+                by=self._column_names.patient_id_col_name,
+                maintain_order=True,
+            )
+            for df in source_event_dataframes
+        ]
+
         patient_dicts = [
             self._patient_df_to_patient_dict(
                 patient_df,
             )
-            for collection in patient_dfs_collections for patient_df in collection
-        ] 
-        
-        cohort_dict = dict()
+            for collection in patient_dfs_collections
+            for patient_df in collection
+        ]
+
+        cohort_dict = {}
         for patient_dict in patient_dicts:
             patient_id = list(patient_dict.keys())[0]
             if patient_id not in cohort_dict.keys():
@@ -119,7 +125,6 @@ class SourceEventDataframeUnpacker:
                 patient_events = list(patient_dict.values())[0]
                 cohort_dict[patient_id] += patient_events
 
-        patient_cohort = self._cohort_dict_to_patients(cohort_dict = cohort_dict)
-                
-        return patient_cohort
+        patient_cohort = self._cohort_dict_to_patients(cohort_dict=cohort_dict)
 
+        return patient_cohort

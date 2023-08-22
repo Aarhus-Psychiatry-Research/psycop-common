@@ -88,6 +88,7 @@ def test_static_features():
 
     assert unpacked == [expected_patient]
 
+
 def test_multiple_event_sources():
     test_data = str_to_pl_df(
         """patient,source,value
@@ -104,9 +105,16 @@ def test_multiple_event_sources():
     expected_patient = Patient(patient_id=1)
 
     expected_patient.add_events(
-        [StaticFeature(source="test", patient=expected_patient, value=0), 
-         TemporalEvent(source="test2", patient=expected_patient, timestamp=dt.datetime(2023, 1, 1), value=1, name=None)
-         ],
+        [
+            StaticFeature(source="test", patient=expected_patient, value=0),
+            TemporalEvent(
+                source="test2",
+                patient=expected_patient,
+                timestamp=dt.datetime(2023, 1, 1),
+                value=1,
+                name=None,
+            ),
+        ],
     )
 
     unpacked = SourceEventDataframeUnpacker().unpack(
@@ -114,4 +122,3 @@ def test_multiple_event_sources():
     )
 
     assert unpacked == [expected_patient]
-

@@ -33,12 +33,16 @@ class Patient:
         return [event for event in events if start <= event.timestamp < end]
 
     def add_events(self, events: list[TemporalEvent | StaticFeature]):
-        # add patient reference to each event 
+        # add patient reference to each event
         for event in events:
             event.patient = self
 
-        self._temporal_events += [event for event in events if isinstance(event, TemporalEvent)]
-        self._static_features += [event for event in events if isinstance(event, StaticFeature)]
+        self._temporal_events += [
+            event for event in events if isinstance(event, TemporalEvent)
+        ]
+        self._static_features += [
+            event for event in events if isinstance(event, StaticFeature)
+        ]
 
     @property
     def temporal_events(self) -> Sequence[TemporalEvent]:
