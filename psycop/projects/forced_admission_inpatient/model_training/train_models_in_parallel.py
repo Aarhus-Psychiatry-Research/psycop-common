@@ -47,7 +47,7 @@ def main(
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
         train_single_model_file_path=Path(
-            "psycop/projects/forced_admission_inpatient/model_training/train_model_from_application_module.py",
+            "train_model_from_application_module.py",
         ),
     )
 
