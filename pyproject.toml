@@ -1,6 +1,6 @@
 [project]
 name = "psycop"
-version = "0.98.0"
+version = "0.99.0"
 authors = [{ name = "Martin Bernstorff", email = "martinbernstorff@gmail.com" }]
 description = "PSYCOP"
 classifiers = [

@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.99.0 (2023-08-22)
+
+### Feature
+
+* Cohort creation for the cancer project ([`4a408b9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4a408b9f3ccbea0d28acb980a400d5e6b0d8890e))
+
+### Fix
+
+* Correct type hints for aggregation ([`ac9fc29`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ac9fc29172cca3081fe76f9e640c3689f086a9d7))
+* Reconfigure lab tests ([`caebc33`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/caebc338019f0f05123f38453249ba33a6fb8856))
+* Replaced unsued function ([`75f241c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/75f241cafff64b55eace870ed73791982d2baa3f))
+
+### Documentation
+
+* Docstring ([`e7a6879`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e7a6879cf48fcc0ea0d10d2663dfac1e9a78ae2d))
+* Docstring update ([`c98bd22`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c98bd22ce279d7dab440918772b0312f83612bd4))
+* Update docstring ([`87c5c89`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/87c5c89bcf9cad637e37d4059f63be4707e3d039))
+
 ## v0.98.0 (2023-08-22)
 
 ### Feature
