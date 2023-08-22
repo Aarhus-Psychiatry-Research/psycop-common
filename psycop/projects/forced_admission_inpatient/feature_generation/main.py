@@ -4,6 +4,7 @@ import logging
 import sys
 import warnings
 from pathlib import Path
+from typing import Literal
 
 from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,
@@ -55,10 +56,32 @@ def main(
     limited_feature_set: bool = False,
     generate_in_chunks: bool = True,
     feature_set_name: str | None = None,
+    text_embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "both",
     chunksize: int = 10,
 ) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
+
+    if feature_set_name:
+        feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
+    else:
+        feature_set_dir = project_info.flattened_dataset_dir
+
+    if Path.exists(feature_set_dir):
+        while True:
+            response = input(
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): ",
+            )
+
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
+                print("Process stopped.")
+                return feature_set_dir
+            if response.lower() in ["yes", "y"]:
+                print(f"Folder '{feature_set_dir}' will be overwritten.")
+                break
+
     feature_specs = FeatureSpecifier(
         project_info=project_info,
         min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
@@ -69,7 +92,9 @@ def main(
         text_feature_specs = TextFeatureSpecifier(
             project_info=project_info,
             min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
-        ).get_text_feature_specs()
+        ).get_text_feature_specs(
+            embedding_method=text_embedding_method,
+        )  # type: ignore
 
         feature_specs += text_feature_specs
 
@@ -101,26 +126,6 @@ def main(
         flattened_df=flattened_df,
         visit_type="inpatient",
     )
-
-    if feature_set_name:
-        feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
-    else:
-        feature_set_dir = project_info.flattened_dataset_dir
-
-    if Path.exists(feature_set_dir):
-        while True:
-            response = input(
-                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): ",
-            )
-
-            if response.lower() not in ["yes", "y", "no", "n"]:
-                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
-            if response.lower() in ["no", "n"]:
-                print("Process stopped.")
-                return feature_set_dir
-            if response.lower() in ["yes", "y"]:
-                print(f"Folder '{feature_set_dir}' will be overwritten.")
-                break
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
@@ -167,4 +172,7 @@ if __name__ == "__main__":
         project_info=project_info,
     )
 
-    main(feature_set_name="full_feature_set_with_sent_transformer_embeddings")
+    main(
+        feature_set_name="full_feature_set_with_sent_transformer_and_tfidf_embeddings",
+        generate_in_chunks=True,
+    )
