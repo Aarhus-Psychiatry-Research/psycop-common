@@ -7,9 +7,9 @@ data:
 
   # Feature specs
   pred_prefix: pred_
-  outc_prefix: outcome_coercion_bool
+  outc_prefix: outcome_restraint
 
-  splits_for_training: ["train"]
+  splits_for_training: ["train", "val"]
   splits_for_evaluation: null
 
   col_name:

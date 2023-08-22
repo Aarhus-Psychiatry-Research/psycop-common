@@ -11,7 +11,9 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 # create a memory cache with a directory to store the cache
 memory = Memory(
-    location=Path("E:/shared_resources/coercion/model_eval/model_eval_cache"),
+    location=Path(
+        "E:/sara/psycop-common/psycop/projects/restraint/model_training/pipeline_eval",
+    ),
 )
 
 
@@ -37,7 +39,7 @@ def df_to_eval_dataset(
 
 def get_run_item_file_path(wandb_group: str, wandb_run: str, file_name: str) -> Path:
     return Path(
-        f"E:/shared_resources/coercion/model_eval/{wandb_group}/{wandb_run}/{file_name}",
+        f"E:/sara/psycop-common/psycop/projects/restraint/model_training/pipeline_eval/{wandb_group}/{wandb_run}/{file_name}",
     )
 
 
