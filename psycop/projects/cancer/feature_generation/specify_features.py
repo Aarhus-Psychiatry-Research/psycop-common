@@ -4,6 +4,7 @@ from typing import Callable
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import (
+    AggregationFunType,
     latest,
     maximum,
     mean,
@@ -146,7 +147,7 @@ class FeatureSpecifier:
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
