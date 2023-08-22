@@ -5,11 +5,12 @@ preprocessing:
     convert_booleans_to_int: true
     drop_datetime_predictor_columns: true
     convert_datetimes_to_ordinal: false
-    drop_patient_if_exclusion_before_date: 2013-01-01
-    min_prediction_time_date: 2013-01-01
+    drop_visits_after_exclusion_timestamp: false
+    drop_patient_if_exclusion_before_date: null # Replaced by get_eligible_prediction_times
+    min_prediction_time_date: null # Replaced by get_eligible_prediction_times
+    min_age: null # Replaced by get_eligible_prediction_times
     min_lookahead_days: 1825
     lookbehind_combination: [30, 90, 180, 365, 730]
-    min_age: 18
   post_split:
     imputation_method: most_frequent
     scaling: z-score-normalisation
