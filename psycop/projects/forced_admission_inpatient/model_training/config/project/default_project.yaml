@@ -4,7 +4,7 @@ seed: 42
 
 wandb:
   entity: psycop # Which entity to run WanDB in.
-  mode: online # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+  mode: offline # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
   group: forced_admissions # Which group to run WanDB in.
   
   
