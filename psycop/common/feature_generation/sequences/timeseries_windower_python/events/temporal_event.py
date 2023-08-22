@@ -20,6 +20,8 @@ class TemporalEvent:
     patient: Patient | None = None
 
     def __eq__(self, __value: TemporalEvent) -> bool:  # type: ignore
+        # We implement a custom equality, since we have circular references in the dataclass,
+        # and equality cannot be defined for circular references.
         for attr in self.__dict__:
             if attr == "patient":
                 continue
