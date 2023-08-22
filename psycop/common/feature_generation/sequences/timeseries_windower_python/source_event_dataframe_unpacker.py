@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Sequence
 
 import polars as pl
 
@@ -82,7 +82,7 @@ class EventDataFramesToPatients:
             ]
 
         patient_id: str = patient_events.select(
-            pl.first(self._column_names.patient_id_col_name)
+            pl.first(self._column_names.patient_id_col_name),
         ).item()
 
         patient_dict = {patient_id: event_objects}
