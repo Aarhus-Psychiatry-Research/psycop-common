@@ -2,6 +2,26 @@
 
 <!--next-version-placeholder-->
 
+## v0.98.0 (2023-08-22)
+
+### Feature
+
+* Add sentence transformers features ([`8a91048`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8a9104865f68da1fcf74af37ba0f338e8a3d5b9d))
+* Adding text specs ([`27b37ac`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/27b37ac22c9dddbaa422c67a20afa21610d77373))
+
+### Fix
+
+* Type annotation ([`a18cc64`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a18cc64996afa1fac283ac1b3388aebd1b54ff34))
+* Wandb back to offline ([`b67d4f7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b67d4f7bc33ec4cf2f0fe1f24c804707816a8c85))
+* Config ([`f5e2c73`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f5e2c738c2fc8bbd592ec1f90902786a4adfbccf))
+* Wandb config ([`761ea6a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/761ea6a16b5a333c0c7491035323f2653edf10ae))
+* Lookbehind combi config ([`09919f4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/09919f470efe681a8c305ef0e30f90e8fe549bbc))
+* Update configs ([`6ad6fef`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6ad6fef3f8b1d8b258c15d4a165c942612e4593a))
+* Correct type hints for aggregation ([`d6f4311`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d6f4311a34b34a0deebd8ce2d10bc0bd683945cf))
+* Param changes ([`650912d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/650912df0ea1e2ef276e01fc2da1187696981417))
+* Add missing arg ([`500be32`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/500be3288b0f382403f71f924bd0ad3698ce3645))
+* Minor changes to params ([`dd1dcea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dd1dcea57e89baee88390ddaa37b7c17071de74b))
+
 ## v0.97.0 (2023-08-15)
 
 ### Feature
