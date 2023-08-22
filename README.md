@@ -7,7 +7,7 @@
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/\_\_init\_\_.py                                                               |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/application\_modules/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
-| psycop/common/feature\_generation/application\_modules/chunked\_feature\_generation.py                          |       50 |       19 |     62% |29-53, 60-65, 94-96, 105, 114-117 |
+| psycop/common/feature\_generation/application\_modules/chunked\_feature\_generation.py                          |       50 |       19 |     62% |31-57, 64-69, 98-100, 109, 118-121 |
 | psycop/common/feature\_generation/application\_modules/filter\_prediction\_times.py                             |       44 |        3 |     93% | 9, 45, 81 |
 | psycop/common/feature\_generation/application\_modules/flatten\_dataset.py                                      |       27 |        6 |     78% |22-28, 113 |
 | psycop/common/feature\_generation/application\_modules/project\_setup.py                                        |       29 |        5 |     83% |     53-70 |
