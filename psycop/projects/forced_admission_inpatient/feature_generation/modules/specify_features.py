@@ -372,10 +372,6 @@ class FeatureSpecifier:
                 NamedDataframe(df=p_ethanol(), name="p_ethanol"),
                 NamedDataframe(df=p_nortriptyline(), name="p_nortriptyline"),
                 NamedDataframe(df=p_clomipramine(), name="p_clomipramine"),
-                NamedDataframe(
-                    df=cancelled_standard_lab_results(),
-                    name="cancelled_standard_lab_results",
-                ),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -383,6 +379,28 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return lab_results
+
+    def _get_cancelled_lab_result_specs(
+        self,
+        resolve_multiple: list[AggregationFunType],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
+        """Get cancelled lab result specs."""
+        log.info("-------- Generating cancelled lab result specs --------")
+
+        cancelled_lab_results = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(
+                    df=cancelled_standard_lab_results(),
+                    name="cancelled_standard_lab_results",
+                ),
+            ),
+            aggregation_fns=resolve_multiple,
+            lookbehind_days=interval_days,
+            fallback=[0],
+        ).create_combinations()
+
+        return cancelled_lab_results
 
     def _get_limited_feature_specs(
         self,
@@ -485,6 +503,11 @@ class FeatureSpecifier:
             interval_days=interval_days,
         )
 
+        cancelled_lab_results = self._get_cancelled_lab_result_specs(
+            resolve_multiple=[count, boolean],
+            interval_days=interval_days,
+        )
+
         return (
             visits
             + admissions
@@ -494,6 +517,7 @@ class FeatureSpecifier:
             + coercion
             + structured_sfi
             + lab_results
+            + cancelled_lab_results
         )
 
     def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec]]:
