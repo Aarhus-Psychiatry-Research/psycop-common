@@ -154,7 +154,9 @@ class FeatureSpecifier:
         visits = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=physical_visits_to_psychiatry(),
+                    df=physical_visits_to_psychiatry(
+                        return_value_as_visit_length_days=False,
+                    ),
                     name="physical_visits_to_psychiatry",
                 ),
                 NamedDataframe(
@@ -178,7 +180,12 @@ class FeatureSpecifier:
         log.info("-------- Generating admissions specs --------")
 
         admissions_df = PredictorGroupSpec(
-            named_dataframes=[NamedDataframe(df=admissions(), name="admissions")],
+            named_dataframes=[
+                NamedDataframe(
+                    df=admissions(return_value_as_visit_length_days=True),
+                    name="admissions",
+                ),
+            ],
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
             fallback=[0],
@@ -493,6 +500,9 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
+            log.warning(
+                "--- !!! Using the minimum set of features for debugging !!! ---",
+            )
             return (
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
