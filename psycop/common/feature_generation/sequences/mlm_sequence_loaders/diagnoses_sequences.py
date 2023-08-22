@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Sequence
+from collections.abc import Sequence
 
 import polars as pl
 
@@ -35,7 +35,7 @@ class DiagnosisLoader(EventDfLoader):
     def format_diagnosis_columns(self, df: pl.LazyFrame) -> pl.LazyFrame:
         df = (
             df.with_columns(
-                pl.col("diagnosegruppestreng").str.split("#").alias("value")
+                pl.col("diagnosegruppestreng").str.split("#").alias("value"),
             )
             .drop("diagnosegruppestreng")
             .explode("value")
@@ -43,7 +43,7 @@ class DiagnosisLoader(EventDfLoader):
                 [
                     pl.col("value").str.slice(offset=2).str.strip(),
                     pl.col("value").str.slice(offset=0, length=1).alias("type"),
-                ]
+                ],
             )
             .rename({"datotid_slut": "timestamp", "dw_ek_borger": "patient"})
         )
@@ -53,14 +53,14 @@ class DiagnosisLoader(EventDfLoader):
 
 class MLMDataLoader(AbstractMLMDataLoader):
     @staticmethod
-    def get_train_set(loaders: Sequence[EventDfLoader]) -> List[Patient]:
+    def get_train_set(loaders: Sequence[EventDfLoader]) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in loaders])
 
         train_ids = pl.from_pandas(load_ids(split="train")).lazy()
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
 
         unpacked_patients = SourceEventDataframeUnpacker(
-            column_names=PatientColumnNames()
+            column_names=PatientColumnNames(),
         ).unpack(source_event_dataframes=[events_from_train.collect()])
 
         return unpacked_patients
