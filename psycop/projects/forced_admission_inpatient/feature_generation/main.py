@@ -56,7 +56,7 @@ def main(
     generate_in_chunks: bool = True,
     feature_set_name: str | None = None,
     chunksize: int = 10,
-):
+) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     feature_specs = FeatureSpecifier(
