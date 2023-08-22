@@ -21,6 +21,18 @@ def patients() -> List[Patient]:
     return []
 
 
+@pytest.mark.parametrize("embedding_module", [BEHRTEmbedder(d_model=384)])
+def test_embeddings(patients: list, embedding_module: nn.Module):
+    """
+    Test embedding interface
+    """
+    embedding_module.fit(patients)
+
+    inputs = embedding_module.collate_fn(patients)
+    # forward
+    outputs = embedding_module(inputs)
+
+
 def test_main(patients: list, tmp_path: Path):
     """
     Tests the general intended workflow
