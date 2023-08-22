@@ -143,9 +143,7 @@ class TextFeatureSpecifier:
         if embedding_method == "sentence_transformer":
             return sentence_transformer_specs
 
-        if embedding_method == "tfidf":
-            return tfidf_specs  # type: ignore
-        return None
+        return tfidf_specs
 
     def get_text_feature_specs(
         self,
