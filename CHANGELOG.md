@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.100.0 (2023-08-22)
+
+### Feature
+
+* Filename check earlier for feature-gen ([`17b3404`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/17b3404a3721167f6efad037855655bed8b45831))
+
 ## v0.99.0 (2023-08-22)
 
 ### Feature
