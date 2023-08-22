@@ -26,8 +26,8 @@ class PatientColumnNames:
 
 
 class SourceEventDataframeUnpacker:
-    def __init__(self, column_names: PatientColumnNames) -> None:
-        self._column_names = column_names
+    def __init__(self, column_names: PatientColumnNames | None = None) -> None:
+        self._column_names = column_names if column_names is not None else PatientColumnNames()
 
     def _temporal_event_dict_to_event_obj(
         self,
@@ -116,7 +116,8 @@ class SourceEventDataframeUnpacker:
             if patient_id not in cohort_dict.keys():
                 cohort_dict.update(patient_dict)
             else:
-                cohort_dict[patient_id] += list(patient_dict.values())
+                patient_events = list(patient_dict.values())[0]
+                cohort_dict[patient_id] += patient_events
 
         patient_cohort = self._cohort_dict_to_patients(cohort_dict = cohort_dict)
                 

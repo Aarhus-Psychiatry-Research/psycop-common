@@ -14,3 +14,11 @@ class StaticFeature:
     source: str  # E.g. "date-of-birth"/"gender"
     patient: Patient | None
     value: float | str | bool
+
+    def __eq__(self, __value: StaticFeature) -> bool:  # type: ignore
+        for attr in self.__dict__:
+            if attr == "patient":
+                continue
+            if getattr(self, attr) != getattr(__value, attr):
+                return False
+        return True
