@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.102.0 (2023-08-23)
+
+### Feature
+
+* Get patients from sql ([`d9ebba4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d9ebba418e3e777776d02a1b4dcfe4e5d809cdf6))
+
+### Fix
+
+* Rename from merge ([`38257e4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/38257e442fe3aa31a3c1a29b92eac02931c83897))
+* Type checking block for circular imports ([`a33a8de`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a33a8de19f0810818b093029954ddd66dac75b46))
+* Typo in shak codes ([`e2cd184`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e2cd1846f55c930f61cad2afed5c41b61e263deb))
+
 ## v0.101.0 (2023-08-23)
 
 ### Feature
