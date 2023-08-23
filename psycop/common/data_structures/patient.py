@@ -3,7 +3,6 @@ from __future__ import annotations
 import datetime as dt
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
 
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.data_structures.static_feature import StaticFeature
