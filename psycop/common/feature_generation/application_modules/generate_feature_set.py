@@ -44,22 +44,6 @@ def generate_feature_set(
     If generate_in_chunks is True, feature generation is split into
     multiple chunks to avoid memory issues"""
 
-    if generate_in_chunks:
-        flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
-            project_info,
-            eligible_prediction_times,
-            feature_specs,
-            chunksize,
-        )
-
-    else:
-        flattened_df = create_flattened_dataset(
-            feature_specs=feature_specs,
-            prediction_times_df=eligible_prediction_times,
-            drop_pred_times_with_insufficient_look_distance=False,
-            project_info=project_info,
-        )
-
     if feature_set_name:
         feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
     else:
@@ -79,6 +63,22 @@ def generate_feature_set(
             if response.lower() in ["yes", "y"]:
                 print(f"Folder '{feature_set_dir}' will be overwritten.")
                 break
+
+    if generate_in_chunks:
+        flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
+            project_info,
+            eligible_prediction_times,
+            feature_specs,
+            chunksize,
+        )
+
+    else:
+        flattened_df = create_flattened_dataset(
+            feature_specs=feature_specs,
+            prediction_times_df=eligible_prediction_times,
+            drop_pred_times_with_insufficient_look_distance=False,
+            project_info=project_info,
+        )
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,

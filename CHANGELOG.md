@@ -2,6 +2,77 @@
 
 <!--next-version-placeholder-->
 
+## v0.103.0 (2023-08-23)
+
+### Feature
+
+* Train new tfidf model and encode text ([`1fdd3ce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1fdd3ce7fa2534f00f0cdd997443d6f2624e5621))
+
+## v0.102.1 (2023-08-23)
+
+### Fix
+
+* Don't shadow python builtin ([`c05d307`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c05d307d70ef00433405ec5188ddeb5a1ce7110b))
+
+## v0.102.0 (2023-08-23)
+
+### Feature
+
+* Get patients from sql ([`d9ebba4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d9ebba418e3e777776d02a1b4dcfe4e5d809cdf6))
+
+### Fix
+
+* Rename from merge ([`38257e4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/38257e442fe3aa31a3c1a29b92eac02931c83897))
+* Type checking block for circular imports ([`a33a8de`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a33a8de19f0810818b093029954ddd66dac75b46))
+* Typo in shak codes ([`e2cd184`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e2cd1846f55c930f61cad2afed5c41b61e263deb))
+
+## v0.101.0 (2023-08-23)
+
+### Feature
+
+* Convert getters to properties ([`cbe130b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cbe130b191bd3047aee0295fc3594129674d4341))
+* Handle lookahead-based outcome resolution ([`489003f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/489003f8544b2c76c5d30cb788c148bd1e9f02c0))
+* Remove patient_ids and fix downstream type consequences ([`2918452`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/29184521b5f3c6721043939ce69bf5fbadfb8aa9))
+* Misc. ([`bd3d6ea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bd3d6eafcf9ddcf896f130cecc4bb059bf8e20e2))
+* First working unpacker ([`c65219b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c65219bb984d0ea1202c924e65220f50d9207b2b))
+* First stab at unpacking to patient dfs ([`74ba12a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/74ba12ac405f3c7466f16c2b743e4e9cc37c6b0e))
+* Filter prediction sequences ([`402eee9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/402eee9d14f17a5d77e7a11439d0cd816c30ff8c))
+
+### Fix
+
+* Rename patient id in tests ([`da79654`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/da79654cae87541ad9f0325b17559a0f7d04a847))
+* Spelling errors ([`114b624`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/114b624918b9cdff515d84c4ba8d991356b63b0d))
+* Missing type import ([`575689b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/575689be2990ecac79b97da99efa06526ba3fa1e))
+* Downstream type fixes ([`1cd438b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1cd438b51f9a3de46ae38d2fd3e0463714e8f20b))
+
+### Documentation
+
+* Add comments explaining __eq__ ([`d99c0be`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d99c0becfe4fbce05b0c599c233fdd58d178e785))
+
+## v0.100.0 (2023-08-22)
+
+### Feature
+
+* Filename check earlier for feature-gen ([`17b3404`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/17b3404a3721167f6efad037855655bed8b45831))
+
+## v0.99.0 (2023-08-22)
+
+### Feature
+
+* Cohort creation for the cancer project ([`4a408b9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4a408b9f3ccbea0d28acb980a400d5e6b0d8890e))
+
+### Fix
+
+* Correct type hints for aggregation ([`ac9fc29`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ac9fc29172cca3081fe76f9e640c3689f086a9d7))
+* Reconfigure lab tests ([`caebc33`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/caebc338019f0f05123f38453249ba33a6fb8856))
+* Replaced unsued function ([`75f241c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/75f241cafff64b55eace870ed73791982d2baa3f))
+
+### Documentation
+
+* Docstring ([`e7a6879`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e7a6879cf48fcc0ea0d10d2663dfac1e9a78ae2d))
+* Docstring update ([`c98bd22`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c98bd22ce279d7dab440918772b0312f83612bd4))
+* Update docstring ([`87c5c89`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/87c5c89bcf9cad637e37d4059f63be4707e3d039))
+
 ## v0.98.0 (2023-08-22)
 
 ### Feature
