@@ -12,8 +12,8 @@ from psycop.common.feature_generation.sequences.timeseries_windower_python.patie
     Patient,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower_python.source_event_dataframe_unpacker import (
+    EventDataFramesToPatients,
     PatientColumnNames,
-    SourceEventDataframeUnpacker,
 )
 
 
@@ -59,7 +59,7 @@ class MLMDataLoader(AbstractMLMDataLoader):
         train_ids = pl.from_pandas(load_ids(split="train")).lazy()
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
 
-        unpacked_patients = SourceEventDataframeUnpacker(
+        unpacked_patients = EventDataFramesToPatients(
             column_names=PatientColumnNames(),
         ).unpack(source_event_dataframes=[events_from_train.collect()])
 
