@@ -16,5 +16,5 @@ def test_diagnosis_formatting():
 
     resulting_diagnoses = formatted_df.collect().get_column("value").to_list()
     assert resulting_diagnoses == ["F431", "F431", "ALFC3", "F329"]
-    type = formatted_df.collect().get_column("type").to_list()
-    assert type == ["A", "A", "+", "B"]
+    types = formatted_df.collect().get_column("type").to_list()
+    assert types == ["A", "A", "+", "B"]
