@@ -7,11 +7,11 @@ if TYPE_CHECKING:
     import datetime as dt
     from collections.abc import Sequence
 
-    from psycop.common.data_structures import (
+    from psycop.common.data_structures.patient import (
         Patient,
-        StaticFeature,
-        TemporalEvent,
     )
+    from psycop.common.data_structures.static_feature import StaticFeature
+    from psycop.common.data_structures.temporal_event import TemporalEvent
 
 
 @dataclass(frozen=True)

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import datetime as dt
 
-    from psycop.common.data_structures import (
+    from psycop.common.data_structures.patient import (
         Patient,
     )
 

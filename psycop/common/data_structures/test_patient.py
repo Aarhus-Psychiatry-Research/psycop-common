@@ -1,6 +1,7 @@
 import datetime as dt
 
-from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.data_structures.patient import Patient
+from psycop.common.data_structures.temporal_event import TemporalEvent
 
 
 class TestPatientSequenceGenerator:

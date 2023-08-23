@@ -82,7 +82,6 @@ select = [
   "PT",
   "UP",
   "Q",
-  "TCH",
   "PTH",
   "RSE",
   "RET",
