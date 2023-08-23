@@ -64,10 +64,10 @@ class DiagnosisLoader(EventDfLoader):
         return df
 
 
-class MLMDataLoader:
+class PatientLoader:
     @staticmethod
-    def get_train_set(loaders: Sequence[EventDfLoader]) -> list[Patient]:
-        event_data = pl.concat([loader.load_events() for loader in loaders])
+    def get_train_set(event_loaders: Sequence[EventDfLoader]) -> list[Patient]:
+        event_data = pl.concat([loader.load_events() for loader in event_loaders])
         train_ids = pl.from_pandas(load_ids(split="train")).lazy()
 
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
@@ -83,4 +83,4 @@ class MLMDataLoader:
 
 
 if __name__ == "__main__":
-    patients = MLMDataLoader.get_train_set(loaders=[DiagnosisLoader()])
+    patients = PatientLoader.get_train_set(event_loaders=[DiagnosisLoader()])
