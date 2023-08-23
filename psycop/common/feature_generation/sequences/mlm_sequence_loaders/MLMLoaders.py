@@ -21,13 +21,6 @@ class EventDfLoader(ABC):
         ...
 
 
-class AbstractMLMDataLoader(ABC):
-    @staticmethod
-    @abstractmethod
-    def get_train_set(loaders: Sequence[EventDfLoader]) -> list[Patient]:
-        ...
-
-
 class DiagnosisLoader(EventDfLoader):
     """Load all diagnoses for all patients."""
 
@@ -71,7 +64,7 @@ class DiagnosisLoader(EventDfLoader):
         return df
 
 
-class MLMDataLoader(AbstractMLMDataLoader):
+class MLMDataLoader:
     @staticmethod
     def get_train_set(loaders: Sequence[EventDfLoader]) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in loaders])
@@ -91,5 +84,3 @@ class MLMDataLoader(AbstractMLMDataLoader):
 
 if __name__ == "__main__":
     patients = MLMDataLoader.get_train_set(loaders=[DiagnosisLoader()])
-
-    pass
