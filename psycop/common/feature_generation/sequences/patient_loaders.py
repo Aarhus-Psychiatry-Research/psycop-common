@@ -4,7 +4,7 @@ from collections.abc import Sequence
 
 import polars as pl
 
-from psycop.common.data_structures import (
+from psycop.common.data_structures.patient import (
     Patient,
 )
 from psycop.common.feature_generation.loaders.raw.load_ids import load_ids

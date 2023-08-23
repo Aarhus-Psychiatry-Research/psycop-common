@@ -1,6 +1,8 @@
 import datetime as dt
 
-from psycop.common.data_structures import Patient, StaticFeature, TemporalEvent
+from psycop.common.data_structures.patient import Patient
+from psycop.common.data_structures.static_feature import StaticFeature
+from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatients,
 )
