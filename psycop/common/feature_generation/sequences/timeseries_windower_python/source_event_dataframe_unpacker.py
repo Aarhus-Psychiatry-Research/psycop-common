@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import Any
 
 import polars as pl
+from tqdm import tqdm
+from wasabi import Printer
 
 from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
     StaticFeature,
@@ -13,6 +15,8 @@ from psycop.common.feature_generation.sequences.timeseries_windower_python.event
 from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
     Patient,
 )
+
+msg = Printer(timestamp=True)
 
 PatientDict = dict[str | int, list[TemporalEvent | StaticFeature]]
 
@@ -75,7 +79,6 @@ class EventDataFramesToPatients:
                 self._temporal_event_dict_to_event_obj(event_row=e, patient=None)
                 for e in event_dicts
             ]
-
         else:
             event_objects = [
                 self._static_feature_dict_to_event_obj(event_row=e, patient=None)
@@ -112,15 +115,15 @@ class EventDataFramesToPatients:
             for df in source_event_dataframes
         ]
 
-        patient_dicts = [
-            self._patient_df_to_patient_dict(
-                patient_df,
-            )
-            for collection in patient_dfs_collections
-            for patient_df in collection
-        ]
+        patient_dicts = []
+        for i, collection in enumerate(patient_dfs_collections):
+            msg.info(f"Unpacking loader {i+1} of {len(patient_dfs_collections)}")
+
+            for patient_df in tqdm(collection):
+                patient_dicts.append(self._patient_df_to_patient_dict(patient_df))
 
         cohort_dict = {}
+
         for patient_dict in patient_dicts:
             patient_id = list(patient_dict.keys())[0]
             if patient_id not in cohort_dict.keys():
