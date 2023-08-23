@@ -5,6 +5,10 @@
 | Name                                                                                                            |    Stmts |     Miss |   Cover |   Missing |
 |---------------------------------------------------------------------------------------------------------------- | -------: | -------: | ------: | --------: |
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
+| psycop/common/data\_structures/patient.py                                                                       |       34 |        1 |     97% |        50 |
+| psycop/common/data\_structures/prediction\_time.py                                                              |       16 |        5 |     69% |      7-14 |
+| psycop/common/data\_structures/static\_feature.py                                                               |       18 |        3 |     83% |   7-9, 26 |
+| psycop/common/data\_structures/temporal\_event.py                                                               |       20 |        3 |     85% |   7-9, 28 |
 | psycop/common/feature\_generation/\_\_init\_\_.py                                                               |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/application\_modules/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/application\_modules/chunked\_feature\_generation.py                          |       50 |       19 |     62% |31-57, 64-69, 98-100, 109, 118-121 |
@@ -36,17 +40,8 @@
 | psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       77 |       46 |     40% |65-169, 178, 192-203, 212, 228, 247-258, 269, 286, 296-308 |
 | psycop/common/feature\_generation/loaders/raw/sql\_load.py                                                      |       21 |       13 |     38% |     42-70 |
 | psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       70 |       51 |     27% |27-38, 55-77, 133-283 |
-| psycop/common/feature\_generation/sequences/mlm\_sequence\_loaders/MLMLoaders.py                                |       31 |       11 |     65% |21, 29-31, 70-82, 86 |
-| psycop/common/feature\_generation/sequences/timeseries\_windower/timeseries\_windower.py                        |       16 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/timeseries\_windower/types/abstract\_polars\_dataframe.py           |       24 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/timeseries\_windower/types/event\_dataframe.py                      |       16 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/timeseries\_windower/types/prediction\_time\_dataframe.py           |       20 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/timeseries\_windower/types/sequence\_dataframe.py                   |       19 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/events/static\_feature.py              |       18 |        3 |     83% |   7-9, 26 |
-| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/events/temporal\_event.py              |       20 |        3 |     85% |   7-9, 28 |
-| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/patient.py                             |       33 |        1 |     97% |        54 |
-| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/prediction\_time.py                    |       16 |        5 |     69% |      7-16 |
-| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/source\_event\_dataframe\_unpacker.py  |       57 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/event\_dataframes\_to\_patient.py                                   |       57 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/patient\_loaders.py                                                 |       31 |       11 |     65% |21, 29-31, 70-82, 86 |
 | psycop/common/feature\_generation/text\_models/fit\_text\_models.py                                             |       10 |        1 |     90% |        34 |
 | psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       21 |        5 |     76% |     70-90 |
 | psycop/common/feature\_generation/text\_models/utils.py                                                         |       12 |        4 |     67% |23-24, 37-38 |
@@ -144,7 +139,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4410** | **1249** | **72%** |           |
+|                                                                                                       **TOTAL** | **4316** | **1249** | **71%** |           |
 
 
 ## Setup coverage badge
