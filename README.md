@@ -36,6 +36,8 @@
 | psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       77 |       46 |     40% |65-169, 178, 192-203, 212, 228, 247-258, 269, 286, 296-308 |
 | psycop/common/feature\_generation/loaders/raw/sql\_load.py                                                      |       21 |       13 |     38% |     42-70 |
 | psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       70 |       51 |     27% |27-38, 55-77, 133-283 |
+| psycop/common/feature\_generation/sequences/mlm\_sequence\_loaders/diagnoses\_sequences.py                      |       28 |        9 |     68% |23, 31-33, 57-66 |
+| psycop/common/feature\_generation/sequences/mlm\_sequence\_loaders/sequences\_for\_mlm.py                       |       12 |        4 |     67% |  7-12, 21 |
 | psycop/common/feature\_generation/sequences/timeseries\_windower/timeseries\_windower.py                        |       16 |        0 |    100% |           |
 | psycop/common/feature\_generation/sequences/timeseries\_windower/types/abstract\_polars\_dataframe.py           |       24 |        0 |    100% |           |
 | psycop/common/feature\_generation/sequences/timeseries\_windower/types/event\_dataframe.py                      |       16 |        0 |    100% |           |
@@ -143,7 +145,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4372** | **1238** | **72%** |           |
+|                                                                                                       **TOTAL** | **4412** | **1251** | **72%** |           |
 
 
 ## Setup coverage badge
