@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class StaticFeature:
-    soure_type: str  # E.g. "date-of-birth"/"gender"
+    source_type: str  # E.g. "date-of-birth"/"gender"
     patient: Patient | None
     value: float | str | bool | datetime
 

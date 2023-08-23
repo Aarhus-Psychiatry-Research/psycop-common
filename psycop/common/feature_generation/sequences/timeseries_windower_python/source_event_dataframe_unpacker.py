@@ -27,7 +27,7 @@ class PatientColumnNames:
 
 
 class EventDataFramesToPatients:
-    """Unpakcs a sequene of dataframes containing events into a list of patients."""
+    """Unpakcs a sequence of dataframes containing events into a list of patients."""
 
     def __init__(self, column_names: PatientColumnNames | None = None) -> None:
         self._column_names = (
@@ -56,7 +56,7 @@ class EventDataFramesToPatients:
     ) -> StaticFeature:
         return StaticFeature(
             patient=patient,
-            soure_type=event_row[self._column_names.source_col_name],
+            source_type=event_row[self._column_names.source_col_name],
             value=event_row[self._column_names.value_col_name],
         )
 
