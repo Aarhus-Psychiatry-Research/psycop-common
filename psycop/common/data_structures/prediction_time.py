@@ -8,11 +8,9 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from psycop.common.data_structures import (
+        Patient,
         StaticFeature,
         TemporalEvent,
-    )
-    from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
-        Patient,
     )
 
 

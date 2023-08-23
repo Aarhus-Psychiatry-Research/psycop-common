@@ -1,11 +1,6 @@
 import datetime as dt
 
-from psycop.common.data_structures import (
-    TemporalEvent,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
-    Patient,
-)
+from psycop.common.data_structures import Patient, TemporalEvent
 
 
 class TestPatientSequenceGenerator:

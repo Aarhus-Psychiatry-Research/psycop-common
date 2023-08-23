@@ -2,13 +2,7 @@ import datetime as dt
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 
-from psycop.common.data_structures import (
-    StaticFeature,
-    TemporalEvent,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.prediction_time import (
-    PredictionTime,
-)
+from psycop.common.data_structures import PredictionTime, StaticFeature, TemporalEvent
 
 
 @dataclass

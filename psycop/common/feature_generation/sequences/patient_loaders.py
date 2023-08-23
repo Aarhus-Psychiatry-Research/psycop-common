@@ -4,12 +4,12 @@ from collections.abc import Sequence
 
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
-from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
+from psycop.common.data_structures import (
     Patient,
 )
-from psycop.common.feature_generation.sequences.timeseries_windower_python.source_event_dataframe_unpacker import (
+from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatients,
     PatientColumnNames,
 )
