@@ -2,6 +2,29 @@
 
 <!--next-version-placeholder-->
 
+## v0.101.0 (2023-08-23)
+
+### Feature
+
+* Convert getters to properties ([`cbe130b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cbe130b191bd3047aee0295fc3594129674d4341))
+* Handle lookahead-based outcome resolution ([`489003f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/489003f8544b2c76c5d30cb788c148bd1e9f02c0))
+* Remove patient_ids and fix downstream type consequences ([`2918452`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/29184521b5f3c6721043939ce69bf5fbadfb8aa9))
+* Misc. ([`bd3d6ea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bd3d6eafcf9ddcf896f130cecc4bb059bf8e20e2))
+* First working unpacker ([`c65219b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c65219bb984d0ea1202c924e65220f50d9207b2b))
+* First stab at unpacking to patient dfs ([`74ba12a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/74ba12ac405f3c7466f16c2b743e4e9cc37c6b0e))
+* Filter prediction sequences ([`402eee9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/402eee9d14f17a5d77e7a11439d0cd816c30ff8c))
+
+### Fix
+
+* Rename patient id in tests ([`da79654`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/da79654cae87541ad9f0325b17559a0f7d04a847))
+* Spelling errors ([`114b624`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/114b624918b9cdff515d84c4ba8d991356b63b0d))
+* Missing type import ([`575689b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/575689be2990ecac79b97da99efa06526ba3fa1e))
+* Downstream type fixes ([`1cd438b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1cd438b51f9a3de46ae38d2fd3e0463714e8f20b))
+
+### Documentation
+
+* Add comments explaining __eq__ ([`d99c0be`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d99c0becfe4fbce05b0c599c233fdd58d178e785))
+
 ## v0.100.0 (2023-08-22)
 
 ### Feature
