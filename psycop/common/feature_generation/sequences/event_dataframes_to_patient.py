@@ -6,15 +6,9 @@ import polars as pl
 from tqdm import tqdm
 from wasabi import Printer
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
-    StaticFeature,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
-    TemporalEvent,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
-    Patient,
-)
+from psycop.common.data_structures.patient import Patient
+from psycop.common.data_structures.static_feature import StaticFeature
+from psycop.common.data_structures.temporal_event import TemporalEvent
 
 msg = Printer(timestamp=True)
 

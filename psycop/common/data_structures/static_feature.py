@@ -4,22 +4,20 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import datetime as dt
+    from datetime import datetime
 
-    from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
+    from psycop.common.data_structures.patient import (
         Patient,
     )
 
 
 @dataclass
-class TemporalEvent:
-    timestamp: dt.datetime
-    source_type: str  # E.g. "lab"/"diagnosis"
-    source_subtype: str | None  # E.g. "Hba1c"/"hypertension". Is optional, since e.g. diagnoses don't have a name, only a source and value.
-    value: float | str | bool
-    patient: Patient | None = None
+class StaticFeature:
+    source_type: str  # E.g. "date-of-birth"/"gender"
+    patient: Patient | None
+    value: float | str | bool | datetime
 
-    def __eq__(self, __value: TemporalEvent) -> bool:  # type: ignore
+    def __eq__(self, __value: StaticFeature) -> bool:  # type: ignore
         """Patient attr is ignored when computing equality. Needed for tests, since we have circular references in the dataclass, and the default __eq__ doesn't work."""
         for attr in self.__dict__:
             if attr == "patient":
