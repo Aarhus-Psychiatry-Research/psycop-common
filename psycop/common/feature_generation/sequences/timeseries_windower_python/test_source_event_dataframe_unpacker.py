@@ -17,7 +17,7 @@ from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 def test_temporal_events():
     test_data = str_to_pl_df(
-        """patient,timestamp,source,value
+        """dw_ek_borger,timestamp,source,value
 1,2020-01-01 00:00:00,source1,0
 1,2020-01-01 00:00:00,source1,1
 2,2020-01-01 00:00:00,source1,2
@@ -71,7 +71,7 @@ def test_temporal_events():
 
 def test_static_features():
     test_data = str_to_pl_df(
-        """patient,source,value
+        """dw_ek_borger,source,value
 1,test,0
                              """,
     )
@@ -91,13 +91,13 @@ def test_static_features():
 
 def test_multiple_event_sources():
     test_data = str_to_pl_df(
-        """patient,source,value
+        """dw_ek_borger,source,value
 1,test,0
                              """,
     )
 
     test_data2 = str_to_pl_df(
-        """patient,source,timestamp,value
+        """dw_ek_borger,source,timestamp,value
 1,test2,2023-01-01,1
                              """,
     )
