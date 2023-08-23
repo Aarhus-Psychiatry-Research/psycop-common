@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.103.0 (2023-08-23)
+
+### Feature
+
+* Train new tfidf model and encode text ([`1fdd3ce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1fdd3ce7fa2534f00f0cdd997443d6f2624e5621))
+
 ## v0.102.1 (2023-08-23)
 
 ### Fix
