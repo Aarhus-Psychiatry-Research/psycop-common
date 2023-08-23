@@ -121,6 +121,7 @@ class EventDataFramesToPatients:
         ]
 
         cohort_dict = {}
+
         for patient_dict in patient_dicts:
             patient_id = list(patient_dict.keys())[0]
             if patient_id not in cohort_dict.keys():

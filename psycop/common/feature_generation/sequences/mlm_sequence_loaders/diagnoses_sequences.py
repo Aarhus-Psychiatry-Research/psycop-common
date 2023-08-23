@@ -55,8 +55,8 @@ class MLMDataLoader(AbstractMLMDataLoader):
     @staticmethod
     def get_train_set(loaders: Sequence[EventDfLoader]) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in loaders])
-
         train_ids = pl.from_pandas(load_ids(split="train")).lazy()
+
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
 
         unpacked_patients = EventDataFramesToPatients(
