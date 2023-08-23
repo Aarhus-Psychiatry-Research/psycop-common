@@ -1,7 +1,7 @@
 # @package _global_
 data:
   # General config
-  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\full_feature_set_with_sent_transformer_embeddings\
+  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\full_feature_set_with_sent_transformer_and_tfidf_embeddings\
   suffix: parquet
   splits_for_training: ["train"]
   splits_for_evaluation: null

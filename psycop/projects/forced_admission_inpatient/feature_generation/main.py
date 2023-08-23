@@ -48,7 +48,7 @@ from psycop.projects.forced_admission_inpatient.feature_generation.modules.utils
 log = logging.getLogger()
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
-
+ 
 @wandb_alert_on_exception
 def main(
     add_text_features: bool = True,
