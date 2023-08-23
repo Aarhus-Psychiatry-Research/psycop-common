@@ -65,6 +65,8 @@ jobs:
         uses: py-cov-action/python-coverage-comment-action@c5b0a2ebd92a0db3bddeee5898632ebd2609a818
         with:
           GITHUB_TOKEN: ${{ github.token }}
+          ANNOTATE_MISSING_LINES: true
+          ANNOTATION_TYPE: "warning"
 
       - name: Store Pull Request comment to be posted
         uses: actions/upload-artifact@v3
