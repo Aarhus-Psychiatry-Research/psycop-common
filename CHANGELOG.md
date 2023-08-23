@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.102.1 (2023-08-23)
+
+### Fix
+
+* Don't shadow python builtin ([`c05d307`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c05d307d70ef00433405ec5188ddeb5a1ce7110b))
+
 ## v0.102.0 (2023-08-23)
 
 ### Feature
