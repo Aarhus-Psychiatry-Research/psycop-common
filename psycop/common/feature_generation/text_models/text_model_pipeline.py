@@ -46,7 +46,7 @@ def create_model_filename(
 
 def text_model_pipeline(
     model: Literal["bow", "tfidf"],
-    corpus_name: str = "psycop_train_val_all_sfis_preprocessed",
+    corpus_name: str = "psycop_train_all_sfis_preprocessed",
     sfi_type: Optional[Sequence[str]] = None,
     ngram_range: tuple = (1, 1),
     max_df: float = 1.0,
