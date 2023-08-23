@@ -41,6 +41,11 @@
 | psycop/common/feature\_generation/sequences/timeseries\_windower/types/event\_dataframe.py                      |       16 |        0 |    100% |           |
 | psycop/common/feature\_generation/sequences/timeseries\_windower/types/prediction\_time\_dataframe.py           |       20 |        0 |    100% |           |
 | psycop/common/feature\_generation/sequences/timeseries\_windower/types/sequence\_dataframe.py                   |       19 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/events/static\_feature.py              |       18 |        3 |     83% |   7-9, 26 |
+| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/events/temporal\_event.py              |       20 |        3 |     85% |   7-9, 28 |
+| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/patient.py                             |       33 |        1 |     97% |        54 |
+| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/prediction\_time.py                    |       16 |        5 |     69% |      7-16 |
+| psycop/common/feature\_generation/sequences/timeseries\_windower\_python/source\_event\_dataframe\_unpacker.py  |       50 |        0 |    100% |           |
 | psycop/common/feature\_generation/text\_models/fit\_text\_models.py                                             |       10 |        1 |     90% |        34 |
 | psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       21 |        5 |     76% |     70-90 |
 | psycop/common/feature\_generation/text\_models/utils.py                                                         |       12 |        4 |     67% |23-24, 37-38 |
@@ -138,7 +143,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4235** | **1226** | **71%** |           |
+|                                                                                                       **TOTAL** | **4372** | **1238** | **72%** |           |
 
 
 ## Setup coverage badge
