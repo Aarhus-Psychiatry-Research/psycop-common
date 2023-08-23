@@ -1,6 +1,6 @@
 import datetime as dt
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
+from psycop.common.data_structures import (
     TemporalEvent,
 )
 from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (

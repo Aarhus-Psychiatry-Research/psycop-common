@@ -1,15 +1,7 @@
 import datetime as dt
 
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.static_feature import (
-    StaticFeature,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.events.temporal_event import (
-    TemporalEvent,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
-    Patient,
-)
-from psycop.common.feature_generation.sequences.timeseries_windower_python.source_event_dataframe_unpacker import (
+from psycop.common.data_structures import Patient, StaticFeature, TemporalEvent
+from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatients,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
