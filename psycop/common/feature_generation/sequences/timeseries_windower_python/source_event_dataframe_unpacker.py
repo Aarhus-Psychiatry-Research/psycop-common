@@ -117,7 +117,6 @@ class EventDataFramesToPatients:
 
         patient_dicts = []
         for i, collection in enumerate(patient_dfs_collections):
-
             msg.info(f"Unpacking loader {i+1} of {len(patient_dfs_collections)}")
 
             for patient_df in tqdm(collection):

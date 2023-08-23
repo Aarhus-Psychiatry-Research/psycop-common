@@ -41,7 +41,7 @@ class DiagnosisLoader(EventDfLoader):
         df = (
             df.with_columns(
                 pl.col(
-                    "diagnosegruppestreng"
+                    "diagnosegruppestreng",
                 )  # Each row looks like A:DF432#B:DF232#Z:ALFC3 etc.
                 .str.split("#")
                 .alias("value"),
@@ -54,13 +54,14 @@ class DiagnosisLoader(EventDfLoader):
                     .str.slice(offset=2)  # Remove prefix, e.g. A: or B: or Z:
                     .str.strip()  # Replace trailing whitespaces
                     .str.replace(
-                        "^D", ""
+                        "^D",
+                        "",
                     ),  # In the diagnosis DF432, the D is only in the Danish system and doesn't carry meaning. Remove it.
                     pl.col("value")
                     .str.slice(offset=0, length=1)
                     .alias("type"),  # Exctract the type, e.g. for A:DF2, extract A
                     pl.lit("diagnosis").alias(
-                        "source"
+                        "source",
                     ),  # Add a source column, indicating diagnoses
                 ],
             )
@@ -78,7 +79,7 @@ class MLMDataLoader(AbstractMLMDataLoader):
 
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
         events_after_2013 = events_from_train.filter(
-            pl.col("timestamp") > datetime.datetime(2013, 1, 1)
+            pl.col("timestamp") > datetime.datetime(2013, 1, 1),
         )
 
         unpacked_patients = EventDataFramesToPatients(
