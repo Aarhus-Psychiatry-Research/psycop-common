@@ -1,4 +1,4 @@
-from psycop.common.feature_generation.sequences.mlm_sequence_loaders.diagnoses_sequences import (
+from psycop.common.feature_generation.sequences.mlm_sequence_loaders.MLMLoaders import (
     DiagnosisLoader,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df

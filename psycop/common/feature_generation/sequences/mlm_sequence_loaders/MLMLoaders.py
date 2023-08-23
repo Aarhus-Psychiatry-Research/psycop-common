@@ -6,9 +6,6 @@ import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.feature_generation.sequences.mlm_sequence_loaders.sequences_for_mlm import (
-    AbstractMLMDataLoader,
-)
 from psycop.common.feature_generation.sequences.timeseries_windower_python.patient import (
     Patient,
 )
@@ -21,6 +18,13 @@ from psycop.common.feature_generation.sequences.timeseries_windower_python.sourc
 class EventDfLoader(ABC):
     @abstractmethod
     def load_events(self) -> pl.LazyFrame:
+        ...
+
+
+class AbstractMLMDataLoader(ABC):
+    @staticmethod
+    @abstractmethod
+    def get_train_set(loaders: Sequence[EventDfLoader]) -> list[Patient]:
         ...
 
 
