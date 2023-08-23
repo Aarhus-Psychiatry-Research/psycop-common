@@ -129,12 +129,12 @@ class TextFeatureSpecifier:
 
         sentence_transformer_specs = self._get_sentence_transformer_specs(
             resolve_multiple=[mean],
-            interval_days=[7],
+            interval_days=[30],
         )
 
         tfidf_specs = self._get_tfidf_specs(
             resolve_multiple=[mean],
-            interval_days=[7],
+            interval_days=[180],
         )
 
         if embedding_method == "both":
