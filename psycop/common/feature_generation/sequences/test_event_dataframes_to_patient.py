@@ -1,6 +1,5 @@
 import datetime as dt
 
-from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.data_structures.test_patient import get_test_patient
