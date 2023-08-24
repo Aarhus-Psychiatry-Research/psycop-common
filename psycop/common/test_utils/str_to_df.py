@@ -52,7 +52,7 @@ def str_to_df(
     # Drop comments for each line if any exist inside the str
     lines = []
     for line in string.split("\n"):
-        if "#" in line:
+        if " #" in line:
             line = line[: line.rfind("#")]  # noqa
 
         line.strip()

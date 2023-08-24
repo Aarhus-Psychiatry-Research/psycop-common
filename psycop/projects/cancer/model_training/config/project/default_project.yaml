@@ -1,5 +1,6 @@
 name: cancer
 seed: 42
+project_path: E:\shared_resources\cancer\
 
 wandb:
   entity: psycop # Which entity to run WanDB in.

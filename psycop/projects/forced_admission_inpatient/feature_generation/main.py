@@ -2,8 +2,12 @@
 
 import logging
 import sys
+import warnings
 from pathlib import Path
 
+from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
+    ChunkedFeatureGenerator,
+)
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -33,33 +37,65 @@ from psycop.projects.forced_admission_inpatient.feature_generation.modules.loade
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_features import (
     FeatureSpecifier,
 )
+from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_text_features import (
+    TextFeatureSpecifier,
+)
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.utils import (
     add_outcome_col,
 )
 
 log = logging.getLogger()
+warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
 
 @wandb_alert_on_exception
-def main(feature_set_name: str | None = None) -> Path:
+def main(
+    add_text_features: bool = True,
+    min_set_for_debug: bool = False,
+    limited_feature_set: bool = False,
+    generate_in_chunks: bool = True,
+    feature_set_name: str | None = None,
+    chunksize: int = 10,
+) -> Path:
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=True,  # Remember to set to False when generating full dataset
-        limited_feature_set=False,
+        min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
+        limited_feature_set=limited_feature_set,
     ).get_feature_specs()
 
-    flattened_df = create_flattened_dataset(
-        feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=forced_admissions_inpatient(
-            timestamps_only=True,
-        ),
-        drop_pred_times_with_insufficient_look_distance=False,
-        project_info=project_info,
-        quarantine_df=load_move_into_rm_for_exclusion(),
-        quarantine_days=720,
-    )
+    if add_text_features:
+        text_feature_specs = TextFeatureSpecifier(
+            project_info=project_info,
+            min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
+        ).get_text_feature_specs()
+
+        feature_specs += text_feature_specs
+
+    if generate_in_chunks:
+        flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
+            project_info=project_info,
+            eligible_prediction_times=forced_admissions_inpatient(
+                timestamps_only=True,
+            ),
+            feature_specs=feature_specs,  # type: ignore
+            chunksize=chunksize,
+            quarantine_df=load_move_into_rm_for_exclusion(),
+            quarantine_days=720,
+        )
+
+    else:
+        flattened_df = create_flattened_dataset(
+            feature_specs=feature_specs,  # type: ignore
+            prediction_times_df=forced_admissions_inpatient(
+                timestamps_only=True,
+            ),
+            drop_pred_times_with_insufficient_look_distance=False,
+            project_info=project_info,
+            quarantine_df=load_move_into_rm_for_exclusion(),
+            quarantine_days=720,
+        )
 
     flattened_df = add_outcome_col(
         flattened_df=flattened_df,
@@ -131,4 +167,4 @@ if __name__ == "__main__":
         project_info=project_info,
     )
 
-    main(feature_set_name="min_dataset_for_debug")
+    main(feature_set_name="full_feature_set_with_sent_transformer_embeddings")
