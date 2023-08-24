@@ -1,4 +1,7 @@
 import datetime as dt
+from typing import Sequence
+
+import polars as pl
 
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
@@ -7,6 +10,15 @@ from psycop.common.feature_generation.sequences.event_dataframes_to_patient impo
     EventDataFramesToPatients,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
+
+
+def create_date_of_birth_df(patient_ids: Sequence[int]) -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "dw_ek_borger": patient_ids,
+            "timestamp": [dt.datetime(year=1990, month=1, day=1) for _ in patient_ids],
+        }
+    )
 
 
 def test_temporal_events():
@@ -55,6 +67,7 @@ def test_temporal_events():
 
     unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data],
+        date_of_birth_df=create_date_of_birth_df(patient_ids=[1, 2]),
     )
     assert unpacked == expected_patients
 
@@ -74,6 +87,7 @@ def test_static_features():
 
     unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data],
+        date_of_birth_df=create_date_of_birth_df(patient_ids=[1]),
     )
 
     assert unpacked == [expected_patient]
@@ -106,6 +120,7 @@ def test_multiple_event_sources():
 
     unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data, test_data2],
+        date_of_birth_df=create_date_of_birth_df(patient_ids=[1]),
     )
 
     assert unpacked == [expected_patient]
