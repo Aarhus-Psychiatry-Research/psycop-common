@@ -25,14 +25,12 @@ def test_temporal_events():
     patient_1.add_events(
         [
             TemporalEvent(
-                patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=0,
                 source_type="source1",
                 source_subtype=None,
             ),
             TemporalEvent(
-                patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=1,
                 source_type="source1",
@@ -47,7 +45,6 @@ def test_temporal_events():
     patient_2.add_events(
         [
             TemporalEvent(
-                patient=patient_2,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=2,
                 source_type="source1",
@@ -73,7 +70,7 @@ def test_static_features():
     expected_patient = Patient(patient_id=1)
 
     expected_patient.add_events(
-        [StaticFeature(source_type="test")],  # type: ignore
+        [StaticFeature(source_type="test", value=0)],
     )
 
     unpacked = EventDataFramesToPatients().unpack(
@@ -89,25 +86,23 @@ def test_multiple_event_sources():
 1,test,0
                              """,
     )
+    expected_static_event = StaticFeature(source_type="test", value=0)
 
     test_data2 = str_to_pl_df(
         """dw_ek_borger,source,timestamp,value
 1,test2,2023-01-01,1
                              """,
     )
+    expected_temporal_event = TemporalEvent(
+        source_type="test2",
+        source_subtype=None,
+        timestamp=dt.datetime(2023, 1, 1),
+        value=1,
+    )
 
     expected_patient = Patient(patient_id=1)
-
     expected_patient.add_events(
-        [
-            StaticFeature(source_type="test"),  # type: ignore
-            TemporalEvent(
-                source_type="test2",
-                timestamp=dt.datetime(2023, 1, 1),
-                value=1,
-                source_subtype=None,
-            ),
-        ],
+        [expected_static_event, expected_temporal_event],
     )
 
     unpacked = EventDataFramesToPatients().unpack(

@@ -6,10 +6,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from psycop.common.data_structures.patient import (
-        Patient,
-    )
-
 
 @dataclass
 class StaticFeature:
