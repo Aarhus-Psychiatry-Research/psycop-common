@@ -30,9 +30,6 @@ class Patient:
 
     def add_events(self, events: list[TemporalEvent | StaticFeature]):
         # add patient reference to each event
-        for event in events:
-            event.patient = self
-
         self._temporal_events += [
             event for event in events if isinstance(event, TemporalEvent)
         ]
