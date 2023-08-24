@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Sequence
+from collections.abc import Sequence
 
 import polars as pl
 
@@ -17,7 +17,7 @@ def create_date_of_birth_df(patient_ids: Sequence[int]) -> pl.DataFrame:
         {
             "dw_ek_borger": patient_ids,
             "timestamp": [dt.datetime(year=1990, month=1, day=1) for _ in patient_ids],
-        }
+        },
     )
 
 

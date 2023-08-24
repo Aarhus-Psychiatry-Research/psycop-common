@@ -10,7 +10,6 @@ from wasabi import Printer
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
-from psycop.common.data_structures.test_patient import get_test_patient
 
 msg = Printer(timestamp=True)
 
@@ -84,7 +83,9 @@ class EventDataFramesToPatients:
         return patient_dict  # type: ignore
 
     def _cohort_dict_to_patients(
-        self, cohort_dict: PatientDict, date_of_birth_dict: dict[int | str, datetime]
+        self,
+        cohort_dict: PatientDict,
+        date_of_birth_dict: dict[int | str, datetime],
     ) -> list[Patient]:
         patient_cohort = []
 
@@ -95,7 +96,7 @@ class EventDataFramesToPatients:
                 raise KeyError(
                     f"Patient {patient_id} does not have a date of birth. "
                     "Please make sure that the date of birth is included in the "
-                    "date_of_birth_df."
+                    "date_of_birth_df.",
                 ) from e
             patient = Patient(patient_id=patient_id, date_of_birth=date_of_birth)
             patient.add_events(patient_events)
@@ -104,7 +105,8 @@ class EventDataFramesToPatients:
         return patient_cohort
 
     def _date_of_birth_df_to_dict(
-        self, date_of_birth_df: pl.DataFrame
+        self,
+        date_of_birth_df: pl.DataFrame,
     ) -> dict[int | str, datetime]:
         date_of_birth_dicts = date_of_birth_df.iter_rows(named=True)
         date_of_birth_dict = {
@@ -147,11 +149,12 @@ class EventDataFramesToPatients:
                 cohort_dict[patient_id] += patient_events
 
         date_of_birth_dict = self._date_of_birth_df_to_dict(
-            date_of_birth_df=date_of_birth_df
+            date_of_birth_df=date_of_birth_df,
         )
 
         patient_cohort = self._cohort_dict_to_patients(
-            cohort_dict=cohort_dict, date_of_birth_dict=date_of_birth_dict
+            cohort_dict=cohort_dict,
+            date_of_birth_dict=date_of_birth_dict,
         )
 
         return patient_cohort
