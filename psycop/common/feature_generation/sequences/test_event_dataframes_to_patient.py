@@ -1,5 +1,7 @@
 import datetime as dt
 
+import pytest
+
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.data_structures.test_patient import get_test_patient
@@ -115,3 +117,17 @@ def test_multiple_event_sources():
     )
 
     assert unpacked == [expected_patient]
+
+
+def test_patient_without_date_of_birth_raises_error():
+    test_data = str_to_pl_df(
+        """dw_ek_borger,source,value
+1,test,0
+                             """,
+    )
+
+    with pytest.raises(KeyError):
+        EventDataFramesToPatients().unpack(
+            source_event_dataframes=[test_data],
+            date_of_birth_df=get_test_date_of_birth_df(patient_ids=[2]),
+        )
