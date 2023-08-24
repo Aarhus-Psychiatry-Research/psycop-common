@@ -1,7 +1,19 @@
 import datetime as dt
 
 from psycop.common.data_structures.patient import Patient
+from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
+
+
+def get_test_patient(
+    patient_id: int,
+    date_of_birth: dt.datetime = dt.datetime(year=2020, month=1, day=1),
+) -> Patient:
+    patient = Patient(
+        patient_id=patient_id,
+        date_of_birth=date_of_birth,
+    )
+    return patient
 
 
 class TestPatientSequenceGenerator:
@@ -22,10 +34,10 @@ class TestPatientSequenceGenerator:
             ),
         ]
 
-        patient = Patient(
+        patient = get_test_patient(
             patient_id=1,
         )
-        patient.add_events(temporal_events)  # type: ignore
+        patient.add_events(temporal_events)
 
         prediction_sequences = patient.to_prediction_times(
             lookbehind=dt.timedelta(days=2),

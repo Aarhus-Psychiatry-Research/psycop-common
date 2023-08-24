@@ -3,6 +3,7 @@ import datetime as dt
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
+from psycop.common.data_structures.test_patient import get_test_patient
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatients,
 )
@@ -18,9 +19,8 @@ def test_temporal_events():
                              """,
     )
 
-    patient_1 = Patient(
+    patient_1 = get_test_patient(
         patient_id=1,
-        _temporal_events=[],
     )
     patient_1.add_events(
         [
@@ -39,7 +39,7 @@ def test_temporal_events():
         ],
     )
 
-    patient_2 = Patient(
+    patient_2 = get_test_patient(
         patient_id=2,
     )
     patient_2.add_events(
@@ -67,7 +67,7 @@ def test_static_features():
                              """,
     )
 
-    expected_patient = Patient(patient_id=1)
+    expected_patient = get_test_patient(patient_id=1)
 
     expected_patient.add_events(
         [StaticFeature(source_type="test", value=0)],
@@ -100,7 +100,7 @@ def test_multiple_event_sources():
         value=1,
     )
 
-    expected_patient = Patient(patient_id=1)
+    expected_patient = get_test_patient(patient_id=1)
     expected_patient.add_events(
         [expected_static_event, expected_temporal_event],
     )

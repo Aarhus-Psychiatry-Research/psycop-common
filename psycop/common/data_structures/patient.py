@@ -14,6 +14,7 @@ class Patient:
     """All task-agnostic data for a patient."""
 
     patient_id: str | int
+    date_of_birth: dt.datetime
     _temporal_events: list[TemporalEvent] = field(default_factory=list)
     _static_features: list[StaticFeature] = field(default_factory=list)
 
@@ -28,7 +29,7 @@ class Patient:
         # However, this might be plenty fast. We can always optimize later.
         return [event for event in events if start <= event.timestamp < end]
 
-    def add_events(self, events: list[TemporalEvent | StaticFeature]):
+    def add_events(self, events: Sequence[TemporalEvent | StaticFeature]):
         # add patient reference to each event
         self._temporal_events += [
             event for event in events if isinstance(event, TemporalEvent)
