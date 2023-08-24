@@ -34,11 +34,9 @@ class EventDataFramesToPatients:
 
     def _temporal_event_dict_to_event_obj(
         self,
-        patient: Patient | None,
         event_row: dict[str, Any],
     ) -> TemporalEvent:
         return TemporalEvent(
-            patient=patient,
             timestamp=event_row[self._column_names.timestamp_col_name],
             source_type=event_row[self._column_names.source_col_name],
             source_subtype=event_row[self._column_names.name_col_name]
@@ -49,11 +47,9 @@ class EventDataFramesToPatients:
 
     def _static_feature_dict_to_event_obj(
         self,
-        patient: Patient | None,
         event_row: dict[str, Any],
     ) -> StaticFeature:
         return StaticFeature(
-            patient=patient,
             source_type=event_row[self._column_names.source_col_name],
             value=event_row[self._column_names.value_col_name],
         )
@@ -70,13 +66,11 @@ class EventDataFramesToPatients:
 
         if is_temporal_events:
             event_objects = [
-                self._temporal_event_dict_to_event_obj(event_row=e, patient=None)
-                for e in event_dicts
+                self._temporal_event_dict_to_event_obj(event_row=e) for e in event_dicts
             ]
         else:
             event_objects = [
-                self._static_feature_dict_to_event_obj(event_row=e, patient=None)
-                for e in event_dicts
+                self._static_feature_dict_to_event_obj(event_row=e) for e in event_dicts
             ]
 
         patient_id: str = patient_events.select(

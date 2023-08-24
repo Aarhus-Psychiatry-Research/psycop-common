@@ -73,7 +73,7 @@ def test_static_features():
     expected_patient = Patient(patient_id=1)
 
     expected_patient.add_events(
-        [StaticFeature(source_type="test", patient=expected_patient, value=0)],
+        [StaticFeature(source_type="test")],  # type: ignore
     )
 
     unpacked = EventDataFramesToPatients().unpack(
@@ -100,10 +100,9 @@ def test_multiple_event_sources():
 
     expected_patient.add_events(
         [
-            StaticFeature(source_type="test", patient=expected_patient, value=0),
+            StaticFeature(source_type="test"),  # type: ignore
             TemporalEvent(
                 source_type="test2",
-                patient=expected_patient,
                 timestamp=dt.datetime(2023, 1, 1),
                 value=1,
                 source_subtype=None,
