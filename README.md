@@ -5,7 +5,7 @@
 | Name                                                                                                            |    Stmts |     Miss |   Cover |   Missing |
 |---------------------------------------------------------------------------------------------------------------- | -------: | -------: | ------: | --------: |
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
-| psycop/common/data\_structures/patient.py                                                                       |       32 |        1 |     97% |        47 |
+| psycop/common/data\_structures/patient.py                                                                       |       35 |        2 |     94% |    22, 55 |
 | psycop/common/data\_structures/prediction\_time.py                                                              |       16 |        5 |     69% |      7-14 |
 | psycop/common/data\_structures/static\_feature.py                                                               |        9 |        1 |     89% |         7 |
 | psycop/common/data\_structures/temporal\_event.py                                                               |       11 |        1 |     91% |         7 |
@@ -40,8 +40,9 @@
 | psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       77 |       46 |     40% |65-169, 178, 192-203, 212, 228, 247-258, 269, 286, 296-308 |
 | psycop/common/feature\_generation/loaders/raw/sql\_load.py                                                      |       21 |       13 |     38% |     42-70 |
 | psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       70 |       51 |     27% |27-38, 55-77, 133-283 |
-| psycop/common/feature\_generation/sequences/event\_dataframes\_to\_patient.py                                   |       57 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/patient\_loaders.py                                                 |       31 |       11 |     65% |21, 29-31, 70-82, 86 |
+| psycop/common/feature\_generation/sequences/event\_dataframes\_to\_patient.py                                   |       67 |        0 |    100% |           |
+| psycop/common/feature\_generation/sequences/patient\_loaders.py                                                 |       37 |       14 |     62% |22, 30-32, 71-73, 77-92, 96-98 |
+| psycop/common/feature\_generation/sequences/utils\_for\_testing.py                                              |        5 |        0 |    100% |           |
 | psycop/common/feature\_generation/text\_models/fit\_text\_models.py                                             |       10 |        1 |     90% |        34 |
 | psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       21 |        5 |     76% |     70-90 |
 | psycop/common/feature\_generation/text\_models/utils.py                                                         |       12 |        4 |     67% |23-24, 37-38 |
@@ -139,7 +140,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4296** | **1245** | **71%** |           |
+|                                                                                                       **TOTAL** | **4320** | **1249** | **71%** |           |
 
 
 ## Setup coverage badge
