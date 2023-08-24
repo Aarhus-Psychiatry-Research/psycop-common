@@ -9,13 +9,14 @@ import torch
 from torch import nn
 
 
-class BEHRTEmbedder:
+class BEHRTEmbedder(nn.Module):
     def __init__(
         self,
         d_model: int,
         dropout_prob: float,
         max_sequence_length: int,
     ):
+        super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
 
