@@ -9,6 +9,7 @@ from wasabi import Printer
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
+from psycop.common.data_structures.test_patient import get_test_patient
 
 msg = Printer(timestamp=True)
 
@@ -85,7 +86,7 @@ class EventDataFramesToPatients:
         patient_cohort = []
 
         for patient_id, patient_events in cohort_dict.items():
-            patient = Patient(patient_id=patient_id)
+            patient = get_test_patient(patient_id=patient_id)
             patient.add_events(patient_events)
             patient_cohort.append(patient)
 
