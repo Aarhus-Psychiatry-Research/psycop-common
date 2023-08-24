@@ -5,10 +5,10 @@
 | Name                                                                                                            |    Stmts |     Miss |   Cover |   Missing |
 |---------------------------------------------------------------------------------------------------------------- | -------: | -------: | ------: | --------: |
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
-| psycop/common/data\_structures/patient.py                                                                       |       34 |        1 |     97% |        50 |
+| psycop/common/data\_structures/patient.py                                                                       |       32 |        1 |     97% |        47 |
 | psycop/common/data\_structures/prediction\_time.py                                                              |       16 |        5 |     69% |      7-14 |
-| psycop/common/data\_structures/static\_feature.py                                                               |       18 |        3 |     83% |   7-9, 26 |
-| psycop/common/data\_structures/temporal\_event.py                                                               |       20 |        3 |     85% |   7-9, 28 |
+| psycop/common/data\_structures/static\_feature.py                                                               |        9 |        1 |     89% |         7 |
+| psycop/common/data\_structures/temporal\_event.py                                                               |       11 |        1 |     91% |         7 |
 | psycop/common/feature\_generation/\_\_init\_\_.py                                                               |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/application\_modules/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/application\_modules/chunked\_feature\_generation.py                          |       50 |       19 |     62% |31-57, 64-69, 98-100, 109, 118-121 |
@@ -139,7 +139,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4316** | **1249** | **71%** |           |
+|                                                                                                       **TOTAL** | **4296** | **1245** | **71%** |           |
 
 
 ## Setup coverage badge
