@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
-from sklearn.multioutput import MultiOutputClassifier
+from sklearn.multioutput import ClassifierChain
 from sklearn.pipeline import Pipeline
 from wasabi import Printer
 
@@ -35,7 +35,7 @@ def create_model(cfg: FullConfigSchema) -> Any:
     model_args.update(training_arguments)
 
     if cfg.preprocessing.pre_split.classification_objective == "multilabel":
-        return MultiOutputClassifier(model_dict["model"](**model_args))
+        return ClassifierChain(model_dict["model"](**model_args))
 
     return model_dict["model"](**model_args)
 
@@ -125,10 +125,6 @@ def multilabel_cross_validation(
         groups=train_df[cfg.data.col_name.id],
     )
 
-    msg.info(
-        f"Stratifying by {y[outcome_col_name[0]]}",  # type: ignore
-    )
-
     # Perform CV and get out of fold predictions
     train_df["oof_y_hat"] = np.nan
 
@@ -147,19 +143,19 @@ def multilabel_cross_validation(
         y_pred = pipe.predict_proba(X_train)
 
         msg.info(
-            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, np.asarray([y_pred[x][:,1] for x in range(0, len(y_pred))]).T), 3)}",  # type: ignore
+            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, y_pred), 3)}",   # type: ignore
         )
 
         oof_y_pred = pipe.predict_proba(X.loc[val_idxs])
 
         msg.info(
-            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs], np.asarray([oof_y_pred[x][:,1] for x in range(0, len(oof_y_pred))]).T), 3)}",  # type: ignore
+            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs], oof_y_pred), 3)}",  # type: ignore
         )
 
         train_df.loc[
             val_idxs,
             [f"y_hat_prob_{x}" for x in outcome_col_name],
-        ] = np.asarray([oof_y_pred[x][:, 1] for x in range(0, len(oof_y_pred))]).T
+        ] = [oof_y_pred[:,x] for x in range(0, oof_y_pred.shape[1])]
 
     return train_df
 
@@ -315,14 +311,14 @@ def multilabel_train_validate(
     y_val_hat_prob = pipe.predict_proba(X_val)
 
     print(
-        f"Performance on train: {round(roc_auc_score(y_train, np.asarray([y_train_hat_prob[x][:,1] for x in range(0, len(y_train_hat_prob))]).T), 3)}",  # type: ignore
+        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",  # type: ignore
     )
 
     df = val
     df.loc[
         :,
         [f"y_hat_prob_{x}" for x in outcome_col_name],
-    ] = np.asarray([y_val_hat_prob[x][:, 1] for x in range(0, len(y_val_hat_prob))]).T
+    ] = [y_val_hat_prob[:,x] for x in range(0, y_val_hat_prob.shape[1])]
 
     return create_eval_dataset(
         col_names=cfg.data.col_name,
