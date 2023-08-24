@@ -18,6 +18,13 @@ class Patient:
     _temporal_events: list[TemporalEvent] = field(default_factory=list)
     _static_features: list[StaticFeature] = field(default_factory=list)
 
+    def __repr__(self) -> str:
+        return f"""
+    patient_id: {self.patient_id}
+    date_of_birth: {self.date_of_birth}
+    n temporal_events: {len(self._temporal_events)} 
+    n static_features: {len(self._static_features)}"""
+
     @staticmethod
     def _filter_events_within_time_interval(
         events: Sequence[TemporalEvent],

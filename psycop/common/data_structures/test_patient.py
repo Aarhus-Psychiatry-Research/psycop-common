@@ -6,10 +6,10 @@ from psycop.common.data_structures.temporal_event import TemporalEvent
 
 def get_test_patient(
     patient_id: int | str,
-    date_of_birth: dt.datetime = dt.datetime(year=2020, month=1, day=1),
+    date_of_birth: dt.datetime = dt.datetime(year=1990, month=1, day=1),
 ) -> Patient:
     patient = Patient(
-        patient_id=str(patient_id),
+        patient_id=patient_id,
         date_of_birth=date_of_birth,
     )
     return patient
