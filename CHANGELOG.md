@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.104.0 (2023-08-24)
+
+### Feature
+
+* Parse date of birth to all patients ([`c469997`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c469997d39f3ee42b5a3aad06d0ba54574c4fcc9))
+
 ## v0.103.0 (2023-08-23)
 
 ### Feature
