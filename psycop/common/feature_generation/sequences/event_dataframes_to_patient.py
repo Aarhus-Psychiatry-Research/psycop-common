@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 import polars as pl
@@ -81,19 +82,46 @@ class EventDataFramesToPatients:
 
         return patient_dict  # type: ignore
 
-    def _cohort_dict_to_patients(self, cohort_dict: PatientDict) -> list[Patient]:
+    def _cohort_dict_to_patients(
+        self,
+        cohort_dict: PatientDict,
+        date_of_birth_dict: dict[int | str, datetime],
+    ) -> list[Patient]:
         patient_cohort = []
 
         for patient_id, patient_events in cohort_dict.items():
-            patient = Patient(patient_id=patient_id)
+            try:
+                date_of_birth = date_of_birth_dict[patient_id]
+            except KeyError as e:
+                raise KeyError(
+                    f"Patient {patient_id} does not have a date of birth. "
+                    "Please make sure that the date of birth is included in the "
+                    "date_of_birth_df.",
+                ) from e
+            patient = Patient(patient_id=patient_id, date_of_birth=date_of_birth)
             patient.add_events(patient_events)
             patient_cohort.append(patient)
 
         return patient_cohort
 
+    def _date_of_birth_df_to_dict(
+        self,
+        date_of_birth_df: pl.DataFrame,
+    ) -> dict[int | str, datetime]:
+        date_of_birth_dicts = date_of_birth_df.iter_rows(named=True)
+        date_of_birth_dict = {
+            row[self._column_names.patient_id_col_name]: row[
+                self._column_names.timestamp_col_name
+            ]
+            for row in date_of_birth_dicts
+        }
+
+        return date_of_birth_dict
+
     def unpack(
         self,
         source_event_dataframes: Sequence[pl.DataFrame],
+        date_of_birth_df: pl.DataFrame,
     ) -> list[Patient]:
         patient_dfs_collections = [
             df.partition_by(
@@ -120,6 +148,13 @@ class EventDataFramesToPatients:
                 patient_events = list(patient_dict.values())[0]
                 cohort_dict[patient_id] += patient_events
 
-        patient_cohort = self._cohort_dict_to_patients(cohort_dict=cohort_dict)
+        date_of_birth_dict = self._date_of_birth_df_to_dict(
+            date_of_birth_df=date_of_birth_df,
+        )
+
+        patient_cohort = self._cohort_dict_to_patients(
+            cohort_dict=cohort_dict,
+            date_of_birth_dict=date_of_birth_dict,
+        )
 
         return patient_cohort

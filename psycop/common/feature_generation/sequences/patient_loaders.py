@@ -7,6 +7,7 @@ import polars as pl
 from psycop.common.data_structures.patient import (
     Patient,
 )
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
@@ -66,6 +67,12 @@ class DiagnosisLoader(EventDfLoader):
 
 class PatientLoader:
     @staticmethod
+    def load_date_of_birth_df() -> pl.DataFrame:
+        df = pl.from_pandas(birthdays()).rename({"date_of_birth": "timestamp"})
+
+        return df
+
+    @staticmethod
     def get_train_set(event_loaders: Sequence[EventDfLoader]) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         train_ids = pl.from_pandas(load_ids(split="train")).lazy()
@@ -77,10 +84,15 @@ class PatientLoader:
 
         unpacked_patients = EventDataFramesToPatients(
             column_names=PatientColumnNames(),
-        ).unpack(source_event_dataframes=[events_after_2013.collect()])
+        ).unpack(
+            source_event_dataframes=[events_after_2013.collect()],
+            date_of_birth_df=PatientLoader.load_date_of_birth_df(),
+        )
 
         return unpacked_patients
 
 
 if __name__ == "__main__":
     patients = PatientLoader.get_train_set(event_loaders=[DiagnosisLoader()])
+
+    pass
