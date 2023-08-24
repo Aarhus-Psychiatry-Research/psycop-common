@@ -22,7 +22,7 @@ class Patient:
         return f"""
     patient_id: {self.patient_id}
     date_of_birth: {self.date_of_birth}
-    n temporal_events: {len(self._temporal_events)} 
+    n temporal_events: {len(self._temporal_events)}
     n static_features: {len(self._static_features)}"""
 
     @staticmethod
