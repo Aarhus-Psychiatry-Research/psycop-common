@@ -15,7 +15,9 @@ class CohortToPredictionTimes:
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
-        dataframe: pl.DataFrame, id_col_name: str, patient_timestamp_col_name: str
+        dataframe: pl.DataFrame,
+        id_col_name: str,
+        patient_timestamp_col_name: str,
     ) -> dict[str | int, list[dt.datetime]]:
         timestamp_dicts = dataframe.iter_rows(named=True)
 
@@ -23,7 +25,7 @@ class CohortToPredictionTimes:
         for prediction_time_dict in timestamp_dicts:
             patient_id = prediction_time_dict[id_col_name]
             patient_to_prediction_times[patient_id].append(
-                prediction_time_dict[patient_timestamp_col_name]
+                prediction_time_dict[patient_timestamp_col_name],
             )
 
         return patient_to_prediction_times
@@ -33,7 +35,6 @@ class CohortToPredictionTimes:
         lookbehind: dt.timedelta,
         lookahead: dt.timedelta,
     ) -> tuple[PredictionTime]:
-
         outcome_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
             dataframe=self.cohort_definer.get_outcome_timestamps(),
             id_col_name="dw_ek_borger",

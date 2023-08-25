@@ -3,7 +3,6 @@ import datetime as dt
 import polars as pl
 
 from psycop.common.cohort_definition import CohortDefiner, FilteredPredictionTimeBundle
-from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.test_patient import get_test_patient
 from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
     CohortToPredictionTimes,
@@ -18,7 +17,7 @@ class MockCohortDefiner(CohortDefiner):
             """dw_ek_borger,timestamp
     1,2021-01-01
     2,2022-01-01
-    """
+    """,
         )
         return FilteredPredictionTimeBundle(
             prediction_times=df,
@@ -30,7 +29,7 @@ class MockCohortDefiner(CohortDefiner):
         df = str_to_pl_df(
             """dw_ek_borger,timestamp
     1,2021-01-01
-    """
+    """,
         )
         return df
 
@@ -44,7 +43,8 @@ def test_polars_dataframe_to_dict():
             get_test_patient(patient_id=2),
         ],
     ).create_prediction_times(
-        lookbehind=dt.timedelta(days=1), lookahead=dt.timedelta(days=1)
+        lookbehind=dt.timedelta(days=1),
+        lookahead=dt.timedelta(days=1),
     )
 
     assert len(prediction_times) == 2
