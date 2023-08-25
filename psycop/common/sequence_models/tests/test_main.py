@@ -1,8 +1,8 @@
+from datetime import datetime
 from pathlib import Path
 
 import pytest
 import torch
-from datetime import datetime
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -10,6 +10,7 @@ from psycop.common.data_structures import Patient, TemporalEvent
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTMaskingTask,
+    Embedder,
     PatientDataset,
     Trainer,
 )
@@ -21,39 +22,54 @@ def patients() -> list[Patient]:
     Returns a list of patient objects
     """
 
-    events = [
-        TemporalEvent(
-            timestamp=datetime(2021, 1, 1),
-            value="d1",
-            source_type="diagnosis",
-            source_subtype="",
-        ),
-        TemporalEvent(
-            timestamp=datetime(2021, 1, 3),
-            value="d2",
-            source_type="diagnosis",
-            source_subtype="",
-        ),
-    ]
-    patient = Patient(
+    e1 = TemporalEvent(
+        timestamp=datetime(2021, 1, 1),
+        value="d1",
+        source_type="diagnosis",
+        source_subtype="",
+    )
+    e2 = TemporalEvent(
+        timestamp=datetime(2021, 1, 3),
+        value="d2",
+        source_type="diagnosis",
+        source_subtype="",
+    )
+
+    patient1 = Patient(
         patient_id=1,
         date_of_birth=datetime(1990, 1, 1),
     )
-    patient.add_events(events)
+    patient1.add_events([e1, e2])
 
-    return [patient] * 5
+    patient2 = Patient(
+        patient_id=2,
+        date_of_birth=datetime(1993, 3, 1),
+    )
+    patient2.add_events([e1, e2, e2, e1])
+
+    return [patient1, patient2]
 
 
-@pytest.mark.parametrize("embedding_module", [BEHRTEmbedder(d_model=384)])
-def test_embeddings(patients: list, embedding_module: nn.Module):
+@pytest.mark.parametrize(
+    "embedding_module",
+    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+)
+def test_embeddings(patients: list, embedding_module: Embedder):
     """
     Test embedding interface
     """
     embedding_module.fit(patients)
 
-    inputs = embedding_module.collate_fn(patients)
+    inputs_ids = embedding_module.collate_fn(patients)
+
+    assert isinstance(inputs_ids, dict)
+    assert isinstance(inputs_ids["diagnosis"], torch.Tensor)
+    assert isinstance(inputs_ids["age"], torch.Tensor)
+    assert isinstance(inputs_ids["segment"], torch.Tensor)
+    assert isinstance(inputs_ids["position"], torch.Tensor)
+
     # forward
-    outputs = embedding_module(inputs)
+    outputs = embedding_module(inputs_ids)
 
 
 def test_main(patients: list, tmp_path: Path):

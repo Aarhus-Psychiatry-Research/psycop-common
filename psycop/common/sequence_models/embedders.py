@@ -3,10 +3,36 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
 from copy import copy
+from datetime import datetime
+from typing import Any, Protocol, Sequence
 
 import numpy as np
 import torch
 from torch import nn
+from torch.nn.utils.rnn import pad_sequence
+
+from psycop.common.data_structures import Patient, TemporalEvent
+
+
+class Embedder(Protocol):
+    """
+    Interface for embedding modules
+    """
+
+    def __init__(self, *args: Any) -> None:
+        ...
+
+    def __call__(self, *args: Any) -> torch.Tensor:
+        ...
+
+    def forward(self, *args: Any) -> torch.Tensor:
+        ...
+
+    def collate_fn(self, patients: list[Patient]) -> list[dict[str, torch.Tensor]]:
+        ...
+
+    def fit(self, patients: list[Patient], *args: Any) -> None:
+        ...
 
 
 class BEHRTEmbedder(nn.Module):
@@ -21,11 +47,6 @@ class BEHRTEmbedder(nn.Module):
         self.max_sequence_length = max_sequence_length
 
         self.is_fitted: bool = False
-
-        self.diagnosis_embeddings = None
-        self.age_embeddings = None
-        self.segment_embeddings = None
-        self.position_embeddings = None
 
         self.LayerNorm = nn.LayerNorm(d_model, eps=1e-12)
         self.dropout = nn.Dropout(dropout_prob)
@@ -54,21 +75,15 @@ class BEHRTEmbedder(nn.Module):
 
     def forward(
         self,
-        diagnosis_ids: torch.Tensor,
-        age_ids: torch.Tensor | None,
-        segment_ids: torch.Tensor | None,
-        position_ids: torch.Tensor | None,
-        age: bool = True,
+        inputs: dict[str, torch.Tensor],
     ):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
-        if segment_ids is None:
-            segment_ids = torch.zeros_like(diagnosis_ids)
-        if age_ids is None:
-            age_ids = torch.zeros_like(diagnosis_ids)
-        if position_ids is None:
-            position_ids = torch.zeros_like(diagnosis_ids)
+        diagnosis_ids = inputs["diagnosis"]
+        age_ids = inputs["age"]
+        segment_ids = inputs["segment"]
+        position_ids = inputs["position"]
 
         assert (
             len(diagnosis_ids.shape) == 2
@@ -88,10 +103,7 @@ class BEHRTEmbedder(nn.Module):
         age_embed = self.age_embeddings(age_ids)
         posi_embeddings = self.position_embeddings(position_ids)
 
-        if age:
-            embeddings = word_embed + segment_embed + age_embed + posi_embeddings
-        else:
-            embeddings = word_embed + segment_embed + posi_embeddings
+        embeddings = word_embed + segment_embed + age_embed + posi_embeddings
         embeddings = self.LayerNorm(embeddings)
         embeddings = self.dropout(embeddings)
         return embeddings
@@ -118,7 +130,7 @@ class BEHRTEmbedder(nn.Module):
 
         return torch.tensor(lookup_table)
 
-    def collate_fn(self, patients: list[Patient]):
+    def collate_fn(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
         """
         Handles padding and indexing by converting each to an index tensor
 
@@ -127,64 +139,79 @@ class BEHRTEmbedder(nn.Module):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
-        patient_sequences = [self.collate_patient(p) for p in patients]
+        patient_sequences_ids = [self.collate_patient(p) for p in patients]
         # padding
-        max_seq_len = max([len(p) for p in patient_sequences])
-        assert max_seq_len <= self.max_sequence_length
-        padded_sequences = [
-            self.pad_sequence(seq, max_seq_len) for seq in patient_sequences
-        ]
+        padded_sequences_ids = self.pad_sequences(patient_sequences_ids)
 
-        assert all(len(seq) == max_seq_len for seq in padded_sequences)
-
-        return padded_sequences
+        return padded_sequences_ids
 
     def add_position_and_segment(self, events: list[dict]) -> list[dict]:
         # add position and segment
         for i, e_input in enumerate(events):
             e_input["position"] = torch.tensor(i)
             is_even = i % 2 == 0
-            e_input["segment"] = torch.tensor(is_even)
+            e_input["segment"] = torch.tensor(int(is_even))
         return events
 
-    def pad_sequence(
-        self, sequence: list[dict[str, torch.Tensor]], max_seq_len: int
-    ) -> list[dict[str, torch.Tensor]]:
-        padding_event = {
-            "age": torch.tensor(self.age2idx["PAD"]),
-            "diagnosis": torch.tensor(self.diagnosis2idx["PAD"]),
-            "is_padding": torch.tensor(1),
-        }
-        while len(sequence) < max_seq_len:
-            _padding_event = copy(padding_event)
-            sequence.append(_padding_event)
+    def pad_sequences(
+        self,
+        sequences: list[dict[str, torch.Tensor]],
+    ) -> dict[str, torch.Tensor]:
+        max_seq_len = max([len(p["age"]) for p in sequences])
+        assert max_seq_len <= self.max_sequence_length
 
-    def filter_events(self, events: list[Event]) -> list[Event]:
+        keys = sequences[0].keys()
+        padded_sequences: dict[str, torch.Tensor] = {}
+        for key in keys:
+            pad_idx = self.vocab[key]["PAD"]
+
+            padded_sequences[key] = pad_sequence(
+                [p[key] for p in sequences], batch_first=True, padding_value=pad_idx
+            )
+
+        return padded_sequences
+
+    def filter_events(self, events: Sequence[TemporalEvent]) -> list[TemporalEvent]:
         filtered_events = []
         for event in events:
-            if event.type == "diagnosis":
+            if event.source_type == "diagnosis":
                 filtered_events.append(event)
         return filtered_events
 
-    def collate_patient(self, patient: Patient) -> list[dict[str, torch.Tensor]]:
-        events = patient.events
+    def collate_patient(self, patient: Patient) -> dict[str, torch.Tensor]:
+        events = patient.temporal_events
         events = self.filter_events(events)
-        event_inputs = [self.collate_event(event) for event in events]
+        event_inputs = [self.collate_event(event, patient) for event in events]
 
         # reduce to max sequence length
-        return event_inputs[
-            : self.max_sequence_length
-        ]  # take the first max_sequence_length events (probably better to use the last max_sequence_length events)
+        # take the first max_sequence_length events (probably better to use the last max_sequence_length events)
+        # but this is the same as the original implementation
+        event_inputs = event_inputs[: self.max_sequence_length]
 
-    def get_patient_age(self, event: Event) -> int:
-        raise NotImplementedError
+        event_inputs = self.add_position_and_segment(event_inputs)
 
-    def collate_event(self, event: Event) -> dict[str, torch.Tensor]:
-        age = self.get_patient_age(event)
-        age_idx = self.age2idx.get(age, self.age2idx["UNK"])
-        diagnosis_idx = self.diagnosis2idx.get(
-            event.diagnosis, self.diagnosis2idx["UNK"]
-        )
+        # convert to tensor
+        output: dict[str, torch.Tensor] = {}
+        for key in event_inputs[0].keys():
+            output[key] = torch.stack([e[key] for e in event_inputs])
+        return output
+
+    def get_patient_age(self, event: TemporalEvent, date_of_birth: datetime) -> int:
+        age = event.timestamp - date_of_birth
+        return int(age.days // 365.25)
+
+    def collate_event(
+        self, event: TemporalEvent, patient: Patient
+    ) -> dict[str, torch.Tensor]:
+        age = self.get_patient_age(event, patient.date_of_birth)
+
+        age2idx = self.vocab["age"]
+        diagnosis2idx = self.vocab["diagnosis"]
+
+        diagnosis: str = event.value  # type: ignore
+
+        age_idx: int = age2idx.get(age, age2idx["UNK"])
+        diagnosis_idx: int = diagnosis2idx.get(diagnosis, diagnosis2idx["UNK"])
 
         return {
             "age": torch.tensor(age_idx),
@@ -196,29 +223,38 @@ class BEHRTEmbedder(nn.Module):
         """
         Is not dependent on patient data.
         """
-        patient_events: list[list[Event]] = [
-            self.filter_events(p.events) for p in patients
+        patient_events: list[tuple[Patient, TemporalEvent]] = [
+            (p, e) for p in patients for e in self.filter_events(p.temporal_events)
         ]
-        events: list[Event] = [e for p in patient_events for e in p]
-        diagnosis_codes: list[str] = [e.diagnosis for e in events]
+        diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
         n_diagnosis_codes: int = len(set(diagnosis_codes)) + 2  # UNK + Padding
 
         # create dianosis2idx mapping
-        self.diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
-        self.diagnosis2idx["UNK"] = len(self.diagnosis2idx)
-        self.diagnosis2idx["PAD"] = len(self.diagnosis2idx)
+        diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
+        diagnosis2idx["UNK"] = len(diagnosis2idx)
+        diagnosis2idx["PAD"] = len(diagnosis2idx)
         if add_mask_token:
-            self.diagnosis2idx["MASK"] = len(self.diagnosis2idx)
+            diagnosis2idx["MASK"] = len(diagnosis2idx)
 
-        ages: list[int] = [self.get_patient_age(e) for e in events]
+        ages: list[int] = [
+            self.get_patient_age(e, p.date_of_birth) for p, e in patient_events
+        ]
         n_age_bins = len(set(ages)) + 2  # UNK + PAD
 
         # create age2idx mapping
-        self.age2idx = {a: i for i, a in enumerate(set(ages))}
-        self.age2idx["UNK"] = len(self.age2idx)
-        self.age2idx["PAD"] = len(self.age2idx)
+        age2idx: dict[str | int, int] = {a: i for i, a in enumerate(set(ages))}
+        age2idx["UNK"] = len(age2idx)
+        age2idx["PAD"] = len(age2idx)
 
-        max_position_embeddings = max([len(p.events) for p in patients])
+        self.vocab: dict[str, dict[Any, int]] = {
+            "age": age2idx,
+            "diagnosis": diagnosis2idx,
+            "is_padding": {"PAD": 1},
+            "segment": {"PAD": 0},
+            "position": {"PAD": 0},
+        }
+
+        max_position_embeddings = max([len(p.temporal_events) for p in patients])
         max_position_embeddings = max(max_position_embeddings, self.max_sequence_length)
 
         self.initialize_embeddings_layers(

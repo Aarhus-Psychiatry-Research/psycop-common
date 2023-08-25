@@ -4,6 +4,8 @@ from copy import copy
 import torch
 from torch import nn
 
+from psycop.common.data_structures import Patient
+
 
 class BEHRTMaskingTask(nn.Module):
     """Masked Language Model (MLM) task for BEHRT implementation"""
