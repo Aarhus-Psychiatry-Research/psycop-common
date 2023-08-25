@@ -192,7 +192,7 @@ class BEHRTEmbedder(nn.Module):
             "is_padding": torch.tensor(0),
         }
 
-    def fit(self, patients: list):  # type: ignore
+    def fit(self, patients: list, add_mask_token: bool = True):  # type: ignore
         """
         Is not dependent on patient data.
         """
@@ -207,6 +207,8 @@ class BEHRTEmbedder(nn.Module):
         self.diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
         self.diagnosis2idx["UNK"] = len(self.diagnosis2idx)
         self.diagnosis2idx["PAD"] = len(self.diagnosis2idx)
+        if add_mask_token:
+            self.diagnosis2idx["MASK"] = len(self.diagnosis2idx)
 
         ages: list[int] = [self.get_patient_age(e) for e in events]
         n_age_bins = len(set(ages)) + 2  # UNK + PAD
