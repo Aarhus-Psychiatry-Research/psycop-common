@@ -48,7 +48,7 @@ from psycop.projects.forced_admission_inpatient.feature_generation.modules.utils
 log = logging.getLogger()
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
- 
+
 @wandb_alert_on_exception
 def main(
     add_text_features: bool = True,
@@ -173,6 +173,6 @@ if __name__ == "__main__":
     )
 
     main(
-        feature_set_name="full_feature_set_with_sent_transformer_and_tfidf_embeddings",
+        feature_set_name="full_feature_set_with_sent_transformer_and_tfidf_all_sfis_ngram_range_12_max_df_075_min_df_5_max_features_1000_embeddings",
         generate_in_chunks=True,
     )
