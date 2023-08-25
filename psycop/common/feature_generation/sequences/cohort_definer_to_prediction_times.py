@@ -52,6 +52,8 @@ class CohortToPredictionTimes:
 
             if pt_outcome_timestamps is not None:
                 outcome_timestamp = pt_outcome_timestamps[0]
+            else:
+                outcome_timestamp = None
 
             prediction_times += patient.to_prediction_times(
                 lookbehind=lookbehind,
