@@ -2,9 +2,11 @@ from pathlib import Path
 
 import pytest
 import torch
+from datetime import datetime
 from torch import nn
 from torch.utils.data import DataLoader
 
+from psycop.common.data_structures import Patient, TemporalEvent
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTMaskingTask,
@@ -14,11 +16,32 @@ from psycop.common.sequence_models import (
 
 
 @pytest.fixture
-def patients() -> List[Patient]:
+def patients() -> list[Patient]:
     """
     Returns a list of patient objects
     """
-    return []
+
+    events = [
+        TemporalEvent(
+            timestamp=datetime(2021, 1, 1),
+            value="d1",
+            source_type="diagnosis",
+            source_subtype="",
+        ),
+        TemporalEvent(
+            timestamp=datetime(2021, 1, 3),
+            value="d2",
+            source_type="diagnosis",
+            source_subtype="",
+        ),
+    ]
+    patient = Patient(
+        patient_id=1,
+        date_of_birth=datetime(1990, 1, 1),
+    )
+    patient.add_events(events)
+
+    return [patient] * 5
 
 
 @pytest.mark.parametrize("embedding_module", [BEHRTEmbedder(d_model=384)])
