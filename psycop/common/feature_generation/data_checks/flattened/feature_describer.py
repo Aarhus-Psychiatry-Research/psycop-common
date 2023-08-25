@@ -2,16 +2,11 @@
 df."""
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-from timeseriesflattener.feature_specs.single_specs import (
-    PredictorSpec,
-    StaticSpec,
-    TextPredictorSpec,
-)
+from timeseriesflattener.feature_specs.single_specs import PredictorSpec, StaticSpec
 from wasabi import Printer
 
 from psycop.common.feature_generation.data_checks.utils import (
@@ -97,7 +92,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
 
 def generate_temporal_feature_description(
     series: pd.Series,
-    predictor_spec: PredictorSpec | TextPredictorSpec,
+    predictor_spec: PredictorSpec,
     feature_name: str | None = None,
 ) -> dict[str, Any]:
     """Generate a row with feature description for a temporal predictor."""
@@ -146,7 +141,7 @@ def generate_static_feature_description(
 
 def generate_feature_description_row(
     series: pd.Series,
-    predictor_spec: StaticSpec | PredictorSpec | TextPredictorSpec,
+    predictor_spec: StaticSpec | PredictorSpec,
     feature_name: str | None = None,
 ) -> dict:
     """Generate a row with feature description.
@@ -163,7 +158,7 @@ def generate_feature_description_row(
     match predictor_spec:
         case StaticSpec():
             return generate_static_feature_description(series, predictor_spec)
-        case PredictorSpec() | TextPredictorSpec():
+        case PredictorSpec():
             return generate_temporal_feature_description(
                 series,
                 predictor_spec,
@@ -175,15 +170,15 @@ def generate_feature_description_row(
 
 def generate_feature_description_df(
     df: pd.DataFrame,
-    predictor_specs: list[PredictorSpec | StaticSpec | TextPredictorSpec],
+    predictor_specs: list[PredictorSpec | StaticSpec],
     prefixes_to_describe: set[str],
 ) -> pd.DataFrame:
     """Generate a data frame with feature descriptions.
 
     Args:
         df (pd.DataFrame): Data frame with data to describe.
-        predictor_specs (Union[PredictorSpec, StaticSpec, TemporalSpec]): Predictor specifications.
-        prefixes_to_describe: which column name prefixes to create feature descriptions for
+        predictor_specs (Union[PredictorSpec, StaticSpec,]): Predictor specifications.
+        prefixes_to_describe: Which prefixes for column names to make feature descriptions for.
 
     Returns:
         pd.DataFrame: Data frame with feature descriptions.
@@ -194,27 +189,7 @@ def generate_feature_description_df(
     for spec in predictor_specs:
         column_name = spec.get_output_col_name()
 
-        if isinstance(spec, TextPredictorSpec):
-            last_part = column_name.split(f"{spec.prefix}_{spec.feature_base_name}")[1]
-            first_part = column_name.split(last_part)[0]
-            string_match = f"{first_part}[\\dA-Za-z\\-]+{last_part}"
-
-            column_names = [
-                re.match(string_match, column)[0]  # type: ignore
-                for column in df.columns
-                if re.match(string_match, column) is not None
-            ]
-
-            for column_name in column_names:
-                rows.append(
-                    generate_feature_description_row(
-                        series=df[column_name],
-                        predictor_spec=spec,
-                        feature_name=column_name,
-                    ),
-                )
-
-        elif spec.prefix in prefixes_to_describe:
+        if spec.prefix in prefixes_to_describe:
             rows.append(
                 generate_feature_description_row(
                     series=df[column_name],
@@ -245,9 +220,9 @@ def save_feature_descriptive_stats_from_dir(
         feature_set_dir (Path): Path to directory with data frames.
         feature_specs (list[PredictorSpec]): List of feature specifications.
         file_suffix (str): Suffix of the data frames to load. Must be either ".csv" or ".parquet".
+        prefixes_to_describe: Which prefixes for column names to make feature descriptions for.
         splits (tuple[str]): tuple of splits to include in the description. Defaults to ("train").
         out_dir (Path): Path to directory where to save the feature description. Defaults to None.
-        prefixes_to_describe: Which prefixes for column names to make feature descriptions for.
     """
     msg = Printer(timestamp=True)
 

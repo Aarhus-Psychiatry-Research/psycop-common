@@ -34,7 +34,7 @@ class PredictionTimeFilterer:
             quarantine_interval_days (int, optional): Number of days to quarantine.
             timestamp_col_name (str, optional): Name of the timestamp column.
         """
-        self.prediction_times_df = prediction_times_df
+        self.prediction_times_df = prediction_times_df.copy()
 
         self.quarantine_df = quarantine_timestamps_df
         self.quarantine_days = quarantine_interval_days

@@ -1,29 +1,28 @@
 """Feature specification module."""
 import logging
-from typing import Callable
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import (
-    concatenate,
+    AggregationFunType,
     latest,
     maximum,
     mean,
     minimum,
 )
+from timeseriesflattener.df_transforms import (
+    df_with_multiple_values_to_named_dataframes,
+)
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
     PredictorGroupSpec,
-    TextPredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
     AnySpec,
     OutcomeSpec,
     PredictorSpec,
     StaticSpec,
-    TextPredictorSpec,
 )
-from timeseriesflattener.text_embedding_functions import sklearn_embedding
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
@@ -41,6 +40,9 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f8_disorders,
     f9_disorders,
 )
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
+    EmbeddedTextLoader,
+)
 from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     antipsychotics,
@@ -56,11 +58,9 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     tca,
     valproate,
 )
-from psycop.common.feature_generation.loaders.raw.load_text import load_aktuel_psykisk
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,
 )
-from psycop.common.feature_generation.text_models.utils import load_text_model
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
@@ -148,7 +148,7 @@ class SczBpFeatureSpecifier:
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
@@ -181,7 +181,7 @@ class SczBpFeatureSpecifier:
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
@@ -209,34 +209,53 @@ class SczBpFeatureSpecifier:
 
     def _get_text_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
-    ) -> list[TextPredictorSpec]:
+    ) -> list[PredictorSpec]:
         log.info("-------- Generating text specs --------")
+        embedded_text_filename = (
+            "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
+        )
+        TEXT_SFIS = [
+            "Observation af patient, Psykiatri",
+            "Samtale med behandlingssigte",
+            "Aktuelt psykisk",
+            "Aktuelt socialt, Psykiatri",
+            "Aftaler, Psykiatri",
+            "Aktuelt somatisk, Psykiatri",
+            "Objektivt psykisk",
+            "Kontaktårsag",
+            "Telefonnotat",
+            "Semistruktureret diagnostisk interview",
+            "Vurdering/konklusion",
+        ]
 
-        tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl",
+        embedded_text = EmbeddedTextLoader.load_embedded_text(
+            filename=embedded_text_filename,
+            text_sfi_names=TEXT_SFIS,
+            include_sfi_name=False,
+            n_rows=None,
+        ).to_pandas()
+
+        embedded_text = df_with_multiple_values_to_named_dataframes(
+            df=embedded_text,
+            entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="timestamp",
+            name_prefix="sent_",
         )
 
         if self.min_set_for_debug:
             return []
-        tfidf_specs = TextPredictorGroupSpec(
-            named_dataframes=[
-                NamedDataframe(df=load_aktuel_psykisk(), name="aktuel_psykisk"),
-            ],
+        text_specs = PredictorGroupSpec(
+            named_dataframes=embedded_text,
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
-            embedding_fn_name="tfidf",
             fallback=[np.nan],
-            embedding_fn=[sklearn_embedding],
-            embedding_fn_kwargs=[{"model": tfidf_model}],
         ).create_combinations()
 
-        # add sentence transformers once we have torch on the server..
+        return text_specs
 
-        return tfidf_specs
-
-    def _get_temporal_predictor_specs(self) -> list[PredictorSpec | TextPredictorSpec]:
+    def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("-------- Generating temporal predictor specs --------")
 
@@ -266,7 +285,7 @@ class SczBpFeatureSpecifier:
         )
 
         text = self._get_text_specs(
-            resolve_multiple=[concatenate],
+            resolve_multiple=[mean],
             interval_days=[60, 365, 730],
         )
 

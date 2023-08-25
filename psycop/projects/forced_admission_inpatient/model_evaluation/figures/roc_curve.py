@@ -23,8 +23,8 @@ def eval_ds_to_roc_plot_spec(
 ) -> ROCPlotSpec:
     """Convert EvalDataset to ROCPlotSpec."""
     return ROCPlotSpec(
-        y=eval_dataset.y,
-        y_hat_probs=eval_dataset.y_hat_probs,
+        y=eval_dataset.y,  # type: ignore
+        y_hat_probs=eval_dataset.y_hat_probs,  # type: ignore
         legend_title=legend_title,
     )
 

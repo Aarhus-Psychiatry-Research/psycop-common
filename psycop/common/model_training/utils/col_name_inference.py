@@ -12,7 +12,7 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 def get_col_names(
     cfg: Union[DictConfig, FullConfigSchema],
     dataset: pd.DataFrame,
-) -> tuple[str, list[str]]:
+) -> tuple[Union[str, list[str]], list[str]]:
     """Get column names for outcome and features.
 
     Args:
@@ -30,12 +30,16 @@ def get_col_names(
         and str(cfg.preprocessing.pre_split.min_lookahead_days) in c
     ]
 
-    if len(potential_outcome_col_names) != 1:
-        raise ValueError(
-            "More than one outcome column found. Please make outcome column names unambiguous.",
-        )
+    if cfg.preprocessing.pre_split.keep_only_one_outcome_col:
+        if len(potential_outcome_col_names) != 1:
+            raise ValueError(
+                "More than one outcome column found. Please make outcome column names unambiguous.",
+            )
 
-    outcome_col_name = potential_outcome_col_names[0]
+        outcome_col_name = potential_outcome_col_names[0]
+
+    else:
+        outcome_col_name = potential_outcome_col_names
 
     train_col_names = [
         c

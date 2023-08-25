@@ -18,11 +18,11 @@ EVALUATION_ROOT = Path(__file__).parent
 POS_RATE = 0.05
 
 # Best model on structured features
-DEV_GROUP_NAME = "exophthalmia-intombed"
+DEV_GROUP_NAME = "exothermous-comox"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_DEV_RUN = Run(
     group=DEVELOPMENT_GROUP,
-    name="nonrandomnessseparableness",
+    name="drepaniumextrapolar",
     pos_rate=POS_RATE,
 )
 
@@ -118,6 +118,6 @@ COLOURS = {
 }
 
 MODEL_NAME = {
-    "unaugmentativepreconcurrently": "Baseline Model",
+    "drepaniumextrapolar": "Baseline Model",
     "finchautocrator": "Text-Enhanced Model",
 }
