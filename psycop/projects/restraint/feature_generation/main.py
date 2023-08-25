@@ -24,8 +24,8 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
 from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     load_coercion_prediction_times,
 )
-from psycop.projects.restraint.feature_generation.modules.specify_text_features import (
-    TextFeatureSpecifier,
+from psycop.projects.restraint.feature_generation.modules.specify_features import (
+    FeatureSpecifier,
 )
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
@@ -38,7 +38,7 @@ def main():
     dataset."""
     project_info = RESTRAINT_PROJECT_INFO
 
-    feature_specs = TextFeatureSpecifier(
+    feature_specs = FeatureSpecifier(
         project_info=project_info,
         min_set_for_debug=False,  # Remember to set to False when generating full dataset
     ).get_feature_specs()

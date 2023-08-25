@@ -1,15 +1,18 @@
 """Feature specification module."""
 import logging
-from typing import Callable, Union
+from typing import Union
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import (
+    AggregationFunType,
     boolean,
     change_per_day,
     count,
     latest,
     maximum,
     mean,
+    minimum,
+    summed,
     variance,
 )
 from timeseriesflattener.feature_specs.group_specs import (
@@ -142,7 +145,7 @@ class FeatureSpecifier:
 
     def _get_visits_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get visits specs."""
@@ -151,7 +154,9 @@ class FeatureSpecifier:
         visits = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=physical_visits_to_psychiatry(),
+                    df=physical_visits_to_psychiatry(
+                        return_value_as_visit_length_days=False,
+                    ),
                     name="physical_visits_to_psychiatry",
                 ),
                 NamedDataframe(
@@ -168,14 +173,19 @@ class FeatureSpecifier:
 
     def _get_admissions_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get admissions specs."""
         log.info("-------- Generating admissions specs --------")
 
         admissions_df = PredictorGroupSpec(
-            named_dataframes=[NamedDataframe(df=admissions(), name="admissions")],
+            named_dataframes=[
+                NamedDataframe(
+                    df=admissions(return_value_as_visit_length_days=True),
+                    name="admissions",
+                ),
+            ],
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
             fallback=[0],
@@ -185,7 +195,7 @@ class FeatureSpecifier:
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
@@ -232,7 +242,7 @@ class FeatureSpecifier:
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
@@ -264,7 +274,7 @@ class FeatureSpecifier:
 
     def _get_coercion_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get coercion specs."""
@@ -299,7 +309,7 @@ class FeatureSpecifier:
 
     def _get_beroligende_medicin_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get beroligende medicin specs."""
@@ -318,7 +328,7 @@ class FeatureSpecifier:
 
     def _get_structured_sfi_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get structured sfi specs."""
@@ -343,7 +353,7 @@ class FeatureSpecifier:
 
     def _get_lab_result_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
@@ -362,10 +372,6 @@ class FeatureSpecifier:
                 NamedDataframe(df=p_ethanol(), name="p_ethanol"),
                 NamedDataframe(df=p_nortriptyline(), name="p_nortriptyline"),
                 NamedDataframe(df=p_clomipramine(), name="p_clomipramine"),
-                NamedDataframe(
-                    df=cancelled_standard_lab_results(),
-                    name="cancelled_standard_lab_results",
-                ),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
@@ -373,6 +379,28 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return lab_results
+
+    def _get_cancelled_lab_result_specs(
+        self,
+        resolve_multiple: list[AggregationFunType],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
+        """Get cancelled lab result specs."""
+        log.info("-------- Generating cancelled lab result specs --------")
+
+        cancelled_lab_results = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(
+                    df=cancelled_standard_lab_results(),
+                    name="cancelled_standard_lab_results",
+                ),
+            ),
+            aggregation_fns=resolve_multiple,
+            lookbehind_days=interval_days,
+            fallback=[0],
+        ).create_combinations()
+
+        return cancelled_lab_results
 
     def _get_limited_feature_specs(
         self,
@@ -441,7 +469,7 @@ class FeatureSpecifier:
         )
 
         admissions = self._get_admissions_specs(
-            resolve_multiple=[count, sum],
+            resolve_multiple=[count, summed],
             interval_days=interval_days,
         )
 
@@ -461,17 +489,22 @@ class FeatureSpecifier:
         )
 
         coercion = self._get_coercion_specs(
-            resolve_multiple=[count, sum, boolean],
+            resolve_multiple=[count, summed, boolean],
             interval_days=interval_days,
         )
 
         structured_sfi = self._get_structured_sfi_specs(
-            resolve_multiple=[mean, max, min, change_per_day, variance],
+            resolve_multiple=[mean, maximum, minimum, change_per_day, variance],
             interval_days=interval_days,
         )
 
         lab_results = self._get_lab_result_specs(
-            resolve_multiple=[max, min, mean, latest],
+            resolve_multiple=[maximum, minimum, mean, latest],
+            interval_days=interval_days,
+        )
+
+        cancelled_lab_results = self._get_cancelled_lab_result_specs(
+            resolve_multiple=[count, boolean],
             interval_days=interval_days,
         )
 
@@ -484,12 +517,16 @@ class FeatureSpecifier:
             + coercion
             + structured_sfi
             + lab_results
+            + cancelled_lab_results
         )
 
     def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
+            log.warning(
+                "--- !!! Using the minimum set of features for debugging !!! ---",
+            )
             return (
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
