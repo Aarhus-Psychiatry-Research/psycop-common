@@ -8,7 +8,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import Ru
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-DEV_GROUP_NAME = "mangi-bouquets"
+DEV_GROUP_NAME = "physiurgic-letterleaf"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_POS_RATE = 0.05
 BEST_RUN_NAME = DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[0, 2]

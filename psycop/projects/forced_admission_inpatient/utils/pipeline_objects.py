@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
-EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/pipeline_eval")
+EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/full_model_with_sentence_transformers_and_tfidf/pipeline_eval")
 
 
 def load_file_from_pkl(file_path: Path) -> Any:
@@ -47,7 +47,7 @@ class RunGroup:
     @property
     def group_dir(self) -> Path:
         return Path(
-            f"E:/shared_resources/forced_admissions_inpatient/pipeline_eval/{self.name}",
+            f"E:/shared_resources/forced_admissions_inpatient/full_model_with_sentence_transformers_and_tfidf/pipeline_eval/{self.name}",
         )
 
     @property

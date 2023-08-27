@@ -14,12 +14,12 @@ class BestRun:
 
 
 PROJECT_MODEL_DIR = Path(
-    "E:\\shared_resources\\forced_admissions_inpatient\\pipeline_eval",
+    "E:\\shared_resources\\forced_admissions_inpatient\\full_model_with_sentence_transformers_and_tfidf\\pipeline_eval",
 )
 POS_RATE = 0.05
 
 
-DEV_GROUP_NAME = "mangi-bouquets"
+DEV_GROUP_NAME = "physiurgic-letterleaf"
 
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 
@@ -35,7 +35,7 @@ EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
 EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
 EVAL_RUN = Run(
     group=EVAL_GROUP,
-    name="congreganistcarburating",
+    name="basidiosporeneathmost",
     pos_rate=POS_RATE,
 )
 

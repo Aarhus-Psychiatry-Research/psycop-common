@@ -49,7 +49,7 @@ def _train_pipeline_on_test(pipeline_to_train: PipelineRun):
     train_model(
         cfg=cfg,
         override_output_dir=override_dir,
-    )
+    )       
 
 
 def test_pipeline(
