@@ -76,7 +76,9 @@ def test_main(patients: list, tmp_path: Path):
     """
     Tests the general intended workflow
     """
-    emb = BEHRTEmbedder(d_model=384)  # probably some more args here    # TODO
+    emb = BEHRTEmbedder(
+        d_model=384, dropout_prob=0.1, max_sequence_length=128
+    )  # probably some more args here    # TODO
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
     task = BEHRTMaskingTask(  # TODO
