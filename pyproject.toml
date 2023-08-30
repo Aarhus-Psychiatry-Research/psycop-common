@@ -1,6 +1,6 @@
 [project]
 name = "psycop"
-version = "0.100.0"
+version = "0.104.0"
 authors = [{ name = "Martin Bernstorff", email = "martinbernstorff@gmail.com" }]
 description = "PSYCOP"
 classifiers = [
@@ -87,7 +87,6 @@ select = [
   "RET",
   "RUF",
   "SIM",
-  "TCH",
   "W",
 ]
 ignore = ["ANN101", "ANN401", "B007", "E402", "E501", "F401", "F841", "RET504"]
