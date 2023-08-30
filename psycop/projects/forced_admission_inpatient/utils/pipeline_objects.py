@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
-EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/full_model_with_sentence_transformers_and_tfidf/pipeline_eval")
+EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/eval")
 
 
 def load_file_from_pkl(file_path: Path) -> Any:
@@ -42,12 +42,13 @@ def df_to_eval_dataset(
 
 @dataclass
 class RunGroup:
-    name: str
+    model_name: str
+    group_name: str
 
     @property
     def group_dir(self) -> Path:
         return Path(
-            f"E:/shared_resources/forced_admissions_inpatient/full_model_with_sentence_transformers_and_tfidf/pipeline_eval/{self.name}",
+            f"E:/shared_resources/forced_admissions_inpatient/models/{self.model_name}/pipeline_eval/{self.group_name}",
         )
 
     @property
@@ -157,6 +158,7 @@ class PaperOutputPaths:
 class PaperOutputSettings:
     def __init__(
         self,
+        model_name: str,
         name: str,
         pos_rate: float,
         model_type: str,
@@ -166,7 +168,9 @@ class PaperOutputSettings:
     ):
         self.name = name
         self.pos_rate = pos_rate
-        artifact_root = EVAL_ROOT if artifact_root is None else artifact_root
+        artifact_root = (
+            (EVAL_ROOT / model_name / name) if artifact_root is None else artifact_root
+        )
         self.artifact_path = (
             artifact_root / f"{lookahead_days}_{model_type}_{self.name}"
         )
@@ -182,9 +186,10 @@ class PipelineRun:
         name: str,
         group: RunGroup,
         pos_rate: float,
-        paper_outputs_path: Optional[Path] = None,
+        outputs_path: Optional[Path] = None,
         create_output_paths_on_init: bool = True,
     ):
+        self.model_name = group.model_name
         self.name = name
         self.group = group
         pipeline_output_dir = self.group.group_dir / self.name
@@ -196,9 +201,10 @@ class PipelineRun:
             name=self.name,
         )
         self.paper_outputs = PaperOutputSettings(
+            model_name=self.model_name,
             name=name,
             pos_rate=pos_rate,
-            artifact_root=paper_outputs_path,
+            artifact_root=outputs_path,
             lookahead_days=self.inputs.cfg.preprocessing.pre_split.min_lookahead_days,
             model_type=self.model_type,
             create_output_paths_on_init=create_output_paths_on_init,

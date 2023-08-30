@@ -14,7 +14,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 BEST_DEV_PIPELINE = PipelineRun(
     group=DEVELOPMENT_GROUP,
     name=BEST_RUN_NAME,
-    paper_outputs_path=EVAL_GROUP.group_dir / f"{BEST_RUN_NAME}-eval-on-test",
+    outputs_path=EVAL_GROUP.group_dir / f"{BEST_RUN_NAME}-eval-on-test",
     pos_rate=BEST_POS_RATE,
 )
 BEST_EVAL_PIPELINE = test_pipeline(pipeline_to_test=BEST_DEV_PIPELINE)

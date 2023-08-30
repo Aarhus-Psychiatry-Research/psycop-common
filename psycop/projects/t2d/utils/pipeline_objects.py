@@ -9,9 +9,7 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training.config_schemas.conf_utils import (
-    FullConfigSchema,
-)
+from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 EVAL_ROOT = Path(__file__).parent.parent / "outputs_for_publishing"
