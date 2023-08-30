@@ -1,0 +1,22 @@
+# @package _global_
+data:
+  # General config
+  n_training_samples: null
+  dir: E:\shared_resources\cancer\flattened_datasets
+  suffix: parquet
+
+  # Feature specs
+  pred_prefix: pred_
+  outc_prefix: outc_
+
+  splits_for_training: ["train", "val"]
+  splits_for_evaluation: null
+
+  col_name:
+    pred_timestamp: timestamp
+    outcome_timestamp: null
+    id: dw_ek_borger
+    age: pred_age_in_years
+    is_female: pred_sex_female
+    exclusion_timestamp: null
+    pred_time_uuid: prediction_time_uuid

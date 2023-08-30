@@ -1,9 +1,14 @@
 """Feature specification module."""
 import logging
-from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import latest, maximum, mean, minimum
+from timeseriesflattener.aggregation_fns import (
+    AggregationFunType,
+    latest,
+    maximum,
+    mean,
+    minimum,
+)
 from timeseriesflattener.df_transforms import (
     df_with_multiple_values_to_named_dataframes,
 )
@@ -143,7 +148,7 @@ class SczBpFeatureSpecifier:
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
@@ -176,7 +181,7 @@ class SczBpFeatureSpecifier:
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
@@ -204,7 +209,7 @@ class SczBpFeatureSpecifier:
 
     def _get_text_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating text specs --------")

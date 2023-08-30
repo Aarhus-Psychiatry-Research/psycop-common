@@ -3,7 +3,16 @@ import logging
 from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import count, latest, maximum, mean, minimum
+from timeseriesflattener.aggregation_fns import (
+    AggregationFunType,
+    latest,
+    maximum,
+    mean,
+    minimum,
+)
+from timeseriesflattener.df_transforms import (
+    df_with_multiple_values_to_named_dataframes,
+)
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
@@ -22,7 +31,6 @@ from psycop.common.feature_generation.application_modules.project_setup import (
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    essential_hypertension,
     f0_disorders,
     f1_disorders,
     f2_disorders,
@@ -32,16 +40,15 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f6_disorders,
     f7_disorders,
     f8_disorders,
-    gerd,
-    hyperkinetic_disorders,
-    hyperlipidemia,
-    polycystic_ovarian_syndrome,
-    sleep_apnea,
+)
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
+    EmbeddedTextLoader,
 )
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     alat,
     crp,
     fasting_ldl,
+    hba1c,
     hdl,
     ldl,
     triglycerides,
@@ -70,8 +77,8 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     height_in_cm,
     weight_in_kg,
 )
-from psycop.projects.cancer.feature_generation.outcome_specification.cancer_loaders import (
-    any_cancer,
+from psycop.projects.cancer.feature_generation.cohort_definition.cancer_cohort_definer import (
+    CancerCohortDefiner,
 )
 
 log = logging.getLogger(__name__)
@@ -107,18 +114,6 @@ class FeatureSpecifier:
             ),
         ]
 
-    def _get_metadata_specs(self) -> list[AnySpec]:
-        """Get metadata specs."""
-        log.info("-------- Generating metadata specs --------")
-
-        return [
-            StaticSpec(
-                feature_base_name="any_cancer",
-                timeseries_df=any_cancer(),
-                prefix="",
-            ),
-        ]
-
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
         """Get outcome specs."""
         log.info("-------- Generating outcome specs --------")
@@ -126,8 +121,8 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return [
                 OutcomeSpec(
-                    feature_base_name="any_cancer",
-                    timeseries_df=any_cancer(),
+                    feature_base_name="first_cancer_diagnosis",
+                    timeseries_df=CancerCohortDefiner.get_outcome_timestamps().to_pandas(),
                     lookahead_days=365,
                     aggregation_fn=maximum,
                     fallback=0,
@@ -137,17 +132,22 @@ class FeatureSpecifier:
             ]
 
         return OutcomeGroupSpec(
-            named_dataframes=[NamedDataframe(df=any_cancer(), name="any_cancer")],
+            named_dataframes=[
+                NamedDataframe(
+                    df=CancerCohortDefiner.get_outcome_timestamps().to_pandas(),
+                    name="first_cancer_diagnosis",
+                ),
+            ],
             lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
             aggregation_fns=[maximum],
             fallback=[0],
-            incident=[True],  # Set to false because they can have multiple cancers????
+            incident=[True],  # Consider how to handle multiple cancers
             prefix=self.project_info.prefix.outcome,
         ).create_combinations()
 
     def _get_medication_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get medication specs."""
@@ -196,30 +196,11 @@ class FeatureSpecifier:
 
     def _get_diagnoses_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
         log.info("-------- Generating diagnoses specs --------")
-
-        lifestyle_diagnoses = PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(
-                    df=essential_hypertension(),
-                    name="essential_hypertension",
-                ),
-                NamedDataframe(df=hyperlipidemia(), name="hyperlipidemia"),
-                NamedDataframe(
-                    df=polycystic_ovarian_syndrome(),
-                    name="polycystic_ovarian_syndrome",
-                ),
-                NamedDataframe(df=sleep_apnea(), name="sleep_apnea"),
-                NamedDataframe(df=gerd(), name="gerd"),
-            ),
-            aggregation_fns=resolve_multiple,
-            lookbehind_days=interval_days,
-            fallback=[0],
-        ).create_combinations()
 
         psychiatric_diagnoses = PredictorGroupSpec(
             named_dataframes=(
@@ -232,21 +213,17 @@ class FeatureSpecifier:
                 NamedDataframe(df=f6_disorders(), name="f6_disorders"),
                 NamedDataframe(df=f7_disorders(), name="f7_disorders"),
                 NamedDataframe(df=f8_disorders(), name="f8_disorders"),
-                NamedDataframe(
-                    df=hyperkinetic_disorders(),
-                    name="hyperkinetic_disorders",
-                ),
             ),
             aggregation_fns=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[0],
         ).create_combinations()
 
-        return lifestyle_diagnoses + psychiatric_diagnoses
+        return psychiatric_diagnoses
 
     def _get_lab_result_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[AggregationFunType],
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
@@ -266,7 +243,51 @@ class FeatureSpecifier:
             fallback=[np.nan],
         ).create_combinations()
 
-        return general_lab_results  # + diabetes_lab_results
+        return general_lab_results
+
+    def _get_text_specs(
+        self,
+        resolve_multiple: list[Callable],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
+        log.info("-------- Generating text specs --------")
+        embedded_text_filename = (
+            "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
+        )
+        TEXT_SFIS = [
+            "Observation af patient, Psykiatri",
+            "Samtale med behandlingssigte",
+            "Aktuelt psykisk",
+            "Aktuelt socialt, Psykiatri",
+            "Aftaler, Psykiatri",
+            "Aktuelt somatisk, Psykiatri",
+            "Objektivt psykisk",
+            "Kontaktårsag",
+            "Telefonnotat",
+            "Semistruktureret diagnostisk interview",
+            "Vurdering/konklusion",
+        ]
+        embedded_text = EmbeddedTextLoader.load_embedded_text(
+            filename=embedded_text_filename,
+            text_sfi_names=TEXT_SFIS,
+            include_sfi_name=False,
+            n_rows=None,
+        ).to_pandas()
+        embedded_text = df_with_multiple_values_to_named_dataframes(
+            df=embedded_text,
+            entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="timestamp",
+            name_prefix="sent_",
+        )
+        if self.min_set_for_debug:
+            return []
+        text_specs = PredictorGroupSpec(
+            named_dataframes=embedded_text,
+            lookbehind_days=interval_days,
+            aggregation_fns=resolve_multiple,
+            fallback=[np.nan],
+        ).create_combinations()
+        return text_specs
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -275,17 +296,17 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return [
                 PredictorSpec(
-                    timeseries_df=alat(),
-                    feature_base_name="alat",
-                    lookbehind_days=30,
+                    feature_base_name="hba1c",
+                    timeseries_df=hba1c(),
+                    lookbehind_days=180,
                     aggregation_fn=maximum,
                     fallback=np.nan,
                     prefix=self.project_info.prefix.predictor,
                 ),
             ]
 
-        resolve_multiple = [maximum, minimum, mean, latest, count]
-        interval_days: list[float] = [30, 90, 180, 365, 730]
+        resolve_multiple = [maximum, minimum, mean, latest]
+        interval_days: list[float] = [30, 180, 365, 730, 1095, 1460, 1825]
 
         lab_results = self._get_lab_result_specs(
             resolve_multiple,
@@ -314,7 +335,12 @@ class FeatureSpecifier:
             prefix=self.project_info.prefix.predictor,
         ).create_combinations()
 
-        return lab_results + medications + diagnoses + demographics
+        text = self._get_text_specs(
+            resolve_multiple=[mean],
+            interval_days=[30, 60, 365],
+        )
+
+        return lab_results + medications + diagnoses + demographics + text
 
     def get_feature_specs(self) -> list[AnySpec]:
         """Get a spec set."""
@@ -323,15 +349,10 @@ class FeatureSpecifier:
             log.warning(
                 "--- !!! Using the minimum set of features for debugging !!! ---",
             )
-            return (
-                self._get_temporal_predictor_specs()
-                + self._get_outcome_specs()
-                + self._get_metadata_specs()
-            )
+            return self._get_temporal_predictor_specs() + self._get_outcome_specs()
 
         return (
             self._get_temporal_predictor_specs()
             + self._get_static_predictor_specs()
             + self._get_outcome_specs()
-            + self._get_metadata_specs()
         )
