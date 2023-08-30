@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v0.105.0 (2023-08-30)
+
+### Feature
+
+* Add tfidf ([`fba845a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fba845a9dc2fb431da5637a4348c3413cce4797e))
+
+### Fix
+
+* Config of last model ([`250d854`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/250d854cb8b6e29260e7fe0fb359a1463e18c7ae))
+* Naming ([`5bca53b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5bca53b1c993bd15c97a4944a855dbdc88e51a37))
+* Configurations for new tfidf feat set ([`fe33f0f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fe33f0fbe6b4a2ae7b3a4894b7aaf30960d5eb8a))
+* Update configurations of model train and eval ([`dd0f83c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dd0f83c9e632904b87c2d0cfe4ee94653b8a2474))
+* Reconfigure text lookbehinds ([`f6151ad`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f6151adf3d9e9b25d09451f27e8292adb9e2188b))
+* Text specs ([`a0ac8bf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a0ac8bf30f3214e2645a36261da56dabb2a8746e))
+
 ## v0.104.0 (2023-08-24)
 
 ### Feature
