@@ -20,7 +20,7 @@ class RunGroup:
     @property
     def group_dir(self) -> Path:
         return Path(
-            f"E:/shared_resources/forced_admissions_inpatient/full_model_with_sentence_transformer_and_tfidf_all_sfis_ngram_range_12_max_df_075_min_df_5_max_features_1000_embeddings/pipeline_eval/{self.name}",
+            f"E:/shared_resources/forced_admissions_inpatient/full_model_with_sentence_transformer_and_tfidf_all_sfis_ngram_range_12_max_df_095_min_df_2_max_features_750_embeddings/pipeline_eval/{self.name}",
         )
 
     @property

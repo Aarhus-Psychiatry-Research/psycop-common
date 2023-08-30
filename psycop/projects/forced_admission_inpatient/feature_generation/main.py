@@ -173,6 +173,6 @@ if __name__ == "__main__":
     )
 
     main(
-        feature_set_name="full_feature_set_with_sent_transformer_and_tfidf_all_sfis_ngram_range_12_max_df_075_min_df_5_max_features_1000_embeddings",
+        feature_set_name="full_feature_set_with_sent_transformer_and_tfidf_all_sfis_ngram_range_12_max_df_095_min_df_2_max_features_750_embeddings",
         generate_in_chunks=True,
     )

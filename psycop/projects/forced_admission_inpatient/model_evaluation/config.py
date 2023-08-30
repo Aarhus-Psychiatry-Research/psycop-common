@@ -19,7 +19,7 @@ PROJECT_MODEL_DIR = Path(
 POS_RATE = 0.05
 
 
-DEV_GROUP_NAME = "swath-roosterless"
+DEV_GROUP_NAME = "ventripyramid-ampullulae"
 
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 
