@@ -143,7 +143,7 @@ def multilabel_cross_validation(
         y_pred = pipe.predict_proba(X_train)
 
         msg.info(
-            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, y_pred), 3)}",   # type: ignore
+            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, y_pred), 3)}",  # type: ignore
         )
 
         oof_y_pred = pipe.predict_proba(X.loc[val_idxs])
@@ -155,7 +155,7 @@ def multilabel_cross_validation(
         train_df.loc[
             val_idxs,
             [f"y_hat_prob_{x}" for x in outcome_col_name],
-        ] = [oof_y_pred[:,x] for x in range(0, oof_y_pred.shape[1])]
+        ] = [oof_y_pred[:, x] for x in range(0, oof_y_pred.shape[1])]
 
     return train_df
 
@@ -318,7 +318,7 @@ def multilabel_train_validate(
     df.loc[
         :,
         [f"y_hat_prob_{x}" for x in outcome_col_name],
-    ] = [y_val_hat_prob[:,x] for x in range(0, y_val_hat_prob.shape[1])]
+    ] = [y_val_hat_prob[:, x] for x in range(0, y_val_hat_prob.shape[1])]
 
     return create_eval_dataset(
         col_names=cfg.data.col_name,
