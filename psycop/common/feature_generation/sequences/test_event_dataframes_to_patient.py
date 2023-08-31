@@ -1,10 +1,15 @@
 import datetime as dt
 
-from psycop.common.data_structures.patient import Patient
+import pytest
+
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
+from psycop.common.data_structures.test_patient import get_test_patient
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatients,
+)
+from psycop.common.feature_generation.sequences.utils_for_testing import (
+    get_test_date_of_birth_df,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -18,21 +23,18 @@ def test_temporal_events():
                              """,
     )
 
-    patient_1 = Patient(
+    patient_1 = get_test_patient(
         patient_id=1,
-        _temporal_events=[],
     )
     patient_1.add_events(
         [
             TemporalEvent(
-                patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=0,
                 source_type="source1",
                 source_subtype=None,
             ),
             TemporalEvent(
-                patient=patient_1,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=1,
                 source_type="source1",
@@ -41,13 +43,12 @@ def test_temporal_events():
         ],
     )
 
-    patient_2 = Patient(
+    patient_2 = get_test_patient(
         patient_id=2,
     )
     patient_2.add_events(
         [
             TemporalEvent(
-                patient=patient_2,
                 timestamp=dt.datetime(year=2020, month=1, day=1),
                 value=2,
                 source_type="source1",
@@ -59,6 +60,7 @@ def test_temporal_events():
 
     unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data],
+        date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
     )
     assert unpacked == expected_patients
 
@@ -70,14 +72,15 @@ def test_static_features():
                              """,
     )
 
-    expected_patient = Patient(patient_id=1)
+    expected_patient = get_test_patient(patient_id=1)
 
     expected_patient.add_events(
-        [StaticFeature(source_type="test", patient=expected_patient, value=0)],
+        [StaticFeature(source_type="test", value=0)],
     )
 
     unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data],
+        date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1]),
     )
 
     assert unpacked == [expected_patient]
@@ -89,30 +92,42 @@ def test_multiple_event_sources():
 1,test,0
                              """,
     )
+    expected_static_event = StaticFeature(source_type="test", value=0)
 
     test_data2 = str_to_pl_df(
         """dw_ek_borger,source,timestamp,value
 1,test2,2023-01-01,1
                              """,
     )
+    expected_temporal_event = TemporalEvent(
+        source_type="test2",
+        source_subtype=None,
+        timestamp=dt.datetime(2023, 1, 1),
+        value=1,
+    )
 
-    expected_patient = Patient(patient_id=1)
-
+    expected_patient = get_test_patient(patient_id=1)
     expected_patient.add_events(
-        [
-            StaticFeature(source_type="test", patient=expected_patient, value=0),
-            TemporalEvent(
-                source_type="test2",
-                patient=expected_patient,
-                timestamp=dt.datetime(2023, 1, 1),
-                value=1,
-                source_subtype=None,
-            ),
-        ],
+        [expected_static_event, expected_temporal_event],
     )
 
     unpacked = EventDataFramesToPatients().unpack(
         source_event_dataframes=[test_data, test_data2],
+        date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1]),
     )
 
     assert unpacked == [expected_patient]
+
+
+def test_patient_without_date_of_birth_raises_error():
+    test_data = str_to_pl_df(
+        """dw_ek_borger,source,value
+1,test,0
+                             """,
+    )
+
+    with pytest.raises(KeyError):
+        EventDataFramesToPatients().unpack(
+            source_event_dataframes=[test_data],
+            date_of_birth_df=get_test_date_of_birth_df(patient_ids=[2]),
+        )

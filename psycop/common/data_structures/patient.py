@@ -14,8 +14,16 @@ class Patient:
     """All task-agnostic data for a patient."""
 
     patient_id: str | int
+    date_of_birth: dt.datetime
     _temporal_events: list[TemporalEvent] = field(default_factory=list)
     _static_features: list[StaticFeature] = field(default_factory=list)
+
+    def __repr__(self) -> str:
+        return f"""
+    patient_id: {self.patient_id}
+    date_of_birth: {self.date_of_birth}
+    n temporal_events: {len(self._temporal_events)}
+    n static_features: {len(self._static_features)}"""
 
     @staticmethod
     def _filter_events_within_time_interval(
@@ -28,11 +36,8 @@ class Patient:
         # However, this might be plenty fast. We can always optimize later.
         return [event for event in events if start <= event.timestamp < end]
 
-    def add_events(self, events: list[TemporalEvent | StaticFeature]):
+    def add_events(self, events: Sequence[TemporalEvent | StaticFeature]):
         # add patient reference to each event
-        for event in events:
-            event.patient = self
-
         self._temporal_events += [
             event for event in events if isinstance(event, TemporalEvent)
         ]
@@ -53,7 +58,7 @@ class Patient:
         self,
         lookbehind: dt.timedelta,
         lookahead: dt.timedelta,
-        outcome_timestamp: dt.datetime,
+        outcome_timestamp: dt.datetime | None,
         prediction_timestamps: Sequence[dt.datetime],
     ) -> list[PredictionTime]:
         """Creates prediction times for a boolean outome. E.g. for the task of predicting whether a patient will be diagnosed with diabetes within the next year, this function will return a list of PredictionTime objects, each of which contains the patient's data for a specific prediction time (predictors, prediction timestamp and whether the outcome occurs within the lookahead)."""
@@ -68,8 +73,10 @@ class Patient:
                 end=prediction_timestamp,
             )
 
-            outcome_within_lookahead = outcome_timestamp <= (
-                prediction_timestamp + lookahead
+            outcome_within_lookahead = (
+                outcome_timestamp <= (prediction_timestamp + lookahead)
+                if outcome_timestamp is not None
+                else False
             )
 
             # 2. Return prediction sequences

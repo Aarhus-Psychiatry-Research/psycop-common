@@ -4,6 +4,17 @@ from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.temporal_event import TemporalEvent
 
 
+def get_test_patient(
+    patient_id: int | str,
+    date_of_birth: dt.datetime = dt.datetime(year=1990, month=1, day=1),
+) -> Patient:
+    patient = Patient(
+        patient_id=patient_id,
+        date_of_birth=date_of_birth,
+    )
+    return patient
+
+
 class TestPatientSequenceGenerator:
     def test_temporal_event_filtering(self):
         """Temporal event filtering should remove predictor events which are before the start of the lookbehind window, and after the prediction time."""
@@ -22,10 +33,10 @@ class TestPatientSequenceGenerator:
             ),
         ]
 
-        patient = Patient(
+        patient = get_test_patient(
             patient_id=1,
         )
-        patient.add_events(temporal_events)  # type: ignore
+        patient.add_events(temporal_events)
 
         prediction_sequences = patient.to_prediction_times(
             lookbehind=dt.timedelta(days=2),
