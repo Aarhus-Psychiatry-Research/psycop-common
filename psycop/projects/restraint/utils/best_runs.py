@@ -100,7 +100,6 @@ class Run:
 
     def get_eval_dataset(
         self,
-        custom_columns: Optional[Sequence[str]] = None,
     ) -> EvalDataset:
         df = pd.read_parquet(self.eval_dir / "evaluation_dataset.parquet")
 

@@ -7,8 +7,8 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.projects.restraint.model_evaluation.config import (
-    COLOURS,
     BEST_DEV_RUN,
+    COLOURS,
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,

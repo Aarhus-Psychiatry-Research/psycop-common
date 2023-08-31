@@ -3,8 +3,8 @@ from pathlib import Path
 import plotnine as pn
 
 from psycop.projects.restraint.model_evaluation.config import (
-    COLOURS,
     BEST_DEV_RUN,
+    COLOURS,
     FIGURES_PATH,
     PN_THEME,
 )

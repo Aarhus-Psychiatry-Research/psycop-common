@@ -6,8 +6,8 @@ from psycop.common.model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )
 from psycop.projects.restraint.model_evaluation.config import (
-    COLOURS,
     BEST_DEV_RUN,
+    COLOURS,
     MODEL_NAME,
     PN_THEME,
     ROBUSTNESS_PATH,

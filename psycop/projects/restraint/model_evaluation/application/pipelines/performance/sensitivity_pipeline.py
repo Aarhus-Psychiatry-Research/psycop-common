@@ -5,8 +5,8 @@ import plotnine as pn
 
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.projects.restraint.model_evaluation.config import (
-    COLOURS,
     BEST_DEV_RUN,
+    COLOURS,
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,

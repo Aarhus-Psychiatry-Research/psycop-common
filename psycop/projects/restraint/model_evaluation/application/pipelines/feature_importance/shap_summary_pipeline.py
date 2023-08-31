@@ -7,7 +7,10 @@ from psycop.common.model_training.utils.col_name_inference import (
     infer_outcome_col_name,
     infer_predictor_col_name,
 )
-from psycop.projects.restraint.model_evaluation.config import BEST_DEV_RUN, TEXT_EVAL_RUN
+from psycop.projects.restraint.model_evaluation.config import (
+    BEST_DEV_RUN,
+    TEXT_EVAL_RUN,
+)
 from psycop.projects.restraint.model_evaluation.data.load_true_data import (
     load_file_from_pkl,
     load_fullconfig,

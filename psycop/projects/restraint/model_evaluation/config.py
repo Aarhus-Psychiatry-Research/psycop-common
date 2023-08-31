@@ -26,14 +26,6 @@ BEST_DEV_RUN = Run(
     pos_rate=POS_RATE,
 )
 
-# EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
-# EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
-# BEST_DEV_RUN = Run(
-#     group=EVAL_GROUP,
-#     name="unaugmentativepreconcurrently",
-#     pos_rate=POS_RATE,
-# )
-
 
 # Best model on structured features + text features
 TEXT_DEV_GROUP_NAME = "seigneurial-normalacy"
