@@ -52,8 +52,6 @@ def str_to_df(
     # Drop comments for each line if any exist inside the str
     lines = []
     for line in string.split("\n"):
-        if line == "\n":
-            continue
         # Remove leading whitespace
         if " #" in line:
             line = line[: line.rfind("#")]  # noqa
