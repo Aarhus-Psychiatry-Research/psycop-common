@@ -35,7 +35,7 @@ def create_model(cfg: FullConfigSchema) -> Any:
     model_args.update(training_arguments)
 
     if cfg.preprocessing.pre_split.classification_objective == "multilabel":
-        return ClassifierChain(model_dict["model"](**model_args))
+        return ClassifierChain(model_dict["model"](**model_args), cv=5)
 
     return model_dict["model"](**model_args)
 
@@ -152,10 +152,8 @@ def multilabel_cross_validation(
             f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs], oof_y_pred), 3)}",  # type: ignore
         )
 
-        train_df.loc[
-            val_idxs,
-            [f"y_hat_prob_{x}" for x in outcome_col_name],
-        ] = [oof_y_pred[:, x] for x in range(0, oof_y_pred.shape[1])]
+        for x, col_name in enumerate(outcome_col_name):
+            train_df.loc[val_idxs, f"y_hat_prob_{col_name}"] = oof_y_pred[:, x]
 
     return train_df
 
@@ -315,10 +313,8 @@ def multilabel_train_validate(
     )
 
     df = val
-    df.loc[
-        :,
-        [f"y_hat_prob_{x}" for x in outcome_col_name],
-    ] = [y_val_hat_prob[:, x] for x in range(0, y_val_hat_prob.shape[1])]
+    for x, col_name in enumerate(outcome_col_name):
+        df.loc[:, f"y_hat_prob_{col_name}"] = y_val_hat_prob[:, x]
 
     return create_eval_dataset(
         col_names=cfg.data.col_name,
