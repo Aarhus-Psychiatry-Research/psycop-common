@@ -10,7 +10,7 @@ preprocessing:
     drop_visits_after_exclusion_timestamp: false
     min_prediction_time_date: 2014-01-01
     min_lookahead_days: 182
-    lookbehind_combination: [10, 180, 365]
+    lookbehind_combination: [10, 30, 180, 365]
     min_age: 18
   post_split:
     imputation_method: most_frequent
@@ -28,5 +28,5 @@ hydra:
       ++preprocessing.post_split.scaling: choice("z-score-normalization", "null")
       ++preprocessing.post_split.feature_selection.name: choice("f_classif", "null")
       ++preprocessing.post_split.feature_selection.params.percentile: int(tag(log, interval(1, 90)))
-      ++preprocessing.pre_split.lookbehind_combination: choice([10,30, 180, 365], [10, 180, 365], [365], [180], [30], [10])
+      ++preprocessing.pre_split.lookbehind_combination: choice([10, 30, 180, 365], [10, 30, 180], [10, 180], [10, 180, 365])
       
