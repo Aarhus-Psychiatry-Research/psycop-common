@@ -116,5 +116,5 @@ def confusion_matrix_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    confusion_matrix_pipeline(BEST_DEV_RUN, TABLES_PATH)
+    confusion_matrix_pipeline(EVAL_RUN, TABLES_PATH)
     confusion_matrix_pipeline(TEXT_EVAL_RUN, TEXT_TABLES_PATH)
