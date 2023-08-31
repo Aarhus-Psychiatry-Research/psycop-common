@@ -10,6 +10,7 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.restraint.model_evaluation.config import (
     COLOURS,
+    EVAL_RUN,
     MODEL_NAME,
     PN_THEME,
     TABLES_PATH,
