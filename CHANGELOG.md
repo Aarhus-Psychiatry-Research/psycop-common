@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.106.0 (2023-08-31)
+
+### Feature
+
+* First version ([`2fc715c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2fc715c099c94b9dd470595f73546aa3b9c0786b))
+
+### Fix
+
+* Possibly unbound variable ([`864f59b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/864f59bfa20d27e5b8ec28a5b9d84a3a2ac487ba))
+
+### Documentation
+
+* Point to patient object tests ([`d727664`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d7276642d5a650110a6693c6428058fa3784f432))
+
 ## v0.105.0 (2023-08-30)
 
 ### Feature
