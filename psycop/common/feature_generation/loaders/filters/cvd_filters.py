@@ -18,7 +18,9 @@ def _remove_cvd_exclusions(df: pd.DataFrame, col_name: str) -> pd.DataFrame:
     regex_str = "|".join([f"(D{diag}.*)" for diag in diagnoses])
 
     df = remove_rows_where_col_name_matches_pattern(
-        df=df, col_name=col_name, regex_pattern=regex_str
+        df=df,
+        col_name=col_name,
+        regex_pattern=regex_str,
     )
     return df
 
@@ -37,7 +39,8 @@ def keep_rows_where_diag_matches_cvd_diag(
         regex_pattern=cvd_regex_pattern,
     )
     rows_sans_exclusion = _remove_cvd_exclusions(
-        df=rows_matching_categories, col_name=col_name
+        df=rows_matching_categories,
+        col_name=col_name,
     )
 
     return rows_sans_exclusion

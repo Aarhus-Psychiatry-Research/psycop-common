@@ -14,7 +14,7 @@ def test_cvd_diagnosegruppestreng_filtering():
     DI67.1,N, # Drop, excluded
     DI67.5,N, # Drop, excluded
     DI68.2,N, # Drop, excluded
-                   """
+                   """,
     )
 
     filtered_df = keep_rows_where_diag_matches_cvd_diag(
