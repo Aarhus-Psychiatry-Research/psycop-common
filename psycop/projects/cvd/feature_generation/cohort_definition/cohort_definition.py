@@ -51,3 +51,5 @@ if __name__ == "__main__":
     bundle = CVDCohortDefiner.get_filtered_prediction_times_bundle()
 
     df = bundle.prediction_times
+
+    outcome_timestamps = CVDCohortDefiner.get_outcome_timestamps()
