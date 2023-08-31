@@ -6,7 +6,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.projects.restraint.model_evaluation.config import (
     COLOURS,
-    EVAL_RUN,
+    BEST_DEV_RUN,
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,
@@ -89,5 +89,5 @@ def sensitivity_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    sensitivity_pipeline(EVAL_RUN, FIGURES_PATH)
+    sensitivity_pipeline(BEST_DEV_RUN, FIGURES_PATH)
     sensitivity_pipeline(TEXT_EVAL_RUN, TEXT_FIGURES_PATH)

@@ -7,7 +7,7 @@ from sklearn.metrics import average_precision_score, precision_recall_curve
 from sklearn.utils import resample
 
 from psycop.projects.restraint.model_evaluation.config import (
-    EVAL_RUN,
+    BEST_DEV_RUN,
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,
@@ -114,5 +114,5 @@ def precision_recall_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    precision_recall_pipeline(EVAL_RUN, FIGURES_PATH)
+    precision_recall_pipeline(BEST_DEV_RUN, FIGURES_PATH)
     precision_recall_pipeline(TEXT_EVAL_RUN, TEXT_FIGURES_PATH)

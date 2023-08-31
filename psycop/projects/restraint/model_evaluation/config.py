@@ -18,21 +18,21 @@ EVALUATION_ROOT = Path(__file__).parent
 POS_RATE = 0.05
 
 # Best model on structured features
-DEV_GROUP_NAME = "exothermous-comox"
+DEV_GROUP_NAME = "coercion"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
 BEST_DEV_RUN = Run(
     group=DEVELOPMENT_GROUP,
-    name="drepaniumextrapolar",
+    name="baveniteunvisor",
     pos_rate=POS_RATE,
 )
 
-EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
-EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
-EVAL_RUN = Run(
-    group=EVAL_GROUP,
-    name="unaugmentativepreconcurrently",
-    pos_rate=POS_RATE,
-)
+# EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
+# EVAL_GROUP = RunGroup(name=EVAL_GROUP_NAME)
+# BEST_DEV_RUN = Run(
+#     group=EVAL_GROUP,
+#     name="unaugmentativepreconcurrently",
+#     pos_rate=POS_RATE,
+# )
 
 
 # Best model on structured features + text features
@@ -57,8 +57,8 @@ TEXT_EVAL_RUN = Run(
 GENERAL_ARTIFACT_PATH = (
     EVALUATION_ROOT
     / "outputs_for_publishing"
-    / f"{EVAL_GROUP.name}"
-    / f"{EVAL_RUN.name}"
+    / f"{DEV_GROUP_NAME}"
+    / f"{BEST_DEV_RUN.name}"
 )
 FIGURES_PATH = GENERAL_ARTIFACT_PATH / "figures"
 TABLES_PATH = GENERAL_ARTIFACT_PATH / "tables"

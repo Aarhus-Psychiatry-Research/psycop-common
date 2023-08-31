@@ -7,7 +7,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 )
 from psycop.projects.restraint.model_evaluation.config import (
     COLOURS,
-    EVAL_RUN,
+    BEST_DEV_RUN,
     MODEL_NAME,
     PN_THEME,
     ROBUSTNESS_PATH,
@@ -77,5 +77,5 @@ def roc_auc_by_time_from_first_prediction(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    roc_auc_by_time_from_first_prediction(EVAL_RUN, ROBUSTNESS_PATH)
+    roc_auc_by_time_from_first_prediction(BEST_DEV_RUN, ROBUSTNESS_PATH)
     roc_auc_by_time_from_first_prediction(TEXT_EVAL_RUN, TEXT_ROBUSTNESS_PATH)
