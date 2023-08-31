@@ -14,3 +14,9 @@ def get_first_cvd_indicator() -> pd.DataFrame:
     )
 
     return first_cvd[["dw_ek_borger", "timestamp"]]
+
+
+if __name__ == "__main__":
+    df = get_first_cvd_indicator()
+
+    pass
