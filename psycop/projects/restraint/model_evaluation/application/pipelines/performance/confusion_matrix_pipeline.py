@@ -91,10 +91,10 @@ def confusion_matrix_metrics(
 def confusion_matrix_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
-    df_to_eval_dataset(eval_ds, custom_columns=None)
+    df_to_eval_dataset(eval_ds, custom_columns=None) # type: ignore
     df = pd.DataFrame(
         {
-            "true": eval_ds["outcome_coercion_type_within_2_days"].replace(
+            "true": eval_ds["outcome_coercion_type_within_2_days"].replace( # type: ignore
                 {1: 0, 2: 0, 3: 1},
             ),
             "pred": eval_ds.get_predictions_for_positive_rate(

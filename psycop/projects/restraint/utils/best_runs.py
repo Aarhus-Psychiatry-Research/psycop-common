@@ -103,7 +103,7 @@ class Run:
     ) -> EvalDataset:
         df = pd.read_parquet(self.eval_dir / "evaluation_dataset.parquet")
 
-        return df
+        return df # type: ignore
 
     def get_auroc(self) -> float:
         df = self.group.all_runs_performance_df
