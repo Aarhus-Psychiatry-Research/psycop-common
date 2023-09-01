@@ -37,7 +37,7 @@ class Embedder(Protocol):
     def forward(self, *args: Any) -> torch.Tensor:
         ...
 
-    def collate_fn(self, patients: list[Patient]) -> list[dict[str, torch.Tensor]]:
+    def collate_fn(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
         ...
 
     def fit(self, patients: list[Patient], *args: Any) -> None:
@@ -139,7 +139,7 @@ class BEHRTEmbedder(nn.Module):
 
         return torch.tensor(lookup_table)
 
-    def collate_fn(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
+    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
         """
         Handles padding and indexing by converting each to an index tensor
 
@@ -241,15 +241,11 @@ class BEHRTEmbedder(nn.Module):
             "is_padding": torch.tensor(0),
         }
 
-    def fit(self, patients: list, add_mask_token: bool = True):  # type: ignore
-        """
-        Is not dependent on patient data.
-        """
+    def fit(self, patients: list, add_mask_token: bool = True):
         patient_events: list[tuple[Patient, TemporalEvent]] = [
             (p, e) for p in patients for e in self.filter_events(p.temporal_events)
         ]
         diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
-        n_diagnosis_codes: int = len(set(diagnosis_codes)) + 2  # UNK + Padding
 
         # create dianosis2idx mapping
         diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
@@ -263,7 +259,6 @@ class BEHRTEmbedder(nn.Module):
         ages: list[int] = [
             self.get_patient_age(e, p.date_of_birth) for p, e in patient_events
         ]
-        n_age_bins = len(set(ages)) + 2  # UNK + PAD
 
         # create age2idx mapping
         age2idx: dict[str | int, int] = {a: i for i, a in enumerate(set(ages))}
@@ -272,13 +267,13 @@ class BEHRTEmbedder(nn.Module):
 
         self.vocab = BEHRTVocab(age=age2idx, diagnosis=diagnosis2idx)
 
-        max_position_embeddings = max([len(p.temporal_events) for p in patients])
-        max_position_embeddings = max(max_position_embeddings, self.max_sequence_length)
+        n_diagnosis_codes = len(diagnosis2idx)
+        n_age_bins = len(age2idx)
 
         self.initialize_embeddings_layers(
             n_diagnosis_codes=n_diagnosis_codes,
             n_age_bins=n_age_bins,
-            max_position_embeddings=max_position_embeddings,
+            max_position_embeddings=self.max_sequence_length,
         )
 
         self.is_fitted = True

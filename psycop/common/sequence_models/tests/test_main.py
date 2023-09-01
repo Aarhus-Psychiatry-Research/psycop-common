@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from psycop.common.data_structures import Patient, TemporalEvent
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
-    BEHRTMaskingTask,
+    BEHRTForMaskedLM,
     Embedder,
     PatientDataset,
     Trainer,
@@ -50,85 +50,62 @@ def patients() -> list[Patient]:
     return [patient1, patient2]
 
 
-@pytest.mark.parametrize(
-    "embedding_module",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
-)
-def test_embeddings(patients: list, embedding_module: Embedder):
-    """
-    Test embedding interface
-    """
-    embedding_module.fit(patients)
-
-    inputs_ids = embedding_module.collate_fn(patients)
-
-    assert isinstance(inputs_ids, dict)
-    assert isinstance(inputs_ids["diagnosis"], torch.Tensor)
-    assert isinstance(inputs_ids["age"], torch.Tensor)
-    assert isinstance(inputs_ids["segment"], torch.Tensor)
-    assert isinstance(inputs_ids["position"], torch.Tensor)
-
-    # forward
-    outputs = embedding_module(inputs_ids)
+@pytest.fixture()
+def patient_dataset(patients: list) -> PatientDataset:
+    return PatientDataset(patients)
 
 
-def test_masking_fn(patients: list):
-    """
-    Test masking function
-    """
-    emb = BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)
-    encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-
-    emb.fit(patients)
-
-    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)
-
-    inputs_ids = emb.collate_fn(patients)
-
-    masked_input_ids, masked_labels = task.masking_fn(inputs_ids)
-
-    # assert types
-    assert isinstance(masked_input_ids, dict)
-    assert isinstance(masked_input_ids["diagnosis"], torch.Tensor)
-    assert isinstance(masked_labels, torch.Tensor)
-
-    # assert that the masked labels are same as the input ids where they are not masked? # TODO
-
-    # assert that padding is ignored? # TODO
-
-
-def test_main(patients: list, tmp_path: Path):
-    """
-    Tests the general intended workflow
-    """
+def test_behrt(patient_dataset: PatientDataset):
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
     encoder_layer = nn.TransformerEncoderLayer(
         d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    task = BEHRTMaskingTask(  # TODO
-        embedding_module=emb, encoder_module=encoder
-    )  # this includes the loss and the MLM head
+
+    patients = patient_dataset.patients
+    emb.fit(patients, add_mask_token=True)
+
+    behrt = BEHRTForMaskedLM(embedding_module=emb, encoder_module=encoder)
+
+    dataloader = DataLoader(
+        patient_dataset, batch_size=32, shuffle=True, collate_fn=behrt.collate_fn
+    )
+
+    for input_ids, masked_labels in dataloader:
+        output = behrt(input_ids, masked_labels)
+        loss = output["loss"]
+        loss.backward()  # ensure that the backward pass works
+
+
+def test_main(patients: list, tmp_path: Path):
+    """
+    Tests the general intended workflow
+    """
+    train_patients = patients[:1]
+    val_patients = patients[1:]
+
+    d_model = 32
+    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+    encoder_layer = nn.TransformerEncoderLayer(
+        d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
+    )
+    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+
+    # this includes the loss and the MLM head
+    task = BEHRTForMaskedLM(embedding_module=emb, encoder_module=encoder)
     # ^should masking be here?
 
     optimizer = torch.optim.Adam(task.parameters(), lr=1e-4)
 
-    train_dataset = PatientDataset(train_patients)  # TODO
+    train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
 
-    # chain two functions:
-    #     task.collate_fn,# handles masking
-    #     emb.collate_fn, # handles padding, indexing etc.
-    def collate_fn(x):
-        return task.masking_fn(emb.collate_fn(x))
-
     train_dataloader = DataLoader(
-        train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn
+        train_dataset, batch_size=32, shuffle=True, collate_fn=task.collate_fn
     )
     val_dataloader = DataLoader(
-        val_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn
+        val_dataset, batch_size=32, shuffle=True, collate_fn=task.collate_fn
     )
 
     emb.fit(train_patients, add_mask_token=True)

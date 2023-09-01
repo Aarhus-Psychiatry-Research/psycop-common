@@ -1,4 +1,4 @@
 from .dataset import PatientDataset
 from .embedders import BEHRTEmbedder, Embedder
-from .tasks import BEHRTMaskingTask
+from .tasks import BEHRTForMaskedLM
 from .trainer import Trainer
