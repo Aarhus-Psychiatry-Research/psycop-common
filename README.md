@@ -118,7 +118,7 @@
 | psycop/conftest.py                                                                                              |       47 |        3 |     94% |33, 37, 104 |
 | psycop/projects/forced\_admission\_inpatient/utils/feature\_name\_to\_readable.py                               |       26 |        5 |     81% | 15, 39-42 |
 | psycop/projects/restraint/\_\_init\_\_.py                                                                       |        0 |        0 |    100% |           |
-| psycop/projects/restraint/model\_evaluation/config.py                                                           |       43 |        0 |    100% |           |
+| psycop/projects/restraint/model\_evaluation/config.py                                                           |       40 |        0 |    100% |           |
 | psycop/projects/restraint/model\_evaluation/figures/feature\_importance/shap/get\_shap\_values.py               |       73 |       41 |     44% |26-37, 42-54, 70, 78-92, 102-134, 164-172, 181-194 |
 | psycop/projects/restraint/model\_evaluation/figures/feature\_importance/shap/shap\_plots.py                     |       53 |       29 |     45% |41, 49, 75-87, 96-102, 118-148 |
 | psycop/projects/restraint/model\_evaluation/figures/feature\_importance/shap/shap\_table.py                     |        7 |        0 |    100% |           |
@@ -126,7 +126,7 @@
 | psycop/projects/restraint/test/\_\_init\_\_.py                                                                  |        0 |        0 |    100% |           |
 | psycop/projects/restraint/test/test\_model\_evaluation/\_\_init\_\_.py                                          |        0 |        0 |    100% |           |
 | psycop/projects/restraint/test/test\_model\_evaluation/conftest.py                                              |        7 |        0 |    100% |           |
-| psycop/projects/restraint/utils/best\_runs.py                                                                   |       76 |       33 |     57% |24, 30-38, 42-48, 51-53, 70-74, 77, 80, 86, 90, 94, 98-99, 105-109, 112-116, 120, 124-125, 133 |
+| psycop/projects/restraint/utils/best\_runs.py                                                                   |       75 |       32 |     57% |24, 30-38, 42-48, 51-53, 70-74, 77, 80, 86, 90, 94, 98-99, 104-106, 109-113, 117, 121-122, 130 |
 | psycop/projects/restraint/utils/feature\_name\_to\_readable.py                                                  |       26 |       22 |     15% |6-16, 21-54, 59-64 |
 | psycop/projects/t2d/paper\_outputs/config.py                                                                    |       18 |        0 |    100% |           |
 | psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/conftest.py                      |        7 |        0 |    100% |           |
@@ -142,7 +142,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4392** | **1262** | **71%** |           |
+|                                                                                                       **TOTAL** | **4388** | **1261** | **71%** |           |
 
 
 ## Setup coverage badge
