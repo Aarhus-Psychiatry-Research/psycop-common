@@ -2,7 +2,6 @@
 Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
-from copy import copy
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Protocol, Sequence
@@ -17,7 +16,7 @@ from psycop.common.data_structures import Patient, TemporalEvent
 
 @dataclass(frozen=True)
 class BEHRTVocab:
-    age: dict[int | str, int]  # str because must allow containing "UNK" and "PAD"
+    age: dict[int | str, int]  # str because must allow keys "UNK" and "PAD"
     diagnosis: dict[str, int]
     is_padding: dict[str, int] = field(default_factory=lambda: {"PAD": 1})
     segment: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
@@ -172,8 +171,21 @@ class BEHRTEmbedder(nn.Module):
 
         keys = sequences[0].keys()
         padded_sequences: dict[str, torch.Tensor] = {}
+
         for key in keys:
-            pad_idx = self.vocab[key]["PAD"]
+            key_to_subvocab = {
+                "age": self.vocab.age,
+                "diagnosis": self.vocab.diagnosis,
+                "segment": self.vocab.segment,
+                "position": self.vocab.position,
+                "is_padding": self.vocab.is_padding,
+            }
+
+            if key not in key_to_subvocab:
+                raise ValueError(f"Key {key} not in {key_to_subvocab.keys()}")
+
+            vocab = key_to_subvocab[key]
+            pad_idx = vocab["PAD"]
 
             padded_sequences[key] = pad_sequence(
                 [p[key] for p in sequences], batch_first=True, padding_value=pad_idx
@@ -215,8 +227,8 @@ class BEHRTEmbedder(nn.Module):
     ) -> dict[str, torch.Tensor]:
         age = self.get_patient_age(event, patient.date_of_birth)
 
-        age2idx = self.vocab["age"]
-        diagnosis2idx = self.vocab["diagnosis"]
+        age2idx = self.vocab.age
+        diagnosis2idx = self.vocab.diagnosis
 
         diagnosis: str = event.value  # type: ignore
 
