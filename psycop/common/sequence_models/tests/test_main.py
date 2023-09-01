@@ -79,7 +79,7 @@ def test_masking_fn(patients: list):
     emb = BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)  # TODO
+    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)
 
     emb.fit(patients)
 

@@ -64,7 +64,7 @@ class BEHRTMaskingTask(nn.Module):
         mask[mask.clone()] = prob[mask] < 0.1
         diagnosis[mask] = torch.randint(
             0, self.embedding_module.vocab_size - 1, mask.sum().shape
-        )  # TODO check vocab_size (only diagnosis codes)
+        )  # TODO fix vocab_size (only diagnosis codes)
 
         # -> rest 10% of the time, keep the original word
 
