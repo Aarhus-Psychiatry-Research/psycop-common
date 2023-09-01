@@ -3,6 +3,7 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
 from copy import copy
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Protocol, Sequence
 
@@ -12,6 +13,15 @@ from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import Patient, TemporalEvent
+
+
+@dataclass(frozen=True)
+class BEHRTVocab:
+    age: dict[int | str, int]  # str because must allow containing "UNK" and "PAD"
+    diagnosis: dict[str, int]
+    is_padding: dict[str, int] = field(default_factory=lambda: {"PAD": 1})
+    segment: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
+    position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
 
 
 class Embedder(Protocol):
@@ -192,7 +202,7 @@ class BEHRTEmbedder(nn.Module):
 
         # convert to tensor
         output: dict[str, torch.Tensor] = {}
-        for key in event_inputs[0].keys():
+        for key in event_inputs[0]:
             output[key] = torch.stack([e[key] for e in event_inputs])
         return output
 
@@ -246,13 +256,7 @@ class BEHRTEmbedder(nn.Module):
         age2idx["UNK"] = len(age2idx)
         age2idx["PAD"] = len(age2idx)
 
-        self.vocab: dict[str, dict[Any, int]] = {
-            "age": age2idx,
-            "diagnosis": diagnosis2idx,
-            "is_padding": {"PAD": 1},
-            "segment": {"PAD": 0},
-            "position": {"PAD": 0},
-        }
+        self.vocab = BEHRTVocab(age=age2idx, diagnosis=diagnosis2idx)
 
         max_position_embeddings = max([len(p.temporal_events) for p in patients])
         max_position_embeddings = max(max_position_embeddings, self.max_sequence_length)

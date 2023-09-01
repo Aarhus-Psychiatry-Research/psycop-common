@@ -16,7 +16,7 @@ from psycop.common.sequence_models import (
 )
 
 
-@pytest.fixture
+@pytest.fixture()
 def patients() -> list[Patient]:
     """
     Returns a list of patient objects
@@ -101,10 +101,11 @@ def test_main(patients: list, tmp_path: Path):
     """
     Tests the general intended workflow
     """
-    emb = BEHRTEmbedder(
-        d_model=384, dropout_prob=0.1, max_sequence_length=128
-    )  # probably some more args here    # TODO
-    encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
+    d_model = 32
+    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+    encoder_layer = nn.TransformerEncoderLayer(
+        d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
+    )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
     task = BEHRTMaskingTask(  # TODO
         embedding_module=emb, encoder_module=encoder
@@ -119,7 +120,8 @@ def test_main(patients: list, tmp_path: Path):
     # chain two functions:
     #     task.collate_fn,# handles masking
     #     emb.collate_fn, # handles padding, indexing etc.
-    collate_fn = lambda x: task.masking_fn(emb.collate_fn(x))
+    def collate_fn(x):
+        return emb.collate_fn(task.masking_fn(x))
 
     train_dataloader = DataLoader(
         train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn
