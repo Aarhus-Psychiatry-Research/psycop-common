@@ -236,6 +236,8 @@ class BEHRTEmbedder(nn.Module):
         if add_mask_token:
             diagnosis2idx["MASK"] = len(diagnosis2idx)
 
+        self.mask_token_id = diagnosis2idx["MASK"]
+
         ages: list[int] = [
             self.get_patient_age(e, p.date_of_birth) for p, e in patient_events
         ]

@@ -79,9 +79,10 @@ def test_masking_fn(patients: list):
     emb = BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)
 
     emb.fit(patients)
+
+    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)
 
     inputs_ids = emb.collate_fn(patients)
 
@@ -92,9 +93,9 @@ def test_masking_fn(patients: list):
     assert isinstance(masked_input_ids["diagnosis"], torch.Tensor)
     assert isinstance(masked_labels, torch.Tensor)
 
-    # assert that the masked labels are same as the input ids where they are masked # TODO
+    # assert that the masked labels are same as the input ids where they are not masked? # TODO
 
-    # assert that padding is ignored # TODO
+    # assert that padding is ignored? # TODO
 
 
 def test_main(patients: list, tmp_path: Path):
