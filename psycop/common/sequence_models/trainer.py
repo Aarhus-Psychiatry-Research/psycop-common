@@ -2,15 +2,14 @@
 Defines the trainer class for sequence models
 """
 
-from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Protocol, Sequence
 
 import torch
-from torch import nn
-from torch.backends.cudnn import set_flags
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader, dataloader
+from torch.utils.data import DataLoader
+
+from psycop.common.sequence_models.loggers import Logger
 
 
 class TrainableModel(Protocol):
@@ -23,13 +22,6 @@ class TrainableModel(Protocol):
     def configure_optimizer(self) -> Optimizer:
         ...
 
-
-class Logger(Protocol):
-    def log_hyperparams(self, hyperparams: dict[str, float | str]) -> None:
-        ...
-
-    def log_metrics(self, metrics: dict[str, float]) -> None:
-        ...
 
 
 class CheckpointHandler(Protocol):
