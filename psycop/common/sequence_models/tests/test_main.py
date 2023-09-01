@@ -72,6 +72,31 @@ def test_embeddings(patients: list, embedding_module: Embedder):
     outputs = embedding_module(inputs_ids)
 
 
+def test_masking_fn(patients: list):
+    """
+    Test masking function
+    """
+    emb = BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)
+    encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
+    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)  # TODO
+
+    emb.fit(patients)
+
+    inputs_ids = emb.collate_fn(patients)
+
+    masked_input_ids, masked_labels = task.masking_fn(inputs_ids)
+
+    # assert types
+    assert isinstance(masked_input_ids, dict)
+    assert isinstance(masked_input_ids["diagnosis"], torch.Tensor)
+    assert isinstance(masked_labels, torch.Tensor)
+
+    # assert that the masked labels are same as the input ids where they are masked # TODO
+
+    # assert that padding is ignored # TODO
+
+
 def test_main(patients: list, tmp_path: Path):
     """
     Tests the general intended workflow
