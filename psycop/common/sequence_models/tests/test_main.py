@@ -79,9 +79,10 @@ def test_masking_fn(patients: list):
     emb = BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)
 
     emb.fit(patients)
+
+    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)
 
     inputs_ids = emb.collate_fn(patients)
 
@@ -92,9 +93,9 @@ def test_masking_fn(patients: list):
     assert isinstance(masked_input_ids["diagnosis"], torch.Tensor)
     assert isinstance(masked_labels, torch.Tensor)
 
-    # assert that the masked labels are same as the input ids where they are masked # TODO
+    # assert that the masked labels are same as the input ids where they are not masked? # TODO
 
-    # assert that padding is ignored # TODO
+    # assert that padding is ignored? # TODO
 
 
 def test_main(patients: list, tmp_path: Path):
@@ -121,7 +122,7 @@ def test_main(patients: list, tmp_path: Path):
     #     task.collate_fn,# handles masking
     #     emb.collate_fn, # handles padding, indexing etc.
     def collate_fn(x):
-        return emb.collate_fn(task.masking_fn(x))
+        return task.masking_fn(emb.collate_fn(x))
 
     train_dataloader = DataLoader(
         train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn
@@ -133,12 +134,12 @@ def test_main(patients: list, tmp_path: Path):
     emb.fit(train_patients, add_mask_token=True)
 
     trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)  # TODO
-    trainer.train(steps=20)
+    trainer.fit(n_steps=20)
     trainer.evaluate()
 
     # test that is can be loaded and saved from disk
     trainer.save_to_disk(tmp_path)
-    trainer.load_from_disk(tmp_path)
+    trainer.resume_training_from_latest_checkpoint(tmp_path)
 
     # tes that it can log data
     trainer.log({"step": 1, "loss": 0.1})

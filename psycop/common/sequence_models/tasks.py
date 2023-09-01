@@ -20,11 +20,9 @@ class BEHRTMaskingTask(nn.Module):
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.mlm_head = nn.Linear(
-            self.embedding_module.d_model, embedding_module.vocab_size
+            self.embedding_module.d_model, self.embedding_module.n_diagnosis_codes
         )
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
-
-        assert self.encoder_module.d_model == self.embedding_module.d_model
 
     def forward(
         self,
@@ -53,18 +51,17 @@ class BEHRTMaskingTask(nn.Module):
         masked_lm_labels[~mask] = -1  # -1 will be ignored in loss function
 
         prob /= 0.15
+
         # 80% of the time, replace with [MASK] token
         mask[mask.clone()] = prob[mask] < 0.8
-        diagnosis[mask] = self.embedding_module.vocab["diagnosis"][
-            "MASK"
-        ]  # TODO consider using mask_token_id instead
+        diagnosis[mask] = self.embedding_module.mask_token_id  # TODO
 
         # 10% of the time, replace with random token
         prob /= 0.8
         mask[mask.clone()] = prob[mask] < 0.1
         diagnosis[mask] = torch.randint(
-            0, self.embedding_module.vocab_size - 1, mask.sum().shape
-        )  # TODO fix vocab_size (only diagnosis codes)
+            0, self.embedding_module.n_diagnosis_codes - 1, mask.sum().shape
+        )  # TODO
 
         # -> rest 10% of the time, keep the original word
 
