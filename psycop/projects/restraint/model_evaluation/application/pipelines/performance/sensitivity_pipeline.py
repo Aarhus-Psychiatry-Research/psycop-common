@@ -18,7 +18,6 @@ from psycop.projects.restraint.utils.best_runs import Run
 
 def sensitivity_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset(
-        custom_columns=["outcome_coercion_type_within_2_days"],
     )
 
     output_df = get_auroc_by_input_df(
