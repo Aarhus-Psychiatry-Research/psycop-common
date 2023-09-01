@@ -40,39 +40,51 @@ class BEHRTMaskingTask(nn.Module):
         )  # (bs * seq_length, vocab_size), (bs * seq_length)
         return {"logits": logits, "masked_lm_loss": masked_lm_loss}
 
-    def mask(self, patients: list[Patient]) -> tuple[list[Patient], torch.Tensor]:
-        output_label = []
-        output_token = []
-        # For each patient, mask token with probability 15%
-        for patient in patients:
-            masked_lm_labels = [-1] * len(
-                patient.events
-            )  # -1 will be ignored in loss function
-            for i, event in enumerate(patient.events):
-                prob = random.random()
-                if prob < 0.15:
-                    prob /= 0.15
-                    output_token.append(copy(event))
-                    # 80% of the time, replace with [MASK]
-                    if prob < 0.8:
-                        patient.events[i] = self.embedding_module.diagnosis2idx[
-                            "MASK"
-                        ]  # TODO consider changing this to mask_token_idx
-                    # 10% of the time, replace with random word
-                    elif prob < 0.5:
-                        patient.events[i] = random.randint(
-                            0, self.embedding_module.vocab_size - 1
-                        )
-                    # -> rest 10% of the time, keep the original word
-                    # append the original token to output (we will predict these later)
-                    masked_lm_labels[i] = event
-            output_label.append(masked_lm_labels)
-        return output_token, output_label
-
-    def masking_fn(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
+    def mask(self, diagnosis: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """
         Masking function for the task
         """
-        code, label = self.mask(patients)
-        inputs = self.embedding_module.collate_fn(events, mask=masked_lm_labels)
-        return inputs, masked_lm_labels
+        masked_lm_labels = diagnosis.clone()
+
+        # Mask 15 % of the tokens
+        prob = torch.rand(diagnosis.shape)
+        mask = prob < 0.15
+
+        masked_lm_labels[~mask] = -1  # -1 will be ignored in loss function
+
+        prob /= 0.15
+        # 80% of the time, replace with [MASK] token
+        mask[mask.clone()] = prob[mask] < 0.8
+        diagnosis[mask] = self.embedding_module.vocab["diagnosis"][
+            "MASK"
+        ]  # TODO consider using mask_token_id instead
+
+        # 10% of the time, replace with random token
+        prob /= 0.8
+        mask[mask.clone()] = prob[mask] < 0.1
+        diagnosis[mask] = torch.randint(
+            0, self.embedding_module.vocab_size - 1, mask.sum().shape
+        )  # TODO check vocab_size (only diagnosis codes)
+
+        # -> rest 10% of the time, keep the original word
+
+        return diagnosis, masked_lm_labels
+
+    def masking_fn(
+        self, padded_sequence_ids: dict[str, torch.Tensor]
+    ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
+        """
+        Takes a dictionary of padded sequence ids and masks 15% of the tokens in the diagnosis sequence.
+        """
+        padded_sequence_ids = copy(padded_sequence_ids)
+
+        # Perform masking
+        masked_sequence, masked_labels = self.mask(padded_sequence_ids["diagnosis"])
+
+        # Set padding to -1 to ignore in loss
+        masked_labels[padded_sequence_ids["is_padding"] == 1] = -1
+
+        # Replace padded_sequence_ids with masked_sequence
+        padded_sequence_ids["diagnosis"] = masked_sequence
+
+        return padded_sequence_ids, masked_labels

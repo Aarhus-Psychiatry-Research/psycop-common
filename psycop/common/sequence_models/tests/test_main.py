@@ -94,7 +94,7 @@ def test_main(patients: list, tmp_path: Path):
     # chain two functions:
     #     task.collate_fn,# handles masking
     #     emb.collate_fn, # handles padding, indexing etc.
-    collate_fn = lambda x: emb.collate_fn(task.masking_fn(x))
+    collate_fn = lambda x: task.masking_fn(emb.collate_fn(x))
 
     train_dataloader = DataLoader(
         train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn
