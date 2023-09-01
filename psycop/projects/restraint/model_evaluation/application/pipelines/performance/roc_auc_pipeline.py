@@ -8,7 +8,7 @@ from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
     bootstrap_roc,
 )
 from psycop.projects.restraint.model_evaluation.config import (
-    EVAL_RUN,
+    BEST_DEV_RUN,
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,
@@ -123,5 +123,5 @@ def roc_auc_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    roc_auc_pipeline(EVAL_RUN, FIGURES_PATH)
+    roc_auc_pipeline(BEST_DEV_RUN, FIGURES_PATH)
     roc_auc_pipeline(TEXT_EVAL_RUN, TEXT_FIGURES_PATH)
