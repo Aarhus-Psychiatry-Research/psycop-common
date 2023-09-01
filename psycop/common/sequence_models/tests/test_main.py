@@ -16,7 +16,7 @@ from psycop.common.sequence_models import (
 )
 
 
-@pytest.fixture
+@pytest.fixture()
 def patients() -> list[Patient]:
     """
     Returns a list of patient objects
@@ -120,7 +120,8 @@ def test_main(patients: list, tmp_path: Path):
     # chain two functions:
     #     task.collate_fn,# handles masking
     #     emb.collate_fn, # handles padding, indexing etc.
-    collate_fn = lambda x: task.masking_fn(emb.collate_fn(x))
+    def collate_fn(x):
+        return task.masking_fn(emb.collate_fn(x))
 
     train_dataloader = DataLoader(
         train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn
@@ -132,12 +133,12 @@ def test_main(patients: list, tmp_path: Path):
     emb.fit(train_patients, add_mask_token=True)
 
     trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)  # TODO
-    trainer.train(steps=20)
+    trainer.fit(n_steps=20)
     trainer.evaluate()
 
     # test that is can be loaded and saved from disk
     trainer.save_to_disk(tmp_path)
-    trainer.load_from_disk(tmp_path)
+    trainer.resume_training_from_latest_checkpoint(tmp_path)
 
     # tes that it can log data
     trainer.log({"step": 1, "loss": 0.1})

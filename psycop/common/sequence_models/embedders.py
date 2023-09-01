@@ -192,7 +192,7 @@ class BEHRTEmbedder(nn.Module):
 
         # convert to tensor
         output: dict[str, torch.Tensor] = {}
-        for key in event_inputs[0].keys():
+        for key in event_inputs[0]:
             output[key] = torch.stack([e[key] for e in event_inputs])
         return output
 
