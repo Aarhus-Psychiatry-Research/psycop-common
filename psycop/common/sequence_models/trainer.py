@@ -4,15 +4,15 @@ Defines the trainer class for sequence models
 
 from dataclasses import dataclass
 from tabnanny import check
-from typing import Any, Protocol, Self, Sequence
+from typing import Any, Protocol, Sequence
 
 import torch
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader, dataloader
 
 from psycop.common.sequence_models.checkpoint_savers.base import (
+    Checkpoint,
     CheckpointSaver,
-    ModelCheckpoint,
 )
 from psycop.common.sequence_models.loggers.base import Logger
 
@@ -32,7 +32,7 @@ class TrainableModel(Protocol):
     def state_dict(self) -> dict[str, float]:
         ...
 
-    def load_state_dict(self, state_dict: dict[str, float]) -> Self:
+    def load_state_dict(self, state_dict: dict[str, float]):
         ...
 
 
@@ -124,13 +124,14 @@ class Trainer:
 
         for checkpointer in self.checkpoint_savers:
             checkpointer.save(
-                ModelCheckpoint(
+                Checkpoint(
                     train_step=global_steps,
                     model_state_dict=model_state,
                     optimizer_state_dict=optimizer_state,
                     loss=train_loss_mean,
                     train_dataloader=train_dataloader,
                     val_dataloader=val_dataloader,
+                    run_name=self.logger.run_name,
                 )
             )
 
@@ -160,7 +161,7 @@ class Trainer:
             }
         )
 
-    def _load_state_from_latest_checkpoint(self) -> ModelCheckpoint | None:
+    def _load_state_from_latest_checkpoint(self) -> Checkpoint | None:
         """
         Loads the trainer from disk
         """

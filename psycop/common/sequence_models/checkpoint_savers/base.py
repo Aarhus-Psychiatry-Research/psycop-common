@@ -6,7 +6,8 @@ from torch.utils.data import DataLoader
 
 
 @dataclass(frozen=True)
-class ModelCheckpoint:
+class Checkpoint:
+    run_name: str
     train_step: int
     model_state_dict: dict[Any, Any]
     optimizer_state_dict: dict[Any, Any]
@@ -21,9 +22,9 @@ class CheckpointSaver(Protocol):
 
     def save(
         self,
-        checkpoint: ModelCheckpoint,
+        checkpoint: Checkpoint,
     ):
         ...
 
-    def load_latest(self) -> ModelCheckpoint | None:
+    def load_latest(self) -> Checkpoint | None:
         ...

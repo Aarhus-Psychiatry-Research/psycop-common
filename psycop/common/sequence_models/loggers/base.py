@@ -7,3 +7,7 @@ class Logger(Protocol):
 
     def log_metrics(self, metrics: dict[str, float]) -> None:
         ...
+
+    @property
+    def run_name(self) -> str:
+        ...

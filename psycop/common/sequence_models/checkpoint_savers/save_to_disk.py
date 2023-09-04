@@ -1,11 +1,13 @@
 import os
+import re
 from pathlib import Path
-from typing import Any
 
 import torch
 
-from psycop.common.sequence_models.checkpoint_savers.base import CheckpointSaver
-from psycop.common.sequence_models.trainer import Trainer
+from psycop.common.sequence_models.checkpoint_savers.base import (
+    Checkpoint,
+    CheckpointSaver,
+)
 
 
 class CheckpointToDisk(CheckpointSaver):
@@ -15,27 +17,23 @@ class CheckpointToDisk(CheckpointSaver):
 
     def save(
         self,
-        epoch: int,
-        model_state_dict: dict[Any, Any],
-        optimizer_state_dict: dict[Any, Any],
-        loss: float,
-        run_name: str,
+        checkpoint: Checkpoint,
     ) -> None:
+        if self.override_on_save:
+            file_name = f"{checkpoint.run_name}.pt"
+        else:
+            file_name = f"{checkpoint.run_name}_step_{checkpoint.train_step}.pt"
+
         torch.save(
-            obj={
-                "epoch": epoch,
-                "model_state_dict": model_state_dict,
-                "optimizer_state_dict": optimizer_state_dict,
-                "loss": loss,
-            },
-            f=self.checkpoint_path / f"{run_name}.pkt",
+            obj=checkpoint,
+            f=self.checkpoint_path / file_name,
         )
 
-    def load_latest(self) -> Trainer:
+    def load_latest(self) -> Checkpoint | None:
         # Get file with the latest modified date in self.checkpoint
-        files = self.checkpoint_path.glob(r".+\.pkt")
+        files = list(self.checkpoint_path.glob(r"*.pt"))
+        if len(files) == 0:
+            return None
+
         latest_file = max(files, key=os.path.getctime)
-
-        saved_info = torch.load(latest_file)
-
-        # Load checkpoint
+        return torch.load(latest_file)
