@@ -7,7 +7,7 @@ from psycop.common.model_evaluation.binary.bootstrap_estimates import (
     bootstrap_estimates,
 )
 from psycop.projects.restraint.model_evaluation.config import (
-    EVAL_RUN,
+    BEST_DEV_RUN,
     TABLES_PATH,
     TEXT_EVAL_RUN,
     TEXT_TABLES_PATH,
@@ -57,5 +57,5 @@ def mcc_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    mcc_pipeline(EVAL_RUN, TABLES_PATH)
+    mcc_pipeline(BEST_DEV_RUN, TABLES_PATH)
     mcc_pipeline(TEXT_EVAL_RUN, TEXT_TABLES_PATH)

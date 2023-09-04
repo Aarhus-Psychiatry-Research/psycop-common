@@ -58,7 +58,7 @@ class Patient:
         self,
         lookbehind: dt.timedelta,
         lookahead: dt.timedelta,
-        outcome_timestamp: dt.datetime,
+        outcome_timestamp: dt.datetime | None,
         prediction_timestamps: Sequence[dt.datetime],
     ) -> list[PredictionTime]:
         """Creates prediction times for a boolean outome. E.g. for the task of predicting whether a patient will be diagnosed with diabetes within the next year, this function will return a list of PredictionTime objects, each of which contains the patient's data for a specific prediction time (predictors, prediction timestamp and whether the outcome occurs within the lookahead)."""
@@ -73,8 +73,10 @@ class Patient:
                 end=prediction_timestamp,
             )
 
-            outcome_within_lookahead = outcome_timestamp <= (
-                prediction_timestamp + lookahead
+            outcome_within_lookahead = (
+                outcome_timestamp <= (prediction_timestamp + lookahead)
+                if outcome_timestamp is not None
+                else False
             )
 
             # 2. Return prediction sequences

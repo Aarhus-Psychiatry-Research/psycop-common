@@ -7,8 +7,8 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.projects.restraint.model_evaluation.config import (
+    BEST_DEV_RUN,
     COLOURS,
-    EVAL_RUN,
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,
@@ -119,5 +119,5 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    sensitivity_by_time_to_event(EVAL_RUN, FIGURES_PATH)
+    sensitivity_by_time_to_event(BEST_DEV_RUN, FIGURES_PATH)
     sensitivity_by_time_to_event(TEXT_EVAL_RUN, TEXT_FIGURES_PATH)

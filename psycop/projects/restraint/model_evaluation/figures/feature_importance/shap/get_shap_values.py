@@ -9,7 +9,7 @@ from joblib import Memory
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.cache import mem
-from psycop.projects.restraint.model_evaluation.config import EVAL_RUN
+from psycop.projects.restraint.model_evaluation.config import BEST_DEV_RUN
 from psycop.projects.restraint.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
@@ -94,7 +94,7 @@ def generate_shap_values_from_pipe(
 
 @mem.cache
 def get_shap_bundle_for_best_run(
-    run: Run = EVAL_RUN,
+    run: Run = BEST_DEV_RUN,
     n_rows: Optional[int] = 10_000,
     cache_ver: float = 0.1,
     split_name: Literal["train", "val", "test"] = "val",
@@ -162,7 +162,7 @@ def get_top_i_features_by_mean_abs_shap(
 
 if __name__ == "__main__":
     shap_bundle = get_shap_bundle_for_best_run(
-        run=EVAL_RUN,
+        run=BEST_DEV_RUN,
         n_rows=1_000,
         cache_ver=0.1,
     )

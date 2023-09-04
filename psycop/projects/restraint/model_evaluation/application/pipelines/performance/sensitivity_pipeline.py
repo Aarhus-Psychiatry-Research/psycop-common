@@ -5,8 +5,8 @@ import plotnine as pn
 
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.projects.restraint.model_evaluation.config import (
+    BEST_DEV_RUN,
     COLOURS,
-    EVAL_RUN,
     FIGURES_PATH,
     MODEL_NAME,
     PN_THEME,
@@ -17,9 +17,7 @@ from psycop.projects.restraint.utils.best_runs import Run
 
 
 def sensitivity_pipeline(run: Run, path: Path):
-    eval_ds = run.get_eval_dataset(
-        custom_columns=["outcome_coercion_type_within_2_days"],
-    )
+    eval_ds = run.get_eval_dataset()
 
     output_df = get_auroc_by_input_df(
         eval_dataset=eval_ds,  # type: ignore
@@ -89,5 +87,5 @@ def sensitivity_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    sensitivity_pipeline(EVAL_RUN, FIGURES_PATH)
+    sensitivity_pipeline(BEST_DEV_RUN, FIGURES_PATH)
     sensitivity_pipeline(TEXT_EVAL_RUN, TEXT_FIGURES_PATH)

@@ -12,11 +12,11 @@ preprocessing:
     min_lookahead_days: 2
     lookbehind_combination: [1, 3, 7, 10, 30, 180, 365, 730]
     min_age: 18
-    keep_only_one_outcome_col: false
-    classification_objective: "multilabel"
+    keep_only_one_outcome_col: true
+    classification_objective: "binary"
   post_split:
     imputation_method: "mean"
-    scaling: "z-score-normalisation"
+    scaling: "null"
     feature_selection:
       name: "null"
       params:
