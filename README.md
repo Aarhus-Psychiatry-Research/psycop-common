@@ -6,7 +6,7 @@
 |---------------------------------------------------------------------------------------------------------------- | -------: | -------: | ------: | --------: |
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
 | psycop/common/cohort\_definition.py                                                                             |       43 |       13 |     70% |18, 31, 35, 47, 52, 60-77 |
-| psycop/common/data\_structures/patient.py                                                                       |       35 |        2 |     94% |    22, 55 |
+| psycop/common/data\_structures/patient.py                                                                       |       37 |        4 |     89% |11-12, 25, 58 |
 | psycop/common/data\_structures/prediction\_time.py                                                              |       16 |        5 |     69% |      7-14 |
 | psycop/common/data\_structures/static\_feature.py                                                               |        9 |        1 |     89% |         7 |
 | psycop/common/data\_structures/temporal\_event.py                                                               |       11 |        1 |     91% |         7 |
@@ -24,14 +24,15 @@
 | psycop/common/feature\_generation/data\_checks/utils.py                                                         |       16 |        3 |     81% |   7-9, 72 |
 | psycop/common/feature\_generation/loaders/\_\_init\_\_.py                                                       |        0 |        0 |    100% |           |
 | psycop/common/feature\_generation/loaders/filters/\_\_init\_\_.py                                               |        0 |        0 |    100% |           |
-| psycop/common/feature\_generation/loaders/filters/diabetes\_filters.py                                          |       14 |        4 |     71% |  6, 41-48 |
+| psycop/common/feature\_generation/loaders/filters/cvd\_filters.py                                               |       12 |        0 |    100% |           |
+| psycop/common/feature\_generation/loaders/filters/diabetes\_filters.py                                          |       16 |        4 |     75% |  6, 49-56 |
 | psycop/common/feature\_generation/loaders/flattened/\_\_init\_\_.py                                             |        1 |        0 |    100% |           |
 | psycop/common/feature\_generation/loaders/flattened/local\_feature\_loaders.py                                  |       18 |        7 |     61% |9-11, 27-30, 76, 98, 118 |
 | psycop/common/feature\_generation/loaders/non\_numerical\_coercer.py                                            |       15 |        1 |     93% |        11 |
 | psycop/common/feature\_generation/loaders/raw/\_\_init\_\_.py                                                   |       10 |        0 |    100% |           |
 | psycop/common/feature\_generation/loaders/raw/load\_coercion.py                                                 |      102 |       52 |     49% |33-75, 97-118, 127-136, 151, 166, 180, 194, 208, 224-233, 248-263, 277-289, 304-324, 342, 356, 370, 384, 398, 412, 426, 440, 454, 468, 482 |
 | psycop/common/feature\_generation/loaders/raw/load\_demographic.py                                              |       21 |       13 |     38% |13-25, 30-43 |
-| psycop/common/feature\_generation/loaders/raw/load\_diagnoses.py                                                |      197 |       74 |     62% |19, 55-98, 109, 128, 150, 169, 188, 207, 226, 245-274, 285-314, 327, 346, 365, 384, 404, 423, 442, 461, 480, 499, 518, 537, 556, 578, 597, 616, 635, 657, 676, 695, 714, 736, 755, 774, 793, 815, 834, 853, 872, 892, 911, 930, 949, 968, 987, 1009, 1028, 1047, 1066, 1085, 1105, 1124, 1143, 1163, 1182, 1201, 1220, 1240 |
+| psycop/common/feature\_generation/loaders/raw/load\_diagnoses.py                                                |      202 |       77 |     62% |22, 58-101, 112, 131, 153, 172, 191, 210, 229, 248-277, 287-308, 319-348, 361, 380, 399, 418, 438, 457, 476, 495, 514, 533, 552, 571, 590, 612, 631, 650, 669, 691, 710, 729, 748, 770, 789, 808, 827, 849, 868, 887, 906, 926, 945, 964, 983, 1002, 1021, 1043, 1062, 1081, 1100, 1119, 1139, 1158, 1177, 1197, 1216, 1235, 1254, 1274 |
 | psycop/common/feature\_generation/loaders/raw/load\_ids.py                                                      |       10 |        5 |     50% | 10, 23-29 |
 | psycop/common/feature\_generation/loaders/raw/load\_lab\_results.py                                             |      180 |       92 |     49% |31-54, 73-95, 113-139, 157-180, 198-238, 249, 261-308, 320, 332, 344-351, 363, 375, 387, 399, 411, 423, 435, 447, 459, 471, 483, 495, 507, 519, 531, 543, 555, 567, 579, 591, 603, 615, 627, 639, 651, 663, 675, 687, 699, 711, 723, 735, 747, 762 |
 | psycop/common/feature\_generation/loaders/raw/load\_medications.py                                              |      201 |       77 |     62% |53-113, 135-144, 168, 189, 217, 254, 279, 303, 327, 351, 374, 397, 426, 452, 476, 502, 521, 540, 559, 578, 597, 617, 638, 658, 679, 698, 717, 750, 774, 797, 817, 837, 857, 876, 895, 914, 933, 952, 971, 990, 1010, 1030, 1049, 1068, 1087, 1106, 1125, 1144, 1163, 1182, 1201, 1220, 1239, 1258, 1277, 1296, 1315, 1334, 1353, 1373 |
@@ -113,7 +114,7 @@
 | psycop/common/model\_training/utils/col\_name\_inference.py                                                     |       41 |        9 |     78% |35, 67-68, 76, 96-101, 128 |
 | psycop/common/model\_training/utils/decorators.py                                                               |       43 |        1 |     98% |        31 |
 | psycop/common/model\_training/utils/utils.py                                                                    |       89 |       29 |     67% |40, 116-119, 145, 150-151, 159, 164, 213-219, 231-232, 249, 253, 283-286, 294-298, 306-316, 328-332 |
-| psycop/common/test\_utils/str\_to\_df.py                                                                        |       31 |        1 |     97% |        75 |
+| psycop/common/test\_utils/str\_to\_df.py                                                                        |       31 |        1 |     97% |        80 |
 | psycop/common/test\_utils/test\_data/model\_eval/generate\_synthetic\_dataset\_for\_eval.py                     |       55 |       39 |     29% |37, 42, 61-65, 84-88, 92-170 |
 | psycop/conftest.py                                                                                              |       47 |        3 |     94% |33, 37, 104 |
 | psycop/projects/forced\_admission\_inpatient/utils/feature\_name\_to\_readable.py                               |       26 |        5 |     81% | 15, 39-42 |
@@ -142,7 +143,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |21-22, 30, 52, 56-64, 68-74, 77-79, 96-97, 100-104, 107, 110, 117, 130-134, 137-139, 143, 155-162, 175-182, 197-207, 218 |
-|                                                                                                       **TOTAL** | **4388** | **1261** | **71%** |           |
+|                                                                                                       **TOTAL** | **4409** | **1266** | **71%** |           |
 
 
 ## Setup coverage badge
