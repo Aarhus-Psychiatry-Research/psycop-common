@@ -52,11 +52,16 @@ def str_to_df(
     # Drop comments for each line if any exist inside the str
     lines = []
     for line in string.split("\n"):
+        # Remove leading whitespace
         if " #" in line:
             line = line[: line.rfind("#")]  # noqa
 
-        line.strip()
-        line_without_ending_comma = line[:-1] if line.endswith(",") else line
+        line_sans_leading_trailing_whitespace = line.strip()
+        line_without_ending_comma = (
+            line_sans_leading_trailing_whitespace[:-1]
+            if line_sans_leading_trailing_whitespace.endswith(",")
+            else line
+        )
         lines.append(line_without_ending_comma)
 
     full_string = "\n".join(list(lines))
