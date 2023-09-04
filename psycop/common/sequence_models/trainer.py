@@ -9,7 +9,7 @@ import torch
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 
-from psycop.common.sequence_models.loggers import Logger
+from psycop.common.sequence_models.loggers.base import Logger
 
 
 class TrainableModel(Protocol):
@@ -23,8 +23,7 @@ class TrainableModel(Protocol):
         ...
 
 
-
-class CheckpointHandler(Protocol):
+class CheckpointSaver(Protocol):
     def __init__(self, checkpoint_path: Path, override_on_save: bool) -> None:
         ...
 
@@ -42,7 +41,7 @@ class Trainer:
         validate_every_n_steps: int,
         n_samples_to_validate_on: int,
         logger: Logger,
-        checkpoint_savers: Sequence[CheckpointHandler],
+        checkpoint_savers: Sequence[CheckpointSaver],
         save_every_n_steps: int,
     ) -> None:
         self.device = device
