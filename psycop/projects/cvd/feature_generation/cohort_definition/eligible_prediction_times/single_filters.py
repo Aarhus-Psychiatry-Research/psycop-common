@@ -66,18 +66,18 @@ class NoIncidentCVD(PredictionTimeFilter):
             get_first_cvd_indicator(),
         )
 
-        contacts_with_hba1c = df.join(
+        contacts_with_cvd = df.join(
             contacts_with_cvd,
             on="dw_ek_borger",
             how="left",
             suffix="_result",
         )
 
-        after_incident_cvd = contacts_with_hba1c.filter(
+        after_incident_cvd = contacts_with_cvd.filter(
             pl.col("timestamp") > pl.col("timestamp_result"),
         )
 
-        not_after_incident_cvd = contacts_with_hba1c.join(
+        not_after_incident_cvd = contacts_with_cvd.join(
             after_incident_cvd,
             on="dw_ek_borger",
             how="anti",
