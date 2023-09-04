@@ -111,7 +111,7 @@ def test_main(patients: list, tmp_path: Path):
     emb.fit(train_patients, add_mask_token=True)
 
     trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)  # TODO
-    trainer.fit(train_index=20)
+    trainer.fit(train_step=20)
     trainer.evaluate()
 
     # test that is can be loaded and saved from disk

@@ -7,10 +7,12 @@ from torch.utils.data import DataLoader
 
 @dataclass(frozen=True)
 class ModelCheckpoint:
-    n_steps: int
+    train_step: int
     model_state_dict: dict[Any, Any]
     optimizer_state_dict: dict[Any, Any]
     loss: float
+    train_dataloader: DataLoader
+    val_dataloader: DataLoader
 
 
 class CheckpointSaver(Protocol):
@@ -19,11 +21,7 @@ class CheckpointSaver(Protocol):
 
     def save(
         self,
-        epoch: int,
-        model_state_dict,
-        optimizer_state_dict,
-        loss: float,
-        dataloader: DataLoader,
+        checkpoint: ModelCheckpoint,
     ):
         ...
 
