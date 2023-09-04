@@ -2,13 +2,11 @@
 Defines the trainer class for sequence models
 """
 
-from dataclasses import dataclass
-from tabnanny import check
 from typing import Any, Protocol, Sequence
 
 import torch
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader, dataloader
+from torch.utils.data import DataLoader
 
 from psycop.common.sequence_models.checkpoint_savers.base import (
     Checkpoint,
