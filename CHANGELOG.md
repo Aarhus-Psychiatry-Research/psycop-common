@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v0.107.0 (2023-09-04)
+
+### Feature
+
+* Rename cohort definition to cvd_definition ([`27c5e59`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/27c5e59f0acd807f41cf6f2e99674a48d49f7356))
+* Minor examples ([`f2d99ad`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f2d99ad00c2c2301540693f56eb20a33a52e393a))
+* Cvd outcome definition ([`89dcf49`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/89dcf4948ec2b81012cfa44b0582d78d96c8f820))
+* Add cvd filters ([`9dcfe33`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9dcfe33439a52199e4764fc0d49cb76596d9fe1d))
+
+### Fix
+
+* Remove use of hba1c in cvd filters ([`395487e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/395487e481154eb0a3048ef6547685909c72ac48))
+* Unneeded newline handling ([`311d15d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/311d15d712d8fb79377f927f9cb61382a0b651eb))
+* Strip lines of whitespace before generating dataframes ([`628db49`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/628db494dd0753b69b69c63797b37a0ae76f33f8))
+
 ## v0.106.0 (2023-08-31)
 
 ### Feature
