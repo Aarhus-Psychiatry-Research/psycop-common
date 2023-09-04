@@ -19,14 +19,9 @@ class TestDataset(Dataset):
     def __getitem__(self, idx: int) -> tuple[int, int]:
         return self.data[idx]
 
-
-def dataset_for_tests() -> Dataset:
-    return TestDataset()
-
-
 @pytest.fixture()
 def dataloader_for_tests() -> DataLoader:
-    return DataLoader(dataset_for_tests(), batch_size=1, shuffle=True)
+    return DataLoader(TestDataset(), batch_size=1, shuffle=True)
 
 
 def filename_is_numbered_with_steps(path: Path) -> bool:

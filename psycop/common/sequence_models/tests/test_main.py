@@ -78,7 +78,7 @@ def test_behrt(patient_dataset: PatientDataset):
         loss.backward()  # ensure that the backward pass works
 
 
-def test_main(patients: list, tmp_path: Path):
+def test_main(patients: list[Patient], tmp_path: Path):
     """
     Tests the general intended workflow
     """
