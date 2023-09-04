@@ -2,13 +2,17 @@
 Defines the trainer class for sequence models
 """
 
-from pathlib import Path
-from typing import Protocol, Sequence
+from dataclasses import dataclass
+from tabnanny import check
+from typing import Any, Protocol, Self, Sequence
 
 import torch
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, dataloader
 
+from psycop.common.sequence_models.checkpoint_savers.base import (
+    CheckpointSaver,
+)
 from psycop.common.sequence_models.loggers.base import Logger
 
 
@@ -19,18 +23,15 @@ class TrainableModel(Protocol):
     def validation_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
         ...
 
-    def configure_optimizer(self) -> Optimizer:
+    def configure_optimizer(
+        self, state_dict: dict[Any, Any] | None = None
+    ) -> Optimizer:
         ...
 
-
-class CheckpointSaver(Protocol):
-    def __init__(self, checkpoint_path: Path, override_on_save: bool) -> None:
+    def state_dict(self) -> dict[str, float]:
         ...
 
-    def save(self) -> None:
-        ...
-
-    def load_latest(self) -> None:
+    def load_state_dict(self, state_dict: dict[str, float]) -> Self:
         ...
 
 
@@ -55,22 +56,36 @@ class Trainer:
 
     def fit(
         self,
-        n_steps: int,
+        train_index: int,
         model: TrainableModel,
         train_dataloader: DataLoader,
         val_dataloader: DataLoader,
+        resume_from_latest_checkpoint: bool = True,
     ) -> None:
-        optimizer = model.configure_optimizer()
+        checkpoint_state = self._load_state_from_latest_checkpoint()
+
+        if checkpoint_state is not None and resume_from_latest_checkpoint:
+            model.load_state_dict(checkpoint_state.model_state_dict)
+            optimizer = model.configure_optimizer(
+                state_dict=checkpoint_state.optimizer_state_dict
+            )
+            train_index = checkpoint_state.n_steps
+        elif resume_from_latest_checkpoint and checkpoint_state is None:
+            print("No checkpoint found, starting from scratch")
+            optimizer = model.configure_optimizer()
+            train_index = 0
+
+        # TODO: Figure out how to save the state of the dataloader sampler, so we can continue from the same point
 
         train_loss = []
-        for train_index, batch in enumerate(train_dataloader):
+        for batch in train_dataloader:
             loss = model.training_step(batch=batch)
             train_loss.append(loss)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            if n_steps % self.validate_every_n_steps == 0:
+            if train_index % self.validate_every_n_steps == 0:
                 self._evaluate(
                     model=model,
                     val_dataloader=val_dataloader,
@@ -78,12 +93,39 @@ class Trainer:
                     train_index=train_index,
                 )
 
-            if n_steps % self.save_every_n_steps == 0:
-                for checkpointer in self.checkpoint_savers:
-                    checkpointer.save()
+            if train_index % self.save_every_n_steps == 0:
+                self._save_state(
+                    model=model,
+                    optimizer=optimizer,
+                    global_steps=batch,
+                    loss=float(loss),
+                    train_dataloader=train_dataloader,
+                )
 
-            if n_steps == train_index:
+            if train_index == train_index:
                 break
+
+            train_index += 1
+
+    def _save_state(
+        self,
+        model: TrainableModel,
+        global_steps: int,
+        optimizer: Optimizer,
+        loss: float,
+        train_dataloader: DataLoader,
+    ):
+        model_state = model.state_dict()
+        optimizer_state = optimizer.state_dict()
+
+        for checkpointer in self.checkpoint_savers:
+            checkpointer.save(
+                epoch=global_steps,
+                model_state_dict=model_state,
+                optimizer_state_dict=optimizer_state,
+                loss=loss,
+                dataloader=train_dataloader,
+            )
 
     def _evaluate(
         self,
@@ -111,13 +153,13 @@ class Trainer:
             }
         )
 
-    def resume_training_from_latest_checkpoint(self) -> None:
+    def _load_state_from_latest_checkpoint(self) -> ModelCheckpoint | None:
         """
         Loads the trainer from disk
         """
-        # TODO - Should this be in init or .fit so we can automatically resume by just re-running a script?
         for checkpointer in self.checkpoint_savers:
-            result = checkpointer.load_latest()
-            if result is not None:
-                self = result
+            checkpoint = checkpointer.load_latest()
+            if checkpoint is None:
                 break
+            return checkpoint
+        return None

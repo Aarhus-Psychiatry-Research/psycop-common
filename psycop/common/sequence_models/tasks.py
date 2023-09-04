@@ -3,10 +3,12 @@ from copy import copy
 import torch
 from torch import nn
 
+from psycop.common.sequence_models.trainer import TrainableModel
+
 from .embedders import BEHRTEmbedder
 
 
-class BEHRTForMaskedLM(nn.Module):
+class BEHRTForMaskedLM(nn.Module, TrainableModel):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(
