@@ -152,7 +152,7 @@ class PaperOutputPaths:
 
         if create_output_paths_on_init:
             for path in [self.artifact, self.tables, self.figures, self.estimates]:
-                path.mkdir(parents=False, exist_ok=True)
+                path.mkdir(parents=True, exist_ok=True)
 
 
 class PaperOutputSettings:
