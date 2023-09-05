@@ -68,7 +68,7 @@ class BEHRTForMaskedLM(nn.Module):
         mask[mask.clone()] = prob[mask] < replace_with_random_prob
         diagnosis[mask] = torch.randint(
             0, self.embedding_module.n_diagnosis_codes - 1, mask.sum().shape
-        )  # TODO
+        )
 
         # -> rest 10% of the time, keep the original word
         return diagnosis, masked_lm_labels
