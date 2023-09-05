@@ -4,8 +4,9 @@ import torch
 from torch import nn
 from torch.optim import Optimizer
 
+from psycop.common.data_structures.patient import Patient
 from psycop.common.sequence_models.checkpoint_savers.base import TrainingState
-from psycop.common.sequence_models.trainer import PSYCOPModule
+from psycop.common.sequence_models.trainer import BatchWithLabels, PSYCOPModule
 
 from .embedders import BEHRTEmbedder
 
@@ -17,12 +18,11 @@ class BEHRTForMaskedLM(nn.Module, PSYCOPModule):
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
-        optimizer: Optimizer,
     ):
         super().__init__()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
-        self.optimizer = optimizer
+        self.optimizer = self.configure_optimizer()
 
         self.d_model = self.embedding_module.d_model
         self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
@@ -30,12 +30,12 @@ class BEHRTForMaskedLM(nn.Module, PSYCOPModule):
         self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
-    def training_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+    def training_step(self, batch: BatchWithLabels) -> torch.Tensor:
         # Zero the gradients
         self.optimizer.zero_grad()
 
         # Forward pass
-        output = self.forward(batch, batch["masked_lm_labels"])
+        output = self.forward(batch[0], batch[1])
         loss = output["loss"]
 
         # Backward pass
@@ -46,11 +46,9 @@ class BEHRTForMaskedLM(nn.Module, PSYCOPModule):
 
         return loss
 
-    def validation_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+    def validation_step(self, batch: BatchWithLabels) -> torch.Tensor:
         with torch.no_grad():
-            output = self.forward(
-                inputs=batch, masked_lm_labels=batch["masked_lm_labels"]
-            )
+            output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
 
         return output["loss"]
 
@@ -125,7 +123,7 @@ class BEHRTForMaskedLM(nn.Module, PSYCOPModule):
         return padded_sequence_ids, masked_labels
 
     def collate_fn(
-        self, patients: list
+        self, patients: list[Patient]
     ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
         """
         Takes a list of patients and returns a dictionary of padded sequence ids.
@@ -146,3 +144,7 @@ class BEHRTForMaskedLM(nn.Module, PSYCOPModule):
             model_state_dict=self.state_dict(),
             optimizer_state_dict=self.optimizer.state_dict(),
         )
+
+    def configure_optimizer(self) -> Optimizer:
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
+        return optimizer

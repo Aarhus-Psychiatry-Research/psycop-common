@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
@@ -14,6 +15,10 @@ from psycop.common.sequence_models import (
     PatientDataset,
     Trainer,
 )
+from psycop.common.sequence_models.checkpoint_savers.save_to_disk import (
+    CheckpointToDisk,
+)
+from psycop.common.sequence_models.loggers.wandb_logger import WandbLogger
 
 
 @pytest.fixture()
@@ -78,6 +83,25 @@ def test_behrt(patient_dataset: PatientDataset):
         loss.backward()  # ensure that the backward pass works
 
 
+def init_test_trainer(checkpoint_path: Path) -> Trainer:
+    return Trainer(
+        device=torch.device("mps"),
+        validate_every_n_steps=1,
+        n_samples_to_validate_on=1,
+        logger=WandbLogger(
+            run_name="test_run",
+            project_name="test",
+            entity="test_entity",
+            group="test_group",
+            config={"test_config": "test_config_value"},
+        ),
+        checkpoint_savers=[
+            CheckpointToDisk(checkpoint_path=checkpoint_path, override_on_save=True)
+        ],
+        save_every_n_steps=1,
+    )
+
+
 def test_main(patients: list[Patient], tmp_path: Path):
     """
     Tests the general intended workflow
@@ -87,6 +111,7 @@ def test_main(patients: list[Patient], tmp_path: Path):
 
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+    emb.fit(train_patients, add_mask_token=True)
 
     encoder_layer = nn.TransformerEncoderLayer(
         d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
@@ -94,36 +119,35 @@ def test_main(patients: list[Patient], tmp_path: Path):
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
     # this includes the loss and the MLM head
-    task = BEHRTForMaskedLM(embedding_module=emb, encoder_module=encoder)
-    # ^should masking be here?
-
-    optimizer = torch.optim.Adam(task.parameters(), lr=1e-4)
+    module = BEHRTForMaskedLM(
+        embedding_module=emb,
+        encoder_module=encoder,
+    )
 
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
 
     train_dataloader = DataLoader(
-        train_dataset, batch_size=32, shuffle=True, collate_fn=task.collate_fn
+        train_dataset, batch_size=32, shuffle=True, collate_fn=module.collate_fn
     )
     val_dataloader = DataLoader(
-        val_dataset, batch_size=32, shuffle=True, collate_fn=task.collate_fn
+        val_dataset, batch_size=32, shuffle=True, collate_fn=module.collate_fn
     )
 
-    emb.fit(train_patients, add_mask_token=True)
-
-    trainer = Trainer(
-        task=task,
-        optimizer=optimizer,
+    trainer = init_test_trainer(checkpoint_path=tmp_path).fit(
+        n_steps=1,
+        model=module,
         train_dataloader=train_dataloader,
         val_dataloader=val_dataloader,
-    )  # TODO
+        resume_from_latest_checkpoint=False,
+    )
 
-    trainer.fit(train_step=20)
-    trainer.evaluate()
-
-    # test that is can be loaded and saved from disk
-    trainer.save_to_disk(tmp_path)
-    trainer._load_state_from_latest_checkpoint(tmp_path)
-
-    # tes that it can log data
-    trainer.log({"step": 1, "loss": 0.1})
+    # Check that model can resume training
+    resumed_trainer = init_test_trainer(checkpoint_path=tmp_path).fit(
+        n_steps=2,
+        model=deepcopy(module),
+        train_dataloader=deepcopy(train_dataloader),
+        val_dataloader=deepcopy(val_dataloader),
+        resume_from_latest_checkpoint=True,
+    )
+    assert resumed_trainer.train_step == 2
