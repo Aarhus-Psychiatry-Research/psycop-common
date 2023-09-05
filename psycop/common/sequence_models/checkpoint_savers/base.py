@@ -6,14 +6,19 @@ from torch.utils.data import DataLoader
 
 
 @dataclass(frozen=True)
+class TrainingState:
+    model_state_dict: dict[Any, Any]
+    optimizer_state_dict: dict[Any, Any]
+
+
+@dataclass(frozen=True)
 class Checkpoint:
     run_name: str
     train_step: int
-    model_state_dict: dict[Any, Any]
-    optimizer_state_dict: dict[Any, Any]
     loss: float
     train_dataloader: DataLoader
     val_dataloader: DataLoader
+    training_state: TrainingState
 
 
 class CheckpointSaver(Protocol):

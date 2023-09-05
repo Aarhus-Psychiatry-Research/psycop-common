@@ -2,7 +2,7 @@
 Defines the trainer class for sequence models
 """
 
-from typing import Any, Protocol, Sequence
+from typing import Protocol, Sequence
 
 import torch
 from torch.optim import Optimizer
@@ -11,26 +11,25 @@ from torch.utils.data import DataLoader
 from psycop.common.sequence_models.checkpoint_savers.base import (
     Checkpoint,
     CheckpointSaver,
+    TrainingState,
 )
 from psycop.common.sequence_models.loggers.base import Logger
 
 
-class TrainableModel(Protocol):
+# TODO: Super annoying module name, but what is the name of an optimizer + a model?
+class PSYCOPModule(Protocol):
+    optimizer: Optimizer
+
     def training_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
         ...
 
     def validation_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
         ...
 
-    def configure_optimizer(
-        self, state_dict: dict[Any, Any] | None = None
-    ) -> Optimizer:
+    def get_state(self) -> TrainingState:
         ...
 
-    def state_dict(self) -> dict[str, float]:
-        ...
-
-    def load_state_dict(self, state_dict: dict[str, float]):
+    def load_checkpoint(self, checkpoint: TrainingState):
         ...
 
 
@@ -56,7 +55,7 @@ class Trainer:
     def fit(
         self,
         train_step: int,
-        model: TrainableModel,
+        model: PSYCOPModule,
         train_dataloader: DataLoader,
         val_dataloader: DataLoader,
         resume_from_latest_checkpoint: bool = True,
@@ -64,10 +63,7 @@ class Trainer:
         checkpoint_state = self._load_state_from_latest_checkpoint()
 
         if resume_from_latest_checkpoint and checkpoint_state is not None:
-            model.load_state_dict(checkpoint_state.model_state_dict)
-            optimizer = model.configure_optimizer(
-                state_dict=checkpoint_state.optimizer_state_dict
-            )
+            model.load_checkpoint(checkpoint=checkpoint_state.training_state)
             train_step = checkpoint_state.train_step
         else:
             if resume_from_latest_checkpoint and checkpoint_state is None:
@@ -76,17 +72,12 @@ class Trainer:
                 print(
                     f"Resume from latest checkpoint is {resume_from_latest_checkpoint}, training model from scratch"
                 )
-            optimizer = model.configure_optimizer()
             train_step = 0
 
         train_loss = []
         for batch in train_dataloader:
             loss = model.training_step(batch=batch)
             train_loss.append(loss)
-
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
 
             if train_step % self.validate_every_n_steps == 0:
                 self._evaluate(
@@ -98,7 +89,6 @@ class Trainer:
             if train_step % self.save_every_n_steps == 0:
                 self._save_checkpoints(
                     model=model,
-                    optimizer=optimizer,
                     global_steps=batch,
                     train_loss=train_loss,
                     train_dataloader=train_dataloader,
@@ -109,33 +99,29 @@ class Trainer:
 
     def _save_checkpoints(
         self,
-        model: TrainableModel,
+        model: PSYCOPModule,
         global_steps: int,
-        optimizer: Optimizer,
         train_loss: list[torch.Tensor],
         train_dataloader: DataLoader,
         val_dataloader: DataLoader,
     ):
-        model_state = model.state_dict()
-        optimizer_state = optimizer.state_dict()
         train_loss_mean = float(torch.stack(train_loss).mean())
 
         for checkpointer in self.checkpoint_savers:
             checkpointer.save(
                 Checkpoint(
+                    run_name=self.logger.run_name,
                     train_step=global_steps,
-                    model_state_dict=model_state,
-                    optimizer_state_dict=optimizer_state,
                     loss=train_loss_mean,
                     train_dataloader=train_dataloader,
                     val_dataloader=val_dataloader,
-                    run_name=self.logger.run_name,
+                    training_state=model.get_state(),
                 )
             )
 
     def _evaluate(
         self,
-        model: TrainableModel,
+        model: PSYCOPModule,
         val_dataloader: DataLoader,
         train_loss: list[torch.Tensor],
         train_index: int,

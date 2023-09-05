@@ -2,29 +2,57 @@ from copy import copy
 
 import torch
 from torch import nn
+from torch.optim import Optimizer
 
-from psycop.common.sequence_models.trainer import TrainableModel
+from psycop.common.sequence_models.checkpoint_savers.base import TrainingState
+from psycop.common.sequence_models.trainer import PSYCOPModule
 
 from .embedders import BEHRTEmbedder
 
 
-class BEHRTForMaskedLM(nn.Module, TrainableModel):
+class BEHRTForMaskedLM(nn.Module, PSYCOPModule):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
+        optimizer: Optimizer,
     ):
         super().__init__()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
+        self.optimizer = optimizer
 
         self.d_model = self.embedding_module.d_model
         self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
 
         self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
+
+    def training_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        # Zero the gradients
+        self.optimizer.zero_grad()
+
+        # Forward pass
+        output = self.forward(batch, batch["masked_lm_labels"])
+        loss = output["loss"]
+
+        # Backward pass
+        loss.backward()
+
+        # Update the weights
+        self.optimizer.step()
+
+        return loss
+
+    def validation_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        with torch.no_grad():
+            output = self.forward(
+                inputs=batch, masked_lm_labels=batch["masked_lm_labels"]
+            )
+
+        return output["loss"]
 
     def forward(
         self,
@@ -108,3 +136,13 @@ class BEHRTForMaskedLM(nn.Module, TrainableModel):
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
 
         return padded_sequence_ids, masked_labels
+
+    def load_checkpoint(self, checkpoint: TrainingState):
+        self.load_state_dict(checkpoint.model_state_dict)
+        self.optimizer.load_state_dict(checkpoint.optimizer_state_dict)
+
+    def get_state(self) -> TrainingState:
+        return TrainingState(
+            model_state_dict=self.state_dict(),
+            optimizer_state_dict=self.optimizer.state_dict(),
+        )

@@ -87,6 +87,7 @@ def test_main(patients: list[Patient], tmp_path: Path):
 
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+
     encoder_layer = nn.TransformerEncoderLayer(
         d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
     )
@@ -110,7 +111,13 @@ def test_main(patients: list[Patient], tmp_path: Path):
 
     emb.fit(train_patients, add_mask_token=True)
 
-    trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)  # TODO
+    trainer = Trainer(
+        task=task,
+        optimizer=optimizer,
+        train_dataloader=train_dataloader,
+        val_dataloader=val_dataloader,
+    )  # TODO
+
     trainer.fit(train_step=20)
     trainer.evaluate()
 
