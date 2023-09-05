@@ -78,7 +78,7 @@ def test_behrt(patient_dataset: PatientDataset):
         loss.backward()  # ensure that the backward pass works
 
 
-def test_main(patients: list, tmp_path: Path):
+def test_main(patients: list[Patient], tmp_path: Path):
     """
     Tests the general intended workflow
     """
@@ -111,12 +111,12 @@ def test_main(patients: list, tmp_path: Path):
     emb.fit(train_patients, add_mask_token=True)
 
     trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)  # TODO
-    trainer.fit(n_steps=20)
+    trainer.fit(train_step=20)
     trainer.evaluate()
 
     # test that is can be loaded and saved from disk
     trainer.save_to_disk(tmp_path)
-    trainer.resume_training_from_latest_checkpoint(tmp_path)
+    trainer._load_state_from_latest_checkpoint(tmp_path)
 
     # tes that it can log data
     trainer.log({"step": 1, "loss": 0.1})
