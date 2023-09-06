@@ -3,7 +3,7 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
     plot_auc_roc,
 )
-from psycop.projects.forced_admission_inpatient.model_evaluation.martin_eval.selected_runs import (
+from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
     BEST_EVAL_PIPELINE,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
@@ -11,7 +11,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 )
 
 
-def auroc_plot(run: PipelineRun) -> pn.ggplot:
+def fa_auroc_plot(run: PipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     p = plot_auc_roc(
@@ -25,4 +25,4 @@ def auroc_plot(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    auroc_plot(run=BEST_EVAL_PIPELINE)
+    fa_auroc_plot(run=BEST_EVAL_PIPELINE)

@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-from config import MODEL_NAME
 from wasabi import Printer
 
 from psycop.common.model_training.application_modules.train_model.main import (
@@ -13,6 +12,8 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     RunGroup,
 )
 
+from .config import MODEL_NAME
+
 msg = Printer(timestamp=True)  # type: ignore
 
 
@@ -21,7 +22,7 @@ def _get_test_run_name(pipeline_to_train: PipelineRun) -> str:
 
 
 def _get_test_group_name(pipeline_to_train: PipelineRun) -> str:
-    return f"{pipeline_to_train.group.group_name}-eval-on-test"
+    return f"{pipeline_to_train.group.group_name!s}-eval-on-test"
 
 
 def _get_test_group_path(pipeline_to_train: PipelineRun) -> Path:
