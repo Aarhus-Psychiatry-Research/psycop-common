@@ -1,6 +1,7 @@
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
+from typing import Self
 
 import pytest
 import torch
@@ -151,3 +152,14 @@ def test_main(patients: list[Patient], tmp_path: Path):
         resume_from_latest_checkpoint=True,
     )
     assert resumed_trainer.train_step == 2
+
+
+def infinite_multiplier(a: int, b: int = 1) -> Self:
+    product = a * b
+    return infinite_multiplier(product)
+
+
+if __name__ == "__main__":
+    val = infinite_multiplier(1)(2)(3)
+    print(val)
+    pass
