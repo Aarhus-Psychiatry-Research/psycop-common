@@ -61,6 +61,13 @@ class ArtifactsToDiskSaver:
                 if series is not None  # type: ignore
             }
 
+        if isinstance(eval_dataset.y_hat_probs, pd.DataFrame):
+            df_template |= {
+                col_name: series
+                for col_name, series in dict(eval_dataset.y_hat_probs).items()
+                if series is not None  # type: ignore
+            }
+
         # Remove items that aren't series, e.g. the top level CustomColumns object
         template_filtered = {
             k: v for k, v in df_template.items() if isinstance(v, pd.Series)
