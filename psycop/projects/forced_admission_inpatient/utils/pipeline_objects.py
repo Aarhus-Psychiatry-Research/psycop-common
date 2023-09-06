@@ -28,7 +28,7 @@ def df_to_eval_dataset(
     return EvalDataset(
         ids=df["ids"],
         y=df["y"],
-        y_hat_probs=df["y_hat_probs"],
+        y_hat_probs=df["y_hat_prob"],
         pred_timestamps=df["pred_timestamps"],
         outcome_timestamps=df["outcome_timestamps"],
         age=df["age"],
