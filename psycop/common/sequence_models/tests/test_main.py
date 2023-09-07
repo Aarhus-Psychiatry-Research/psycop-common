@@ -1,7 +1,6 @@
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from typing import Self
 
 import pytest
 import torch
@@ -107,8 +106,10 @@ def test_main(patients: list[Patient], tmp_path: Path):
     """
     Tests the general intended workflow
     """
-    train_patients = patients[:1]
-    val_patients = patients[1:]
+    patients = patients * 10
+    midpoint = int(len(patients) / 2)
+    train_patients = patients[:midpoint]
+    val_patients = patients[midpoint:]
 
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
@@ -129,10 +130,10 @@ def test_main(patients: list[Patient], tmp_path: Path):
     val_dataset = PatientDataset(val_patients)
 
     train_dataloader = DataLoader(
-        train_dataset, batch_size=32, shuffle=True, collate_fn=module.collate_fn
+        train_dataset, batch_size=1, shuffle=True, collate_fn=module.collate_fn
     )
     val_dataloader = DataLoader(
-        val_dataset, batch_size=32, shuffle=True, collate_fn=module.collate_fn
+        val_dataset, batch_size=1, shuffle=True, collate_fn=module.collate_fn
     )
 
     trainer = init_test_trainer(checkpoint_path=tmp_path).fit(
@@ -152,14 +153,3 @@ def test_main(patients: list[Patient], tmp_path: Path):
         resume_from_latest_checkpoint=True,
     )
     assert resumed_trainer.train_step == 2
-
-
-def infinite_multiplier(a: int, b: int = 1) -> Self:
-    product = a * b
-    return infinite_multiplier(product)
-
-
-if __name__ == "__main__":
-    val = infinite_multiplier(1)(2)(3)
-    print(val)
-    pass

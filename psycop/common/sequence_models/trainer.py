@@ -67,6 +67,11 @@ class Trainer:
     ) -> Self:
         checkpoint_state = self._load_state_from_latest_checkpoint()
 
+        if n_steps <= self.train_step:
+            raise ValueError(
+                f"Model is already trained to {self.train_step} steps, n_steps would result in no further training. Set a new n_steps > {self.train_step}."
+            )
+
         if resume_from_latest_checkpoint and checkpoint_state is not None:
             print("Resuming from latest checkpoint")
             model.load_checkpoint(checkpoint=checkpoint_state.training_state)
@@ -101,9 +106,9 @@ class Trainer:
                 )
 
             self.train_step += 1
-
-            if self.train_step == n_steps + 1:
+            if self.train_step >= n_steps:
                 break
+
         return self
 
     def _save_checkpoints(
