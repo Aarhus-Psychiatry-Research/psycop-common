@@ -2,7 +2,6 @@ import pytest
 import torch
 from torch import nn
 
-from psycop.common.seeds import set_seeds
 from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM, Embedder
 
 from .test_main import patients  # noqa: F401 # type: ignore

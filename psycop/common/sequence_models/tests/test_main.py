@@ -9,7 +9,6 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures import Patient, TemporalEvent
-from psycop.common.seeds import set_seeds
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
@@ -116,7 +115,6 @@ def test_main(patients: list[Patient], tmp_path: Path):
     """
     Tests the general intended workflow
     """
-    set_seeds()
     patients = patients * 10
     midpoint = int(len(patients) / 2)
     train_patients = patients[:midpoint]
