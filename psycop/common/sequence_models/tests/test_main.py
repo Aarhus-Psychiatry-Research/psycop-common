@@ -1,6 +1,7 @@
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
+from statistics import mean
 
 import pytest
 import torch
@@ -8,6 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.seeds import set_seeds
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
@@ -18,7 +20,18 @@ from psycop.common.sequence_models import (
 from psycop.common.sequence_models.checkpoint_savers.save_to_disk import (
     CheckpointToDisk,
 )
+from psycop.common.sequence_models.loggers.base import Logger
 from psycop.common.sequence_models.loggers.wandb_logger import WandbLogger
+
+
+class LoggerMock(Logger):
+    def __init__(self, project_name: str, run_name: str):
+        self.metrics: list[dict[str, float]] = []
+        self.run_name = run_name
+        self.project_name = project_name
+
+    def log_metrics(self, metrics: dict[str, float]) -> None:
+        self.metrics += [metrics]
 
 
 @pytest.fixture()
@@ -87,13 +100,10 @@ def init_test_trainer(checkpoint_path: Path) -> Trainer:
     return Trainer(
         device=torch.device("mps"),
         validate_every_n_steps=1,
-        n_samples_to_validate_on=1,
-        logger=WandbLogger(
+        n_samples_to_validate_on=2,
+        logger=LoggerMock(
             run_name="test_run",
             project_name="test",
-            entity="test_entity",
-            group="test_group",
-            config={"test_config": "test_config_value"},
         ),
         checkpoint_savers=[
             CheckpointToDisk(checkpoint_path=checkpoint_path, override_on_save=True)
@@ -106,6 +116,7 @@ def test_main(patients: list[Patient], tmp_path: Path):
     """
     Tests the general intended workflow
     """
+    set_seeds()
     patients = patients * 10
     midpoint = int(len(patients) / 2)
     train_patients = patients[:midpoint]
@@ -130,10 +141,10 @@ def test_main(patients: list[Patient], tmp_path: Path):
     val_dataset = PatientDataset(val_patients)
 
     train_dataloader = DataLoader(
-        train_dataset, batch_size=1, shuffle=True, collate_fn=module.collate_fn
+        train_dataset, batch_size=2, shuffle=True, collate_fn=module.collate_fn
     )
     val_dataloader = DataLoader(
-        val_dataset, batch_size=1, shuffle=True, collate_fn=module.collate_fn
+        val_dataset, batch_size=2, shuffle=True, collate_fn=module.collate_fn
     )
 
     trainer = init_test_trainer(checkpoint_path=tmp_path).fit(
@@ -145,11 +156,21 @@ def test_main(patients: list[Patient], tmp_path: Path):
     )
 
     # Check that model can resume training
+    final_training_steps = 10
     resumed_trainer = init_test_trainer(checkpoint_path=tmp_path).fit(
-        n_steps=2,
+        n_steps=final_training_steps,
         model=deepcopy(module),
         train_dataloader=deepcopy(train_dataloader),
         val_dataloader=deepcopy(val_dataloader),
         resume_from_latest_checkpoint=True,
     )
-    assert resumed_trainer.train_step == 2
+    assert resumed_trainer.train_step == final_training_steps
+
+    # Check that model loss decreases over training time
+    metrics = resumed_trainer.logger.metrics
+    first_three_losses = [metrics[i]["Training loss"] for i in range(0, 3)]
+    last_three_losses = [metrics[i]["Training loss"] for i in range(-3, 0)]
+    final_loss_smaller_than_initial_loss = mean(first_three_losses) > mean(
+        last_three_losses
+    )
+    assert final_loss_smaller_than_initial_loss

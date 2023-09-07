@@ -2,6 +2,7 @@ import pytest
 import torch
 from torch import nn
 
+from psycop.common.seeds import set_seeds
 from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM, Embedder
 
 from .test_main import patients  # noqa: F401 # type: ignore
@@ -38,3 +39,22 @@ def test_masking_fn(patients: list, embedding_module: Embedder):
     padding_mask = masked_input_ids["is_padding"] == 1
     # check that all masked_labels where padding_mask is True are -1
     assert (masked_labels[padding_mask] == -1).all()
+
+
+def test_masking_never_masks_0_elements_in_seq():
+    # If no element in the batch is masked, mask the first element.
+    # Is necessary to not get errors with small batch sizes, since the MLM module expects
+    # at least one element to be masked.
+    n_diagnoses_in_vocab = 4
+    diagnosis = torch.randint(0, n_diagnoses_in_vocab, (2, 2))
+
+    for i in range(100):
+        result = BEHRTForMaskedLM.mask(
+            diagnosis=diagnosis,
+            n_diagnoses_in_vocab=n_diagnoses_in_vocab,
+            mask_token_id=5,
+        )
+        no_elements_are_masked = torch.all(result[1] == -1)
+        assert not no_elements_are_masked
+
+    pass

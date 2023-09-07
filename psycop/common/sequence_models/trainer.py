@@ -2,6 +2,7 @@
 Defines the trainer class for sequence models
 """
 
+import math
 from typing import Protocol, Sequence
 
 import torch
@@ -85,29 +86,31 @@ class Trainer:
                 )
 
         train_loss = []
-        for batch in train_dataloader:
-            loss = model.training_step(batch=batch)
-            train_loss.append(loss)
+        n_epochs = max(int(n_steps / len(train_dataloader)), 1)
+        for _ in range(n_epochs):
+            for batch in train_dataloader:
+                loss = model.training_step(batch=batch)
+                train_loss.append(loss)
 
-            if self.train_step % self.validate_every_n_steps == 0:
-                self._evaluate(
-                    model=model,
-                    val_dataloader=val_dataloader,
-                    train_loss=train_loss,
-                    train_index=self.train_step,
-                )
-            if self.train_step % self.save_every_n_steps == 0:
-                self._save_checkpoints(
-                    model=model,
-                    global_steps=self.train_step,
-                    train_loss=train_loss,
-                    train_dataloader=train_dataloader,
-                    val_dataloader=val_dataloader,
-                )
+                if self.train_step % self.validate_every_n_steps == 0:
+                    self._evaluate(
+                        model=model,
+                        val_dataloader=val_dataloader,
+                        train_loss=train_loss,
+                        train_index=self.train_step,
+                    )
+                if self.train_step % self.save_every_n_steps == 0:
+                    self._save_checkpoints(
+                        model=model,
+                        global_steps=self.train_step,
+                        train_loss=train_loss,
+                        train_dataloader=train_dataloader,
+                        val_dataloader=val_dataloader,
+                    )
 
-            self.train_step += 1
-            if self.train_step >= n_steps:
-                break
+                self.train_step += 1
+                if self.train_step >= n_steps:
+                    break
 
         return self
 
