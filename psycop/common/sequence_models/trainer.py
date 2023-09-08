@@ -28,7 +28,6 @@ class Trainer:
         """
         Performs a single training step
         """
-        pass
 
     def evaluate(self, dataloader: DataLoader) -> dict[str, float]:
         pass
@@ -37,16 +36,13 @@ class Trainer:
         """
         Logs metrics to the logger
         """
-        pass
 
     def save_to_disk(self, path: str) -> None:
         """
         Saves the trainer to disk including the optimizer state, the task state etc.
         """
-        pass
 
     def load_from_disk(self, path: str) -> None:
         """
         Loads the trainer from disk
         """
-        pass

@@ -1,10 +1,7 @@
-import random
 from copy import copy
 
 import torch
 from torch import nn
-
-from psycop.common.data_structures import Patient
 
 
 class BEHRTMaskingTask(nn.Module):
@@ -20,7 +17,8 @@ class BEHRTMaskingTask(nn.Module):
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.mlm_head = nn.Linear(
-            self.embedding_module.d_model, embedding_module.vocab_size
+            self.embedding_module.d_model,
+            embedding_module.vocab_size,
         )
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
@@ -36,7 +34,8 @@ class BEHRTMaskingTask(nn.Module):
         logits = self.mlm_head(encoded_patients)
 
         masked_lm_loss = self.loss(
-            logits.view(-1, logits.size(-1)), masked_lm_labels.view(-1)
+            logits.view(-1, logits.size(-1)),
+            masked_lm_labels.view(-1),
         )  # (bs * seq_length, vocab_size), (bs * seq_length)
         return {"logits": logits, "masked_lm_loss": masked_lm_loss}
 
@@ -63,7 +62,9 @@ class BEHRTMaskingTask(nn.Module):
         prob /= 0.8
         mask[mask.clone()] = prob[mask] < 0.1
         diagnosis[mask] = torch.randint(
-            0, self.embedding_module.vocab_size - 1, mask.sum().shape
+            0,
+            self.embedding_module.vocab_size - 1,
+            mask.sum().shape,
         )  # TODO fix vocab_size (only diagnosis codes)
 
         # -> rest 10% of the time, keep the original word
@@ -71,7 +72,8 @@ class BEHRTMaskingTask(nn.Module):
         return diagnosis, masked_lm_labels
 
     def masking_fn(
-        self, padded_sequence_ids: dict[str, torch.Tensor]
+        self,
+        padded_sequence_ids: dict[str, torch.Tensor],
     ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
         """
         Takes a dictionary of padded sequence ids and masks 15% of the tokens in the diagnosis sequence.

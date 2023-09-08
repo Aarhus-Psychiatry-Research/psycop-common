@@ -2,9 +2,9 @@
 Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
-from copy import copy
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Any, Protocol, Sequence
+from typing import Any, Protocol
 
 import numpy as np
 import torch
@@ -66,11 +66,13 @@ class BEHRTEmbedder(nn.Module):
         self.age_embeddings = nn.Embedding(n_age_bins, self.d_model)
         self.segment_embeddings = nn.Embedding(self.n_segments, self.d_model)
         self.position_embeddings = nn.Embedding(
-            max_position_embeddings, self.d_model
+            max_position_embeddings,
+            self.d_model,
         ).from_pretrained(
             embeddings=self._init_position_embeddings(
-                max_position_embeddings, self.d_model
-            )
+                max_position_embeddings,
+                self.d_model,
+            ),
         )
 
     def forward(
@@ -166,7 +168,9 @@ class BEHRTEmbedder(nn.Module):
             pad_idx = self.vocab[key]["PAD"]
 
             padded_sequences[key] = pad_sequence(
-                [p[key] for p in sequences], batch_first=True, padding_value=pad_idx
+                [p[key] for p in sequences],
+                batch_first=True,
+                padding_value=pad_idx,
             )
 
         return padded_sequences
@@ -192,7 +196,7 @@ class BEHRTEmbedder(nn.Module):
 
         # convert to tensor
         output: dict[str, torch.Tensor] = {}
-        for key in event_inputs[0].keys():
+        for key in event_inputs[0]:
             output[key] = torch.stack([e[key] for e in event_inputs])
         return output
 
@@ -201,7 +205,9 @@ class BEHRTEmbedder(nn.Module):
         return int(age.days // 365.25)
 
     def collate_event(
-        self, event: TemporalEvent, patient: Patient
+        self,
+        event: TemporalEvent,
+        patient: Patient,
     ) -> dict[str, torch.Tensor]:
         age = self.get_patient_age(event, patient.date_of_birth)
 
