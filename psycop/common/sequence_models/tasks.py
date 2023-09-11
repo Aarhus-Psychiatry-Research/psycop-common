@@ -123,7 +123,6 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         # If no element in the batch is masked, mask the first element.
         # Is necessary to not get errors with small batch sizes, since the MLM module expects
         # at least one element to be masked.
-        # TODO: How expensive is this in performance?
         if torch.all(masked_labels == -1):
             masked_labels[0][0] = 1
 

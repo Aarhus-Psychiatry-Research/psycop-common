@@ -3,7 +3,10 @@ from pathlib import Path
 import pytest
 from torch.utils.data import DataLoader, Dataset
 
-from psycop.common.sequence_models.checkpoint_savers.base import Checkpoint
+from psycop.common.sequence_models.checkpoint_savers.base import (
+    Checkpoint,
+    TrainingState,
+)
 from psycop.common.sequence_models.checkpoint_savers.save_to_disk import (
     CheckpointToDisk,
 )
@@ -47,8 +50,7 @@ def test_save_to_disk(
     checkpoint = Checkpoint(
         run_name="test",
         train_step=0,
-        model_state_dict={},
-        optimizer_state_dict={},
+        training_state=TrainingState(model_state_dict={}, optimizer_state_dict={}),
         loss=0.0,
         train_dataloader=dataloader_for_tests,
         val_dataloader=dataloader_for_tests,
