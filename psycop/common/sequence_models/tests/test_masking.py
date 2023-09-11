@@ -1,3 +1,5 @@
+from typing import Callable
+
 import pytest
 import torch
 from torch import nn
@@ -39,20 +41,22 @@ def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):  # noqa: F
     assert (masked_labels[padding_mask] == -1).all()
 
 
-def test_masking_never_masks_0_elements_in_seq(
-    trainable_module: BEHRTForMaskedLM,
-):  # noqa: F811
-    # If no element in the batch is masked, mask the first element.
-    # Is necessary to not get errors with small batch sizes, since the MLM module expects
+@pytest.mark.parametrize("masking_fn", [BEHRTForMaskedLM.mask])
+def test_masking_never_masks_0_elements_in_seq(masking_fn: Callable):
+    # If no element in the batch is masked we get an error since the MLM module expects
     # at least one element to be masked.
     n_diagnoses_in_vocab = 4
     diagnosis = torch.randint(0, n_diagnoses_in_vocab, (2, 2))
-    padded_sequence_ids = {
-        "diagnosis": diagnosis,
-        "is_padding": torch.zeros_like(diagnosis),
-    }
+    padding_mask = torch.zeros_like(diagnosis, dtype=torch.bool)
+
+    input_kwargs = dict(
+        diagnosis=diagnosis,
+        n_diagnoses_in_vocab=n_diagnoses_in_vocab,
+        mask_token_id=0,
+        padding_mask=padding_mask,
+    )
 
     for _i in range(100):
-        result = trainable_module.masking_fn(padded_sequence_ids)
+        result = masking_fn(**input_kwargs)
         no_elements_are_masked = torch.all(result[1] == -1)
         assert not no_elements_are_masked
