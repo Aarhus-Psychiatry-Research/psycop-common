@@ -49,12 +49,12 @@ def test_masking_never_masks_0_elements_in_seq(masking_fn: Callable):
     diagnosis = torch.randint(0, n_diagnoses_in_vocab, (2, 2))
     padding_mask = torch.zeros_like(diagnosis, dtype=torch.bool)
 
-    input_kwargs = dict(
-        diagnosis=diagnosis,
-        n_diagnoses_in_vocab=n_diagnoses_in_vocab,
-        mask_token_id=0,
-        padding_mask=padding_mask,
-    )
+    input_kwargs = {
+        "diagnosis": diagnosis,
+        "n_diagnoses_in_vocab": n_diagnoses_in_vocab,
+        "mask_token_id": 0,
+        "padding_mask": padding_mask,
+    }
 
     for _i in range(100):
         result = masking_fn(**input_kwargs)
