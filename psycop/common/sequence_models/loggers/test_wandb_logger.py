@@ -7,7 +7,9 @@ def test_wandb_logger():
         group="test_group",
         entity="test_entity",
         run_name="test_run",
-        config={"test_param": "test_value"},
     )
+    logger.log_hyperparams({"test_param": "test_value"})
 
+    # Should be able to log metrics multiple times
+    logger.log_metrics({"test_metric": 0.5})
     logger.log_metrics({"test_metric": 0.5})
