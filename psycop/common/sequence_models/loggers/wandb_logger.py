@@ -1,6 +1,6 @@
+import wandb
 from wandb.sdk.wandb_run import Run
 
-import wandb
 from psycop.common.model_training.utils.utils import create_wandb_folders
 from psycop.common.sequence_models.loggers.base import Logger
 

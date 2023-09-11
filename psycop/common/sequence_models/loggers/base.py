@@ -1,7 +1,6 @@
 from typing import Protocol
 
 
-
 class Logger(Protocol):
     run_name: str
 

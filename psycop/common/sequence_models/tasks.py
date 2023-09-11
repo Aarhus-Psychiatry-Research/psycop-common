@@ -62,7 +62,8 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         logits = self.mlm_head(encoded_patients)
 
         masked_lm_loss = self.loss(
-            logits.view(-1, logits.size(-1)), masked_lm_labels.view(-1)
+            logits.view(-1, logits.size(-1)),
+            masked_lm_labels.view(-1),
         )  # (bs * seq_length, vocab_size), (bs * seq_length)
         return {"logits": logits, "loss": masked_lm_loss}
 
@@ -101,7 +102,8 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         return diagnosis, masked_labels
 
     def masking_fn(
-        self, padded_sequence_ids: dict[str, torch.Tensor]
+        self,
+        padded_sequence_ids: dict[str, torch.Tensor],
     ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
         """
         Takes a dictionary of padded sequence ids and masks 15% of the tokens in the diagnosis sequence.
@@ -131,7 +133,8 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         return padded_sequence_ids, masked_labels
 
     def collate_fn(
-        self, patients: list[Patient]
+        self,
+        patients: list[Patient],
     ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
         """
         Takes a list of patients and returns a dictionary of padded sequence ids.

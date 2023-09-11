@@ -2,8 +2,8 @@
 Defines the trainer class for sequence models
 """
 
-import math
-from typing import Protocol, Sequence
+from collections.abc import Sequence
+from typing import Protocol
 
 import torch
 from torch.optim import Optimizer
@@ -70,7 +70,7 @@ class Trainer:
 
         if n_steps <= self.train_step:
             raise ValueError(
-                f"Model is already trained to {self.train_step} steps, n_steps would result in no further training. Set a new n_steps > {self.train_step}."
+                f"Model is already trained to {self.train_step} steps, n_steps would result in no further training. Set a new n_steps > {self.train_step}.",
             )
 
         if resume_from_latest_checkpoint and checkpoint_state is not None:
@@ -82,7 +82,7 @@ class Trainer:
                 print("No checkpoint found, starting from scratch")
             else:
                 print(
-                    f"Resume from latest checkpoint is {resume_from_latest_checkpoint}, training model from scratch"
+                    f"Resume from latest checkpoint is {resume_from_latest_checkpoint}, training model from scratch",
                 )
 
         train_loss = []
@@ -133,7 +133,7 @@ class Trainer:
                     train_dataloader=train_dataloader,
                     val_dataloader=val_dataloader,
                     training_state=model.get_state(),
-                )
+                ),
             )
 
     def _evaluate(
@@ -159,7 +159,7 @@ class Trainer:
                 "Training loss": train_loss_mean,
                 "Validation loss": val_loss_mean,
                 "Training step": train_index,
-            }
+            },
         )
 
     def _load_state_from_latest_checkpoint(self) -> Checkpoint | None:

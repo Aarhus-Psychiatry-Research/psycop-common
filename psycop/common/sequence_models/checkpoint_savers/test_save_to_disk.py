@@ -19,6 +19,7 @@ class TestDataset(Dataset):
     def __getitem__(self, idx: int) -> tuple[int, int]:
         return self.data[idx]
 
+
 @pytest.fixture()
 def dataloader_for_tests() -> DataLoader:
     return DataLoader(TestDataset(), batch_size=1, shuffle=True)
@@ -34,10 +35,13 @@ def filename_is_numbered_with_steps(path: Path) -> bool:
 
 @pytest.mark.parametrize("override_on_save", [True, False])
 def test_save_to_disk(
-    tmp_path: Path, dataloader_for_tests: DataLoader, override_on_save: bool
+    tmp_path: Path,
+    dataloader_for_tests: DataLoader,
+    override_on_save: bool,
 ):
     saver = CheckpointToDisk(
-        checkpoint_path=tmp_path, override_on_save=override_on_save
+        checkpoint_path=tmp_path,
+        override_on_save=override_on_save,
     )
 
     checkpoint = Checkpoint(

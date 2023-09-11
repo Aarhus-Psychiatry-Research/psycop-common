@@ -80,7 +80,9 @@ def trainable_module(patients: list[Patient]) -> BEHRTForMaskedLM:
     emb.fit(patients=patients, add_mask_token=True)
 
     encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
+        d_model=d_model,
+        nhead=int(d_model / 4),
+        dim_feedforward=d_model * 4,
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
@@ -96,7 +98,9 @@ def test_behrt(patient_dataset: PatientDataset):
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
     encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
+        d_model=d_model,
+        nhead=int(d_model / 4),
+        dim_feedforward=d_model * 4,
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
@@ -106,7 +110,10 @@ def test_behrt(patient_dataset: PatientDataset):
     behrt = BEHRTForMaskedLM(embedding_module=emb, encoder_module=encoder)
 
     dataloader = DataLoader(
-        patient_dataset, batch_size=32, shuffle=True, collate_fn=behrt.collate_fn
+        patient_dataset,
+        batch_size=32,
+        shuffle=True,
+        collate_fn=behrt.collate_fn,
     )
 
     for input_ids, masked_labels in dataloader:
@@ -117,7 +124,8 @@ def test_behrt(patient_dataset: PatientDataset):
 
 def init_test_trainer(checkpoint_path: Path) -> Trainer:
     ckpt_saver = CheckpointToDisk(
-        checkpoint_path=checkpoint_path, override_on_save=True
+        checkpoint_path=checkpoint_path,
+        override_on_save=True,
     )
     logger = DummyLogger(run_name="test_run", project_name="test")
     return Trainer(
@@ -131,7 +139,9 @@ def init_test_trainer(checkpoint_path: Path) -> Trainer:
 
 
 def test_trainer(
-    patients: list[Patient], tmp_path: Path, trainable_module: BEHRTForMaskedLM
+    patients: list[Patient],
+    tmp_path: Path,
+    trainable_module: BEHRTForMaskedLM,
 ):
     """
     Tests the general intended workflow of the Trainer class
@@ -151,7 +161,10 @@ def test_trainer(
         collate_fn=trainable_module.collate_fn,
     )
     val_dataloader = DataLoader(
-        val_dataset, batch_size=2, shuffle=True, collate_fn=trainable_module.collate_fn
+        val_dataset,
+        batch_size=2,
+        shuffle=True,
+        collate_fn=trainable_module.collate_fn,
     )
 
     trainer = init_test_trainer(checkpoint_path=tmp_path)
@@ -181,6 +194,6 @@ def test_trainer(
     first_three_losses = [metrics[i]["Training loss"] for i in range(0, 3)]
     last_three_losses = [metrics[i]["Training loss"] for i in range(-3, 0)]
     final_loss_smaller_than_initial_loss = mean(first_three_losses) > mean(
-        last_three_losses
+        last_three_losses,
     )
     assert final_loss_smaller_than_initial_loss

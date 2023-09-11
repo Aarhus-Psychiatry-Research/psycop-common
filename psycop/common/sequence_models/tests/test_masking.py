@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch import nn
 
-from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM, Embedder
+from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM
 
 from .test_main import patients  # noqa: F401 # type: ignore
 
@@ -11,19 +11,18 @@ from .test_main import patients  # noqa: F401 # type: ignore
     "embedding_module",
     [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_masking_fn(patients: list, embedding_module: Embedder):
+def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):  # noqa: F811
     """
     Test masking function
     """
-    emb = BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
-    emb.fit(patients)
+    embedding_module.fit(patients)
 
-    task = BEHRTForMaskedLM(embedding_module=emb, encoder_module=encoder)
+    task = BEHRTForMaskedLM(embedding_module=embedding_module, encoder_module=encoder)
 
-    inputs_ids = emb.collate_patients(patients)
+    inputs_ids = embedding_module.collate_patients(patients)
 
     masked_input_ids, masked_labels = task.masking_fn(inputs_ids)
 
@@ -47,7 +46,7 @@ def test_masking_never_masks_0_elements_in_seq():
     n_diagnoses_in_vocab = 4
     diagnosis = torch.randint(0, n_diagnoses_in_vocab, (2, 2))
 
-    for i in range(100):
+    for _i in range(100):
         result = BEHRTForMaskedLM.mask(
             diagnosis=diagnosis,
             n_diagnoses_in_vocab=n_diagnoses_in_vocab,
