@@ -6,12 +6,12 @@ from torch.optim import Optimizer
 
 from psycop.common.data_structures.patient import Patient
 from psycop.common.sequence_models.checkpoint_savers.base import TrainingState
-from psycop.common.sequence_models.trainer import BatchWithLabels, PSYCOPModule
+from psycop.common.sequence_models.trainer import BatchWithLabels, TrainableModule
 
 from .embedders import BEHRTEmbedder
 
 
-class BEHRTForMaskedLM(nn.Module, PSYCOPModule):
+class BEHRTForMaskedLM(nn.Module, TrainableModule):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(

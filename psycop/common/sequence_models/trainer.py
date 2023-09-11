@@ -21,7 +21,7 @@ BatchWithLabels = tuple[dict[str, torch.Tensor], torch.Tensor]
 
 
 # TODO: Super annoying module name, but what is the name of an optimizer + a model?
-class PSYCOPModule(Protocol):
+class TrainableModule(Protocol):
     optimizer: Optimizer
 
     def training_step(self, batch: BatchWithLabels) -> torch.Tensor:
@@ -61,7 +61,7 @@ class Trainer:
     def fit(
         self,
         n_steps: int,
-        model: PSYCOPModule,
+        model: TrainableModule,
         train_dataloader: DataLoader,
         val_dataloader: DataLoader,
         resume_from_latest_checkpoint: bool = True,
@@ -116,7 +116,7 @@ class Trainer:
 
     def _save_checkpoints(
         self,
-        model: PSYCOPModule,
+        model: TrainableModule,
         global_steps: int,
         train_loss: list[torch.Tensor],
         train_dataloader: DataLoader,
@@ -138,7 +138,7 @@ class Trainer:
 
     def _evaluate(
         self,
-        model: PSYCOPModule,
+        model: TrainableModule,
         val_dataloader: DataLoader,
         train_loss: list[torch.Tensor],
         train_index: int,
