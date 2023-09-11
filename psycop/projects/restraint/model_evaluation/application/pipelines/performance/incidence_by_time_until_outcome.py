@@ -3,8 +3,8 @@ from pathlib import Path
 import plotnine as pn
 
 from psycop.projects.restraint.model_evaluation.config import (
+    BEST_DEV_RUN,
     COLOURS,
-    EVAL_RUN,
     FIGURES_PATH,
     PN_THEME,
 )
@@ -43,4 +43,4 @@ def incidence_by_time_until_outcome_pipeline(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    incidence_by_time_until_outcome_pipeline(EVAL_RUN, FIGURES_PATH)
+    incidence_by_time_until_outcome_pipeline(BEST_DEV_RUN, FIGURES_PATH)

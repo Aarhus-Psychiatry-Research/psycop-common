@@ -7,7 +7,10 @@ from psycop.common.model_training.utils.col_name_inference import (
     infer_outcome_col_name,
     infer_predictor_col_name,
 )
-from psycop.projects.restraint.model_evaluation.config import EVAL_RUN, TEXT_EVAL_RUN
+from psycop.projects.restraint.model_evaluation.config import (
+    BEST_DEV_RUN,
+    TEXT_EVAL_RUN,
+)
 from psycop.projects.restraint.model_evaluation.data.load_true_data import (
     load_file_from_pkl,
     load_fullconfig,
@@ -31,7 +34,7 @@ def shap_summary_pipeline(model: Literal["baseline", "text"], top_n: int = 20):
         top_n (int, optional): How many features to include in gain plot. Defaults to 20
     """
     if model == "baseline":
-        run = EVAL_RUN
+        run = BEST_DEV_RUN
     elif model == "text":
         run = TEXT_EVAL_RUN
     else:

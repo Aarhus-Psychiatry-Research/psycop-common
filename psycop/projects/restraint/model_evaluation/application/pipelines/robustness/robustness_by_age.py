@@ -4,8 +4,8 @@ import plotnine as pn
 
 from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from psycop.projects.restraint.model_evaluation.config import (
+    BEST_DEV_RUN,
     COLOURS,
-    EVAL_RUN,
     MODEL_NAME,
     PN_THEME,
     ROBUSTNESS_PATH,
@@ -67,5 +67,5 @@ def roc_auc_by_age(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    roc_auc_by_age(EVAL_RUN, ROBUSTNESS_PATH)
+    roc_auc_by_age(BEST_DEV_RUN, ROBUSTNESS_PATH)
     roc_auc_by_age(TEXT_EVAL_RUN, TEXT_ROBUSTNESS_PATH)

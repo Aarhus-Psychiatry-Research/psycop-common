@@ -1,6 +1,6 @@
 """Text-feature specification module."""
 import logging
-from typing import Callable
+from typing import Callable, Literal
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import mean
@@ -64,34 +64,95 @@ class TextFeatureSpecifier:
             name_prefix="pred_sent_",
         )
 
-        text_specs = PredictorGroupSpec(
+        sentence_transformer_specs = PredictorGroupSpec(
             named_dataframes=embedded_text,
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
             fallback=[np.nan],
         ).create_combinations()
 
-        return text_specs
+        return sentence_transformer_specs
 
-    def _get_text_specs(self) -> list[PredictorSpec]:
+    def _get_tfidf_specs(
+        self,
+        resolve_multiple: list[Callable],
+        interval_days: list[float],
+    ) -> list[PredictorSpec]:
+        log.info("-------- Generating tfidf specs --------")
+        embedded_text_filename = "text_tfidf_all_sfis_ngram_range_12_max_df_095_min_df_2_max_features_750.parquet"
+        TEXT_SFIS = [
+            "Observation af patient, Psykiatri",
+            "Samtale med behandlingssigte",
+            "Aktuelt psykisk",
+            "Aktuelt socialt, Psykiatri",
+            "Aftaler, Psykiatri",
+            "Aktuelt somatisk, Psykiatri",
+            "Objektivt psykisk",
+            "Kontaktårsag",
+            "Telefonnotat",
+            "Semistruktureret diagnostisk interview",
+            "Vurdering/konklusion",
+        ]
+
+        embedded_text = EmbeddedTextLoader.load_embedded_text(
+            filename=embedded_text_filename,
+            text_sfi_names=TEXT_SFIS,
+            include_sfi_name=False,
+            n_rows=None,
+        ).to_pandas()
+
+        embedded_text = df_with_multiple_values_to_named_dataframes(
+            df=embedded_text,
+            entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="timestamp",
+            name_prefix="pred_",
+        )
+
+        tfidf_specs = PredictorGroupSpec(
+            named_dataframes=embedded_text,
+            lookbehind_days=interval_days,
+            aggregation_fns=resolve_multiple,
+            fallback=[np.nan],
+        ).create_combinations()
+
+        return tfidf_specs
+
+    def _get_text_specs(
+        self,
+        embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "tfidf",
+    ) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("-------- Generating text predictor specs --------")
 
         if self.min_set_for_debug:
             return []
 
-        text_specs = self._get_sentence_transformer_specs(
+        sentence_transformer_specs = self._get_sentence_transformer_specs(
             resolve_multiple=[mean],
-            interval_days=[7],
+            interval_days=[30],
         )
 
-        return text_specs
+        tfidf_specs = self._get_tfidf_specs(
+            resolve_multiple=[mean],
+            interval_days=[180],
+        )
 
-    def get_text_feature_specs(self) -> list[PredictorSpec]:
+        if embedding_method == "both":
+            return sentence_transformer_specs + tfidf_specs
+
+        if embedding_method == "sentence_transformer":
+            return sentence_transformer_specs
+
+        return tfidf_specs
+
+    def get_text_feature_specs(
+        self,
+        embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "tfidf",
+    ) -> list[PredictorSpec]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
             log.warning(
                 "--- !!! Using the minimum set of features for debugging !!! ---",
             )
-        return self._get_text_specs()
+        return self._get_text_specs(embedding_method=embedding_method)
