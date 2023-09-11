@@ -12,7 +12,6 @@ from psycop.common.data_structures import Patient, TemporalEvent
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
-    Embedder,
     PatientDataset,
     Trainer,
 )
@@ -20,10 +19,9 @@ from psycop.common.sequence_models.checkpoint_savers.save_to_disk import (
     CheckpointToDisk,
 )
 from psycop.common.sequence_models.loggers.base import Logger
-from psycop.common.sequence_models.loggers.wandb_logger import WandbLogger
 
 
-class LoggerMock(Logger):
+class DummyLogger(Logger):
     def __init__(self, project_name: str, run_name: str):
         self.metrics: list[dict[str, float]] = []
         self.run_name = run_name
@@ -31,6 +29,9 @@ class LoggerMock(Logger):
 
     def log_metrics(self, metrics: dict[str, float]) -> None:
         self.metrics += [metrics]
+
+    def log_hyperparams(self, params: dict[str, float | str]) -> None:
+        pass
 
 
 @pytest.fixture()
@@ -72,6 +73,25 @@ def patient_dataset(patients: list) -> PatientDataset:
     return PatientDataset(patients)
 
 
+@pytest.fixture()
+def trainable_module(patients: list[Patient]) -> BEHRTForMaskedLM:
+    d_model = 32
+    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+    emb.fit(patients=patients, add_mask_token=True)
+
+    encoder_layer = nn.TransformerEncoderLayer(
+        d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
+    )
+    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+
+    # this includes the loss and the MLM head
+    module = BEHRTForMaskedLM(
+        embedding_module=emb,
+        encoder_module=encoder,
+    )
+    return module
+
+
 def test_behrt(patient_dataset: PatientDataset):
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
@@ -96,58 +116,48 @@ def test_behrt(patient_dataset: PatientDataset):
 
 
 def init_test_trainer(checkpoint_path: Path) -> Trainer:
+    ckpt_saver = CheckpointToDisk(
+        checkpoint_path=checkpoint_path, override_on_save=True
+    )
+    logger = DummyLogger(run_name="test_run", project_name="test")
     return Trainer(
-        device=torch.device("mps"),
+        device=torch.device("cpu"),
         validate_every_n_steps=1,
         n_samples_to_validate_on=2,
-        logger=LoggerMock(
-            run_name="test_run",
-            project_name="test",
-        ),
-        checkpoint_savers=[
-            CheckpointToDisk(checkpoint_path=checkpoint_path, override_on_save=True)
-        ],
+        logger=logger,
+        checkpoint_savers=[ckpt_saver],
         save_every_n_steps=1,
     )
 
 
-def test_main(patients: list[Patient], tmp_path: Path):
+def test_trainer(
+    patients: list[Patient], tmp_path: Path, trainable_module: BEHRTForMaskedLM
+):
     """
-    Tests the general intended workflow
+    Tests the general intended workflow of the Trainer class
     """
     patients = patients * 10
     midpoint = int(len(patients) / 2)
     train_patients = patients[:midpoint]
     val_patients = patients[midpoint:]
 
-    d_model = 32
-    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(train_patients, add_mask_token=True)
-
-    encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4
-    )
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-
-    # this includes the loss and the MLM head
-    module = BEHRTForMaskedLM(
-        embedding_module=emb,
-        encoder_module=encoder,
-    )
-
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
 
     train_dataloader = DataLoader(
-        train_dataset, batch_size=2, shuffle=True, collate_fn=module.collate_fn
+        train_dataset,
+        batch_size=2,
+        shuffle=True,
+        collate_fn=trainable_module.collate_fn,
     )
     val_dataloader = DataLoader(
-        val_dataset, batch_size=2, shuffle=True, collate_fn=module.collate_fn
+        val_dataset, batch_size=2, shuffle=True, collate_fn=trainable_module.collate_fn
     )
 
-    trainer = init_test_trainer(checkpoint_path=tmp_path).fit(
+    trainer = init_test_trainer(checkpoint_path=tmp_path)
+    trainer.fit(
         n_steps=1,
-        model=module,
+        model=trainable_module,
         train_dataloader=train_dataloader,
         val_dataloader=val_dataloader,
         resume_from_latest_checkpoint=False,
@@ -155,9 +165,10 @@ def test_main(patients: list[Patient], tmp_path: Path):
 
     # Check that model can resume training
     final_training_steps = 10
-    resumed_trainer = init_test_trainer(checkpoint_path=tmp_path).fit(
+    resumed_trainer = init_test_trainer(checkpoint_path=tmp_path)
+    resumed_trainer.fit(
         n_steps=final_training_steps,
-        model=deepcopy(module),
+        model=deepcopy(trainable_module),
         train_dataloader=deepcopy(train_dataloader),
         val_dataloader=deepcopy(val_dataloader),
         resume_from_latest_checkpoint=True,
@@ -165,7 +176,8 @@ def test_main(patients: list[Patient], tmp_path: Path):
     assert resumed_trainer.train_step == final_training_steps
 
     # Check that model loss decreases over training time
-    metrics = resumed_trainer.logger.metrics
+    logger: DummyLogger = resumed_trainer.logger  # type: ignore
+    metrics = logger.metrics
     first_three_losses = [metrics[i]["Training loss"] for i in range(0, 3)]
     last_three_losses = [metrics[i]["Training loss"] for i in range(-3, 0)]
     final_loss_smaller_than_initial_loss = mean(first_three_losses) > mean(
