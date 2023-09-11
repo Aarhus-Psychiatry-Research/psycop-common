@@ -1,8 +1,12 @@
+from typing import TYPE_CHECKING
+
 import wandb
-from wandb.sdk.wandb_run import Run
 
 from psycop.common.model_training.utils.utils import create_wandb_folders
 from psycop.common.sequence_models.loggers.base import Logger
+
+if TYPE_CHECKING:
+    from wandb.sdk.wandb_run import Run
 
 
 class WandbLogger(Logger):
