@@ -2,6 +2,39 @@
 
 <!--next-version-placeholder-->
 
+## v0.108.0 (2023-09-12)
+
+### Feature
+
+* Main test passes 🥳 ([`622adf7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/622adf7b8a76c74c1b5c89b97a8ba270d79f761f))
+* Add missing methods from PSYCOPModule to BEHRTForMaskedLM ([`79f8a26`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/79f8a26fb8629c43521400a847c1031faa044156))
+* Update trainer to match checkpoint savers ([`ab9a234`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ab9a23475d1ab82654df06ca0ff671dfdaf25ecc))
+* Add wandb logger ([`7eef76a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7eef76a475d28c5809da29585e0a18cbd8560752))
+* Flesh out trainining ([`40b1032`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/40b1032c16fcd62092ba6a600021d9105ea3c73d))
+* Add dataclass-based vocab ([`25f7d3e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/25f7d3e607b1a804ce40b030b7d9654365556e63))
+* Implemented masking task ([`b0ffbf4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b0ffbf418bf0b44cea89c9eb82bb7ad8496d3485))
+* Embedder skeleton ([`81479c7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/81479c7e75d39ba7b724a58e6c9c70d55fbcc6e3))
+
+### Fix
+
+* Fix error from static type checks ([`13f5a38`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/13f5a3841d7371be25e2743865d62e985b837f15))
+* Updated format of the mask function to allow for testing ([`d49dadc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d49dadc6043c1f46daf941b31be8ae38efd401ff))
+* Make sure that the tests test the outer masking_fn ([`679cd54`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/679cd54c10fe5bb1ec4afad6dd8f24f42da98934))
+* Renamed PsycopModule -> TrainableModule ([`fadc9a1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fadc9a12b2ebbbe7187fd419725e33a7fbaaac5f))
+* Remove testing assumption from Logger ([`861c162`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/861c162782b17bdc0b1bed552fc4b893fd59d32a))
+* Updated logger to handle allow logging configs seperately ([`604dc2e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/604dc2e3b14874e9e0e14e946d60558f470634aa))
+* Moved logger interface to its own script ([`4c83ff4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4c83ff40aebd299cac03fc0992f5b412390da0fc))
+* Added vocab_size ([`3789834`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3789834edd30dec5a53f0ca36fdf761d7e324080))
+* Added type hints ([`370aebe`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/370aebecca6512326678ab21a784141878854069))
+* Forward pass in embedding module works ([`5cd38d9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5cd38d91d935598b994dd11aaa374f78f86e883a))
+* Added patient dataset ([`2a00c32`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2a00c32891fc5304b48256a3943161c0c6e9a097))
+* Added behrt embedder ([`a2bbd8b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a2bbd8bd534afffa264c753a863e41b9e79af720))
+
+### Documentation
+
+* Removed old comments ([`74ca7d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/74ca7d38bfe59a81cb53a716c53a9c6e493fb1ed))
+* Removed unnecessary comment ([`6f8b175`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6f8b175ba448c5ea904b7926c45b41dc941eed23))
+
 ## v0.107.0 (2023-09-04)
 
 ### Feature
