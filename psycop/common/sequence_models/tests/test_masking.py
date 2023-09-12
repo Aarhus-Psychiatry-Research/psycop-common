@@ -33,11 +33,8 @@ def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):  # noqa: F
     assert isinstance(masked_input_ids["diagnosis"], torch.Tensor)
     assert isinstance(masked_labels, torch.Tensor)
 
-    # assert that the masked labels are same as the input ids where they are not masked? # TODO
-
-    # Check that padding is ignored?
+    # Check that padding is ignored
     padding_mask = masked_input_ids["is_padding"] == 1
-    # check that all masked_labels where padding_mask is True are -1
     assert (masked_labels[padding_mask] == -1).all()
 
 
