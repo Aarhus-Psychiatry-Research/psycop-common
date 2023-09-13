@@ -60,7 +60,7 @@ def process_forced_pred_dfs(
     df = df.rename(
         columns={
             prediction_times_col_name: "timestamp",
-            "outc_91_days": "outc_bool_within_91days",
+            "outc_91_days": "outc_bool_within_91_days",
             "outc_182_days": "outc_bool_within_182_days",
             "outc_365_days": "outc_bool_within_365_days",
             "outc_timestamp_91_days": "timestamp_outcome_91_days",
