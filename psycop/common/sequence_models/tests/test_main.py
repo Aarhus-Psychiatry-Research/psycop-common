@@ -33,6 +33,7 @@ class DummyLogger(Logger):
     def log_hyperparams(self, params: dict[str, float | str]) -> None:
         pass
 
+
 @pytest.fixture()
 def patients() -> list[Patient]:
     """

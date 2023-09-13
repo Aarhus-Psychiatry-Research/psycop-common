@@ -3,10 +3,7 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
 from collections.abc import Sequence
-<<<<<<< HEAD
-=======
 from dataclasses import dataclass, field
->>>>>>> main
 from datetime import datetime
 from typing import Any, Protocol
 
