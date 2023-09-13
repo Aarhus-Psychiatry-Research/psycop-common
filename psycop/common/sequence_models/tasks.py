@@ -1,4 +1,5 @@
 from copy import copy
+
 import torch
 from torch import nn
 from torch.optim import Optimizer
@@ -12,6 +13,7 @@ from .embedders import BEHRTEmbedder
 
 class BEHRTForMaskedLM(nn.Module, TrainableModule):
     """An implementation of the BEHRT model for the masked language modeling task."""
+
     def __init__(
         self,
         embedding_module: BEHRTEmbedder,
@@ -39,10 +41,12 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         # Update the weights
         self.optimizer.step()
         return loss
+
     def validation_step(self, batch: BatchWithLabels) -> torch.Tensor:
         with torch.no_grad():
             output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
         return output["loss"]
+
     def forward(
         self,
         inputs: dict[str, torch.Tensor],
@@ -56,6 +60,7 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
             masked_lm_labels.view(-1),
         )  # (bs * seq_length, vocab_size), (bs * seq_length)
         return {"logits": logits, "loss": masked_lm_loss}
+
     @staticmethod
     def mask(
         diagnosis: torch.Tensor,
@@ -93,6 +98,7 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
             masked_labels[0][0] = 1
         # -> rest 10% of the time, keep the original word
         return diagnosis, masked_labels
+
     def masking_fn(
         self,
         padded_sequence_ids: dict[str, torch.Tensor],
@@ -112,6 +118,7 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         # Replace padded_sequence_ids with masked_sequence
         padded_sequence_ids["diagnosis"] = masked_sequence
         return padded_sequence_ids, masked_labels
+
     def collate_fn(
         self,
         patients: list[Patient],
@@ -123,14 +130,17 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         # Masking
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
         return padded_sequence_ids, masked_labels
+
     def load_checkpoint(self, checkpoint: TrainingState):
         self.load_state_dict(checkpoint.model_state_dict)
         self.optimizer.load_state_dict(checkpoint.optimizer_state_dict)
+
     def get_state(self) -> TrainingState:
         return TrainingState(
             model_state_dict=self.state_dict(),
             optimizer_state_dict=self.optimizer.state_dict(),
         )
+
     def configure_optimizer(self) -> Optimizer:
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
         return optimizer
