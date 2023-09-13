@@ -8,6 +8,9 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Literal
 
+from psycop.common.feature_generation.loaders.filters.cvd_filters import (
+    keep_rows_where_diag_matches_cvd_diag,
+)
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t1d_diag,
     keep_rows_where_diag_matches_t2d_diag,
@@ -267,6 +270,37 @@ def type_2_diabetes(
     )
 
     df_filtered = keep_rows_where_diag_matches_t2d_diag(
+        df=df,
+        col_name="diagnosegruppestreng",
+    )
+
+    return df_filtered
+
+
+def cvd(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code=[
+            "I21",
+            "I22",
+            "I23",
+            "I6",
+        ],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
+
+    df_filtered = keep_rows_where_diag_matches_cvd_diag(
         df=df,
         col_name="diagnosegruppestreng",
     )
