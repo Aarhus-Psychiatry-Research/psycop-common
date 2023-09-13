@@ -6,8 +6,8 @@ from psycop.common.model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )
 from psycop.projects.restraint.model_evaluation.config import (
+    BEST_DEV_RUN,
     COLOURS,
-    EVAL_RUN,
     MODEL_NAME,
     PN_THEME,
     ROBUSTNESS_PATH,
@@ -118,7 +118,7 @@ def auroc_by_month_of_year(run: Run, path: Path):
 
 
 if __name__ == "__main__":
-    auroc_by_day_of_week(EVAL_RUN, ROBUSTNESS_PATH)
+    auroc_by_day_of_week(BEST_DEV_RUN, ROBUSTNESS_PATH)
     auroc_by_day_of_week(TEXT_EVAL_RUN, TEXT_ROBUSTNESS_PATH)
-    auroc_by_month_of_year(EVAL_RUN, ROBUSTNESS_PATH)
+    auroc_by_month_of_year(BEST_DEV_RUN, ROBUSTNESS_PATH)
     auroc_by_month_of_year(TEXT_EVAL_RUN, TEXT_ROBUSTNESS_PATH)

@@ -1,5 +1,7 @@
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
+from statistics import mean
 
 import pytest
 import torch
@@ -9,12 +11,27 @@ from torch.utils.data import DataLoader
 from psycop.common.data_structures import Patient, TemporalEvent
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
-    BEHRTMaskingTask,
-    Embedder,
+    BEHRTForMaskedLM,
     PatientDataset,
     Trainer,
 )
+from psycop.common.sequence_models.checkpoint_savers.save_to_disk import (
+    CheckpointToDisk,
+)
+from psycop.common.sequence_models.loggers.base import Logger
 
+
+class DummyLogger(Logger):
+    def __init__(self, project_name: str, run_name: str):
+        self.metrics: list[dict[str, float]] = []
+        self.run_name = run_name
+        self.project_name = project_name
+
+    def log_metrics(self, metrics: dict[str, float]) -> None:
+        self.metrics += [metrics]
+
+    def log_hyperparams(self, params: dict[str, float | str]) -> None:
+        pass
 
 @pytest.fixture()
 def patients() -> list[Patient]:
@@ -50,103 +67,132 @@ def patients() -> list[Patient]:
     return [patient1, patient2]
 
 
-@pytest.mark.parametrize(
-    "embedding_module",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
-)
-def test_embeddings(patients: list, embedding_module: Embedder):
-    """
-    Test embedding interface
-    """
-    embedding_module.fit(patients)
-
-    inputs_ids = embedding_module.collate_fn(patients)
-
-    assert isinstance(inputs_ids, dict)
-    assert isinstance(inputs_ids["diagnosis"], torch.Tensor)
-    assert isinstance(inputs_ids["age"], torch.Tensor)
-    assert isinstance(inputs_ids["segment"], torch.Tensor)
-    assert isinstance(inputs_ids["position"], torch.Tensor)
-
-    # forward
-    embedding_module(inputs_ids)
+@pytest.fixture()
+def patient_dataset(patients: list) -> PatientDataset:
+    return PatientDataset(patients)
 
 
-def test_masking_fn(patients: list):
-    """
-    Test masking function
-    """
-    emb = BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)
-    encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
+@pytest.fixture()
+def trainable_module(patients: list[Patient]) -> BEHRTForMaskedLM:
+    d_model = 32
+    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+    emb.fit(patients=patients, add_mask_token=True)
+
+    encoder_layer = nn.TransformerEncoderLayer(
+        d_model=d_model,
+        nhead=int(d_model / 4),
+        dim_feedforward=d_model * 4,
+    )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    task = BEHRTMaskingTask(embedding_module=emb, encoder_module=encoder)
 
-    emb.fit(patients)
-
-    inputs_ids = emb.collate_fn(patients)
-
-    masked_input_ids, masked_labels = task.masking_fn(inputs_ids)
-
-    # assert types
-    assert isinstance(masked_input_ids, dict)
-    assert isinstance(masked_input_ids["diagnosis"], torch.Tensor)
-    assert isinstance(masked_labels, torch.Tensor)
-
-    # assert that the masked labels are same as the input ids where they are masked # TODO
-
-    # assert that padding is ignored # TODO
-
-
-def test_main(patients: list, tmp_path: Path):
-    """
-    Tests the general intended workflow
-    """
-    emb = BEHRTEmbedder(
-        d_model=384,
-        dropout_prob=0.1,
-        max_sequence_length=128,
-    )  # probably some more args here    # TODO
-    encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    task = BEHRTMaskingTask(  # TODO
+    # this includes the loss and the MLM head
+    module = BEHRTForMaskedLM(
         embedding_module=emb,
         encoder_module=encoder,
-    )  # this includes the loss and the MLM head
-    # ^should masking be here?
+    )
+    return module
 
-    optimizer = torch.optim.Adam(task.parameters(), lr=1e-4)
 
-    train_dataset = PatientDataset(train_patients)  # TODO
+def test_behrt(patient_dataset: PatientDataset):
+    d_model = 32
+    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+    encoder_layer = nn.TransformerEncoderLayer(
+        d_model=d_model,
+        nhead=int(d_model / 4),
+        dim_feedforward=d_model * 4,
+    )
+    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+
+    patients = patient_dataset.patients
+    emb.fit(patients, add_mask_token=True)
+
+    behrt = BEHRTForMaskedLM(embedding_module=emb, encoder_module=encoder)
+
+    dataloader = DataLoader(
+        patient_dataset,
+        batch_size=32,
+        shuffle=True,
+        collate_fn=behrt.collate_fn,
+    )
+
+    for input_ids, masked_labels in dataloader:
+        output = behrt(input_ids, masked_labels)
+        loss = output["loss"]
+        loss.backward()  # ensure that the backward pass works
+
+
+def init_test_trainer(checkpoint_path: Path) -> Trainer:
+    ckpt_saver = CheckpointToDisk(
+        checkpoint_path=checkpoint_path,
+        override_on_save=True,
+    )
+    logger = DummyLogger(run_name="test_run", project_name="test")
+    return Trainer(
+        device=torch.device("cpu"),
+        validate_every_n_steps=1,
+        n_samples_to_validate_on=2,
+        logger=logger,
+        checkpoint_savers=[ckpt_saver],
+        save_every_n_steps=1,
+    )
+
+
+def test_trainer(
+    patients: list[Patient],
+    tmp_path: Path,
+    trainable_module: BEHRTForMaskedLM,
+):
+    """
+    Tests the general intended workflow of the Trainer class
+    """
+    patients = patients * 10
+    midpoint = int(len(patients) / 2)
+    train_patients = patients[:midpoint]
+    val_patients = patients[midpoint:]
+
+    train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
-
-    # chain two functions:
-    #     task.collate_fn,# handles masking
-    #     emb.collate_fn, # handles padding, indexing etc.
-    def collate_fn(x):
-        return task.masking_fn(emb.collate_fn(x))
 
     train_dataloader = DataLoader(
         train_dataset,
-        batch_size=32,
+        batch_size=2,
         shuffle=True,
-        collate_fn=collate_fn,
+        collate_fn=trainable_module.collate_fn,
     )
     val_dataloader = DataLoader(
         val_dataset,
-        batch_size=32,
+        batch_size=2,
         shuffle=True,
-        collate_fn=collate_fn,
+        collate_fn=trainable_module.collate_fn,
     )
 
-    emb.fit(train_patients, add_mask_token=True)
+    trainer = init_test_trainer(checkpoint_path=tmp_path)
+    trainer.fit(
+        n_steps=1,
+        model=trainable_module,
+        train_dataloader=train_dataloader,
+        val_dataloader=val_dataloader,
+        resume_from_latest_checkpoint=False,
+    )
 
-    trainer = Trainer(task, optimizer, train_dataloader, val_dataloader)  # TODO
-    trainer.train(steps=20)
-    trainer.evaluate()
+    # Check that model can resume training
+    final_training_steps = 10
+    resumed_trainer = init_test_trainer(checkpoint_path=tmp_path)
+    resumed_trainer.fit(
+        n_steps=final_training_steps,
+        model=deepcopy(trainable_module),
+        train_dataloader=deepcopy(train_dataloader),
+        val_dataloader=deepcopy(val_dataloader),
+        resume_from_latest_checkpoint=True,
+    )
+    assert resumed_trainer.train_step == final_training_steps
 
-    # test that is can be loaded and saved from disk
-    trainer.save_to_disk(tmp_path)
-    trainer.load_from_disk(tmp_path)
-
-    # tes that it can log data
-    trainer.log({"step": 1, "loss": 0.1})
+    # Check that model loss decreases over training time
+    logger: DummyLogger = resumed_trainer.logger  # type: ignore
+    metrics = logger.metrics
+    first_three_losses = [metrics[i]["Training loss"] for i in range(0, 3)]
+    last_three_losses = [metrics[i]["Training loss"] for i in range(-3, 0)]
+    final_loss_smaller_than_initial_loss = mean(first_three_losses) > mean(
+        last_three_losses,
+    )
+    assert final_loss_smaller_than_initial_loss

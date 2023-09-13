@@ -3,6 +3,10 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
 from collections.abc import Sequence
+<<<<<<< HEAD
+=======
+from dataclasses import dataclass, field
+>>>>>>> main
 from datetime import datetime
 from typing import Any, Protocol
 
@@ -12,6 +16,15 @@ from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import Patient, TemporalEvent
+
+
+@dataclass(frozen=True)
+class BEHRTVocab:
+    age: dict[int | str, int]  # str because must allow keys "UNK" and "PAD"
+    diagnosis: dict[str, int]
+    is_padding: dict[str, int] = field(default_factory=lambda: {"PAD": 1})
+    segment: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
+    position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
 
 
 class Embedder(Protocol):
@@ -28,7 +41,7 @@ class Embedder(Protocol):
     def forward(self, *args: Any) -> torch.Tensor:
         ...
 
-    def collate_fn(self, patients: list[Patient]) -> list[dict[str, torch.Tensor]]:
+    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
         ...
 
     def fit(self, patients: list[Patient], *args: Any) -> None:
@@ -78,7 +91,7 @@ class BEHRTEmbedder(nn.Module):
     def forward(
         self,
         inputs: dict[str, torch.Tensor],
-    ):
+    ) -> torch.Tensor:
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
@@ -110,11 +123,15 @@ class BEHRTEmbedder(nn.Module):
         embeddings = self.dropout(embeddings)
         return embeddings
 
-    def _init_position_embeddings(self, max_position_embeddings: int, d_model: int):
-        def even_code(pos, idx):  # type: ignore
+    def _init_position_embeddings(
+        self,
+        max_position_embeddings: int,
+        d_model: int,
+    ) -> torch.Tensor:
+        def even_code(pos, idx):  # type: ignore # noqa: ANN001, ANN202
             return np.sin(pos / (10000 ** (2 * idx / d_model)))
 
-        def odd_code(pos, idx):  # type: ignore
+        def odd_code(pos, idx):  # type: ignore # noqa: ANN001, ANN202
             return np.cos(pos / (10000 ** (2 * idx / d_model)))
 
         # initialize position embedding table
@@ -132,7 +149,7 @@ class BEHRTEmbedder(nn.Module):
 
         return torch.tensor(lookup_table)
 
-    def collate_fn(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
+    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
         """
         Handles padding and indexing by converting each to an index tensor
 
@@ -164,8 +181,21 @@ class BEHRTEmbedder(nn.Module):
 
         keys = sequences[0].keys()
         padded_sequences: dict[str, torch.Tensor] = {}
+
         for key in keys:
-            pad_idx = self.vocab[key]["PAD"]
+            key_to_subvocab = {
+                "age": self.vocab.age,
+                "diagnosis": self.vocab.diagnosis,
+                "segment": self.vocab.segment,
+                "position": self.vocab.position,
+                "is_padding": self.vocab.is_padding,
+            }
+
+            if key not in key_to_subvocab:
+                raise ValueError(f"Key {key} not in {key_to_subvocab.keys()}")
+
+            vocab = key_to_subvocab[key]
+            pad_idx = vocab["PAD"]
 
             padded_sequences[key] = pad_sequence(
                 [p[key] for p in sequences],
@@ -211,8 +241,8 @@ class BEHRTEmbedder(nn.Module):
     ) -> dict[str, torch.Tensor]:
         age = self.get_patient_age(event, patient.date_of_birth)
 
-        age2idx = self.vocab["age"]
-        diagnosis2idx = self.vocab["diagnosis"]
+        age2idx = self.vocab.age
+        diagnosis2idx = self.vocab.diagnosis
 
         diagnosis: str = event.value  # type: ignore
 
@@ -225,15 +255,11 @@ class BEHRTEmbedder(nn.Module):
             "is_padding": torch.tensor(0),
         }
 
-    def fit(self, patients: list, add_mask_token: bool = True):  # type: ignore
-        """
-        Is not dependent on patient data.
-        """
+    def fit(self, patients: list, add_mask_token: bool = True):
         patient_events: list[tuple[Patient, TemporalEvent]] = [
             (p, e) for p in patients for e in self.filter_events(p.temporal_events)
         ]
         diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
-        n_diagnosis_codes: int = len(set(diagnosis_codes)) + 2  # UNK + Padding
 
         # create dianosis2idx mapping
         diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
@@ -242,31 +268,26 @@ class BEHRTEmbedder(nn.Module):
         if add_mask_token:
             diagnosis2idx["MASK"] = len(diagnosis2idx)
 
+        self.mask_token_id = diagnosis2idx["MASK"]
+
         ages: list[int] = [
             self.get_patient_age(e, p.date_of_birth) for p, e in patient_events
         ]
-        n_age_bins = len(set(ages)) + 2  # UNK + PAD
 
         # create age2idx mapping
         age2idx: dict[str | int, int] = {a: i for i, a in enumerate(set(ages))}
         age2idx["UNK"] = len(age2idx)
         age2idx["PAD"] = len(age2idx)
 
-        self.vocab: dict[str, dict[Any, int]] = {
-            "age": age2idx,
-            "diagnosis": diagnosis2idx,
-            "is_padding": {"PAD": 1},
-            "segment": {"PAD": 0},
-            "position": {"PAD": 0},
-        }
+        self.vocab = BEHRTVocab(age=age2idx, diagnosis=diagnosis2idx)
 
-        max_position_embeddings = max([len(p.temporal_events) for p in patients])
-        max_position_embeddings = max(max_position_embeddings, self.max_sequence_length)
+        n_diagnosis_codes = len(diagnosis2idx)
+        n_age_bins = len(age2idx)
 
         self.initialize_embeddings_layers(
             n_diagnosis_codes=n_diagnosis_codes,
             n_age_bins=n_age_bins,
-            max_position_embeddings=max_position_embeddings,
+            max_position_embeddings=self.max_sequence_length,
         )
 
         self.is_fitted = True

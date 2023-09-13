@@ -5,7 +5,7 @@ from typing import Literal, Optional
 import polars as pl
 
 from psycop.projects.restraint.model_evaluation.config import (
-    EVAL_RUN,
+    BEST_DEV_RUN,
     FIGURES_PATH,
     TABLES_PATH,
     TEXT_EVAL_RUN,
@@ -29,7 +29,7 @@ def shap_dependency_pipeline(
     top_n_shap_scatter: Optional[int] = 20,
 ):
     if model == "baseline":
-        run, f_path, t_path = EVAL_RUN, FIGURES_PATH, TABLES_PATH
+        run, f_path, t_path = BEST_DEV_RUN, FIGURES_PATH, TABLES_PATH
     elif model == "text":
         run, f_path, t_path = TEXT_EVAL_RUN, TEXT_FIGURES_PATH, TEXT_TABLES_PATH
     else:
