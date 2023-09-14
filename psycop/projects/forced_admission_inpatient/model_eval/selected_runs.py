@@ -14,7 +14,7 @@ BEST_DEV_PIPELINE = PipelineRun(
     name=DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[
         1,
         2,
-    ],  # [0,2] for best logistic regressuib and [1,2] for best xgboost
+    ],  # [0,2] for best logistic regression and [1,2] for best xgboost
     pos_rate=BEST_POS_RATE,
     create_output_paths_on_init=False,
 )
