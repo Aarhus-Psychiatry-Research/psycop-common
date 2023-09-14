@@ -33,23 +33,18 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
     def training_step(self, batch: BatchWithLabels) -> torch.Tensor:
         # Zero the gradients
         self.optimizer.zero_grad()
-
         # Forward pass
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
-
         # Backward pass
         loss.backward()
-
         # Update the weights
         self.optimizer.step()
-
         return loss
 
     def validation_step(self, batch: BatchWithLabels) -> torch.Tensor:
         with torch.no_grad():
             output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
-
         return output["loss"]
 
     def forward(
@@ -60,7 +55,6 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         embedded_patients = self.embedding_module(inputs)
         encoded_patients = self.encoder_module(embedded_patients)
         logits = self.mlm_head(encoded_patients)
-
         masked_lm_loss = self.loss(
             logits.view(-1, logits.size(-1)),
             masked_lm_labels.view(-1),
@@ -81,15 +75,11 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         Masking function for the task
         """
         masked_labels = diagnosis.clone()
-
         # Mask 15 % of the tokens
         prob = torch.rand(diagnosis.shape)
         mask = prob < masking_prob
-
         masked_labels[~mask] = -1  # -1 will be ignored in loss function
-
         prob /= masking_prob
-
         # 80% of the time, replace with [MASK] token
         mask[mask.clone()] = prob[mask] < replace_with_mask_prob
         diagnosis[mask] = mask_token_id
@@ -101,13 +91,11 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
 
         # Set padding to -1 to ignore in loss
         masked_labels[padding_mask] = -1
-
         # If no element in the batch is masked, mask the first element.
         # Is necessary to not get errors with small batch sizes, since the MLM module expects
         # at least one element to be masked.
         if torch.all(masked_labels == -1):
             masked_labels[0][0] = 1
-
         # -> rest 10% of the time, keep the original word
         return diagnosis, masked_labels
 
@@ -120,19 +108,15 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         """
         padded_sequence_ids = copy(padded_sequence_ids)
         padding_mask = padded_sequence_ids["is_padding"] == 1
-
         # Perform masking
-
         masked_sequence, masked_labels = self.mask(
             diagnosis=padded_sequence_ids["diagnosis"],
             n_diagnoses_in_vocab=self.embedding_module.n_diagnosis_codes,
             mask_token_id=self.mask_token_id,
             padding_mask=padding_mask,
         )
-
         # Replace padded_sequence_ids with masked_sequence
         padded_sequence_ids["diagnosis"] = masked_sequence
-
         return padded_sequence_ids, masked_labels
 
     def collate_fn(
@@ -143,10 +127,8 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         Takes a list of patients and returns a dictionary of padded sequence ids.
         """
         padded_sequence_ids = self.embedding_module.collate_patients(patients)
-
         # Masking
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
-
         return padded_sequence_ids, masked_labels
 
     def load_checkpoint(self, checkpoint: TrainingState):
