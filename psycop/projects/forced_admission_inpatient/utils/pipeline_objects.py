@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
-EVAL_ROOT = Path(__file__).parent.parent / "outputs_for_publishing"
+EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/eval")
 
 
 def load_file_from_pkl(file_path: Path) -> Any:
@@ -28,12 +28,11 @@ def df_to_eval_dataset(
     return EvalDataset(
         ids=df["ids"],
         y=df["y"],
-        y_hat_probs=df["y_hat_probs"],
+        y_hat_probs=df["y_hat_prob"],
         pred_timestamps=df["pred_timestamps"],
         outcome_timestamps=df["outcome_timestamps"],
         age=df["age"],
         is_female=df["is_female"],
-        exclusion_timestamps=df["exclusion_timestamps"],
         pred_time_uuids=df["pred_time_uuids"],
         custom_columns={col: df[col] for col in custom_columns}
         if custom_columns
@@ -43,11 +42,14 @@ def df_to_eval_dataset(
 
 @dataclass
 class RunGroup:
-    name: str
+    model_name: str
+    group_name: str
 
     @property
     def group_dir(self) -> Path:
-        return Path(f"E:/shared_resources/t2d/model_eval/{self.name}")
+        return Path(
+            f"E:/shared_resources/forced_admissions_inpatient/models/{self.model_name}/pipeline_eval/{self.group_name}",
+        )
 
     @property
     def flattened_ds_dir(self) -> Path:
@@ -141,13 +143,6 @@ class PipelineOutputs:
         return load_file_from_pkl(self.dir_path / "pipe.pkl")
 
 
-@dataclass
-class T2DArtifactNames:
-    main_performance_figure: str = "t2d_main_performance_figure.png"
-    main_robustness_figure: str = "t2d_main_robustness.png"
-    performance_by_ppr: str = "t2d_performance_by_ppr.xlsx"
-
-
 class PaperOutputPaths:
     def __init__(self, artifact_path: Path, create_output_paths_on_init: bool = True):
         self.artifact = artifact_path
@@ -163,6 +158,7 @@ class PaperOutputPaths:
 class PaperOutputSettings:
     def __init__(
         self,
+        model_name: str,
         name: str,
         pos_rate: float,
         model_type: str,
@@ -172,11 +168,12 @@ class PaperOutputSettings:
     ):
         self.name = name
         self.pos_rate = pos_rate
-        artifact_root = EVAL_ROOT if artifact_root is None else artifact_root
+        artifact_root = (
+            (EVAL_ROOT / model_name / name) if artifact_root is None else artifact_root
+        )
         self.artifact_path = (
             artifact_root / f"{lookahead_days}_{model_type}_{self.name}"
         )
-        self.artifact_names = T2DArtifactNames()
         self.paths = PaperOutputPaths(
             self.artifact_path,
             create_output_paths_on_init=create_output_paths_on_init,
@@ -189,9 +186,10 @@ class PipelineRun:
         name: str,
         group: RunGroup,
         pos_rate: float,
-        paper_outputs_path: Optional[Path] = None,
+        outputs_path: Optional[Path] = None,
         create_output_paths_on_init: bool = True,
     ):
+        self.model_name = group.model_name
         self.name = name
         self.group = group
         pipeline_output_dir = self.group.group_dir / self.name
@@ -203,9 +201,10 @@ class PipelineRun:
             name=self.name,
         )
         self.paper_outputs = PaperOutputSettings(
+            model_name=self.model_name,
             name=name,
             pos_rate=pos_rate,
-            artifact_root=paper_outputs_path,
+            artifact_root=outputs_path,
             lookahead_days=self.inputs.cfg.preprocessing.pre_split.min_lookahead_days,
             model_type=self.model_type,
             create_output_paths_on_init=create_output_paths_on_init,
