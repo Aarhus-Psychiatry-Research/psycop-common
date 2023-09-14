@@ -2,17 +2,17 @@
 
 from pathlib import Path
 
+from config import MODEL_NAME
 from wasabi import Printer
 
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
+from psycop.projects.forced_admission_inpatient.model_eval.config import BEST_POS_RATE
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     PipelineRun,
     RunGroup,
 )
-
-from .config import MODEL_NAME
 
 msg = Printer(timestamp=True)  # type: ignore
 
@@ -79,7 +79,7 @@ def test_pipeline(
             group_name=_get_test_group_name(pipeline_to_test),
         ),
         name=_get_test_run_name(pipeline_to_test),
-        pos_rate=0.03,
+        pos_rate=BEST_POS_RATE,
     )
 
 
