@@ -32,7 +32,7 @@ def _get_test_group_path(pipeline_to_train: PipelineRun) -> Path:
     )
 
 
-def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) -> Path:
+def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) :
     """Get the path to the directory where the pipeline is evaluated on the test set."""
     return _get_test_group_path(
         pipeline_to_train=pipeline_to_train,
@@ -53,7 +53,7 @@ def _train_pipeline_on_test(pipeline_to_train: PipelineRun):
         override_output_dir=override_dir,
     )
 
-def _check_directory_exists(dir_path: Path):
+def _check_directory_exists(dir_path: Path) -> bool:
     """
     Check if a directory exists and contains any files.
     """
@@ -68,9 +68,9 @@ def _check_directory_exists(dir_path: Path):
         
         # No files were found in the directory
         return False
-    else:
-        # The directory doesn't exist or is not a directory
-        return False
+
+    # The directory doesn't exist or is not a directory
+    return False
 
 
 def test_pipeline(
