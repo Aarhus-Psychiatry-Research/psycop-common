@@ -61,6 +61,13 @@ class ArtifactsToDiskSaver:
                 if series is not None  # type: ignore
             }
 
+        if isinstance(eval_dataset.y, pd.DataFrame):
+            df_template |= {
+                col_name: series
+                for col_name, series in dict(eval_dataset.y).items()
+                if series is not None  # type: ignore
+            }
+
         if isinstance(eval_dataset.y_hat_probs, pd.DataFrame):
             df_template |= {
                 col_name: series

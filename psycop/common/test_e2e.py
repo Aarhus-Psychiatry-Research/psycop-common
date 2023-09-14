@@ -315,4 +315,4 @@ def test_e2e_multilabel(tmp_path: Path):
         split_names=["train"],
     )
 
-    assert auroc == 1.0
+    assert auroc == 1
