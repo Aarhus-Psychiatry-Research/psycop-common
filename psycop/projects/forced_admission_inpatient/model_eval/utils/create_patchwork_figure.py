@@ -14,7 +14,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 msg = Printer(timestamp=True)
 
 
-def t2d_create_patchwork_figure(
+def fa_create_patchwork_figure(
     run: PipelineRun,
     plot_fns: Sequence[Callable],
     output_filename: str,
@@ -22,7 +22,7 @@ def t2d_create_patchwork_figure(
 ):
     """Create a patchwork figure from plot_fns. All plot_fns must only need a ModelRun object as input, and return a plotnine ggplot output."""
     for output_str, value in (
-        ("Run group", run.group.name),
+        ("Run group", run.group.group_name),
         ("Model_type", run.model_type),
         ("Lookahead days", run.inputs.cfg.preprocessing.pre_split.min_lookahead_days),
     ):
