@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.109.0 (2023-09-14)
+
+### Feature
+
+* Implement classifierchain ([`097cc0a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/097cc0a85db563e01a226fa0b48ae0039e4295c8))
+
+### Fix
+
+* Unpack dataframe to series in eval df ([`dcf9b93`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dcf9b93df1a2ff232733824b9728f64760008b80))
+
 ## v0.108.0 (2023-09-12)
 
 ### Feature
