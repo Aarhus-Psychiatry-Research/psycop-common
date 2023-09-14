@@ -32,7 +32,7 @@ def _get_test_group_path(pipeline_to_train: PipelineRun) -> Path:
     )
 
 
-def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) :
+def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) -> Path:
     """Get the path to the directory where the pipeline is evaluated on the test set."""
     return _get_test_group_path(
         pipeline_to_train=pipeline_to_train,
