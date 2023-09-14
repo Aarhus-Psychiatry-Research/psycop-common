@@ -53,15 +53,35 @@ def _train_pipeline_on_test(pipeline_to_train: PipelineRun):
         override_output_dir=override_dir,
     )
 
+def _check_directory_exists(dir_path: Path):
+    """
+    Check if a directory exists and contains any files.
+    """
+    
+    if dir_path.exists():
+        # Check if the path exists and is a directory
+        
+        # Iterate through the contents and check if any of them are files
+        for item in dir_path.iterdir():
+            if item.is_file():
+                return True  # Found a file in the directory
+        
+        # No files were found in the directory
+        return False
+    else:
+        # The directory doesn't exist or is not a directory
+        return False
+
 
 def test_pipeline(
     pipeline_to_test: PipelineRun,
 ) -> PipelineRun:
     # Check if the pipeline has already been trained on the test set
     # If so, return the existing run
-    pipeline_has_been_evaluated_on_test = _get_test_pipeline_dir(
+    pipeline_has_been_evaluated_on_test = _check_directory_exists(dir_path=_get_test_pipeline_dir(
         pipeline_to_train=pipeline_to_test,
-    ).exists()
+        )
+    )
 
     if not pipeline_has_been_evaluated_on_test:
         msg.info(
