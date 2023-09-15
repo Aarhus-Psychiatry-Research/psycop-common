@@ -5,7 +5,6 @@ from pathlib import Path
 import hydra
 import numpy as np
 import pandas as pd
-import plotnine as pn
 
 from psycop.common.model_training.config_schemas.conf_utils import (
     convert_omegaconf_to_pydantic_object,
@@ -26,50 +25,6 @@ SYNTH_DATA_PATH = (
     / "flattened"
     / "synth_flattened_with_outcome.csv"
 )
-
-
-def _plot_timestamp_distribution(
-    df: pd.DataFrame,
-    timestamp_col: str,
-    split: str,
-    save: bool = True,
-) -> None:
-    """Plot distribution of timestamps in a column."""
-
-    # Convert the column containing timestamps to a pandas datetime object if it's not already
-    if not pd.api.types.is_datetime64_ns_dtype(df[timestamp_col]):
-        df[timestamp_col] = pd.to_datetime(df[timestamp_col], errors="coerce")
-
-    df["timestamp_bins"] = pd.cut(
-        df[timestamp_col],
-        bins=pd.date_range(
-            start=df[timestamp_col].min(),
-            end=df[timestamp_col].max(),
-            freq="10D",
-        ),  # type: ignore
-    )
-
-    # Create a plot using plotnine
-    p = (
-        pn.ggplot(df, pn.aes(x="timestamp_bins", fill="timestamp_bins"))
-        + pn.geom_bar()
-        + pn.labs(
-            title="Timestamp Distribution (Binned into 10-Day Intervals)",
-            x="Timestamp Intervals",
-            y="Count",
-        )
-        + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
-    )
-
-    print(p)
-
-    if save:
-        output_dir = (
-            Path("E:\\shared_resources\\forced_admissions_inpatient")
-            / "data_split_comparisons"
-        )
-
-        p.save(output_dir / f"{split}_{timestamp_col}_distribution.png")
 
 
 def _generate_general_descriptive_stats(
@@ -109,7 +64,7 @@ def _generate_general_descriptive_stats(
 
 def _get_pred_cols_df(df: pd.DataFrame) -> pd.DataFrame:
     """Get columns that start with pred_."""
-    pred_cols = [col for col in df.columns if col.startswith("pred_")]
+    pred_cols = [col for col in df.columns if col.startswith("pred_")] # type: ignore
 
     return df[pred_cols]
 
@@ -122,7 +77,7 @@ def _get_pred_cols_df(df: pd.DataFrame) -> pd.DataFrame:
 def main(
     cfg: FullConfigSchema,
     synth_data: bool = True,
-    save: bool = False,
+    save: bool = True,
 ) -> pd.DataFrame:
     """Main."""
     cfg = convert_omegaconf_to_pydantic_object(cfg)  # type: ignore
@@ -166,9 +121,6 @@ def main(
         )
 
         stats.to_csv(output_dir / "train_val_descriptive_comparison.csv")
-
-    _plot_timestamp_distribution(train_df, "timestamp", "train", save)
-    _plot_timestamp_distribution(val_df, "timestamp", "val", save)
 
     return stats
 
