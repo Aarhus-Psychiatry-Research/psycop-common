@@ -2,13 +2,12 @@
 
 from pathlib import Path
 
-from config import MODEL_NAME
 from wasabi import Printer
 
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
-from psycop.projects.forced_admission_inpatient.model_eval.config import BEST_POS_RATE
+from psycop.projects.forced_admission_inpatient.model_eval.config import BEST_POS_RATE, MODEL_NAME
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     PipelineRun,
     RunGroup,

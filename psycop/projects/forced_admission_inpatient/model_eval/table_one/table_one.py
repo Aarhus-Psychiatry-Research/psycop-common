@@ -14,15 +14,14 @@ from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import 
 model_train_df = pl.concat(
     [
         BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(split="train"),
-        BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(split="val"),
     ],
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
 test_dataset = BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(
-    split="test",
+    split="val",
 ).with_columns(
-    dataset=pl.format("test"),
+    dataset=pl.format("val"),
 )
 
 flattened_combined = pl.concat([model_train_df, test_dataset], how="vertical").rename(
