@@ -26,7 +26,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + pn.scale_x_discrete()
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
-        + pn.labs(x="Months to outcome", y="Sensitivity")
+        + pn.labs(x="Days to outcome", y="Sensitivity")
         + FA_PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
         + pn.scale_color_brewer(type="qual", palette=2)
@@ -73,8 +73,8 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
             time_one=eval_dataset.pred_timestamps,
             time_two=eval_dataset.outcome_timestamps,
             direction="t2-t1",
-            bins=range(0, 6, 1),
-            bin_unit="M",
+            bins=range(0, 180, 30),
+            bin_unit="D",
             bin_continuous_input=True,
             drop_na_events=True,
         )
