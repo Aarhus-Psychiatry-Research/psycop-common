@@ -19,6 +19,7 @@ from psycop.common.model_training.config_schemas.conf_utils import (
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PRETRAINED_CFG_PATH = Path(
             f"E:/shared_resources/forced_admissions_inpatient/models/only_text_with_sentence_transformer_and_tfidf_750_embeddings/pipeline_eval/puncturation-unbeset/hamosemassecuite/cfg.json",
         )
