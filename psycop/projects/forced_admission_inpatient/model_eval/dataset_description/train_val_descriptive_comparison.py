@@ -7,6 +7,7 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.colors import LinearSegmentedColormap
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.utils import (
@@ -86,15 +87,19 @@ def _generate_general_descriptive_stats(
     female_ratio = df["pred_sex_female"].sum() / df.shape[0]
 
     pred_cols = _get_pred_cols_df(df)
-    na_ratios = pred_cols.isna().sum().sum() / pred_cols.shape[0] * pred_cols.shape[1]
+    na_ratios = pred_cols.isna().sum().sum() / (pred_cols.shape[0] * pred_cols.shape[1])
 
     outcomes = df["outc_bool_within_182_days"].sum()
     outcome_rate = outcomes / df.shape[0]
 
+    unique_patients_with_outcomes = df[df["outc_bool_within_182_days"] == 1][
+        "dw_ek_borger"
+    ].nunique()
+
     print(
         df[df["outc_bool_within_182_days"] == 1]["dw_ek_borger"]
         .value_counts()
-        .head(20),
+        .head(10),
     )
 
     stats = pd.DataFrame(
@@ -107,6 +112,7 @@ def _generate_general_descriptive_stats(
             "female_ratio": [female_ratio],
             "outcome_rate": [outcome_rate],
             "outcomes": [outcomes],
+            "unique_patients_with_outcomes": [unique_patients_with_outcomes],
             "na_ratios": [na_ratios],
         },
     )
@@ -165,6 +171,40 @@ def _calc_feature_corr_with_outcome(
     return result_df
 
 
+def _plot_corr_diffs(
+    df: pd.DataFrame,
+    shape: tuple,
+    output_dir: Optional[Path],
+    feature_split: str = "features",
+):
+    corr_array = df["correlation_diffs"].values.reshape(shape[0], shape[1])  # type: ignore
+
+    # Create a green to red colormap
+    cmap = LinearSegmentedColormap.from_list(
+        "GreenToRed",
+        ["#FF0000", "#00FF00"],
+        N=256,
+    )
+
+    # Create a heatmap of the decimal values
+    plt.figure(figsize=(8, 8))
+    plt.imshow(corr_array, cmap=cmap, interpolation="nearest", vmin=-1, vmax=1)
+    plt.colorbar(label="Values", orientation="vertical")
+
+    # Add labels to the x and y axes if needed
+    plt.xlabel("X-axis")
+    plt.ylabel("Y-axis")
+
+    # Set plot title
+    plt.title("Correlation Values Heatmap (Train split - validation split)")
+
+    plt.tight_layout()
+
+    # Save the plot as an image if save_path is provided
+    if output_dir:
+        plt.savefig(output_dir / f"{feature_split}_correlation_differences.png")
+
+
 def main(
     cfg: FullConfigSchema,
     synth_data: bool = False,
@@ -215,7 +255,29 @@ def main(
 
     stats = pd.concat([train_stats, val_stats], axis=0).reset_index(drop=True)
 
+    if save:
+        stats.to_csv(output_dir / "train_val_descriptive_comparison.csv")
+
     corrs = _calc_feature_corr_with_outcome(train_df, val_df)
+
+    if save:
+        corrs.to_csv(output_dir / "feature_outcome_correlations.csv")
+
+    tfidf_features = corrs[corrs["feature"].str.startswith("pred_pred_tfidf")]
+    other_features = corrs[~corrs["feature"].str.startswith("pred_pred_tfidf")]
+
+    _plot_corr_diffs(
+        tfidf_features,
+        (25, 30),
+        output_dir=output_dir,
+        feature_split="tfidf_features",
+    )
+    _plot_corr_diffs(
+        other_features,
+        (49, 22),
+        output_dir=output_dir,
+        feature_split="other_features",
+    )
 
     plot_timestamp_distribution(
         train_df,
@@ -229,10 +291,6 @@ def main(
         split_name="val",
         output_dir=output_dir,
     )
-
-    if save:
-        stats.to_csv(output_dir / "train_val_descriptive_comparison.csv")
-        corrs.to_csv(output_dir / "feature_outcome_correlations.csv")
 
     return stats
 

@@ -146,7 +146,7 @@ def load_text_sfis(
 
 def load_text_split(
     text_sfi_names: str | Iterable[str],
-    split_name: Sequence[Literal["train", "val"]],
+    split_name: Sequence[Literal["train", "val", "test"]],
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
