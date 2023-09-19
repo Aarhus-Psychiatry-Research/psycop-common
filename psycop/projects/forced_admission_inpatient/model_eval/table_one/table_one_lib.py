@@ -25,7 +25,7 @@ def get_psychiatric_diagnosis_row_specs(
         [
             c
             for c in readable_col_names
-            if pattern.search(c) and "max" in c and "1095" in c
+            if pattern.search(c) and "boolean" in c and "365" in c
         ],
     )
 
