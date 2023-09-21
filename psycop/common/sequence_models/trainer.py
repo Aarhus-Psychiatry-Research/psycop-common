@@ -20,7 +20,6 @@ from psycop.common.sequence_models.loggers.base import Logger
 BatchWithLabels = tuple[dict[str, torch.Tensor], torch.Tensor]
 
 
-# TODO: Super annoying module name, but what is the name of an optimizer + a model?
 class TrainableModule(Protocol):
     optimizer: Optimizer
 
