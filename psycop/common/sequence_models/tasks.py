@@ -31,12 +31,9 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
     def training_step(self, batch: BatchWithLabels) -> torch.Tensor:
-        # Zero the gradients
         self.optimizer.zero_grad()
-        # Forward pass
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
-        # Backward pass
         loss.backward()
         # Update the weights
         self.optimizer.step()

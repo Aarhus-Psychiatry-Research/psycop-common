@@ -3,7 +3,7 @@ Defines the trainer class for sequence models
 """
 
 from collections.abc import Sequence
-from typing import Protocol
+from typing import Any, Protocol
 
 import torch
 from torch.optim import Optimizer
@@ -35,6 +35,17 @@ class TrainableModule(Protocol):
     def load_checkpoint(self, checkpoint: TrainingState):
         ...
 
+    def to(self, device: torch.device) -> Any:
+        ...
+
+
+def batch_to_device(
+    batch: BatchWithLabels, device: torch.device
+) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
+    for key, value in batch[0].items():
+        batch[0][key] = value.to(device)
+    return batch[0], batch[1].to(device)
+
 
 class Trainer:
     def __init__(
@@ -65,7 +76,6 @@ class Trainer:
         val_dataloader: DataLoader,
         resume_from_latest_checkpoint: bool = True,
     ) -> Self:
-
         if n_steps <= self.train_step:
             raise ValueError(
                 f"Model is already trained to {self.train_step} steps, n_steps would result in no further training. Set a new n_steps > {self.train_step}.",
@@ -85,10 +95,14 @@ class Trainer:
                         f"Resume from latest checkpoint is {resume_from_latest_checkpoint}, training model from scratch",
                     )
 
+        model.to(self.device)
+
         train_loss = []
         n_epochs = max(int(n_steps / len(train_dataloader)), 1)
         for _ in range(n_epochs):
             for batch in train_dataloader:
+                batch = batch_to_device(batch=batch, device=self.device)
+
                 loss = model.training_step(batch=batch)
                 train_loss.append(loss)
 
@@ -145,6 +159,8 @@ class Trainer:
     ):
         val_loss: list[torch.Tensor] = []
         for val_index, val_batch in enumerate(val_dataloader):
+            val_batch = batch_to_device(batch=val_batch, device=self.device)
+
             if val_index == self.n_samples_to_validate_on:
                 break
             val_loss.append(model.validation_step(batch=val_batch))
