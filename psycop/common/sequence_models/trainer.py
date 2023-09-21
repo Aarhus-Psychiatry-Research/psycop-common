@@ -2,6 +2,7 @@
 Defines the trainer class for sequence models
 """
 
+import logging
 from collections.abc import Sequence
 from typing import Any, Protocol
 
@@ -16,6 +17,8 @@ from psycop.common.sequence_models.checkpoint_savers.base import (
     TrainingState,
 )
 from psycop.common.sequence_models.loggers.base import Logger
+
+logger = logging.getLogger(__name__)
 
 BatchWithLabels = tuple[dict[str, torch.Tensor], torch.Tensor]
 
@@ -84,14 +87,14 @@ class Trainer:
         if resume_from_latest_checkpoint:
             checkpoint_state = self._load_state_from_latest_checkpoint()
             if checkpoint_state is not None:
-                print("Resuming from latest checkpoint")
+                logging.info("Resuming from latest checkpoint")
                 model.load_checkpoint(checkpoint=checkpoint_state.training_state)
                 self.train_step = checkpoint_state.train_step
             else:
                 if resume_from_latest_checkpoint and checkpoint_state is None:
-                    print("No checkpoint found, starting from scratch")
+                    logging.info("No checkpoint found, starting from scratch")
                 else:
-                    print(
+                    logging.info(
                         f"Resume from latest checkpoint is {resume_from_latest_checkpoint}, training model from scratch",
                     )
 
