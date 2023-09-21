@@ -65,24 +65,25 @@ class Trainer:
         val_dataloader: DataLoader,
         resume_from_latest_checkpoint: bool = True,
     ) -> Self:
-        checkpoint_state = self._load_state_from_latest_checkpoint()
 
         if n_steps <= self.train_step:
             raise ValueError(
                 f"Model is already trained to {self.train_step} steps, n_steps would result in no further training. Set a new n_steps > {self.train_step}.",
             )
 
-        if resume_from_latest_checkpoint and checkpoint_state is not None:
-            print("Resuming from latest checkpoint")
-            model.load_checkpoint(checkpoint=checkpoint_state.training_state)
-            self.train_step = checkpoint_state.train_step
-        else:
-            if resume_from_latest_checkpoint and checkpoint_state is None:
-                print("No checkpoint found, starting from scratch")
+        if resume_from_latest_checkpoint:
+            checkpoint_state = self._load_state_from_latest_checkpoint()
+            if checkpoint_state is not None:
+                print("Resuming from latest checkpoint")
+                model.load_checkpoint(checkpoint=checkpoint_state.training_state)
+                self.train_step = checkpoint_state.train_step
             else:
-                print(
-                    f"Resume from latest checkpoint is {resume_from_latest_checkpoint}, training model from scratch",
-                )
+                if resume_from_latest_checkpoint and checkpoint_state is None:
+                    print("No checkpoint found, starting from scratch")
+                else:
+                    print(
+                        f"Resume from latest checkpoint is {resume_from_latest_checkpoint}, training model from scratch",
+                    )
 
         train_loss = []
         n_epochs = max(int(n_steps / len(train_dataloader)), 1)

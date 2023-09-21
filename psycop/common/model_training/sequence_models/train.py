@@ -1,10 +1,16 @@
 """
-- [ ] Test that it runs
-    - [ ] Test that it saves a checkpoint
-        - [ ] Test that it can resume from a checkpoint
+- [x] Test that it runs
+    - [x] Test that it saves a checkpoint
+        - [x] Test that it can resume from a checkpoint
+        - [ ] check that it does not overwrite the new device
     - [ ] test that it run on gpu
 - [ ] test that it logs to wandb
     - [ ] logs config (currently not logged)
+
+TODO:
+- replace print with logging
+- fix moving to device
+- log hyperparameters
 """
 
 
@@ -28,6 +34,7 @@ from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 from torch import nn
 
 from psycop.common.sequence_models.trainer import Trainer
+
 
 
 def create_model(patients: list[Patient]) -> BEHRTForMaskedLM:
@@ -92,7 +99,7 @@ def create_trainer(checkpoint_path: Path) -> Trainer:
     )
 
     return Trainer(
-        device=torch.device("cpu"),
+        device=torch.device("cuda"),
         validate_every_n_steps=1,
         n_samples_to_validate_on=2,
         logger=logger,
@@ -107,9 +114,9 @@ model_ckpt_path.mkdir(parents=True, exist_ok=True)
 
 trainer = create_trainer(checkpoint_path=model_ckpt_path)
 trainer.fit(
-    n_steps=1,
+    n_steps=100,
     model=model,
     train_dataloader=train_dataloader,
     val_dataloader=val_dataloader,
-    resume_from_latest_checkpoint=True,
+    resume_from_latest_checkpoint=False,
 )
