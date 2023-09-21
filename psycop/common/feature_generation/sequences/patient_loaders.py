@@ -73,9 +73,11 @@ class PatientLoader:
         return df
 
     @staticmethod
-    def get_train_set(event_loaders: Sequence[EventDfLoader]) -> list[Patient]:
+    def get_split(
+        event_loaders: Sequence[EventDfLoader], split: str = "train"
+    ) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
-        train_ids = pl.from_pandas(load_ids(split="train")).lazy()
+        train_ids = pl.from_pandas(load_ids(split=split)).lazy()
 
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
         events_after_2013 = events_from_train.filter(
@@ -93,6 +95,4 @@ class PatientLoader:
 
 
 if __name__ == "__main__":
-    patients = PatientLoader.get_train_set(event_loaders=[DiagnosisLoader()])
-
-    pass
+    patients = PatientLoader.get_split(event_loaders=[DiagnosisLoader()], split="train")
