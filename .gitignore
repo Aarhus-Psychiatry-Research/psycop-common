@@ -199,3 +199,6 @@ joblib
 
 # model checkpoints
 /data
+
+# logging
+lightning_logs/*

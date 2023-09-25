@@ -1,4 +1,5 @@
 from copy import copy
+from typing import Any
 
 import lightning.pytorch as pl
 import torch
@@ -6,10 +7,10 @@ from torch import nn
 from torch.optim import Optimizer
 
 from psycop.common.data_structures.patient import Patient
-from psycop.common.sequence_models.checkpoint_savers.base import TrainingState
-from psycop.common.sequence_models.trainer import BatchWithLabels, TrainableModule
 
 from .embedders import BEHRTEmbedder
+
+BatchWithLabels = tuple[dict[str, torch.Tensor], torch.Tensor]
 
 
 class BEHRTForMaskedLM(pl.LightningModule):
@@ -19,11 +20,12 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
+        optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},
     ):
         super().__init__()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
-        self.optimizer = self.configure_optimizer()
+        self.optimizer_kwargs = optimizer_kwargs
 
         self.d_model = self.embedding_module.d_model
         self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
@@ -31,23 +33,19 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
-    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:
-        self.optimizer.zero_grad()
+    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
-        loss.backward()
         # Update the weights
-        self.optimizer.step()
         self.log("Training Loss", loss)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:
-        with torch.no_grad():
-            output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
+    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore
+        output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
         self.log("Validation Loss", output["loss"])
         return output["loss"]
 
-    def forward(
+    def forward(  # type: ignore
         self,
         inputs: dict[str, torch.Tensor],
         masked_lm_labels: torch.Tensor,
@@ -131,16 +129,6 @@ class BEHRTForMaskedLM(pl.LightningModule):
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
         return padded_sequence_ids, masked_labels
 
-    def load_checkpoint(self, checkpoint: TrainingState):
-        self.load_state_dict(checkpoint.model_state_dict)
-        self.optimizer.load_state_dict(checkpoint.optimizer_state_dict)
-
-    def get_state(self) -> TrainingState:
-        return TrainingState(
-            model_state_dict=self.state_dict(),
-            optimizer_state_dict=self.optimizer.state_dict(),
-        )
-
-    def configure_optimizer(self) -> Optimizer:
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
+    def configure_optimizers(self) -> Optimizer:
+        optimizer = torch.optim.Adam(self.parameters(), **self.optimizer_kwargs)
         return optimizer
