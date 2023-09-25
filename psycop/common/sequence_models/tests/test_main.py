@@ -1,5 +1,4 @@
 from datetime import datetime
-from pathlib import Path
 
 import lightning.pytorch as pl
 import pytest
@@ -103,7 +102,8 @@ def test_behrt(patient_dataset: PatientDataset):
 
 
 def test_module_with_trainer(
-    patients: list[Patient], tmp_path: Path, trainable_module: BEHRTForMaskedLM
+    patients: list[Patient],
+    trainable_module: BEHRTForMaskedLM,
 ):
     """
     Tests the general intended workflow of the Trainer class

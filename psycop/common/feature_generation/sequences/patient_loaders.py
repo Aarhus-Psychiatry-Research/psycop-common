@@ -74,7 +74,8 @@ class PatientLoader:
 
     @staticmethod
     def get_split(
-        event_loaders: Sequence[EventDfLoader], split: str = "train"
+        event_loaders: Sequence[EventDfLoader],
+        split: str = "train",
     ) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         train_ids = pl.from_pandas(load_ids(split=split)).lazy()

@@ -66,8 +66,8 @@ class TrainingConfig:
 
 @dataclass
 class Config:
-    training_config: TrainingConfig = TrainingConfig()
-    model_config: ModelConfig = ModelConfig()
+    training_config: TrainingConfig = TrainingConfig()  # noqa
+    model_config: ModelConfig = ModelConfig()  # noqa
 
     def to_dict(self) -> dict[str, Any]:
         """return a flattened dictionary of the config"""
@@ -108,7 +108,8 @@ model_cfg = config.model_config
 training_cfg = config.training_config
 
 train_patients = PatientLoader.get_split(
-    event_loaders=[DiagnosisLoader()], split="train"
+    event_loaders=[DiagnosisLoader()],
+    split="train",
 )
 val_patients = PatientLoader.get_split(event_loaders=[DiagnosisLoader()], split="val")
 

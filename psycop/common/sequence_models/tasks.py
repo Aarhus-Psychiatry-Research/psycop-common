@@ -20,7 +20,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
-        optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},
+        optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},  # noqa
     ):
         super().__init__()
         self.embedding_module = embedding_module
@@ -33,14 +33,14 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
-    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore
+    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore # noqa: ARG002
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
         # Update the weights
         self.log("Training Loss", loss)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore
+    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
         output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
         self.log("Validation Loss", output["loss"])
         return output["loss"]
