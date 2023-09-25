@@ -5,13 +5,14 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 
 
 def time_from_first_pos_pred_to_next_hba1c(
-    pos_preds: pl.LazyFrame, hba1cs: pl.LazyFrame
+    pos_preds: pl.LazyFrame,
+    hba1cs: pl.LazyFrame,
 ) -> pl.LazyFrame:
     first_pos_pred_colname = "timestamp_first_pos_pred"
     delta_time_col_name = "time_from_first_pos_pred_to_next_hba1c"
 
     first_pos_pred = pos_preds.groupby("patient_id").agg(
-        pl.col("pred_timestamps").min().alias(first_pos_pred_colname)
+        pl.col("pred_timestamps").min().alias(first_pos_pred_colname),
     )
 
     filtered = (
@@ -22,14 +23,14 @@ def time_from_first_pos_pred_to_next_hba1c(
         )
         .with_columns(
             (pl.col("timestamp") - pl.col(first_pos_pred_colname)).alias(
-                delta_time_col_name
-            )
+                delta_time_col_name,
+            ),
         )
         .filter(pl.col(delta_time_col_name) >= 0)
     )
 
     return filtered.groupby("patient_id").agg(
-        pl.col(delta_time_col_name).min().alias("min_time_to_next_hba1c")
+        pl.col(delta_time_col_name).min().alias("min_time_to_next_hba1c"),
     )
 
 
@@ -51,7 +52,7 @@ if __name__ == "__main__":
                     "pred_timestamps": eval_ds.pred_timestamps,
                     "outcome_timestamps": eval_ds.outcome_timestamps,
                 },
-            )
+            ),
         )
         .lazy()
         .filter(pl.col("pred") == 1 & pl.col("y") == 1)
@@ -61,7 +62,8 @@ if __name__ == "__main__":
 
     delta_time_df = (
         time_from_first_pos_pred_to_next_hba1c(
-            pos_preds=positive_predictions, hba1cs=pl.from_pandas(hba1cs).lazy()
+            pos_preds=positive_predictions,
+            hba1cs=pl.from_pandas(hba1cs).lazy(),
         )
         .collect()
         .describe()
