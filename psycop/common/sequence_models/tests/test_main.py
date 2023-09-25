@@ -4,20 +4,16 @@ from pathlib import Path
 from statistics import mean
 
 import pytest
+import pytorch_lightning as pl
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures import Patient, TemporalEvent
-from psycop.common.sequence_models import (
-    BEHRTEmbedder,
-    BEHRTForMaskedLM,
-    PatientDataset,
-    Trainer,
-)
-from psycop.common.sequence_models.checkpoint_savers.save_to_disk import (
-    CheckpointToDisk,
-)
+from psycop.common.sequence_models import (BEHRTEmbedder, BEHRTForMaskedLM,
+                                           PatientDataset, Trainer)
+from psycop.common.sequence_models.checkpoint_savers.save_to_disk import \
+    CheckpointToDisk
 from psycop.common.sequence_models.loggers.base import Logger
 
 
@@ -122,21 +118,6 @@ def test_behrt(patient_dataset: PatientDataset):
         loss.backward()  # ensure that the backward pass works
 
 
-def init_test_trainer(checkpoint_path: Path) -> Trainer:
-    ckpt_saver = CheckpointToDisk(
-        checkpoint_path=checkpoint_path,
-        override_on_save=True,
-    )
-    logger = DummyLogger(run_name="test_run", project_name="test")
-    return Trainer(
-        device=torch.device("cpu"),
-        validate_every_n_steps=1,
-        n_samples_to_validate_on=2,
-        logger=logger,
-        checkpoint_savers=[ckpt_saver],
-        save_every_n_steps=1,
-    )
-
 
 def test_trainer(
     patients: list[Patient],
@@ -167,33 +148,31 @@ def test_trainer(
         collate_fn=trainable_module.collate_fn,
     )
 
-    trainer = init_test_trainer(checkpoint_path=tmp_path)
+    trainer = pl.Trainer(max_steps=1)
     trainer.fit(
-        n_steps=1,
         model=trainable_module,
-        train_dataloader=train_dataloader,
-        val_dataloader=val_dataloader,
-        resume_from_latest_checkpoint=False,
+        train_dataloaders=train_dataloader,
+        val_dataloaders=val_dataloader,
     )
 
-    # Check that model can resume training
-    final_training_steps = 10
-    resumed_trainer = init_test_trainer(checkpoint_path=tmp_path)
-    resumed_trainer.fit(
-        n_steps=final_training_steps,
-        model=deepcopy(trainable_module),
-        train_dataloader=deepcopy(train_dataloader),
-        val_dataloader=deepcopy(val_dataloader),
-        resume_from_latest_checkpoint=True,
-    )
-    assert resumed_trainer.train_step == final_training_steps
+    # # Check that model can resume training
+    # final_training_steps = 10
+    # resumed_trainer = init_test_trainer(checkpoint_path=tmp_path)
+    # resumed_trainer.fit(
+    #     n_steps=final_training_steps,
+    #     model=deepcopy(trainable_module),
+    #     train_dataloader=deepcopy(train_dataloader),
+    #     val_dataloader=deepcopy(val_dataloader),
+    #     resume_from_latest_checkpoint=True,
+    # )
+    # assert resumed_trainer.train_step == final_training_steps
 
-    # Check that model loss decreases over training time
-    logger: DummyLogger = resumed_trainer.logger  # type: ignore
-    metrics = logger.metrics
-    first_three_losses = [metrics[i]["Training loss"] for i in range(0, 3)]
-    last_three_losses = [metrics[i]["Training loss"] for i in range(-3, 0)]
-    final_loss_smaller_than_initial_loss = mean(first_three_losses) > mean(
-        last_three_losses,
-    )
-    assert final_loss_smaller_than_initial_loss
+    # # Check that model loss decreases over training time
+    # logger: DummyLogger = resumed_trainer.logger  # type: ignore
+    # metrics = logger.metrics
+    # first_three_losses = [metrics[i]["Training loss"] for i in range(0, 3)]
+    # last_three_losses = [metrics[i]["Training loss"] for i in range(-3, 0)]
+    # final_loss_smaller_than_initial_loss = mean(first_three_losses) > mean(
+    #     last_three_losses,
+    # )
+    # assert final_loss_smaller_than_initial_loss

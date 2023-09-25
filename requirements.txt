@@ -29,3 +29,4 @@ transformers==4.24.0
 timeseriesflattener==1.6.0
 sentence-transformers==2.2.2
 torch==2.0.1
+lightning==2.0.9

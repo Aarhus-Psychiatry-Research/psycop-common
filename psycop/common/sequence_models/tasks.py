@@ -1,5 +1,6 @@
 from copy import copy
 
+import lightning.pytorch as pl
 import torch
 from torch import nn
 from torch.optim import Optimizer
@@ -11,7 +12,7 @@ from psycop.common.sequence_models.trainer import BatchWithLabels, TrainableModu
 from .embedders import BEHRTEmbedder
 
 
-class BEHRTForMaskedLM(nn.Module, TrainableModule):
+class BEHRTForMaskedLM(pl.LightningModule):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(
@@ -30,18 +31,20 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
-    def training_step(self, batch: BatchWithLabels) -> torch.Tensor:
+    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:
         self.optimizer.zero_grad()
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
         loss.backward()
         # Update the weights
         self.optimizer.step()
+        self.log("Training Loss", loss)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels) -> torch.Tensor:
+    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:
         with torch.no_grad():
             output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
+        self.log("Validation Loss", output["loss"])
         return output["loss"]
 
     def forward(
