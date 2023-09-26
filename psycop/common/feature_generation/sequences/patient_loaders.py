@@ -14,6 +14,7 @@ from psycop.common.feature_generation.sequences.event_dataframes_to_patient impo
     EventDataFramesToPatients,
     PatientColumnNames,
 )
+from psycop.common.global_utils.cache import mem
 
 
 class EventDfLoader(ABC):
@@ -72,6 +73,7 @@ class PatientLoader:
 
         return df
 
+    @mem.cache
     @staticmethod
     def get_split(
         event_loaders: Sequence[EventDfLoader],

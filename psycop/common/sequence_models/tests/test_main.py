@@ -132,7 +132,7 @@ def test_module_with_trainer(
         collate_fn=trainable_module.collate_fn,
     )
 
-    trainer = pl.Trainer(max_steps=1)
+    trainer = pl.Trainer(max_steps=50)
     trainer.fit(
         model=trainable_module,
         train_dataloaders=train_dataloader,
