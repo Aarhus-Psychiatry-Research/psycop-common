@@ -1,3 +1,4 @@
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.t2d.paper_outputs.config import (
     BEST_POS_RATE,
     DEVELOPMENT_GROUP,

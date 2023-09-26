@@ -3,12 +3,13 @@ import pickle
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Mapping, Optional
 
 import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
@@ -89,7 +90,7 @@ class PipelineInputs:
     group: RunGroup
     eval_dir: Path
 
-    def get_cfg_as_json(self) -> FullConfigSchema:
+    def get_cfg_as_json(self) -> dict[str, Any]:
         # Load json
         path = self.eval_dir / "cfg.json"
         return json.loads(json.loads(path.read_text()))
@@ -109,10 +110,22 @@ class PipelineInputs:
 
     @property
     def cfg(self) -> FullConfigSchema:
-        # Loading the json instead of the .pkl makes us independent
-        # of whether the imports in psycop-common model-training have changed
-        # TODO: Note that this means assigning to the cfg property does nothing, since it's recomputed every time it's called
-        return FullConfigSchema.parse_obj(self.get_cfg_as_json())
+        """
+        Loads the config object for the given pipeline.
+        Loading the json instead of the .pkl makes us independent
+            of whether the imports in psycop-common model-training have changed
+
+        Args:
+            extension_dict: Add this dict to the cfg object. Helpful when the cfg object has changed, e.g. a parameter has been added, and you want to add that parameter without changing the full cfg.
+
+        TODO: Note that this means assigning to the cfg property does nothing, since it's recomputed every time it's called
+        """
+        pipeline_dict = self.get_cfg_as_json()
+
+        if "project_path" not in pipeline_dict["project"].keys():
+            pipeline_dict["project"]["project_path"] = OVARTACI_SHARED_DIR / "t2d"
+
+        return FullConfigSchema.parse_obj(pipeline_dict)
 
 
 @dataclass
@@ -196,7 +209,10 @@ class PipelineRun:
         self.group = group
         pipeline_output_dir = self.group.group_dir / self.name
 
-        self.inputs = PipelineInputs(group=group, eval_dir=pipeline_output_dir)
+        self.inputs = PipelineInputs(
+            group=group,
+            eval_dir=pipeline_output_dir,
+        )
         self.pipeline_outputs = PipelineOutputs(
             group=group,
             dir_path=pipeline_output_dir,

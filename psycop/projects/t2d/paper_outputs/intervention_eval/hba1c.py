@@ -1,3 +1,5 @@
+import datetime as dt
+
 import pandas as pd
 import polars as pl
 
@@ -48,21 +50,27 @@ if __name__ == "__main__":
                         desired_positive_rate=pipeline.paper_outputs.pos_rate,
                     )[0],
                     "y": eval_ds.y,
-                    "id": eval_ds.ids,
+                    "patient_id": eval_ds.ids,
                     "pred_timestamps": eval_ds.pred_timestamps,
                     "outcome_timestamps": eval_ds.outcome_timestamps,
                 },
             ),
         )
         .lazy()
-        .filter(pl.col("pred") == 1 & pl.col("y") == 1)
+        .filter(pl.col("pred") == 1)
+        .filter(pl.col("y") == 1)
     )
 
-    hba1cs = hba1c().rename({"dw_ek_broger": "patient_id", "timestamp": "timestamp"})
+    hba1cs = hba1c().rename(
+        {"dw_ek_borger": "patient_id", "timestamp": "timestamp"}, axis=1
+    )
+    hba1cs_with_fuzz = pl.from_pandas(hba1cs).with_columns(
+        (pl.col("timestamp") + dt.timedelta(days=1)).alias("timestamp")
+    )
 
     delta_time_df = time_from_first_pos_pred_to_next_hba1c(
         pos_preds=positive_predictions,
-        hba1cs=pl.from_pandas(hba1cs).lazy(),
+        hba1cs=hba1cs_with_fuzz.lazy(),
     ).collect()
 
     description_df = delta_time_df.describe()
