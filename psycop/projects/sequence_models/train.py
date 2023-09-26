@@ -111,7 +111,6 @@ def create_trainer(save_dir: Path, config: TrainingConfig) -> pl.Trainer:
         save_dir=save_dir,
         offline=config.offline,
         project=config.project_name,
-        log_model="all",
     )
 
     return pl.Trainer(
