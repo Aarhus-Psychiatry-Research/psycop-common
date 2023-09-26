@@ -141,6 +141,7 @@
 | psycop/projects/restraint/utils/best\_runs.py                                                                   |       75 |       32 |     57% |24, 30-38, 42-48, 51-53, 70-74, 77, 80, 86, 90, 94, 98-99, 104-106, 109-113, 117, 121-122, 130 |
 | psycop/projects/restraint/utils/feature\_name\_to\_readable.py                                                  |       26 |       22 |     15% |6-16, 21-54, 59-64 |
 | psycop/projects/t2d/paper\_outputs/config.py                                                                    |       18 |        0 |    100% |           |
+| psycop/projects/t2d/paper\_outputs/intervention\_eval/hba1c.py                                                  |       20 |        9 |     55% |     36-75 |
 | psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/conftest.py                      |        7 |        0 |    100% |           |
 | psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/get\_shap\_values.py             |       59 |       34 |     42% |18-29, 34-46, 62, 70-84, 93-125, 153-163 |
 | psycop/projects/t2d/paper\_outputs/model\_description/feature\_importance/shap/plot\_shap.py                    |       31 |        0 |    100% |           |
@@ -153,8 +154,8 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/modified\_dataset.py                                      |       40 |       26 |     35% |18, 29, 36-43, 51-94 |
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
-| psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      108 |       51 |     53% |19-20, 28, 50, 54-62, 66-72, 75-77, 94-95, 98-102, 105, 108, 115, 128-132, 135-137, 141, 153-160, 173-180, 195-205, 216 |
-|                                                                                                       **TOTAL** | **4788** | **1288** | **73%** |           |
+| psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      112 |       54 |     52% |20-21, 29, 51, 55-63, 67-73, 76-78, 95-96, 99-103, 106, 109, 123-128, 141-145, 148-150, 154, 166-173, 186-193, 208-221, 232 |
+|                                                                                                       **TOTAL** | **4812** | **1300** | **73%** |           |
 
 
 ## Setup coverage badge
