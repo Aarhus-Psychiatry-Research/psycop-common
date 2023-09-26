@@ -3,7 +3,6 @@ from datetime import datetime
 from pathlib import Path
 from statistics import mean
 
-import numpy as np
 import pytest
 import torch
 from torch import nn

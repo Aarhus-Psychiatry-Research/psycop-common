@@ -3,7 +3,7 @@ import pickle
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Mapping, Optional
+from typing import Any, Literal, Optional
 
 import pandas as pd
 import polars as pl

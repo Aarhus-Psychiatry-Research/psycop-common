@@ -62,10 +62,11 @@ if __name__ == "__main__":
     )
 
     hba1cs = hba1c().rename(
-        {"dw_ek_borger": "patient_id", "timestamp": "timestamp"}, axis=1
+        {"dw_ek_borger": "patient_id", "timestamp": "timestamp"},
+        axis=1,
     )
     hba1cs_with_fuzz = pl.from_pandas(hba1cs).with_columns(
-        (pl.col("timestamp") + dt.timedelta(days=1)).alias("timestamp")
+        (pl.col("timestamp") + dt.timedelta(days=1)).alias("timestamp"),
     )
 
     delta_time_df = time_from_first_pos_pred_to_next_hba1c(
