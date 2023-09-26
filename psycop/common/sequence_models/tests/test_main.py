@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from statistics import mean
 
+import numpy as np
 import pytest
 import torch
 from torch import nn
@@ -191,8 +192,8 @@ def test_trainer(
     # Check that model loss decreases over training time
     logger: DummyLogger = resumed_trainer.logger  # type: ignore
     metrics = logger.metrics
-    first_three_losses = [metrics[i]["Training loss"] for i in range(0, 3)]
-    last_three_losses = [metrics[i]["Training loss"] for i in range(-3, 0)]
+    first_three_losses = [metrics[i]["Training loss"] for i in range(0, 5)]
+    last_three_losses = [metrics[i]["Training loss"] for i in range(-5, 0)]
     final_loss_smaller_than_initial_loss = mean(first_three_losses) > mean(
         last_three_losses,
     )

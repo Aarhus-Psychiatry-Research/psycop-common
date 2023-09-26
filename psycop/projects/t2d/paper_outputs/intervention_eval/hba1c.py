@@ -60,13 +60,11 @@ if __name__ == "__main__":
 
     hba1cs = hba1c().rename({"dw_ek_broger": "patient_id", "timestamp": "timestamp"})
 
-    delta_time_df = (
-        time_from_first_pos_pred_to_next_hba1c(
-            pos_preds=positive_predictions,
-            hba1cs=pl.from_pandas(hba1cs).lazy(),
-        )
-        .collect()
-        .describe()
-    )
+    delta_time_df = time_from_first_pos_pred_to_next_hba1c(
+        pos_preds=positive_predictions,
+        hba1cs=pl.from_pandas(hba1cs).lazy(),
+    ).collect()
+
+    description_df = delta_time_df.describe()
 
     print(delta_time_df)
