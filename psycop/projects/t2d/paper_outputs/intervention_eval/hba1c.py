@@ -18,11 +18,7 @@ def time_from_first_pos_pred_to_next_hba1c(
     )
 
     filtered = (
-        first_pos_pred.join(
-            hba1cs,
-            on="patient_id",
-            how="inner",
-        )
+        first_pos_pred.join(hba1cs, on="patient_id", how="inner")
         .with_columns(
             (pl.col("timestamp") - pl.col(first_pos_pred_colname)).alias(
                 delta_time_col_name,
