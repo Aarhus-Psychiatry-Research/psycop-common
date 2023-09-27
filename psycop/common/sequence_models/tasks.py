@@ -23,6 +23,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},  # noqa
     ):
         super().__init__()
+        self.save_hyperparameters()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.optimizer_kwargs = optimizer_kwargs
