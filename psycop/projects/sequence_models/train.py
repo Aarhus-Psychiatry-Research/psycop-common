@@ -2,7 +2,7 @@
 - [x] Test that it runs on Ovartaci
     - [ ] Test that it saves checkpoints at marked itervals
     - [ ] Test that it can resume from a checkpoint
-    - [ ] Test that it runs on gpu
+    - [x] Test that it runs on gpu
 - [ ] Test that it logs to wandb and that we can upload it
     - [ ] Logs config (currently not logged)
 
@@ -15,7 +15,7 @@ TODO:
 """
 
 import enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -68,8 +68,8 @@ class TrainingConfig:
 
 @dataclass
 class Config:
-    training_config: TrainingConfig = TrainingConfig()  # noqa
-    model_config: ModelConfig = ModelConfig()  # noqa
+    training_config: TrainingConfig = field(default_factory=TrainingConfig)
+    model_config: ModelConfig = field(default_factory=ModelConfig)
 
     def to_dict(self) -> dict[str, Any]:
         """return a flattened dictionary of the config"""
