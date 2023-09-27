@@ -1,10 +1,11 @@
+from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
-from lightning.pytorch.callbacks import ModelCheckpoint
 import pytest
+from lightning.pytorch.callbacks import ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -15,9 +16,10 @@ from psycop.common.sequence_models import (
     PatientDataset,
 )
 from psycop.projects.sequence_models.train import (
+    Config,
     TorchAccelerator,
     TrainingConfig,
-    create_trainer,
+    create_default_trainer,
 )
 
 
@@ -120,8 +122,9 @@ def test_module_with_trainer(
 
     assert isinstance(trainable_module, pl.LightningModule)
 
-    patients = patients * 10
-    midpoint = int(len(patients) / 2)
+    n_patients = 10
+    patients = patients * n_patients
+    midpoint = int(n_patients / 2)
     train_patients = patients[:midpoint]
     val_patients = patients[midpoint:]
 
@@ -141,30 +144,14 @@ def test_module_with_trainer(
         collate_fn=trainable_module.collate_fn,
     )
 
-    config = TrainingConfig(n_steps=10, accelerator=TorchAccelerator.CPU)
+    config = Config(
+        training_config=TrainingConfig(
+            n_steps=midpoint, accelerator=TorchAccelerator.CPU
+        )
+    )
     save_dir = Path(__file__).parent
 
-    wandb_logger = pl_loggers.WandbLogger(
-        name=config.run_name,
-        save_dir=save_dir,
-        offline=config.offline,
-        project=config.project_name,
-    )
-
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=tmp_path / "checkpoints",
-        every_n_train_steps=1,
-        verbose=True,
-    )
-
-    trainer = pl.Trainer(
-        accelerator=config.accelerator.value,
-        max_steps=config.n_steps,
-        val_check_interval=config.validate_every_n_batches,
-        logger=wandb_logger,
-        callbacks=[checkpoint_callback],
-    )
-
+    trainer = create_default_trainer(save_dir=save_dir, config=config)
     trainer.fit(
         model=trainable_module,
         train_dataloaders=train_dataloader,
@@ -175,14 +162,8 @@ def test_module_with_trainer(
     checkpoint_paths = list((tmp_path / "checkpoints").glob("*.ckpt"))
     assert len(checkpoint_paths) == 1
 
-    # Checkpoints can be loaded
-    trainer = pl.Trainer(
-        accelerator=config.accelerator.value,
-        max_steps=config.n_steps,
-        val_check_interval=config.validate_every_n_batches,
-        logger=wandb_logger,
-        callbacks=[checkpoint_callback],
-        resume_from_checkpoint=checkpoint_paths[0],
-    )
-
-    # Are hyperparameters logged? Yes!
+    # Checkpoint can be loaded
+    # Note that load_from_checkpoint raises a FileNotFoundError if the checkpoint does not exist.
+    # Hence, this would fail if we could not load the checkpoint.
+    loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_paths[0])
+    trainer.fit(model=loaded_model, train_dataloaders=train_dataloader)

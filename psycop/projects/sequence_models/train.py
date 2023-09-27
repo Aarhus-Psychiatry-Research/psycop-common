@@ -1,10 +1,10 @@
 """
 - [x] Test that it runs on Ovartaci
-    - [ ] Test that it saves checkpoints at marked itervals
-    - [ ] Test that it can resume from a checkpoint
+    - [x] Test that it saves checkpoints at marked itervals
+    - [x] Test that it can resume from a checkpoint
     - [x] Test that it runs on gpu
-- [ ] Test that it logs to wandb and that we can upload it
-    - [ ] Logs config (currently not logged)
+- [x] Test that it logs to wandb and that we can upload it
+    - [x] Logs config (currently not logged)
 
 TODO:
 - [x] replace print with logging
@@ -15,12 +15,13 @@ TODO:
 """
 
 import enum
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
+from lightning.pytorch.callbacks import ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -36,7 +37,8 @@ from psycop.common.sequence_models.embedders import BEHRTEmbedder
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 
 
-class ModelConfig(BaseModel):
+@dataclass
+class ModelConfig:
     d_model: int = 32
     dropout_prob: float = 0.1
     max_sequence_length: int = 128
@@ -105,26 +107,34 @@ def create_model(patients: list[Patient], config: ModelConfig) -> BEHRTForMasked
     return module
 
 
-def create_trainer(save_dir: Path, config: TrainingConfig) -> pl.Trainer:
+def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
     wandb_logger = pl_loggers.WandbLogger(
-        name=config.run_name,
+        name=config.training_config.run_name,
         save_dir=save_dir,
-        offline=config.offline,
-        project=config.project_name,
+        offline=config.training_config.offline,
+        project=config.training_config.project_name,
     )
 
-    return pl.Trainer(
-        accelerator=config.accelerator.value,
-        max_steps=config.n_steps,
-        val_check_interval=config.validate_every_n_batches,
-        logger=wandb_logger,
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=save_dir / "checkpoints",
+        every_n_train_steps=1,
+        verbose=True,
     )
+
+    trainer = pl.Trainer(
+        accelerator=config.training_config.accelerator.value,
+        max_steps=config.training_config.n_steps,
+        val_check_interval=config.training_config.validate_every_n_batches,
+        logger=wandb_logger,
+        callbacks=[checkpoint_callback],
+    )
+    wandb_logger.experiment.config.update(asdict(config))
+
+    return trainer
 
 
 if __name__ == "__main__":
     config = Config()
-    model_cfg = config.model_config
-    training_cfg = config.training_config
 
     train_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
@@ -134,20 +144,20 @@ if __name__ == "__main__":
         event_loaders=[DiagnosisLoader()], split="val"
     )
 
-    model = create_model(patients=train_patients, config=model_cfg)
+    model = create_model(patients=train_patients, config=config.model_config)
 
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
 
     train_dataloader = DataLoader(
         train_dataset,
-        batch_size=training_cfg.batch_size,
+        batch_size=config.training_config.batch_size,
         shuffle=True,
         collate_fn=model.collate_fn,
     )
     val_dataloader = DataLoader(
         val_dataset,
-        batch_size=training_cfg.batch_size,
+        batch_size=config.training_config.batch_size,
         shuffle=True,
         collate_fn=model.collate_fn,
     )
@@ -157,8 +167,7 @@ if __name__ == "__main__":
     save_dir = project_root / "data"
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    trainer = create_trainer(save_dir=save_dir, config=training_cfg)
-    trainer.logger.log_hyperparams(config.model_config.dict())
+    trainer = create_default_trainer(save_dir=save_dir, config=config)
 
     trainer.fit(
         model=model,
