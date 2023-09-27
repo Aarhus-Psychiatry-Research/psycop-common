@@ -1,6 +1,9 @@
 from datetime import datetime
+from pathlib import Path
 
 import lightning.pytorch as pl
+import lightning.pytorch.loggers as pl_loggers
+from lightning.pytorch.callbacks import ModelCheckpoint
 import pytest
 from torch import nn
 from torch.utils.data import DataLoader
@@ -10,6 +13,11 @@ from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
     PatientDataset,
+)
+from psycop.projects.sequence_models.train import (
+    TorchAccelerator,
+    TrainingConfig,
+    create_trainer,
 )
 
 
@@ -104,6 +112,7 @@ def test_behrt(patient_dataset: PatientDataset):
 def test_module_with_trainer(
     patients: list[Patient],
     trainable_module: BEHRTForMaskedLM,
+    tmp_path: Path,
 ):
     """
     Tests the general intended workflow of the Trainer class
@@ -132,9 +141,41 @@ def test_module_with_trainer(
         collate_fn=trainable_module.collate_fn,
     )
 
-    trainer = pl.Trainer(max_steps=50)
+    config = TrainingConfig(n_steps=10, accelerator=TorchAccelerator.CPU)
+    save_dir = Path(__file__).parent
+
+    wandb_logger = pl_loggers.WandbLogger(
+        name=config.run_name,
+        save_dir=save_dir,
+        offline=config.offline,
+        project=config.project_name,
+    )
+
+    # Checkpoints are saved
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=tmp_path / "checkpoints",
+        every_n_train_steps=1,
+        verbose=True,
+    )
+
+    trainer = pl.Trainer(
+        accelerator=config.accelerator.value,
+        max_steps=config.n_steps,
+        val_check_interval=config.validate_every_n_batches,
+        logger=wandb_logger,
+        callbacks=[checkpoint_callback],
+    )
+
     trainer.fit(
         model=trainable_module,
         train_dataloaders=train_dataloader,
         val_dataloaders=val_dataloader,
     )
+
+    assert len(list((tmp_path / "checkpoints").glob("*.ckpt"))) == 1
+
+    # Checkpoints can be loaded
+
+    # wandb logging
+
+    # wandb upload
