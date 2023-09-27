@@ -151,7 +151,6 @@ def test_module_with_trainer(
         project=config.project_name,
     )
 
-    # Checkpoints are saved
     checkpoint_callback = ModelCheckpoint(
         dirpath=tmp_path / "checkpoints",
         every_n_train_steps=1,
@@ -172,10 +171,18 @@ def test_module_with_trainer(
         val_dataloaders=val_dataloader,
     )
 
-    assert len(list((tmp_path / "checkpoints").glob("*.ckpt"))) == 1
+    # Checkpoints are saved
+    checkpoint_paths = list((tmp_path / "checkpoints").glob("*.ckpt"))
+    assert len(checkpoint_paths) == 1
 
     # Checkpoints can be loaded
+    trainer = pl.Trainer(
+        accelerator=config.accelerator.value,
+        max_steps=config.n_steps,
+        val_check_interval=config.validate_every_n_batches,
+        logger=wandb_logger,
+        callbacks=[checkpoint_callback],
+        resume_from_checkpoint=checkpoint_paths[0],
+    )
 
-    # wandb logging
-
-    # wandb upload
+    # Are hyperparameters logged? Yes!
