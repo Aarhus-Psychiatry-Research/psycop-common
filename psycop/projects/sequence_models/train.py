@@ -65,8 +65,8 @@ class TrainingConfig:
         -1
     )  # -1 means run until max_epochs, which defaults to 1000 in pytorch lightning.
     batch_size: int = 32
-    validate_every_n_batches: int = 1
-    save_every_n_steps: int = 1
+    validate_every_prop_epoch: float = 1.0
+    checkpoint_every_n_epochs: int = 1
 
 
 @dataclass
@@ -120,13 +120,13 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
 
     trainer = pl.Trainer(
         accelerator=config.training_config.accelerator.value,
-        val_check_interval=config.training_config.validate_every_n_batches,
+        val_check_interval=config.training_config.validate_every_prop_epoch,
         logger=wandb_logger,
         max_steps=config.training_config.n_steps,
         callbacks=[
             ModelCheckpoint(
                 dirpath=save_dir / "checkpoints",
-                every_n_epochs=5,
+                every_n_epochs=config.training_config.checkpoint_every_n_epochs,
                 verbose=True,
                 save_top_k=5,
                 mode="min",

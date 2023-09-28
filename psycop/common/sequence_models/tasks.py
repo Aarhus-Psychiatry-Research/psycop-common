@@ -42,7 +42,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
         # Update the weights
-        self.log("Training Loss", loss)
+        self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
