@@ -126,7 +126,7 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
         callbacks=[
             ModelCheckpoint(
                 dirpath=save_dir / "checkpoints",
-                every_n_train_steps=1,
+                every_n_epochs=5,
                 verbose=True,
                 save_top_k=5,
                 mode="min",
@@ -141,7 +141,7 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
 
 
 if __name__ == "__main__":
-    config = Config()
+    config = Config(training_config=TrainingConfig(accelerator=TorchAccelerator.CUDA))
 
     train_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
