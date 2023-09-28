@@ -39,12 +39,12 @@ from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 
 @dataclass
 class ModelConfig:
-    d_model: int = 32
+    d_model: int = 288
     dropout_prob: float = 0.1
-    max_sequence_length: int = 128
-    nhead = int(d_model / 4)
-    dim_feedforward = d_model * 4
-    num_layers = 2
+    max_sequence_length: int = 512
+    nhead = 12
+    dim_feedforward = 512
+    num_layers = 6
 
 
 class TorchAccelerator(enum.Enum):
