@@ -1,12 +1,10 @@
-from typing import Callable
+from typing import Callable  # noqa: I001
 
 import pytest
 import torch
 from torch import nn
 
 from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM
-
-from .test_main import patients, trainable_module  # noqa: F401 # type: ignore
 
 
 @pytest.mark.parametrize(

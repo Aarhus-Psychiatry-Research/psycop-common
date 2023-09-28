@@ -1,4 +1,3 @@
-from datetime import datetime
 from pathlib import Path
 
 import lightning.pytorch as pl
@@ -6,78 +5,25 @@ import pytest
 from torch import nn
 from torch.utils.data import DataLoader
 
-from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.data_structures import Patient
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
     PatientDataset,
 )
+from psycop.common.sequence_models.tests.conftest import patients
 from psycop.projects.sequence_models.train import (
     Config,
     TorchAccelerator,
     TrainingConfig,
+    create_behrt_MLM_model,
     create_default_trainer,
 )
 
 
 @pytest.fixture()
-def patients() -> list[Patient]:
-    """
-    Returns a list of patient objects
-    """
-
-    e1 = TemporalEvent(
-        timestamp=datetime(2021, 1, 1),
-        value="d1",
-        source_type="diagnosis",
-        source_subtype="",
-    )
-    e2 = TemporalEvent(
-        timestamp=datetime(2021, 1, 3),
-        value="d2",
-        source_type="diagnosis",
-        source_subtype="",
-    )
-
-    patient1 = Patient(
-        patient_id=1,
-        date_of_birth=datetime(1990, 1, 1),
-    )
-    patient1.add_events([e1, e2])
-
-    patient2 = Patient(
-        patient_id=2,
-        date_of_birth=datetime(1993, 3, 1),
-    )
-    patient2.add_events([e1, e2, e2, e1])
-
-    return [patient1, patient2]
-
-
-@pytest.fixture()
 def patient_dataset(patients: list) -> PatientDataset:
     return PatientDataset(patients)
-
-
-@pytest.fixture()
-def trainable_module(patients: list[Patient]) -> BEHRTForMaskedLM:
-    d_model = 32
-    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patients=patients, add_mask_token=True)
-
-    encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model,
-        nhead=int(d_model / 4),
-        dim_feedforward=d_model * 4,
-    )
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-
-    # this includes the loss and the MLM head
-    module = BEHRTForMaskedLM(
-        embedding_module=emb,
-        encoder_module=encoder,
-    )
-    return module
 
 
 def test_behrt(patient_dataset: PatientDataset):
@@ -148,9 +94,11 @@ def test_module_with_trainer(
         ),
     )
 
+    module = create_behrt_MLM_model(patients=train_patients, config=config.model_config)
+
     trainer = create_default_trainer(save_dir=tmp_path, config=config)
     trainer.fit(
-        model=trainable_module,
+        model=module,
         train_dataloaders=train_dataloader,
         val_dataloaders=val_dataloader,
     )
