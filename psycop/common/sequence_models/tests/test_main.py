@@ -141,10 +141,13 @@ def test_module_with_trainer(
         collate_fn=trainable_module.collate_fn,
     )
 
-    config = Config(training_config=TrainingConfig(accelerator=TorchAccelerator.CPU))
-    save_dir = Path(__file__).parent
+    config = Config(
+        training_config=TrainingConfig(
+            accelerator=TorchAccelerator.CPU, n_steps=midpoint
+        )
+    )
 
-    trainer = create_default_trainer(save_dir=save_dir, config=config)
+    trainer = create_default_trainer(save_dir=tmp_path, config=config)
     trainer.fit(
         model=trainable_module,
         train_dataloaders=train_dataloader,
@@ -153,7 +156,7 @@ def test_module_with_trainer(
 
     # Checkpoints are saved
     checkpoint_paths = list((tmp_path / "checkpoints").glob("*.ckpt"))
-    assert len(checkpoint_paths) == 1
+    assert len(checkpoint_paths) >= 1
 
     # Checkpoint can be loaded
     # Note that load_from_checkpoint raises a FileNotFoundError if the checkpoint does not exist.

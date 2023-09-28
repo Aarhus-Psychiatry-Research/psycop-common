@@ -61,6 +61,9 @@ class TrainingConfig:
     offline: bool = True
     accelerator: TorchAccelerator = TorchAccelerator.CUDA
 
+    n_steps: int = (
+        -1
+    )  # -1 means run until max_epochs, which defaults to 1000 in pytorch lightning.
     batch_size: int = 32
     validate_every_n_batches: int = 1
     save_every_n_steps: int = 1
@@ -117,6 +120,7 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
         accelerator=config.training_config.accelerator.value,
         val_check_interval=config.training_config.validate_every_n_batches,
         logger=wandb_logger,
+        max_steps=config.training_config.n_steps,
         callbacks=[
             ModelCheckpoint(
                 dirpath=save_dir / "checkpoints",
