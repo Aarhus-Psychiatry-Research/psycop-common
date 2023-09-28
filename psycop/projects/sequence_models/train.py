@@ -31,7 +31,6 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
     PatientLoader,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.common.model_evaluation.utils import BaseModel
 from psycop.common.sequence_models import PatientDataset
 from psycop.common.sequence_models.embedders import BEHRTEmbedder
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
@@ -143,7 +142,8 @@ if __name__ == "__main__":
         split="train",
     )
     val_patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()], split="val"
+        event_loaders=[DiagnosisLoader()],
+        split="val",
     )
 
     model = create_model(patients=train_patients, config=config.model_config)

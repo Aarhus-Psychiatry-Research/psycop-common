@@ -1,11 +1,8 @@
-from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
 import lightning.pytorch as pl
-import lightning.pytorch.loggers as pl_loggers
 import pytest
-from lightning.pytorch.callbacks import ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
 

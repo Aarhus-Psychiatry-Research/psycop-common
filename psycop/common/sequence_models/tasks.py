@@ -37,8 +37,8 @@ class BEHRTForMaskedLM(pl.LightningModule):
     def training_step(  # type: ignore
         self,
         batch: BatchWithLabels,
-        batch_idx: int,
-    ) -> torch.Tensor:  # noqa: ARG002
+        batch_idx: int,  # noqa: ARG002
+    ) -> torch.Tensor:
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
         # Update the weights
