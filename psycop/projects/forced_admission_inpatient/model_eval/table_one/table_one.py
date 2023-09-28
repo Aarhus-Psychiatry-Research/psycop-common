@@ -18,13 +18,14 @@ model_train_df = pl.concat(
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
-test_dataset = BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(
+
+val_dataset = BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(
     split="val",
 ).with_columns(
     dataset=pl.format("val"),
 )
 
-flattened_combined = pl.concat([model_train_df, test_dataset], how="vertical").rename(
+flattened_combined = pl.concat([model_train_df, val_dataset], how="vertical").rename(
     {"prediction_time_uuid": "pred_time_uuid"},
 )
 

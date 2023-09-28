@@ -128,10 +128,12 @@ class FeatureSpecifier:
         project_info: ProjectInfo,
         min_set_for_debug: bool = False,
         limited_feature_set: bool = False,
+        lookbehind_180d_mean: bool = False,
     ):
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
         self.limited_feature_set = limited_feature_set
+        self.lookbehind_180d_mean = lookbehind_180d_mean
 
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
@@ -460,6 +462,65 @@ class FeatureSpecifier:
                     prefix=self.project_info.prefix.predictor,
                 ),
             ]
+        if self.lookbehind_180d_mean:
+            interval_days = [180.0]
+            resolve_multiple = [mean]
+
+            visits = self._get_visits_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            admissions = self._get_admissions_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            diagnoses = self._get_diagnoses_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            medications = self._get_medication_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            beroligende_medicin = self._get_beroligende_medicin_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            coercion = self._get_coercion_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            structured_sfi = self._get_structured_sfi_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            lab_results = self._get_lab_result_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+
+            cancelled_lab_results = self._get_cancelled_lab_result_specs(
+                resolve_multiple=resolve_multiple,
+                interval_days=interval_days,
+            )
+            return (
+                visits
+                + admissions
+                + medications
+                + diagnoses
+                + beroligende_medicin
+                + coercion
+                + structured_sfi
+                + lab_results
+                + cancelled_lab_results
+            )
 
         interval_days = [10.0, 30.0, 180.0, 365.0]
 
@@ -534,6 +595,15 @@ class FeatureSpecifier:
         if self.limited_feature_set:
             return (
                 self._get_limited_feature_specs() + self._get_static_predictor_specs()
+            )
+
+        if self.lookbehind_180d_mean:
+            log.warning(
+                "--- !!! Using all features, but only a lookbehind of 180 days and mean as aggregation function !!! ---",
+            )
+            return (
+                self._get_temporal_predictor_specs()
+                + self._get_static_predictor_specs()
             )
 
         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()
