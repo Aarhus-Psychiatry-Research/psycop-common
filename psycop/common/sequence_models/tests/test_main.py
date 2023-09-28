@@ -143,8 +143,9 @@ def test_module_with_trainer(
 
     config = Config(
         training_config=TrainingConfig(
-            accelerator=TorchAccelerator.CPU, n_steps=midpoint
-        )
+            accelerator=TorchAccelerator.CPU,
+            n_steps=midpoint,
+        ),
     )
 
     trainer = create_default_trainer(save_dir=tmp_path, config=config)
