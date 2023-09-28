@@ -21,7 +21,8 @@ from typing import Any
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
-from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
+import torch
+from lightning.pytorch.callbacks import ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -139,7 +140,16 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
 
 
 if __name__ == "__main__":
-    config = Config()
+    config = Config(
+        training_config=TrainingConfig(
+            validate_every_n_batches=100,
+            n_steps=999_999_999,
+            batch_size=256,
+        ),
+        model_config=ModelConfig(
+            d_model=32,
+        ),
+    )
 
     train_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
@@ -164,7 +174,7 @@ if __name__ == "__main__":
     val_dataloader = DataLoader(
         val_dataset,
         batch_size=config.training_config.batch_size,
-        shuffle=True,
+        shuffle=False,
         collate_fn=model.collate_fn,
     )
     project_root = OVARTACI_SHARED_DIR / "sequence_models" / "BEHRT"
@@ -174,6 +184,7 @@ if __name__ == "__main__":
     save_dir.mkdir(parents=True, exist_ok=True)
 
     trainer = create_default_trainer(save_dir=save_dir, config=config)
+    torch.set_float32_matmul_precision("high")
 
     trainer.fit(
         model=model,
