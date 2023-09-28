@@ -144,11 +144,7 @@ def test_module_with_trainer(
         collate_fn=trainable_module.collate_fn,
     )
 
-    config = Config(
-        training_config=TrainingConfig(
-            n_steps=midpoint, accelerator=TorchAccelerator.CPU
-        )
-    )
+    config = Config(training_config=TrainingConfig(accelerator=TorchAccelerator.CPU))
     save_dir = Path(__file__).parent
 
     trainer = create_default_trainer(save_dir=save_dir, config=config)

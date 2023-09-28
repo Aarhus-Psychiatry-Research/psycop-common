@@ -62,8 +62,7 @@ class TrainingConfig:
     offline: bool = True
     accelerator: TorchAccelerator = TorchAccelerator.CUDA
 
-    batch_size: int = 2
-    n_steps: int = 100
+    batch_size: int = 32
     validate_every_n_batches: int = 1
     save_every_n_steps: int = 1
 
@@ -123,7 +122,6 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
 
     trainer = pl.Trainer(
         accelerator=config.training_config.accelerator.value,
-        max_steps=config.training_config.n_steps,
         val_check_interval=config.training_config.validate_every_n_batches,
         logger=wandb_logger,
         callbacks=[checkpoint_callback],
