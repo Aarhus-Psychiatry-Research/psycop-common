@@ -47,7 +47,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
         output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
-        self.log("Validation Loss", output["loss"])
+        self.log("val_loss", output["loss"])
         return output["loss"]
 
     def forward(  # type: ignore

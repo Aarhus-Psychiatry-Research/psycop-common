@@ -21,7 +21,7 @@ from typing import Any
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
-from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -114,17 +114,21 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
         project=config.training_config.project_name,
     )
 
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=save_dir / "checkpoints",
-        every_n_train_steps=1,
-        verbose=True,
-    )
-
     trainer = pl.Trainer(
         accelerator=config.training_config.accelerator.value,
         val_check_interval=config.training_config.validate_every_n_batches,
         logger=wandb_logger,
-        callbacks=[checkpoint_callback],
+        callbacks=[
+            ModelCheckpoint(
+                dirpath=save_dir / "checkpoints",
+                every_n_train_steps=1,
+                verbose=True,
+                save_top_k=5,
+                mode="min",
+                monitor="val_loss",
+            ),
+            LearningRateMonitor(logging_interval="epoch", log_momentum=True),
+        ],
     )
     wandb_logger.experiment.config.update(asdict(config))
 
