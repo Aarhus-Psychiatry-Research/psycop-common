@@ -82,7 +82,9 @@ class Config:
         return d
 
 
-def create_model(patients: list[Patient], config: ModelConfig) -> BEHRTForMaskedLM:
+def create_behrt_MLM_model(
+    patients: list[Patient], config: ModelConfig
+) -> BEHRTForMaskedLM:
     """
     Creates a model for testing
     """
@@ -149,11 +151,10 @@ if __name__ == "__main__":
         event_loaders=[DiagnosisLoader()],
         split="val",
     )
-
-    model = create_model(patients=train_patients, config=config.model_config)
-
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
+
+    model = create_behrt_MLM_model(patients=train_patients, config=config.model_config)
 
     train_dataloader = DataLoader(
         train_dataset,
@@ -174,7 +175,6 @@ if __name__ == "__main__":
     save_dir.mkdir(parents=True, exist_ok=True)
 
     trainer = create_default_trainer(save_dir=save_dir, config=config)
-
     trainer.fit(
         model=model,
         train_dataloaders=train_dataloader,

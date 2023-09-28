@@ -11,7 +11,6 @@ from psycop.common.sequence_models import (
     BEHRTForMaskedLM,
     PatientDataset,
 )
-from psycop.common.sequence_models.tests.conftest import patients
 from psycop.projects.sequence_models.train import (
     Config,
     TorchAccelerator,
@@ -56,36 +55,21 @@ def test_behrt(patient_dataset: PatientDataset):
 
 def test_module_with_trainer(
     patients: list[Patient],
-    trainable_module: BEHRTForMaskedLM,
     tmp_path: Path,
 ):
     """
     Tests the general intended workflow of the Trainer class
     """
 
-    assert isinstance(trainable_module, pl.LightningModule)
-
     n_patients = 10
     patients = patients * n_patients
     midpoint = int(n_patients / 2)
+
     train_patients = patients[:midpoint]
     val_patients = patients[midpoint:]
 
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
-
-    train_dataloader = DataLoader(
-        train_dataset,
-        batch_size=2,
-        shuffle=True,
-        collate_fn=trainable_module.collate_fn,
-    )
-    val_dataloader = DataLoader(
-        val_dataset,
-        batch_size=2,
-        shuffle=True,
-        collate_fn=trainable_module.collate_fn,
-    )
 
     config = Config(
         training_config=TrainingConfig(
@@ -94,11 +78,26 @@ def test_module_with_trainer(
         ),
     )
 
-    module = create_behrt_MLM_model(patients=train_patients, config=config.model_config)
+    trainable_module = create_behrt_MLM_model(
+        patients=train_patients, config=config.model_config
+    )
+
+    train_dataloader = DataLoader(
+        train_dataset,
+        batch_size=config.training_config.batch_size,
+        shuffle=True,
+        collate_fn=trainable_module.collate_fn,
+    )
+    val_dataloader = DataLoader(
+        val_dataset,
+        batch_size=config.training_config.batch_size,
+        shuffle=True,
+        collate_fn=trainable_module.collate_fn,
+    )
 
     trainer = create_default_trainer(save_dir=tmp_path, config=config)
     trainer.fit(
-        model=module,
+        model=trainable_module,
         train_dataloaders=train_dataloader,
         val_dataloaders=val_dataloader,
     )
