@@ -32,8 +32,8 @@ from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.forced_admission_inpatient.feature_generation.modules.loaders.load_forced_admissions_dfs_with_prediction_times_and_outcome import (
-    forced_admissions_inpatient,
+from psycop.projects.forced_admission_inpatient.cohort.forced_admissions_inpatient_cohort_definition import (
+    ForcedAdmissionsInpatientCohortDefiner,
 )
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_features import (
     FeatureSpecifier,
@@ -101,25 +101,21 @@ def main(
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
             project_info=project_info,
-            eligible_prediction_times=forced_admissions_inpatient(
-                timestamps_only=True,
-            ),
+            eligible_prediction_times=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
             quarantine_df=load_move_into_rm_for_exclusion(),
-            quarantine_days=720,
+            quarantine_days=365,
         )
 
     else:
         flattened_df = create_flattened_dataset(
             feature_specs=feature_specs,  # type: ignore
-            prediction_times_df=forced_admissions_inpatient(
-                timestamps_only=True,
-            ),
+            prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
             drop_pred_times_with_insufficient_look_distance=False,
             project_info=project_info,
             quarantine_df=load_move_into_rm_for_exclusion(),
-            quarantine_days=720,
+            quarantine_days=365,
         )
 
     flattened_df = add_outcome_col(
@@ -173,6 +169,8 @@ if __name__ == "__main__":
     )
 
     main(
-        feature_set_name="full_feature_set_with_sent_transformer_and_tfidf_all_sfis_ngram_range_12_max_df_095_min_df_2_max_features_750_embeddings",
-        generate_in_chunks=True,
+        add_text_features=False,
+        min_set_for_debug=True,
+        feature_set_name="min_set_for_debug",
+        generate_in_chunks=False,
     )
