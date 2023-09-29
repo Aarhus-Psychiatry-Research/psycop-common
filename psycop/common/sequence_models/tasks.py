@@ -4,7 +4,6 @@ from typing import Any
 import lightning.pytorch as pl
 import torch
 from torch import nn
-from torch.optim import Optimizer
 
 from psycop.common.data_structures.patient import Patient
 
@@ -21,12 +20,14 @@ class BEHRTForMaskedLM(pl.LightningModule):
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
         optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},  # noqa
+        scheduler_kwargs: dict[str, Any] = {"step_size": 5, "gamma": 0.5},  # noqa
     ):
         super().__init__()
         self.save_hyperparameters()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.optimizer_kwargs = optimizer_kwargs
+        self.scheduler_kwargs = scheduler_kwargs
 
         self.d_model = self.embedding_module.d_model
         self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
@@ -134,6 +135,10 @@ class BEHRTForMaskedLM(pl.LightningModule):
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
         return padded_sequence_ids, masked_labels
 
-    def configure_optimizers(self) -> Optimizer:
+    def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), **self.optimizer_kwargs)
-        return optimizer
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer,
+            **self.scheduler_kwargs,
+        )
+        return [optimizer], [lr_scheduler]

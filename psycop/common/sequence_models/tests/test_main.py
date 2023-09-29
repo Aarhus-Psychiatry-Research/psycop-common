@@ -75,12 +75,11 @@ def test_module_with_trainer(
         training_config=TrainingConfig(
             accelerator=TorchAccelerator.CPU,
             n_steps=midpoint,
+            scheduler_kwargs={"step_size": 1, "gamma": 0.5},
         ),
     )
 
-    trainable_module = create_behrt_MLM_model(
-        patients=train_patients, config=config.model_config
-    )
+    trainable_module = create_behrt_MLM_model(patients=train_patients, config=config)
 
     train_dataloader = DataLoader(
         train_dataset,
