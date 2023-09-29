@@ -1,19 +1,24 @@
 import pandas as pd
+import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import SCORE2_CVD
+from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specification.procedure_codes import (
+    get_cvd_procedures,
+)
 
 
 def get_first_cvd_indicator() -> pd.DataFrame:
-    df = SCORE2_CVD()
+    diagnoses = pl.from_pandas(SCORE2_CVD())
+    procedure_codes = get_cvd_procedures()
 
     first_cvd = (
-        df.sort_values("timestamp")
+        pl.concat([diagnoses, procedure_codes])
+        .sort("timestamp")
         .groupby("dw_ek_borger")
         .first()
-        .reset_index(drop=False)
     )
 
-    return first_cvd[["dw_ek_borger", "timestamp"]]
+    return first_cvd.select(["dw_ek_borger", "timestamp"]).to_pandas()
 
 
 if __name__ == "__main__":
