@@ -67,8 +67,6 @@ class TrainingConfig:
     batch_size: int = 32
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
-    optimizer_kwargs: dict[str, Any] = field(default_factory=dict)
-    scheduler_kwargs: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -84,32 +82,30 @@ class Config:
         return d
 
 
-def create_behrt_MLM_model(patients: list[Patient], config: Config) -> BEHRTForMaskedLM:
+def create_behrt_MLM_model(
+    patients: list[Patient], config: ModelConfig
+) -> BEHRTForMaskedLM:
     """
     Creates a model for testing
     """
     emb = BEHRTEmbedder(
-        d_model=config.model_config.d_model,
-        dropout_prob=config.model_config.dropout_prob,
-        max_sequence_length=config.model_config.max_sequence_length,
+        d_model=config.d_model,
+        dropout_prob=config.dropout_prob,
+        max_sequence_length=config.max_sequence_length,
     )
     emb.fit(patients=patients, add_mask_token=True)
 
     encoder_layer = nn.TransformerEncoderLayer(
-        d_model=config.model_config.d_model,
-        nhead=config.model_config.n_heads,
-        dim_feedforward=config.model_config.dim_feedforward,
+        d_model=config.d_model,
+        nhead=config.n_heads,
+        dim_feedforward=config.dim_feedforward,
     )
-    encoder = nn.TransformerEncoder(
-        encoder_layer, num_layers=config.model_config.num_layers
-    )
+    encoder = nn.TransformerEncoder(encoder_layer, num_layers=config.num_layers)
 
     # this includes the loss and the MLM head
     module = BEHRTForMaskedLM(
         embedding_module=emb,
         encoder_module=encoder,
-        optimizer_kwargs=config.training_config.optimizer_kwargs,
-        scheduler_kwargs=config.training_config.scheduler_kwargs,
     )
     return module
 
@@ -158,7 +154,7 @@ if __name__ == "__main__":
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
 
-    model = create_behrt_MLM_model(patients=train_patients, config=config)
+    model = create_behrt_MLM_model(patients=train_patients, config=config.model_config)
 
     train_dataloader = DataLoader(
         train_dataset,
