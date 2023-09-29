@@ -9,7 +9,7 @@ import logging
 from typing import TYPE_CHECKING, Literal
 
 from psycop.common.feature_generation.loaders.filters.cvd_filters import (
-    keep_rows_where_diag_matches_cvd_diag,
+    only_SCORE2_CVD_diagnoses,
 )
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t1d_diag,
@@ -277,7 +277,7 @@ def type_2_diabetes(
     return df_filtered
 
 
-def cvd(
+def SCORE2_CVD(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
     shak_code: int | None = None,
@@ -300,7 +300,7 @@ def cvd(
         keep_code_col=True,
     )
 
-    df_filtered = keep_rows_where_diag_matches_cvd_diag(
+    df_filtered = only_SCORE2_CVD_diagnoses(
         df=df,
         col_name="diagnosegruppestreng",
     )
