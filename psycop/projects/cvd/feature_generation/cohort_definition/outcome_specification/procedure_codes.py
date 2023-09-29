@@ -11,6 +11,6 @@ def get_cvd_procedures() -> pl.DataFrame:
             )
         )
         .select(["dw_ek_borger", "datotid_udfoert", "procedurekode"])
-        .rename({"datotid_udfoert": "date", "procedurekode": "procedure_code"})
+        .rename({"datotid_udfoert": "timestamp", "procedurekode": "procedure_code"})
     )
     return table

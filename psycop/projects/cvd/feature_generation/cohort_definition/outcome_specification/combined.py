@@ -8,8 +8,12 @@ from psycop.projects.cvd.feature_generation.cohort_definition.outcome_specificat
 
 
 def get_first_cvd_indicator() -> pd.DataFrame:
-    diagnoses = pl.from_pandas(SCORE2_CVD())
-    procedure_codes = get_cvd_procedures()
+    diagnoses = (
+        pl.from_pandas(SCORE2_CVD())
+        .rename({"diagnosegruppestreng": "cause"})
+        .drop("value")
+    )
+    procedure_codes = get_cvd_procedures().rename({"procedure_code": "cause"})
 
     first_cvd = (
         pl.concat([diagnoses, procedure_codes])
@@ -18,7 +22,7 @@ def get_first_cvd_indicator() -> pd.DataFrame:
         .first()
     )
 
-    return first_cvd.select(["dw_ek_borger", "timestamp"]).to_pandas()
+    return first_cvd.select(["dw_ek_borger", "timestamp", "cause"]).to_pandas()
 
 
 if __name__ == "__main__":
