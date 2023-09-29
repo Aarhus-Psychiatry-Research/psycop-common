@@ -158,7 +158,7 @@ if __name__ == "__main__":
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
 
-    model = create_behrt_MLM_model(patients=train_patients, config=config.model_config)
+    model = create_behrt_MLM_model(patients=train_patients, config=config)
 
     train_dataloader = DataLoader(
         train_dataset,
