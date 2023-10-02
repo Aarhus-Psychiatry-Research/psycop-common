@@ -1,8 +1,7 @@
--r requirements.txt
--r test-requirements.txt
 black==22.6.0
-ruff==0.0.272
+cruft
 invoke==2.1.0
+pre-commit==3.4.0
 pyright==1.1.306
 pytest-sugar==0.9.7
-pre-commit
+ruff==0.0.272
