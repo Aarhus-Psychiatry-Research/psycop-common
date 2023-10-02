@@ -436,7 +436,7 @@ def test_for_venv(c: Context):
     if IN_DOCKER:
         print("Running in docker, not checking for virtual environment.")
         return
-    
+
     if NOT_WINDOWS:
         python_path = c.run("which python", pty=NOT_WINDOWS, hide=True).stdout
 
