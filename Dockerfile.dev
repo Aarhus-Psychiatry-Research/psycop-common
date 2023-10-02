@@ -27,4 +27,4 @@ RUN pip install -e .
 
 # Developer experience
 # Initialise pre-commit, but make installing optional
-# RUN pre-commit install && pre-commit uninstall
+RUN pre-commit run
