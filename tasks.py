@@ -431,6 +431,12 @@ def create_pr_from_staged_changes(c: Context):
 @task
 def test_for_venv(c: Context):
     """Test if the user is in a virtual environment."""
+    # Check if in docker environment by checking if the /.dockerenv file exists
+    IN_DOCKER = Path("/.dockerenv").exists()
+    if IN_DOCKER:
+        print("Running in docker, not checking for virtual environment.")
+        return
+    
     if NOT_WINDOWS:
         python_path = c.run("which python", pty=NOT_WINDOWS, hide=True).stdout
 
