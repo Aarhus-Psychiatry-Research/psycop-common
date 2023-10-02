@@ -34,4 +34,3 @@ COPY test-requirements.txt .
 RUN pip install -r test-requirements.txt
 
 COPY . /app
-RUN pip install -e .
