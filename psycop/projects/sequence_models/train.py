@@ -70,42 +70,55 @@ class TrainingConfig:
 
 
 @dataclass
+class OptimizationConfig:
+    optimizer_kwargs: dict[str, Any] = field(default_factory=lambda: {"lr": 0.01})
+    lr_scheduler_kwargs: dict[str, Any] = field(
+        default_factory=lambda: {"step_size": 100},  # updates lr every step_size epochs
+    )
+
+
+@dataclass
 class Config:
     training_config: TrainingConfig = field(default_factory=TrainingConfig)
     model_config: ModelConfig = field(default_factory=ModelConfig)
+    optimization_config: OptimizationConfig = field(default_factory=OptimizationConfig)
 
     def to_dict(self) -> dict[str, Any]:
         """return a flattened dictionary of the config"""
 
         d = self.training_config.__dict__
         d.update(self.model_config.__dict__)
+        d.update(self.optimization_config.__dict__)
         return d
 
 
-def create_behrt_MLM_model(
-    patients: list[Patient], config: ModelConfig
-) -> BEHRTForMaskedLM:
+def create_behrt_MLM_model(patients: list[Patient], config: Config) -> BEHRTForMaskedLM:
     """
     Creates a model for testing
     """
     emb = BEHRTEmbedder(
-        d_model=config.d_model,
-        dropout_prob=config.dropout_prob,
-        max_sequence_length=config.max_sequence_length,
+        d_model=config.model_config.d_model,
+        dropout_prob=config.model_config.dropout_prob,
+        max_sequence_length=config.model_config.max_sequence_length,
     )
     emb.fit(patients=patients, add_mask_token=True)
 
     encoder_layer = nn.TransformerEncoderLayer(
-        d_model=config.d_model,
-        nhead=config.n_heads,
-        dim_feedforward=config.dim_feedforward,
+        d_model=config.model_config.d_model,
+        nhead=config.model_config.n_heads,
+        dim_feedforward=config.model_config.dim_feedforward,
     )
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=config.num_layers)
+    encoder = nn.TransformerEncoder(
+        encoder_layer,
+        num_layers=config.model_config.num_layers,
+    )
 
     # this includes the loss and the MLM head
     module = BEHRTForMaskedLM(
         embedding_module=emb,
         encoder_module=encoder,
+        optimizer_kwargs=config.optimization_config.optimizer_kwargs,
+        lr_scheduler_kwargs=config.optimization_config.lr_scheduler_kwargs,
     )
     return module
 
@@ -154,7 +167,7 @@ if __name__ == "__main__":
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
 
-    model = create_behrt_MLM_model(patients=train_patients, config=config.model_config)
+    model = create_behrt_MLM_model(patients=train_patients, config=config)
 
     train_dataloader = DataLoader(
         train_dataset,

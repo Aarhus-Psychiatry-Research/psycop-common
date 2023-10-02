@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import lightning.pytorch as pl
 import pytest
 from torch import nn
 from torch.utils.data import DataLoader
@@ -78,9 +77,7 @@ def test_module_with_trainer(
         ),
     )
 
-    trainable_module = create_behrt_MLM_model(
-        patients=train_patients, config=config.model_config
-    )
+    trainable_module = create_behrt_MLM_model(patients=train_patients, config=config)
 
     train_dataloader = DataLoader(
         train_dataset,

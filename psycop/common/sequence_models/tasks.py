@@ -19,15 +19,15 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
-        optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},  # noqa
-        scheduler_kwargs: dict[str, Any] = {"step_size": 5, "gamma": 0.5},  # noqa
+        optimizer_kwargs: dict[str, Any],
+        lr_scheduler_kwargs: dict[str, Any],
     ):
         super().__init__()
         self.save_hyperparameters()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.optimizer_kwargs = optimizer_kwargs
-        self.scheduler_kwargs = scheduler_kwargs
+        self.scheduler_kwargs = lr_scheduler_kwargs
 
         self.d_model = self.embedding_module.d_model
         self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
