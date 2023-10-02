@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_74075c38a86296a3_load_ids_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-09-29 11:43 +0000
+            created at 2023-10-02 11:29 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -91,7 +91,7 @@
     <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="nam">typing</span> <span class="key">import</span> <span class="nam">TYPE_CHECKING</span><span class="op">,</span> <span class="nam">Literal</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="nam">psycop</span><span class="op">.</span><span class="nam">common</span><span class="op">.</span><span class="nam">feature_generation</span><span class="op">.</span><span class="nam">loaders</span><span class="op">.</span><span class="nam">filters</span><span class="op">.</span><span class="nam">cvd_filters</span> <span class="key">import</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="nam">keep_rows_where_diag_matches_cvd_diag</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="nam">only_SCORE2_CVD_diagnoses</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">psycop</span><span class="op">.</span><span class="nam">common</span><span class="op">.</span><span class="nam">feature_generation</span><span class="op">.</span><span class="nam">loaders</span><span class="op">.</span><span class="nam">filters</span><span class="op">.</span><span class="nam">diabetes_filters</span> <span class="key">import</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">    <span class="nam">keep_rows_where_diag_matches_t1d_diag</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -359,7 +359,7 @@
     <p class="mis show_mis"><span class="n"><a id="t277" href="#t277">277</a></span><span class="t">    <span class="key">return</span> <span class="nam">df_filtered</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t278" href="#t278">278</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t279" href="#t279">279</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t280" href="#t280">280</a></span><span class="t"><span class="key">def</span> <span class="nam">cvd</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t280" href="#t280">280</a></span><span class="t"><span class="key">def</span> <span class="nam">SCORE2_CVD</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t281" href="#t281">281</a></span><span class="t">    <span class="nam">n_rows</span><span class="op">:</span> <span class="nam">int</span> <span class="op">|</span> <span class="key">None</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t282" href="#t282">282</a></span><span class="t">    <span class="nam">shak_location_col</span><span class="op">:</span> <span class="nam">str</span> <span class="op">|</span> <span class="key">None</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t283" href="#t283">283</a></span><span class="t">    <span class="nam">shak_code</span><span class="op">:</span> <span class="nam">int</span> <span class="op">|</span> <span class="key">None</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -382,7 +382,7 @@
     <p class="pln"><span class="n"><a id="t300" href="#t300">300</a></span><span class="t">        <span class="nam">keep_code_col</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t301" href="#t301">301</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t302" href="#t302">302</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t303" href="#t303">303</a></span><span class="t">    <span class="nam">df_filtered</span> <span class="op">=</span> <span class="nam">keep_rows_where_diag_matches_cvd_diag</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t303" href="#t303">303</a></span><span class="t">    <span class="nam">df_filtered</span> <span class="op">=</span> <span class="nam">only_SCORE2_CVD_diagnoses</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t304" href="#t304">304</a></span><span class="t">        <span class="nam">df</span><span class="op">=</span><span class="nam">df</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t305" href="#t305">305</a></span><span class="t">        <span class="nam">col_name</span><span class="op">=</span><span class="str">"diagnosegruppestreng"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t306" href="#t306">306</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -1371,7 +1371,7 @@
             <a id="nextFileLink" class="nav" href="d_74075c38a86296a3_load_ids_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-09-29 11:43 +0000
+            created at 2023-10-02 11:29 +0000
         </p>
     </div>
 </footer>
