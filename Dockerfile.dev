@@ -27,3 +27,4 @@ RUN pip install -e .
 # Initialise pre-commit
 # Remove the .git repo afterwards, since the dev container bind-mounts the development repo
 RUN git init . && pre-commit run
+RUN inv static-type-checks
