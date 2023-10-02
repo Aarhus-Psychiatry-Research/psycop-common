@@ -22,9 +22,9 @@ COPY dev-requirements.txt requirements.txt test-requirements.txt .
 RUN pip install pre-commit==3.4.0 
 
 # Install the app
-COPY . .
+COPY . /app
 RUN pip install -e .
 
-# Developer experience
-# Initialise pre-commit, but make installing optional
-RUN pre-commit run
+# Initialise pre-commit
+# Remove the .git repo afterwards, since the dev container bind-mounts the development repo
+RUN git init . && pre-commit run
