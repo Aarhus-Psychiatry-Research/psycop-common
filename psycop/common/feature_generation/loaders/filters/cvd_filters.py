@@ -25,7 +25,7 @@ def _remove_cvd_exclusions(df: pd.DataFrame, col_name: str) -> pd.DataFrame:
     return df
 
 
-def keep_rows_where_diag_matches_cvd_diag(
+def only_SCORE2_CVD_diagnoses(
     df: pd.DataFrame,
     col_name: str,
 ) -> pd.DataFrame:

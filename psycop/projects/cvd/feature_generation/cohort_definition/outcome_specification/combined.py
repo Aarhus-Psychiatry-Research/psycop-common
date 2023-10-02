@@ -1,10 +1,10 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import cvd
+from psycop.common.feature_generation.loaders.raw.load_diagnoses import SCORE2_CVD
 
 
 def get_first_cvd_indicator() -> pd.DataFrame:
-    df = cvd()
+    df = SCORE2_CVD()
 
     first_cvd = (
         df.sort_values("timestamp")

@@ -1,5 +1,5 @@
 from psycop.common.feature_generation.loaders.filters.cvd_filters import (
-    keep_rows_where_diag_matches_cvd_diag,
+    only_SCORE2_CVD_diagnoses,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
 
@@ -17,7 +17,7 @@ def test_cvd_diagnosegruppestreng_filtering():
                    """,
     )
 
-    filtered_df = keep_rows_where_diag_matches_cvd_diag(
+    filtered_df = only_SCORE2_CVD_diagnoses(
         df=df,
         col_name="diagnosegruppestreng",
     )
