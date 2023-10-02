@@ -1,20 +1,30 @@
 # Use Python 3.10 slim as the base image
 FROM python:3.10
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y git-all
 
 # Set the working directory to /app
 WORKDIR /app
 
+# Lazygit
+RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') && curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && tar xf lazygit.tar.gz lazygit && install lazygit /usr/local/bin && rm -rf lazygit lazygit.tar.gzRUN curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+
+# Github CLI
+RUN type -p curl >/dev/null || (apt update && apt install curl -y)
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt update \
+    && apt install gh -y
+
 # Install dependencies
 COPY dev-requirements.txt requirements.txt test-requirements.txt .
-RUN pip install -r dev-requirements.txt
+# RUN pip install -r dev-requirements.txt
+RUN pip install pre-commit==3.4.0 
 
 # Install the app
-COPY . /app/
+COPY . .
 RUN pip install -e .
 
 # Developer experience
 # Initialise pre-commit, but make installing optional
-RUN pre-commit install && pre-commit uninstall
-# Lazygit
-RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') && curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && tar xf lazygit.tar.gz lazygit && install lazygit /usr/local/bin && rm -rf lazygit lazygit.tar.gzRUN curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+# RUN pre-commit install && pre-commit uninstall
