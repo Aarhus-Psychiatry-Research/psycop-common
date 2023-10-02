@@ -18,8 +18,7 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
 
 # Install dependencies
 COPY dev-requirements.txt requirements.txt test-requirements.txt .
-# RUN pip install -r dev-requirements.txt
-RUN pip install pre-commit==3.4.0 
+RUN pip install -r dev-requirements.txt
 
 # Install the app
 COPY . /app
