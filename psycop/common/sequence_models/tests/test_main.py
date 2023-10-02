@@ -37,7 +37,14 @@ def test_behrt(patient_dataset: PatientDataset):
     patients = patient_dataset.patients
     emb.fit(patients, add_mask_token=True)
 
-    behrt = BEHRTForMaskedLM(embedding_module=emb, encoder_module=encoder)
+    config = Config()
+
+    behrt = BEHRTForMaskedLM(
+        embedding_module=emb,
+        encoder_module=encoder,
+        optimizer_kwargs=config.optimization_config.optimizer_kwargs,
+        lr_scheduler_kwargs=config.optimization_config.lr_scheduler_kwargs,
+    )
 
     dataloader = DataLoader(
         patient_dataset,
