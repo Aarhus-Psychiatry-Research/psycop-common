@@ -1,17 +1,18 @@
-from typing import Callable  # noqa: I001
+from typing import Callable
 
 import pytest
 import torch
 from torch import nn
 
 from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM
+from psycop.projects.sequence_models.train import Config
 
 
 @pytest.mark.parametrize(
     "embedding_module",
     [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):  # noqa: F811
+def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):
     """
     Test masking function
     """
@@ -20,7 +21,14 @@ def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):  # noqa: F
 
     embedding_module.fit(patients)
 
-    task = BEHRTForMaskedLM(embedding_module=embedding_module, encoder_module=encoder)
+    config = Config()
+
+    task = BEHRTForMaskedLM(
+        embedding_module=embedding_module,
+        encoder_module=encoder,
+        optimizer_kwargs=config.optimization_config.optimizer_kwargs,
+        lr_scheduler_kwargs=config.optimization_config.lr_scheduler_kwargs,
+    )
 
     inputs_ids = embedding_module.collate_patients(patients)
 

@@ -12,6 +12,7 @@ from psycop.common.sequence_models import (
 )
 from psycop.projects.sequence_models.train import (
     Config,
+    OptimizationConfig,
     TorchAccelerator,
     TrainingConfig,
     create_behrt_MLM_model,
@@ -82,6 +83,7 @@ def test_module_with_trainer(
             accelerator=TorchAccelerator.CPU,
             n_steps=midpoint,
         ),
+        optimization_config=OptimizationConfig(lr_scheduler_kwargs={"step_size": 1}),
     )
 
     trainable_module = create_behrt_MLM_model(patients=train_patients, config=config)
