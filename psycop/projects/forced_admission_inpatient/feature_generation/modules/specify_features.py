@@ -116,6 +116,13 @@ log = logging.getLogger(__name__)
 
 from psycop.common.feature_generation.loaders.raw.load_visits import admissions
 
+df = forced_admissions_onset_timestamps()
+# Sort the DataFrame by 'dw_ek_borger' and 'timestamp'
+df_sorted = df.sort_values(by=["dw_ek_borger", "timestamp"])
+
+# Keep only the first occurrence of each unique combination
+df_filtered = df_sorted.drop_duplicates(subset=["dw_ek_borger"], keep="first")
+
 
 class SpecSet(BaseModel):
     """A set of unresolved specs, ready for resolving."""
@@ -155,14 +162,14 @@ class FeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=forced_admissions_onset_timestamps(),
+                    df=df_filtered,
                     name="forced_admissions",
                 ),
             ],
             lookahead_days=[month * 30 for month in (1, 3, 6, 12)],
             aggregation_fns=[maximum],
             fallback=[0],
-            incident=[True],
+            incident=[False],
             prefix=self.project_info.prefix.outcome,
         ).create_combinations()
 

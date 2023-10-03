@@ -41,9 +41,6 @@ from psycop.projects.forced_admission_inpatient.feature_generation.modules.speci
 from psycop.projects.forced_admission_inpatient.feature_generation.modules.specify_text_features import (
     TextFeatureSpecifier,
 )
-from psycop.projects.forced_admission_inpatient.feature_generation.modules.utils import (
-    add_outcome_col,
-)
 
 log = logging.getLogger()
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
@@ -118,11 +115,6 @@ def main(
             quarantine_days=365,
         )
 
-    flattened_df = add_outcome_col(
-        flattened_df=flattened_df,
-        visit_type="inpatient",
-    )
-
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
         project_info=project_info,
@@ -170,7 +162,7 @@ if __name__ == "__main__":
 
     main(
         add_text_features=False,
-        min_set_for_debug=True,
-        feature_set_name="min_set_for_debug",
+        min_set_for_debug=False,
+        feature_set_name="full_feature_set_without_text_new_cohort",
         generate_in_chunks=False,
     )
