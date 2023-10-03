@@ -84,7 +84,7 @@ def test_module_with_trainer(
             n_steps=midpoint,
         ),
         optimization_config=OptimizationConfig(
-            lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": midpoint}
+            lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": midpoint},
         ),
     )
 

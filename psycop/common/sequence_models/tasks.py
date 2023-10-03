@@ -140,7 +140,9 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self,
     ) -> tuple[list[torch.optim.Optimizer], list[torch.optim.lr_scheduler.LambdaLR]]:
         optimizer = AdamW(
-            self.parameters(), correct_bias=False, **self.optimizer_kwargs
+            self.parameters(),
+            correct_bias=False,
+            **self.optimizer_kwargs,
         )
 
         lr_scheduler = get_linear_schedule_with_warmup(

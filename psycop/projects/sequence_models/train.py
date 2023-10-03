@@ -62,7 +62,7 @@ class TrainingConfig:
     accelerator: TorchAccelerator = TorchAccelerator.CUDA
 
     n_steps: int = 100_000
-    batch_size: int = 100 # =1000 because gradients are accumulated over 10 batches
+    batch_size: int = 100  # =1000 because gradients are accumulated over 10 batches?
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
 
@@ -72,7 +72,7 @@ class OptimizationConfig:
     optimizer_kwargs: dict[str, Any] = field(
         default_factory=lambda: {
             "lr": 1e-3,
-        }
+        },
     )
     lr_scheduler_kwargs: dict[str, Any] = field(
         default_factory=lambda: {
@@ -164,8 +164,9 @@ if __name__ == "__main__":
 
     config = Config(
         training_config=TrainingConfig(
-            accelerator=TorchAccelerator.CUDA, run_name=run_name
-        )
+            accelerator=TorchAccelerator.CUDA,
+            run_name=run_name,
+        ),
     )
 
     train_patients = PatientLoader.get_split(
