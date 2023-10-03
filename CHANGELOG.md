@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v0.111.0 (2023-10-03)
+
+### Feature
+
+* Add dev container ([`84301b8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/84301b82020fffabd9573e70bb9ada6ad3e8c7a6))
+* Add corr plot ([`d0c116f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d0c116f16eb6b8f2fcd31f10a29b5a3cd1ca6602))
+* Add feature outcome corrs ([`4376b19`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4376b190f2aee4350888f8c7d9908c987a7cc3f8))
+* Add hist ([`708ca45`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/708ca45b8beb67ca091b9d08fe1efe93c41bc5bd))
+* Descriptive stats ([`8c0b038`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8c0b038f8ccb82090e1b4b24308fab70b1b2d02b))
+
+### Fix
+
+* Changes ([`d172358`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d1723589ad21b5da4ca5f3d40794f5c26cbbadd1))
+* Minor errors ([`1b21da3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1b21da37e234603e29cffbccfb34eac284b7984a))
+
 ## v0.110.0 (2023-09-26)
 
 ### Feature
