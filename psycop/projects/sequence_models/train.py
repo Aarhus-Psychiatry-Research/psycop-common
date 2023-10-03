@@ -62,7 +62,7 @@ class TrainingConfig:
     accelerator: TorchAccelerator = TorchAccelerator.CUDA
 
     n_steps: int = 100_000
-    batch_size: int = 1_000
+    batch_size: int = 100 # =1000 because gradients are accumulated over 10 batches
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
 
@@ -141,6 +141,7 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
         val_check_interval=config.training_config.validate_every_prop_epoch,
         logger=wandb_logger,
         max_steps=config.training_config.n_steps,
+        accumulate_grad_batches=10,
         callbacks=[
             ModelCheckpoint(
                 dirpath=save_dir / "checkpoints",
