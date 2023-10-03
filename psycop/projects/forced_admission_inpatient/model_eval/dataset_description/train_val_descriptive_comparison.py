@@ -235,7 +235,7 @@ def main(
         )
 
         train_df = df.sample(frac=0.8, random_state=42)
-        val_df = df.drop(train_df.index)
+        val_df = df.drop(train_df.index)  # type: ignore
 
     else:
         train_df = load_and_filter_split_from_cfg(
