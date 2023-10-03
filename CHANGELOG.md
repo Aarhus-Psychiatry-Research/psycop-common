@@ -2,6 +2,33 @@
 
 <!--next-version-placeholder-->
 
+## v0.110.0 (2023-09-26)
+
+### Feature
+
+* Time from first pos pred to next hba1c ([`b0d805d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b0d805de4a82b84d452ef7fc550c8d887bcda290))
+* Ned script for retraining model with new cv ([`eba749f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/eba749f8c82f74b3c3997362e5ab68ce4b5c6343))
+* Add feature importance table ([`423cc23`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/423cc238450f8095d6a10dde5ced100dfdd455e4))
+* Add baseline table one ([`8695e29`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8695e294f687b40b0a12eafe832ab56339bb5259))
+* Adding eval plots ([`5b81f26`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5b81f260309759e24c10b61aa26d4114025d85ae))
+* Add new eval branch ([`5e8aea3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5e8aea3477a5418a16f7791885ff0474f53f8621))
+* Wip new eval structure ([`8728545`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8728545f36ff86cb48a38537a7986d6354bc0baa))
+
+### Fix
+
+* Lint ([`5bbdd7c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5bbdd7c06527865f88d1b5a6c43cef2e685ee0f5))
+* Missing path arg ([`f4fe5e1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f4fe5e1e7b73be47652a5952e126b1341611899d))
+* Spelling in comments ([`58de461`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/58de461ae9e9ec391c054def7b2110d31ca0299d))
+* Lint ([`0eeb957`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0eeb957156dee907fcef7ec3fc36f49e76e35d8d))
+* Lint ([`f084a83`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f084a8365d60958982df9c0a22263fba7722c2c0))
+* Various minor changes ([`4a8f6de`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4a8f6de407ce6f12ecd2d670e4a2be4c86b65712))
+* Missing return type annotation ([`cd2f8f9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd2f8f945fe6c2fed05b8dcab3a360404f72b2ae))
+* Formatting ([`b8521e4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b8521e4791ab01cb93816076a588490002cad0c9))
+* Delete old eval folder ([`5e5cc6a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5e5cc6a8cf5c52e1c1d0ceef8fa98b886c830602))
+* Eval paths ([`6f1f1a1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6f1f1a1231134b7a3ea32fd235787d7040ae66b6))
+* Selected runs ([`a448ab4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a448ab427a88510dd3d73da7644098795adabf84))
+* Configs ([`80d1907`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/80d19070a5f6c0a0db021f933a477e947edbe896))
+
 ## v0.109.0 (2023-09-14)
 
 ### Feature

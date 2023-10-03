@@ -51,6 +51,7 @@ def main(
     add_text_features: bool = True,
     min_set_for_debug: bool = False,
     limited_feature_set: bool = False,
+    lookbehind_180d_mean: bool = False,
     generate_in_chunks: bool = True,
     feature_set_name: str | None = None,
     text_embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "both",
@@ -83,6 +84,7 @@ def main(
         project_info=project_info,
         min_set_for_debug=min_set_for_debug,  # Remember to set to False when generating full dataset
         limited_feature_set=limited_feature_set,
+        lookbehind_180d_mean=lookbehind_180d_mean,
     ).get_feature_specs()
 
     if add_text_features:
