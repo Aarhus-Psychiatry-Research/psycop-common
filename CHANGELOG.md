@@ -2,6 +2,32 @@
 
 <!--next-version-placeholder-->
 
+## v0.112.0 (2023-10-03)
+
+### Feature
+
+* Gradient accumulation fix OutOfMemoryError? ([`7cfc47b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7cfc47ba47c8a92b6d5f663cc4cae275fdf7947f))
+* Lr scheduler linear with warm-up ([`0f2d433`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0f2d4333cb8e8722cfa725bf8c5bf100835e0af5))
+* Pretrain version ([`5e9091c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5e9091cc85ff26d8334d27215dcc001109642170))
+* Ready for training ([`1218794`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1218794ffc20c1f5ed53bbcfdb4f4affd0485d6e))
+* Expand test to cover model checkpointing ([`1f0bece`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1f0bececb1d2b5ec701b205538716133fe6778ad))
+* Lightning module saves hyperparams ([`59e7ac6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/59e7ac660810848fc79cd27df19add19bd4d65ca))
+* Adapt sequence training script to pytorch lightnign ([`005cbdf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/005cbdfce8366021e0f4f11ad02b5f8e7a3843ce))
+* Initial changes to pytorch lightning module ([`d919009`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d919009d5323bdce64cb6ba7715bcf16cae10f90))
+* Added training script for sequence model ([`7d2c2bb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7d2c2bbd41db933ad7d139ada551654ac88dea0b))
+
+### Fix
+
+* Configs should be initialised with factories ([`7ddbf9b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7ddbf9b8908010c79ff94bbf03b13db38cb37588))
+* Ruff ([`626e0fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/626e0fc75f6a203a04838a964d958c806b37f103))
+* Fully transitioned to pl ([`d3a8d32`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d3a8d32f74f5e35a774b32f56ccfaa52f8e1b493))
+* Replaced print with logging statements ([`769530f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/769530f036c03f801d5b44bac109ee7b5305a4e2))
+* Make sure parameters is actually moved to the gpu ([`131e1f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/131e1f01610f5fe0aef360edc7ad94d4866ee1ba))
+
+### Documentation
+
+* Typo ([`0dfeb69`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0dfeb69acd4c0a834bf8d793c0fb541f728615b6))
+
 ## v0.111.0 (2023-10-03)
 
 ### Feature
