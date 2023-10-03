@@ -4,6 +4,7 @@ from typing import Any
 import lightning.pytorch as pl
 import torch
 from torch import nn
+from transformers import AdamW, get_linear_schedule_with_warmup
 
 from psycop.common.data_structures.patient import Patient
 
@@ -135,9 +136,14 @@ class BEHRTForMaskedLM(pl.LightningModule):
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
         return padded_sequence_ids, masked_labels
 
-    def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), **self.optimizer_kwargs)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(
+    def configure_optimizers(
+        self,
+    ) -> tuple[list[torch.optim.Optimizer], list[torch.optim.lr_scheduler.LambdaLR]]:
+        optimizer = AdamW(
+            self.parameters(), correct_bias=False, **self.optimizer_kwargs
+        )
+
+        lr_scheduler = get_linear_schedule_with_warmup(
             optimizer,
             **self.scheduler_kwargs,
         )

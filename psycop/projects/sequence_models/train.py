@@ -64,16 +64,23 @@ class TrainingConfig:
     n_steps: int = (
         -1
     )  # -1 means run until max_epochs, which defaults to 1000 in pytorch lightning.
-    batch_size: int = 32
+    batch_size: int = 8_000
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
 
 
 @dataclass
 class OptimizationConfig:
-    optimizer_kwargs: dict[str, Any] = field(default_factory=lambda: {"lr": 0.01})
+    optimizer_kwargs: dict[str, Any] = field(
+        default_factory=lambda: {
+            "lr": 1e-3,
+        }
+    )
     lr_scheduler_kwargs: dict[str, Any] = field(
-        default_factory=lambda: {"step_size": 100},  # updates lr every step_size epochs
+        default_factory=lambda: {
+            "num_warmup_steps": 10_000,
+            "num_training_steps": 100_000,
+        },
     )
 
 
