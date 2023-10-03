@@ -83,7 +83,9 @@ def test_module_with_trainer(
             accelerator=TorchAccelerator.CPU,
             n_steps=midpoint,
         ),
-        optimization_config=OptimizationConfig(lr_scheduler_kwargs={"step_size": 1}),
+        optimization_config=OptimizationConfig(
+            lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": midpoint}
+        ),
     )
 
     trainable_module = create_behrt_MLM_model(patients=train_patients, config=config)

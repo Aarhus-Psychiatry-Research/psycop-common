@@ -61,10 +61,8 @@ class TrainingConfig:
     offline: bool = True
     accelerator: TorchAccelerator = TorchAccelerator.CUDA
 
-    n_steps: int = (
-        -1
-    )  # -1 means run until max_epochs, which defaults to 1000 in pytorch lightning.
-    batch_size: int = 8_000
+    n_steps: int = 100_000
+    batch_size: int = 1_000
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
 
@@ -79,7 +77,7 @@ class OptimizationConfig:
     lr_scheduler_kwargs: dict[str, Any] = field(
         default_factory=lambda: {
             "num_warmup_steps": 10_000,
-            "num_training_steps": 100_000,
+            "num_training_steps": TrainingConfig.n_steps,
         },
     )
 
@@ -161,7 +159,13 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
 
 
 if __name__ == "__main__":
-    config = Config(training_config=TrainingConfig(accelerator=TorchAccelerator.CUDA))
+    run_name = input("Enter a run name: ")
+
+    config = Config(
+        training_config=TrainingConfig(
+            accelerator=TorchAccelerator.CUDA, run_name=run_name
+        )
+    )
 
     train_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
