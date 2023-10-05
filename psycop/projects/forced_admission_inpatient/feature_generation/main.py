@@ -163,8 +163,8 @@ if __name__ == "__main__":
     )
 
     main(
-        add_text_features=False,
+        add_text_features=True,
         min_set_for_debug=False,
-        feature_set_name="full_feature_set_without_text_new_cohort",
-        generate_in_chunks=False,
+        feature_set_name="full_feature_set_with_sentence_transformer_and_tfidf_750",
+        generate_in_chunks=True,
     )

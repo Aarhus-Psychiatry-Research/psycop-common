@@ -79,7 +79,7 @@ class TextFeatureSpecifier:
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating tfidf specs --------")
-        embedded_text_filename = "text_tfidf_all_sfis_ngram_range_12_max_df_095_min_df_2_max_features_750.parquet"
+        embedded_text_filename = "text_tfidf_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet"
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
