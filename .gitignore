@@ -202,3 +202,6 @@ joblib
 
 # logging
 lightning_logs/*
+
+# Allow mapping csv to be uploaded
+!**/caliber-icd10-mapping.csv
