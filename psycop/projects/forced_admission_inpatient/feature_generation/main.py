@@ -163,7 +163,7 @@ if __name__ == "__main__":
     )
 
     main(
-        add_text_features=False,
+        add_text_features=True,
         min_set_for_debug=False,
         limited_feature_set=False,
         lookbehind_180d_mean=True,
