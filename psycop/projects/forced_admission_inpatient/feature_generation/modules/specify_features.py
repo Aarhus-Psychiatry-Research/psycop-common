@@ -529,7 +529,7 @@ class FeatureSpecifier:
             )
 
             beroligende_medicin = self._get_beroligende_medicin_specs(
-                resolve_multiple=resolve_multiple,
+                resolve_multiple=[boolean],
                 interval_days=interval_days,
             )
 
