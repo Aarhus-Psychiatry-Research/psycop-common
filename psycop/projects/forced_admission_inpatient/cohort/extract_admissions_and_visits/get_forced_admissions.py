@@ -35,7 +35,10 @@ def get_forced_admissions(write: bool = True) -> pd.DataFrame:
     return forced_admissions
 
 
-def forced_admissions_onset_timestamps(timestamps_only: bool = False) -> pd.DataFrame:
+def forced_admissions_onset_timestamps(
+    timestamps_only: bool = False,
+    timestamp_as_value_col: bool = False,
+) -> pd.DataFrame:
     # Load forced_admissions data
     view = "[forced_admissions_processed_2012_2021]"
     cols_to_keep = "dw_ek_borger, datotid_start_sei"
@@ -48,7 +51,10 @@ def forced_admissions_onset_timestamps(timestamps_only: bool = False) -> pd.Data
         columns={"datotid_start_sei": "timestamp"},
     )
 
-    forced_admissions["value"] = 1
+    if timestamp_as_value_col:
+        forced_admissions["value"] = forced_admissions["timestamp"].copy()
+    else:
+        forced_admissions["value"] = 1
 
     if timestamps_only:
         return forced_admissions[["dw_ek_borger", "timestamp"]]

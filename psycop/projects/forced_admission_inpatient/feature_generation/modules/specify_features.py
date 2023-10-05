@@ -8,6 +8,7 @@ from timeseriesflattener.aggregation_fns import (
     boolean,
     change_per_day,
     count,
+    earliest,
     latest,
     maximum,
     mean,
@@ -116,13 +117,6 @@ log = logging.getLogger(__name__)
 
 from psycop.common.feature_generation.loaders.raw.load_visits import admissions
 
-df = forced_admissions_onset_timestamps()
-# Sort the DataFrame by 'dw_ek_borger' and 'timestamp'
-df_sorted = df.sort_values(by=["dw_ek_borger", "timestamp"])
-
-# Keep only the first occurrence of each unique combination
-df_filtered = df_sorted.drop_duplicates(subset=["dw_ek_borger"], keep="first")
-
 
 class SpecSet(BaseModel):
     """A set of unresolved specs, ready for resolving."""
@@ -164,7 +158,7 @@ class FeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=df_filtered,
+                    df=forced_admissions_onset_timestamps(),
                     name="forced_admissions",
                 ),
             ],
@@ -173,6 +167,24 @@ class FeatureSpecifier:
             fallback=[0],
             incident=[False],
             prefix=self.project_info.prefix.outcome,
+        ).create_combinations()
+
+    def _get_outcome_timestamp_specs(self) -> list[OutcomeSpec]:
+        """Get outcome specs."""
+        log.info("-------- Generating outcome specs --------")
+
+        return OutcomeGroupSpec(
+            named_dataframes=[
+                NamedDataframe(
+                    df=forced_admissions_onset_timestamps(timestamp_as_value_col=True),
+                    name="",
+                ),
+            ],
+            lookahead_days=[month * 30 for month in (1, 3, 6, 12)],
+            aggregation_fns=[earliest],
+            fallback=[np.NaN],
+            incident=[False],
+            prefix="timestamp_outcome",
         ).create_combinations()
 
     def _get_visits_specs(
@@ -622,12 +634,14 @@ class FeatureSpecifier:
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
                 + self._get_outcome_specs()
+                + self._get_outcome_timestamp_specs()
             )
         if self.limited_feature_set:
             return (
                 self._get_limited_feature_specs()
                 + self._get_static_predictor_specs()
                 + self._get_outcome_specs()
+                + self._get_outcome_timestamp_specs()
             )
 
         if self.lookbehind_180d_mean:
@@ -638,10 +652,12 @@ class FeatureSpecifier:
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
                 + self._get_outcome_specs()
+                + self._get_outcome_timestamp_specs()
             )
 
         return (
             self._get_temporal_predictor_specs()
             + self._get_static_predictor_specs()
             + self._get_outcome_specs()
+            + self._get_outcome_timestamp_specs()
         )

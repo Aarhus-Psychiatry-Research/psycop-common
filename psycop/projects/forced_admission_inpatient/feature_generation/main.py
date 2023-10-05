@@ -165,6 +165,8 @@ if __name__ == "__main__":
     main(
         add_text_features=False,
         min_set_for_debug=False,
-        feature_set_name="full_feature_set_without_text_new_cohort",
+        limited_feature_set=False,
+        lookbehind_180d_mean=True,
+        feature_set_name="feature_set_lookbehind_180d_mean_no_text",
         generate_in_chunks=False,
     )
