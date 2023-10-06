@@ -8,6 +8,7 @@ from timeseriesflattener.aggregation_fns import (
     boolean,
     change_per_day,
     count,
+    earliest,
     latest,
     maximum,
     mean,
@@ -17,6 +18,7 @@ from timeseriesflattener.aggregation_fns import (
 )
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
+    OutcomeGroupSpec,
     PredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
@@ -107,6 +109,9 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
+from psycop.projects.forced_admission_inpatient.cohort.extract_admissions_and_visits.get_forced_admissions import (
+    forced_admissions_onset_timestamps,
+)
 
 log = logging.getLogger(__name__)
 
@@ -137,6 +142,7 @@ class FeatureSpecifier:
 
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
+        log.info("-------- Generating static specs --------")
         return [
             StaticSpec(
                 timeseries_df=sex_female(),
@@ -144,6 +150,42 @@ class FeatureSpecifier:
                 feature_base_name="sex_female",
             ),
         ]
+
+    def _get_outcome_specs(self) -> list[OutcomeSpec]:
+        """Get outcome specs."""
+        log.info("-------- Generating outcome specs --------")
+
+        return OutcomeGroupSpec(
+            named_dataframes=[
+                NamedDataframe(
+                    df=forced_admissions_onset_timestamps(),
+                    name="forced_admissions",
+                ),
+            ],
+            lookahead_days=[month * 30 for month in (1, 3, 6, 12)],
+            aggregation_fns=[maximum],
+            fallback=[0],
+            incident=[False],
+            prefix=self.project_info.prefix.outcome,
+        ).create_combinations()
+
+    def _get_outcome_timestamp_specs(self) -> list[OutcomeSpec]:
+        """Get outcome specs."""
+        log.info("-------- Generating outcome specs --------")
+
+        return OutcomeGroupSpec(
+            named_dataframes=[
+                NamedDataframe(
+                    df=forced_admissions_onset_timestamps(timestamp_as_value_col=True),
+                    name="",
+                ),
+            ],
+            lookahead_days=[month * 30 for month in (1, 3, 6, 12)],
+            aggregation_fns=[earliest],
+            fallback=[np.NaN],
+            incident=[False],
+            prefix="timestamp_outcome",
+        ).create_combinations()
 
     def _get_visits_specs(
         self,
@@ -487,7 +529,7 @@ class FeatureSpecifier:
             )
 
             beroligende_medicin = self._get_beroligende_medicin_specs(
-                resolve_multiple=resolve_multiple,
+                resolve_multiple=[boolean],
                 interval_days=interval_days,
             )
 
@@ -581,7 +623,7 @@ class FeatureSpecifier:
             + cancelled_lab_results
         )
 
-    def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec]]:
+    def get_feature_specs(self) -> list[Union[StaticSpec, OutcomeSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
@@ -591,10 +633,15 @@ class FeatureSpecifier:
             return (
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
+                + self._get_outcome_specs()
+                + self._get_outcome_timestamp_specs()
             )
         if self.limited_feature_set:
             return (
-                self._get_limited_feature_specs() + self._get_static_predictor_specs()
+                self._get_limited_feature_specs()
+                + self._get_static_predictor_specs()
+                + self._get_outcome_specs()
+                + self._get_outcome_timestamp_specs()
             )
 
         if self.lookbehind_180d_mean:
@@ -604,6 +651,13 @@ class FeatureSpecifier:
             return (
                 self._get_temporal_predictor_specs()
                 + self._get_static_predictor_specs()
+                + self._get_outcome_specs()
+                + self._get_outcome_timestamp_specs()
             )
 
-        return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()
+        return (
+            self._get_temporal_predictor_specs()
+            + self._get_static_predictor_specs()
+            + self._get_outcome_specs()
+            + self._get_outcome_timestamp_specs()
+        )

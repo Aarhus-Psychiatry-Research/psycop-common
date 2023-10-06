@@ -48,7 +48,7 @@ class PredictionTimeFilterer:
 
         if self.quarantine_df is not None and self.quarantine_days is not None:
             self.quarantine_df = self.quarantine_df.rename(
-                columns={"timestamp": "timestamp_quarantine"},
+                columns={timestamp_col_name: "timestamp_quarantine"},
             )
 
         self.entity_id_col_name = entity_id_col_name
