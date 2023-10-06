@@ -34,13 +34,13 @@ def get_outpatient_visits_to_psychiatry(write: bool = True) -> pd.DataFrame:
         ROWS_PER_CHUNK = 5_000
 
         write_df_to_sql(
-            df=df[["dw_ek_borger", "datotid_predict"]],
+            df=df[["dw_ek_borger", "datotid_predict"]],  # type: ignore
             table_name="all_outpatient_visits_processed_2012_2021",
             if_exists="replace",
             rows_per_chunk=ROWS_PER_CHUNK,
         )
 
-    return df[["dw_ek_borger", "datotid_predict"]]
+    return df[["dw_ek_borger", "datotid_predict"]]  # type: ignore
 
 
 def outpatient_visits_timestamps() -> pd.DataFrame:

@@ -19,20 +19,22 @@ def get_forced_admissions(write: bool = True) -> pd.DataFrame:
     )
 
     forced_admissions = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
-    forced_admissions[["datotid_start_sei", "datotid_slut_sei"]] = forced_admissions[
+    forced_admissions[["datotid_start_sei", "datotid_slut_sei"]] = forced_admissions[  # type: ignore
         ["datotid_start_sei", "datotid_slut_sei"]
-    ].apply(pd.to_datetime)
+    ].apply(
+        pd.to_datetime,
+    )
 
     if write:
         ROWS_PER_CHUNK = 5_000
 
         write_df_to_sql(
-            df=forced_admissions,
+            df=forced_admissions,  # type: ignore
             table_name="forced_admissions_processed_2012_2021",
             if_exists="replace",
             rows_per_chunk=ROWS_PER_CHUNK,
         )
-    return forced_admissions
+    return forced_admissions  # type: ignore
 
 
 def forced_admissions_onset_timestamps(
@@ -47,7 +49,7 @@ def forced_admissions_onset_timestamps(
 
     forced_admissions = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
 
-    forced_admissions = forced_admissions.rename(
+    forced_admissions = forced_admissions.rename(  # type: ignore
         columns={"datotid_start_sei": "timestamp"},
     )
 
@@ -71,7 +73,7 @@ def forced_admissions_end_timestamps() -> pd.DataFrame:
 
     forced_admissions = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
 
-    forced_admissions = forced_admissions.rename(
+    forced_admissions = forced_admissions.rename(  # type: ignore
         columns={"datotid_slut_sei": "timestamp"},
     )
 

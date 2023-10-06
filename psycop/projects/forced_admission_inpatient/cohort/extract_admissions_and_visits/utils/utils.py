@@ -97,7 +97,7 @@ def concat_readmissions_for_all_patients(
     df = pd.concat(
         [
             concat_readmissions_for_single_patient(
-                patient,
+                patient,  # type: ignore
                 readmission_interval_hours=readmission_interval_hours,
             )
             for patient in df_patients_list
