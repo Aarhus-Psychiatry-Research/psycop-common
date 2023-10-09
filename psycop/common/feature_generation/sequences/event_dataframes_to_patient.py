@@ -26,7 +26,7 @@ class PatientColumnNames:
 
 
 class EventDataFramesToPatients:
-    """Unpakcs a sequence of dataframes containing events into a list of patients."""
+    """Unpacks a sequence of dataframes containing events into a list of patients."""
 
     def __init__(self, column_names: PatientColumnNames | None = None) -> None:
         self._column_names = (

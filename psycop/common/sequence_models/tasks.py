@@ -4,9 +4,9 @@ from typing import Any, Literal
 import lightning.pytorch as pl
 import torch
 from torch import nn
-from torch.optim import Optimizer
 from torchmetrics import Metric
 from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
+from transformers import AdamW, get_linear_schedule_with_warmup
 
 from psycop.common.data_structures.patient import Patient
 
@@ -23,12 +23,15 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
-        optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},  # noqa
+        optimizer_kwargs: dict[str, Any],
+        lr_scheduler_kwargs: dict[str, Any],
     ):
         super().__init__()
+        self.save_hyperparameters()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.optimizer_kwargs = optimizer_kwargs
+        self.scheduler_kwargs = lr_scheduler_kwargs
 
         self.d_model = self.embedding_module.d_model
         self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
@@ -36,16 +39,20 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
-    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore # noqa: ARG002
+    def training_step(  # type: ignore
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,  # noqa: ARG002
+    ) -> torch.Tensor:
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
         # Update the weights
-        self.log("Training Loss", loss)
+        self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
         output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
-        self.log("Validation Loss", output["loss"])
+        self.log("val_loss", output["loss"])
         return output["loss"]
 
     def forward(  # type: ignore
@@ -132,9 +139,20 @@ class BEHRTForMaskedLM(pl.LightningModule):
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
         return padded_sequence_ids, masked_labels
 
-    def configure_optimizers(self) -> Optimizer:
-        optimizer = torch.optim.Adam(self.parameters(), **self.optimizer_kwargs)
-        return optimizer
+    def configure_optimizers(
+        self,
+    ) -> tuple[list[torch.optim.Optimizer], list[torch.optim.lr_scheduler.LambdaLR]]:
+        optimizer = AdamW(
+            self.parameters(),
+            correct_bias=False,
+            **self.optimizer_kwargs,
+        )
+
+        lr_scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            **self.scheduler_kwargs,
+        )
+        return [optimizer], [lr_scheduler]
 
 
 class EncoderForClassification(pl.LightningModule):
@@ -147,13 +165,15 @@ class EncoderForClassification(pl.LightningModule):
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
         aggregation_module: AggregationModule,
-        optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},  # noqa
+        optimizer_kwargs: dict[str, Any],
+        lr_scheduler_kwargs: dict[str, Any],
         num_classes: int = 1,
     ):
         super().__init__()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.optimizer_kwargs = optimizer_kwargs
+        self.scheduler_kwargs = lr_scheduler_kwargs
         self.aggregation_module = aggregation_module
 
         self.d_model: int = embedding_module.d_model
@@ -257,6 +277,17 @@ class EncoderForClassification(pl.LightningModule):
         ).float()  # required for loss computation
         return padded_sequence_ids, outcome_tensor
 
-    def configure_optimizers(self) -> Optimizer:
-        optimizer = torch.optim.Adam(self.parameters(), **self.optimizer_kwargs)
-        return optimizer
+    def configure_optimizers(
+        self,
+    ) -> tuple[list[torch.optim.Optimizer], list[torch.optim.lr_scheduler.LambdaLR]]:
+        optimizer = AdamW(
+            self.parameters(),
+            correct_bias=False,
+            **self.optimizer_kwargs,
+        )
+
+        lr_scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            **self.scheduler_kwargs,
+        )
+        return [optimizer], [lr_scheduler]
