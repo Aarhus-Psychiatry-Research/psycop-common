@@ -34,7 +34,7 @@ class CohortToPredictionTimes:
         self,
         lookbehind: dt.timedelta,
         lookahead: dt.timedelta,
-    ) -> tuple[PredictionTime]:
+    ) -> tuple[PredictionTime, ...]:
         outcome_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
             dataframe=self.cohort_definer.get_outcome_timestamps(),
             id_col_name="dw_ek_borger",
@@ -46,7 +46,7 @@ class CohortToPredictionTimes:
             patient_timestamp_col_name="timestamp",
         )
 
-        prediction_times = []
+        prediction_times: list[PredictionTime] = []
         for patient in self.patients:
             pt_outcome_timestamps = outcome_timestamps.get(patient.patient_id)
 
