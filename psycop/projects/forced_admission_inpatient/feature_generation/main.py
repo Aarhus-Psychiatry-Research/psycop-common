@@ -163,10 +163,19 @@ if __name__ == "__main__":
     )
 
     main(
-        add_text_features=True,
+        add_text_features=False,
         min_set_for_debug=False,
         limited_feature_set=False,
         lookbehind_180d_mean=True,
         feature_set_name="feature_set_lookbehind_180d_mean_no_text",
         generate_in_chunks=False,
+    )
+
+    main(
+        add_text_features=True,
+        min_set_for_debug=False,
+        limited_feature_set=False,
+        lookbehind_180d_mean=False,
+        feature_set_name="full_feature_set_with_sentence_transformers_and_tfidf_750",
+        generate_in_chunks=True,
     )
