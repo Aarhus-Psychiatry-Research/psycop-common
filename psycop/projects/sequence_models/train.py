@@ -26,6 +26,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import Patient
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
@@ -171,11 +172,11 @@ if __name__ == "__main__":
 
     train_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
-        split="train",
+        split=SplitName.TRAIN,
     )
     val_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
-        split="val",
+        split=SplitName.VALIDATION,
     )
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)

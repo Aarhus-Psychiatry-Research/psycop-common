@@ -17,6 +17,8 @@ from psycop.common.feature_generation.utils import data_loaders
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
+    from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
+
 
 def get_valid_text_sfi_names() -> set[str]:
     """Returns a set of valid text sfi names. Notice that 'Konklusion' is replaced
@@ -146,7 +148,7 @@ def load_text_sfis(
 
 def load_text_split(
     text_sfi_names: str | Iterable[str],
-    split_name: Sequence[Literal["train", "val", "test"]],
+    split_name: Sequence[SplitName],
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
