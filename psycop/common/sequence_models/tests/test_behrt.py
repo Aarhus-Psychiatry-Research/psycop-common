@@ -85,7 +85,7 @@ def test_module_with_trainer(
         ),
     )
 
-    trainable_module = create_behrt_MLM_model(
+    trainable_module = create_behrt_MLM_model(  # noqa: F811
         patients=train_patients,
         config=config,
     )
