@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from functools import partial
 from multiprocessing import Pool
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
@@ -16,6 +16,8 @@ from psycop.common.feature_generation.utils import data_loaders
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
+
+    from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 
 
 def get_valid_text_sfi_names() -> set[str]:
@@ -146,7 +148,7 @@ def load_text_sfis(
 
 def load_text_split(
     text_sfi_names: str | Iterable[str],
-    split_name: Sequence[Literal["train", "val", "test"]],
+    split_name: Sequence[SplitName],
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:

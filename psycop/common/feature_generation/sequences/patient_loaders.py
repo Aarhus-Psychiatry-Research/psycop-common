@@ -8,7 +8,7 @@ from psycop.common.data_structures.patient import (
     Patient,
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatients,
@@ -75,7 +75,7 @@ class PatientLoader:
     @staticmethod
     def get_split(
         event_loaders: Sequence[EventDfLoader],
-        split: str = "train",
+        split: SplitName,
     ) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         train_ids = pl.from_pandas(load_ids(split=split)).lazy()
@@ -96,4 +96,7 @@ class PatientLoader:
 
 
 if __name__ == "__main__":
-    patients = PatientLoader.get_split(event_loaders=[DiagnosisLoader()], split="train")
+    patients = PatientLoader.get_split(
+        event_loaders=[DiagnosisLoader()],
+        split=SplitName.TRAIN,
+    )
