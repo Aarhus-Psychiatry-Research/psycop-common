@@ -1,8 +1,14 @@
 from datetime import datetime
 
 import pytest
+from torch import nn
 
 from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.sequence_models import (
+    BEHRTEmbedder,
+    BEHRTForMaskedLM,
+    PatientDataset,
+)
 
 
 @pytest.fixture()
@@ -37,3 +43,32 @@ def patients() -> list[Patient]:
     patient2.add_events([e1, e2, e2, e1])
 
     return [patient1, patient2]
+
+
+@pytest.fixture()
+def patient_dataset(patients: list) -> PatientDataset:
+    return PatientDataset(patients)
+
+
+@pytest.fixture()
+def behrt_for_masked_lm(patients: list[Patient]) -> BEHRTForMaskedLM:
+    d_model = 32
+    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
+    emb.fit(patients=patients, add_mask_token=True)
+
+    encoder_layer = nn.TransformerEncoderLayer(
+        d_model=d_model,
+        nhead=int(d_model / 4),
+        dim_feedforward=d_model * 4,
+        batch_first=True,
+    )
+    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+
+    # this includes the loss and the MLM head
+    module = BEHRTForMaskedLM(
+        embedding_module=emb,
+        encoder_module=encoder,
+        optimizer_kwargs={"lr": 1e-3},
+        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
+    )
+    return module

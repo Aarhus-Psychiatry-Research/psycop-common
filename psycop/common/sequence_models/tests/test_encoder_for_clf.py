@@ -12,7 +12,6 @@ from psycop.common.sequence_models import (
     EncoderForClassification,
     PatientDatasetWithLabels,
 )
-from psycop.common.sequence_models.tasks import EncoderForClassification
 
 
 @pytest.fixture()
@@ -93,6 +92,9 @@ def test_encoder_for_clf_(
         embedding_module=embedding_module,
         encoder_module=encoder_module,
         aggregation_module=aggregation_module,
+        num_classes=1,
+        optimizer_kwargs={"lr": 1e-3},
+        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
     )
 
     dataloader = DataLoader(

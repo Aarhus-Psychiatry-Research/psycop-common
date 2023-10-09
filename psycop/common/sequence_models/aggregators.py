@@ -7,7 +7,9 @@ from torch import nn
 class AggregationModule(nn.Module):
     @abstractmethod
     def forward(
-        self, last_hidden: torch.Tensor, attention_mask: torch.Tensor
+        self,
+        last_hidden: torch.Tensor,
+        attention_mask: torch.Tensor,
     ) -> torch.Tensor:
         pass
 
@@ -22,8 +24,10 @@ class AveragePooler(AggregationModule):
         super().__init__()
 
     def forward(
-        self, last_hidden: torch.Tensor, attention_mask: torch.Tensor
+        self,
+        last_hidden: torch.Tensor,
+        attention_mask: torch.Tensor,
     ) -> torch.Tensor:
         return (last_hidden * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(
-            -1
+            -1,
         ).unsqueeze(-1)

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pytest
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -19,34 +18,7 @@ from psycop.projects.sequence_models.train import (
     create_default_trainer,
 )
 
-
-@pytest.fixture()
-def patient_dataset(patients: list) -> PatientDataset:
-    return PatientDataset(patients)
-
-
-@pytest.fixture()
-def trainable_module(patients: list[Patient]) -> BEHRTForMaskedLM:
-    d_model = 32
-    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patients=patients, add_mask_token=True)
-
-    encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model,
-        nhead=int(d_model / 4),
-        dim_feedforward=d_model * 4,
-        batch_first=True,
-    )
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-
-    # this includes the loss and the MLM head
-    module = BEHRTForMaskedLM(
-        embedding_module=emb,
-        encoder_module=encoder,
-        optimizer_kwargs={"lr": 1e-3},
-        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
-    )
-    return module
+from .conftest import patients, trainable_module  # noqa: F401 # type: ignore
 
 
 def test_behrt(patient_dataset: PatientDataset):
@@ -60,7 +32,7 @@ def test_behrt(patient_dataset: PatientDataset):
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
-    patients = patient_dataset.patients
+    patients = patient_dataset.patients  # noqa: F811
     emb.fit(patients, add_mask_token=True)
 
     config = Config()
@@ -113,7 +85,10 @@ def test_module_with_trainer(
         ),
     )
 
-    trainable_module = create_behrt_MLM_model(patients=train_patients, config=config)
+    trainable_module = create_behrt_MLM_model(
+        patients=train_patients,
+        config=config,
+    )
 
     train_dataloader = DataLoader(
         train_dataset,

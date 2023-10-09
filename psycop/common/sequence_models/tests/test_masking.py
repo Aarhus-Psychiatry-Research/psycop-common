@@ -5,9 +5,10 @@ import torch
 from torch import nn
 
 from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM
-
-from .test_behrt import patients, trainable_module  # noqa: F401 # type: ignore
 from psycop.projects.sequence_models.train import Config
+
+from .conftest import patients
+from .test_behrt import patients, trainable_module  # noqa: F401 # type: ignore
 
 
 @pytest.mark.parametrize(
