@@ -2,7 +2,7 @@
 import logging
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -110,7 +110,7 @@ def split_and_save_dataset_to_disk(
                 split_name = SplitName.TEST  # noqa: PLW2901
             case _:
                 raise ValueError(
-                    f"Splitname {split_name} is not allowed, try from ['train', 'test', 'val']"
+                    f"Splitname {split_name} is not allowed, try from ['train', 'test', 'val']",
                 )
 
         if not split_ids:
