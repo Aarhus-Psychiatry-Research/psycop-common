@@ -36,7 +36,7 @@ class ForcedAdmissionsInpatientMinAgeFilter(PredictionTimeFilter):
 class ForcedAdmissionsInpatientWashoutMove(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
-        not_within_two_years_from_move = pl.from_pandas(
+        not_within_x_years_from_move = pl.from_pandas(
             PredictionTimeFilterer(
                 prediction_times_df=df.to_pandas(),
                 entity_id_col_name="dw_ek_borger",
@@ -45,13 +45,13 @@ class ForcedAdmissionsInpatientWashoutMove(PredictionTimeFilter):
                 timestamp_col_name="timestamp",
             ).run_filter(),
         )
-        return not_within_two_years_from_move
+        return not_within_x_years_from_move
 
 
 class ForcedAdmissionsInpatientWashoutPriorForcedAdmission(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
-        not_within_two_years_from_move = pl.from_pandas(
+        not_within_x_years_from_forced_admission = pl.from_pandas(
             PredictionTimeFilterer(
                 prediction_times_df=df.to_pandas(),
                 entity_id_col_name="dw_ek_borger",
@@ -61,4 +61,4 @@ class ForcedAdmissionsInpatientWashoutPriorForcedAdmission(PredictionTimeFilter)
             ).run_filter(),
         )
 
-        return not_within_two_years_from_move
+        return not_within_x_years_from_forced_admission

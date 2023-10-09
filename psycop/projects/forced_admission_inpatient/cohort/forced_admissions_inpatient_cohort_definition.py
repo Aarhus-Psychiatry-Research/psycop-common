@@ -21,18 +21,30 @@ from psycop.projects.forced_admission_inpatient.cohort.prediction_timestamp_filt
 
 class ForcedAdmissionsInpatientCohortDefiner(CohortDefiner):
     @staticmethod
-    def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
+    def get_filtered_prediction_times_bundle(
+        washout_on_prior_forced_admissions: bool = True,
+    ) -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.from_pandas(
             admissions_discharge_timestamps(),
         )
+
+        if washout_on_prior_forced_admissions:
+            return filter_prediction_times(
+                prediction_times=unfiltered_prediction_times,
+                filtering_steps=(
+                    ForcedAdmissionsInpatientMinDateFilter(),
+                    ForcedAdmissionsInpatientMinAgeFilter(),
+                    ForcedAdmissionsInpatientWashoutMove(),
+                    ForcedAdmissionsInpatientWashoutPriorForcedAdmission(),
+                ),
+                entity_id_col_name="dw_ek_borger",
+            )
 
         return filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
             filtering_steps=(
                 ForcedAdmissionsInpatientMinDateFilter(),
                 ForcedAdmissionsInpatientMinAgeFilter(),
-                ForcedAdmissionsInpatientWashoutMove(),
-                ForcedAdmissionsInpatientWashoutPriorForcedAdmission(),
             ),
             entity_id_col_name="dw_ek_borger",
         )
@@ -47,6 +59,14 @@ if __name__ == "__main__":
         ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle()
     )
 
-    df = bundle.prediction_times
+    bundle_no_washout = (
+        ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
+            washout_on_prior_forced_admissions=False,
+        )
+    )
+
+    df = bundle.prediction_times.to_pandas()
+
+    df_no_washout = bundle_no_washout.prediction_times.to_pandas()
 
     outcome_timestamps = ForcedAdmissionsInpatientCohortDefiner.get_outcome_timestamps()
