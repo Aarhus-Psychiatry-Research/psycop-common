@@ -188,7 +188,7 @@ psycop/tests/test_eval_results/*
 psycop/**/*.md
 
 # Wandb
-**/wandb
+/wandb
 multirun
 
 # Ignore the ouptuts for publishing folder
@@ -196,9 +196,4 @@ multirun
 pytest.xml
 joblib
 /outputs
-
-# model checkpoints
-/data
-
-# logging
-lightning_logs/*
+.git

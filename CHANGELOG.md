@@ -2,6 +2,58 @@
 
 <!--next-version-placeholder-->
 
+## v0.113.0 (2023-10-06)
+
+### Feature
+
+* Define cohort ([`7434bac`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7434bacf131f387c422d1b2748acd82ac209a00f))
+
+### Fix
+
+* Adapt ([`d0977ba`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d0977baac53f2186b813b679d99c73f22637a568))
+* Minor changes ([`9969d99`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9969d99432f6da55f18f80c0bd916d06e304ce2d))
+
+## v0.112.0 (2023-10-03)
+
+### Feature
+
+* Gradient accumulation fix OutOfMemoryError? ([`7cfc47b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7cfc47ba47c8a92b6d5f663cc4cae275fdf7947f))
+* Lr scheduler linear with warm-up ([`0f2d433`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0f2d4333cb8e8722cfa725bf8c5bf100835e0af5))
+* Pretrain version ([`5e9091c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5e9091cc85ff26d8334d27215dcc001109642170))
+* Ready for training ([`1218794`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1218794ffc20c1f5ed53bbcfdb4f4affd0485d6e))
+* Expand test to cover model checkpointing ([`1f0bece`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1f0bececb1d2b5ec701b205538716133fe6778ad))
+* Lightning module saves hyperparams ([`59e7ac6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/59e7ac660810848fc79cd27df19add19bd4d65ca))
+* Adapt sequence training script to pytorch lightnign ([`005cbdf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/005cbdfce8366021e0f4f11ad02b5f8e7a3843ce))
+* Initial changes to pytorch lightning module ([`d919009`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d919009d5323bdce64cb6ba7715bcf16cae10f90))
+* Added training script for sequence model ([`7d2c2bb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7d2c2bbd41db933ad7d139ada551654ac88dea0b))
+
+### Fix
+
+* Configs should be initialised with factories ([`7ddbf9b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7ddbf9b8908010c79ff94bbf03b13db38cb37588))
+* Ruff ([`626e0fc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/626e0fc75f6a203a04838a964d958c806b37f103))
+* Fully transitioned to pl ([`d3a8d32`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d3a8d32f74f5e35a774b32f56ccfaa52f8e1b493))
+* Replaced print with logging statements ([`769530f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/769530f036c03f801d5b44bac109ee7b5305a4e2))
+* Make sure parameters is actually moved to the gpu ([`131e1f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/131e1f01610f5fe0aef360edc7ad94d4866ee1ba))
+
+### Documentation
+
+* Typo ([`0dfeb69`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0dfeb69acd4c0a834bf8d793c0fb541f728615b6))
+
+## v0.111.0 (2023-10-03)
+
+### Feature
+
+* Add dev container ([`84301b8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/84301b82020fffabd9573e70bb9ada6ad3e8c7a6))
+* Add corr plot ([`d0c116f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d0c116f16eb6b8f2fcd31f10a29b5a3cd1ca6602))
+* Add feature outcome corrs ([`4376b19`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4376b190f2aee4350888f8c7d9908c987a7cc3f8))
+* Add hist ([`708ca45`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/708ca45b8beb67ca091b9d08fe1efe93c41bc5bd))
+* Descriptive stats ([`8c0b038`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8c0b038f8ccb82090e1b4b24308fab70b1b2d02b))
+
+### Fix
+
+* Changes ([`d172358`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d1723589ad21b5da4ca5f3d40794f5c26cbbadd1))
+* Minor errors ([`1b21da3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1b21da37e234603e29cffbccfb34eac284b7984a))
+
 ## v0.110.0 (2023-09-26)
 
 ### Feature

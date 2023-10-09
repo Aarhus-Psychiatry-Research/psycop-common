@@ -1,28 +1,34 @@
 from copy import copy
+from typing import Any
 
+import lightning.pytorch as pl
 import torch
 from torch import nn
-from torch.optim import Optimizer
+from transformers import AdamW, get_linear_schedule_with_warmup
 
 from psycop.common.data_structures.patient import Patient
-from psycop.common.sequence_models.checkpoint_savers.base import TrainingState
-from psycop.common.sequence_models.trainer import BatchWithLabels, TrainableModule
 
 from .embedders import BEHRTEmbedder
 
+BatchWithLabels = tuple[dict[str, torch.Tensor], torch.Tensor]
 
-class BEHRTForMaskedLM(nn.Module, TrainableModule):
+
+class BEHRTForMaskedLM(pl.LightningModule):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
+        optimizer_kwargs: dict[str, Any],
+        lr_scheduler_kwargs: dict[str, Any],
     ):
         super().__init__()
+        self.save_hyperparameters()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
-        self.optimizer = self.configure_optimizer()
+        self.optimizer_kwargs = optimizer_kwargs
+        self.scheduler_kwargs = lr_scheduler_kwargs
 
         self.d_model = self.embedding_module.d_model
         self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
@@ -30,24 +36,23 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
-    def training_step(self, batch: BatchWithLabels) -> torch.Tensor:
-        # Zero the gradients
-        self.optimizer.zero_grad()
-        # Forward pass
+    def training_step(  # type: ignore
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,  # noqa: ARG002
+    ) -> torch.Tensor:
         output = self.forward(batch[0], batch[1])
         loss = output["loss"]
-        # Backward pass
-        loss.backward()
         # Update the weights
-        self.optimizer.step()
+        self.log("train_loss", loss)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels) -> torch.Tensor:
-        with torch.no_grad():
-            output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
+    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
+        output = self.forward(inputs=batch[0], masked_lm_labels=batch[1])
+        self.log("val_loss", output["loss"])
         return output["loss"]
 
-    def forward(
+    def forward(  # type: ignore
         self,
         inputs: dict[str, torch.Tensor],
         masked_lm_labels: torch.Tensor,
@@ -131,16 +136,17 @@ class BEHRTForMaskedLM(nn.Module, TrainableModule):
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
         return padded_sequence_ids, masked_labels
 
-    def load_checkpoint(self, checkpoint: TrainingState):
-        self.load_state_dict(checkpoint.model_state_dict)
-        self.optimizer.load_state_dict(checkpoint.optimizer_state_dict)
-
-    def get_state(self) -> TrainingState:
-        return TrainingState(
-            model_state_dict=self.state_dict(),
-            optimizer_state_dict=self.optimizer.state_dict(),
+    def configure_optimizers(
+        self,
+    ) -> tuple[list[torch.optim.Optimizer], list[torch.optim.lr_scheduler.LambdaLR]]:
+        optimizer = AdamW(
+            self.parameters(),
+            correct_bias=False,
+            **self.optimizer_kwargs,
         )
 
-    def configure_optimizer(self) -> Optimizer:
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
-        return optimizer
+        lr_scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            **self.scheduler_kwargs,
+        )
+        return [optimizer], [lr_scheduler]
