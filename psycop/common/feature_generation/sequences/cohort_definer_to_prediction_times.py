@@ -1,11 +1,15 @@
 import datetime as dt
+import itertools
 from collections import defaultdict
+from typing import Mapping, NewType, Sequence
 
 import polars as pl
 
 from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
+
+PATIENT_ID = NewType("PATIENT_ID", str)
 
 
 class CohortToPredictionTimes:
@@ -18,7 +22,7 @@ class CohortToPredictionTimes:
         dataframe: pl.DataFrame,
         id_col_name: str,
         patient_timestamp_col_name: str,
-    ) -> dict[str | int, list[dt.datetime]]:
+    ) -> dict[PATIENT_ID, list[dt.datetime]]:
         timestamp_dicts = dataframe.iter_rows(named=True)
 
         patient_to_prediction_times = defaultdict(list)
@@ -29,6 +33,28 @@ class CohortToPredictionTimes:
             )
 
         return patient_to_prediction_times
+
+    @staticmethod
+    def _patient_to_prediction_times(
+        patient: Patient,
+        lookbehind: dt.timedelta,
+        lookahead: dt.timedelta,
+        outcome_timestamps: Mapping[PATIENT_ID, list[dt.datetime]],
+        prediction_timestamps: Mapping[PATIENT_ID, list[dt.datetime]],
+    ) -> Sequence[PredictionTime]:
+        pt_outcome_timestamps = outcome_timestamps.get(patient.patient_id)
+
+        if pt_outcome_timestamps is not None:
+            outcome_timestamp = pt_outcome_timestamps[0]
+        else:
+            outcome_timestamp = None
+
+        return patient.to_prediction_times(
+            lookbehind=lookbehind,
+            lookahead=lookahead,
+            outcome_timestamp=outcome_timestamp,
+            prediction_timestamps=prediction_timestamps[patient.patient_id],
+        )
 
     def create_prediction_times(
         self,
@@ -46,20 +72,15 @@ class CohortToPredictionTimes:
             patient_timestamp_col_name="timestamp",
         )
 
-        prediction_times: list[PredictionTime] = []
-        for patient in self.patients:
-            pt_outcome_timestamps = outcome_timestamps.get(patient.patient_id)
-
-            if pt_outcome_timestamps is not None:
-                outcome_timestamp = pt_outcome_timestamps[0]
-            else:
-                outcome_timestamp = None
-
-            prediction_times += patient.to_prediction_times(
+        prediction_times = (
+            self._patient_to_prediction_times(
+                patient=pt,
                 lookbehind=lookbehind,
                 lookahead=lookahead,
-                outcome_timestamp=outcome_timestamp,
-                prediction_timestamps=prediction_timestamps[patient.patient_id],
+                outcome_timestamps=outcome_timestamps,
+                prediction_timestamps=prediction_timestamps,
             )
+            for pt in self.patients
+        )
 
-        return tuple(prediction_times)
+        return tuple(itertools.chain.from_iterable(prediction_times))
