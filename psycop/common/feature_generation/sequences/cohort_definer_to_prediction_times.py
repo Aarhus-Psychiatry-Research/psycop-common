@@ -1,7 +1,8 @@
 import datetime as dt
 import itertools
 from collections import defaultdict
-from typing import Mapping, NewType, Sequence
+from collections.abc import Mapping, Sequence
+from typing import NewType
 
 import polars as pl
 
