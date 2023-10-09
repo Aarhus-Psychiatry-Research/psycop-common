@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from torch import nn
 from torch.utils.data import DataLoader
@@ -7,6 +9,7 @@ from psycop.common.sequence_models import (
     AggregationModule,
     AveragePooler,
     BEHRTEmbedder,
+    BEHRTForMaskedLM,
     EncoderForClassification,
     PatientDatasetWithLabels,
 )
@@ -46,7 +49,7 @@ def aggregation_module() -> AveragePooler:
     return AveragePooler()
 
 
-def test_encoder_for_clf_(
+def test_encoder_for_clf(
     patient_dataset_with_labels: PatientDatasetWithLabels,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
@@ -55,6 +58,37 @@ def test_encoder_for_clf_(
     clf = EncoderForClassification(
         embedding_module=embedding_module,
         encoder_module=encoder_module,
+        aggregation_module=aggregation_module,
+        num_classes=1,
+        optimizer_kwargs={"lr": 1e-3},
+        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
+    )
+
+    dataloader = DataLoader(
+        patient_dataset_with_labels,
+        batch_size=32,
+        shuffle=True,
+        collate_fn=clf.collate_fn,  # type: ignore
+    )
+
+    for input_ids, masked_labels in dataloader:
+        output = clf(input_ids, masked_labels)
+        loss = output["loss"]
+        loss.backward()  # ensure that the backward pass works
+
+
+def test_pretrain_from_checkpoint(
+    patient_dataset_with_labels: PatientDatasetWithLabels,
+    aggregation_module: AggregationModule,
+):
+    path = Path(__file__).parent / "test_checkpoints"
+    checkpoint_path = path / "epoch=4-step=5.ckpt"
+
+    loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
+
+    clf = EncoderForClassification(
+        embedding_module=loaded_model.embedding_module,
+        encoder_module=loaded_model.encoder_module,
         aggregation_module=aggregation_module,
         num_classes=1,
         optimizer_kwargs={"lr": 1e-3},
