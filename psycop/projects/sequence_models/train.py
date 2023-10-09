@@ -37,7 +37,6 @@ from psycop.common.sequence_models.loggers.wandb_logger import WandbLogger
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 from psycop.common.sequence_models.trainer import Trainer
 
-
 @dataclass
 class ModelConfig:
     d_model: int = 32
@@ -92,6 +91,7 @@ def create_model(patients: list[Patient], config: ModelConfig) -> BEHRTForMasked
         d_model=config.d_model,
         nhead=config.nhead,
         dim_feedforward=config.dim_feedforward,
+        batch_first=True, 
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=config.num_layers)
 

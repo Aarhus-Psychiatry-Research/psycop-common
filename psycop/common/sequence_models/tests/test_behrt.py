@@ -62,6 +62,7 @@ def trainable_module(patients: list[Patient]) -> BEHRTForMaskedLM:
         d_model=d_model,
         nhead=int(d_model / 4),
         dim_feedforward=d_model * 4,
+        batch_first=True,
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
@@ -80,6 +81,7 @@ def test_behrt(patient_dataset: PatientDataset):
         d_model=d_model,
         nhead=int(d_model / 4),
         dim_feedforward=d_model * 4,
+        batch_first=True,
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
@@ -132,7 +134,7 @@ def test_module_with_trainer(
         collate_fn=trainable_module.collate_fn,
     )
 
-    trainer = pl.Trainer(max_steps=1)
+    trainer = pl.Trainer(max_steps=1, accelerator="cpu")
     trainer.fit(
         model=trainable_module,
         train_dataloaders=train_dataloader,

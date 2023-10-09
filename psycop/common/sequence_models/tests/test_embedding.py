@@ -3,7 +3,7 @@ import torch
 
 from psycop.common.sequence_models import BEHRTEmbedder, Embedder
 
-from .test_main import patients  # noqa: F401 # type: ignore
+from .test_behrt import patients  # noqa: F401 # type: ignore
 
 
 @pytest.mark.parametrize(

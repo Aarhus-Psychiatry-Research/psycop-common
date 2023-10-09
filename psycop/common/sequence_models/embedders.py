@@ -88,7 +88,7 @@ class BEHRTEmbedder(nn.Module):
     def forward(
         self,
         inputs: dict[str, torch.Tensor],
-    ) -> torch.Tensor:
+    ) -> dict[str, torch.Tensor]:
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
@@ -118,7 +118,7 @@ class BEHRTEmbedder(nn.Module):
         embeddings = word_embed + segment_embed + age_embed + posi_embeddings
         embeddings = self.LayerNorm(embeddings)
         embeddings = self.dropout(embeddings)
-        return embeddings
+        return {"src": embeddings, "src_key_padding_mask": inputs["is_padding"] == 1}
 
     def _init_position_embeddings(
         self,

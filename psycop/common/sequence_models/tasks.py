@@ -1,13 +1,16 @@
 from copy import copy
-from typing import Any
+from typing import Any, Literal
 
 import lightning.pytorch as pl
 import torch
 from torch import nn
 from torch.optim import Optimizer
+from torchmetrics import Metric
+from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 
 from psycop.common.data_structures.patient import Patient
 
+from .aggregators import AggregationModule
 from .embedders import BEHRTEmbedder
 
 BatchWithLabels = tuple[dict[str, torch.Tensor], torch.Tensor]
@@ -51,7 +54,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         masked_lm_labels: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
         embedded_patients = self.embedding_module(inputs)
-        encoded_patients = self.encoder_module(embedded_patients)
+        encoded_patients = self.encoder_module(**embedded_patients)
         logits = self.mlm_head(encoded_patients)
         masked_lm_loss = self.loss(
             logits.view(-1, logits.size(-1)),
@@ -128,6 +131,131 @@ class BEHRTForMaskedLM(pl.LightningModule):
         # Masking
         padded_sequence_ids, masked_labels = self.masking_fn(padded_sequence_ids)
         return padded_sequence_ids, masked_labels
+
+    def configure_optimizers(self) -> Optimizer:
+        optimizer = torch.optim.Adam(self.parameters(), **self.optimizer_kwargs)
+        return optimizer
+
+
+class EncoderForClassification(pl.LightningModule):
+    """
+    A BEHRT model for the classification task.
+    """
+
+    def __init__(
+        self,
+        embedding_module: BEHRTEmbedder,
+        encoder_module: nn.Module,
+        aggregation_module: AggregationModule,
+        optimizer_kwargs: dict[str, Any] = {"lr": 1e-4},  # noqa
+        num_classes: int = 1,
+    ):
+        super().__init__()
+        self.embedding_module = embedding_module
+        self.encoder_module = encoder_module
+        self.optimizer_kwargs = optimizer_kwargs
+        self.aggregation_module = aggregation_module
+
+        self.d_model: int = embedding_module.d_model
+
+        self.is_binary = num_classes == 1
+        self.num_classes = num_classes
+        if self.is_binary:
+            self.loss = nn.BCEWithLogitsLoss()
+        else:
+            self.loss = nn.CrossEntropyLoss()
+
+        self.classification_head = nn.Linear(self.d_model, num_classes)
+
+        self.metrics = self.create_metrics(num_classes)
+
+    @staticmethod
+    def create_metrics(num_classes: int) -> dict[str, Metric]:
+        is_binary = num_classes == 1
+        if is_binary:
+            return {"AUROC": BinaryAUROC()}
+        return {"AUROC (macro)": MulticlassAUROC(num_classes=num_classes)}
+
+    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore # noqa: ARG002
+        output = self.forward(batch[0], batch[1])
+        loss = output["loss"]
+        self.log_step("Training", output)
+        return loss
+
+    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
+        output = self.forward(inputs=batch[0], labels=batch[1])
+        self.log_step("Validation", output)
+        return output["loss"]
+
+    def log_step(
+        self,
+        mode: Literal["Validation", "Training"],
+        output: dict[str, torch.Tensor],
+    ) -> None:
+        """
+        Logs the metrics for the given mode.
+        """
+        for metric_name, metric in output.items():
+            self.log(f"{mode} {metric_name}", metric)
+
+    def forward(  # type: ignore
+        self,
+        inputs: dict[str, torch.Tensor],
+        labels: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        embedded_patients = self.embedding_module(inputs)
+        encoded_patients = self.encoder_module(**embedded_patients)
+
+        # Aggregate the sequence
+        is_padding = embedded_patients["src_key_padding_mask"]
+        aggregated_patients = self.aggregation_module(
+            encoded_patients,
+            attention_mask=~is_padding,
+        )
+
+        # Classification head
+        logits = self.classification_head(aggregated_patients)
+        loss = self.loss(logits, labels)
+
+        metrics = self.calculate_metrics(logits, labels)
+
+        return {"logits": logits, "loss": loss, **metrics}
+
+    def calculate_metrics(
+        self,
+        logits: torch.Tensor,
+        labels: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        """
+        Calculates the metrics for the task.
+        """
+        # Calculate the metrics
+        metrics = {}
+        if self.is_binary:
+            probs = torch.sigmoid(logits)
+        else:
+            probs = torch.softmax(logits, dim=1)
+
+        for metric_name, metric in self.metrics.items():
+            metrics[metric_name] = metric(probs, labels)
+
+        return metrics
+
+    def collate_fn(
+        self,
+        patients_with_labels: list[tuple[Patient, int]],
+    ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
+        """
+        Takes a list of patients and returns a dictionary of padded sequence ids.
+        """
+        patients, outcomes = list(zip(*patients_with_labels))  # type: ignore
+        patients: list[Patient] = list(patients)
+        padded_sequence_ids = self.embedding_module.collate_patients(patients)
+        outcome_tensor = torch.tensor(outcomes)
+        outcome_tensor = outcome_tensor.unsqueeze(
+            -1,
+        ).float()  # required for loss computation
+        return padded_sequence_ids, outcome_tensor
 
     def configure_optimizers(self) -> Optimizer:
         optimizer = torch.optim.Adam(self.parameters(), **self.optimizer_kwargs)

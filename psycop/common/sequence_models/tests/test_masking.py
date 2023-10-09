@@ -6,7 +6,7 @@ from torch import nn
 
 from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM
 
-from .test_main import patients, trainable_module  # noqa: F401 # type: ignore
+from .test_behrt import patients, trainable_module  # noqa: F401 # type: ignore
 
 
 @pytest.mark.parametrize(
