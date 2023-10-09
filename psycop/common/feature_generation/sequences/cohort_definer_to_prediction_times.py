@@ -1,8 +1,7 @@
 import datetime as dt
 import itertools
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
-from typing import NewType
+from typing import Sequence
 
 import polars as pl
 
@@ -10,7 +9,7 @@ from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
 
-PATIENT_ID = NewType("PATIENT_ID", str)
+PATIENT_ID = str | int
 
 
 class CohortToPredictionTimes:
@@ -40,8 +39,8 @@ class CohortToPredictionTimes:
         patient: Patient,
         lookbehind: dt.timedelta,
         lookahead: dt.timedelta,
-        outcome_timestamps: Mapping[PATIENT_ID, list[dt.datetime]],
-        prediction_timestamps: Mapping[PATIENT_ID, list[dt.datetime]],
+        outcome_timestamps: dict[PATIENT_ID, list[dt.datetime]],
+        prediction_timestamps: dict[PATIENT_ID, list[dt.datetime]],
     ) -> Sequence[PredictionTime]:
         pt_outcome_timestamps = outcome_timestamps.get(patient.patient_id)
 
