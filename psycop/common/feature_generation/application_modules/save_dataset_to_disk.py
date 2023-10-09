@@ -2,7 +2,7 @@
 import logging
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,7 @@ from psycop.common.feature_generation.application_modules.project_setup import (
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
-from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_ids
 from psycop.common.feature_generation.utils import write_df_to_file
 
 log = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ def filter_by_split_ids(
     return split_df
 
 
-def get_split_id_df(split_name: Literal["train", "val", "test"]) -> pd.DataFrame:
+def get_split_id_df(split_name: SplitName) -> pd.DataFrame:
     """Get a dataframe with the splits ids."""
     split_id_df = load_ids(
         split=split_name,
@@ -89,7 +89,7 @@ def split_and_save_dataset_to_disk(
     project_info: ProjectInfo,
     feature_set_dir: Path,
     split_ids: Optional[dict[str, pd.DataFrame]] = None,
-    split_names: Sequence[str] = ("train", "val", "test"),  # type: ignore
+    split_names: Sequence[str] = ("train", "val", "test"),
 ):
     """Split and save to disk.
 
@@ -101,20 +101,32 @@ def split_and_save_dataset_to_disk(
         split_names (tuple[str], optional): Names of split to create. Defaults to ("train", "val", "test").
     """
     for split_name in split_names:
+        match split_name:
+            case "train":
+                split_name = SplitName.TRAIN  # noqa: PLW2901
+            case "val":
+                split_name = SplitName.VALIDATION  # noqa: PLW2901
+            case "test":
+                split_name = SplitName.TEST  # noqa: PLW2901
+            case _:
+                raise ValueError(
+                    f"Splitname {split_name} is not allowed, try from ['train', 'test', 'val']",
+                )
+
         if not split_ids:
-            split_id_df = get_split_id_df(split_name=split_name)  # type: ignore
+            split_id_df = get_split_id_df(split_name=split_name)
         else:
-            split_id_df = split_ids[split_name]
+            split_id_df = split_ids[split_name.value]
 
         split_df = filter_by_split_ids(
             df_to_split=flattened_df,
             split_id_df=split_id_df,
-            split_name=split_name,
+            split_name=split_name.value,
             split_id_col=project_info.col_names.id,
         )
 
         save_split_to_disk(
             split_df=split_df,
-            split_name=split_name,
+            split_name=split_name.value,
             feature_set_dir=feature_set_dir,
         )
