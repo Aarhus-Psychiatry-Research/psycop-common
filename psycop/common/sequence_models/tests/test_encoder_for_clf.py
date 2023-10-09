@@ -1,10 +1,8 @@
-from datetime import datetime
-
 import pytest
 from torch import nn
 from torch.utils.data import DataLoader
 
-from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.data_structures import Patient
 from psycop.common.sequence_models import (
     AggregationModule,
     AveragePooler,
