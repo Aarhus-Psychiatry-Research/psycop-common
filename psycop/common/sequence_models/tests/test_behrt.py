@@ -18,8 +18,6 @@ from psycop.projects.sequence_models.train import (
     create_default_trainer,
 )
 
-from .conftest import patients, trainable_module  # noqa: F401 # type: ignore
-
 
 def test_behrt(patient_dataset: PatientDataset):
     d_model = 32
@@ -32,7 +30,7 @@ def test_behrt(patient_dataset: PatientDataset):
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
-    patients = patient_dataset.patients  # noqa: F811
+    patients = patient_dataset.patients
     emb.fit(patients, add_mask_token=True)
 
     config = Config()
@@ -85,7 +83,7 @@ def test_module_with_trainer(
         ),
     )
 
-    trainable_module = create_behrt_MLM_model(  # noqa: F811
+    trainable_module = create_behrt_MLM_model(
         patients=train_patients,
         config=config,
     )
