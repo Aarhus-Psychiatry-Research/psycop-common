@@ -18,7 +18,7 @@ mem = Memory(location=cache_dir, verbose=1)
 
 
 def cast_str_to_split_name(
-    split_str: Literal["train"] | Literal["test"] | Literal["val"],
+    split_str: Literal["train", "test", "val"],
 ) -> SplitName:
     match split_str:
         case "train":

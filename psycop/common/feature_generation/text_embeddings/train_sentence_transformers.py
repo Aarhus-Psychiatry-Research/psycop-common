@@ -1,11 +1,11 @@
 """Train sentence transformer model using SimCSE loss on our data."""
 from collections.abc import Sequence
 from time import time
-from typing import Literal
 
 from sentence_transformers import InputExample, SentenceTransformer, losses
 from torch.utils.data import DataLoader
 
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.loaders.raw.load_text import load_text_split
 from psycop.common.global_utils.paths import TEXT_EMBEDDING_MODELS_DIR
 
@@ -13,7 +13,7 @@ from psycop.common.global_utils.paths import TEXT_EMBEDDING_MODELS_DIR
 def get_train_text(
     n_rows: int | None,
     text_sfi_names: str | list[str],
-    train_splits: Sequence[Literal["train", "val"]],
+    train_splits: Sequence[SplitName],
 ) -> list[str]:
     text_df = load_text_split(
         text_sfi_names=text_sfi_names,
@@ -68,7 +68,7 @@ def train_simcse_model_from_text(
     batch_size: int,
     model_save_name: str,
     n_rows: int | None = None,
-    train_splits: Sequence[Literal["train", "val"]] = ["train"],
+    train_splits: Sequence[SplitName] = [SplitName.TRAIN],
     debug: bool = False,
 ) -> None:
     if debug:
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 128
     EPOCHS = 2
     N_ROWS = None
-    TRAIN_SPLITS: Sequence[Literal["train", "val"]] = ["train"]
+    TRAIN_SPLITS = [SplitName.TRAIN]
     MODEL = "miniLM"
     # Exp 1: continue pretraining paraphrase-multilingual-MiniLM-L12-v2
     model_options = {
