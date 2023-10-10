@@ -212,7 +212,9 @@ class BEHRTEmbedder(nn.Module):
         return filtered_events
 
     def get_mapped_diagnosis_codes(
-        self, diagnosis_codes: list[str], mapping: dict[str, str]
+        self,
+        diagnosis_codes: list[str],
+        mapping: dict[str, str],
     ) -> list[str]:
         return [mapping[d] for d in diagnosis_codes if d in mapping]
 
@@ -274,11 +276,12 @@ class BEHRTEmbedder(nn.Module):
         if map_diagnosis_codes:
             if self.diagnosis_mapping is None:
                 raise ValueError(
-                    "diagnosis_mapping must be provided if map_diagnosis_codes is True"
+                    "diagnosis_mapping must be provided if map_diagnosis_codes is True",
                 )
             else:
                 diagnosis_codes = self.get_mapped_diagnosis_codes(
-                    diagnosis_codes=diagnosis_codes, mapping=self.diagnosis_mapping
+                    diagnosis_codes=diagnosis_codes,
+                    mapping=self.diagnosis_mapping,
                 )
 
         # create dianosis2idx mapping

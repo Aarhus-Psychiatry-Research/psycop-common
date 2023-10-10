@@ -1,11 +1,12 @@
 """
-To replicate the BEHRT paper, we need to map over diagnoses from ICD10 codes to caliber categories. 
+To replicate the BEHRT paper, we need to map over diagnoses from ICD10 codes to caliber categories.
 This script contains the functions for extracting that mapping.
 """
 
 import os
-import polars as pl
+
 import pandas as pd
+import polars as pl
 
 
 def extract_icd10_to_caliber_categories_df(in_path: str, out_path: str):
@@ -23,7 +24,7 @@ def extract_icd10_to_caliber_categories_df(in_path: str, out_path: str):
             pl.read_csv(in_path + file)
             for file in os.listdir(in_path)
             if file.startswith("ICD")
-        ]
+        ],
     )
 
     # Keep only the disease and the icd10 code columns

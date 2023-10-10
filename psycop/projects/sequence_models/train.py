@@ -26,7 +26,6 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import Patient
-
 from psycop.common.feature_generation.sequences.mapping_diagnosis_codes import (
     load_and_format_icd10_to_caliber_mapping,
 )
@@ -91,8 +90,8 @@ class DiagnosisMappingConfig:
     map_diagnosis_codes: bool = True
     diagnosis_mapping: Optional[dict[str, str]] = field(
         default_factory=lambda: load_and_format_icd10_to_caliber_mapping(
-            "psycop/projects/sequence_models/caliber-icd10-mapping.csv"
-        )
+            "psycop/projects/sequence_models/caliber-icd10-mapping.csv",
+        ),
     )
 
 
@@ -102,7 +101,7 @@ class Config:
     model_config: ModelConfig = field(default_factory=ModelConfig)
     optimization_config: OptimizationConfig = field(default_factory=OptimizationConfig)
     diagnosis_mapping_config: DiagnosisMappingConfig = field(
-        default_factory=DiagnosisMappingConfig
+        default_factory=DiagnosisMappingConfig,
     )
 
     def to_dict(self) -> dict[str, Any]:
