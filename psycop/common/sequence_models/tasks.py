@@ -8,7 +8,7 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 
 from psycop.common.data_structures.patient import Patient
 
-from .BEHRT_embedding.embedders import BEHRTEmbedder
+from .embedders.BEHRT_embedders import BEHRTEmbedder
 
 BatchWithLabels = tuple[dict[str, torch.Tensor], torch.Tensor]
 

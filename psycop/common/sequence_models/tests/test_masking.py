@@ -4,7 +4,8 @@ import pytest
 import torch
 from torch import nn
 
-from psycop.common.sequence_models import BEHRTEmbedder, BEHRTForMaskedLM
+from psycop.common.sequence_models import BEHRTForMaskedLM
+from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.projects.sequence_models.train import Config
 
 

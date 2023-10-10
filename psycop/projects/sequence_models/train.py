@@ -33,7 +33,7 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.sequence_models import PatientDataset
-from psycop.common.sequence_models.BEHRT_embedding.embedders import BEHRTEmbedder
+from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 
 
