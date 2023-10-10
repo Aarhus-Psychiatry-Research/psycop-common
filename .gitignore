@@ -148,7 +148,7 @@ cython_debug/
 #.idea/
 
 #VSCode
-# .vscode/*
+.vscode/*
 
 # Testing
 pytest-coverage.txt

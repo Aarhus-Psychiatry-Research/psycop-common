@@ -493,7 +493,6 @@ def lint(c: Context, auto_fix: bool = False):
     test_for_venv(c)
     test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
-    static_type_checks(c)
 
 
 @task
@@ -501,6 +500,7 @@ def pr(c: Context, auto_fix: bool = True):
     """Run all checks and update the PR."""
     add_and_commit(c)
     lint(c, auto_fix=auto_fix)
+    static_type_checks(c)
     test(c)
     push_to_branch(c)
     update_pr(c)
