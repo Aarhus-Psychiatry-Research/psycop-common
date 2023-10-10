@@ -97,7 +97,9 @@ def main(
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
             project_info=project_info,
-            eligible_prediction_times=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(washout_on_prior_forced_admissions=False).prediction_times.to_pandas(),
+            eligible_prediction_times=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
+                washout_on_prior_forced_admissions=False,
+            ).prediction_times.to_pandas(),
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
         )
@@ -105,7 +107,9 @@ def main(
     else:
         flattened_df = create_flattened_dataset(
             feature_specs=feature_specs,  # type: ignore
-            prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(washout_on_prior_forced_admissions=False).prediction_times.to_pandas(),
+            prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
+                washout_on_prior_forced_admissions=False,
+            ).prediction_times.to_pandas(),
             drop_pred_times_with_insufficient_look_distance=False,
             project_info=project_info,
         )
