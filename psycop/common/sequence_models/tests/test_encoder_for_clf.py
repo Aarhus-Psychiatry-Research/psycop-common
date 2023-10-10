@@ -59,7 +59,7 @@ def test_encoder_for_clf(
         embedding_module=embedding_module,
         encoder_module=encoder_module,
         aggregation_module=aggregation_module,
-        num_classes=1,
+        num_classes=2,
         optimizer_kwargs={"lr": 1e-3},
         lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
     )
@@ -68,7 +68,7 @@ def test_encoder_for_clf(
         patient_dataset_with_labels,
         batch_size=32,
         shuffle=True,
-        collate_fn=clf.collate_fn,  # type: ignore
+        collate_fn=clf.collate_fn,
     )
 
     for input_ids, masked_labels in dataloader:
@@ -81,6 +81,12 @@ def test_pretrain_from_checkpoint(
     patient_dataset_with_labels: PatientDatasetWithLabels,
     aggregation_module: AggregationModule,
 ):
+    """
+    Check whether we can continue pre-training from an existing checkpoint.
+
+    If this test fails it mean that we have lost backwards compatibility with previous checkpoints and you will
+    need to recreate a new checkpoint.
+    """
     path = Path(__file__).parent / "test_checkpoints"
     checkpoint_path = path / "epoch=4-step=5.ckpt"
 
@@ -90,7 +96,7 @@ def test_pretrain_from_checkpoint(
         embedding_module=loaded_model.embedding_module,
         encoder_module=loaded_model.encoder_module,
         aggregation_module=aggregation_module,
-        num_classes=1,
+        num_classes=2,
         optimizer_kwargs={"lr": 1e-3},
         lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
     )
@@ -99,7 +105,7 @@ def test_pretrain_from_checkpoint(
         patient_dataset_with_labels,
         batch_size=32,
         shuffle=True,
-        collate_fn=clf.collate_fn,  # type: ignore
+        collate_fn=clf.collate_fn,
     )
 
     for input_ids, masked_labels in dataloader:
