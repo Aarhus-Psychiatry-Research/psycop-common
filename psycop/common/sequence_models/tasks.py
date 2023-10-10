@@ -262,7 +262,14 @@ class EncoderForClassification(pl.LightningModule):
 
         # Classification head
         logits = self.classification_head(aggregated_patients)
-        loss = self.loss(logits, labels)
+        if self.is_binary:
+            _logits = logits.squeeze(-1).float()
+        else:
+            # If not binary convert to one-hot encoding
+            _labels = torch.nn.functional.one_hot(
+                labels, num_classes=self.num_classes
+            ).float()
+        loss = self.loss(logits, _labels)  # type: ignore
 
         metrics = self.calculate_metrics(logits, labels)
 
@@ -298,10 +305,8 @@ class EncoderForClassification(pl.LightningModule):
         patients, outcomes = list(zip(*patients_with_labels))  # type: ignore
         patients: list[Patient] = list(patients)
         padded_sequence_ids = self.embedding_module.collate_patients(patients)
+
         outcome_tensor = torch.tensor(outcomes)
-        outcome_tensor = outcome_tensor.unsqueeze(
-            -1,
-        ).float()  # required for loss computation
         return padded_sequence_ids, outcome_tensor
 
     def configure_optimizers(

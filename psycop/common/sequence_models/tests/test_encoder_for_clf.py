@@ -77,6 +77,34 @@ def test_encoder_for_clf(
         loss.backward()  # ensure that the backward pass works
 
 
+def test_encoder_for_clf_for_multiclass(
+    patient_dataset_with_labels: PatientDatasetWithLabels,
+    embedding_module: BEHRTEmbedder,
+    encoder_module: nn.Module,
+    aggregation_module: AggregationModule,
+):
+    clf = EncoderForClassification(
+        embedding_module=embedding_module,
+        encoder_module=encoder_module,
+        aggregation_module=aggregation_module,
+        num_classes=4,  # more than 2 classes
+        optimizer_kwargs={"lr": 1e-3},
+        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
+    )
+
+    dataloader = DataLoader(
+        patient_dataset_with_labels,
+        batch_size=32,
+        shuffle=True,
+        collate_fn=clf.collate_fn,
+    )
+
+    for input_ids, masked_labels in dataloader:
+        output = clf(input_ids, masked_labels)
+        loss = output["loss"]
+        loss.backward()  # ensure that the backward pass works
+
+
 def test_pretrain_from_checkpoint(
     patient_dataset_with_labels: PatientDatasetWithLabels,
     aggregation_module: AggregationModule,
