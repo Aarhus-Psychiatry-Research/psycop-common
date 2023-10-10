@@ -34,9 +34,8 @@ cd psycop-common
 
 <activate virtual environment (conda, .venv etc.) here> 
 
-pip install invoke
-
-inv install
+# Install from the relevant requirements.txt files, e.g.
+pip install -r requirements.txt -r dev-requirements.txt -r gpu-requirements.txt
 ```
 
 <!--
