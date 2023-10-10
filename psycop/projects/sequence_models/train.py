@@ -33,7 +33,7 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.sequence_models import PatientDataset
-from psycop.common.sequence_models.embedders import BEHRTEmbedder
+from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 
 
@@ -45,6 +45,7 @@ class ModelConfig:
     dim_feedforward = 512
     dropout_prob: float = 0.1
     max_sequence_length: int = 512
+    map_diagnosis_codes: bool = True
 
 
 class TorchAccelerator(enum.Enum):
@@ -107,7 +108,11 @@ def create_behrt_MLM_model(patients: list[Patient], config: Config) -> BEHRTForM
         dropout_prob=config.model_config.dropout_prob,
         max_sequence_length=config.model_config.max_sequence_length,
     )
-    emb.fit(patients=patients, add_mask_token=True)
+    emb.fit(
+        patients=patients,
+        add_mask_token=True,
+        map_diagnosis_codes=config.model_config.map_diagnosis_codes,
+    )
 
     encoder_layer = nn.TransformerEncoderLayer(
         d_model=config.model_config.d_model,

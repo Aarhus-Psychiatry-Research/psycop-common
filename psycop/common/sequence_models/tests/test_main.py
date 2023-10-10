@@ -6,10 +6,10 @@ from torch.utils.data import DataLoader
 
 from psycop.common.data_structures import Patient
 from psycop.common.sequence_models import (
-    BEHRTEmbedder,
     BEHRTForMaskedLM,
     PatientDataset,
 )
+from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.projects.sequence_models.train import (
     Config,
     OptimizationConfig,
