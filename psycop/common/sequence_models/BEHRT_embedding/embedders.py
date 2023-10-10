@@ -5,6 +5,7 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+import json
 from typing import Any, Protocol
 
 import numpy as np
@@ -213,10 +214,9 @@ class BEHRTEmbedder(nn.Module):
         self,
         diagnosis_codes: list[str],
     ) -> list[str]:
-        mapping_df = pd.read_csv(
-            "psycop/projects/sequence_models/caliber-icd10-mapping.csv"
-        )
-        mapping = mapping_df.set_index("ICD10code")["Disease"].to_dict()
+        with open("psycop/common/sequence_models/diagnosis_code_mapping.json") as fp:
+            mapping = json.load(fp)
+
         return [mapping[d] for d in diagnosis_codes if d in mapping]
 
     def collate_patient(self, patient: Patient) -> dict[str, torch.Tensor]:

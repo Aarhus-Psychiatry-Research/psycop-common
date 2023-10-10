@@ -17,7 +17,7 @@ TODO:
 import enum
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
@@ -34,7 +34,7 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.sequence_models import PatientDataset
-from psycop.common.sequence_models.embedders import BEHRTEmbedder
+from psycop.common.sequence_models.BEHRT_embedding.embedders import BEHRTEmbedder
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 
 
@@ -46,6 +46,7 @@ class ModelConfig:
     dim_feedforward = 512
     dropout_prob: float = 0.1
     max_sequence_length: int = 512
+    map_diagnosis_codes: bool = True
 
 
 class TorchAccelerator(enum.Enum):
@@ -85,18 +86,10 @@ class OptimizationConfig:
 
 
 @dataclass
-class DiagnosisMappingConfig:
-    map_diagnosis_codes: bool = True
-
-
-@dataclass
 class Config:
     training_config: TrainingConfig = field(default_factory=TrainingConfig)
     model_config: ModelConfig = field(default_factory=ModelConfig)
     optimization_config: OptimizationConfig = field(default_factory=OptimizationConfig)
-    diagnosis_mapping_config: DiagnosisMappingConfig = field(
-        default_factory=DiagnosisMappingConfig,
-    )
 
     def to_dict(self) -> dict[str, Any]:
         """return a flattened dictionary of the config"""
@@ -104,7 +97,6 @@ class Config:
         d = self.training_config.__dict__
         d.update(self.model_config.__dict__)
         d.update(self.optimization_config.__dict__)
-        d.update(self.diagnosis_mapping_config.__dict__)
         return d
 
 
@@ -120,7 +112,7 @@ def create_behrt_MLM_model(patients: list[Patient], config: Config) -> BEHRTForM
     emb.fit(
         patients=patients,
         add_mask_token=True,
-        map_diagnosis_codes=config.diagnosis_mapping_config.map_diagnosis_codes,
+        map_diagnosis_codes=config.model_config.map_diagnosis_codes,
     )
 
     encoder_layer = nn.TransformerEncoderLayer(
