@@ -2,10 +2,10 @@
 Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
+import json
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-import json
 from typing import Any, Protocol
 
 import numpy as np
@@ -276,7 +276,7 @@ class BEHRTEmbedder(nn.Module):
         # map diagnosis codes
         if map_diagnosis_codes:
             diagnosis_codes = self.get_mapped_diagnosis_codes(
-                diagnosis_codes=diagnosis_codes
+                diagnosis_codes=diagnosis_codes,
             )
 
         # create dianosis2idx mapping

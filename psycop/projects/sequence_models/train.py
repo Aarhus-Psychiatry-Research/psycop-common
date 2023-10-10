@@ -27,7 +27,6 @@ from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
-
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
