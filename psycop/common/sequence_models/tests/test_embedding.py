@@ -54,19 +54,25 @@ def test_diagnosis_mapping(
             timestamp=dt.datetime(2021, 1, 1),
             value="A00",
             source_type="diagnosis",
-            source_subtype="test_name",
+            source_subtype="A",
         ),
         TemporalEvent(
             timestamp=dt.datetime(2021, 1, 3),
             value="A30",
             source_type="diagnosis",
-            source_subtype="test_name",
+            source_subtype="A",
+        ),
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="A30",
+            source_type="diagnosis",
+            source_subtype="B",
         ),
         TemporalEvent(
             timestamp=dt.datetime(2021, 1, 3),
             value="I65",
             source_type="diagnosis",
-            source_subtype="test_name",
+            source_subtype="A",
         ),
     ]
 
