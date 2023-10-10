@@ -37,9 +37,9 @@ def test_embeddings(patients: list, embedding_module: Embedder):  # noqa: F811
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_diagnosis_mapping(
-    patients: list,
+    patients: list,  # noqa: F811
     embedding_module: BEHRTEmbedder,
-):  # noqa: F811
+):
     """
     Test mapping of diagnosis from ICD10 to caliber
     """
