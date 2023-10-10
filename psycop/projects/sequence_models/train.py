@@ -27,9 +27,7 @@ from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
-from psycop.common.feature_generation.sequences.mapping_diagnosis_codes import (
-    load_and_format_icd10_to_caliber_mapping,
-)
+
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
@@ -89,11 +87,6 @@ class OptimizationConfig:
 @dataclass
 class DiagnosisMappingConfig:
     map_diagnosis_codes: bool = True
-    diagnosis_mapping: Optional[dict[str, str]] = field(
-        default_factory=lambda: load_and_format_icd10_to_caliber_mapping(
-            "psycop/projects/sequence_models/caliber-icd10-mapping.csv",
-        ),
-    )
 
 
 @dataclass
@@ -123,7 +116,6 @@ def create_behrt_MLM_model(patients: list[Patient], config: Config) -> BEHRTForM
         d_model=config.model_config.d_model,
         dropout_prob=config.model_config.dropout_prob,
         max_sequence_length=config.model_config.max_sequence_length,
-        diagnosis_mapping=config.diagnosis_mapping_config.diagnosis_mapping,
     )
     emb.fit(
         patients=patients,

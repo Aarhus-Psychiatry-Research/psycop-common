@@ -51,12 +51,10 @@ class BEHRTEmbedder(nn.Module):
         d_model: int,
         dropout_prob: float,
         max_sequence_length: int,
-        diagnosis_mapping: Optional[dict[str, str]] = None,
     ):
         super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
-        self.diagnosis_mapping = diagnosis_mapping
 
         self.is_fitted: bool = False
 
@@ -214,8 +212,11 @@ class BEHRTEmbedder(nn.Module):
     def get_mapped_diagnosis_codes(
         self,
         diagnosis_codes: list[str],
-        mapping: dict[str, str],
     ) -> list[str]:
+        mapping_df = pd.read_csv(
+            "psycop/projects/sequence_models/caliber-icd10-mapping.csv"
+        )
+        mapping = mapping_df.set_index("ICD10code")["Disease"].to_dict()
         return [mapping[d] for d in diagnosis_codes if d in mapping]
 
     def collate_patient(self, patient: Patient) -> dict[str, torch.Tensor]:
@@ -265,7 +266,7 @@ class BEHRTEmbedder(nn.Module):
         self,
         patients: list,
         add_mask_token: bool = True,
-        map_diagnosis_codes: bool = False,
+        map_diagnosis_codes: bool = True,
     ):
         patient_events: list[tuple[Patient, TemporalEvent]] = [
             (p, e) for p in patients for e in self.filter_events(p.temporal_events)
@@ -274,13 +275,8 @@ class BEHRTEmbedder(nn.Module):
 
         # map diagnosis codes
         if map_diagnosis_codes:
-            if self.diagnosis_mapping is None:
-                raise ValueError(
-                    "diagnosis_mapping must be provided if map_diagnosis_codes is True",
-                )
             diagnosis_codes = self.get_mapped_diagnosis_codes(
-                diagnosis_codes=diagnosis_codes,
-                mapping=self.diagnosis_mapping,
+                diagnosis_codes=diagnosis_codes
             )
 
         # create dianosis2idx mapping
