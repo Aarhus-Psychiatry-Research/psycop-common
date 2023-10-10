@@ -192,8 +192,8 @@ class BEHRTEmbedder(nn.Module):
         self,
         diagnosis_codes: list[str],
     ) -> list[str]:
-        with open(
-            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json"
+        with open(  # noqa: PTH123
+            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
         ) as fp:
             mapping = json.load(fp)
 

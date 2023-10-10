@@ -1,6 +1,7 @@
 from typing import Any, Protocol
 
 import torch
+
 from psycop.common.data_structures import Patient
 
 
