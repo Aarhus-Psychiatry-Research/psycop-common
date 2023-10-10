@@ -156,19 +156,10 @@ if __name__ == "__main__":
     )
 
     main(
-        add_text_features=False,
-        min_set_for_debug=False,
-        limited_feature_set=True,
-        lookbehind_180d_mean=False,
-        feature_set_name="no_washout_feature_sets/limited_feature_set_no_washout",
-        generate_in_chunks=False,
-    )
-
-    main(
         add_text_features=True,
         min_set_for_debug=False,
         limited_feature_set=False,
         lookbehind_180d_mean=False,
-        feature_set_name="no_washout_feature_sets/full_feature_set_with_sentence_transformers_and_tfidf_750_no_washout",
+        feature_set_name="full_feature_set_with_sentence_transformers_and_tfidf_750",
         generate_in_chunks=True,
     )

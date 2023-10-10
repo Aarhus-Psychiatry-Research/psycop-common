@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
@@ -10,7 +11,13 @@ if TYPE_CHECKING:
     import pandas as pd
 
 
-def load_ids(split: str, n_rows: int | None = None) -> pd.DataFrame:
+class SplitName(Enum):
+    TRAIN = "train"
+    VALIDATION = "val"
+    TEST = "test"
+
+
+def load_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFrame:
     """Loads ids for a given split.
 
     Args:
@@ -20,7 +27,7 @@ def load_ids(split: str, n_rows: int | None = None) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Only dw_ek_borger column with ids
     """
-    view = f"[psycop_{split}_ids]"
+    view = f"[psycop_{split.value}_ids]"
 
     sql = f"SELECT * FROM [fct].{view}"
 

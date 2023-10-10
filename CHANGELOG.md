@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.114.0 (2023-10-09)
+
+### Feature
+
+* Add procedure codes ([`002d488`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/002d488411902bd3f88b17831dca2c8826b445ed))
+
 ## v0.113.0 (2023-10-06)
 
 ### Feature

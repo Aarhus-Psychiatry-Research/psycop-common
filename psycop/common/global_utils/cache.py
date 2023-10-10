@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from joblib import Memory
-
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, PSYCOP_PKG_ROOT
 
 # If on Windows

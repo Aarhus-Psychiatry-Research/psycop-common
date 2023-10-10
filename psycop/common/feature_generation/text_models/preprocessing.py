@@ -1,10 +1,11 @@
 import re
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Optional
 
 import pandas as pd
 
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.loaders.raw.load_text import (
     get_valid_text_sfi_names,
     load_text_split,
@@ -51,7 +52,7 @@ def text_preprocessing(
 
 
 def text_preprocessing_pipeline(
-    split_names: Sequence[Literal["train", "val"]] = ["train", "val"],
+    split_names: Sequence[SplitName] = [SplitName.TEST, SplitName.VALIDATION],
     n_rows: Optional[int] = None,
     save_path: str = "E:/shared_resources/preprocessed_text",
 ) -> str:
