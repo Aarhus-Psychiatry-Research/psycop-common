@@ -97,5 +97,6 @@ class PatientLoader:
 
 if __name__ == "__main__":
     patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()], split=SplitName.TRAIN
+        event_loaders=[DiagnosisLoader()],
+        split=SplitName.TRAIN,
     )

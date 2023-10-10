@@ -96,13 +96,16 @@ class CohortToPredictionTimes:
 
 if __name__ == "__main__":
     patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()], split=SplitName.TRAIN
+        event_loaders=[DiagnosisLoader()],
+        split=SplitName.TRAIN,
     )
 
     prediction_times = CohortToPredictionTimes(
-        cohort_definer=T2DCohortDefiner(), patient_objects=patients
+        cohort_definer=T2DCohortDefiner(),
+        patient_objects=patients,
     ).create_prediction_times(
-        lookbehind=dt.timedelta(days=365), lookahead=dt.timedelta(days=365)
+        lookbehind=dt.timedelta(days=365),
+        lookahead=dt.timedelta(days=365),
     )
 
     pass
