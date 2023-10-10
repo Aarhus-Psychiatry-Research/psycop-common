@@ -214,7 +214,9 @@ class BEHRTEmbedder(nn.Module):
         self,
         diagnosis_codes: list[str],
     ) -> list[str]:
-        with open("psycop/common/sequence_models/diagnosis_code_mapping.json") as fp:
+        with open(
+            "psycop/common/sequence_models/BEHRT_embedding/diagnosis_code_mapping.json"
+        ) as fp:
             mapping = json.load(fp)
 
         return [mapping[d] for d in diagnosis_codes if d in mapping]
