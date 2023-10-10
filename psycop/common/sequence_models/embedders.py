@@ -5,7 +5,7 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Protocol
+from typing import Any, Optional, Protocol
 
 import numpy as np
 import torch
@@ -51,10 +51,12 @@ class BEHRTEmbedder(nn.Module):
         d_model: int,
         dropout_prob: float,
         max_sequence_length: int,
+        diagnosis_mapping: Optional[dict[str, str]] = None,
     ):
         super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
+        self.diagnosis_mapping = diagnosis_mapping
 
         self.is_fitted: bool = False
 
@@ -209,6 +211,11 @@ class BEHRTEmbedder(nn.Module):
                 filtered_events.append(event)
         return filtered_events
 
+    def get_mapped_diagnosis_codes(
+        self, diagnosis_codes: list[str], mapping: dict[str, str]
+    ) -> list[str]:
+        return [mapping[d] for d in diagnosis_codes if d in mapping]
+
     def collate_patient(self, patient: Patient) -> dict[str, torch.Tensor]:
         events = patient.temporal_events
         events = self.filter_events(events)
@@ -252,11 +259,27 @@ class BEHRTEmbedder(nn.Module):
             "is_padding": torch.tensor(0),
         }
 
-    def fit(self, patients: list, add_mask_token: bool = True):
+    def fit(
+        self,
+        patients: list,
+        add_mask_token: bool = True,
+        map_diagnosis_codes: bool = False,
+    ):
         patient_events: list[tuple[Patient, TemporalEvent]] = [
             (p, e) for p in patients for e in self.filter_events(p.temporal_events)
         ]
         diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
+
+        # map diagnosis codes
+        if map_diagnosis_codes:
+            if self.diagnosis_mapping is None:
+                raise ValueError(
+                    "diagnosis_mapping must be provided if map_diagnosis_codes is True"
+                )
+            else:
+                diagnosis_codes = self.get_mapped_diagnosis_codes(
+                    diagnosis_codes=diagnosis_codes, mapping=self.diagnosis_mapping
+                )
 
         # create dianosis2idx mapping
         diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}

@@ -17,7 +17,7 @@ TODO:
 import enum
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
@@ -26,6 +26,10 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import Patient
+
+from psycop.common.feature_generation.sequences.mapping_diagnosis_codes import (
+    load_and_format_icd10_to_caliber_mapping,
+)
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
@@ -83,10 +87,23 @@ class OptimizationConfig:
 
 
 @dataclass
+class DiagnosisMappingConfig:
+    map_diagnosis_codes: bool = True
+    diagnosis_mapping: Optional[dict[str, str]] = field(
+        default_factory=lambda: load_and_format_icd10_to_caliber_mapping(
+            "psycop/projects/sequence_models/caliber-icd10-mapping.csv"
+        )
+    )
+
+
+@dataclass
 class Config:
     training_config: TrainingConfig = field(default_factory=TrainingConfig)
     model_config: ModelConfig = field(default_factory=ModelConfig)
     optimization_config: OptimizationConfig = field(default_factory=OptimizationConfig)
+    diagnosis_mapping_config: DiagnosisMappingConfig = field(
+        default_factory=DiagnosisMappingConfig
+    )
 
     def to_dict(self) -> dict[str, Any]:
         """return a flattened dictionary of the config"""
@@ -94,6 +111,7 @@ class Config:
         d = self.training_config.__dict__
         d.update(self.model_config.__dict__)
         d.update(self.optimization_config.__dict__)
+        d.update(self.diagnosis_mapping_config.__dict__)
         return d
 
 
@@ -105,8 +123,13 @@ def create_behrt_MLM_model(patients: list[Patient], config: Config) -> BEHRTForM
         d_model=config.model_config.d_model,
         dropout_prob=config.model_config.dropout_prob,
         max_sequence_length=config.model_config.max_sequence_length,
+        diagnosis_mapping=config.diagnosis_mapping_config.diagnosis_mapping,
     )
-    emb.fit(patients=patients, add_mask_token=True)
+    emb.fit(
+        patients=patients,
+        add_mask_token=True,
+        map_diagnosis_codes=config.diagnosis_mapping_config.map_diagnosis_codes,
+    )
 
     encoder_layer = nn.TransformerEncoderLayer(
         d_model=config.model_config.d_model,

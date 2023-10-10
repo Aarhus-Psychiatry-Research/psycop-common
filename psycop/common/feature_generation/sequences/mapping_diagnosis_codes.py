@@ -1,10 +1,11 @@
 """
 To replicate the BEHRT paper, we need to map over diagnoses from ICD10 codes to caliber categories. 
-This script contains the functions for extracting that mapping and for applying it to the diagnoses.
+This script contains the functions for extracting that mapping.
 """
 
 import os
 import polars as pl
+import pandas as pd
 
 
 def extract_icd10_to_caliber_categories_df(in_path: str, out_path: str):
@@ -43,29 +44,13 @@ def extract_icd10_to_caliber_categories_df(in_path: str, out_path: str):
     df.write_csv(out_path + "caliber-icd10-mapping.csv")
 
 
-def map_icd10_to_caliber_categories(
-    df: pl.LazyFrame,
-    mapping_df: pl.DataFrame,
-) -> pl.LazyFrame:
+def load_and_format_icd10_to_caliber_mapping(in_path: str) -> dict[str, str]:
     """
-    Takes a dataframe with ICD10 codes (with columns "dw_ek_borger",
-    "timestamp", "value", "type", "source") and a dataframe with the
-    mapping between ICD10 codes and caliber categories. Returns a
-    dataframe with caliber categories instead of ICD10 codes (for A diagnoses).
+    Takes path to the .csv with the mapping between ICD10 codes and caliber categories and returns a dictionary with the mapping.
+    This function is specific for mapping between ICD10 codes and caliber categories and can be swapped out for a different mapping.
     Args:
-        df (pl.LazyFrame): A dataframe with ICD10 codes in the format from DiagnosisLoader. Must contain the columns "dw_ek_borger", "timestamp", "value", "type", "source".
-        mapping_df (pl.DataFrame): A dataframe with the mapping between ICD10 codes and caliber categories.
+        in_path (str): Path to .csv file with the mapping between ICD10 codes and caliber categories.
     """
-    # Only keep rows with where column "type" == "A"
-    filtered_df = df.filter(pl.col("type") == "A").filter(
-        pl.col("value").is_in(mapping_df["value"])
-    )
-
-    # Replace value with caliber category
-    caliber_df = (
-        filtered_df.join(mapping_df.lazy(), on="value", how="left")
-        .with_columns(pl.col("Disease").alias("value"))
-        .select("dw_ek_borger", "timestamp", "value", "type", "source")
-    )
-
-    return caliber_df
+    mapping_df = pd.read_csv(in_path)
+    mapping = mapping_df.set_index("ICD10code")["Disease"].to_dict()
+    return mapping
