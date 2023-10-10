@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.115.0 (2023-10-10)
+
+### Feature
+
+* Add tasks.json ([`84546d1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/84546d1d1b1f668f797728db435c716c13279af4))
+* Add vscode dev task ([`8a349b8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8a349b8ce7b4b1978897ab0245ae34d99e0dd1e7))
+* Create diagnosis mapping (icd10->caliber) ([`e27af96`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e27af96a0f8422b858e514c1a423daf529e04b59))
+
+### Fix
+
+* Delete unused file ([`1e4cab7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1e4cab7fea33bc455b4b4c1cd7289d14f03e90b1))
+
 ## v0.114.0 (2023-10-09)
 
 ### Feature
