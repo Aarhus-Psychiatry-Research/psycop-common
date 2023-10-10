@@ -11,12 +11,16 @@ if TYPE_CHECKING:
     import datetime as dt
     from collections.abc import Sequence
 
+    from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
+        PATIENT_ID,
+    )
+
 
 @dataclass
 class Patient:
     """All task-agnostic data for a patient."""
 
-    patient_id: str | int
+    patient_id: PATIENT_ID
     date_of_birth: dt.datetime
     _temporal_events: list[TemporalEvent] = field(default_factory=list)
     _static_features: list[StaticFeature] = field(default_factory=list)

@@ -29,6 +29,7 @@ from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.sequences.mapping_diagnosis_codes import (
     load_and_format_icd10_to_caliber_mapping,
 )
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
@@ -193,11 +194,11 @@ if __name__ == "__main__":
 
     train_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
-        split="train",
+        split=SplitName.TRAIN,
     )
     val_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
-        split="val",
+        split=SplitName.VALIDATION,
     )
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)

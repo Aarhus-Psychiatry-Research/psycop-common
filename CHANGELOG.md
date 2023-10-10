@@ -2,6 +2,23 @@
 
 <!--next-version-placeholder-->
 
+## v0.114.0 (2023-10-09)
+
+### Feature
+
+* Add procedure codes ([`002d488`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/002d488411902bd3f88b17831dca2c8826b445ed))
+
+## v0.113.0 (2023-10-06)
+
+### Feature
+
+* Define cohort ([`7434bac`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7434bacf131f387c422d1b2748acd82ac209a00f))
+
+### Fix
+
+* Adapt ([`d0977ba`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d0977baac53f2186b813b679d99c73f22637a568))
+* Minor changes ([`9969d99`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9969d99432f6da55f18f80c0bd916d06e304ce2d))
+
 ## v0.112.0 (2023-10-03)
 
 ### Feature
