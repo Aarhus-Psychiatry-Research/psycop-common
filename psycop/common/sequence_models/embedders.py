@@ -278,11 +278,10 @@ class BEHRTEmbedder(nn.Module):
                 raise ValueError(
                     "diagnosis_mapping must be provided if map_diagnosis_codes is True",
                 )
-            else:
-                diagnosis_codes = self.get_mapped_diagnosis_codes(
-                    diagnosis_codes=diagnosis_codes,
-                    mapping=self.diagnosis_mapping,
-                )
+            diagnosis_codes = self.get_mapped_diagnosis_codes(
+                diagnosis_codes=diagnosis_codes,
+                mapping=self.diagnosis_mapping,
+            )
 
         # create dianosis2idx mapping
         diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
