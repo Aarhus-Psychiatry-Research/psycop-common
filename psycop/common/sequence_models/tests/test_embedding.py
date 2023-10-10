@@ -1,10 +1,8 @@
 import pytest
 import torch
 
-from psycop.common.sequence_models.embedders.BEHRT_embedders import (
-    BEHRTEmbedder,
-    Embedder,
-)
+from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
+from psycop.common.sequence_models.embedders.interface import Embedder
 
 from .conftest import patients  # noqa: F401 # type: ignore
 

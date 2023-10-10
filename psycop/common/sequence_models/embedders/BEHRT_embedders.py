@@ -6,7 +6,6 @@ import json
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Protocol
 
 import numpy as np
 import torch
@@ -23,27 +22,6 @@ class BEHRTVocab:
     is_padding: dict[str, int] = field(default_factory=lambda: {"PAD": 1})
     segment: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
     position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
-
-
-class Embedder(Protocol):
-    """
-    Interface for embedding modules
-    """
-
-    def __init__(self, *args: Any) -> None:
-        ...
-
-    def __call__(self, *args: Any) -> torch.Tensor:
-        ...
-
-    def forward(self, *args: Any) -> torch.Tensor:
-        ...
-
-    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
-        ...
-
-    def fit(self, patients: list[Patient], *args: Any) -> None:
-        ...
 
 
 class BEHRTEmbedder(nn.Module):
@@ -215,7 +193,7 @@ class BEHRTEmbedder(nn.Module):
         diagnosis_codes: list[str],
     ) -> list[str]:
         with open(
-            "psycop/common/sequence_models/BEHRT_embedding/diagnosis_code_mapping.json"
+            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json"
         ) as fp:
             mapping = json.load(fp)
 
