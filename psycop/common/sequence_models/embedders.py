@@ -5,7 +5,7 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 import numpy as np
 import torch
