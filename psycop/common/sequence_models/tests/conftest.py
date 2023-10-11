@@ -15,13 +15,13 @@ def patients() -> list[Patient]:
         timestamp=datetime(2021, 1, 1),
         value="d1",
         source_type="diagnosis",
-        source_subtype="",
+        source_subtype="A",
     )
     e2 = TemporalEvent(
         timestamp=datetime(2021, 1, 3),
         value="d2",
         source_type="diagnosis",
-        source_subtype="",
+        source_subtype="A",
     )
 
     patient1 = Patient(
