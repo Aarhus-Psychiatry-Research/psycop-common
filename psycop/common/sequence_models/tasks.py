@@ -267,7 +267,8 @@ class EncoderForClassification(pl.LightningModule):
         else:
             # If not binary convert to one-hot encoding
             _labels = torch.nn.functional.one_hot(
-                labels, num_classes=self.num_classes
+                labels,
+                num_classes=self.num_classes,
             ).float()
         loss = self.loss(logits, _labels)  # type: ignore
 
