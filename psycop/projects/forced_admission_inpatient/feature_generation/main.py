@@ -28,9 +28,6 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    load_move_into_rm_for_exclusion,
-)
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.forced_admission_inpatient.cohort.forced_admissions_inpatient_cohort_definition import (
     ForcedAdmissionsInpatientCohortDefiner,
@@ -100,21 +97,21 @@ def main(
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
             project_info=project_info,
-            eligible_prediction_times=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
+            eligible_prediction_times=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
+                washout_on_prior_forced_admissions=False,
+            ).prediction_times.to_pandas(),
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
-            quarantine_df=load_move_into_rm_for_exclusion(),
-            quarantine_days=365,
         )
 
     else:
         flattened_df = create_flattened_dataset(
             feature_specs=feature_specs,  # type: ignore
-            prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
+            prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
+                washout_on_prior_forced_admissions=False,
+            ).prediction_times.to_pandas(),
             drop_pred_times_with_insufficient_look_distance=False,
             project_info=project_info,
-            quarantine_df=load_move_into_rm_for_exclusion(),
-            quarantine_days=365,
         )
 
     split_and_save_dataset_to_disk(
@@ -160,15 +157,6 @@ if __name__ == "__main__":
 
     init_wandb(
         project_info=project_info,
-    )
-
-    main(
-        add_text_features=False,
-        min_set_for_debug=False,
-        limited_feature_set=False,
-        lookbehind_180d_mean=True,
-        feature_set_name="feature_set_lookbehind_180d_mean_no_text",
-        generate_in_chunks=False,
     )
 
     main(
