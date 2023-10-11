@@ -83,7 +83,7 @@ class RunGroup:
         )
 
 
-SplitNames = Literal["train", "test", "val"]
+SplitNames = Literal["train", "test", "val", "val_no_washout", "train_no_washout"]
 
 
 @dataclass

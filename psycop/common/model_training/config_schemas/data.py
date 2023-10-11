@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 
@@ -34,7 +34,7 @@ class DataSchema(PSYCOPBaseModel):
         "train",
         "val",
     ]  # splits to use for training
-    splits_for_evaluation: Optional[Sequence[Literal["val", "test"]]] = None
+    splits_for_evaluation: Optional[Sequence[str]] = None
     # splits to use for evaluation. If None, crossvalidation is done on splits_for_training split(s).
 
     # Feature specs

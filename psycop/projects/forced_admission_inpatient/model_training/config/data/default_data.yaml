@@ -1,18 +1,18 @@
 # @package _global_
 data:
   # General config
-  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\full_feature_set_without_text\
+  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\no_washout_feature_sets\full_feature_set_with_sentence_transformers_and_tfidf_750_no_washout
   suffix: parquet
-  splits_for_training: ["train"]
+  splits_for_training: ["train", "val"]
   splits_for_evaluation: null
 
   # Feature specs
   pred_prefix: pred_
-  outc_prefix: outc_bool_within_182_days
+  outc_prefix: 'outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous'
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: timestamp_outcome_182_days
+    outcome_timestamp: 'timestamp_outcome__within_180_days_earliest_fallback_nan_dichotomous'
     is_female: pred_sex_female
     id: dw_ek_borger
     age: pred_age_in_years
