@@ -184,7 +184,7 @@ class BEHRTEmbedder(nn.Module):
     def filter_events(self, events: Sequence[TemporalEvent]) -> list[TemporalEvent]:
         filtered_events = []
         for event in events:
-            if event.source_type == "diagnosis":
+            if event.source_type == "diagnosis" and event.source_subtype == "A":
                 filtered_events.append(event)
         return filtered_events
 

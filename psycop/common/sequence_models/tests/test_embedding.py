@@ -49,24 +49,41 @@ def test_diagnosis_mapping(
         date_of_birth=dt.datetime(year=1990, month=1, day=1),
     )
 
+    # Add temporal events to check that diagnosis codes are mapped correctly
     temporal_events = [
         TemporalEvent(
             timestamp=dt.datetime(2021, 1, 1),
             value="A00",
             source_type="diagnosis",
-            source_subtype="test_name",
+            source_subtype="A",
         ),
+        # Check that two different ICD10 codes map to the same caliber code (A00, A30 -> Bacterial Diseases (excl TB))
         TemporalEvent(
             timestamp=dt.datetime(2021, 1, 3),
             value="A30",
             source_type="diagnosis",
-            source_subtype="test_name",
+            source_subtype="A",
         ),
+        # Check that diagnoses with different subtype than A are excluded
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="A30",
+            source_type="diagnosis",
+            source_subtype="B",
+        ),
+        # Check that ICD10 code maps to different caliber code than those above (I65 -> Transient ischaemic attack)
         TemporalEvent(
             timestamp=dt.datetime(2021, 1, 3),
             value="I65",
             source_type="diagnosis",
-            source_subtype="test_name",
+            source_subtype="A",
+        ),
+        # Check that diagnosis codes that are not in the mapping are excluded
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="I99999",
+            source_type="diagnosis",
+            source_subtype="A",
         ),
     ]
 
