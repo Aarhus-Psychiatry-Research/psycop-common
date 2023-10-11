@@ -1,0 +1,50 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "PR",
+            "type": "shell",
+            "command": "gh pr create -w",
+            "group": "test",
+            "dependsOn": [
+                "Lint",
+                "Test",
+                "Static type check"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "group": "pr"
+            }
+        },
+        {
+            "label": "Lint",
+            "type": "shell",
+            "command": "inv lint",
+            "presentation": {
+                "reveal": "always",
+                "group": "pr"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "command": "inv test",
+            "presentation": {
+                "reveal": "always",
+                "group": "pr"
+            },
+        },
+        {
+            "label": "Static type check",
+            "type": "shell",
+            "command": "inv static-type-checks",
+            "presentation": {
+                "reveal": "always",
+                "group": "pr"
+            }
+        }
+    ]
+}

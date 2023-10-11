@@ -287,27 +287,6 @@ def static_type_checks(c: Context):
         )
 
 
-@task
-def install(
-    c: Context,
-    pip_args: str = "",
-    msg: bool = True,
-    venv_path: Optional[str] = None,
-):
-    """Install project dependencies in venv path"""
-    if msg:
-        echo_header(f"{msg_type.DOING} Installing project")
-
-    install_cmd = f"pip install -r dev-requirements.txt {pip_args}"
-
-    if venv_path is not None and NOT_WINDOWS:
-        with c.prefix(f"source {venv_path}/bin/activate"):
-            c.run(install_cmd)
-            return
-
-    c.run(install_cmd)
-
-
 def get_python_path(preferred_version: str) -> Optional[str]:
     """Get path to python executable."""
     preferred_version_path = shutil.which(f"python{preferred_version}")
@@ -339,19 +318,9 @@ def setup(c: Context, python_path: Optional[str] = None):
             exit(1)
     venv_name = setup_venv(c, python_path=python_path)
 
-    install(c, pip_args="--upgrade", msg=False, venv_path=venv_name)
-
-    if venv_name is not None:
-        print(
-            f"{msg_type.DOING} Activate your virtual environment by running: \n\n\t\t source {venv_name}/bin/activate \n",
-        )
-
-
-@task
-def update(c: Context):
-    """Update dependencies."""
-    echo_header(f"{msg_type.DOING} Updating project")
-    install(c, pip_args="--upgrade", msg=False)
+    print(
+        f"{msg_type.DOING} Activate your virtual environment by running: \n\n\t\t source {venv_name}/bin/activate \n",
+    )
 
 
 @task(iterable="pytest_args")
@@ -493,7 +462,6 @@ def lint(c: Context, auto_fix: bool = False):
     test_for_venv(c)
     test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
-    static_type_checks(c)
 
 
 @task
@@ -501,6 +469,7 @@ def pr(c: Context, auto_fix: bool = True):
     """Run all checks and update the PR."""
     add_and_commit(c)
     lint(c, auto_fix=auto_fix)
+    static_type_checks(c)
     test(c)
     push_to_branch(c)
     update_pr(c)

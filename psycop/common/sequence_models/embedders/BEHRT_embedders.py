@@ -2,10 +2,10 @@
 Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
+import json
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Protocol
 
 import numpy as np
 import torch
@@ -14,20 +14,7 @@ from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import Patient, TemporalEvent
 
-
-@dataclass(frozen=True)
-class EmbeddedSequence:
-    """
-    A dataclass containing an embedded sequence and a mask indicating which tokens are padding tokens
-
-    Attributes:
-        src: A tensor containing the embedded token sequence. Shape (batch, sequence length, d_model)
-        src_key_padding_mask: A tensor containing boolean values indicating which tokens are padding tokens
-            (True) and which are not (False). Shape: (batch, sequence length)
-    """
-
-    src: torch.Tensor
-    src_key_padding_mask: torch.Tensor
+from .interface import EmbeddedSequence
 
 
 @dataclass(frozen=True)
@@ -37,27 +24,6 @@ class BEHRTVocab:
     is_padding: dict[str, int] = field(default_factory=lambda: {"PAD": 1})
     segment: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
     position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
-
-
-class Embedder(Protocol):
-    """
-    Interface for embedding modules
-    """
-
-    def __init__(self, *args: Any) -> None:
-        ...
-
-    def __call__(self, *args: Any) -> torch.Tensor:
-        ...
-
-    def forward(self, *args: Any) -> EmbeddedSequence:
-        ...
-
-    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
-        ...
-
-    def fit(self, patients: list[Patient], *args: Any) -> None:
-        ...
 
 
 class BEHRTEmbedder(nn.Module):
@@ -224,6 +190,17 @@ class BEHRTEmbedder(nn.Module):
                 filtered_events.append(event)
         return filtered_events
 
+    def get_mapped_diagnosis_codes(
+        self,
+        diagnosis_codes: list[str],
+    ) -> list[str]:
+        with open(  # noqa: PTH123
+            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
+        ) as fp:
+            mapping = json.load(fp)
+
+        return [mapping[d] for d in diagnosis_codes if d in mapping]
+
     def collate_patient(self, patient: Patient) -> dict[str, torch.Tensor]:
         events = patient.temporal_events
         events = self.filter_events(events)
@@ -267,11 +244,22 @@ class BEHRTEmbedder(nn.Module):
             "is_padding": torch.tensor(0),
         }
 
-    def fit(self, patients: list, add_mask_token: bool = True):
+    def fit(
+        self,
+        patients: list,
+        add_mask_token: bool = True,
+        map_diagnosis_codes: bool = True,
+    ):
         patient_events: list[tuple[Patient, TemporalEvent]] = [
             (p, e) for p in patients for e in self.filter_events(p.temporal_events)
         ]
         diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
+
+        # map diagnosis codes
+        if map_diagnosis_codes:
+            diagnosis_codes = self.get_mapped_diagnosis_codes(
+                diagnosis_codes=diagnosis_codes,
+            )
 
         # create dianosis2idx mapping
         diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}

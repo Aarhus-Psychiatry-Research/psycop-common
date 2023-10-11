@@ -13,7 +13,7 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 from psycop.common.data_structures.patient import Patient
 
 from .aggregators import AggregationModule
-from .embedders import BEHRTEmbedder
+from .embedders.BEHRT_embedders import BEHRTEmbedder
 
 
 @dataclass

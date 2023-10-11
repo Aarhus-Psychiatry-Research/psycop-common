@@ -24,10 +24,6 @@ sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
 timeseriesflattener==1.6.0
-sentence-transformers==2.2.2
-torch==2.0.1
-lightning==2.0.9
-torchmetrics==1.1.2
 wandb==0.15.4
 wasabi==0.9.1
 xgboost==1.7.3
