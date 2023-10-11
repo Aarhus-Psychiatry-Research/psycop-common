@@ -263,7 +263,7 @@ class EncoderForClassification(pl.LightningModule):
         # Classification head
         logits = self.classification_head(aggregated_patients)
         if self.is_binary:
-            _logits = logits.squeeze(-1).float()
+            _labels = labels.unsqueeze(-1).float()
         else:
             # If not binary convert to one-hot encoding
             _labels = torch.nn.functional.one_hot(
