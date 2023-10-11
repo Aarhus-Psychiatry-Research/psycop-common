@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.116.0 (2023-10-11)
+
+### Feature
+
+* Filter diagnosis subtype in BEHRT ([`2c56baf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2c56baf1baf2b0f2285d8b24c0f23d7aee27f96c))
+* Generate pred timestamps without washout ([`911076b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/911076bc7d35956f780db23e01a2a92632c0b322))
+
+### Documentation
+
+* Added test documentation ([`448ce4d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/448ce4d180e16b27f291dccab8865d50234c141d))
+
 ## v0.115.0 (2023-10-10)
 
 ### Feature
