@@ -4,10 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures import Patient
-from psycop.common.sequence_models import (
-    BEHRTForMaskedLM,
-    PatientDataset,
-)
+from psycop.common.sequence_models import BEHRTForMaskedLM, PatientDataset
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.projects.sequence_models.train import (
     Config,
@@ -57,7 +54,7 @@ def test_behrt(patient_dataset: PatientDataset):
 
 def test_module_with_trainer(
     patients: list[Patient],
-    tmp_path: Path,
+    tmp_path: Path = Path("lightning_logs"),
 ):
     """
     Tests the general intended workflow of the Trainer class
