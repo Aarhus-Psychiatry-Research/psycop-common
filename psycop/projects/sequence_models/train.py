@@ -44,7 +44,7 @@ class ModelConfig:
     n_heads = 12
     dim_feedforward = 512
     dropout_prob: float = 0.1
-    max_sequence_length: int = 512
+    max_sequence_length: int = 256
     map_diagnosis_codes: bool = True
 
 
@@ -64,10 +64,11 @@ class TrainingConfig:
     accelerator: TorchAccelerator = TorchAccelerator.CUDA
 
     n_steps: int = 100_000
-    batch_size: int = 100  # =1000 because gradients are accumulated over 10 batches?
+    batch_size: int = 512
+    accumulate_grad_batches: int = 1
+    precision: str = "bf16-mixed"
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
-
 
 @dataclass
 class OptimizationConfig:
@@ -148,7 +149,8 @@ def create_default_trainer(save_dir: Path, config: Config) -> pl.Trainer:
         val_check_interval=config.training_config.validate_every_prop_epoch,
         logger=wandb_logger,
         max_steps=config.training_config.n_steps,
-        accumulate_grad_batches=10,
+        accumulate_grad_batches=config.training_config.accumulate_grad_batches,
+        precision=config.training_config.precision,  # type: ignore
         callbacks=[
             ModelCheckpoint(
                 dirpath=save_dir / "checkpoints",
