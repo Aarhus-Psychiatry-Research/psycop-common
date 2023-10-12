@@ -69,7 +69,7 @@ def post_wandb_setup_train_model(
                     pre_split_cfg=cfg.preprocessing.pre_split,
                     split=split,  # type: ignore
                 )
-                for split in cfg.data.splits_for_evaluation
+                for split in cfg.data.datasets_for_evaluation
             ],
             ignore_index=True,
         )
