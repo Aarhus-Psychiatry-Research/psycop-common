@@ -17,10 +17,9 @@ BEST_DEV_PIPELINE = PipelineRun(
     ],  # [0,2] for best logistic regression and [1,2] for best xgboost
     pos_rate=BEST_POS_RATE,
     create_output_paths_on_init=False,
-    )
+)
 
-if __name__ == "__main__":
-    test_selected_model_pipeline(
+BEST_EVAL_PIPELINE = test_selected_model_pipeline(
     pipeline_to_test=BEST_DEV_PIPELINE,
     splits_for_evaluation=["val_with_washout"],
-    )
+)
