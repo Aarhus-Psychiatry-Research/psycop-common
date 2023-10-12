@@ -54,7 +54,7 @@ def test_behrt(patient_dataset: PatientDataset):
 
 def test_module_with_trainer(
     patients: list[Patient],
-    tmp_path: Path = Path("lightning_logs"),
+    tmp_path: Path,
 ):
     """
     Tests the general intended workflow of the Trainer class
