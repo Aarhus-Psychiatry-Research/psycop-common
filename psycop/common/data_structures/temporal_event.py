@@ -11,5 +11,5 @@ if TYPE_CHECKING:
 class TemporalEvent:
     timestamp: dt.datetime
     source_type: str  # E.g. "lab"/"diagnosis"
-    source_subtype: str | None  # E.g. "Hba1c"/"hypertension". Is optional, since e.g. diagnoses don't have a name, only a source and value.
+    source_subtype: str | None # E.g. "Hba1c"/"hypertension" or "A" for diagnoses. Is optional, since some source types might not have a name, only a source and value.
     value: float | str | bool
