@@ -93,7 +93,7 @@ def test_selected_model_pipeline(
             pipeline_to_train=pipeline_to_test,
         ),
     )
-    
+
     if pipeline_has_been_evaluated_on_test:
         msg.good(
             f"{pipeline_to_test.group.group_name}/{pipeline_to_test.name} has been already been evaluated.",
@@ -103,13 +103,15 @@ def test_selected_model_pipeline(
 
         while done_evaluating is False:
             response = input(
-                f"Do you want to reavaluate the pipeline and potentially overwrite the contents of this folder? (yes/no): ",
+                "Do you want to reavaluate the pipeline and potentially overwrite the contents of this folder? (yes/no): ",
             )
 
             if response.lower() not in ["yes", "y", "no", "n"]:
                 print("Invalid response. Please enter 'yes/y' or 'no/n'.")
             if response.lower() in ["no", "n"]:
-                print("Model will not be reavluated. Loading previous evaluation pipeline run.")
+                print(
+                    "Model will not be reavluated. Loading previous evaluation pipeline run."
+                )
                 done_evaluating = True
                 return PipelineRun(
                     group=RunGroup(
@@ -118,12 +120,12 @@ def test_selected_model_pipeline(
                     ),
                     name=_get_test_run_name(pipeline_to_test),
                     pos_rate=BEST_POS_RATE,
-    )
+                )
 
             if response.lower() in ["yes", "y"]:
                 done_evaluating = True
                 msg.info(
-                f"{pipeline_to_test.group.group_name}/{pipeline_to_test.name} will be reavaluated and files overwritten, training",
+                    f"{pipeline_to_test.group.group_name}/{pipeline_to_test.name} will be reavaluated and files overwritten, training",
                 )
                 _train_pipeline_on_test(
                     pipeline_to_train=pipeline_to_test,
@@ -140,7 +142,6 @@ def test_selected_model_pipeline(
             splits_for_training=splits_for_training,
             datasets_for_evaluation=datasets_for_evaluation,
         )
-        
 
     return PipelineRun(
         group=RunGroup(
