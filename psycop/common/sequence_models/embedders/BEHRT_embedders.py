@@ -14,6 +14,8 @@ from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import Patient, TemporalEvent
 
+from .interface import EmbeddedSequence
+
 
 @dataclass(frozen=True)
 class BEHRTVocab:
@@ -67,7 +69,7 @@ class BEHRTEmbedder(nn.Module):
     def forward(
         self,
         inputs: dict[str, torch.Tensor],
-    ) -> torch.Tensor:
+    ) -> EmbeddedSequence:
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
@@ -97,7 +99,7 @@ class BEHRTEmbedder(nn.Module):
         embeddings = word_embed + segment_embed + age_embed + posi_embeddings
         embeddings = self.LayerNorm(embeddings)
         embeddings = self.dropout(embeddings)
-        return embeddings
+        return EmbeddedSequence(embeddings, inputs["is_padding"] == 1)
 
     def _init_position_embeddings(
         self,

@@ -7,14 +7,12 @@ from psycop.common.data_structures import Patient, TemporalEvent
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.embedders.interface import Embedder
 
-from .conftest import patients  # noqa: F401 # type: ignore
-
 
 @pytest.mark.parametrize(
     "embedding_module",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_embeddings(patients: list, embedding_module: Embedder):  # noqa: F811
+def test_embeddings(patients: list, embedding_module: Embedder):
     """
     Test embedding interface
     """
@@ -37,7 +35,7 @@ def test_embeddings(patients: list, embedding_module: Embedder):  # noqa: F811
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_diagnosis_mapping(
-    patients: list,  # noqa: F811
+    patients: list,
     embedding_module: BEHRTEmbedder,
 ):
     """
