@@ -43,9 +43,14 @@ def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) -> Path:
 
 def _train_pipeline_on_test(
     pipeline_to_train: PipelineRun,
-    splits_for_training: list = ["train"],
-    splits_for_evaluation: list = ["val"],
+    splits_for_training: list | None = None,
+    splits_for_evaluation: list | None = None,
 ):
+    if splits_for_training is None:
+        splits_for_training = ["train"]
+    if splits_for_evaluation is None:
+        splits_for_evaluation = ["val"]
+
     cfg = pipeline_to_train.inputs.cfg
     cfg.project.wandb.Config.allow_mutation = True
     cfg.data.Config.allow_mutation = True
@@ -78,8 +83,8 @@ def _check_directory_exists(dir_path: Path) -> bool:
 
 def test_pipeline(
     pipeline_to_test: PipelineRun,
-    splits_for_training: list = ["train"],
-    splits_for_evaluation: list = ["val"],
+    splits_for_training: list | None = None,
+    splits_for_evaluation: list | None = None,
 ) -> PipelineRun:
     # Check if the pipeline has already been trained on the test set
     # If so, return the existing run
@@ -111,11 +116,3 @@ def test_pipeline(
         name=_get_test_run_name(pipeline_to_test),
         pos_rate=BEST_POS_RATE,
     )
-
-
-if __name__ == "__main__":
-    from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
-        BEST_DEV_PIPELINE,
-    )
-
-    eval_run = test_pipeline(pipeline_to_test=BEST_DEV_PIPELINE)
