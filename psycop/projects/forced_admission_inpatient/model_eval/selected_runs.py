@@ -9,8 +9,8 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     PipelineRun,
 )
 
-def evaluate_selected_run():
 
+def evaluate_selected_run():
     BEST_DEV_PIPELINE = PipelineRun(
         group=DEVELOPMENT_GROUP,
         name=DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[
@@ -20,9 +20,11 @@ def evaluate_selected_run():
         pos_rate=BEST_POS_RATE,
         create_output_paths_on_init=False,
     )
-    BEST_EVAL_PIPELINE = test_pipeline(
-        pipeline_to_test=BEST_DEV_PIPELINE, splits_for_evaluation=["val_with_washout"]
+    test_pipeline(
+        pipeline_to_test=BEST_DEV_PIPELINE,
+        splits_for_evaluation=["val_with_washout"],
     )
+
 
 if __name__ == "__main__":
     evaluate_selected_run()
