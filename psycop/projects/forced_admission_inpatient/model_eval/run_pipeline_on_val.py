@@ -116,11 +116,3 @@ def test_pipeline(
         name=_get_test_run_name(pipeline_to_test),
         pos_rate=BEST_POS_RATE,
     )
-
-
-if __name__ == "__main__":
-    from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
-        BEST_DEV_PIPELINE,
-    )
-
-    eval_run = test_pipeline(pipeline_to_test=BEST_DEV_PIPELINE)
