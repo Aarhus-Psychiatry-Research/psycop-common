@@ -70,6 +70,7 @@ class TrainingConfig:
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
 
+
 @dataclass
 class OptimizationConfig:
     optimizer_kwargs: dict[str, Any] = field(
