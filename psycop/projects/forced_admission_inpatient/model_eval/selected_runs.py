@@ -21,5 +21,5 @@ BEST_DEV_PIPELINE = PipelineRun(
 
 BEST_EVAL_PIPELINE = test_selected_model_pipeline(
     pipeline_to_test=BEST_DEV_PIPELINE,
-    splits_for_evaluation=["val_with_washout"],
+    datasets_for_evaluation=["val_with_washout"],
 )
