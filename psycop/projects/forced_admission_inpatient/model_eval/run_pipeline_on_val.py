@@ -110,7 +110,7 @@ def test_selected_model_pipeline(
                 print("Invalid response. Please enter 'yes/y' or 'no/n'.")
             if response.lower() in ["no", "n"]:
                 print(
-                    "Model will not be reavluated. Loading previous evaluation pipeline run."
+                    "Model will not be reavluated. Loading previous evaluation pipeline run.",
                 )
                 done_evaluating = True
                 return PipelineRun(
