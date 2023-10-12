@@ -81,7 +81,7 @@ def _check_directory_exists(dir_path: Path) -> bool:
     return False
 
 
-def test_pipeline(
+def test_selected_model_pipeline(
     pipeline_to_test: PipelineRun,
     splits_for_training: list | None = None,
     splits_for_evaluation: list | None = None,
