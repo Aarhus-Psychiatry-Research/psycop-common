@@ -37,7 +37,7 @@ def test_crossvalidation(muteable_test_config: FullConfigSchema):
 def test_train_val_predict(muteable_test_config: FullConfigSchema):
     """Test train without crossvalidation."""
     cfg = muteable_test_config
-    cfg.data.splits_for_evaluation = ["test"]
+    cfg.data.datasets_for_evaluation = ["test"]
     train_model(cfg)
 
 

@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.117.1 (2023-10-12)
+
+### Fix
+
+* Update naming in cfg schema ([`5a1f131`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5a1f1319abf9bd5e85adbe577981a3cbefcbf31e))
+* Wrap eval function ([`b2f5161`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b2f5161301f1cc69c14e575d7a2f9db9d44bc1aa))
+
 ## v0.117.0 (2023-10-12)
 
 ### Feature
