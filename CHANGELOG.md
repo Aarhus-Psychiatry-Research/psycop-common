@@ -2,6 +2,28 @@
 
 <!--next-version-placeholder-->
 
+## v0.117.0 (2023-10-12)
+
+### Feature
+
+* Added fine-tuning script ([`bef7c88`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bef7c8859fe5735cccd5be267f59be17abedb6fb))
+
+### Fix
+
+* Ran precommit ([`6e6bf80`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6e6bf80b1ae9cc972f3a45577140deb64c983136))
+* Don't run bf16 on tests ([`5a624ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5a624ca8ba76e5c59f3b1c6799fbfe8633540264))
+* Ran pre-commit ([`11536be`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/11536beab426a3b99d5361ccca77b3a835ef5f80))
+* Ran pre-commit ([`42b8e29`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/42b8e29bb22c78d06eacd13a2453d3e40b9fb14d))
+* Added description of how to create checkpoint ([`453c5a9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/453c5a94580077bd137c712edc6042b68addc469))
+* Updated the checkpoint ([`b04f37c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b04f37c33bfab46e492bd0544b57d2f4fb558ff0))
+* Ran pre-commit ([`7e40ed1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7e40ed105f18c2320601ad120a34b4ea64fa3e8a))
+* Added test for multilabel ([`1f29927`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1f29927f2be9995a2e473dc3419f41bfce6d20d8))
+* Based on review from @MartinBernstorff ([`643c1e4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/643c1e4692c96ac382a505214cb0e568c5612b0b))
+* Ran pre-commit ([`b2a98ec`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b2a98ec2d1f19379be8b45bab27e3beecad24528))
+* Remove .conftest antipattern ([`5e5a693`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5e5a6930c858ac5cb75fa2466d8c756f19439614))
+* Ran pre-commit ([`fab110a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fab110a9d2a32c4ac5daad56bf00552cbd65e566))
+* Ran pre-commit ([`ff41ad2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ff41ad2a7939952c8502d926c7a4a4e431b430cd))
+
 ## v0.116.0 (2023-10-11)
 
 ### Feature
