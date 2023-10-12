@@ -74,7 +74,7 @@ def test_module_with_trainer(
         training_config=TrainingConfig(
             accelerator=TorchAccelerator.CPU,
             n_steps=midpoint,
-            precision="32-true"
+            precision="32-true",
         ),
         optimization_config=OptimizationConfig(
             lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": midpoint},
