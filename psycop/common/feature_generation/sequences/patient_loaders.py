@@ -29,9 +29,9 @@ class DiagnosisLoader(EventDfLoader):
         """Load all a-diagnoses"""
         query = "SELECT dw_ek_borger, datotid_slut, diagnosegruppestreng FROM [fct].[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022] WHERE datotid_slut IS NOT NULL"
         df = pl.from_pandas(sql_load(query, database="USR_PS_Forsk")).lazy()
-        return self.format_diagnosis_columns(df=df)
+        return self.preprocess_diagnosis_columns(df=df)
 
-    def format_diagnosis_columns(self, df: pl.LazyFrame) -> pl.LazyFrame:
+    def preprocess_diagnosis_columns(self, df: pl.LazyFrame) -> pl.LazyFrame:
         df = (
             df.with_columns(
                 pl.col(

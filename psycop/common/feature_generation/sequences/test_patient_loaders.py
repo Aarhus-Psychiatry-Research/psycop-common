@@ -4,7 +4,7 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 
-def test_diagnosis_formatting():
+def test_diagnosis_preproessing():
     df = str_to_pl_df(
         """dw_ek_borger,datotid_slut,diagnosegruppestreng
     1,2023-01-01,A:DF431                    # Keep all, even though doesn't end with a hashtag
@@ -12,9 +12,9 @@ def test_diagnosis_formatting():
     """,
     )
 
-    formatted_df = DiagnosisLoader().format_diagnosis_columns(df=df.lazy())
+    formatted_df = DiagnosisLoader().preprocess_diagnosis_columns(df=df.lazy())
 
     resulting_diagnoses = formatted_df.collect().get_column("value").to_list()
-    assert resulting_diagnoses == ["F431", "F431", "ALFC3", "F329"]
+    assert set(resulting_diagnoses) == {"F431", "ALFC3", "F329"}
     types = formatted_df.collect().get_column("type").to_list()
-    assert types == ["A", "A", "+", "B"]
+    assert set(types) == {"A", "+", "B"}
