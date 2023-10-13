@@ -60,7 +60,7 @@ class DiagnosisLoader(EventDfLoader):
                 ],
             )
             .rename({"datotid_slut": "timestamp"})
-        )
+        ).unique()
 
         return df
 
