@@ -82,7 +82,7 @@ class PatientLoader:
 
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
         events_from_patients_with_at_least_5_contacts = events_from_train.filter(
-            pl.col("timestamp").unique().count().over("dw_ek_borger") >= 5
+            pl.col("timestamp").unique().count().over("dw_ek_borger") >= 5,
         )
         events_after_2013 = events_from_patients_with_at_least_5_contacts.filter(
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
