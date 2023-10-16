@@ -59,7 +59,7 @@ class DiagnosisLoader(EventDfLoader):
                 pl.col("field_1").str.replace(
                     "^D",
                     "",
-                ),
+                ).str.strip(),
             )  # In the diagnosis DF432, the D is only in the Danish system and doesn't carry meaning. Remove it.)
             .rename(
                 {"datotid_slut": "timestamp", "field_0": "type", "field_1": "value"},

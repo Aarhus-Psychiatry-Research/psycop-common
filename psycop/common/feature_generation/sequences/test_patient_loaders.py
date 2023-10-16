@@ -31,6 +31,7 @@ def test_diagnosis_preprocessing():
     types = formatted_df.collect().get_column("type").to_list()
     assert types == ["A", "A", "+", "B"]
 
+test_diagnosis_preprocessing()
 
 def test_keep_min_n_visits():
     df = str_to_pl_df(
