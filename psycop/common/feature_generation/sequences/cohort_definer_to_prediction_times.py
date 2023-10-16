@@ -98,6 +98,7 @@ if __name__ == "__main__":
     patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
         split=SplitName.TRAIN,
+        min_n_visits=5,
     )
 
     prediction_times = CohortToPredictionTimes(
