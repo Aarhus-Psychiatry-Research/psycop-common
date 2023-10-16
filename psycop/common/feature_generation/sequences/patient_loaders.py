@@ -28,7 +28,7 @@ class DiagnosisLoader(EventDfLoader):
 
     def load_events(self) -> pl.LazyFrame:
         """Load all a-diagnoses"""
-        query = "SELECT dw_ek_borger, datotid_slut, diagnosegruppestreng FROM [fct].[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022] WHERE datotid_slut IS NOT NULL AND diagnosegruppestreng IS NOT NULL"
+        query = "SELECT dw_ek_borger, datotid_slut, diagnosegruppestreng FROM [fct].[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022] WHERE datotid_slut IS NOT NULL"
         df = pl.from_pandas(sql_load(query, database="USR_PS_Forsk")).lazy()
         return self.preprocess_diagnosis_columns(df=df)
 

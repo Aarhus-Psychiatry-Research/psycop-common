@@ -32,9 +32,6 @@ def test_diagnosis_preprocessing():
     assert types == ["A", "A", "+", "B"]
 
 
-test_diagnosis_preprocessing()
-
-
 def test_keep_min_n_visits():
     df = str_to_pl_df(
         """dw_ek_borger,timestamp,type,value,source
