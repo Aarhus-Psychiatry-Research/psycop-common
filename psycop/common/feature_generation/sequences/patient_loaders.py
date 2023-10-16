@@ -56,10 +56,12 @@ class DiagnosisLoader(EventDfLoader):
             )
             .unnest("value")  # Unnest prefix and diagnosis code into separate columns
             .with_columns(
-                pl.col("field_1").str.replace(
+                pl.col("field_1")
+                .str.replace(
                     "^D",
                     "",
-                ).str.strip(),
+                )
+                .str.strip(),
             )  # In the diagnosis DF432, the D is only in the Danish system and doesn't carry meaning. Remove it.)
             .rename(
                 {"datotid_slut": "timestamp", "field_0": "type", "field_1": "value"},
