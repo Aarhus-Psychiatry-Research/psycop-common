@@ -1,6 +1,7 @@
 import datetime
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from typing import Union
 
 import polars as pl
 
@@ -60,9 +61,21 @@ class DiagnosisLoader(EventDfLoader):
                 ],
             )
             .rename({"datotid_slut": "timestamp"})
-        ).unique()
+        ).unique(maintain_order=True)
 
         return df
+
+
+def keep_if_min_n_visits(
+    event_df: pl.LazyFrame,
+    n_visits: Union[int, None],
+) -> pl.LazyFrame:
+    if n_visits:
+        event_df = event_df.filter(
+            pl.col("timestamp").unique().count().over("dw_ek_borger") >= n_visits,
+        )
+
+    return event_df
 
 
 class PatientLoader:
@@ -76,15 +89,19 @@ class PatientLoader:
     def get_split(
         event_loaders: Sequence[EventDfLoader],
         split: SplitName,
+        min_n_visits: Union[int, None],
     ) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         train_ids = pl.from_pandas(load_ids(split=split)).lazy()
 
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
-        events_from_patients_with_at_least_5_contacts = events_from_train.filter(
-            pl.col("timestamp").unique().count().over("dw_ek_borger") >= 5,
+
+        filtered_events_from_train = keep_if_min_n_visits(
+            events_from_train,
+            n_visits=min_n_visits,
         )
-        events_after_2013 = events_from_patients_with_at_least_5_contacts.filter(
+
+        events_after_2013 = filtered_events_from_train.filter(
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
         )
 
@@ -102,4 +119,5 @@ if __name__ == "__main__":
     patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
         split=SplitName.TRAIN,
+        min_n_visits=5,
     )
