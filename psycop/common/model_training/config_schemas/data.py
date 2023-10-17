@@ -38,7 +38,7 @@ class DataSchema(PSYCOPBaseModel):
         Sequence[Union[Literal["val", "test"], str]]
     ] = None
     # dataset to use for evaluation. Commonly, it would simply take either the val or test split
-    # corresponding to the train split, but a specific dataset may also be given when needed.
+    # of the corresponding train split, but a specific dataset may also be given when needed.
     # If None, crossvalidation is done on splits_for_training split(s).
 
     # Feature specs

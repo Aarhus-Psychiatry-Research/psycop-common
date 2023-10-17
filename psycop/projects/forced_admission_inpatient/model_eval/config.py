@@ -14,7 +14,7 @@ PROJECT_MODEL_DIR = Path(
     f"E:/shared_resources/forced_admissions_inpatient/models/{MODEL_NAME}/pipeline_eval",
 )
 
-DEV_GROUP_NAME = "expeditation-latins"
+DEV_GROUP_NAME = "epanaphora-zoogony"
 DEVELOPMENT_GROUP = RunGroup(model_name=MODEL_NAME, group_name=DEV_GROUP_NAME)
 BEST_POS_RATE = 0.03
 

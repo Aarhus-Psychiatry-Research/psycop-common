@@ -44,18 +44,18 @@ def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) -> Path:
 def _train_pipeline_on_test(
     pipeline_to_train: PipelineRun,
     splits_for_training: list | None = None,
-    splits_for_evaluation: list | None = None,
+    datasets_for_evaluation: list | None = None,
 ):
     if splits_for_training is None:
         splits_for_training = ["train"]
-    if splits_for_evaluation is None:
-        splits_for_evaluation = ["val"]
+    if datasets_for_evaluation is None:
+        datasets_for_evaluation = ["val"]
 
     cfg = pipeline_to_train.inputs.cfg
     cfg.project.wandb.Config.allow_mutation = True
     cfg.data.Config.allow_mutation = True
     cfg.data.splits_for_training = splits_for_training
-    cfg.data.datasets_for_evaluation = splits_for_evaluation
+    cfg.data.datasets_for_evaluation = datasets_for_evaluation
 
     override_dir = _get_test_pipeline_dir(pipeline_to_train=pipeline_to_train)
     msg.info(f"Evaluating to {override_dir}")
@@ -84,7 +84,7 @@ def _check_directory_exists(dir_path: Path) -> bool:
 def test_selected_model_pipeline(
     pipeline_to_test: PipelineRun,
     splits_for_training: list | None = None,
-    splits_for_evaluation: list | None = None,
+    datasets_for_evaluation: list | None = None,
 ) -> PipelineRun:
     # Check if the pipeline has already been trained on the test set
     # If so, return the existing run
@@ -94,18 +94,53 @@ def test_selected_model_pipeline(
         ),
     )
 
-    if not pipeline_has_been_evaluated_on_test:
+    if pipeline_has_been_evaluated_on_test:
+        msg.good(
+            f"{pipeline_to_test.group.group_name}/{pipeline_to_test.name} has been already been evaluated.",
+        )
+
+        done_evaluating = False
+
+        while done_evaluating is False:
+            response = input(
+                "Do you want to reavaluate the pipeline and potentially overwrite the contents of this folder? (yes/no): ",
+            )
+
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
+                print(
+                    "Model will not be reavluated. Loading previous evaluation pipeline run.",
+                )
+                done_evaluating = True
+                return PipelineRun(
+                    group=RunGroup(
+                        model_name=MODEL_NAME,
+                        group_name=_get_test_group_name(pipeline_to_test),
+                    ),
+                    name=_get_test_run_name(pipeline_to_test),
+                    pos_rate=BEST_POS_RATE,
+                )
+
+            if response.lower() in ["yes", "y"]:
+                done_evaluating = True
+                msg.info(
+                    f"{pipeline_to_test.group.group_name}/{pipeline_to_test.name} will be reavaluated and files overwritten, training",
+                )
+                _train_pipeline_on_test(
+                    pipeline_to_train=pipeline_to_test,
+                    splits_for_training=splits_for_training,
+                    datasets_for_evaluation=datasets_for_evaluation,
+                )
+
+    else:
         msg.info(
             f"{pipeline_to_test.group.group_name}/{pipeline_to_test.name} has not been evaluated, training",
         )
         _train_pipeline_on_test(
             pipeline_to_train=pipeline_to_test,
             splits_for_training=splits_for_training,
-            splits_for_evaluation=splits_for_evaluation,
-        )
-    else:
-        msg.good(
-            f"{pipeline_to_test.group.group_name}/{pipeline_to_test.name} has been evaluated, loading",
+            datasets_for_evaluation=datasets_for_evaluation,
         )
 
     return PipelineRun(

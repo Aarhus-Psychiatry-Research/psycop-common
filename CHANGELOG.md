@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.118.0 (2023-10-12)
+
+### Feature
+
+* Add overwrite eval warnings ([`6d5657f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6d5657f52becfa6a40e1ee6c958dffc71808eb36))
+
 ## v0.117.1 (2023-10-12)
 
 ### Fix
