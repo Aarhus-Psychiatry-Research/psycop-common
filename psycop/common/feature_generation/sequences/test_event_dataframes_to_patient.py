@@ -146,16 +146,16 @@ def test_passing_patient_colnames():
     """,
     )
 
+    patient_column_names = {"source_subtype_col_name": "type"}
+
     formatted_df = (
-        DiagnosisLoader(min_n_visits=1)
+        DiagnosisLoader(min_n_visits=None)
         .preprocess_diagnosis_columns(df=df.lazy())
         .collect()
     )
 
     unpacked_with_source_subtype_column = EventDataFramesToPatients(
-        column_names=PatientColumnNames(
-            source_subtype_col_name="type",
-        ),
+        column_names=PatientColumnNames(**patient_column_names),
     ).unpack(
         source_event_dataframes=[formatted_df],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),

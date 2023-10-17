@@ -103,7 +103,7 @@ class PatientLoader:
     def get_split(
         event_loaders: Sequence[EventDfLoader],
         split: SplitName,
-        source_subtype_col_name: str | None = None,
+        patient_column_names: dict[str, str] | None = None,
     ) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         train_ids = pl.from_pandas(load_ids(split=split)).lazy()
@@ -115,9 +115,9 @@ class PatientLoader:
         )
 
         unpacked_patients = EventDataFramesToPatients(
-            column_names=PatientColumnNames(
-                source_subtype_col_name=source_subtype_col_name,
-            ),
+            column_names=PatientColumnNames(**patient_column_names)
+            if patient_column_names is not None
+            else None,
         ).unpack(
             source_event_dataframes=[events_after_2013.collect()],
             date_of_birth_df=PatientLoader.load_date_of_birth_df(),

@@ -72,6 +72,7 @@ class TrainingConfig:
 
     # data filtering
     min_n_visits: int = 5
+    patient_column_names = {"source_subtype_col_name": "type"}
 
 
 @dataclass
@@ -187,14 +188,14 @@ if __name__ == "__main__":
             DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
         ],
         split=SplitName.TRAIN,
-        source_subtype_col_name="type",
+        patient_column_names=config.training_config.patient_column_names,
     )
     val_patients = PatientLoader.get_split(
         event_loaders=[
             DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
         ],
         split=SplitName.VALIDATION,
-        source_subtype_col_name="type",
+        patient_column_names=config.training_config.patient_column_names,
     )
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
