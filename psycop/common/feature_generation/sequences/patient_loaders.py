@@ -70,7 +70,9 @@ class DiagnosisLoader(EventDfLoader):
             .rename(
                 {"datotid_slut": "timestamp", "field_0": "type", "field_1": "value"},
             )
-            .filter(pl.col("type").str.lengths() < 2) # Removes HCO "diagnosis metadata", which is of too poor quality.
+            .filter(
+                pl.col("type").str.lengths() < 2
+            )  # Removes HCO "diagnosis metadata", which is of too poor quality.
         ).unique(maintain_order=True)
 
         if self.min_n_visits:
