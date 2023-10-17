@@ -182,10 +182,12 @@ if __name__ == "__main__":
     train_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
         split=SplitName.TRAIN,
+        source_subtype_col_name="type",
     )
     val_patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader()],
         split=SplitName.VALIDATION,
+        source_subtype_col_name="type",
     )
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)
