@@ -14,7 +14,7 @@ def test_diagnosis_preprocessing():
         """dw_ek_borger,datotid_slut,diagnosegruppestreng
     1,2023-01-01,A:DF431                    # Keep all, even though doesn't end with a hashtag
     1,2023-01-01,A:DF431                    # Duplicate, do not keep
-    2,2023-01-01,A:DF439#+:ALFC3#B:DF329    # Keep up until, but not including, first hashtag
+    2,2023-01-01,A:DF439#+:ALFC3#B:DF329    # Extract diagnoses correctly
     """,
     )
 
