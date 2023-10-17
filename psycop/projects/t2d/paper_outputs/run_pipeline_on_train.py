@@ -38,7 +38,7 @@ def _train_pipeline_on_test(pipeline_to_train: PipelineRun):
     cfg = pipeline_to_train.inputs.cfg
     cfg.project.wandb.Config.allow_mutation = True
     cfg.data.Config.allow_mutation = True
-    cfg.data.splits_for_evaluation = ["test"]
+    cfg.data.datasets_for_evaluation = ["test"]
 
     override_dir = _get_test_pipeline_dir(pipeline_to_train=pipeline_to_train)
     msg.info(f"Evaluating to {override_dir}")
