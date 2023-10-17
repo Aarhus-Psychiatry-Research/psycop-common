@@ -183,14 +183,16 @@ if __name__ == "__main__":
     )
 
     train_patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
+        event_loaders=[
+            DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
+        ],
         split=SplitName.TRAIN,
-        min_n_visits=config.training_config.min_n_visits,
     )
     val_patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
+        event_loaders=[
+            DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
+        ],
         split=SplitName.VALIDATION,
-        min_n_visits=config.training_config.min_n_visits,
     )
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)

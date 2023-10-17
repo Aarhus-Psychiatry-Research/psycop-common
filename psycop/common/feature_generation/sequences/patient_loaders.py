@@ -26,6 +26,10 @@ class EventDfLoader(ABC):
 class DiagnosisLoader(EventDfLoader):
     """Load all diagnoses for all patients."""
 
+    def __init__(self, min_n_visits: Union[int, None]) -> None:
+        super().__init__()
+        self.min_n_visits = min_n_visits
+
     def load_events(self) -> pl.LazyFrame:
         """Load all a-diagnoses"""
         query = "SELECT dw_ek_borger, datotid_slut, diagnosegruppestreng FROM [fct].[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022] WHERE datotid_slut IS NOT NULL"
@@ -66,21 +70,24 @@ class DiagnosisLoader(EventDfLoader):
             .rename(
                 {"datotid_slut": "timestamp", "field_0": "type", "field_1": "value"},
             )
+            .filter(pl.col("type").str.lengths() < 2)
         ).unique(maintain_order=True)
+
+        if self.min_n_visits:
+            df = keep_if_min_n_visits(df=df, n_visits=self.min_n_visits)
 
         return df.drop_nulls()  # Drop all rows with no diagnosis
 
 
 def keep_if_min_n_visits(
-    event_df: pl.LazyFrame,
+    df: pl.LazyFrame,
     n_visits: Union[int, None],
 ) -> pl.LazyFrame:
-    if n_visits:
-        event_df = event_df.filter(
-            pl.col("timestamp").unique().count().over("dw_ek_borger") >= n_visits,
-        )
+    df = df.filter(
+        pl.col("timestamp").unique().count().over("dw_ek_borger") >= n_visits,
+    )
 
-    return event_df
+    return df
 
 
 class PatientLoader:
@@ -94,19 +101,13 @@ class PatientLoader:
     def get_split(
         event_loaders: Sequence[EventDfLoader],
         split: SplitName,
-        min_n_visits: Union[int, None],
     ) -> list[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         train_ids = pl.from_pandas(load_ids(split=split)).lazy()
 
         events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
 
-        filtered_events_from_train = keep_if_min_n_visits(
-            events_from_train,
-            n_visits=min_n_visits,
-        )
-
-        events_after_2013 = filtered_events_from_train.filter(
+        events_after_2013 = events_from_train.filter(
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
         )
 
@@ -122,7 +123,6 @@ class PatientLoader:
 
 if __name__ == "__main__":
     patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
+        event_loaders=[DiagnosisLoader(min_n_visits=5)],
         split=SplitName.TRAIN,
-        min_n_visits=5,
     )
