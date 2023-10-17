@@ -88,7 +88,7 @@ class PatientLoader:
 
         unpacked_patients = EventDataFramesToPatients(
             column_names=PatientColumnNames(
-                source_subtype_col_name=source_subtype_col_name
+                source_subtype_col_name=source_subtype_col_name,
             ),
         ).unpack(
             source_event_dataframes=[events_after_2013.collect()],
