@@ -70,6 +70,9 @@ class TrainingConfig:
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
 
+    # data filtering
+    min_n_visits: int = 5
+
 
 @dataclass
 class OptimizationConfig:
@@ -180,11 +183,15 @@ if __name__ == "__main__":
     )
 
     train_patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
+        event_loaders=[
+            DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
+        ],
         split=SplitName.TRAIN,
     )
     val_patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
+        event_loaders=[
+            DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
+        ],
         split=SplitName.VALIDATION,
     )
     train_dataset = PatientDataset(train_patients)
