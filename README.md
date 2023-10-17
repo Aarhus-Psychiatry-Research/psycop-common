@@ -46,7 +46,7 @@
 | psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       70 |       51 |     27% |27-38, 55-77, 133-283 |
 | psycop/common/feature\_generation/sequences/cohort\_definer\_to\_prediction\_times.py                           |       40 |        3 |     92% |    98-111 |
 | psycop/common/feature\_generation/sequences/event\_dataframes\_to\_patient.py                                   |       67 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/patient\_loaders.py                                                 |       36 |       13 |     64% |22, 30-32, 71-73, 80-95, 99 |
+| psycop/common/feature\_generation/sequences/patient\_loaders.py                                                 |       45 |       14 |     69% |23, 35-37, 79, 98-100, 107-123, 127 |
 | psycop/common/feature\_generation/sequences/utils\_for\_testing.py                                              |        5 |        0 |    100% |           |
 | psycop/common/feature\_generation/text\_models/fit\_text\_models.py                                             |       10 |        1 |     90% |        34 |
 | psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       22 |        5 |     77% |     71-91 |
@@ -139,7 +139,7 @@
 | psycop/projects/restraint/test/test\_model\_evaluation/conftest.py                                              |        7 |        0 |    100% |           |
 | psycop/projects/restraint/utils/best\_runs.py                                                                   |       75 |       32 |     57% |24, 30-38, 42-48, 51-53, 70-74, 77, 80, 86, 90, 94, 98-99, 104-106, 109-113, 117, 121-122, 130 |
 | psycop/projects/restraint/utils/feature\_name\_to\_readable.py                                                  |       26 |       22 |     15% |6-16, 21-54, 59-64 |
-| psycop/projects/sequence\_models/train.py                                                                       |       85 |       19 |     78% |98-101, 173-214 |
+| psycop/projects/sequence\_models/train.py                                                                       |       86 |       19 |     78% |101-104, 176-221 |
 | psycop/projects/t2d/feature\_generation/\_\_init\_\_.py                                                         |        0 |        0 |    100% |           |
 | psycop/projects/t2d/feature\_generation/cohort\_definition/eligible\_prediction\_times/add\_age.py              |        9 |        5 |     44% |     10-18 |
 | psycop/projects/t2d/feature\_generation/cohort\_definition/eligible\_prediction\_times/eligible\_config.py      |        4 |        0 |    100% |           |
@@ -165,7 +165,7 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       41 |       19 |     54% |35-53, 88-113 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      112 |       54 |     52% |20-21, 29, 51, 55-63, 67-73, 76-78, 95-96, 99-103, 106, 109, 123-128, 141-145, 148-150, 154, 166-173, 186-193, 208-221, 232 |
-|                                                                                                       **TOTAL** | **5082** | **1421** | **72%** |           |
+|                                                                                                       **TOTAL** | **5092** | **1422** | **72%** |           |
 
 
 ## Setup coverage badge
