@@ -14,7 +14,7 @@ def test_diagnosis_preprocessing():
     1,2023-01-01,A:DF431                    # Keep all, even though doesn't end with a hashtag
     1,2023-01-01,A:DF431                    # Duplicate, do not keep
     2,2023-01-01,A:DF439#+:ALFC3#B:DF329    # Extract diagnoses correctly
-    2,2023-01-01,A:DF439#HO:DF431           # Keep first, exclude invalid prefix
+    5,2023-01-01,A:DF431#HO:DF431           # Keep first, exclude invalid prefix
     """,
     )
 
@@ -23,7 +23,7 @@ def test_diagnosis_preprocessing():
     )
 
     resulting_diagnoses = formatted_df.collect().get_column("value").to_list()
-    assert resulting_diagnoses == ["F431", "F439", "ALFC3", "F329", "F439"]
+    assert resulting_diagnoses == ["F431", "F439", "ALFC3", "F329", "F431"]
 
     diagnoses_are_alphanumeric = [
         diagnosis.isalnum() for diagnosis in resulting_diagnoses
