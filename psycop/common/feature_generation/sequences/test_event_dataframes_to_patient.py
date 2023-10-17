@@ -146,7 +146,11 @@ def test_passing_patient_colnames():
     """,
     )
 
-    formatted_df = DiagnosisLoader().format_diagnosis_columns(df=df.lazy()).collect()
+    formatted_df = (
+        DiagnosisLoader(min_n_visits=1)
+        .preprocess_diagnosis_columns(df=df.lazy())
+        .collect()
+    )
 
     unpacked_with_source_subtype_column = EventDataFramesToPatients(
         column_names=PatientColumnNames(
