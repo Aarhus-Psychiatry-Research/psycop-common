@@ -72,7 +72,11 @@ class TrainingConfig:
 
     # data filtering
     min_n_visits: int = 5
-    patient_column_names = {"source_subtype_col_name": "type"}
+    patient_column_names: dict[str, str] | None = field(
+        default_factory=lambda: {
+            "source_subtype_col_name": "type",
+        },
+    )
 
 
 @dataclass
