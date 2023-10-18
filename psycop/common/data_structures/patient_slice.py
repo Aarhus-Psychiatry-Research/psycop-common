@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
-from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
     PATIENT_ID,
 )

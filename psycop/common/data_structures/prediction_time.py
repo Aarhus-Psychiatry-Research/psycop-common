@@ -28,7 +28,7 @@ class PredictionTime:
 
     def to_patient_slice(self) -> PatientSlice:
         return PatientSlice(
-            patient=self.patient,
+            patient_id=self.patient.patient_id,
             date_of_birth=self.patient.date_of_birth,
             _temporal_events=self.temporal_events,
             _static_features=self.static_features,
