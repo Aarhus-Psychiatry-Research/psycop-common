@@ -2,9 +2,13 @@
 Defines the dataset class for patient data
 """
 
+from collections.abc import Sequence
+
 from torch.utils.data import Dataset
 
 from psycop.common.data_structures import Patient
+from psycop.common.data_structures.patient_slice import PatientSlice
+from psycop.common.data_structures.prediction_time import PredictionTime
 
 
 class PatientDataset(Dataset):
@@ -18,14 +22,15 @@ class PatientDataset(Dataset):
         return self.patients[idx]
 
 
-class PatientDatasetWithLabels(Dataset):
-    def __init__(self, patients: list[Patient], labels: list[int]) -> None:
-        self.patients: list[Patient] = patients
-        self.labels: list[int] = labels
-        assert len(self.patients) == len(self.labels)
+class PatientSlicesWithLabels(Dataset):
+    def __init__(self, prediction_times: Sequence[PredictionTime]) -> None:
+        self.prediction_times = prediction_times
 
     def __len__(self) -> int:
-        return len(self.patients)
+        return len(self.prediction_times)
 
-    def __getitem__(self, idx: int) -> tuple[Patient, int]:
-        return self.patients[idx], self.labels[idx]
+    def __getitem__(self, idx: int) -> tuple[PatientSlice, int]:
+        pred_time = self.prediction_times[idx]
+        patient_slice = pred_time.to_patient_slice()
+        label = int(pred_time.outcome)
+        return (patient_slice, label)

@@ -12,7 +12,8 @@ import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 
-from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.data_structures import TemporalEvent
+from psycop.common.data_structures.patient_slice import PatientSlice
 
 from .interface import EmbeddedSequence
 
@@ -127,7 +128,10 @@ class BEHRTEmbedder(nn.Module):
 
         return torch.tensor(lookup_table)
 
-    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
+    def collate_patient_slices(
+        self,
+        patients: list[PatientSlice],
+    ) -> dict[str, torch.Tensor]:
         """
         Handles padding and indexing by converting each to an index tensor
 
@@ -136,7 +140,7 @@ class BEHRTEmbedder(nn.Module):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
-        patient_sequences_ids = [self.collate_patient(p) for p in patients]
+        patient_sequences_ids = [self.collate_patient_slice(p) for p in patients]
         # padding
         padded_sequences_ids = self.pad_sequences(patient_sequences_ids)
 
@@ -201,10 +205,13 @@ class BEHRTEmbedder(nn.Module):
 
         return [mapping[d] for d in diagnosis_codes if d in mapping]
 
-    def collate_patient(self, patient: Patient) -> dict[str, torch.Tensor]:
-        events = patient.temporal_events
+    def collate_patient_slice(
+        self,
+        patient_slice: PatientSlice,
+    ) -> dict[str, torch.Tensor]:
+        events = patient_slice.temporal_events
         events = self.filter_events(events)
-        event_inputs = [self.collate_event(event, patient) for event in events]
+        event_inputs = [self.collate_event(event, patient_slice) for event in events]
 
         # reduce to max sequence length
         # take the first max_sequence_length events (probably better to use the last max_sequence_length events)
@@ -226,9 +233,9 @@ class BEHRTEmbedder(nn.Module):
     def collate_event(
         self,
         event: TemporalEvent,
-        patient: Patient,
+        patient_slice: PatientSlice,
     ) -> dict[str, torch.Tensor]:
-        age = self.get_patient_age(event, patient.date_of_birth)
+        age = self.get_patient_age(event, patient_slice.date_of_birth)
 
         age2idx = self.vocab.age
         diagnosis2idx = self.vocab.diagnosis
@@ -250,7 +257,7 @@ class BEHRTEmbedder(nn.Module):
         add_mask_token: bool = True,
         map_diagnosis_codes: bool = True,
     ):
-        patient_events: list[tuple[Patient, TemporalEvent]] = [
+        patient_events: list[tuple[PatientSlice, TemporalEvent]] = [
             (p, e) for p in patients for e in self.filter_events(p.temporal_events)
         ]
         diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore

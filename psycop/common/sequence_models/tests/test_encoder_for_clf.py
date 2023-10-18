@@ -1,3 +1,4 @@
+import datetime as dt
 from pathlib import Path
 
 import pytest
@@ -5,19 +6,32 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures import Patient
+from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.sequence_models import (
     AggregationModule,
     AveragePooler,
     BEHRTEmbedder,
     BEHRTForMaskedLM,
     EncoderForClassification,
-    PatientDatasetWithLabels,
+    PatientSlicesWithLabels,
 )
 
 
 @pytest.fixture()
-def patient_dataset_with_labels(patients: list) -> PatientDatasetWithLabels:
-    return PatientDatasetWithLabels(patients, labels=[0, 1])
+def patient_dataset_with_labels(patients: list) -> PatientSlicesWithLabels:
+    prediction_times = []
+    for i, patient in enumerate(patients):
+        prediction_times.append(
+            PredictionTime(
+                patient=patient,
+                temporal_events=patient.temporal_events,
+                static_features=patient.static_features,
+                prediction_timestamp=dt.datetime(year=2000 + i, month=1, day=1),
+                outcome=i % 2 == 0,
+            ),
+        )
+
+    return PatientSlicesWithLabels(prediction_times=prediction_times)
 
 
 @pytest.fixture()
@@ -50,7 +64,7 @@ def aggregation_module() -> AveragePooler:
 
 
 def test_encoder_for_clf(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PatientSlicesWithLabels,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
@@ -78,7 +92,7 @@ def test_encoder_for_clf(
 
 
 def test_encoder_for_clf_for_multiclass(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PatientSlicesWithLabels,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
@@ -106,7 +120,7 @@ def test_encoder_for_clf_for_multiclass(
 
 
 def test_pretrain_from_checkpoint(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PatientSlicesWithLabels,
     aggregation_module: AggregationModule,
 ):
     """
