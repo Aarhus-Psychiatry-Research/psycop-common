@@ -36,7 +36,8 @@ class Embedder(Protocol):
         ...
 
     def collate_patient_slices(
-        self, patients: list[PatientSlice]
+        self,
+        patients: list[PatientSlice],
     ) -> dict[str, torch.Tensor]:
         ...
 
