@@ -1,13 +1,10 @@
 import datetime as dt
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
+from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
-
-if TYPE_CHECKING:
-    from psycop.common.data_structures.patient import Patient
 
 
 @dataclass(frozen=True)
