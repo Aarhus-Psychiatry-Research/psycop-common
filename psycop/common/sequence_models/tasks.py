@@ -11,6 +11,7 @@ from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 from transformers import AdamW, get_linear_schedule_with_warmup
 
 from psycop.common.data_structures.patient import Patient
+from psycop.common.data_structures.prediction_time import PredictionTime
 
 from .aggregators import AggregationModule
 from .embedders.BEHRT_embedders import BEHRTEmbedder
@@ -150,12 +151,12 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def collate_fn(
         self,
-        patients: list[Patient],
+        PredictionTime: list[PredictionTime],
     ) -> BatchWithLabels:
         """
-        Takes a list of patients and returns a dictionary of padded sequence ids.
+        Takes a list of PredictionTime and returns a dictionary of padded sequence ids.
         """
-        padded_sequence_ids = self.embedding_module.collate_patients(patients)
+        padded_sequence_ids = self.embedding_module.collate_patients(PredictionTime)
         # Masking
         batch_with_labels = self.masking_fn(padded_sequence_ids)
         return batch_with_labels

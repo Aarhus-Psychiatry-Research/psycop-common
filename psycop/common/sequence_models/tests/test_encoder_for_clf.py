@@ -11,13 +11,13 @@ from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
     EncoderForClassification,
-    PatientDatasetWithLabels,
+    PredictionTimeDataset,
 )
 
 
 @pytest.fixture()
-def patient_dataset_with_labels(patients: list) -> PatientDatasetWithLabels:
-    return PatientDatasetWithLabels(patients, labels=[0, 1])
+def patient_dataset_with_labels(patients: list) -> PredictionTimeDataset:
+    return PredictionTimeDataset(patients, labels=[0, 1])
 
 
 @pytest.fixture()
@@ -50,7 +50,7 @@ def aggregation_module() -> AveragePooler:
 
 
 def test_encoder_for_clf(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PredictionTimeDataset,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
@@ -78,7 +78,7 @@ def test_encoder_for_clf(
 
 
 def test_encoder_for_clf_for_multiclass(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PredictionTimeDataset,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
@@ -106,7 +106,7 @@ def test_encoder_for_clf_for_multiclass(
 
 
 def test_pretrain_from_checkpoint(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PredictionTimeDataset,
     aggregation_module: AggregationModule,
 ):
     """

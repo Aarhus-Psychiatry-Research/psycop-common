@@ -127,7 +127,9 @@ class BEHRTEmbedder(nn.Module):
 
         return torch.tensor(lookup_table)
 
-    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
+    def collate_prediction_times(
+        self, patients: list[Patient]
+    ) -> dict[str, torch.Tensor]:
         """
         Handles padding and indexing by converting each to an index tensor
 

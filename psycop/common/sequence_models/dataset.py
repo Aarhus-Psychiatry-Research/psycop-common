@@ -2,9 +2,11 @@
 Defines the dataset class for patient data
 """
 
+from typing import Sequence
 from torch.utils.data import Dataset
 
 from psycop.common.data_structures import Patient
+from psycop.common.data_structures.prediction_time import PredictionTime
 
 
 class PatientDataset(Dataset):
@@ -18,14 +20,14 @@ class PatientDataset(Dataset):
         return self.patients[idx]
 
 
-class PatientDatasetWithLabels(Dataset):
-    def __init__(self, patients: list[Patient], labels: list[int]) -> None:
-        self.patients: list[Patient] = patients
-        self.labels: list[int] = labels
-        assert len(self.patients) == len(self.labels)
+class PredictionTimeDataset(Dataset):
+    def __init__(self, prediction_times: Sequence[PredictionTime]) -> None:
+        self.prediction_times = prediction_times
 
     def __len__(self) -> int:
-        return len(self.patients)
+        return len(self.prediction_times)
 
-    def __getitem__(self, idx: int) -> tuple[Patient, int]:
-        return self.patients[idx], self.labels[idx]
+    def __getitem__(self, idx: int) -> PredictionTime:
+        return self.prediction_times[
+            idx
+        ]  # Uncertian exactly what the sequence should look like here; we probably want to construct the sequence in the embedder, so this just returns PredictionTimes?

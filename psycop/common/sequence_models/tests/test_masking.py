@@ -31,7 +31,7 @@ def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):
         lr_scheduler_kwargs=config.optimization_config.lr_scheduler_kwargs,
     )
 
-    inputs_ids = embedding_module.collate_patients(patients)
+    inputs_ids = embedding_module.collate_prediction_times(patients)
 
     masked_input_ids, masked_labels = task.masking_fn(inputs_ids)
 
