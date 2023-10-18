@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.119.0 (2023-10-18)
+
+### Feature
+
+* Create plot when training xgboost hba1c only ([`cd52ec8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd52ec89c18967453cb387d47ad3346a8baea431))
+
+### Fix
+
+* Change typehint for patient colnames ([`22d9317`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/22d931731fc96d42e8ced0671e63a44be9dcfad5))
+* Do not import BEST_EVAL_PIPELINE unless main ([`d5da51f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d5da51fbf9c66e1ef5c75d42657f1002b56a3605))
+* Fixed mutable default error in config ([`a2d8294`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a2d8294f62c4b19a6b2801ce9a9898585deb4327))
+* Source subtype filtering works ([`1259203`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1259203d58b09ee2b09f71f7455976199fc9ed10))
+
 ## v0.118.0 (2023-10-12)
 
 ### Feature
