@@ -2,8 +2,8 @@ from pathlib import Path
 
 from torch import nn
 from torch.utils.data import DataLoader
-from psycop.common.data_structures.patient import PatientSlice
 
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.sequence_models import BEHRTForMaskedLM, PatientSliceDataset
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.projects.sequence_models.train import (

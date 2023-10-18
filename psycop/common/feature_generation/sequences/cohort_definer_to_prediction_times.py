@@ -22,7 +22,9 @@ PATIENT_ID = str | int
 
 class CohortToPredictionTimes:
     def __init__(
-        self, cohort_definer: CohortDefiner, patient_objects: list[PatientSlice]
+        self,
+        cohort_definer: CohortDefiner,
+        patient_objects: list[PatientSlice],
     ):
         self.cohort_definer = cohort_definer
         self.patients = patient_objects

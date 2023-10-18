@@ -49,7 +49,7 @@ def test_polars_dataframe_to_dict():
 
     assert len(prediction_times) == 2
     patient_1 = list(
-        filter(lambda x: x.patient_slice.patient_id == 1, prediction_times)
+        filter(lambda x: x.patient_slice.patient_id == 1, prediction_times),
     )[0]
     assert patient_1.prediction_timestamp == dt.datetime(2021, 1, 1)
     # The rest of the prediction time creation logic is tested in the patient object tests

@@ -12,7 +12,6 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 
 from psycop.common.data_structures.patient import PatientSlice
 
-
 from .aggregators import AggregationModule
 from .embedders.BEHRT_embedders import BEHRTEmbedder
 

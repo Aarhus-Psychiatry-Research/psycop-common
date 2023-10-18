@@ -24,8 +24,8 @@ import lightning.pytorch.loggers as pl_loggers
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
-from psycop.common.data_structures.patient import PatientSlice
 
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     PatientSliceColumnNames,
@@ -113,7 +113,8 @@ class Config:
 
 
 def create_behrt_MLM_model(
-    patients: list[PatientSlice], config: Config
+    patients: list[PatientSlice],
+    config: Config,
 ) -> BEHRTForMaskedLM:
     """
     Creates a model for testing

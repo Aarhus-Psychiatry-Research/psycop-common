@@ -1,6 +1,6 @@
 import datetime as dt
-from psycop.common.data_structures.patient import PatientSlice
 
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.temporal_event import TemporalEvent
 
 

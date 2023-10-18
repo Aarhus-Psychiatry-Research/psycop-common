@@ -6,8 +6,8 @@ from typing import Any
 import polars as pl
 from tqdm import tqdm
 from wasabi import Printer
-from psycop.common.data_structures.patient import PatientSlice
 
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
 

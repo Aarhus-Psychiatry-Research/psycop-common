@@ -4,8 +4,8 @@ from collections.abc import Sequence
 from typing import Union
 
 import polars as pl
-from psycop.common.data_structures.patient import PatientSlice
 
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
