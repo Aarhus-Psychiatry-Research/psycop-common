@@ -89,11 +89,21 @@ SplitNames = Literal["train", "test", "val"]
 class PipelineInputs:
     group: RunGroup
     eval_dir: Path
+    additional_cfg_keys: dict[str, dict[str, Any]] | None
 
     def get_cfg_as_json(self) -> dict[str, Any]:
         # Load json
         path = self.eval_dir / "cfg.json"
-        return json.loads(json.loads(path.read_text()))
+        source_json = json.loads(json.loads(path.read_text()))
+
+        if self.additional_cfg_keys:
+            for k in self.additional_cfg_keys:
+                source_v = source_json[k]
+                additional_v = self.additional_cfg_keys[k]
+                result_v = source_v.update(additional_v)
+                source_json.update(result_v)
+
+        return source_json
 
     def _get_flattened_split_path(self, split: SplitNames) -> Path:
         matches = list(self.group.flattened_ds_dir.glob(f"*{split}*.parquet"))
@@ -202,6 +212,7 @@ class T2DPipelineRun:
         name: str,
         group: RunGroup,
         pos_rate: float,
+        additional_cfg_keys: dict[str, Any] | None = None,
         paper_outputs_path: Optional[Path] = None,
         create_output_paths_on_init: bool = True,
     ):
@@ -212,6 +223,7 @@ class T2DPipelineRun:
         self.inputs = PipelineInputs(
             group=group,
             eval_dir=pipeline_output_dir,
+            additional_cfg_keys=additional_cfg_keys,
         )
         self.pipeline_outputs = PipelineOutputs(
             group=group,
