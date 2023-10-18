@@ -22,7 +22,7 @@ class PatientColumnNames:
     timestamp_col_name: str = "timestamp"
     source_col_name: str = "source"
     value_col_name: str = "value"
-    name_col_name: str | None = None
+    source_subtype_col_name: str | None = None
 
 
 class EventDataFramesToPatients:
@@ -40,8 +40,8 @@ class EventDataFramesToPatients:
         return TemporalEvent(
             timestamp=event_row[self._column_names.timestamp_col_name],
             source_type=event_row[self._column_names.source_col_name],
-            source_subtype=event_row[self._column_names.name_col_name]
-            if self._column_names.name_col_name is not None
+            source_subtype=event_row[self._column_names.source_subtype_col_name]
+            if self._column_names.source_subtype_col_name is not None
             else None,
             value=event_row[self._column_names.value_col_name],
         )
