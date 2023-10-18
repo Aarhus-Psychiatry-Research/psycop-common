@@ -215,6 +215,7 @@ class T2DPipelineRun:
         additional_cfg_keys: dict[str, Any] | None = None,
         paper_outputs_path: Optional[Path] = None,
         create_output_paths_on_init: bool = True,
+        additional_cfg_keys: dict[str, Any],
     ):
         self.name = name
         self.group = group
