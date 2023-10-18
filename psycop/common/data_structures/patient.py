@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Patient:
+class PatientSlice:
     """All task-agnostic data for a patient."""
 
     patient_id: PATIENT_ID
