@@ -9,12 +9,12 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import Ru
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-MODEL_NAME = "full_model_with_text_features_no_washout"
+MODEL_NAME = "full_model_with_text_features"
 PROJECT_MODEL_DIR = Path(
     f"E:/shared_resources/forced_admissions_inpatient/models/{MODEL_NAME}/pipeline_eval",
 )
 
-DEV_GROUP_NAME = "epanaphora-zoogony"
+DEV_GROUP_NAME = "ethnopsychology-cereal"
 DEVELOPMENT_GROUP = RunGroup(model_name=MODEL_NAME, group_name=DEV_GROUP_NAME)
 BEST_POS_RATE = 0.03
 
