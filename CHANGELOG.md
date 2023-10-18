@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.120.0 (2023-10-18)
+
+### Feature
+
+* Extract runs to functions, to avoid instantiation on import ([`afc94cb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/afc94cb29fc9a2995f7003efd62638ca7afec6d0))
+
+### Fix
+
+* Renames ([`5ea1fe5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5ea1fe53b3ff2208885f10cc168858b2ddf66936))
+
+### Documentation
+
+* How to install cuda enabled pytorch on overtaci ([`25608d2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/25608d27fafdd3f61862479d6d177aed478268d8))
+
 ## v0.119.0 (2023-10-18)
 
 ### Feature
