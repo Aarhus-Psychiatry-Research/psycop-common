@@ -3,7 +3,6 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
     plot_auc_roc,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
@@ -21,4 +20,6 @@ def t2d_auroc_plot(run: T2DPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
+    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+
     t2d_auroc_plot(run=BEST_EVAL_PIPELINE)

@@ -10,7 +10,6 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.incidence_b
 from psycop.projects.t2d.paper_outputs.model_description.performance.sensitivity_by_time_to_event_pipeline import (
     t2d_sensitivity_by_time_to_event,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
     t2d_create_patchwork_figure,
 )
@@ -31,4 +30,6 @@ def t2d_create_main_performance_figure(run: T2DPipelineRun) -> None:
 
 
 if __name__ == "__main__":
+    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+
     t2d_create_main_performance_figure(run=BEST_EVAL_PIPELINE)
