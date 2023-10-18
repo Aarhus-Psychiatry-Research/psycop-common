@@ -14,10 +14,10 @@ from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.paper_outputs.utils.create_patchwork_figure import (
     t2d_create_patchwork_figure,
 )
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
-def t2d_create_main_performance_figure(run: PipelineRun) -> None:
+def t2d_create_main_performance_figure(run: T2DPipelineRun) -> None:
     t2d_create_patchwork_figure(
         run=run,
         plot_fns=(

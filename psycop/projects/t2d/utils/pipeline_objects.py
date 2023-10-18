@@ -196,7 +196,7 @@ class PaperOutputSettings:
         )
 
 
-class PipelineRun:
+class T2DPipelineRun:
     def __init__(
         self,
         name: str,

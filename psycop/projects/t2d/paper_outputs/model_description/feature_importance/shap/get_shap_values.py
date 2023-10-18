@@ -7,7 +7,7 @@ import shap
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.cache import mem
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
 def generate_shap_df_for_predictor_col(
@@ -86,7 +86,7 @@ def generate_shap_values_from_pipe(
 
 @mem.cache
 def get_shap_bundle_for_best_run(
-    run: PipelineRun,
+    run: T2DPipelineRun,
     n_rows: Optional[int] = 10_000,
     cache_ver: float = 0.1,
 ) -> ShapBundle:

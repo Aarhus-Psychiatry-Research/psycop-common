@@ -14,12 +14,12 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.performance
 from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustness_figure import (
     t2d_create_main_robustness_figure,
 )
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
 
-def t2d_create_markdown_artifacts(pipeline: PipelineRun) -> list[MarkdownArtifact]:
+def t2d_create_markdown_artifacts(pipeline: T2DPipelineRun) -> list[MarkdownArtifact]:
     relative_to = pipeline.paper_outputs.artifact_path.parent
     pos_rate_percent = f"{int(pipeline.paper_outputs.pos_rate * 100)}%"
     lookahead_years = int(
@@ -64,7 +64,7 @@ def t2d_create_markdown_artifacts(pipeline: PipelineRun) -> list[MarkdownArtifac
     return artifacts  # type: ignore
 
 
-def t2d_main_manuscript_eval(pipeline: PipelineRun) -> list[MarkdownArtifact]:
+def t2d_main_manuscript_eval(pipeline: T2DPipelineRun) -> list[MarkdownArtifact]:
     msg.divider(
         f"Evaluating {pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {pipeline.model_type} - {pipeline.name}",
     )

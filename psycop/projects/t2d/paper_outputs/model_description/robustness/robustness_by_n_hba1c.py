@@ -5,11 +5,11 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
     t2d_plot_robustness,
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
 def t2d_auroc_by_n_hba1c(
-    run: PipelineRun,
+    run: T2DPipelineRun,
 ) -> pn.ggplot:
     """Plot performance by n hba1c"""
     eval_ds = run.pipeline_outputs.get_eval_dataset(

@@ -5,9 +5,9 @@ from psycop.projects.t2d.paper_outputs.config import (
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     test_pipeline,
 )
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
-BEST_DEV_PIPELINE = PipelineRun(
+BEST_DEV_PIPELINE = T2DPipelineRun(
     group=DEVELOPMENT_GROUP,
     name="nonviolentstigmaria",
     pos_rate=BEST_POS_RATE,

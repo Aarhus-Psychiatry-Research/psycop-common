@@ -5,10 +5,10 @@ from psycop.common.model_training.data_loader.utils import (
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
-def generate_feature_importance_table(pipeline_run: PipelineRun) -> pl.DataFrame:
+def generate_feature_importance_table(pipeline_run: T2DPipelineRun) -> pl.DataFrame:
     pipeline = pipeline_run.pipeline_outputs.pipe
 
     # Get feature importance scores

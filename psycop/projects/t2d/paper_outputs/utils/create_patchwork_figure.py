@@ -7,13 +7,13 @@ from wasabi import Printer
 from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
 
 def t2d_create_patchwork_figure(
-    run: PipelineRun,
+    run: T2DPipelineRun,
     plot_fns: Sequence[Callable],
     output_filename: str,
     single_plot_dimensions: tuple[float, float] = (5, 5),

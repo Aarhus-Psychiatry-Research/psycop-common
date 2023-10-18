@@ -8,10 +8,10 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.plotnine_co
     plotnine_confusion_matrix,
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
-def t2d_confusion_matrix_plot(run: PipelineRun) -> pn.ggplot:
+def t2d_confusion_matrix_plot(run: T2DPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pd.DataFrame(

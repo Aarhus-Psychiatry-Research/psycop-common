@@ -14,7 +14,11 @@ from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     test_pipeline,
 )
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import EVAL_ROOT, PipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import (
+    EVAL_ROOT,
+    T2DPipelineRun,
+    RunGroup,
+)
 
 msg = Printer(timestamp=True)
 
@@ -22,7 +26,7 @@ msg = Printer(timestamp=True)
 def get_best_runs_from_model_type(
     dev_run_group: RunGroup,
     model_type: str,
-) -> tuple[PipelineRun]:
+) -> tuple[T2DPipelineRun]:
     """Get PipelineRun objects for the best runs of a given model type"""
     performance_df = pl.from_pandas(dev_run_group.all_runs_performance_df)
 
@@ -37,7 +41,7 @@ def get_best_runs_from_model_type(
     best_run_names = list(best_run_df["run_name"])
 
     best_runs = tuple(
-        PipelineRun(
+        T2DPipelineRun(
             group=dev_run_group,
             name=name,
             pos_rate=BEST_POS_RATE,
@@ -53,7 +57,7 @@ def get_best_runs_from_model_type(
 
 def get_test_artifacts_for_pipeline(
     recreate_artifacts: bool,
-    dev_pipeline: PipelineRun,
+    dev_pipeline: T2DPipelineRun,
 ) -> list[MarkdownArtifact]:
     """Get the standard set of artifacts for a given pipeline"""
     pipeline = test_pipeline(pipeline_to_test=dev_pipeline)
