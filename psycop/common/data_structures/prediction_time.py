@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from psycop.common.data_structures.patient_slice import PatientSlice
+from psycop.common.data_structures.patient import PatientSlice
+
 
 if TYPE_CHECKING:
     import datetime as dt
