@@ -100,7 +100,7 @@ if __name__ == "__main__":
         collate_fn=clf.collate_fn,
     )
 
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    # TODO:
+    # - [ ] Fit the clf
+    # - [ ] Run forwards pass to get predictions
+    # - [ ] Save predictions and dataset to disk in same format as EvalDataset
