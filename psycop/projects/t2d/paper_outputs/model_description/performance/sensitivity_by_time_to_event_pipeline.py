@@ -101,6 +101,6 @@ def t2d_sensitivity_by_time_to_event(run: T2DPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-    t2d_sensitivity_by_time_to_event(run=BEST_EVAL_PIPELINE)
+    t2d_sensitivity_by_time_to_event(run=get_best_eval_pipeline)

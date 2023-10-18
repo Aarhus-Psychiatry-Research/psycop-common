@@ -1,12 +1,12 @@
 import polars as pl
 from wasabi import Printer
 
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
 msg = Printer(timestamp=True)
 
 if __name__ == "__main__":
-    pipeline_inputs = BEST_EVAL_PIPELINE.inputs
+    pipeline_inputs = get_best_eval_pipeline.inputs
 
     flattened_dataset = pl.concat(
         [

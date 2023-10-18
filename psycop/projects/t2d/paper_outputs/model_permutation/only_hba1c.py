@@ -91,10 +91,10 @@ if __name__ == "__main__":
     from copy import copy
 
     from psycop.projects.t2d.paper_outputs.selected_runs import (
-        BEST_EVAL_PIPELINE,
+        get_best_eval_pipeline,
     )
 
-    run = copy(BEST_EVAL_PIPELINE)
+    run = copy(get_best_eval_pipeline())
     run.name = "xgboost_hba1c_only"
     default_xgboost_params = True
 

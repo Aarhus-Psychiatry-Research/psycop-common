@@ -62,11 +62,11 @@ class CreateBooleanDataset(FeatureModifier):
 
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.selected_runs import (
-        BEST_EVAL_PIPELINE,
+        get_best_eval_pipeline,
     )
 
     evaluate_pipeline_with_modified_dataset(
-        run=BEST_EVAL_PIPELINE,
+        run=get_best_eval_pipeline,
         feature_modifier=CreateBooleanDataset(),
     )
 

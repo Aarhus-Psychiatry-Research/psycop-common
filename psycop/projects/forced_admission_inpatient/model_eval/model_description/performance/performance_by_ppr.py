@@ -85,7 +85,7 @@ def fa_output_performance_by_ppr(run: PipelineRun):
 
 if __name__ == "__main__":
     from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
-        BEST_EVAL_PIPELINE,
+        get_best_eval_pipeline,
     )
 
-    fa_output_performance_by_ppr(run=BEST_EVAL_PIPELINE)
+    fa_output_performance_by_ppr(run=get_best_eval_pipeline)

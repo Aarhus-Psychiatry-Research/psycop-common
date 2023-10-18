@@ -24,12 +24,13 @@ p = (
 )
 
 # %%
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-BEST_EVAL_PIPELINE.paper_outputs.paths.figures.mkdir(parents=True, exist_ok=True)
+get_best_eval_pipeline.paper_outputs.paths.figures.mkdir(parents=True, exist_ok=True)
 
 save_path = (
-    BEST_EVAL_PIPELINE.paper_outputs.paths.figures / "diabetes_incidence_by_time.png"
+    get_best_eval_pipeline.paper_outputs.paths.figures
+    / "diabetes_incidence_by_time.png"
 )
 
 p.save(save_path, dpi=600)

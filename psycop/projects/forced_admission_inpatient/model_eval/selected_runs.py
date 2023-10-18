@@ -9,7 +9,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     PipelineRun,
 )
 
-BEST_DEV_PIPELINE = PipelineRun(
+get_best_dev_pipeline = PipelineRun(
     group=DEVELOPMENT_GROUP,
     name=DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[
         0,
@@ -19,7 +19,7 @@ BEST_DEV_PIPELINE = PipelineRun(
     create_output_paths_on_init=False,
 )
 
-BEST_EVAL_PIPELINE = test_selected_model_pipeline(
-    pipeline_to_test=BEST_DEV_PIPELINE,
+get_best_eval_pipeline = test_selected_model_pipeline(
+    pipeline_to_test=get_best_dev_pipeline,
     datasets_for_evaluation=["val_with_washout"],
 )

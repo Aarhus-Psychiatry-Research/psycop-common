@@ -21,7 +21,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.preprocessing.pre_split.processors.row_filter import (
     PreSplitRowFilter,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
@@ -96,7 +96,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
         )
 
         lookahead_days = (
-            BEST_EVAL_PIPELINE.inputs.cfg.preprocessing.pre_split.min_lookahead_days
+            get_best_eval_pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days
         )
 
         hba1c_timestamps = hba1c()
@@ -239,8 +239,8 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
 
 if __name__ == "__main__":
-    pipeline = BEST_EVAL_PIPELINE
-    plot = MeasurementsWithinLookaheadPlot().get_plot(run=BEST_EVAL_PIPELINE)
+    pipeline = get_best_eval_pipeline
+    plot = MeasurementsWithinLookaheadPlot().get_plot(run=get_best_eval_pipeline)
     size = (6.5, 8)
 
     plot.save(

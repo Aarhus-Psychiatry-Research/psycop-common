@@ -13,7 +13,7 @@ from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_
 from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
     test_pipeline,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 from psycop.projects.t2d.utils.pipeline_objects import (
     EVAL_ROOT,
     RunGroup,
@@ -106,7 +106,7 @@ def full_eval_for_supplementary(
         )
 
         # Do not add the main pipeline's eval to supplementary
-        if run.name != BEST_EVAL_PIPELINE.name:
+        if run.name != get_best_eval_pipeline.name:
             artifacts += run_artifacts
 
     combined_supplementary_md = create_supplementary_from_markdown_artifacts(

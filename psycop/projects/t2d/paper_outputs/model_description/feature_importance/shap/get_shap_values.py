@@ -150,10 +150,10 @@ def get_top_i_features_by_mean_abs_shap(
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
     shap_bundle = get_shap_bundle_for_best_run(
-        run=BEST_EVAL_PIPELINE,
+        run=get_best_eval_pipeline,
         n_rows=1_000,
         cache_ver=0.1,
     )

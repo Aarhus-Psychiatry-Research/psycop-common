@@ -37,7 +37,7 @@ def train_model_with_modified_dataset(
     cfg.data.Config.allow_mutation = True
     cfg.data.dir = str(boolean_dataset_dir)
     cfg.data.splits_for_training = ["train"]
-    cfg.data.datasets_for_evaluation = ["test"]
+    cfg.data.splits_for_evaluation = ["test"]
 
     msg.info(f"Training model from dataset at {cfg.data.dir}")
     roc_auc = train_model(cfg=cfg)

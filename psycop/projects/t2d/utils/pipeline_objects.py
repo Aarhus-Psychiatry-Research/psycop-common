@@ -90,6 +90,7 @@ class PipelineInputs:
     group: RunGroup
     eval_dir: Path
     additional_cfg_keys: dict[str, dict[str, Any]] | None
+    remove_cfg_keys: set[str] | None
 
     def get_cfg_as_json(self) -> dict[str, Any]:
         # Load json
@@ -100,9 +101,13 @@ class PipelineInputs:
             for k in self.additional_cfg_keys:
                 source_v = source_json[k]
                 additional_v = self.additional_cfg_keys[k]
-                result_v = source_v.update(additional_v)                
-                source_json.update(result_v)
-        
+                source_v.update(additional_v)
+                source_json.update(source_v)
+
+        if self.remove_cfg_keys:
+            for k in self.remove_cfg_keys:
+                del source_json[k]
+
         return source_json
 
     def _get_flattened_split_path(self, split: SplitNames) -> Path:
@@ -131,9 +136,6 @@ class PipelineInputs:
         TODO: Note that this means assigning to the cfg property does nothing, since it's recomputed every time it's called
         """
         pipeline_dict = self.get_cfg_as_json()
-
-        if "project_path" not in pipeline_dict["project"].keys():
-            pipeline_dict["project"]["project_path"] = OVARTACI_SHARED_DIR / "t2d"
 
         return FullConfigSchema.parse_obj(pipeline_dict)
 
@@ -214,13 +216,19 @@ class T2DPipelineRun:
         pos_rate: float,
         paper_outputs_path: Optional[Path] = None,
         create_output_paths_on_init: bool = True,
-        additional_cfg_keys: dict[str, Any],
+        additional_cfg_keys: dict[str, Any] | None = None,
+        remove_cfg_keys: set[str] | None = None,
     ):
         self.name = name
         self.group = group
         pipeline_output_dir = self.group.group_dir / self.name
 
-        self.inputs = PipelineInputs(group=group, eval_dir=pipeline_output_dir, additional_cfg_keys=additional_cfg_keys)
+        self.inputs = PipelineInputs(
+            group=group,
+            eval_dir=pipeline_output_dir,
+            additional_cfg_keys=additional_cfg_keys,
+            remove_cfg_keys=remove_cfg_keys,
+        )
         self.pipeline_outputs = PipelineOutputs(
             group=group,
             dir_path=pipeline_output_dir,

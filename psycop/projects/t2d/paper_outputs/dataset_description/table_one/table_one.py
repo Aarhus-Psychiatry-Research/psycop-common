@@ -7,17 +7,17 @@ import polars as pl
 from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
     T2DCohortDefiner,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
 model_train_df = pl.concat(
     [
-        BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(split="train"),
-        BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(split="val"),
+        get_best_eval_pipeline.inputs.get_flattened_split_as_lazyframe(split="train"),
+        get_best_eval_pipeline.inputs.get_flattened_split_as_lazyframe(split="val"),
     ],
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
-test_dataset = BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_lazyframe(
+test_dataset = get_best_eval_pipeline.inputs.get_flattened_split_as_lazyframe(
     split="test",
 ).with_columns(
     dataset=pl.format("test"),
@@ -209,9 +209,9 @@ patient_table_one = create_table(
 ############
 combined = pd.concat([visit_table_one, patient_table_one])
 
-BEST_EVAL_PIPELINE.paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
+get_best_eval_pipeline.paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
 combined.to_csv(
-    BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "descriptive_stats_table.csv",
+    get_best_eval_pipeline.paper_outputs.paths.tables / "descriptive_stats_table.csv",
 )
 
 # %%

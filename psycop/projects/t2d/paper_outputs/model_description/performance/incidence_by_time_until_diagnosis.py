@@ -55,10 +55,11 @@ def t2d_first_pred_to_event(run: T2DPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-    t2d_first_pred_to_event(run=BEST_EVAL_PIPELINE).save(
-        BEST_EVAL_PIPELINE.paper_outputs.paths.figures / "time_from_pred_to_event.png",
+    t2d_first_pred_to_event(run=get_best_eval_pipeline).save(
+        get_best_eval_pipeline.paper_outputs.paths.figures
+        / "time_from_pred_to_event.png",
         width=5,
         height=5,
         dpi=600,
