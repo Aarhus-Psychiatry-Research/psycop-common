@@ -16,7 +16,7 @@ if __name__ == "__main__":
     cfg.project.wandb.Config.allow_mutation = True
     cfg.project.wandb.group = f"{run_to_train_from.group.name}-eval-on-test"
     cfg.data.Config.allow_mutation = True
-    cfg.data.datasets_for_evaluation = ["val"]
+    cfg.data.splits_for_evaluation = ["val"]
 
     train_model(cfg=cfg)
 
@@ -27,6 +27,6 @@ if __name__ == "__main__":
     text_cfg.project.wandb.Config.allow_mutation = True
     text_cfg.project.wandb.group = f"{text_run_to_train_from.group.name}-eval-on-test"
     text_cfg.data.Config.allow_mutation = True
-    text_cfg.data.datasets_for_evaluation = ["val"]
+    text_cfg.data.splits_for_evaluation = ["val"]
 
     train_model(cfg=text_cfg)

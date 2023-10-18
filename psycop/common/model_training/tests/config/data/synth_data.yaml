@@ -3,7 +3,7 @@ data:
   dir: psycop/common/model_training/tests/test_data/synth_splits_subsampled/
   suffix: csv
   splits_for_training: ["train", "val"]
-  datasets_for_evaluation: null
+  splits_for_evaluation: null
   n_training_samples: null
   pred_prefix: pred_
   outc_prefix: outc_

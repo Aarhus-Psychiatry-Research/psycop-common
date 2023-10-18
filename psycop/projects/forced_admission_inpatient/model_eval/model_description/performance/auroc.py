@@ -4,7 +4,7 @@ from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
     plot_auc_roc,
 )
 from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
-    BEST_EVAL_PIPELINE,
+    get_best_eval_pipeline,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     PipelineRun,
@@ -25,4 +25,4 @@ def fa_auroc_plot(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    fa_auroc_plot(run=BEST_EVAL_PIPELINE)
+    fa_auroc_plot(run=get_best_eval_pipeline())

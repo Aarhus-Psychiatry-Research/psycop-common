@@ -33,9 +33,9 @@ def time_from_first_pos_pred_to_next_hba1c(
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-    pipeline = BEST_EVAL_PIPELINE
+    pipeline = get_best_eval_pipeline()
     eval_ds = pipeline.pipeline_outputs.get_eval_dataset()
 
     positive_predictions = (

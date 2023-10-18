@@ -8,7 +8,7 @@ from psycop.projects.forced_admission_inpatient.model_eval.model_description.per
     plotnine_confusion_matrix,
 )
 from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
-    BEST_EVAL_PIPELINE,
+    get_best_eval_pipeline,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     PipelineRun,
@@ -39,4 +39,4 @@ def fa_confusion_matrix_plot(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    fa_confusion_matrix_plot(run=BEST_EVAL_PIPELINE)
+    fa_confusion_matrix_plot(run=get_best_eval_pipeline())

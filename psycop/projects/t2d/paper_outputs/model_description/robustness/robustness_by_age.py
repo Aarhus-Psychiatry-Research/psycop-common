@@ -4,7 +4,7 @@ from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_inp
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
@@ -32,4 +32,4 @@ def t2d_auroc_by_age(run: T2DPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_age(run=BEST_EVAL_PIPELINE)
+    t2d_auroc_by_age(run=get_best_eval_pipeline())

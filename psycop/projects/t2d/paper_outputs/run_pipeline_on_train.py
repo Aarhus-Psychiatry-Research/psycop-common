@@ -7,7 +7,7 @@ from wasabi import Printer
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
-from psycop.projects.t2d.utils.pipeline_objects import RunGroup, T2DPipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
@@ -38,7 +38,7 @@ def _train_pipeline_on_test(pipeline_to_train: T2DPipelineRun):
     cfg = pipeline_to_train.inputs.cfg
     cfg.project.wandb.Config.allow_mutation = True
     cfg.data.Config.allow_mutation = True
-    cfg.data.datasets_for_evaluation = ["test"]
+    cfg.data.splits_for_evaluation = ["test"]
 
     override_dir = _get_test_pipeline_dir(pipeline_to_train=pipeline_to_train)
     msg.info(f"Evaluating to {override_dir}")
@@ -68,14 +68,10 @@ def test_pipeline(
             f"{pipeline_to_test.group.name}/{pipeline_to_test.name} has been evaluated, loading",
         )
 
-    return T2DPipelineRun(
-        group=RunGroup(name=_get_test_group_name(pipeline_to_test)),
-        name=_get_test_run_name(pipeline_to_test),
-        pos_rate=0.03,
-    )
+    return pipeline_to_test
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_DEV_PIPELINE
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_dev_pipeline
 
-    eval_run = test_pipeline(pipeline_to_test=BEST_DEV_PIPELINE)
+    eval_run = test_pipeline(pipeline_to_test=get_best_dev_pipeline())

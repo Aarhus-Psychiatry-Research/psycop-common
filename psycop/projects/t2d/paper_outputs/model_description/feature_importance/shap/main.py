@@ -1,4 +1,4 @@
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.get_shap_values import (
@@ -23,7 +23,9 @@ if __name__ == "__main__":
 
     plotting_df = pl.from_pandas(long_shap_df)
 
-    shap_figures_path = BEST_EVAL_PIPELINE.paper_outputs.paths.figures / "shap_plot.png"
+    shap_figures_path = (
+        get_best_eval_pipeline().paper_outputs.paths.figures / "shap_plot.png"
+    )
     shap_figures_path.mkdir(exist_ok=True, parents=True)
 
     from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap.plot_shap import (

@@ -7,10 +7,23 @@ from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
 )
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
-BEST_DEV_PIPELINE = T2DPipelineRun(
-    group=DEVELOPMENT_GROUP,
-    name="nonviolentstigmaria",
-    pos_rate=BEST_POS_RATE,
-    additional_cfg_keys={"project": {"project_path": "E:/shared_resources/t2d"}},
-)
-BEST_EVAL_PIPELINE = test_pipeline(pipeline_to_test=BEST_DEV_PIPELINE)
+
+def get_best_dev_pipeline() -> T2DPipelineRun:
+    return T2DPipelineRun(
+        group=DEVELOPMENT_GROUP,
+        name="nonviolentstigmaria",
+        pos_rate=BEST_POS_RATE,
+        additional_cfg_keys={
+            "project": {
+                "project_path": "E:/shared_resources/t2d",
+                "seed": "42",
+                "gpu": "true",
+                "name": "nonviolentstigmaria",
+            },
+        },
+        remove_cfg_keys={"name", "project_path", "seed", "gpu", "wandb"},
+    )
+
+
+def get_best_eval_pipeline() -> T2DPipelineRun:
+    return test_pipeline(pipeline_to_test=get_best_dev_pipeline())
