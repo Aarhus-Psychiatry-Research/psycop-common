@@ -27,6 +27,9 @@ from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
+from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
+    PatientColumnNames,
+)
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
@@ -72,10 +75,10 @@ class TrainingConfig:
 
     # data filtering
     min_n_visits: int = 5
-    patient_column_names: dict[str, str] | None = field(
-        default_factory=lambda: {
-            "source_subtype_col_name": "type",
-        },
+    patient_column_names: PatientColumnNames | None = field(
+        default=PatientColumnNames(
+            source_subtype_col_name="type",
+        ),
     )
 
 
