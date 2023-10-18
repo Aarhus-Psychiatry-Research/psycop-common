@@ -6,8 +6,8 @@ from typing import Any
 import polars as pl
 from tqdm import tqdm
 from wasabi import Printer
+from psycop.common.data_structures.patient import PatientSlice
 
-from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
 
@@ -17,7 +17,7 @@ PatientDict = dict[str | int, list[TemporalEvent | StaticFeature]]
 
 
 @dataclass(frozen=True)
-class PatientColumnNames:
+class PatientSliceColumnNames:
     patient_id_col_name: str = "dw_ek_borger"
     timestamp_col_name: str = "timestamp"
     source_col_name: str = "source"
@@ -25,12 +25,12 @@ class PatientColumnNames:
     source_subtype_col_name: str | None = None
 
 
-class EventDataFramesToPatients:
+class EventDataFramesToPatientSlices:
     """Unpacks a sequence of dataframes containing events into a list of patients."""
 
-    def __init__(self, column_names: PatientColumnNames | None = None) -> None:
+    def __init__(self, column_names: PatientSliceColumnNames | None = None) -> None:
         self._column_names = (
-            column_names if column_names is not None else PatientColumnNames()
+            column_names if column_names is not None else PatientSliceColumnNames()
         )
 
     def _temporal_event_dict_to_event_obj(
@@ -82,11 +82,11 @@ class EventDataFramesToPatients:
 
         return patient_dict  # type: ignore
 
-    def _cohort_dict_to_patients(
+    def _cohort_dict_to_patient_slices(
         self,
         cohort_dict: PatientDict,
         date_of_birth_dict: dict[int | str, datetime],
-    ) -> list[Patient]:
+    ) -> list[PatientSlice]:
         patient_cohort = []
 
         for patient_id, patient_events in cohort_dict.items():
@@ -98,9 +98,12 @@ class EventDataFramesToPatients:
                     "Please make sure that the date of birth is included in the "
                     "date_of_birth_df.",
                 ) from e
-            patient = Patient(patient_id=patient_id, date_of_birth=date_of_birth)
-            patient.add_events(patient_events)
-            patient_cohort.append(patient)
+            patient_slice = PatientSlice(
+                patient_id=patient_id,
+                date_of_birth=date_of_birth,
+            )
+            patient_slice.add_events(patient_events)
+            patient_cohort.append(patient_slice)
 
         return patient_cohort
 
@@ -122,7 +125,7 @@ class EventDataFramesToPatients:
         self,
         source_event_dataframes: Sequence[pl.DataFrame],
         date_of_birth_df: pl.DataFrame,
-    ) -> list[Patient]:
+    ) -> list[PatientSlice]:
         patient_dfs_collections = [
             df.partition_by(
                 by=self._column_names.patient_id_col_name,
@@ -152,7 +155,7 @@ class EventDataFramesToPatients:
             date_of_birth_df=date_of_birth_df,
         )
 
-        patient_cohort = self._cohort_dict_to_patients(
+        patient_cohort = self._cohort_dict_to_patient_slices(
             cohort_dict=cohort_dict,
             date_of_birth_dict=date_of_birth_dict,
         )

@@ -3,16 +3,17 @@ from datetime import datetime
 import pytest
 from torch import nn
 
-from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.data_structures import TemporalEvent
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
-    PatientDataset,
+    PatientSliceDataset,
 )
 
 
 @pytest.fixture()
-def patients() -> list[Patient]:
+def patients() -> list[PatientSlice]:
     """
     Returns a list of patient objects
     """
@@ -30,13 +31,13 @@ def patients() -> list[Patient]:
         source_subtype="A",
     )
 
-    patient1 = Patient(
+    patient1 = PatientSlice(
         patient_id=1,
         date_of_birth=datetime(1990, 1, 1),
     )
     patient1.add_events([e1, e2])
 
-    patient2 = Patient(
+    patient2 = PatientSlice(
         patient_id=2,
         date_of_birth=datetime(1993, 3, 1),
     )
@@ -46,12 +47,12 @@ def patients() -> list[Patient]:
 
 
 @pytest.fixture()
-def patient_dataset(patients: list) -> PatientDataset:
-    return PatientDataset(patients)
+def patient_dataset(patients: list) -> PatientSliceDataset:
+    return PatientSliceDataset(patients)
 
 
 @pytest.fixture()
-def behrt_for_masked_lm(patients: list[Patient]) -> BEHRTForMaskedLM:
+def behrt_for_masked_lm(patients: list[PatientSlice]) -> BEHRTForMaskedLM:
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
     emb.fit(patients=patients, add_mask_token=True)

@@ -10,7 +10,8 @@ from torchmetrics import Metric
 from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 from transformers import AdamW, get_linear_schedule_with_warmup
 
-from psycop.common.data_structures.patient_slice import PatientSlice
+from psycop.common.data_structures.patient import PatientSlice
+
 
 from .aggregators import AggregationModule
 from .embedders.BEHRT_embedders import BEHRTEmbedder

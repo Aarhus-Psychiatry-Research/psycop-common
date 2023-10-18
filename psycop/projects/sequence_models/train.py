@@ -24,18 +24,18 @@ import lightning.pytorch.loggers as pl_loggers
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
+from psycop.common.data_structures.patient import PatientSlice
 
-from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
-    PatientColumnNames,
+    PatientSliceColumnNames,
 )
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.common.sequence_models import PatientDataset
+from psycop.common.sequence_models import PatientSliceDataset
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 
@@ -75,8 +75,8 @@ class TrainingConfig:
 
     # data filtering
     min_n_visits: int = 5
-    patient_column_names: PatientColumnNames | None = field(
-        default=PatientColumnNames(
+    patient_column_names: PatientSliceColumnNames | None = field(
+        default=PatientSliceColumnNames(
             source_subtype_col_name="type",
         ),
     )
@@ -112,7 +112,9 @@ class Config:
         return d
 
 
-def create_behrt_MLM_model(patients: list[Patient], config: Config) -> BEHRTForMaskedLM:
+def create_behrt_MLM_model(
+    patients: list[PatientSlice], config: Config
+) -> BEHRTForMaskedLM:
     """
     Creates a model for testing
     """
@@ -204,8 +206,8 @@ if __name__ == "__main__":
         split=SplitName.VALIDATION,
         patient_column_names=config.training_config.patient_column_names,
     )
-    train_dataset = PatientDataset(train_patients)
-    val_dataset = PatientDataset(val_patients)
+    train_dataset = PatientSliceDataset(train_patients)
+    val_dataset = PatientSliceDataset(val_patients)
 
     model = create_behrt_MLM_model(patients=train_patients, config=config)
 

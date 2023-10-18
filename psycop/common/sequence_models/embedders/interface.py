@@ -3,7 +3,7 @@ from typing import Any, Protocol
 
 import torch
 
-from psycop.common.data_structures import Patient
+from psycop.common.data_structures.patient import PatientSlice
 
 
 @dataclass(frozen=True)
@@ -35,8 +35,8 @@ class Embedder(Protocol):
     def forward(self, *args: Any) -> EmbeddedSequence:
         ...
 
-    def collate_patients(self, patients: list[Patient]) -> dict[str, torch.Tensor]:
+    def collate_patients(self, patients: list[PatientSlice]) -> dict[str, torch.Tensor]:
         ...
 
-    def fit(self, patients: list[Patient], *args: Any) -> None:
+    def fit(self, patients: list[PatientSlice], *args: Any) -> None:
         ...

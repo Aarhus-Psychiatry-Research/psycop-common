@@ -89,7 +89,7 @@ class PatientSlice:
             # 2. Return prediction sequences
             prediction_sequences.append(
                 PredictionTime(
-                    patient=self,
+                    patient_slice=self,
                     prediction_timestamp=prediction_timestamp,
                     temporal_events=filtered_events,
                     outcome=outcome_within_lookahead,

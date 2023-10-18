@@ -2,9 +2,9 @@ from pathlib import Path
 
 from torch import nn
 from torch.utils.data import DataLoader
+from psycop.common.data_structures.patient import PatientSlice
 
-from psycop.common.data_structures import Patient
-from psycop.common.sequence_models import BEHRTForMaskedLM, PatientDataset
+from psycop.common.sequence_models import BEHRTForMaskedLM, PatientSliceDataset
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.projects.sequence_models.train import (
     Config,
@@ -16,7 +16,7 @@ from psycop.projects.sequence_models.train import (
 )
 
 
-def test_behrt(patient_dataset: PatientDataset):
+def test_behrt(patient_dataset: PatientSliceDataset):
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
     encoder_layer = nn.TransformerEncoderLayer(
@@ -27,7 +27,7 @@ def test_behrt(patient_dataset: PatientDataset):
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
-    patients = patient_dataset.patients
+    patients = patient_dataset.patient_slices
     emb.fit(patients, add_mask_token=True)
 
     config = Config()
@@ -53,7 +53,7 @@ def test_behrt(patient_dataset: PatientDataset):
 
 
 def test_module_with_trainer(
-    patients: list[Patient],
+    patients: list[PatientSlice],
     tmp_path: Path,
 ):
     """
@@ -67,8 +67,8 @@ def test_module_with_trainer(
     train_patients = patients[:midpoint]
     val_patients = patients[midpoint:]
 
-    train_dataset = PatientDataset(train_patients)
-    val_dataset = PatientDataset(val_patients)
+    train_dataset = PatientSliceDataset(train_patients)
+    val_dataset = PatientSliceDataset(val_patients)
 
     config = Config(
         training_config=TrainingConfig(

@@ -1,5 +1,5 @@
 from .aggregators import AggregationModule, AveragePooler
-from .dataset import PatientDataset, PatientSlicesWithLabels
+from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 from .embedders.BEHRT_embedders import BEHRTEmbedder
 from .embedders.interface import Embedder
 from .tasks import BEHRTForMaskedLM, EncoderForClassification
@@ -8,7 +8,7 @@ __all__ = [
     "BEHRTEmbedder",
     "BEHRTForMaskedLM",
     "Embedder",
-    "PatientDataset",
+    "PatientSliceDataset",
     "PatientSlicesWithLabels",
     "EncoderForClassification",
     "AveragePooler",

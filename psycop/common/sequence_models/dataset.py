@@ -6,20 +6,19 @@ from collections.abc import Sequence
 
 from torch.utils.data import Dataset
 
-from psycop.common.data_structures import Patient
-from psycop.common.data_structures.patient_slice import PatientSlice
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 
 
-class PatientDataset(Dataset):
-    def __init__(self, patients: list[Patient]) -> None:
-        self.patients: list[Patient] = patients
+class PatientSliceDataset(Dataset):
+    def __init__(self, patient_slices: list[PatientSlice]) -> None:
+        self.patient_slices: list[PatientSlice] = patient_slices
 
     def __len__(self) -> int:
-        return len(self.patients)
+        return len(self.patient_slices)
 
-    def __getitem__(self, idx: int) -> Patient:
-        return self.patients[idx]
+    def __getitem__(self, idx: int) -> PatientSlice:
+        return self.patient_slices[idx]
 
 
 class PatientSlicesWithLabels(Dataset):
@@ -31,6 +30,6 @@ class PatientSlicesWithLabels(Dataset):
 
     def __getitem__(self, idx: int) -> tuple[PatientSlice, int]:
         pred_time = self.prediction_times[idx]
-        patient_slice = pred_time.to_patient_slice()
         label = int(pred_time.outcome)
-        return (patient_slice, label)
+
+        return (pred_time.patient_slice, label)

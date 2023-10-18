@@ -3,7 +3,8 @@ import datetime as dt
 import pytest
 import torch
 
-from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.data_structures import TemporalEvent
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.embedders.interface import Embedder
 
@@ -42,7 +43,7 @@ def test_diagnosis_mapping(
     Test mapping of diagnosis from ICD10 to caliber
     """
 
-    patient = Patient(
+    patient = PatientSlice(
         patient_id=11,
         date_of_birth=dt.datetime(year=1990, month=1, day=1),
     )
@@ -87,7 +88,7 @@ def test_diagnosis_mapping(
 
     patient.add_events(temporal_events)
 
-    patient_events: list[tuple[Patient, TemporalEvent]] = [
+    patient_events: list[tuple[PatientSlice, TemporalEvent]] = [
         (p, e)
         for p in [*patients, patient]
         for e in embedding_module.filter_events(p.temporal_events)

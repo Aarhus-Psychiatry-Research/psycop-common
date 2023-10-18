@@ -13,7 +13,7 @@ from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import TemporalEvent
-from psycop.common.data_structures.patient_slice import PatientSlice
+from psycop.common.data_structures.patient import PatientSlice
 
 from .interface import EmbeddedSequence
 
