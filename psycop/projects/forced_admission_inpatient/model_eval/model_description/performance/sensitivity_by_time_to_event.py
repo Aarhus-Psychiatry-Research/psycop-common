@@ -109,4 +109,4 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    fa_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline)
+    fa_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())

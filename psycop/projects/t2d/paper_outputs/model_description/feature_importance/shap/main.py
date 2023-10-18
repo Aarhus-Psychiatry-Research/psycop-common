@@ -24,7 +24,7 @@ if __name__ == "__main__":
     plotting_df = pl.from_pandas(long_shap_df)
 
     shap_figures_path = (
-        get_best_eval_pipeline.paper_outputs.paths.figures / "shap_plot.png"
+        get_best_eval_pipeline().paper_outputs.paths.figures / "shap_plot.png"
     )
     shap_figures_path.mkdir(exist_ok=True, parents=True)
 

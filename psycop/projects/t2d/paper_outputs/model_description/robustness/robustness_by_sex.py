@@ -31,4 +31,4 @@ def t2d_auroc_by_sex(run: T2DPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_sex(run=get_best_eval_pipeline)
+    t2d_auroc_by_sex(run=get_best_eval_pipeline())

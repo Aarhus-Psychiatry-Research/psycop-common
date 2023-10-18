@@ -74,4 +74,4 @@ def test_pipeline(
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.selected_runs import get_best_dev_pipeline
 
-    eval_run = test_pipeline(pipeline_to_test=get_best_dev_pipeline)
+    eval_run = test_pipeline(pipeline_to_test=get_best_dev_pipeline())

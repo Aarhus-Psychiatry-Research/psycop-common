@@ -35,4 +35,4 @@ def t2d_auroc_by_n_hba1c(
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_n_hba1c(run=get_best_eval_pipeline)
+    t2d_auroc_by_n_hba1c(run=get_best_eval_pipeline())

@@ -66,7 +66,7 @@ if __name__ == "__main__":
     )
 
     evaluate_pipeline_with_modified_dataset(
-        run=get_best_eval_pipeline,
+        run=get_best_eval_pipeline(),
         feature_modifier=CreateBooleanDataset(),
     )
 

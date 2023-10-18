@@ -13,16 +13,20 @@ from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import 
 
 model_train_df = pl.concat(
     [
-        get_best_eval_pipeline.inputs.get_flattened_split_as_lazyframe(split="train"),
+        get_best_eval_pipeline().inputs.get_flattened_split_as_lazyframe(split="train"),
     ],
     how="vertical",
 ).with_columns(dataset=pl.format("0. train"))
 
 
-val_dataset = get_best_eval_pipeline.inputs.get_flattened_split_as_lazyframe(
-    split="val",
-).with_columns(
-    dataset=pl.format("val"),
+val_dataset = (
+    get_best_eval_pipeline()
+    .inputs.get_flattened_split_as_lazyframe(
+        split="val",
+    )
+    .with_columns(
+        dataset=pl.format("val"),
+    )
 )
 
 flattened_combined = pl.concat([model_train_df, val_dataset], how="vertical").rename(
@@ -156,9 +160,9 @@ patient_table_one = create_table(
 ############
 combined = pd.concat([visit_table_one, patient_table_one])
 
-get_best_eval_pipeline.paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
+get_best_eval_pipeline().paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
 combined.to_csv(
-    get_best_eval_pipeline.paper_outputs.paths.tables / "descriptive_stats_table.csv",
+    get_best_eval_pipeline().paper_outputs.paths.tables / "descriptive_stats_table.csv",
 )
 
 # %%

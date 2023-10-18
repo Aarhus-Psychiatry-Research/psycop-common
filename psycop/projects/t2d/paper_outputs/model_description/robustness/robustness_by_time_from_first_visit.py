@@ -60,4 +60,4 @@ def t2d_auroc_by_time_from_first_visit(run: T2DPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_time_from_first_visit(run=get_best_eval_pipeline)
+    t2d_auroc_by_time_from_first_visit(run=get_best_eval_pipeline())

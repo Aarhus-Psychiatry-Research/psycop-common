@@ -96,7 +96,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
         )
 
         lookahead_days = (
-            get_best_eval_pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days
+            get_best_eval_pipeline().inputs.cfg.preprocessing.pre_split.min_lookahead_days
         )
 
         hba1c_timestamps = hba1c()
@@ -239,8 +239,8 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
 
 if __name__ == "__main__":
-    pipeline = get_best_eval_pipeline
-    plot = MeasurementsWithinLookaheadPlot().get_plot(run=get_best_eval_pipeline)
+    pipeline = get_best_eval_pipeline()
+    plot = MeasurementsWithinLookaheadPlot().get_plot(run=get_best_eval_pipeline())
     size = (6.5, 8)
 
     plot.save(

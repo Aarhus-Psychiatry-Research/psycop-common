@@ -6,7 +6,7 @@ from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeli
 msg = Printer(timestamp=True)
 
 if __name__ == "__main__":
-    pipeline_inputs = get_best_eval_pipeline.inputs
+    pipeline_inputs = get_best_eval_pipeline().inputs
 
     flattened_dataset = pl.concat(
         [

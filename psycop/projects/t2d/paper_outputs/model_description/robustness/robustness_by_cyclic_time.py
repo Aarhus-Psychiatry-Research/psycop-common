@@ -47,5 +47,5 @@ def t2d_auroc_by_month_of_year(run: T2DPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_day_of_week(run=get_best_eval_pipeline)
-    t2d_auroc_by_month_of_year(run=get_best_eval_pipeline)
+    t2d_auroc_by_day_of_week(run=get_best_eval_pipeline())
+    t2d_auroc_by_month_of_year(run=get_best_eval_pipeline())

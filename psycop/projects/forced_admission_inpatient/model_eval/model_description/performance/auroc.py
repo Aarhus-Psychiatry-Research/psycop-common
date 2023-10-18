@@ -25,4 +25,4 @@ def fa_auroc_plot(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    fa_auroc_plot(run=get_best_eval_pipeline)
+    fa_auroc_plot(run=get_best_eval_pipeline())

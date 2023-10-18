@@ -106,7 +106,7 @@ def full_eval_for_supplementary(
         )
 
         # Do not add the main pipeline's eval to supplementary
-        if run.name != get_best_eval_pipeline.name:
+        if run.name != get_best_eval_pipeline().name:
             artifacts += run_artifacts
 
     combined_supplementary_md = create_supplementary_from_markdown_artifacts(

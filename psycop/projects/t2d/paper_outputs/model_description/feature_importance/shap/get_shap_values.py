@@ -153,7 +153,7 @@ if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
     shap_bundle = get_shap_bundle_for_best_run(
-        run=get_best_eval_pipeline,
+        run=get_best_eval_pipeline(),
         n_rows=1_000,
         cache_ver=0.1,
     )

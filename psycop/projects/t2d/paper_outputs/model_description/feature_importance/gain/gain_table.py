@@ -58,6 +58,6 @@ def generate_feature_importance_table(pipeline_run: T2DPipelineRun) -> pl.DataFr
 
 if __name__ == "__main__":
     top_100_features = generate_feature_importance_table(
-        pipeline_run=get_best_eval_pipeline,
+        pipeline_run=get_best_eval_pipeline(),
     )
     pass

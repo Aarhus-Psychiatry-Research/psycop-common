@@ -88,4 +88,4 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    fa_output_performance_by_ppr(run=get_best_eval_pipeline)
+    fa_output_performance_by_ppr(run=get_best_eval_pipeline())

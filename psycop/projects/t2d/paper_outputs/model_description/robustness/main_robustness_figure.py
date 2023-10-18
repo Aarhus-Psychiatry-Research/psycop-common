@@ -38,4 +38,4 @@ def t2d_create_main_robustness_figure(run: T2DPipelineRun) -> None:
 
 
 if __name__ == "__main__":
-    t2d_create_main_robustness_figure(run=get_best_eval_pipeline)
+    t2d_create_main_robustness_figure(run=get_best_eval_pipeline())

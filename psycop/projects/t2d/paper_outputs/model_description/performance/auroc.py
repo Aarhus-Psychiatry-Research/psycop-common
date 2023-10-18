@@ -22,4 +22,4 @@ def t2d_auroc_plot(run: T2DPipelineRun) -> pn.ggplot:
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-    t2d_auroc_plot(run=get_best_eval_pipeline)
+    t2d_auroc_plot(run=get_best_eval_pipeline())
