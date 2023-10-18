@@ -7,7 +7,7 @@ from wasabi import Printer
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
-from psycop.projects.t2d.utils.pipeline_objects import RunGroup, T2DPipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
@@ -69,6 +69,7 @@ def test_pipeline(
         )
 
     return pipeline_to_test
+
 
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.selected_runs import get_best_dev_pipeline

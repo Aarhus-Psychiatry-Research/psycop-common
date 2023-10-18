@@ -19,7 +19,7 @@ def get_best_dev_pipeline() -> T2DPipelineRun:
                 "seed": "42",
                 "gpu": "true",
                 "name": "nonviolentstigmaria",
-            }
+            },
         },
         remove_cfg_keys={"name", "project_path", "seed", "gpu", "wandb"},
     )

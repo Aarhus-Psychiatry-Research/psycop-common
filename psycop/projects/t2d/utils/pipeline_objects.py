@@ -9,7 +9,6 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
