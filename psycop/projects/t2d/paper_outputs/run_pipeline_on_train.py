@@ -7,7 +7,7 @@ from wasabi import Printer
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
-from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun, RunGroup
+from psycop.projects.t2d.utils.pipeline_objects import RunGroup, T2DPipelineRun
 
 msg = Printer(timestamp=True)
 

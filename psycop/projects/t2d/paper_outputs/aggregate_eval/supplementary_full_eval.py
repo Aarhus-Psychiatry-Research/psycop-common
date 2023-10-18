@@ -16,8 +16,8 @@ from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
 from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
 from psycop.projects.t2d.utils.pipeline_objects import (
     EVAL_ROOT,
-    T2DPipelineRun,
     RunGroup,
+    T2DPipelineRun,
 )
 
 msg = Printer(timestamp=True)

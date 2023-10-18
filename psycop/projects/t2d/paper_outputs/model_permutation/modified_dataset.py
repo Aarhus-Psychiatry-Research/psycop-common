@@ -9,7 +9,7 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun, SplitNames
+from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRun
 
 msg = Printer(timestamp=True)
 

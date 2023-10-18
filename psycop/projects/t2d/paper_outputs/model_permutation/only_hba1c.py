@@ -3,15 +3,15 @@ from pathlib import Path
 
 import polars as pl
 from wasabi import Printer
+
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
 )
-
 from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
     FeatureModifier,
     evaluate_pipeline_with_modified_dataset,
 )
-from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun, SplitNames
+from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
