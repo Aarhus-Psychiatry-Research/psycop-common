@@ -106,8 +106,6 @@ class PipelineInputs:
         if self.remove_cfg_keys:
             for k in self.remove_cfg_keys:
                 del source_json[k]
-                result_v = source_v.update(additional_v)
-                source_json.update(result_v)
 
         return source_json
 
