@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 from torch import nn
 from torch.utils.data import DataLoader
-from psycop.common.data_structures.patient import PatientSlice
 
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.sequence_models import (
     AggregationModule,
