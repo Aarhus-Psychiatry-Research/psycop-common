@@ -35,7 +35,9 @@ class Embedder(Protocol):
     def forward(self, *args: Any) -> EmbeddedSequence:
         ...
 
-    def collate_patients(self, patients: list[PatientSlice]) -> dict[str, torch.Tensor]:
+    def collate_patient_slices(
+        self, patients: list[PatientSlice]
+    ) -> dict[str, torch.Tensor]:
         ...
 
     def fit(self, patients: list[PatientSlice], *args: Any) -> None:

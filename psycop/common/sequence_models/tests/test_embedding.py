@@ -19,7 +19,7 @@ def test_embeddings(patients: list, embedding_module: Embedder):
     """
     embedding_module.fit(patients)
 
-    inputs_ids = embedding_module.collate_patients(patients)
+    inputs_ids = embedding_module.collate_patient_slices(patients)
 
     assert isinstance(inputs_ids, dict)
     assert isinstance(inputs_ids["diagnosis"], torch.Tensor)  # type: ignore
