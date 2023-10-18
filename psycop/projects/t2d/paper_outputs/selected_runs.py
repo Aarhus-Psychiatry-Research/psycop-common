@@ -11,5 +11,6 @@ BEST_DEV_PIPELINE = T2DPipelineRun(
     group=DEVELOPMENT_GROUP,
     name="nonviolentstigmaria",
     pos_rate=BEST_POS_RATE,
+    additional_cfg_keys={"project": {"project_path": "E:/shared_resources/t2d"}},
 )
 BEST_EVAL_PIPELINE = test_pipeline(pipeline_to_test=BEST_DEV_PIPELINE)
