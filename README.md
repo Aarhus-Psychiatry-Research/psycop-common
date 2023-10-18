@@ -169,8 +169,8 @@
 | psycop/projects/t2d/paper\_outputs/model\_permutation/only\_hba1c.py                                            |       43 |       20 |     53% |38-56, 91-117 |
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
-| psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      112 |       54 |     52% |20-21, 29, 51, 55-63, 67-73, 76-78, 95-96, 99-103, 106, 109, 123-128, 141-145, 148-150, 154, 166-173, 186-193, 208-221, 232 |
-|                                                                                                       **TOTAL** | **5185** | **1476** | **72%** |           |
+| psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
+|                                                                                                       **TOTAL** | **5194** | **1484** | **71%** |           |
 
 
 ## Setup coverage badge
