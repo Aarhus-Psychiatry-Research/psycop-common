@@ -76,10 +76,17 @@ def test_diagnosis_mapping(
             source_type="diagnosis",
             source_subtype="A",
         ),
-        # Check that diagnosis codes that are not in the mapping are excluded
+        # Check that F909 is mapped to F90 (Hyperkinetic disorders) since F909 is not in the mapping
         TemporalEvent(
             timestamp=dt.datetime(2021, 1, 3),
-            value="I99999",
+            value="F909",
+            source_type="diagnosis",
+            source_subtype="A",
+        ),
+        # Check that codes that are not in the mapping are not mapped
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="X999999",
             source_type="diagnosis",
             source_subtype="A",
         ),
@@ -103,4 +110,5 @@ def test_diagnosis_mapping(
         "Bacterial Diseases (excl TB)",
         "Bacterial Diseases (excl TB)",
         "Transient ischaemic attack",
+        "Hyperkinetic disorders",
     ]

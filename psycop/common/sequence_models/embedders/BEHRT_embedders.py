@@ -199,7 +199,17 @@ class BEHRTEmbedder(nn.Module):
         ) as fp:
             mapping = json.load(fp)
 
-        return [mapping[d] for d in diagnosis_codes if d in mapping]
+        # For each diagnosis code, attempt to map to caliber code
+        # If no mapping exists, remove one character from the end of the code and try again
+        mapped_diagnosis_codes = []
+        for d in diagnosis_codes:
+            while len(d) > 2:  # only attempt codes with at least 3 characters
+                if d in mapping:
+                    mapped_diagnosis_codes.append(mapping[d])
+                    break
+                d = d[:-1]  # noqa: PLW2901
+
+        return mapped_diagnosis_codes
 
     def collate_patient(self, patient: Patient) -> dict[str, torch.Tensor]:
         events = patient.temporal_events
