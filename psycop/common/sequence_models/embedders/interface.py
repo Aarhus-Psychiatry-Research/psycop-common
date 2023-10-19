@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Protocol, Sequence
+from numpy.random import SeedSequence
 
 import torch
 
@@ -32,14 +33,17 @@ class Embedder(Protocol):
     def __call__(self, *args: Any) -> torch.Tensor:
         ...
 
-    def forward(self, *args: Any) -> EmbeddedSequence:
+    def forward(self, inputs: dict[str, torch.Tensor]) -> EmbeddedSequence:
         ...
 
     def collate_patient_slices(
         self,
-        patients: list[PatientSlice],
+        patient_slices: Sequence[PatientSlice],
     ) -> dict[str, torch.Tensor]:
         ...
 
-    def fit(self, patients: list[PatientSlice], *args: Any) -> None:
+    def fit(
+        self,
+        patient_slices: Sequence[PatientSlice],
+    ) -> None:
         ...

@@ -129,7 +129,7 @@ def create_behrt_MLM_model(
         max_sequence_length=config.model_config.max_sequence_length,
     )
     emb.fit(
-        patients=patient_slices,
+        patient_slices=patient_slices,
         add_mask_token=True,
         map_diagnosis_codes=config.model_config.map_diagnosis_codes,
     )

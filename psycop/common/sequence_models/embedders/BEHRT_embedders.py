@@ -15,7 +15,7 @@ from torch.nn.utils.rnn import pad_sequence
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
 
-from .interface import EmbeddedSequence
+from .interface import EmbeddedSequence, Embedder
 
 
 @dataclass(frozen=True)
@@ -27,7 +27,7 @@ class BEHRTVocab:
     position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
 
 
-class BEHRTEmbedder(nn.Module):
+class BEHRTEmbedder(nn.Module, Embedder):
     def __init__(
         self,
         d_model: int,
@@ -130,7 +130,7 @@ class BEHRTEmbedder(nn.Module):
 
     def collate_patient_slices(
         self,
-        patients: list[PatientSlice],
+        patient_slices: Sequence[PatientSlice],
     ) -> dict[str, torch.Tensor]:
         """
         Handles padding and indexing by converting each to an index tensor
@@ -140,7 +140,7 @@ class BEHRTEmbedder(nn.Module):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
-        patient_sequences_ids = [self.collate_patient_slice(p) for p in patients]
+        patient_sequences_ids = [self.collate_patient_slice(p) for p in patient_slices]
         # padding
         padded_sequences_ids = self.pad_sequences(patient_sequences_ids)
 
@@ -253,12 +253,14 @@ class BEHRTEmbedder(nn.Module):
 
     def fit(
         self,
-        patients: Sequence[PatientSlice],
+        patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
         map_diagnosis_codes: bool = True,
     ):
         patient_events = [
-            (p, e) for p in patients for e in self.filter_events(p.temporal_events)
+            (p, e)
+            for p in patient_slices
+            for e in self.filter_events(p.temporal_events)
         ]
         diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
