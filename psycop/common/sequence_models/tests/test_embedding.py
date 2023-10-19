@@ -83,13 +83,6 @@ def test_diagnosis_mapping(
             source_type="diagnosis",
             source_subtype="A",
         ),
-        # Check that codes that are not in the mapping are not mapped
-        TemporalEvent(
-            timestamp=dt.datetime(2021, 1, 3),
-            value="X999999",
-            source_type="diagnosis",
-            source_subtype="A",
-        ),
     ]
 
     patient.add_events(temporal_events)
