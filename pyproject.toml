@@ -48,6 +48,7 @@ reportUnknownVariableType = "none"
 reportMissingTypeStubs = "none"
 reportUntypedFunctionDecorator = "none"
 reportIncompatibleVariableOverride = "none"
+reportMissingTypeArgument = "none"
 reportUnusedVariable = "none" # Fixed by ruff
 reportUnusedImport = "none" # Fixed by ruff
 reportPrivateImportUsage = "none"
