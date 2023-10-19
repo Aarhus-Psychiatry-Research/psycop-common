@@ -4,7 +4,8 @@ from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
-from scipy import stats  # type: ignore
+from scipy import stats
+from transformers import PreTrainedModel, PreTrainedTokenizer  # type: ignore
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
@@ -15,7 +16,7 @@ def create_outcome_values(
     logistic_outcome_model: str,
     intercept: float = 0,
     noise_mean_sd: tuple[float, float] = (0, 1),
-) -> pd.Series[float]:
+) -> pd.Series:  # type: ignore
     """Create outcome values for a column.
 
     Args:
@@ -52,8 +53,8 @@ def create_outcome_values(
 def generate_text_data(
     n_samples: int,
     sequence: str,
-    tokenizer: Optional[Any] = None,
-    model: Optional[Any] = None,
+    tokenizer: PreTrainedTokenizer | None = None,
+    model: PreTrainedModel | None = None,
 ) -> list[str]:
     """Generate text data.
 
@@ -71,7 +72,7 @@ def generate_text_data(
     tokenizer = (
         GPT2Tokenizer.from_pretrained("gpt2") if tokenizer is None else tokenizer
     )
-    model = GPT2LMHeadModel.from_pretrained("gpt2") if model is None else model
+    model = GPT2LMHeadModel.from_pretrained("gpt2") if model is None else model  # type: ignore
 
     inputs = tokenizer.encode(sequence, return_tensors="pt")
 
@@ -84,7 +85,7 @@ def generate_text_data(
         )[0]
 
         outputs = model.generate(  # type: ignore
-            inputs,
+            inputs,  # type: ignore
             min_length=0,
             max_length=max_tokens,
             do_sample=True,

@@ -264,7 +264,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         ]
 
         # Check that the values only include diagnosis codes
-        assert all([isinstance(e.value, str) for p, e in patient_events])
+        assert all(isinstance(e.value, str) for p, e in patient_events)
 
         diagnosis_codes: list[str] = [str(e.value) for p, e in patient_events]
 

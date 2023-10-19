@@ -6,7 +6,7 @@ from collections.abc import Sequence
 
 from torch.utils.data import Dataset
 
-from psycop.common.data_structures.patient import Patient, PatientSlice
+from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 
 

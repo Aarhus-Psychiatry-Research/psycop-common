@@ -103,7 +103,7 @@ def drop_records_if_datediff_days_smaller_than(
 
 
 def round_floats_to_edge(
-    series: pd.Series[float],
+    series: pd.Series,  # type: ignore
     bins: list[float],
 ) -> pd.Series:  # type: ignore
     """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
