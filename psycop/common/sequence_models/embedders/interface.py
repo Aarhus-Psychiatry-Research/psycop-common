@@ -1,6 +1,6 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol, Sequence
-from numpy.random import SeedSequence
+from typing import Any, Protocol
 
 import torch
 

@@ -1,13 +1,11 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import (
-    Patient,
     PatientSlice,
-    patients_to_infinite_slices,
 )
 from psycop.common.sequence_models import BEHRTForMaskedLM, PatientSliceDataset
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
