@@ -9,7 +9,6 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
@@ -89,11 +88,26 @@ SplitNames = Literal["train", "test", "val"]
 class PipelineInputs:
     group: RunGroup
     eval_dir: Path
+    additional_cfg_keys: dict[str, dict[str, Any]] | None
+    remove_cfg_keys: set[str] | None
 
     def get_cfg_as_json(self) -> dict[str, Any]:
         # Load json
         path = self.eval_dir / "cfg.json"
-        return json.loads(json.loads(path.read_text()))
+        source_json = json.loads(json.loads(path.read_text()))
+
+        if self.additional_cfg_keys:
+            for k in self.additional_cfg_keys:
+                source_v = source_json[k]
+                additional_v = self.additional_cfg_keys[k]
+                source_v.update(additional_v)
+                source_json.update(source_v)
+
+        if self.remove_cfg_keys:
+            for k in self.remove_cfg_keys:
+                del source_json[k]
+
+        return source_json
 
     def _get_flattened_split_path(self, split: SplitNames) -> Path:
         matches = list(self.group.flattened_ds_dir.glob(f"*{split}*.parquet"))
@@ -121,9 +135,6 @@ class PipelineInputs:
         TODO: Note that this means assigning to the cfg property does nothing, since it's recomputed every time it's called
         """
         pipeline_dict = self.get_cfg_as_json()
-
-        if "project_path" not in pipeline_dict["project"].keys():
-            pipeline_dict["project"]["project_path"] = OVARTACI_SHARED_DIR / "t2d"
 
         return FullConfigSchema.parse_obj(pipeline_dict)
 
@@ -196,14 +207,16 @@ class PaperOutputSettings:
         )
 
 
-class PipelineRun:
+class T2DPipelineRun:
     def __init__(
         self,
         name: str,
         group: RunGroup,
         pos_rate: float,
+        additional_cfg_keys: dict[str, Any] | None = None,
         paper_outputs_path: Optional[Path] = None,
         create_output_paths_on_init: bool = True,
+        remove_cfg_keys: set[str] | None = None,
     ):
         self.name = name
         self.group = group
@@ -212,6 +225,8 @@ class PipelineRun:
         self.inputs = PipelineInputs(
             group=group,
             eval_dir=pipeline_output_dir,
+            additional_cfg_keys=additional_cfg_keys,
+            remove_cfg_keys=remove_cfg_keys,
         )
         self.pipeline_outputs = PipelineOutputs(
             group=group,

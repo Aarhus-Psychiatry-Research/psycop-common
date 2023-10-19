@@ -27,6 +27,9 @@ from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
+from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
+    PatientColumnNames,
+)
 from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
@@ -69,6 +72,14 @@ class TrainingConfig:
     precision: str = "bf16-mixed"
     validate_every_prop_epoch: float = 1.0
     checkpoint_every_n_epochs: int = 1
+
+    # data filtering
+    min_n_visits: int = 5
+    patient_column_names: PatientColumnNames | None = field(
+        default=PatientColumnNames(
+            source_subtype_col_name="type",
+        ),
+    )
 
 
 @dataclass
@@ -180,12 +191,18 @@ if __name__ == "__main__":
     )
 
     train_patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
+        event_loaders=[
+            DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
+        ],
         split=SplitName.TRAIN,
+        patient_column_names=config.training_config.patient_column_names,
     )
     val_patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
+        event_loaders=[
+            DiagnosisLoader(min_n_visits=config.training_config.min_n_visits),
+        ],
         split=SplitName.VALIDATION,
+        patient_column_names=config.training_config.patient_column_names,
     )
     train_dataset = PatientDataset(train_patients)
     val_dataset = PatientDataset(val_patients)

@@ -26,13 +26,13 @@ selected_specs = [
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_df,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-out_dir = BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "feature_description"
+out_dir = get_best_eval_pipeline().paper_outputs.paths.tables / "feature_description"
 out_dir.mkdir(parents=True, exist_ok=True)
 
 df = generate_feature_description_df(
-    df=BEST_EVAL_PIPELINE.inputs.get_flattened_split_as_pd(split="train"),
+    df=get_best_eval_pipeline().inputs.get_flattened_split_as_pd(split="train"),
     predictor_specs=selected_specs,  # type: ignore
 )
 
@@ -86,10 +86,10 @@ prettified = prettify_feature_description_df(input_df=df)
 print(prettified)
 
 # %%
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
 predictor_description_path = (
-    BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "predictor_description.csv"
+    get_best_eval_pipeline().paper_outputs.paths.tables / "predictor_description.csv"
 )
 
 prettified.to_csv(predictor_description_path)
@@ -118,7 +118,9 @@ md = MarkdownTable(
 """,
 ).get_markdown()
 
-with (BEST_EVAL_PIPELINE.paper_outputs.paths.tables / "predictor_description.md").open(
+with (
+    get_best_eval_pipeline().paper_outputs.paths.tables / "predictor_description.md"
+).open(
     "+w",
 ) as f:
     f.write(md)

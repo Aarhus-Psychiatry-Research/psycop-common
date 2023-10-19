@@ -7,7 +7,7 @@ import shap
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.cache import mem
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
 def generate_shap_df_for_predictor_col(
@@ -86,7 +86,7 @@ def generate_shap_values_from_pipe(
 
 @mem.cache
 def get_shap_bundle_for_best_run(
-    run: PipelineRun,
+    run: T2DPipelineRun,
     n_rows: Optional[int] = 10_000,
     cache_ver: float = 0.1,
 ) -> ShapBundle:
@@ -150,10 +150,10 @@ def get_top_i_features_by_mean_abs_shap(
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
     shap_bundle = get_shap_bundle_for_best_run(
-        run=BEST_EVAL_PIPELINE,
+        run=get_best_eval_pipeline(),
         n_rows=1_000,
         cache_ver=0.1,
     )

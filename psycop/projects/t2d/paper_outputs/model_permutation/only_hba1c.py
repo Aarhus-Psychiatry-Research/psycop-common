@@ -4,11 +4,14 @@ from pathlib import Path
 import polars as pl
 from wasabi import Printer
 
+from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
+    t2d_create_main_performance_figure,
+)
 from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
     FeatureModifier,
     evaluate_pipeline_with_modified_dataset,
 )
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
+from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
@@ -26,7 +29,7 @@ class Hba1cOnly(FeatureModifier):
 
     def modify_features(
         self,
-        run: PipelineRun,
+        run: T2DPipelineRun,
         output_dir_path: Path,
         input_split_names: Sequence[SplitNames],
         output_split_name: str,
@@ -88,14 +91,15 @@ if __name__ == "__main__":
     from copy import copy
 
     from psycop.projects.t2d.paper_outputs.selected_runs import (
-        BEST_EVAL_PIPELINE,
+        get_best_eval_pipeline,
     )
 
-    default_xgboost_params = False
+    run = copy(get_best_eval_pipeline())
+    run.name = "xgboost_hba1c_only"
+    default_xgboost_params = True
 
     if default_xgboost_params:
         msg.divider("Training with default xgboost params")
-        run = copy(BEST_EVAL_PIPELINE)
         cfg = run.inputs.cfg
 
         # Set XGBoost to default hyperparameters
@@ -111,7 +115,8 @@ if __name__ == "__main__":
         }
 
     evaluate_pipeline_with_modified_dataset(
-        run=BEST_EVAL_PIPELINE,
+        run=run,
         feature_modifier=Hba1cOnly(lookbehind="730", aggregation_method="mean"),
         rerun_if_exists=True,
+        plot_fns=[t2d_create_main_performance_figure],
     )

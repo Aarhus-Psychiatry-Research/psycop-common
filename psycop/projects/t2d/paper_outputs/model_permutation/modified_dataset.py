@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Callable
 
 from wasabi import Printer
 
@@ -8,7 +9,7 @@ from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
+from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
@@ -20,7 +21,7 @@ class FeatureModifier(ABC):
     @abstractmethod
     def modify_features(
         self,
-        run: PipelineRun,
+        run: T2DPipelineRun,
         output_dir_path: Path,
         input_split_names: Sequence[SplitNames],
         output_split_name: str,
@@ -36,7 +37,7 @@ def train_model_with_modified_dataset(
     cfg.data.Config.allow_mutation = True
     cfg.data.dir = str(boolean_dataset_dir)
     cfg.data.splits_for_training = ["train"]
-    cfg.data.datasets_for_evaluation = ["test"]
+    cfg.data.splits_for_evaluation = ["test"]
 
     msg.info(f"Training model from dataset at {cfg.data.dir}")
     roc_auc = train_model(cfg=cfg)
@@ -44,9 +45,10 @@ def train_model_with_modified_dataset(
 
 
 def evaluate_pipeline_with_modified_dataset(
-    run: PipelineRun,
+    run: T2DPipelineRun,
     feature_modifier: FeatureModifier,
     rerun_if_exists: bool = True,
+    plot_fns: Sequence[Callable[[T2DPipelineRun], None]] | None = None,
 ):
     modified_name = feature_modifier.name
 
@@ -92,3 +94,7 @@ def evaluate_pipeline_with_modified_dataset(
     # Write AUROC
     with auroc_md_path.open("a") as f:
         f.write(str(auroc))
+
+    if plot_fns:
+        for plot_fn in plot_fns:
+            plot_fn(run)

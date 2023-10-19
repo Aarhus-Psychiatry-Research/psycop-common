@@ -21,11 +21,11 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.preprocessing.pre_split.processors.row_filter import (
     PreSplitRowFilter,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
-def get_eligible_prediction_times_for_pipeline(run: PipelineRun) -> pd.DataFrame:
+def get_eligible_prediction_times_for_pipeline(run: T2DPipelineRun) -> pd.DataFrame:
     col_names = run.inputs.cfg.data.col_name
 
     columns_to_keep = (
@@ -61,15 +61,15 @@ def get_eligible_prediction_times_for_pipeline(run: PipelineRun) -> pd.DataFrame
 
 class AbstractPlot(ABC):
     @abstractmethod
-    def get_dataset(self, run: PipelineRun) -> pl.DataFrame:
+    def get_dataset(self, run: T2DPipelineRun) -> pl.DataFrame:
         raise NotImplementedError
 
     @abstractmethod
-    def _create_plot(self, df: pl.DataFrame, run: PipelineRun) -> pn.ggplot:
+    def _create_plot(self, df: pl.DataFrame, run: T2DPipelineRun) -> pn.ggplot:
         raise NotImplementedError
 
     @abstractmethod
-    def get_plot(self, run: PipelineRun) -> pn.ggplot:
+    def get_plot(self, run: T2DPipelineRun) -> pn.ggplot:
         raise NotImplementedError
 
 
@@ -77,7 +77,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
     def __init__(self):
         pass
 
-    def get_dataset(self, run: PipelineRun) -> pl.DataFrame:
+    def get_dataset(self, run: T2DPipelineRun) -> pl.DataFrame:
         prediction_times_eligible_for_pipeline = (
             get_eligible_prediction_times_for_pipeline(
                 run=run,
@@ -96,7 +96,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
         )
 
         lookahead_days = (
-            BEST_EVAL_PIPELINE.inputs.cfg.preprocessing.pre_split.min_lookahead_days
+            get_best_eval_pipeline().inputs.cfg.preprocessing.pre_split.min_lookahead_days
         )
 
         hba1c_timestamps = hba1c()
@@ -170,7 +170,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
         return pl.from_dataframe(plot_df)
 
-    def _create_plot(self, df: pl.DataFrame, run: PipelineRun) -> pn.ggplot:
+    def _create_plot(self, df: pl.DataFrame, run: T2DPipelineRun) -> pn.ggplot:
         df = (
             df.select(
                 [
@@ -229,7 +229,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
         return plot
 
-    def get_plot(self, run: PipelineRun) -> pn.ggplot:
+    def get_plot(self, run: T2DPipelineRun) -> pn.ggplot:
         df = self.get_dataset(run=run)
 
         plot = self._create_plot(df=df, run=run)
@@ -239,8 +239,8 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
 
 
 if __name__ == "__main__":
-    pipeline = BEST_EVAL_PIPELINE
-    plot = MeasurementsWithinLookaheadPlot().get_plot(run=BEST_EVAL_PIPELINE)
+    pipeline = get_best_eval_pipeline()
+    plot = MeasurementsWithinLookaheadPlot().get_plot(run=get_best_eval_pipeline())
     size = (6.5, 8)
 
     plot.save(

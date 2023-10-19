@@ -106,7 +106,7 @@ def fa_sensitivity_by_time_to_event(pipeline_run: PipelineRun) -> pn.ggplot:
 
 if __name__ == "__main__":
     from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
-        BEST_EVAL_PIPELINE,
+        get_best_eval_pipeline,
     )
 
-    fa_sensitivity_by_time_to_event(pipeline_run=BEST_EVAL_PIPELINE)
+    fa_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())

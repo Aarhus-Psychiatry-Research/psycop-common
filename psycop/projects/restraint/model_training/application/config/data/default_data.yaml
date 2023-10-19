@@ -10,7 +10,7 @@ data:
   outc_prefix: outcome_coercion_bool
 
   splits_for_training: ["train", "val"]
-  datasets_for_evaluation: null
+  splits_for_evaluation: null
 
   col_name:
     pred_timestamp: timestamp

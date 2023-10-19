@@ -4,7 +4,7 @@ from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )
 from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
-    BEST_EVAL_PIPELINE,
+    get_best_eval_pipeline,
 )
 from psycop.projects.forced_admission_inpatient.utils.feature_name_to_readable import (
     feature_name_to_readable,
@@ -64,6 +64,6 @@ def generate_feature_importance_table(pipeline_run: PipelineRun) -> pl.DataFrame
 
 if __name__ == "__main__":
     top_100_features = generate_feature_importance_table(
-        pipeline_run=BEST_EVAL_PIPELINE,
+        pipeline_run=get_best_eval_pipeline(),
     )
     pass

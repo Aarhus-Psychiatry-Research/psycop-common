@@ -7,7 +7,9 @@ from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.data_structures.test_patient import get_test_patient
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatients,
+    PatientColumnNames,
 )
+from psycop.common.feature_generation.sequences.patient_loaders import DiagnosisLoader
 from psycop.common.feature_generation.sequences.utils_for_testing import (
     get_test_date_of_birth_df,
 )
@@ -131,3 +133,48 @@ def test_patient_without_date_of_birth_raises_error():
             source_event_dataframes=[test_data],
             date_of_birth_df=get_test_date_of_birth_df(patient_ids=[2]),
         )
+
+
+def test_passing_patient_colnames():
+    """Test that column names can be passed when unpacking events."""
+
+    df = str_to_pl_df(
+        """dw_ek_borger,datotid_slut,diagnosegruppestreng
+    1,2023-01-01,A:DF431
+    1,2023-01-01,A:DF431#+:ALFC3#B:DF329
+    2,2020-01-01,A:DF431#+:ALFC3#B:DF329
+    """,
+    )
+
+    formatted_df = (
+        DiagnosisLoader(min_n_visits=None)
+        .preprocess_diagnosis_columns(df=df.lazy())
+        .collect()
+    )
+
+    unpacked_with_source_subtype_column = EventDataFramesToPatients(
+        column_names=PatientColumnNames(source_subtype_col_name="type"),
+    ).unpack(
+        source_event_dataframes=[formatted_df],
+        date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
+    )
+
+    unpacked_without_source_subtype_column = EventDataFramesToPatients().unpack(
+        source_event_dataframes=[formatted_df],
+        date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
+    )
+
+    # Assert that source_subtypes are str when source_subtype_col_name is specified
+    assert all(
+        isinstance(event.source_subtype, str)
+        for event in [
+            e for p in unpacked_with_source_subtype_column for e in p.temporal_events
+        ]
+    )
+    # Assert that source_subtypes are None when source_subtype_col_name is not specified
+    assert all(
+        event.source_subtype is None
+        for event in [
+            e for p in unpacked_without_source_subtype_column for e in p.temporal_events
+        ]
+    )

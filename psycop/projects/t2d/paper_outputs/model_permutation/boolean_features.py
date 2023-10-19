@@ -8,7 +8,7 @@ from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import
     FeatureModifier,
     evaluate_pipeline_with_modified_dataset,
 )
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun, SplitNames
+from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
@@ -33,7 +33,7 @@ class CreateBooleanDataset(FeatureModifier):
 
     def modify_features(
         self,
-        run: PipelineRun,
+        run: T2DPipelineRun,
         output_dir_path: Path,
         input_split_names: Sequence[SplitNames],
         output_split_name: str,
@@ -62,11 +62,11 @@ class CreateBooleanDataset(FeatureModifier):
 
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.selected_runs import (
-        BEST_EVAL_PIPELINE,
+        get_best_eval_pipeline,
     )
 
     evaluate_pipeline_with_modified_dataset(
-        run=BEST_EVAL_PIPELINE,
+        run=get_best_eval_pipeline(),
         feature_modifier=CreateBooleanDataset(),
     )
 

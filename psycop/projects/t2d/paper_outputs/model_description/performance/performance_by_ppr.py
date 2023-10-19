@@ -4,7 +4,7 @@ from wasabi import Printer
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (
     generate_performance_by_ppr_table,
 )
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
@@ -68,7 +68,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     return renamed_df
 
 
-def t2d_output_performance_by_ppr(run: PipelineRun):
+def t2d_output_performance_by_ppr(run: T2DPipelineRun):
     output_path = (
         run.paper_outputs.paths.tables
         / run.paper_outputs.artifact_names.performance_by_ppr
@@ -85,6 +85,6 @@ def t2d_output_performance_by_ppr(run: PipelineRun):
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
-    t2d_output_performance_by_ppr(run=BEST_EVAL_PIPELINE)
+    t2d_output_performance_by_ppr(run=get_best_eval_pipeline())

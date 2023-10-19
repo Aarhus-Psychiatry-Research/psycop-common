@@ -6,11 +6,11 @@ from psycop.common.model_evaluation.binary.time.periodic_data import (
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
-from psycop.projects.t2d.paper_outputs.selected_runs import BEST_EVAL_PIPELINE
-from psycop.projects.t2d.utils.pipeline_objects import PipelineRun
+from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
+from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
-def t2d_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
+def t2d_auroc_by_day_of_week(run: T2DPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
@@ -28,7 +28,7 @@ def t2d_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
     )
 
 
-def t2d_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
+def t2d_auroc_by_month_of_year(run: T2DPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
@@ -47,5 +47,5 @@ def t2d_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    t2d_auroc_by_day_of_week(run=BEST_EVAL_PIPELINE)
-    t2d_auroc_by_month_of_year(run=BEST_EVAL_PIPELINE)
+    t2d_auroc_by_day_of_week(run=get_best_eval_pipeline())
+    t2d_auroc_by_month_of_year(run=get_best_eval_pipeline())

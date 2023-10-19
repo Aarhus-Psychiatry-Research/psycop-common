@@ -2,6 +2,33 @@
 
 <!--next-version-placeholder-->
 
+## v0.120.0 (2023-10-18)
+
+### Feature
+
+* Extract runs to functions, to avoid instantiation on import ([`afc94cb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/afc94cb29fc9a2995f7003efd62638ca7afec6d0))
+
+### Fix
+
+* Renames ([`5ea1fe5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5ea1fe53b3ff2208885f10cc168858b2ddf66936))
+
+### Documentation
+
+* How to install cuda enabled pytorch on overtaci ([`25608d2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/25608d27fafdd3f61862479d6d177aed478268d8))
+
+## v0.119.0 (2023-10-18)
+
+### Feature
+
+* Create plot when training xgboost hba1c only ([`cd52ec8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd52ec89c18967453cb387d47ad3346a8baea431))
+
+### Fix
+
+* Change typehint for patient colnames ([`22d9317`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/22d931731fc96d42e8ced0671e63a44be9dcfad5))
+* Do not import get_best_eval_pipeline unless main ([`d5da51f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d5da51fbf9c66e1ef5c75d42657f1002b56a3605))
+* Fixed mutable default error in config ([`a2d8294`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a2d8294f62c4b19a6b2801ce9a9898585deb4327))
+* Source subtype filtering works ([`1259203`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1259203d58b09ee2b09f71f7455976199fc9ed10))
+
 ## v0.118.0 (2023-10-12)
 
 ### Feature
