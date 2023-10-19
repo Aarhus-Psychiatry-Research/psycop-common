@@ -14,7 +14,7 @@ msg = Printer(timestamp=True)
 
 def t2d_create_patchwork_figure(
     run: T2DPipelineRun,
-    plot_fns: Sequence[Callable],
+    plot_fns: Sequence[Callable],  # type: ignore
     output_filename: str,
     single_plot_dimensions: tuple[float, float] = (5, 5),
 ):

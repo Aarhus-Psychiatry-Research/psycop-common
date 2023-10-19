@@ -173,7 +173,7 @@ def _calc_feature_corr_with_outcome(
 
 def _plot_corr_diffs(
     df: pd.DataFrame,
-    shape: tuple,
+    shape: tuple,  # type: ignore
     output_dir: Optional[Path],
     feature_split: str = "features",
 ):

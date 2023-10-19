@@ -12,8 +12,8 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 @dataclass
 class ROCPlotSpec:
-    y: pd.Series
-    y_hat_probs: pd.Series
+    y: pd.Series  # type: ignore
+    y_hat_probs: pd.Series  # type: ignore
     legend_title: str
 
 
@@ -38,12 +38,12 @@ def eval_ds_to_roc_plot_spec(
 def plot_auc_roc(
     specs: list[ROCPlotSpec],
     title: str = "ROC-curve",
-    fig_size: Optional[tuple] = (5, 5),
+    fig_size: Optional[tuple] = (5, 5),  # type: ignore
     dpi: int = 160,
     save_path: Optional[Path] = None,
 ) -> Union[None, Path]:
     """Plot AUC ROC curve."""
-    plt.figure(figsize=fig_size, dpi=dpi)
+    plt.figure(figsize=fig_size, dpi=dpi)  # type: ignore
 
     for spec in specs:
         fpr, tpr, _ = roc_curve(spec.y, spec.y_hat_probs)
