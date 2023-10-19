@@ -1,10 +1,10 @@
 # @package _global_
 data:
   # General config
-  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\no_washout_feature_sets\full_feature_set_with_sentence_transformers_and_tfidf_750_no_washout
+  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\full_feature_set_with_sentence_transformers_and_tfidf_750
   suffix: parquet
-  splits_for_training: ["train", "val"]
-  splits_for_evaluation: null
+  splits_for_training: ["train"]
+  datasets_for_evaluation: null
 
   # Feature specs
   pred_prefix: pred_
