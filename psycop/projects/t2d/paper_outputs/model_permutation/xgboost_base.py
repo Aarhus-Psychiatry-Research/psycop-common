@@ -18,16 +18,17 @@ if __name__ == "__main__":
 
     msg.divider("Training with best params")
     cfg = run.inputs.cfg
-    best_auc = train_model(cfg=cfg)
-    print(f"Best AUC: {best_auc}")
+    ## best_auc = train_model(cfg=cfg)
+    # print(f"Best AUC: {best_auc}")
 
     msg.divider("Training with default xgboost params")
     cfg.model.Config.allow_mutation = True
+    cfg.n_crossval_splits = 10
     cfg.model.args = {
         "n_estimators": 100,
         "alpha": 0,
         "lambda": 1,
-        "max_depth": 6,
+        "max_depth": 2,
         "learning_rate": 0.3,
         "gamma": 0,
         "grow_policy": "depthwise",
