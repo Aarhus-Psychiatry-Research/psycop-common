@@ -1,14 +1,14 @@
 import datetime as dt
 
-from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.temporal_event import TemporalEvent
 
 
-def get_test_patient_slice(
+def get_test_patient(
     patient_id: int | str,
     date_of_birth: dt.datetime = dt.datetime(year=1990, month=1, day=1),
-) -> PatientSlice:
-    patient = PatientSlice(
+) -> Patient:
+    patient = Patient(
         patient_id=patient_id,
         date_of_birth=date_of_birth,
     )
@@ -34,7 +34,7 @@ class TestPatientSequenceGenerator:
             ),
         ]
 
-        patient = get_test_patient_slice(
+        patient = get_test_patient(
             patient_id=1,
         )
         patient.add_events(temporal_events)
@@ -48,12 +48,12 @@ class TestPatientSequenceGenerator:
 
         exclude_events_after_prediction_time = prediction_sequences[
             0
-        ].temporal_events == [temporal_events[0]]
+        ].patient_slice.temporal_events == [temporal_events[0]]
         assert exclude_events_after_prediction_time
 
         exclude_events_before_start_of_lookbehind = prediction_sequences[
             1
-        ].temporal_events == [
+        ].patient_slice.temporal_events == [
             temporal_events[1],
         ]
         assert exclude_events_before_start_of_lookbehind

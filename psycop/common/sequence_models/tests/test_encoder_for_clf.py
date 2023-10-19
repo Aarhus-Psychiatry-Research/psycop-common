@@ -19,15 +19,13 @@ from psycop.common.sequence_models import (
 
 @pytest.fixture()
 def patient_dataset_with_labels(
-    patients: list[PatientSlice],
+    patient_slices: list[PatientSlice],
 ) -> PatientSlicesWithLabels:
     prediction_times = []
-    for i, patient_slice in enumerate(patients):
+    for i, patient_slice in enumerate(patient_slices):
         prediction_times.append(
             PredictionTime(
                 patient_slice=patient_slice,
-                temporal_events=patient_slice.temporal_events,
-                static_features=patient_slice.static_features,
                 prediction_timestamp=dt.datetime(year=2000 + i, month=1, day=1),
                 outcome=i % 2 == 0,
             ),
@@ -37,10 +35,10 @@ def patient_dataset_with_labels(
 
 
 @pytest.fixture()
-def embedding_module(patients: list[PatientSlice]) -> BEHRTEmbedder:
+def embedding_module(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patients, add_mask_token=True)
+    emb.fit(patient_slices, add_mask_token=True)
     return emb
 
 

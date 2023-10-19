@@ -4,7 +4,7 @@ import pytest
 from torch import nn
 
 from psycop.common.data_structures import TemporalEvent
-from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.patient import Patient, PatientSlice
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
     BEHRTForMaskedLM,
@@ -13,7 +13,7 @@ from psycop.common.sequence_models import (
 
 
 @pytest.fixture()
-def patients() -> list[PatientSlice]:
+def patient_slices() -> list[Patient]:
     """
     Returns a list of patient objects
     """
@@ -31,13 +31,13 @@ def patients() -> list[PatientSlice]:
         source_subtype="A",
     )
 
-    patient1 = PatientSlice(
+    patient1 = Patient(
         patient_id=1,
         date_of_birth=datetime(1990, 1, 1),
     )
     patient1.add_events([e1, e2])
 
-    patient2 = PatientSlice(
+    patient2 = Patient(
         patient_id=2,
         date_of_birth=datetime(1993, 3, 1),
     )
@@ -47,15 +47,15 @@ def patients() -> list[PatientSlice]:
 
 
 @pytest.fixture()
-def patient_dataset(patients: list) -> PatientSliceDataset:
-    return PatientSliceDataset(patients)
+def patient_dataset(patient_slices: list) -> PatientSliceDataset:
+    return PatientSliceDataset(patient_slices)
 
 
 @pytest.fixture()
-def behrt_for_masked_lm(patients: list[PatientSlice]) -> BEHRTForMaskedLM:
+def behrt_for_masked_lm(patient_slices: list[PatientSlice]) -> BEHRTForMaskedLM:
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patients=patients, add_mask_token=True)
+    emb.fit(patients=patient_slices, add_mask_token=True)
 
     encoder_layer = nn.TransformerEncoderLayer(
         d_model=d_model,

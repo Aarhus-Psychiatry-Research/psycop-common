@@ -53,7 +53,7 @@ def test_behrt(patient_dataset: PatientSliceDataset):
 
 
 def test_module_with_trainer(
-    patients: list[PatientSlice],
+    patient_slices: list[PatientSlice],
     tmp_path: Path,
 ):
     """
@@ -61,11 +61,11 @@ def test_module_with_trainer(
     """
 
     n_patients = 10
-    patients = patients * n_patients
+    patient_slices = patient_slices * n_patients
     midpoint = int(n_patients / 2)
 
-    train_patients = patients[:midpoint]
-    val_patients = patients[midpoint:]
+    train_patients = patient_slices[:midpoint]
+    val_patients = patient_slices[midpoint:]
 
     train_dataset = PatientSliceDataset(train_patients)
     val_dataset = PatientSliceDataset(val_patients)
@@ -82,7 +82,7 @@ def test_module_with_trainer(
     )
 
     trainable_module = create_behrt_MLM_model(
-        patients=train_patients,
+        patient_slices=train_patients,
         config=config,
     )
 

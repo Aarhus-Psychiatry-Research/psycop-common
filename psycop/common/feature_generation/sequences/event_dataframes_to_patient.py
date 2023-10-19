@@ -7,7 +7,7 @@ import polars as pl
 from tqdm import tqdm
 from wasabi import Printer
 
-from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
 
@@ -86,8 +86,8 @@ class EventDataFramesToPatientSlices:
         self,
         cohort_dict: PatientDict,
         date_of_birth_dict: dict[int | str, datetime],
-    ) -> list[PatientSlice]:
-        patient_cohort = []
+    ) -> list[Patient]:
+        patient_cohort: list[Patient] = []
 
         for patient_id, patient_events in cohort_dict.items():
             try:
@@ -98,12 +98,12 @@ class EventDataFramesToPatientSlices:
                     "Please make sure that the date of birth is included in the "
                     "date_of_birth_df.",
                 ) from e
-            patient_slice = PatientSlice(
+            patient = Patient(
                 patient_id=patient_id,
                 date_of_birth=date_of_birth,
             )
-            patient_slice.add_events(patient_events)
-            patient_cohort.append(patient_slice)
+            patient.add_events(patient_events)
+            patient_cohort.append(patient)
 
         return patient_cohort
 
@@ -125,7 +125,7 @@ class EventDataFramesToPatientSlices:
         self,
         source_event_dataframes: Sequence[pl.DataFrame],
         date_of_birth_df: pl.DataFrame,
-    ) -> list[PatientSlice]:
+    ) -> list[Patient]:
         patient_dfs_collections = [
             df.partition_by(
                 by=self._column_names.patient_id_col_name,

@@ -17,7 +17,7 @@ TODO:
 import enum
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
@@ -25,7 +25,11 @@ from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
 
-from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.patient import (
+    Patient,
+    PatientSlice,
+    patients_to_infinite_slices,
+)
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     PatientSliceColumnNames,
@@ -113,7 +117,7 @@ class Config:
 
 
 def create_behrt_MLM_model(
-    patients: list[PatientSlice],
+    patient_slices: Sequence[PatientSlice],
     config: Config,
 ) -> BEHRTForMaskedLM:
     """
@@ -125,7 +129,7 @@ def create_behrt_MLM_model(
         max_sequence_length=config.model_config.max_sequence_length,
     )
     emb.fit(
-        patients=patients,
+        patients=patient_slices,
         add_mask_token=True,
         map_diagnosis_codes=config.model_config.map_diagnosis_codes,
     )
@@ -207,10 +211,12 @@ if __name__ == "__main__":
         split=SplitName.VALIDATION,
         patient_column_names=config.training_config.patient_column_names,
     )
-    train_dataset = PatientSliceDataset(train_patients)
-    val_dataset = PatientSliceDataset(val_patients)
+    train_dataset = PatientSliceDataset(patients_to_infinite_slices(train_patients))
+    val_dataset = PatientSliceDataset(patients_to_infinite_slices(val_patients))
 
-    model = create_behrt_MLM_model(patients=train_patients, config=config)
+    model = create_behrt_MLM_model(
+        patient_slices=patients_to_infinite_slices(train_patients), config=config
+    )
 
     train_dataloader = DataLoader(
         train_dataset,

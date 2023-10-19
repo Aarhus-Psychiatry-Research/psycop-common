@@ -13,7 +13,7 @@ from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import TemporalEvent
-from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.patient import Patient, PatientSlice
 
 from .interface import EmbeddedSequence
 
@@ -235,7 +235,7 @@ class BEHRTEmbedder(nn.Module):
         event: TemporalEvent,
         patient_slice: PatientSlice,
     ) -> dict[str, torch.Tensor]:
-        age = self.get_patient_age(event, patient_slice.date_of_birth)
+        age = self.get_patient_age(event, patient_slice.patient.date_of_birth)
 
         age2idx = self.vocab.age
         diagnosis2idx = self.vocab.diagnosis
@@ -253,11 +253,11 @@ class BEHRTEmbedder(nn.Module):
 
     def fit(
         self,
-        patients: list,
+        patients: Sequence[PatientSlice],
         add_mask_token: bool = True,
         map_diagnosis_codes: bool = True,
     ):
-        patient_events: list[tuple[PatientSlice, TemporalEvent]] = [
+        patient_events = [
             (p, e) for p in patients for e in self.filter_events(p.temporal_events)
         ]
         diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
@@ -278,7 +278,8 @@ class BEHRTEmbedder(nn.Module):
         self.mask_token_id = diagnosis2idx["MASK"]
 
         ages: list[int] = [
-            self.get_patient_age(e, p.date_of_birth) for p, e in patient_events
+            self.get_patient_age(e, ps.patient.date_of_birth)
+            for ps, e in patient_events
         ]
 
         # create age2idx mapping

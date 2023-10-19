@@ -6,7 +6,7 @@ from collections.abc import Sequence
 import polars as pl
 
 from psycop.common.cohort_definition import CohortDefiner
-from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.patient_loaders import (
@@ -24,7 +24,7 @@ class CohortToPredictionTimes:
     def __init__(
         self,
         cohort_definer: CohortDefiner,
-        patient_objects: list[PatientSlice],
+        patient_objects: Sequence[Patient],
     ):
         self.cohort_definer = cohort_definer
         self.patients = patient_objects
@@ -48,7 +48,7 @@ class CohortToPredictionTimes:
 
     @staticmethod
     def _patient_to_prediction_times(
-        patient: PatientSlice,
+        patient: Patient,
         lookbehind: dt.timedelta,
         lookahead: dt.timedelta,
         outcome_timestamps: dict[PATIENT_ID, list[dt.datetime]],

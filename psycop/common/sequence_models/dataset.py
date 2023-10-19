@@ -11,8 +11,8 @@ from psycop.common.data_structures.prediction_time import PredictionTime
 
 
 class PatientSliceDataset(Dataset):
-    def __init__(self, patient_slices: list[PatientSlice]) -> None:
-        self.patient_slices: list[PatientSlice] = patient_slices
+    def __init__(self, patient_slices: Sequence[PatientSlice]) -> None:
+        self.patient_slices: Sequence[PatientSlice] = patient_slices
 
     def __len__(self) -> int:
         return len(self.patient_slices)
