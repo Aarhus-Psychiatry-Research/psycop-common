@@ -1,7 +1,8 @@
+from wasabi import Printer
+
 from psycop.common.model_training.application_modules.train_model.main import (
     train_model,
 )
-from wasabi import Printer
 
 msg = Printer(timestamp=True)
 
