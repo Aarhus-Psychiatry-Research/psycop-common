@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 from psycop.common.data_structures import Patient
 
 
-class PatientDataset(Dataset):
+class PatientDataset(Dataset[Patient]):
     def __init__(self, patients: list[Patient]) -> None:
         self.patients: list[Patient] = patients
 
@@ -18,7 +18,7 @@ class PatientDataset(Dataset):
         return self.patients[idx]
 
 
-class PatientDatasetWithLabels(Dataset):
+class PatientDatasetWithLabels(Dataset[tuple[Patient, int]]):
     def __init__(self, patients: list[Patient], labels: list[int]) -> None:
         self.patients: list[Patient] = patients
         self.labels: list[int] = labels

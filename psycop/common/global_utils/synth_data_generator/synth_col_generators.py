@@ -10,12 +10,12 @@ from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 
 def create_outcome_values(
-    df: pd.DataFrame,  # pylint: disable=redefined-outer-name
+    df: pd.DataFrame,
     n_samples: int,
     logistic_outcome_model: str,
     intercept: float = 0,
     noise_mean_sd: tuple[float, float] = (0, 1),
-) -> pd.Series:
+) -> pd.Series[float]:
     """Create outcome values for a column.
 
     Args:
@@ -100,11 +100,11 @@ def generate_text_data(
 def generate_col_from_specs(
     column_type: str,
     n_samples: int,
-    col_specs: dict,
+    col_specs: dict,  # type: ignore
     sequence: Optional[str],
     tokenizer: Optional[Any] = None,
     model: Optional[Any] = None,
-) -> Iterable:
+) -> Iterable:  # type: ignore
     """Generate a column of data.
 
     Args:
@@ -174,7 +174,7 @@ def generate_col_from_specs(
 
 
 def generate_data_columns(
-    predictors: Iterable[dict],
+    predictors: Iterable[dict],  # type: ignore
     n_samples: int,
     df: pd.DataFrame = pd.DataFrame(),  # noqa: B008
     text_prompt: Optional[str] = None,

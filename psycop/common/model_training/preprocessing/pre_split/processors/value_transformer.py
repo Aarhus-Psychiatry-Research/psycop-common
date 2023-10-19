@@ -46,7 +46,7 @@ class PreSplitValueTransformer:
         datetime_dtypes = {"datetime64[ns]", "<M8[ns]"}
 
         dt_columns = [
-            c for c in dataset.columns if dataset[c].dtypes in datetime_dtypes
+            c for c in dataset.columns if dataset[c].dtypes in datetime_dtypes  # type: ignore
         ]
 
         # convert datetime columns
@@ -59,7 +59,7 @@ class PreSplitValueTransformer:
         self,
         dataset: pd.DataFrame,
         columns_to_skip: tuple[str, str] = ("age_in_years", "sex_female"),
-        ignore_dtypes: tuple = ("datetime64[ns]", "<M8[ns]"),
+        ignore_dtypes: tuple[str] = ("datetime64[ns]", "<M8[ns]"),  # type: ignore
     ) -> pd.DataFrame:
         """Convert predictors to boolean."""
         columns = infer_predictor_col_name(df=dataset, prefix=self.data_cfg.pred_prefix)
@@ -67,7 +67,7 @@ class PreSplitValueTransformer:
         cols_to_round = [
             c
             for c in columns
-            if (dataset[c].dtype not in ignore_dtypes) or c in columns_to_skip
+            if (dataset[c].dtype not in ignore_dtypes) or c in columns_to_skip  # type: ignore
         ]
 
         for col in cols_to_round:

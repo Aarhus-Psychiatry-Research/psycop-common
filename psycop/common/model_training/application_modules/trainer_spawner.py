@@ -21,7 +21,7 @@ def start_trainer(
     model_name: str,
     dataset_dir: Optional[Union[Path, str]] = None,
     train_single_model_file_path: Optional[Path] = None,
-) -> subprocess.Popen:
+) -> subprocess.Popen:  # type: ignore
     """Start a trainer."""
     msg = Printer(timestamp=True)
 
@@ -71,7 +71,8 @@ def spawn_trainers(
     train_single_model_file_path: Path,
 ):
     """Train a model for each cell in the grid of possible look distances."""
-    active_trainers: list[subprocess.Popen] = []
+    active_trainers: list[subprocess.Popen] = []  # type: ignore
+    trainer_combinations_queue = trainer_specs.copy()
     trainer_combinations_queue = trainer_specs.copy()
 
     if cfg.train is None:

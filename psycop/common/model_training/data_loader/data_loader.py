@@ -23,7 +23,7 @@ class DataLoader:
     def __init__(
         self,
         data_cfg: DataSchema,
-        column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,
+        column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,  # type: ignore
     ):
         self.data_cfg = data_cfg
 
@@ -101,7 +101,7 @@ class DataLoader:
         # Concat splits if multiple are given
         if isinstance(split_names, (list, tuple)):
             if isinstance(split_names, list):
-                split_names = tuple(split_names)
+                split_names = tuple(split_names)  # type: ignore
 
             if nrows is not None:
                 nrows = int(

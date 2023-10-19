@@ -8,8 +8,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 def fit_text_model(
     model: Literal["bow", "tfidf"],
-    corpus: pd.Series,
-    ngram_range: tuple = (1, 1),
+    corpus: pd.Series,  # type: ignore
+    ngram_range: tuple = (1, 1),  # type: ignore
     max_df: float = 1.0,
     min_df: int = 1,
     max_features: Optional[int] = 100,
@@ -37,7 +37,7 @@ def fit_text_model(
 
     # Define vectorizer
     vec = vec_type[model](
-        ngram_range=ngram_range,
+        ngram_range=ngram_range,  # type: ignore
         max_df=max_df,
         min_df=min_df,
         max_features=max_features,

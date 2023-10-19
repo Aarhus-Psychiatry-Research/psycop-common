@@ -13,7 +13,7 @@ from wasabi import Printer
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 
-def get_feature_selection_steps(cfg: FullConfigSchema) -> list:
+def get_feature_selection_steps(cfg: FullConfigSchema) -> list:  # type: ignore
     """Add feature selection steps to the preprocessing pipeline."""
     new_steps = []
 
