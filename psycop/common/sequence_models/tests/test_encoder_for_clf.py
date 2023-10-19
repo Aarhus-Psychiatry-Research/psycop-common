@@ -1,30 +1,44 @@
+import datetime as dt
 from pathlib import Path
 
 import pytest
 from torch import nn
 from torch.utils.data import DataLoader
 
-from psycop.common.data_structures import Patient
+from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.sequence_models import (
     AggregationModule,
     AveragePooler,
     BEHRTEmbedder,
     BEHRTForMaskedLM,
     EncoderForClassification,
-    PatientDatasetWithLabels,
+    PatientSlicesWithLabels,
 )
 
 
 @pytest.fixture()
-def patient_dataset_with_labels(patients: list) -> PatientDatasetWithLabels:
-    return PatientDatasetWithLabels(patients, labels=[0, 1])
+def patient_dataset_with_labels(
+    patient_slices: list[PatientSlice],
+) -> PatientSlicesWithLabels:
+    prediction_times = []
+    for i, patient_slice in enumerate(patient_slices):
+        prediction_times.append(
+            PredictionTime(
+                patient_slice=patient_slice,
+                prediction_timestamp=dt.datetime(year=2000 + i, month=1, day=1),
+                outcome=i % 2 == 0,
+            ),
+        )
+
+    return PatientSlicesWithLabels(prediction_times=prediction_times)
 
 
 @pytest.fixture()
-def embedding_module(patients: list[Patient]) -> BEHRTEmbedder:
+def embedding_module(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patients, add_mask_token=True)
+    emb.fit(patient_slices, add_mask_token=True)
     return emb
 
 
@@ -50,7 +64,7 @@ def aggregation_module() -> AveragePooler:
 
 
 def test_encoder_for_clf(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PatientSlicesWithLabels,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
@@ -78,7 +92,7 @@ def test_encoder_for_clf(
 
 
 def test_encoder_for_clf_for_multiclass(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PatientSlicesWithLabels,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
@@ -106,7 +120,7 @@ def test_encoder_for_clf_for_multiclass(
 
 
 def test_pretrain_from_checkpoint(
-    patient_dataset_with_labels: PatientDatasetWithLabels,
+    patient_dataset_with_labels: PatientSlicesWithLabels,
     aggregation_module: AggregationModule,
 ):
     """

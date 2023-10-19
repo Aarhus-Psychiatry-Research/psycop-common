@@ -16,6 +16,12 @@ if TYPE_CHECKING:
     )
 
 
+@dataclass(frozen=True)
+class TimeInterval:
+    start: dt.datetime
+    end: dt.datetime
+
+
 @dataclass
 class Patient:
     """All task-agnostic data for a patient."""
@@ -61,6 +67,25 @@ class Patient:
     def static_features(self) -> Sequence[StaticFeature]:
         return self._static_features
 
+    def to_patient_slice(
+        self,
+        time_interval: TimeInterval | None,
+    ) -> PatientSlice:
+        """Creates a patient slice, i.e. a subset of the patient's data within a specific time interval."""
+        if time_interval is not None:
+            filtered_events = self._filter_events_within_time_interval(
+                events=self.temporal_events,
+                start=time_interval.start,
+                end=time_interval.end,
+            )
+        else:
+            filtered_events = self.temporal_events
+
+        return PatientSlice(
+            patient=self,
+            temporal_events=filtered_events,
+        )
+
     def to_prediction_times(
         self,
         lookbehind: dt.timedelta,
@@ -74,10 +99,12 @@ class Patient:
 
         for prediction_timestamp in prediction_timestamps:
             # 1. Filter the predictor events to those that are relevant to the prediction time. (Keep all static, drop all temporal that are outside the lookbehind window.)
-            filtered_events = self._filter_events_within_time_interval(
-                events=self.temporal_events,
+            time_interval = TimeInterval(
                 start=prediction_timestamp - lookbehind,
                 end=prediction_timestamp,
+            )
+            patient_slice = self.to_patient_slice(
+                time_interval=time_interval,
             )
 
             outcome_within_lookahead = (
@@ -89,12 +116,29 @@ class Patient:
             # 2. Return prediction sequences
             prediction_sequences.append(
                 PredictionTime(
-                    patient=self,
+                    patient_slice=patient_slice,
                     prediction_timestamp=prediction_timestamp,
-                    temporal_events=filtered_events,
                     outcome=outcome_within_lookahead,
-                    static_features=self._static_features,
                 ),
             )
 
         return prediction_sequences
+
+
+@dataclass(frozen=True)
+class PatientSlice:
+    patient: Patient
+    temporal_events: Sequence[TemporalEvent]
+
+
+def patients_to_infinite_slices(patients: Sequence[Patient]) -> Sequence[PatientSlice]:
+    """Convert a sequence of patients to full slices; i.e. get their entire history of temporal events. Basically just a type recast."""
+    patient_slices = []
+    for patient in patients:
+        patient_slices.append(
+            patient.to_patient_slice(
+                time_interval=None,
+            ),
+        )
+
+    return patient_slices
