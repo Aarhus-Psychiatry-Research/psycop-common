@@ -18,8 +18,8 @@ if __name__ == "__main__":
 
     msg.divider("Training with best params")
     cfg = run.inputs.cfg
-    ## best_auc = train_model(cfg=cfg)
-    # print(f"Best AUC: {best_auc}")
+    best_auc = train_model(cfg=cfg)
+    print(f"Best AUC: {best_auc}")
 
     msg.divider("Training with default xgboost params")
     cfg.model.Config.allow_mutation = True
