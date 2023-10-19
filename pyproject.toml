@@ -50,7 +50,7 @@ reportMissingTypeArgument = "none"
 reportUntypedFunctionDecorator = "none"
 reportIncompatibleVariableOverride = "none"
 reportUnusedVariable = "none"
-reportUnusedImports = "none"
+reportUnusedImport = "none"
 reportPrivateImportUsage = "none"
 
 [tool.ruff]
