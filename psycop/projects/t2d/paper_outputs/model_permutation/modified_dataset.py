@@ -46,7 +46,7 @@ def train_model_with_modified_dataset(
 
 def evaluate_pipeline_with_modified_dataset(
     run: T2DPipelineRun,
-    feature_modifier: FeatureModifier | None,
+    feature_modifier: FeatureModifier,
     rerun_if_exists: bool = True,
     plot_fns: Sequence[Callable[[T2DPipelineRun], None]] | None = None,
 ):
