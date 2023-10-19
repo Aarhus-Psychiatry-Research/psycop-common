@@ -53,7 +53,7 @@ def sql_load(
         stream_results=True,
         fast_executemany=True,
     )
-    df = pd.read_sql(text(query), conn)
+    df = pd.read_sql(text(query), conn)  # type: ignore
 
     if format_timestamp_cols_to_datetime:
         datetime_col_names = [
@@ -64,7 +64,7 @@ def sql_load(
 
         df[datetime_col_names] = df[datetime_col_names].apply(pd.to_datetime)
 
-    conn.close()
-    engine.dispose()
+    conn.close()  # type: ignore
+    engine.dispose()  # type: ignore
 
     return df

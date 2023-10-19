@@ -52,7 +52,7 @@ def get_best_runs_from_model_type(
 
     msg.divider(f"Evaluating {[run.name for run in best_runs]}")
 
-    return best_runs
+    return best_runs  # type: ignore
 
 
 def get_test_artifacts_for_pipeline(

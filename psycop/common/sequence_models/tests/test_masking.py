@@ -13,7 +13,7 @@ from psycop.projects.sequence_models.train import Config
     "embedding_module",
     [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_masking_fn(patient_slices: list, embedding_module: BEHRTEmbedder):
+def test_masking_fn(patient_slices: list, embedding_module: BEHRTEmbedder):  # type: ignore
     """
     Test masking function
     """
@@ -46,7 +46,7 @@ def test_masking_fn(patient_slices: list, embedding_module: BEHRTEmbedder):
 
 
 @pytest.mark.parametrize("masking_fn", [BEHRTForMaskedLM.mask])
-def test_masking_never_masks_0_elements_in_seq(masking_fn: Callable):
+def test_masking_never_masks_0_elements_in_seq(masking_fn: Callable):  # type: ignore
     # If no element in the batch is masked we get an error since the MLM module expects
     # at least one element to be masked.
     n_diagnoses_in_vocab = 4
