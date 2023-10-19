@@ -15,9 +15,10 @@ TODO:
 """
 
 import enum
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import lightning.pytorch as pl
 import lightning.pytorch.loggers as pl_loggers
@@ -26,7 +27,6 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import (
-    Patient,
     PatientSlice,
     patients_to_infinite_slices,
 )
@@ -215,7 +215,8 @@ if __name__ == "__main__":
     val_dataset = PatientSliceDataset(patients_to_infinite_slices(val_patients))
 
     model = create_behrt_MLM_model(
-        patient_slices=patients_to_infinite_slices(train_patients), config=config
+        patient_slices=patients_to_infinite_slices(train_patients),
+        config=config,
     )
 
     train_dataloader = DataLoader(

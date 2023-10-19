@@ -138,7 +138,7 @@ def patients_to_infinite_slices(patients: Sequence[Patient]) -> Sequence[Patient
         patient_slices.append(
             patient.to_patient_slice(
                 time_interval=None,
-            )
+            ),
         )
 
     return patient_slices

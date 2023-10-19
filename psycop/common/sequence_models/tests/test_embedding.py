@@ -4,7 +4,7 @@ import pytest
 import torch
 
 from psycop.common.data_structures import TemporalEvent
-from psycop.common.data_structures.patient import Patient, PatientSlice
+from psycop.common.data_structures.patient import Patient
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.embedders.interface import Embedder
 
