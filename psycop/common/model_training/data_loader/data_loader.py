@@ -1,7 +1,8 @@
 """Dataset loader."""
 import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Callable, Optional, Sequence, Union
+from typing import Callable, Optional, Union
 
 import pandas as pd
 from wasabi import Printer
@@ -62,11 +63,12 @@ class DataLoader:
         return all(base_uuid.isin(df[uuid_column]).all() for df in datasets[1:])
 
     @staticmethod
-    def _remove_id_columns(datasets: list[pd.DataFrame], id_columns: Sequence[str]) -> list[pd.DataFrame]:
+    def _remove_id_columns(
+        datasets: list[pd.DataFrame],
+        id_columns: Sequence[str],
+    ) -> list[pd.DataFrame]:
         """Remove id columns from all but the first dataset"""
-        for dataset in datasets[1:]:
-            dataset.drop(columns=id_columns, inplace=True)
-        return datasets
+        return [dataset.drop(columns=id_columns) if i > 0 else dataset for i, dataset in enumerate(datasets)]
 
 
     def _check_and_merge_feature_sets(
@@ -81,14 +83,21 @@ class DataLoader:
                 + "Ensure that they have been created with the same "
                 + "prediction times.",
             )
-        shared_id_columns = [self.data_cfg.col_name.id, self.data_cfg.col_name.pred_time_uuid, self.data_cfg.col_name.pred_timestamp]
+        shared_id_columns = [
+            self.data_cfg.col_name.id,
+            self.data_cfg.col_name.pred_time_uuid,
+            self.data_cfg.col_name.pred_timestamp,
+        ]
         if DataLoader._check_dataframes_can_be_concatenated(
             datasets=datasets,
             uuid_column=self.data_cfg.col_name.pred_time_uuid,
         ):
             log.debug("Concatenating multiple feature sets.")
-            
-            datasets = DataLoader._remove_id_columns(datasets=datasets, id_columns=shared_id_columns)
+
+            datasets = DataLoader._remove_id_columns(
+                datasets=datasets,
+                id_columns=shared_id_columns,
+            )
             return pd.concat(datasets, axis=1)
 
         log.debug("Joining multiple feature sets.")

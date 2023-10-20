@@ -1,8 +1,10 @@
 # pyright: reportPrivateUsage=false
 import pandas as pd
 import pytest
-from psycop.common.model_training.config_schemas.data import ColumnNamesSchema, DataSchema
 
+from psycop.common.model_training.config_schemas.data import (
+    DataSchema,
+)
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 from psycop.common.test_utils.str_to_df import str_to_df
 
@@ -18,6 +20,7 @@ def dataloader() -> DataLoader:
         n_training_samples=None,
     )
     return DataLoader(data_cfg=data_cfg)
+
 
 ## write test for merging feature sets
 @pytest.fixture()
@@ -75,15 +78,21 @@ def test_check_dataframes_can_be_concatenated_false(
 
 
 def test_check_and_merge_feature_sets_concatenated_correct_output(
-        base_feature_df: pd.DataFrame,
-        feature_df_same_order_uuids: pd.DataFrame,
-        dataloader: DataLoader,
+    base_feature_df: pd.DataFrame,
+    feature_df_same_order_uuids: pd.DataFrame,
+    dataloader: DataLoader,
 ):
-    concatenated_df =  dataloader._check_and_merge_feature_sets(  #
+    concatenated_df = dataloader._check_and_merge_feature_sets(  #
         datasets=[base_feature_df, feature_df_same_order_uuids],
     )
 
-    expected_cols = {"prediction_time_uuid", "feature_name_1", "feature_name_2", "dw_ek_borger","timestamp"}
+    expected_cols = {
+        "prediction_time_uuid",
+        "feature_name_1",
+        "feature_name_2",
+        "dw_ek_borger",
+        "timestamp",
+    }
 
     assert set(concatenated_df.columns) == expected_cols
     assert len(concatenated_df.columns) == len(expected_cols)
@@ -105,10 +114,10 @@ def test_check_and_merge_feature_sets(
     assert concatenated_df.equals(joined_df)
 
 
-
-
-
-def test_check_and_merge_feature_sets_too_many_rows(base_feature_df: pd.DataFrame, dataloader: DataLoader):
+def test_check_and_merge_feature_sets_too_many_rows(
+    base_feature_df: pd.DataFrame,
+    dataloader: DataLoader,
+):
     feature_df_too_many_rows = str_to_df(
         """prediction_time_uuid,feature_name_2,dw_ek_borger,timestamp
 x_2010,2,x,2010
@@ -126,7 +135,10 @@ z_2010,4,z,2010""",
         )
 
 
-def test_check_and_merge_feature_sets_not_matching_uuids(base_feature_df: pd.DataFrame, dataloader: DataLoader):
+def test_check_and_merge_feature_sets_not_matching_uuids(
+    base_feature_df: pd.DataFrame,
+    dataloader: DataLoader,
+):
     feature_df_not_matching_uuids = str_to_df(
         """prediction_time_uuid,feature_name_2,dw_ek_borger,timestamp
 x_2010,0,x,2010
