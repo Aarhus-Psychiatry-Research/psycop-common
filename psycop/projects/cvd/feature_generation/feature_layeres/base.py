@@ -18,12 +18,3 @@ AnySpecType = AnySpec | PredictorSpec | OutcomeSpec | StaticSpec
 class FeatureLayer(Protocol):
     def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
         ...
-
-
-@dataclass(frozen=True)
-class LayerNamedDataframe(NamedDataframe):
-    layer: int
-
-    @property
-    def name(self) -> str:
-        return f"{self.name}_layer_{self.layer}"

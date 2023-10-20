@@ -13,7 +13,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
 from psycop.common.feature_generation.loaders.raw.load_lab_results import ldl
 from psycop.projects.cvd.feature_generation.feature_layeres.base import (
     FeatureLayer,
-    LayerNamedDataframe,
+    NamedDataframe,
 )
 
 
@@ -21,7 +21,7 @@ class CVDLayer1(FeatureLayer):
     def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
         layer = 1
         ldl_spec = PredictorGroupSpec(
-            named_dataframes=(LayerNamedDataframe(df=ldl(), name="ldl", layer=layer),),
+            named_dataframes=(NamedDataframe(df=ldl(), name=f"ldl_layer_{layer}"),),
             aggregation_fns=[mean],
             fallback=[np.nan],
             lookbehind_days=[lookbehind_days],
@@ -29,10 +29,9 @@ class CVDLayer1(FeatureLayer):
 
         essential_hypertension_spec = PredictorGroupSpec(
             named_dataframes=(
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=essential_hypertension(),
-                    name="essential_hypertension",
-                    layer=layer,
+                    name=f"essential_hypertension_layer_{layer}",
                 ),
             ),
             aggregation_fns=[count],

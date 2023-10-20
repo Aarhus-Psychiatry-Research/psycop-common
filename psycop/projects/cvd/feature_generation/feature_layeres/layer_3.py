@@ -24,7 +24,7 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
 )
 from psycop.projects.cvd.feature_generation.feature_layeres.base import (
     FeatureLayer,
-    LayerNamedDataframe,
+    NamedDataframe,
 )
 
 
@@ -33,60 +33,49 @@ class CVDLayer3(FeatureLayer):
         layer = 3
         psychiatric_disorders = PredictorGroupSpec(
             named_dataframes=(
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f0_disorders(),
-                    name="f0_disorders_layer",
-                    layer=layer,
+                    name=f"f0_disorders_layer_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f1_disorders(),
-                    name="f1_disorders",
-                    layer=layer,
+                    name=f"f1_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f2_disorders(),
-                    name="f2_disorders",
-                    layer=layer,
+                    name=f"f2_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f3_disorders(),
-                    name="f3_disorders",
-                    layer=layer,
+                    name=f"f3_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f4_disorders(),
-                    name="f4_disorders",
-                    layer=layer,
+                    name=f"f4_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f5_disorders(),
-                    name="f5_disorders",
-                    layer=layer,
+                    name=f"f5_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f6_disorders(),
-                    name="f6_disorders",
-                    layer=layer,
+                    name=f"f6_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f7_disorders(),
-                    name="f7_disorders",
-                    layer=layer,
+                    name=f"f7_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f8_disorders(),
-                    name="f8_disorders",
-                    layer=layer,
+                    name=f"f8_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=f9_disorders(),
-                    name="f9_disorders",
-                    layer=layer,
+                    name=f"f9_disorders_layer_{layer}",
                 ),
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=top_10_weight_gaining_antipsychotics(),
-                    name="top_10_weight_gaining_antipsychotics",
-                    layer=layer,
+                    name=f"top_10_weight_gaining_antipsychotics_layer_{layer}",
                 ),
             ),
             aggregation_fns=[count],
@@ -96,10 +85,9 @@ class CVDLayer3(FeatureLayer):
 
         antipsychotics_spec = PredictorGroupSpec(
             named_dataframes=(
-                LayerNamedDataframe(
+                NamedDataframe(
                     df=top_10_weight_gaining_antipsychotics(),
-                    name="antipsychotics",
-                    layer=layer,
+                    name=f"antipsychotics_layer_{layer}",
                 ),
             ),
             lookbehind_days=[lookbehind_days],
@@ -108,7 +96,7 @@ class CVDLayer3(FeatureLayer):
         ).create_combinations()
 
         hdl_spec = PredictorGroupSpec(
-            named_dataframes=[LayerNamedDataframe(df=hdl(), name="hdl", layer=layer)],
+            named_dataframes=[NamedDataframe(df=hdl(), name=f"hdl_layer_{layer}")],
             lookbehind_days=[lookbehind_days],
             aggregation_fns=[boolean],
             fallback=[0],
