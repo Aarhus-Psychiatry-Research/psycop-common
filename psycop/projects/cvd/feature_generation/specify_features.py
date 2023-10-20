@@ -1,6 +1,6 @@
 """Feature specification module."""
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 from timeseriesflattener.aggregation_fns import (
     maximum,
@@ -20,6 +20,12 @@ from timeseriesflattener.feature_specs.single_specs import (
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     SCORE2_CVD,
+)
+from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
+    CVDCohortDefiner,
+)
+from psycop.projects.cvd.feature_generation.feature_layeres.base import (
+    AnySpecType,
 )
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_1 import CVDLayer1
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_2 import CVDLayer2
@@ -61,37 +67,40 @@ class CVDFeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=SCORE2_CVD(),
+                    df=CVDCohortDefiner.get_outcome_timestamps().to_pandas(),
                     name="score2_cvd",
                 ),
             ],
             lookahead_days=[365 * 5],
             aggregation_fns=[maximum],
             fallback=[0],
-            incident=[True],
+            incident=[False],
         ).create_combinations()
 
-    def get_feature_specs(self, layer: int) -> list[AnySpec]:
+    def get_feature_specs(self, layer: int) -> list[AnySpecType]:
         """Get a spec set."""
+        feature_sequences: list[Sequence[AnySpecType]] = [
+            self._get_static_predictor_specs(),
+            self._get_outcome_specs(),
+        ]
 
-        layers: list[FeatureLayer] = [CVDLayer1()]
-
+        if layer >= 1:
+            feature_sequences.append(CVDLayer1().get_features(lookbehind_days=730))
         if layer >= 2:
-            layers.append(CVDLayer2())
+            feature_sequences.append(CVDLayer2().get_features(lookbehind_days=730))
         if layer >= 3:
-            layers.append(CVDLayer3())
+            feature_sequences.append(CVDLayer3().get_features(lookbehind_days=730))
         if layer > 3:
             raise ValueError(f"Layer {layer} not supported.")
 
-        temporal_predictor_sequences = [
-            layer.get_features(lookbehind_days=730) for layer in layers
-        ]
-        temporal_predictors = [
-            item for sublist in temporal_predictor_sequences for item in sublist
-        ]
+        # Flatten the Sequence of lists
+        features = [feature for sublist in feature_sequences for feature in sublist]
 
-        return (
-            temporal_predictors
-            + self._get_static_predictor_specs()
-            + self._get_outcome_specs()
-        )
+        return features
+
+
+if __name__ == "__main__":
+    outcome_specs = CVDFeatureSpecifier()._get_outcome_specs()
+    outcome_df = outcome_specs[0].timeseries_df
+
+    pass
