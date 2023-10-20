@@ -68,8 +68,10 @@ class DataLoader:
         id_columns: Sequence[str],
     ) -> list[pd.DataFrame]:
         """Remove id columns from all but the first dataset"""
-        return [dataset.drop(columns=id_columns) if i > 0 else dataset for i, dataset in enumerate(datasets)]
-
+        return [
+            dataset.drop(columns=id_columns) if i > 0 else dataset
+            for i, dataset in enumerate(datasets)
+        ]
 
     def _check_and_merge_feature_sets(
         self,
