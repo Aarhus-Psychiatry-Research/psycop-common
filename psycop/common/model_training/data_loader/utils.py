@@ -18,6 +18,36 @@ from psycop.common.model_training.preprocessing.pre_split.processors.value_clean
 )
 
 
+def check_dataframes_can_be_concatenated(
+    datasets: list[pd.DataFrame],
+    uuid_column: str,
+) -> bool:
+    """Check if pred_time_uuid columns are sorted so they can be concatenated
+    instead of joined."""
+    base_uuid = datasets[0][uuid_column]
+    return all(base_uuid.equals(df[uuid_column]) for df in datasets[1:])
+
+
+def check_and_merge_feature_sets(
+    datasets: list[pd.DataFrame],
+    uuid_column: str,
+) -> pd.DataFrame:
+    n_rows = [dataset.shape[0] for dataset in datasets]
+    if len(set(n_rows)) != 1:
+        raise ValueError(
+            "The datasets have a different amount of rows. "
+            + "Ensure that they have been created with the same "
+            + "prediction times.",
+        )
+
+    if check_dataframes_can_be_concatenated(datasets=datasets, uuid_column=uuid_column):
+        return pd.concat(datasets, axis=1)
+    merged_df = datasets[0]
+    for df in datasets[1:]:
+        merged_df = pd.merge(merged_df, df, on=uuid_column, how="outer", validate="1:1")
+    return merged_df
+
+
 def get_latest_dataset_dir(path: Path) -> Path:
     """Get the latest dataset directory by time of creation."""
     return max(path.glob("*"), key=os.path.getctime)
@@ -29,7 +59,8 @@ def load_and_filter_split_from_cfg(
     split: str,
     cache_dir: Optional[Path] = None,
 ) -> pd.DataFrame:
-    """Load train dataset from config.
+    """Load train dataset from config. If data_cfg.dir is a list of paths to
+    different feature sets, will concatenate them
 
     Args:
         data_cfg (DataSchema): Data config
@@ -40,16 +71,38 @@ def load_and_filter_split_from_cfg(
     Returns:
         pd.DataFrame: Train dataset
     """
-    dataset = DataLoader(data_cfg=data_cfg).load_dataset_from_dir(split_names=split)
 
-    filtered_data = pre_split_process_full_dataset(
-        dataset=dataset,
-        pre_split_cfg=pre_split_cfg,
-        data_cfg=data_cfg,
-        cache_dir=cache_dir,
+    if not isinstance(data_cfg.dir, list):
+        dataset_dirs = [data_cfg.dir]
+    else:
+        dataset_dirs = data_cfg.dir
+
+    datasets = [
+        DataLoader(data_cfg=data_cfg).load_dataset_from_dir(
+            split_names=split,
+            dataset_dir=dataset_dir,
+        )
+        for dataset_dir in dataset_dirs
+    ]
+
+    filtered_data = [
+        pre_split_process_full_dataset(
+            dataset=dataset,
+            pre_split_cfg=pre_split_cfg,
+            data_cfg=data_cfg,
+            cache_dir=cache_dir,
+        )
+        for dataset in datasets
+    ]
+
+    if len(filtered_data) == 1:
+        return filtered_data[0]
+
+    merged_datasets = check_and_merge_feature_sets(
+        datasets=filtered_data,
+        uuid_column=data_cfg.col_name.pred_time_uuid,
     )
-
-    return filtered_data
+    return merged_datasets
 
 
 def load_and_filter_train_from_cfg(

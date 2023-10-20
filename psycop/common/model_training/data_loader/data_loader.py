@@ -26,9 +26,8 @@ class DataLoader:
         column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,
     ):
         self.data_cfg = data_cfg
-
+        self.data_dir = data_cfg.dir
         # File handling
-        self.dir_path = Path(data_cfg.dir)
         self.file_suffix = data_cfg.suffix
         self.column_name_checker = column_name_checker
 
@@ -45,6 +44,7 @@ class DataLoader:
     def _load_dataset_file(
         self,
         split_name: str,
+        dataset_dir: Path,
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
         """Load dataset from directory. Finds any file with the matching file
@@ -52,6 +52,7 @@ class DataLoader:
 
         Args:
             split_name (str): Name of split, allowed are ["train", "test", "val"]
+            dataset_dir (Path): Directory containing the dataset
             nrows (Optional[int]): Number of rows to load. Defaults to None, in which case
                 all rows are loaded.
             self.file_suffix (str, optional): File suffix of the dataset. Defaults to "parquet".
@@ -64,7 +65,7 @@ class DataLoader:
         if self.file_suffix not in ("csv", "parquet"):
             raise ValueError(f"File suffix {self.file_suffix} not supported.")
 
-        path = list(self.dir_path.glob(f"*{split_name}*.{self.file_suffix}"))[0]
+        path = list(dataset_dir.glob(f"*{split_name}*.{self.file_suffix}"))[0]
 
         if "parquet" in self.file_suffix:
             if nrows:
@@ -85,6 +86,7 @@ class DataLoader:
 
     def load_dataset_from_dir(
         self,
+        dataset_dir: Path | str,
         split_names: Union[list[str], tuple[str], str],
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
@@ -92,12 +94,14 @@ class DataLoader:
         train and val for crossvalidation.
 
         Args:
+            dataset_dir (Path | str): Directory containing the dataset
             split_names (Union[Sequence[str], str]): Name of split, allowed are ["train", "test", "val"]
             nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
 
         Returns:
             pd.DataFrame: The filtered dataset
         """
+        dataset_dir = Path(dataset_dir)
         # Concat splits if multiple are given
         if isinstance(split_names, (list, tuple)):
             if isinstance(split_names, list):
@@ -110,11 +114,19 @@ class DataLoader:
 
             return pd.concat(
                 [
-                    self._load_dataset_file(split_name=split, nrows=nrows)
+                    self._load_dataset_file(
+                        split_name=split,
+                        nrows=nrows,
+                        dataset_dir=dataset_dir,
+                    )
                     for split in split_names
                 ],
                 ignore_index=True,
             )
 
         # Otherwise, just return the single split
-        return self._load_dataset_file(split_name=split_names, nrows=nrows)
+        return self._load_dataset_file(
+            split_name=split_names,
+            nrows=nrows,
+            dataset_dir=dataset_dir,
+        )
