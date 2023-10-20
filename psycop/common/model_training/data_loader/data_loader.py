@@ -102,11 +102,11 @@ class DataLoader:
             )
             return pd.concat(datasets, axis=1)
 
-        log.debug("Joining multiple feature sets.")
         if DataLoader._check_dataframes_can_be_joined(
             datasets=datasets,
             uuid_column=self.data_cfg.col_name.pred_time_uuid,
         ):
+            log.debug("Joining multiple feature sets.")
             merged_df = datasets[0]
             for df in datasets[1:]:
                 merged_df = pd.merge(
@@ -218,10 +218,10 @@ class DataLoader:
                             ignore_index=True,
                         ),
                     )
-        # if only feature set provided, just return it
+        # if only a single feature set provided, just return it
         if len(feature_sets) == 1:
             return feature_sets[0]
-        # else, check if they can be concatenated or need to be joined
+        # else, concatenate/join them
         merged_datasets = self._check_and_merge_feature_sets(
             datasets=feature_sets,
         )
