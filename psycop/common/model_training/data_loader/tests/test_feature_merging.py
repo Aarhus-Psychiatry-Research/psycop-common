@@ -35,10 +35,10 @@ y_2011,3""",
 def feature_df_different_order_uuids() -> pd.DataFrame:
     return str_to_df(
         """uuid,feature_name_2
-x_2010,2
-x_2011,2
 y_2010,3,
-y_2011,3""",
+y_2011,3,
+x_2010,2
+x_2011,2""",
     )
 
 
