@@ -189,36 +189,7 @@ class FeatureSpecifier:
         return specs
 
     def get_layer_3_specs(self) -> list[PredictorSpec]:
-        psychiatric_diagnoses = PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(df=f0_disorders(), name="f0_disorders"),
-                NamedDataframe(df=f1_disorders(), name="f1_disorders"),
-                NamedDataframe(df=f2_disorders(), name="f2_disorders"),
-                NamedDataframe(df=f3_disorders(), name="f3_disorders"),
-                NamedDataframe(df=f4_disorders(), name="f4_disorders"),
-                NamedDataframe(df=f5_disorders(), name="f5_disorders"),
-                NamedDataframe(df=f6_disorders(), name="f6_disorders"),
-                NamedDataframe(df=f7_disorders(), name="f7_disorders"),
-                NamedDataframe(df=f8_disorders(), name="f8_disorders"),
-                NamedDataframe(df=f9_disorders(), name="f9_disorders"),
-                NamedDataframe(
-                    df=top_10_weight_gaining_antipsychotics(),
-                    name="top_10_weight_gaining_antipsychotics",
-                ),
-            ),
-            aggregation_fns=[count],
-            lookbehind_days=[self.default_lookbehind_days],
-            fallback=[0],
-        ).create_combinations()
-
-        hdl = PredictorSpec(
-            timeseries_df=hdl(),
-            feature_base_name="hdl",
-            aggregation_fn=self.default_lookbehind_days,
-            fallback=self.default_fallback,
-        )
-
-        return specs
+        
 
     def get_feature_specs(self) -> list[AnySpec]:
         """Get a spec set."""
