@@ -7,8 +7,8 @@ from psycop.common.feature_generation.loaders.raw import sql_load
 def load_heart_procedure_codes() -> pl.DataFrame:
     df = pl.from_pandas(
         sql_load(
-            query="SELECT * FROM [fct].[FOR_hjerte_procedurekoder_inkl_2021_feb2022]"
-        )
+            query="SELECT * FROM [fct].[FOR_hjerte_procedurekoder_inkl_2021_feb2022]",
+        ),
     ).rename({"datotid_udfoert": "timestamp", "procedurekode": "procedure_code"})
     return df
 
