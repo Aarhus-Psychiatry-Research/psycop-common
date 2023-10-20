@@ -91,9 +91,9 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     weight_in_kg,
 )
 from psycop.projects.cvd.feature_generation.feature_layeres.base import FeatureLayer, LayerPosition
-from psycop.projects.cvd.feature_generation.feature_layeres.layer_a import CVDLayerA
-from psycop.projects.cvd.feature_generation.feature_layeres.layer_b import CVDLayerB
-from psycop.projects.cvd.feature_generation.feature_layeres.layer_c import CVDLayerC
+from psycop.projects.cvd.feature_generation.feature_layeres.layer_1 import CVDLayer1
+from psycop.projects.cvd.feature_generation.feature_layeres.layer_2 import CVDLayer2
+from psycop.projects.cvd.feature_generation.feature_layeres.layer_3 import CVDLayer3
 from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
@@ -153,12 +153,12 @@ class FeatureSpecifier:
     def get_feature_specs(self, layer: int) -> list[AnySpec]:
         """Get a spec set."""
 
-        layers: list[FeatureLayer] = [CVDLayerA()]
+        layers: list[FeatureLayer] = [CVDLayer1()]
 
         if layer >= 2:
-            layers.append(CVDLayerB())
+            layers.append(CVDLayer2())
         if layer >= 3:
-            layers.append(CVDLayerC())
+            layers.append(CVDLayer3())
         if layer > 3:
             raise ValueError(f"Layer {layer} not supported.")
 

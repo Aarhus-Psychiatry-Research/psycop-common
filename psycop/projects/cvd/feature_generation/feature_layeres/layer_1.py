@@ -6,14 +6,15 @@ from psycop.projects.cvd.feature_generation.feature_layeres.base import AnySpecT
 
 
 from timeseriesflattener.aggregation_fns import boolean, count, mean
-from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
+from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec, PredictorSpec
 
 
 from typing import Sequence
 
 
-class CVDLayerA(FeatureLayer):
-    def get_features(self, lookbehind_days: int) -> Sequence[AnySpecType]:
+class CVDLayer1(FeatureLayer):
+    def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
+        layer = 1
         ldl_spec = PredictorGroupSpec(
                 named_dataframes=(LayerNamedDataframe(df=ldl(), name="ldl", layer=layer),),
                 aggregation_fns=[mean],

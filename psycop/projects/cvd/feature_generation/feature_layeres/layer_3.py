@@ -5,14 +5,15 @@ from psycop.projects.cvd.feature_generation.feature_layeres.base import AnySpecT
 
 
 from timeseriesflattener.aggregation_fns import boolean, count
-from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
+from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec, PredictorSpec
 
 
 from typing import Sequence
 
 
-class CVDLayerC(FeatureLayer):
-    def get_features(self, lookbehind_days: int) -> Sequence[AnySpecType]:
+class CVDLayer3(FeatureLayer):
+    def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
+        layer=3
         psychiatric_disorders = PredictorGroupSpec(
             named_dataframes=(
                 LayerNamedDataframe(df=f0_disorders(), name="f0_disorders_layer", layer=layer),

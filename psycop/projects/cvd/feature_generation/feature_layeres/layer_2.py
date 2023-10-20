@@ -1,4 +1,5 @@
 import numpy as np
+from timeseriesflattener.feature_specs.single_specs import PredictorSpec
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import acute_myocardial_infarction, chronic_lung_disease, f0_disorders, f1_disorders, f2_disorders, f3_disorders, f4_disorders, f5_disorders, f6_disorders, f7_disorders, f8_disorders, f9_disorders, ischemic_stroke
 from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c, hdl
 from psycop.common.feature_generation.loaders.raw.load_medications import top_10_weight_gaining_antipsychotics
@@ -13,8 +14,9 @@ from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
 from typing import Sequence
 
 
-class CVDLayerB(FeatureLayer):
-    def get_features(self, lookbehind_days: int) -> Sequence[AnySpecType]:
+class CVDLayer2(FeatureLayer):
+    def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
+        layer=2
         specs = PredictorGroupSpec(
             lookbehind_days=[lookbehind_days],
             named_dataframes=[
