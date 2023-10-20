@@ -60,7 +60,9 @@ class DataLoader:
         """Check if pred_time_uuid columns contain the same elements so they can
         be joined without introducing new rows"""
         base_uuid = datasets[0][uuid_column]
-        all_base_uuids_in_other_datasets = [base_uuid.isin(df[uuid_column]).all() for df in datasets[1:]]
+        all_base_uuids_in_other_datasets = [
+            base_uuid.isin(df[uuid_column]).all() for df in datasets[1:]
+        ]
         return all(all_base_uuids_in_other_datasets)
 
     @staticmethod
@@ -187,7 +189,9 @@ class DataLoader:
 
         feature_sets = [
             self._load_dataset_from_dir(
-                split_names=split_names, nrows=nrows, dataset_dir=dataset_dir
+                split_names=split_names,
+                nrows=nrows,
+                dataset_dir=dataset_dir,
             )
             for dataset_dir in dataset_dirs
         ]
@@ -222,14 +226,13 @@ class DataLoader:
                         nrows / len(split_names),
                     )
                 return pd.concat(
-                        [
-                            self._load_dataset_file(
-                                split_name=split,
-                                nrows=nrows,
-                                dataset_dir=dataset_dir,
-                            )
-                            for split in split_names
-                        ],
-                        ignore_index=True,
-                    )
-                
+                    [
+                        self._load_dataset_file(
+                            split_name=split,
+                            nrows=nrows,
+                            dataset_dir=dataset_dir,
+                        )
+                        for split in split_names
+                    ],
+                    ignore_index=True,
+                )

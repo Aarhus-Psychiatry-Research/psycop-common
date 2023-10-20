@@ -27,7 +27,7 @@ class ColumnNamesSchema(PSYCOPBaseModel):
 class DataSchema(PSYCOPBaseModel):
     """Data configuration."""
 
-    dir: list[
+    dir: list[  # noqa: A003
         Path
     ] | Path  # Location of the dataset. if list, datasets will be concatenated.
     suffix: str = "parquet"  # File suffix to load.
