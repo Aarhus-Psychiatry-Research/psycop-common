@@ -60,7 +60,8 @@ class DataLoader:
         """Check if pred_time_uuid columns contain the same elements so they can
         be joined without introducing new rows"""
         base_uuid = datasets[0][uuid_column]
-        return all(base_uuid.isin(df[uuid_column]).all() for df in datasets[1:])
+        all_base_uuids_in_other_datasets = [base_uuid.isin(df[uuid_column]).all() for df in datasets[1:]]
+        return all(all_base_uuids_in_other_datasets)
 
     @staticmethod
     def _remove_id_columns(
@@ -78,12 +79,12 @@ class DataLoader:
         datasets: list[pd.DataFrame],
     ) -> pd.DataFrame:
         """Check if datasets can be concatenated or need to be joined."""
-        n_rows = [dataset.shape[0] for dataset in datasets]
-        if len(set(n_rows)) != 1:
+        n_rows_per_dataset = [dataset.shape[0] for dataset in datasets]
+        all_datasets_have_same_length = len(set(n_rows_per_dataset)) == 1
+        if not all_datasets_have_same_length:
             raise ValueError(
-                "The datasets have a different amount of rows. "
-                + "Ensure that they have been created with the same "
-                + "prediction times.",
+                """The datasets have a different amount of rows.
+                             Ensure that they have been created with the same prediction times.""",
             )
         shared_id_columns = [
             self.data_cfg.col_name.id,
@@ -173,7 +174,6 @@ class DataLoader:
         train and val for crossvalidation.
 
         Args:
-            dataset_dir (Path | str): Directory containing the dataset
             split_names (Union[Sequence[str], str]): Name of split, allowed are ["train", "test", "val"]
             nrows (Optional[int]): Number of rows to load from dataset. Defaults to None, in which case all rows are loaded.
 
@@ -185,40 +185,13 @@ class DataLoader:
         else:
             dataset_dirs = self.data_dir
 
-        feature_sets: list[pd.DataFrame] = []
-        for dataset_dir in dataset_dirs:
-            dataset_dir_path = Path(dataset_dir)
-            # Concat splits if multiple are given
-            match split_names:
-                case str():
-                    # Otherwise, just return the single split
-                    feature_sets.append(
-                        self._load_dataset_file(
-                            split_name=split_names,
-                            nrows=nrows,
-                            dataset_dir=dataset_dir_path,
-                        ),
-                    )
-                case list() | tuple():
-                    if nrows is not None:
-                        nrows = int(
-                            nrows / len(split_names),
-                        )
+        feature_sets = [
+            self._load_dataset_from_dir(
+                split_names=split_names, nrows=nrows, dataset_dir=dataset_dir
+            )
+            for dataset_dir in dataset_dirs
+        ]
 
-                    feature_sets.append(
-                        pd.concat(
-                            [
-                                self._load_dataset_file(
-                                    split_name=split,
-                                    nrows=nrows,
-                                    dataset_dir=dataset_dir_path,
-                                )
-                                for split in split_names
-                            ],
-                            ignore_index=True,
-                        ),
-                    )
-        # if only a single feature set provided, just return it
         if len(feature_sets) == 1:
             return feature_sets[0]
         # else, concatenate/join them
@@ -226,3 +199,37 @@ class DataLoader:
             datasets=feature_sets,
         )
         return merged_datasets
+
+    def _load_dataset_from_dir(
+        self,
+        split_names: Union[list[str], tuple[str], str],
+        nrows: Optional[int],
+        dataset_dir: Path,
+    ) -> pd.DataFrame:
+        match split_names:
+            case str():
+                # just return the single split
+                return self._load_dataset_file(
+                    split_name=split_names,
+                    nrows=nrows,
+                    dataset_dir=dataset_dir,
+                )
+
+            case list() | tuple():
+                # Concat splits if multiple are given
+                if nrows is not None:
+                    nrows = int(
+                        nrows / len(split_names),
+                    )
+                return pd.concat(
+                        [
+                            self._load_dataset_file(
+                                split_name=split,
+                                nrows=nrows,
+                                dataset_dir=dataset_dir,
+                            )
+                            for split in split_names
+                        ],
+                        ignore_index=True,
+                    )
+                
