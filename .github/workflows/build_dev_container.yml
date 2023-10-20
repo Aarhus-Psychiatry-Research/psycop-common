@@ -26,7 +26,7 @@ jobs:
       - name: Pre-build dev container image
         uses: devcontainers/ci@v0.3
         with:
-          imageName: ghcr.io/Aarhus-Psychiatry-Research/psycop-common
-          cacheFrom: ghcr.io/Aarhus-Psychiatry-Research/psycop-common
+          imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
+          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common
           push: filter
           refFilterForPush: refs/heads/main
