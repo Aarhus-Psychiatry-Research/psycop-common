@@ -17,9 +17,6 @@ from psycop.common.model_training.data_loader.col_name_checker import (
 log = logging.getLogger(__name__)
 
 
-
-
-
 class DataLoader:
     """Class to handle loading of a datasplit."""
 
@@ -46,9 +43,9 @@ class DataLoader:
 
     @staticmethod
     def _check_dataframes_can_be_concatenated(
-    datasets: list[pd.DataFrame],
-    uuid_column: str,
-) -> bool:
+        datasets: list[pd.DataFrame],
+        uuid_column: str,
+    ) -> bool:
         """Check if pred_time_uuid columns are sorted so they can be concatenated
         instead of joined."""
         base_uuid = datasets[0][uuid_column]
@@ -62,7 +59,7 @@ class DataLoader:
         """Check if pred_time_uuid columns contain the same elements so they can
         be joined without introducing new rows"""
         base_uuid = datasets[0][uuid_column]
-        return all(base_uuid.isin(df[uuid_column]) for df in datasets[1:])
+        return all(base_uuid.isin(df[uuid_column]).all() for df in datasets[1:])
 
     @staticmethod
     def _check_and_merge_feature_sets(
@@ -78,18 +75,31 @@ class DataLoader:
                 + "prediction times.",
             )
 
-        if DataLoader._check_dataframes_can_be_concatenated(datasets=datasets, uuid_column=uuid_column):
+        if DataLoader._check_dataframes_can_be_concatenated(
+            datasets=datasets,
+            uuid_column=uuid_column,
+        ):
             log.debug("Concatenating multiple feature sets.")
             return pd.concat(datasets, axis=1)
-        
+
         log.debug("Joining multiple feature sets.")
-        if DataLoader._check_dataframes_can_be_joined(datasets=datasets, uuid_column=uuid_column):
+        if DataLoader._check_dataframes_can_be_joined(
+            datasets=datasets,
+            uuid_column=uuid_column,
+        ):
             merged_df = datasets[0]
             for df in datasets[1:]:
-                merged_df = pd.merge(merged_df, df, on=uuid_column, how="outer", validate="1:1")
+                merged_df = pd.merge(
+                    merged_df,
+                    df,
+                    on=uuid_column,
+                    how="outer",
+                    validate="1:1",
+                )
             return merged_df
-        raise ValueError("The datasets have different uuids. Ensure that they have been created with the same prediction times.")
-
+        raise ValueError(
+            "The datasets have different uuids. Ensure that they have been created with the same prediction times.",
+        )
 
     def _load_dataset_file(
         self,
@@ -157,7 +167,7 @@ class DataLoader:
 
         feature_sets: list[pd.DataFrame] = []
         for dataset_dir in dataset_dirs:
-            dataset_dir = Path(dataset_dir)
+            dataset_dir_path = Path(dataset_dir)
             # Concat splits if multiple are given
             if isinstance(split_names, (list, tuple)):
                 if nrows is not None:
@@ -167,24 +177,24 @@ class DataLoader:
 
                 feature_sets.append(
                     pd.concat(
-                    [
-                        self._load_dataset_file(
-                            split_name=split,
-                            nrows=nrows,
-                            dataset_dir=dataset_dir,
-                        )
-                        for split in split_names
-                    ],
-                    ignore_index=True,
-                )
+                        [
+                            self._load_dataset_file(
+                                split_name=split,
+                                nrows=nrows,
+                                dataset_dir=dataset_dir_path,
+                            )
+                            for split in split_names
+                        ],
+                        ignore_index=True,
+                    ),
                 )
             # Otherwise, just return the single split
             feature_sets.append(
                 self._load_dataset_file(
-                split_name=split_names,
-                nrows=nrows,
-                dataset_dir=dataset_dir,
-            )
+                    split_name=split_names,
+                    nrows=nrows,
+                    dataset_dir=dataset_dir_path,
+                ),
             )
         # if only feature set provided, just return it
         if len(feature_sets) == 1:

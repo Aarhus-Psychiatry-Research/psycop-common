@@ -18,12 +18,9 @@ from psycop.common.model_training.preprocessing.pre_split.processors.value_clean
 )
 
 
-
-
 def get_latest_dataset_dir(path: Path) -> Path:
     """Get the latest dataset directory by time of creation."""
     return max(path.glob("*"), key=os.path.getctime)
-
 
 
 def load_and_filter_split_from_cfg(
@@ -55,7 +52,6 @@ def load_and_filter_split_from_cfg(
     return filtered_data
 
 
-
 def load_and_filter_train_from_cfg(
     cfg: FullConfigSchema,
     cache_dir: Optional[Path] = None,
@@ -85,8 +81,10 @@ def load_train_raw(
     if isinstance(cfg.data.dir, (str, Path)):
         path = Path(cfg.data.dir)
     else:
-        raise ValueError(f"cfg.data.dir must be a string or Path, got {type(cfg.data.dir)}")
-    
+        raise ValueError(
+            f"cfg.data.dir must be a string or Path, got {type(cfg.data.dir)}",
+        )
+
     file_names = list(path.glob(pattern=r"*train*"))
 
     if len(file_names) == 1:
