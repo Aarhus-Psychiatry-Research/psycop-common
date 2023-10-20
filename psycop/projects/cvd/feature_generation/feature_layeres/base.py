@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import Protocol, Sequence
+from venv import create
 from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
 
 from timeseriesflattener.feature_specs.single_specs import AnySpec
@@ -14,6 +15,7 @@ from timeseriesflattener.aggregation_fns import (
     maximum,
     mean,
     minimum,
+    boolean,
 )
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
@@ -102,59 +104,16 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
     get_first_diabetes_lab_result_above_threshold,
 )
 
-class LayerPosition(Enum):
-    A = "A"
-    B = "B"
-    C = "C"
-    D = "D"
-    E = "E"
-    F = "F"
-
 AnySpecType = AnySpec | PredictorSpec | OutcomeSpec | StaticSpec
 
 class FeatureLayer(Protocol):
-    def get_features(self, layer: LayerPosition, lookbehind_days: int) -> Sequence[AnySpec]:
+    def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
         ...
 
 @dataclass(frozen=True)
 class LayerNamedDataframe(NamedDataframe):
-    layer: str
+    layer: int
 
     @property
     def name(self) -> str:
         return f"{self.name}_layer_{self.layer}"
-    
-
-class LayerC(FeatureLayer):
-    def get_features(self, layer: LayerPosition, lookbehind_days: int) -> Sequence[AnySpecType]:
-        psychiatric_disorders = PredictorGroupSpec(
-            named_dataframes=(
-                LayerNamedDataframe(df=f0_disorders(), name="f0_disorders_layer", layer=layer.value),
-                LayerNamedDataframe(df=f1_disorders(), name="f1_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f2_disorders(), name="f2_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f3_disorders(), name="f3_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f4_disorders(), name="f4_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f5_disorders(), name="f5_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f6_disorders(), name="f6_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f7_disorders(), name="f7_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f8_disorders(), name="f8_disorders", layer=layer.value),
-                LayerNamedDataframe(df=f9_disorders(), name="f9_disorders", layer=layer.value),
-                LayerNamedDataframe(
-                    df=top_10_weight_gaining_antipsychotics(),
-                    name="top_10_weight_gaining_antipsychotics",
-                    layer=layer.value,
-                ),
-            ),
-            aggregation_fns=[count],
-            lookbehind_days=[lookbehind_days],
-            fallback=[0],
-        ).create_combinations()
-
-        hdl_spec = PredictorGroupSpec(
-            named_dataframes=[LayerNamedDataframe(df=hdl(), name="hdl", layer=layer.value)],
-            lookbehind_days=[lookbehind_days],
-            aggregation_fns=[count],
-            fallback=[0],
-        ).create_combinations()
-
-        return psychiatric_disorders + hdl_spec

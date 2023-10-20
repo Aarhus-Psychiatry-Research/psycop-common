@@ -90,6 +90,10 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     height_in_cm,
     weight_in_kg,
 )
+from psycop.projects.cvd.feature_generation.feature_layeres.base import FeatureLayer, LayerPosition
+from psycop.projects.cvd.feature_generation.feature_layeres.layer_a import CVDLayerA
+from psycop.projects.cvd.feature_generation.feature_layeres.layer_b import CVDLayerB
+from psycop.projects.cvd.feature_generation.feature_layeres.layer_c import CVDLayerC
 from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
@@ -115,12 +119,8 @@ class FeatureSpecifier:
     def __init__(
         self,
         project_info: ProjectInfo,
-        min_set_for_debug: bool = False,
     ) -> None:
-        self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
-        self.default_fallback = np.nan
-        self.default_lookbehind_days = 730
 
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
@@ -150,67 +150,23 @@ class FeatureSpecifier:
             prefix=self.project_info.prefix.outcome,
         ).create_combinations()
 
-    def get_layer_1_specs(self) -> list[PredictorSpec]:
-        return [
-            PredictorSpec(
-                timeseries_df=ldl(),
-                feature_base_name="ldl",
-                aggregation_fn=mean,
-                fallback=np.nan,
-                lookbehind_days=self.default_lookbehind_days,
-            ),
-            PredictorSpec(
-                timeseries_df=essential_hypertension(),
-                feature_base_name="essential_hypertension",
-                aggregation_fn=count,
-                fallback=0,
-                lookbehind_days=self.default_lookbehind_days,
-            ),
-        ]
-
-    def get_layer_2_specs(self) -> list[PredictorSpec]:
-        specs = PredictorGroupSpec(
-            lookbehind_days=[self.default_lookbehind_days],
-            named_dataframes=[
-                NamedDataframe(
-                    df=acute_myocardial_infarction(), name="acute_myocardial_infarction"
-                ),
-                NamedDataframe(df=pci(), name="pci"),
-                NamedDataframe(df=cabg(), name="cabg"),
-                NamedDataframe(df=ischemic_stroke(), name="ischemic_stroke"),
-                NamedDataframe(df=pad(), name="peripheral_arterial_disease"),
-                NamedDataframe(df=hba1c(), name="hba1c"),
-                NamedDataframe(df=chronic_lung_disease(), name="chronic_lung_disease"),
-            ],
-            aggregation_fns=[mean],
-            fallback=[np.nan],
-        ).create_combinations()
-
-        return specs
-
-    def get_layer_3_specs(self) -> list[PredictorSpec]:
-        
-
-    def get_feature_specs(self) -> list[AnySpec]:
+    def get_feature_specs(self, layer: int) -> list[AnySpec]:
         """Get a spec set."""
 
-        if self.min_set_for_debug:
-            log.warning(
-                "--- !!! Using the minimum set of features for debugging !!! ---",
-            )
-            return (
-                self._get_temporal_predictor_specs()
-                + self._get_outcome_specs()
-                + self._get_metadata_specs()
-            )
+        layers: list[FeatureLayer] = [CVDLayerA()]
+
+        if layer >= 2:
+            layers.append(CVDLayerB())
+        if layer >= 3:
+            layers.append(CVDLayerC())
+        if layer > 3:
+            raise ValueError(f"Layer {layer} not supported.")
+
+        temporal_predictor_sequences = [layer.get_features(lookbehind_days=730) for layer in layers]
+        temporal_predictors = [item for sublist in temporal_predictor_sequences for item in sublist]
 
         return (
-            self._get_temporal_predictor_specs()
+            temporal_predictors
             + self._get_static_predictor_specs()
             + self._get_outcome_specs()
-            + self._get_metadata_specs()
         )
-
-
-if __name__ == "__main__":
-    main()
