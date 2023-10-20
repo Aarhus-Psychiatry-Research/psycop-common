@@ -2,6 +2,7 @@
 from typing import Any
 
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
@@ -24,4 +25,5 @@ MODELS = {
     "logistic-regression": logistic,
     "xgboost": xgboost,
     "naive-bayes": nb,
+    "random-forest": {"model": RandomForestClassifier, "static_hyperparameters": {}},
 }

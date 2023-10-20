@@ -74,7 +74,7 @@ class CVDFeatureSpecifier:
             lookahead_days=[365 * 5],
             aggregation_fns=[maximum],
             fallback=[0],
-            incident=[False],
+            incident=[True],
         ).create_combinations()
 
     def get_feature_specs(self, layer: int) -> list[AnySpecType]:

@@ -83,7 +83,7 @@ class NoIncidentCVD(PredictionTimeFilter):
             how="anti",
         )
 
-        return not_after_incident_cvd.drop(["timestamp_result"])
+        return not_after_incident_cvd.drop(["timestamp_result", "cause"])
 
 
 class CVDWashoutMove(PredictionTimeFilter):

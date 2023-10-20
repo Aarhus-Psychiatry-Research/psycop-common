@@ -30,7 +30,7 @@ class CVDCohortDefiner(CohortDefiner):
             ),
         )
 
-        return filter_prediction_times(
+        result = filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
             filtering_steps=(
                 CVDMinDateFilter(),
@@ -41,6 +41,8 @@ class CVDCohortDefiner(CohortDefiner):
             ),
             entity_id_col_name="dw_ek_borger",
         )
+
+        return result
 
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
