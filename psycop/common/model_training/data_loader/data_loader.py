@@ -191,7 +191,7 @@ class DataLoader:
             # Otherwise, just return the single split
             feature_sets.append(
                 self._load_dataset_file(
-                    split_name=split_names, # type: ignore
+                    split_name=split_names,  # type: ignore
                     nrows=nrows,
                     dataset_dir=dataset_dir_path,
                 ),
