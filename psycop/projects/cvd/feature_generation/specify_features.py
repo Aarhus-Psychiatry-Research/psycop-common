@@ -17,9 +17,6 @@ from timeseriesflattener.feature_specs.single_specs import (
     StaticSpec,
 )
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     SCORE2_CVD,
