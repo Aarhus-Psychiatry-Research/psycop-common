@@ -45,14 +45,8 @@ class SpecSet(BaseModel):
     metadata: list[AnySpec]
 
 
-class FeatureSpecifier:
+class CVDFeatureSpecifier:
     """Feature specification class."""
-
-    def __init__(
-        self,
-        project_info: ProjectInfo,
-    ) -> None:
-        self.project_info = project_info
 
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
@@ -60,7 +54,6 @@ class FeatureSpecifier:
             StaticSpec(
                 feature_base_name="sex_female",
                 timeseries_df=sex_female(),
-                prefix=self.project_info.prefix.predictor,
             ),
         ]
 
@@ -79,7 +72,6 @@ class FeatureSpecifier:
             aggregation_fns=[maximum],
             fallback=[0],
             incident=[True],
-            prefix=self.project_info.prefix.outcome,
         ).create_combinations()
 
     def get_feature_specs(self, layer: int) -> list[AnySpec]:
