@@ -88,7 +88,10 @@ y_2010,3,
 y_2011,3,
 z_2010,4,""",
     )
-    with pytest.raises(ValueError, match="The datasets have a different amount of rows. Ensure that they have been created with the same prediction times."):
+    with pytest.raises(
+        ValueError,
+        match="The datasets have a different amount of rows. Ensure that they have been created with the same prediction times.",
+    ):
         DataLoader._check_and_merge_feature_sets(
             datasets=[base_feature_df, feature_df_too_many_rows],
             uuid_column="uuid",
@@ -103,7 +106,10 @@ x_2011,0
 z_2010,1,
 z_2011,1""",
     )
-    with pytest.raises(ValueError, match="The datasets have different uuids. Ensure that they have been created with the same prediction times."):
+    with pytest.raises(
+        ValueError,
+        match="The datasets have different uuids. Ensure that they have been created with the same prediction times.",
+    ):
         DataLoader._check_and_merge_feature_sets(
             datasets=[base_feature_df, feature_df_not_matching_uuids],
             uuid_column="uuid",
