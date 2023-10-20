@@ -1,3 +1,4 @@
+# pyright: reportPrivateUsage=false
 import pandas as pd
 import pytest
 
@@ -45,7 +46,7 @@ def test_check_dataframes_can_be_concatenated(
     base_feature_df: pd.DataFrame,
     feature_df_same_order_uuids: pd.DataFrame,
 ):
-    assert DataLoader._check_dataframes_can_be_concatenated(
+    assert DataLoader._check_dataframes_can_be_concatenated( # 
         datasets=[base_feature_df, feature_df_same_order_uuids],
         uuid_column="uuid",
     )
