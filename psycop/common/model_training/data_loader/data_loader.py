@@ -17,6 +17,9 @@ from psycop.common.model_training.data_loader.col_name_checker import (
 log = logging.getLogger(__name__)
 
 
+
+
+
 class DataLoader:
     """Class to handle loading of a datasplit."""
 
@@ -40,6 +43,53 @@ class DataLoader:
             self.column_name_checker(col_name_schema=self.data_cfg.col_name, df=df)
         else:
             log.debug("No column name checker specified. Skipping column name check.")
+
+    @staticmethod
+    def _check_dataframes_can_be_concatenated(
+    datasets: list[pd.DataFrame],
+    uuid_column: str,
+) -> bool:
+        """Check if pred_time_uuid columns are sorted so they can be concatenated
+        instead of joined."""
+        base_uuid = datasets[0][uuid_column]
+        return all(base_uuid.equals(df[uuid_column]) for df in datasets[1:])
+
+    @staticmethod
+    def _check_dataframes_can_be_joined(
+        datasets: list[pd.DataFrame],
+        uuid_column: str,
+    ) -> bool:
+        """Check if pred_time_uuid columns contain the same elements so they can
+        be joined without introducing new rows"""
+        base_uuid = datasets[0][uuid_column]
+        return all(base_uuid.isin(df[uuid_column]) for df in datasets[1:])
+
+    @staticmethod
+    def _check_and_merge_feature_sets(
+        datasets: list[pd.DataFrame],
+        uuid_column: str,
+    ) -> pd.DataFrame:
+        """Check if datasets can be concatenated or need to be joined."""
+        n_rows = [dataset.shape[0] for dataset in datasets]
+        if len(set(n_rows)) != 1:
+            raise ValueError(
+                "The datasets have a different amount of rows. "
+                + "Ensure that they have been created with the same "
+                + "prediction times.",
+            )
+
+        if DataLoader._check_dataframes_can_be_concatenated(datasets=datasets, uuid_column=uuid_column):
+            log.debug("Concatenating multiple feature sets.")
+            return pd.concat(datasets, axis=1)
+        
+        log.debug("Joining multiple feature sets.")
+        if DataLoader._check_dataframes_can_be_joined(datasets=datasets, uuid_column=uuid_column):
+            merged_df = datasets[0]
+            for df in datasets[1:]:
+                merged_df = pd.merge(merged_df, df, on=uuid_column, how="outer", validate="1:1")
+            return merged_df
+        raise ValueError("The datasets have different uuids. Ensure that they have been created with the same prediction times.")
+
 
     def _load_dataset_file(
         self,
@@ -86,7 +136,6 @@ class DataLoader:
 
     def load_dataset_from_dir(
         self,
-        dataset_dir: Path | str,
         split_names: Union[list[str], tuple[str], str],
         nrows: Optional[int] = None,
     ) -> pd.DataFrame:
@@ -101,32 +150,48 @@ class DataLoader:
         Returns:
             pd.DataFrame: The filtered dataset
         """
-        dataset_dir = Path(dataset_dir)
-        # Concat splits if multiple are given
-        if isinstance(split_names, (list, tuple)):
-            if isinstance(split_names, list):
-                split_names = tuple(split_names)
+        if not isinstance(self.data_dir, list):
+            dataset_dirs = [self.data_dir]
+        else:
+            dataset_dirs = self.data_dir
 
-            if nrows is not None:
-                nrows = int(
-                    nrows / len(split_names),
-                )
-
-            return pd.concat(
-                [
-                    self._load_dataset_file(
-                        split_name=split,
-                        nrows=nrows,
-                        dataset_dir=dataset_dir,
+        feature_sets: list[pd.DataFrame] = []
+        for dataset_dir in dataset_dirs:
+            dataset_dir = Path(dataset_dir)
+            # Concat splits if multiple are given
+            if isinstance(split_names, (list, tuple)):
+                if nrows is not None:
+                    nrows = int(
+                        nrows / len(split_names),
                     )
-                    for split in split_names
-                ],
-                ignore_index=True,
-            )
 
-        # Otherwise, just return the single split
-        return self._load_dataset_file(
-            split_name=split_names,
-            nrows=nrows,
-            dataset_dir=dataset_dir,
+                feature_sets.append(
+                    pd.concat(
+                    [
+                        self._load_dataset_file(
+                            split_name=split,
+                            nrows=nrows,
+                            dataset_dir=dataset_dir,
+                        )
+                        for split in split_names
+                    ],
+                    ignore_index=True,
+                )
+                )
+            # Otherwise, just return the single split
+            feature_sets.append(
+                self._load_dataset_file(
+                split_name=split_names,
+                nrows=nrows,
+                dataset_dir=dataset_dir,
+            )
+            )
+        # if only feature set provided, just return it
+        if len(feature_sets) == 1:
+            return feature_sets[0]
+        # else, check if they can be concatenated or need to be joined
+        merged_datasets = DataLoader._check_and_merge_feature_sets(
+            datasets=feature_sets,
+            uuid_column=self.data_cfg.col_name.pred_time_uuid,
         )
+        return merged_datasets
