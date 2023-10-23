@@ -1,19 +1,10 @@
 import logging
-import re
-from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    Prefixes,
-    ProjectInfo,
-)
 from psycop.common.model_training.application_modules.train_model.main import (
-    get_eval_dir,
     train_model,
 )
-from psycop.common.model_training.application_modules.wandb_handler import WandbHandler
 from psycop.common.model_training.config_schemas.data import (
     ColumnNamesSchema,
     DataSchema,
@@ -33,12 +24,6 @@ from psycop.common.model_training.config_schemas.project import (
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )
-from psycop.common.model_training.preprocessing.post_split.pipeline import (
-    create_post_split_pipeline,
-)
-from psycop.common.model_training.training.train_and_predict import train_and_predict
-from psycop.common.model_training.training_output.model_evaluator import ModelEvaluator
-from psycop.common.model_training.utils.col_name_inference import get_col_names
 from psycop.projects.cvd.feature_generation.main import get_cvd_project_info
 
 log = logging.getLogger(__name__)
@@ -57,6 +42,7 @@ def load_datasets(cfg: FullConfigSchema) -> pd.DataFrame:
     )
 
     return train_datasets
+
 
 if __name__ == "__main__":
     project_info = get_cvd_project_info()
@@ -113,5 +99,3 @@ if __name__ == "__main__":
     print(auroc)
 
     pass
-
-    

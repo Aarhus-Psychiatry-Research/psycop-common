@@ -1,6 +1,6 @@
 """Feature specification module."""
 import logging
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 from timeseriesflattener.aggregation_fns import (
     maximum,
@@ -18,9 +18,6 @@ from timeseriesflattener.feature_specs.single_specs import (
 )
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    SCORE2_CVD,
-)
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
     CVDCohortDefiner,
 )
@@ -32,9 +29,9 @@ from psycop.projects.cvd.feature_generation.feature_layeres.layer_2 import CVDLa
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_3 import CVDLayer3
 
 if TYPE_CHECKING:
-    from psycop.projects.cvd.feature_generation.feature_layeres.base import (
-        FeatureLayer,
-    )
+    from collections.abc import Sequence
+
+    pass
 
 log = logging.getLogger(__name__)
 

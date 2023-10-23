@@ -175,11 +175,11 @@ class PresSplitColFilter:
 
         try:
             n_col_names = len(
-                infer_outcome_col_name(df, prefix=self.data_cfg.outc_prefix)
+                infer_outcome_col_name(df, prefix=self.data_cfg.outc_prefix),
             )
         except ValueError as err:
             raise ValueError(
-                f"No outcome columns matching both prefix {self.data_cfg.outc_prefix} and lookahead {self.pre_split_cfg.min_lookahead_days} found"
+                f"No outcome columns matching both prefix {self.data_cfg.outc_prefix} and lookahead {self.pre_split_cfg.min_lookahead_days} found",
             ) from err
 
         if n_col_names > 1:
