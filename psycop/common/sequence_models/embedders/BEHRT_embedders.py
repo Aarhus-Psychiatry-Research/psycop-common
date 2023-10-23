@@ -215,6 +215,15 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         return mapped_diagnosis_codes
 
+    def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:
+        # add cls token to start of sequence
+        cls_token = {
+            "age": torch.tensor(self.vocab.age["CLS"]),
+            "diagnosis": torch.tensor(self.vocab.diagnosis["CLS"]),
+            "is_padding": torch.tensor(0),
+        }
+        return [cls_token, *events]
+
     def collate_patient_slice(
         self,
         patient_slice: PatientSlice,
@@ -228,13 +237,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         # but this is the same as the original implementation
         event_inputs = event_inputs[: self.max_sequence_length]
 
-        # add cls token to start of sequence
-        cls_token = {
-            "age": torch.tensor(self.vocab.age["CLS"]),
-            "diagnosis": torch.tensor(self.vocab.diagnosis["CLS"]),
-            "is_padding": torch.tensor(0),
-        }
-        event_inputs = [cls_token, *event_inputs]
+        event_inputs = self.add_cls_token_to_sequence(event_inputs)
 
         event_inputs = self.add_position_and_segment(event_inputs)
 
