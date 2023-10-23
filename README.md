@@ -119,7 +119,7 @@
 | psycop/common/sequence\_models/\_\_init\_\_.py                                                                  |        6 |        0 |    100% |           |
 | psycop/common/sequence\_models/aggregators.py                                                                   |       12 |        1 |     92% |        14 |
 | psycop/common/sequence\_models/dataset.py                                                                       |       18 |        0 |    100% |           |
-| psycop/common/sequence\_models/embedders/BEHRT\_embedders.py                                                    |      142 |        3 |     98% |74, 137, 173 |
+| psycop/common/sequence\_models/embedders/BEHRT\_embedders.py                                                    |      149 |        3 |     98% |74, 137, 173 |
 | psycop/common/sequence\_models/embedders/interface.py                                                           |       19 |        5 |     74% |30, 33, 36, 39, 42 |
 | psycop/common/sequence\_models/tasks.py                                                                         |      142 |       12 |     92% |224-227, 230-232, 242-243, 316-326 |
 | psycop/common/sequence\_models/tests/\_\_init\_\_.py                                                            |        0 |        0 |    100% |           |
@@ -170,7 +170,7 @@
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
-|                                                                                                       **TOTAL** | **5194** | **1484** | **71%** |           |
+|                                                                                                       **TOTAL** | **5201** | **1484** | **71%** |           |
 
 
 ## Setup coverage badge
