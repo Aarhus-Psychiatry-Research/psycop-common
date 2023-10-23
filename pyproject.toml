@@ -48,9 +48,10 @@ reportUnknownVariableType = "none"
 reportMissingTypeStubs = "none"
 reportUntypedFunctionDecorator = "none"
 reportIncompatibleVariableOverride = "none"
+reportUnusedVariable = "none"
+reportUnusedImport = "none"
 reportMissingTypeArgument = "none"
-reportUnusedVariable = "none" # Fixed by ruff
-reportUnusedImport = "none" # Fixed by ruff
+
 reportPrivateImportUsage = "none"
 
 [tool.ruff]

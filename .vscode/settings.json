@@ -25,5 +25,5 @@
         "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"
     },
     "explorerExclude.backup": {},
-    "jupyter.notebookFileRoot": "${workspaceFolder}"
+    "jupyter.notebookFileRoot": "${workspaceFolder}",
 }
