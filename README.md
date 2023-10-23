@@ -7,7 +7,7 @@
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
 | psycop/common/cohort\_definition.py                                                                             |       45 |       15 |     67% |18, 31, 35, 47, 52, 60-80 |
 | psycop/common/data\_structures/\_\_init\_\_.py                                                                  |        3 |        0 |    100% |           |
-| psycop/common/data\_structures/patient.py                                                                       |       57 |        5 |     91% |11-14, 35, 68 |
+| psycop/common/data\_structures/patient.py                                                                       |       54 |        5 |     91% |11-14, 35, 68 |
 | psycop/common/data\_structures/prediction\_time.py                                                              |       11 |        2 |     82% |       7-9 |
 | psycop/common/data\_structures/static\_feature.py                                                               |        9 |        1 |     89% |         7 |
 | psycop/common/data\_structures/temporal\_event.py                                                               |       11 |        1 |     91% |         7 |
@@ -124,7 +124,7 @@
 | psycop/common/sequence\_models/embedders/interface.py                                                           |       20 |        5 |     75% |31, 34, 37, 43, 49 |
 | psycop/common/sequence\_models/tasks.py                                                                         |      142 |       12 |     92% |226-229, 232-234, 244-245, 320-330 |
 | psycop/common/sequence\_models/tests/\_\_init\_\_.py                                                            |        0 |        0 |    100% |           |
-| psycop/common/sequence\_models/tests/conftest.py                                                                |       31 |        7 |     77% |     66-85 |
+| psycop/common/sequence\_models/tests/conftest.py                                                                |       31 |        7 |     77% |     65-84 |
 | psycop/common/test\_utils/str\_to\_df.py                                                                        |       31 |        1 |     97% |        80 |
 | psycop/common/test\_utils/test\_data/model\_eval/generate\_synthetic\_dataset\_for\_eval.py                     |       55 |       39 |     29% |37, 42, 61-65, 84-88, 92-170 |
 | psycop/conftest.py                                                                                              |       47 |        3 |     94% |33, 37, 104 |
@@ -140,7 +140,7 @@
 | psycop/projects/restraint/test/test\_model\_evaluation/conftest.py                                              |        7 |        0 |    100% |           |
 | psycop/projects/restraint/utils/best\_runs.py                                                                   |       75 |       32 |     57% |24, 30-38, 42-48, 51-53, 70-74, 77, 80, 86, 90, 94, 98-99, 104-106, 109-113, 117, 121-122, 130 |
 | psycop/projects/restraint/utils/feature\_name\_to\_readable.py                                                  |       26 |       22 |     15% |6-16, 21-54, 59-64 |
-| psycop/projects/sequence\_models/train.py                                                                       |       89 |       19 |     79% |113-116, 191-241 |
+| psycop/projects/sequence\_models/train.py                                                                       |       89 |       19 |     79% |112-115, 190-240 |
 | psycop/projects/t2d/feature\_generation/\_\_init\_\_.py                                                         |        0 |        0 |    100% |           |
 | psycop/projects/t2d/feature\_generation/cohort\_definition/eligible\_prediction\_times/add\_age.py              |        9 |        5 |     44% |     10-18 |
 | psycop/projects/t2d/feature\_generation/cohort\_definition/eligible\_prediction\_times/eligible\_config.py      |        4 |        0 |    100% |           |
@@ -171,7 +171,7 @@
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
-|                                                                                                       **TOTAL** | **5299** | **1496** | **72%** |           |
+|                                                                                                       **TOTAL** | **5296** | **1496** | **72%** |           |
 
 
 ## Setup coverage badge
