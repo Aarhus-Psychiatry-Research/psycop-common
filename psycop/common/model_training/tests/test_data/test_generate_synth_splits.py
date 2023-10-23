@@ -111,7 +111,7 @@ def test_synth_data_generator():
                 index=False,
             )
 
-            synth_df.sample(frac=0.1, random_state=RANDOM_SEED).to_csv(
+            synth_df.sample(frac=0.01, random_state=RANDOM_SEED).to_csv(
                 Path(__file__).parent
                 / "synth_splits_subsampled"
                 / f"synth_{split}_sample.csv",
