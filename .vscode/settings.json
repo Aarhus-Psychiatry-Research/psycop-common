@@ -26,5 +26,4 @@
     },
     "explorerExclude.backup": {},
     "jupyter.notebookFileRoot": "${workspaceFolder}",
-    "python.analysis.diagnosticMode": "workspace"
 }
