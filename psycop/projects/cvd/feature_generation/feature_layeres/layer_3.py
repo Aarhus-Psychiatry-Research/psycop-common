@@ -2,6 +2,7 @@ from collections.abc import Sequence
 
 from timeseriesflattener.aggregation_fns import boolean, count
 from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
     PredictorGroupSpec,
     PredictorSpec,
 )
@@ -24,7 +25,6 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
 )
 from psycop.projects.cvd.feature_generation.feature_layeres.base import (
     FeatureLayer,
-    NamedDataframe,
 )
 
 

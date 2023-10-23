@@ -2,7 +2,10 @@ from collections.abc import Sequence
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import mean
-from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
+from timeseriesflattener.feature_specs.group_specs import (
+    NamedDataframe,
+    PredictorGroupSpec,
+)
 from timeseriesflattener.feature_specs.single_specs import PredictorSpec
 
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
@@ -14,7 +17,6 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
 from psycop.common.feature_generation.loaders.raw.load_procedures import cabg, pad, pci
 from psycop.projects.cvd.feature_generation.feature_layeres.base import (
     FeatureLayer,
-    NamedDataframe,
 )
 
 

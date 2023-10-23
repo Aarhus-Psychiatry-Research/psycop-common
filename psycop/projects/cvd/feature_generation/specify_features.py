@@ -97,7 +97,7 @@ class CVDFeatureSpecifier:
 
 
 if __name__ == "__main__":
-    outcome_specs = CVDFeatureSpecifier()._get_outcome_specs()
+    outcome_specs = CVDFeatureSpecifier()._get_outcome_specs()  # type: ignore
     outcome_df = outcome_specs[0].timeseries_df
 
     pass
