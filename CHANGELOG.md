@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v0.122.0 (2023-10-23)
+
+### Feature
+
+* Merge multiple feature sets ([`6526bdd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6526bddb974db3af8bcadccbfac6f975f4d2ff25))
+* Test xgboost assumption ([`5a3222a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5a3222a5eed3bbf1d8519d4e8ee1f4e940c3f263))
+* Add test of xgboost hyperparams assumption ([`0768f62`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0768f62150c954512950b55a4803a6bbd4533c1f))
+
+### Fix
+
+* Misc ([`b63d22d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b63d22d0430a7d1babb74c87f5e5eef6524106a4))
+* Misc ([`f8e35a0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f8e35a07a20eea2645b1d5c5b649d58e42a2bada))
+* Correct checking whether dfs can be joined ([`7630572`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7630572897974cd53c9ee2ceb0aefa0e64268967))
+* Move feature merging to data_loader ([`a31c9ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a31c9ca02838a04c759b45566d6f347e80798ad9))
+
 ## v0.121.0 (2023-10-23)
 
 ### Feature
