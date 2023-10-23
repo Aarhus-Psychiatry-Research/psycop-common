@@ -228,12 +228,21 @@ class BEHRTEmbedder(nn.Module, Embedder):
         # but this is the same as the original implementation
         event_inputs = event_inputs[: self.max_sequence_length]
 
+        # add cls token to start of sequence
+        cls_token = {
+            "age": torch.tensor(self.vocab.age["CLS"]),
+            "diagnosis": torch.tensor(self.vocab.diagnosis["CLS"]),
+            "is_padding": torch.tensor(0),
+        }
+        event_inputs = [cls_token, *event_inputs]
+
         event_inputs = self.add_position_and_segment(event_inputs)
 
         # convert to tensor
         output: dict[str, torch.Tensor] = {}
         for key in event_inputs[0]:
             output[key] = torch.stack([e[key] for e in event_inputs])
+
         return output
 
     def get_patient_age(self, event: TemporalEvent, date_of_birth: datetime) -> int:
@@ -288,6 +297,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
         diagnosis2idx["UNK"] = len(diagnosis2idx)
         diagnosis2idx["PAD"] = len(diagnosis2idx)
+        diagnosis2idx["CLS"] = len(diagnosis2idx)
         if add_mask_token:
             diagnosis2idx["MASK"] = len(diagnosis2idx)
 
@@ -302,6 +312,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         age2idx: dict[str | int, int] = {a: i for i, a in enumerate(set(ages))}
         age2idx["UNK"] = len(age2idx)
         age2idx["PAD"] = len(age2idx)
+        age2idx["CLS"] = len(age2idx)
 
         self.vocab = BEHRTVocab(age=age2idx, diagnosis=diagnosis2idx)
 
