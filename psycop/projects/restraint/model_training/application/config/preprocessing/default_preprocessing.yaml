@@ -15,7 +15,7 @@ preprocessing:
     keep_only_one_outcome_col: true
     classification_objective: "binary"
   post_split:
-    imputation_method: "mean"
+    imputation_method: "null"
     scaling: "null"
     feature_selection:
       name: "null"
