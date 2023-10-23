@@ -41,7 +41,8 @@ def test_diagnosis_mapping(
     """
     Test mapping of diagnosis from ICD10 to caliber
     """
-
+    # Check that diagnosis codes that are not in the mapping are excluded
+    # (this patient has no diagnosis codes in the mapping)
     patient = Patient(
         patient_id=11,
         date_of_birth=dt.datetime(year=1990, month=1, day=1),
