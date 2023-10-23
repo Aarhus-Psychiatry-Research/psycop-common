@@ -16,10 +16,6 @@ RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygi
 COPY dev-requirements.txt ./
 RUN pip install -r dev-requirements.txt
 
-## Run static-type-checks
-COPY tasks.py pyproject.toml ./
-RUN inv static-type-checks
-
 ## Initialise pre-commit
 ### Remove the .git repo afterwards, since the dev container bind-mounts the development repo
 COPY .pre-commit-config.yaml ./
@@ -35,6 +31,10 @@ RUN pip install -r requirements.txt
 
 COPY test-requirements.txt .
 RUN pip install -r test-requirements.txt
+
+## Run static-type-checks
+COPY tasks.py pyproject.toml ./
+RUN inv static-type-checks
 
 COPY . /app
 RUN pip install -e .

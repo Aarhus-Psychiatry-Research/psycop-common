@@ -43,7 +43,8 @@ def test_diagnosis_mapping(
     """
     Test mapping of diagnosis from ICD10 to caliber
     """
-
+    # Check that diagnosis codes that are not in the mapping are excluded
+    # (this patient has no diagnosis codes in the mapping)
     patient = Patient(
         patient_id=11,
         date_of_birth=dt.datetime(year=1990, month=1, day=1),
@@ -78,10 +79,10 @@ def test_diagnosis_mapping(
             source_type="diagnosis",
             source_subtype="A",
         ),
-        # Check that diagnosis codes that are not in the mapping are excluded
+        # Check that F909 is mapped to F90 (Hyperkinetic disorders) since F909 is not in the mapping
         TemporalEvent(
             timestamp=dt.datetime(2021, 1, 3),
-            value="I99999",
+            value="F909",
             source_type="diagnosis",
             source_subtype="A",
         ),
@@ -97,7 +98,7 @@ def test_diagnosis_mapping(
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
     # map diagnosis codes
-    mapped_diagnosis_codes = embedding_module.get_mapped_diagnosis_codes(
+    mapped_diagnosis_codes = embedding_module.map_icd10_to_caliber(
         diagnosis_codes=diagnosis_codes,
     )
 
@@ -105,4 +106,5 @@ def test_diagnosis_mapping(
         "Bacterial Diseases (excl TB)",
         "Bacterial Diseases (excl TB)",
         "Transient ischaemic attack",
+        "Hyperkinetic disorders",
     ]
