@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.123.0 (2023-10-23)
+
+### Feature
+
+* Specify features ([`f659990`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f6599908d845ca2db612b1a37c5bc7a97e62af86))
+* Define first 3 layers ([`caeca0b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/caeca0bb7c297d350ebb2953ae500f7a7393fd24))
+* Add PAD loader ([`ccfe572`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ccfe5721f4992d57437ca800fdcb61a466b2f583))
+
 ## v0.122.0 (2023-10-23)
 
 ### Feature
