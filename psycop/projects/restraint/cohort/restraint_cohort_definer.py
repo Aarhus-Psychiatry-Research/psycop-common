@@ -39,7 +39,7 @@ def load_prediction_times() -> pl.DataFrame:
             RestraintMinAgeFilter(),
         ],
         entity_id_col_name="dw_ek_borger",
-    ).prediction_times
+    ).prediction_times.select(pl.col(["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"]))
 
     filtered_prediction_times = preprocess_readmissions(df=filtered_prediction_times)
 
@@ -49,7 +49,7 @@ def load_prediction_times() -> pl.DataFrame:
         prediction_times=unfiltered_coercion_timestamps,
         filtering_steps=[RestraintCoercionTypeFilter()],
         entity_id_col_name="dw_ek_borger",
-    ).prediction_times
+    ).prediction_times.select(pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]))
 
     unfiltered_cohort = filtered_prediction_times.join(
         filtered_coercion_timestamps, how="left", on="dw_ek_borger"
@@ -79,9 +79,9 @@ def load_prediction_times() -> pl.DataFrame:
 
     exploded_cohort = explode_admissions(filtered_cohort)
 
-    unfiltered_prediction_times = pl.from_pandas(
-        load_admissions_discharge_timestamps()
-    )  # maybe not necessary to get shakkode?
+    # unfiltered_prediction_times = pl.from_pandas(
+    #     load_admissions_discharge_timestamps()
+    # ).select(pl.col(["dw_ek_borger", "datotid_start", "shakkode_ansvarlig"]))
 
     return exploded_cohort.join(
         unfiltered_prediction_times,
@@ -117,7 +117,9 @@ class RestraintCohortDefiner(CohortDefiner):
         return outcome_df
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     bundle = RestraintCohortDefiner.get_filtered_prediction_times_bundle()
 
     outcome_timestamps = RestraintCohortDefiner.get_outcome_timestamps()
+
+    print("i")

@@ -4,7 +4,7 @@ import polars as pl
 
 def concat_readmissions(
     df_patient: pd.DataFrame,
-    readmission_interval_hours: int,
+    readmission_interval_hours: int = 4,
 ) -> pd.DataFrame:
     """
     Concatenates individual readmissions into continuous admissions. An admission is defined as a readmission when the admission starts less than a specifiec number of
@@ -41,16 +41,19 @@ def concat_readmissions(
 
         # if there are multiple subsequent readmissions (i.e., both 'end_readmission' and 'start_readmission' == True), all but the first and last are excluded
         readmissions_subset = readmissions[
-            (readmissions.end_readmission is False)
-            | (readmissions.start_readmission is False)
+            (readmissions.end_readmission == False)
+            | (readmissions.start_readmission == False)
         ]
 
         # insert discharge time from the last readmission into the first
-        readmissions_subset = readmissions_subset[readmissions_subset.end_readmission]
+        readmissions_subset.loc[
+            readmissions_subset.start_readmission == False,
+            "datotid_slut",
+        ] = readmissions_subset["datotid_slut"].shift(-1)
 
         # keep only the first admission
         readmissions_subset = readmissions_subset[
-            readmissions_subset.end_readmission is True
+            readmissions_subset.end_readmission == True
         ]
 
         # remove readmissions from the original data
@@ -68,23 +71,22 @@ def concat_readmissions(
         df_patient_concatenated_readmissions = df_patient_no_readmissions.merge(
             readmissions_subset,
             how="outer",
-            on=["dw_ek_borger", "datotid_start", "datotid_slut"],
+            on=["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"],
         )
 
     else:
         return df_patient[
-            ["dw_ek_borger", "datotid_start", "datotid_slut"]
+            ["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"]
         ].sort_values(["dw_ek_borger", "datotid_start"])
 
     return df_patient_concatenated_readmissions[
-        ["dw_ek_borger", "datotid_start", "datotid_slut"]
+        ["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"]
     ].sort_values(["dw_ek_borger", "datotid_start"])
 
 
 def preprocess_readmissions(df: pl.DataFrame) -> pl.DataFrame:
     df_ = df.to_pandas()
 
-    df_ = df_[["dw_ek_borger", "datotid_start", "datotid_slut"]]
     df_ = df_.sort_values(["dw_ek_borger", "datotid_start"])
 
     df_patients = df_.groupby("dw_ek_borger")
@@ -121,7 +123,7 @@ def keep_first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFram
         ].min(),
     )
 
-    return admission.drop(columns=["typetekst_sei", "_merge"])[
+    return admission.drop(columns="typetekst_sei")[
         (admission.datotid_start_sei == admission.datotid_start_sei.min())
     ].drop_duplicates()
 
@@ -129,7 +131,7 @@ def keep_first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFram
 def select_outcomes(df: pl.DataFrame) -> pl.DataFrame:
     df_ = df.to_pandas()
     groups = df_.groupby(["dw_ek_borger", "datotid_start"])
-    df_list = [groups.get_group(key) for key in groups]
+    df_list = [groups.get_group(key[0]) for key in groups]
 
     df_concat = pd.concat(
         [keep_first_coercion_within_admission(admission) for admission in df_list],
@@ -186,7 +188,7 @@ def unpack_adm_days(
 
     # if admission is longer than 1 day and if time is <= pred_hour
     if (len(days_unpacked) > 1) and (
-        days_unpacked.iloc[-1, 2].time() <= days_unpacked.iloc[-1, 10].time()  # type: ignore
+        days_unpacked.iloc[-1, 2].time() <= days_unpacked.iloc[-1, -1].time()  # type: ignore
     ):
         days_unpacked = days_unpacked.iloc[:-1, :]
 

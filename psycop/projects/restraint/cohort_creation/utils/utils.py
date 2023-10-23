@@ -49,8 +49,11 @@ def concat_readmissions(
         ]
 
         # insert discharge time from the last readmission into the first
-        readmissions_subset = readmissions_subset[readmissions_subset.end_readmission]
-
+        readmissions_subset.loc[
+            readmissions_subset.start_readmission is False,
+            "datotid_slut",
+        ] = readmissions_subset["datotid_slut"].shift(-1)
+        
         # keep only the first admission
         readmissions_subset = readmissions_subset[
             readmissions_subset.end_readmission is True

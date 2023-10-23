@@ -1,3 +1,4 @@
+from datetime import datetime
 import pandas as pd
 import polars as pl
 
@@ -69,8 +70,8 @@ class RestraintAdmissionFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(
-            (pl.col("datotid_slut").is_not_nan())
-            & (pl.col("datotid_slut") <= "2021-11-22")
+            (pl.col("datotid_slut").is_not_null())
+            & (pl.col("datotid_slut") <= datetime(year=2021, month=11, day=22))
         )
 
 
