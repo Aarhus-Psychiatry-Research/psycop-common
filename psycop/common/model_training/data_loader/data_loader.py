@@ -85,7 +85,7 @@ class DataLoader:
         all_datasets_have_same_length = len(set(n_rows_per_dataset)) == 1
         if not all_datasets_have_same_length:
             raise ValueError(
-                """The datasets have a different amount of rows. 
+                """The datasets have a different amount of rows.
                 Ensure that they have been created with the same prediction times.""",
             )
         shared_id_columns = [
