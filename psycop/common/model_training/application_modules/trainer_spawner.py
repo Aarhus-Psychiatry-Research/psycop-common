@@ -19,7 +19,7 @@ def start_trainer(
     lookahead_days: int,
     wandb_group_override: str,
     model_name: str,
-    dataset_dir: Optional[Union[Path, str, list[Union[Path, str]]]] = None,
+    dataset_dir: Optional[Union[Path, list[Path]]] = None,
     train_single_model_file_path: Optional[Path] = None,
 ) -> subprocess.Popen:
     """Start a trainer."""
