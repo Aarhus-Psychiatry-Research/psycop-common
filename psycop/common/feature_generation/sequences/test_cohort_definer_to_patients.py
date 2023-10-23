@@ -38,7 +38,7 @@ def test_polars_dataframe_to_dict():
     """Test that each prediction time is mapped to the correct patient."""
     prediction_times = CohortToPredictionTimes(
         cohort_definer=MockCohortDefiner(),
-        patient_objects=[
+        patients=[
             get_test_patient(patient_id=1),
             get_test_patient(patient_id=2),
         ],

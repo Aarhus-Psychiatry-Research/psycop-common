@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     prediction_times = CohortToPredictionTimes(
         cohort_definer=T2DCohortDefiner(),
-        patient_objects=patients,
+        patients=patients,
     ).create_prediction_times(
         lookbehind=cfg.data.lookbehind,
         lookahead=cfg.data.lookahead,
