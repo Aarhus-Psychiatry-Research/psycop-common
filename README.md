@@ -6,9 +6,9 @@
 |---------------------------------------------------------------------------------------------------------------- | -------: | -------: | ------: | --------: |
 | psycop/\_\_init\_\_.py                                                                                          |        0 |        0 |    100% |           |
 | psycop/common/cohort\_definition.py                                                                             |       45 |       15 |     67% |18, 31, 35, 47, 52, 60-80 |
-| psycop/common/data\_structures/\_\_init\_\_.py                                                                  |        4 |        0 |    100% |           |
-| psycop/common/data\_structures/patient.py                                                                       |       38 |        5 |     87% |11-14, 29, 62 |
-| psycop/common/data\_structures/prediction\_time.py                                                              |       16 |        5 |     69% |      7-14 |
+| psycop/common/data\_structures/\_\_init\_\_.py                                                                  |        3 |        0 |    100% |           |
+| psycop/common/data\_structures/patient.py                                                                       |       57 |        5 |     91% |11-14, 35, 68 |
+| psycop/common/data\_structures/prediction\_time.py                                                              |       11 |        2 |     82% |       7-9 |
 | psycop/common/data\_structures/static\_feature.py                                                               |        9 |        1 |     89% |         7 |
 | psycop/common/data\_structures/temporal\_event.py                                                               |       11 |        1 |     91% |         7 |
 | psycop/common/feature\_generation/\_\_init\_\_.py                                                               |        0 |        0 |    100% |           |
@@ -44,9 +44,9 @@
 | psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       77 |       46 |     40% |65-169, 178, 192-203, 212, 228, 247-258, 269, 286, 296-308 |
 | psycop/common/feature\_generation/loaders/raw/sql\_load.py                                                      |       21 |       13 |     38% |     42-70 |
 | psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       74 |       55 |     26% |27-38, 55-77, 133-291 |
-| psycop/common/feature\_generation/sequences/cohort\_definer\_to\_prediction\_times.py                           |       40 |        3 |     92% |    98-111 |
+| psycop/common/feature\_generation/sequences/cohort\_definer\_to\_prediction\_times.py                           |       40 |        3 |     92% |   102-115 |
 | psycop/common/feature\_generation/sequences/event\_dataframes\_to\_patient.py                                   |       67 |        0 |    100% |           |
-| psycop/common/feature\_generation/sequences/patient\_loaders.py                                                 |       45 |       14 |     69% |23, 35-37, 79, 98-100, 108-124, 128 |
+| psycop/common/feature\_generation/sequences/patient\_loaders.py                                                 |       45 |       14 |     69% |21, 33-35, 77, 96-98, 106-122, 126 |
 | psycop/common/feature\_generation/sequences/utils\_for\_testing.py                                              |        5 |        0 |    100% |           |
 | psycop/common/feature\_generation/text\_models/fit\_text\_models.py                                             |       10 |        1 |     90% |        34 |
 | psycop/common/feature\_generation/text\_models/preprocessing.py                                                 |       22 |        5 |     77% |     71-91 |
@@ -57,7 +57,7 @@
 | psycop/common/global\_utils/pickle.py                                                                           |       11 |        6 |     45% |7-10, 14-17 |
 | psycop/common/global\_utils/pydantic\_basemodel.py                                                              |       18 |        1 |     94% |        25 |
 | psycop/common/global\_utils/synth\_data\_generator/\_\_init\_\_.py                                              |        0 |        0 |    100% |           |
-| psycop/common/global\_utils/synth\_data\_generator/synth\_col\_generators.py                                    |       63 |       21 |     67% |69-97, 126-135, 138, 148, 173, 241-255 |
+| psycop/common/global\_utils/synth\_data\_generator/synth\_col\_generators.py                                    |       64 |       21 |     67% |70-98, 127-136, 139, 149, 174, 242-256 |
 | psycop/common/global\_utils/synth\_data\_generator/synth\_prediction\_times\_generator.py                       |       18 |        0 |    100% |           |
 | psycop/common/global\_utils/synth\_data\_generator/utils.py                                                     |       11 |        0 |    100% |           |
 | psycop/common/minimal\_pipeline.py                                                                              |       12 |        0 |    100% |           |
@@ -116,15 +116,15 @@
 | psycop/common/model\_training/utils/\_\_init\_\_.py                                                             |        0 |        0 |    100% |           |
 | psycop/common/model\_training/utils/col\_name\_inference.py                                                     |       41 |        9 |     78% |35, 67-68, 76, 96-101, 128 |
 | psycop/common/model\_training/utils/decorators.py                                                               |       43 |        1 |     98% |        31 |
-| psycop/common/model\_training/utils/utils.py                                                                    |       89 |       29 |     67% |40, 116-119, 145, 150-151, 159, 164, 213-219, 231-232, 249, 253, 283-286, 294-298, 306-316, 328-332 |
+| psycop/common/model\_training/utils/utils.py                                                                    |       89 |       29 |     67% |40, 119-122, 148, 153-154, 162, 167, 216-222, 234-235, 252, 256, 286-289, 297-301, 309-319, 331-335 |
 | psycop/common/sequence\_models/\_\_init\_\_.py                                                                  |        6 |        0 |    100% |           |
 | psycop/common/sequence\_models/aggregators.py                                                                   |       12 |        1 |     92% |        14 |
-| psycop/common/sequence\_models/dataset.py                                                                       |       18 |        0 |    100% |           |
-| psycop/common/sequence\_models/embedders/BEHRT\_embedders.py                                                    |      149 |        3 |     98% |74, 137, 173 |
-| psycop/common/sequence\_models/embedders/interface.py                                                           |       19 |        5 |     74% |30, 33, 36, 39, 42 |
-| psycop/common/sequence\_models/tasks.py                                                                         |      142 |       12 |     92% |224-227, 230-232, 242-243, 316-326 |
+| psycop/common/sequence\_models/dataset.py                                                                       |       20 |        0 |    100% |           |
+| psycop/common/sequence\_models/embedders/BEHRT\_embedders.py                                                    |      151 |        3 |     98% |75, 141, 177 |
+| psycop/common/sequence\_models/embedders/interface.py                                                           |       20 |        5 |     75% |31, 34, 37, 43, 49 |
+| psycop/common/sequence\_models/tasks.py                                                                         |      142 |       12 |     92% |226-229, 232-234, 244-245, 320-330 |
 | psycop/common/sequence\_models/tests/\_\_init\_\_.py                                                            |        0 |        0 |    100% |           |
-| psycop/common/sequence\_models/tests/conftest.py                                                                |       26 |        7 |     73% |     55-74 |
+| psycop/common/sequence\_models/tests/conftest.py                                                                |       31 |        7 |     77% |     66-85 |
 | psycop/common/test\_utils/str\_to\_df.py                                                                        |       31 |        1 |     97% |        80 |
 | psycop/common/test\_utils/test\_data/model\_eval/generate\_synthetic\_dataset\_for\_eval.py                     |       55 |       39 |     29% |37, 42, 61-65, 84-88, 92-170 |
 | psycop/conftest.py                                                                                              |       47 |        3 |     94% |33, 37, 104 |
@@ -140,7 +140,7 @@
 | psycop/projects/restraint/test/test\_model\_evaluation/conftest.py                                              |        7 |        0 |    100% |           |
 | psycop/projects/restraint/utils/best\_runs.py                                                                   |       75 |       32 |     57% |24, 30-38, 42-48, 51-53, 70-74, 77, 80, 86, 90, 94, 98-99, 104-106, 109-113, 117, 121-122, 130 |
 | psycop/projects/restraint/utils/feature\_name\_to\_readable.py                                                  |       26 |       22 |     15% |6-16, 21-54, 59-64 |
-| psycop/projects/sequence\_models/train.py                                                                       |       88 |       19 |     78% |109-112, 184-231 |
+| psycop/projects/sequence\_models/train.py                                                                       |       89 |       19 |     79% |113-116, 191-241 |
 | psycop/projects/t2d/feature\_generation/\_\_init\_\_.py                                                         |        0 |        0 |    100% |           |
 | psycop/projects/t2d/feature\_generation/cohort\_definition/eligible\_prediction\_times/add\_age.py              |        9 |        5 |     44% |     10-18 |
 | psycop/projects/t2d/feature\_generation/cohort\_definition/eligible\_prediction\_times/eligible\_config.py      |        4 |        0 |    100% |           |
@@ -171,7 +171,7 @@
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
-|                                                                                                       **TOTAL** | **5274** | **1499** | **72%** |           |
+|                                                                                                       **TOTAL** | **5299** | **1496** | **72%** |           |
 
 
 ## Setup coverage badge

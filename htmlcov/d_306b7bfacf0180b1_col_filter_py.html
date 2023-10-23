@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_306b7bfacf0180b1_row_filter_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-10-23 09:31 +0000
+            created at 2023-10-23 11:25 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -275,11 +275,11 @@
     <p class="run"><span class="n"><a id="t193" href="#t193">193</a></span><span class="t">    <span class="key">def</span> <span class="nam">_drop_datetime_columns</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t">        <span class="nam">pred_prefix</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t">        <span class="nam">dataset</span><span class="op">:</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t">        <span class="nam">drop_dtypes</span><span class="op">:</span> <span class="nam">tuple</span> <span class="op">=</span> <span class="op">(</span><span class="str">"datetime64[ns]"</span><span class="op">,</span> <span class="str">"&lt;M8[ns]"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t">        <span class="nam">drop_dtypes</span><span class="op">:</span> <span class="nam">tuple</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="op">...</span><span class="op">]</span> <span class="op">=</span> <span class="op">(</span><span class="str">"datetime64[ns]"</span><span class="op">,</span> <span class="str">"&lt;M8[ns]"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t">    <span class="op">)</span> <span class="op">-></span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">        <span class="str">"""Drop all datetime columns from the dataset."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">        <span class="nam">columns_to_drop</span> <span class="op">=</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">            <span class="nam">c</span> <span class="key">for</span> <span class="nam">c</span> <span class="key">in</span> <span class="nam">dataset</span><span class="op">.</span><span class="nam">columns</span> <span class="key">if</span> <span class="nam">dataset</span><span class="op">[</span><span class="nam">c</span><span class="op">]</span><span class="op">.</span><span class="nam">dtype</span> <span class="key">in</span> <span class="nam">drop_dtypes</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">            <span class="nam">c</span> <span class="key">for</span> <span class="nam">c</span> <span class="key">in</span> <span class="nam">dataset</span><span class="op">.</span><span class="nam">columns</span> <span class="key">if</span> <span class="nam">dataset</span><span class="op">[</span><span class="nam">c</span><span class="op">]</span><span class="op">.</span><span class="nam">dtype</span> <span class="key">in</span> <span class="nam">drop_dtypes</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t">        <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t">        <span class="nam">columns_to_drop</span> <span class="op">=</span> <span class="op">[</span><span class="nam">c</span> <span class="key">for</span> <span class="nam">c</span> <span class="key">in</span> <span class="nam">columns_to_drop</span> <span class="key">if</span> <span class="nam">c</span><span class="op">.</span><span class="nam">startswith</span><span class="op">(</span><span class="nam">pred_prefix</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -336,7 +336,7 @@
             <a id="nextFileLink" class="nav" href="d_306b7bfacf0180b1_row_filter_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-10-23 09:31 +0000
+            created at 2023-10-23 11:25 +0000
         </p>
     </div>
 </footer>
