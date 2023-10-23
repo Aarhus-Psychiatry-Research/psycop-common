@@ -2,6 +2,45 @@
 
 <!--next-version-placeholder-->
 
+## v0.123.0 (2023-10-23)
+
+### Feature
+
+* Specify features ([`f659990`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f6599908d845ca2db612b1a37c5bc7a97e62af86))
+* Define first 3 layers ([`caeca0b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/caeca0bb7c297d350ebb2953ae500f7a7393fd24))
+* Add PAD loader ([`ccfe572`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ccfe5721f4992d57437ca800fdcb61a466b2f583))
+
+## v0.122.0 (2023-10-23)
+
+### Feature
+
+* Merge multiple feature sets ([`6526bdd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6526bddb974db3af8bcadccbfac6f975f4d2ff25))
+* Test xgboost assumption ([`5a3222a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5a3222a5eed3bbf1d8519d4e8ee1f4e940c3f263))
+* Add test of xgboost hyperparams assumption ([`0768f62`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0768f62150c954512950b55a4803a6bbd4533c1f))
+
+### Fix
+
+* Misc ([`b63d22d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b63d22d0430a7d1babb74c87f5e5eef6524106a4))
+* Misc ([`f8e35a0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f8e35a07a20eea2645b1d5c5b649d58e42a2bada))
+* Correct checking whether dfs can be joined ([`7630572`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7630572897974cd53c9ee2ceb0aefa0e64268967))
+* Move feature merging to data_loader ([`a31c9ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a31c9ca02838a04c759b45566d6f347e80798ad9))
+
+## v0.121.0 (2023-10-23)
+
+### Feature
+
+* Add devcontainer.json ([`b9230b4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b9230b4b27b1ff337e1c121846c3d76fd1e3ef46))
+* Allow levels of granularity in diagnosis mapping ([`a06fd75`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a06fd75d6670574e5f4fe4a13fff1beb191d3a48))
+* Add subsetting script ([`dcd10ee`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dcd10eefef52d8296aafcea4d9725e83c89f1cc8))
+
+### Fix
+
+* Update train val descriptive comp script ([`b1f3e72`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b1f3e72fa2a2546176e3034ca99b15467d738657))
+
+### Documentation
+
+* Comment test ([`7dbeb53`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7dbeb53b3930986d7ee70ad5d547ee1ed9773700))
+
 ## v0.120.0 (2023-10-18)
 
 ### Feature

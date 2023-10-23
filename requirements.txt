@@ -23,7 +23,7 @@ shap==0.41.0
 sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
-timeseriesflattener==1.6.0
+timeseriesflattener==1.7.0
 wandb==0.15.4
 wasabi==0.9.1
 xgboost==1.7.3

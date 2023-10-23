@@ -74,6 +74,9 @@ def filter_prediction_times(
             ),
         )
 
+    if "date_of_birth" in prediction_times.columns:
+        prediction_times = prediction_times.drop("date_of_birth")
+
     return FilteredPredictionTimeBundle(
         prediction_times=prediction_times,
         filter_steps=stepdeltas,
