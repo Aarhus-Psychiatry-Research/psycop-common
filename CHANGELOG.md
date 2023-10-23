@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v0.121.0 (2023-10-23)
+
+### Feature
+
+* Add devcontainer.json ([`b9230b4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b9230b4b27b1ff337e1c121846c3d76fd1e3ef46))
+* Allow levels of granularity in diagnosis mapping ([`a06fd75`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a06fd75d6670574e5f4fe4a13fff1beb191d3a48))
+* Add subsetting script ([`dcd10ee`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dcd10eefef52d8296aafcea4d9725e83c89f1cc8))
+
+### Fix
+
+* Update train val descriptive comp script ([`b1f3e72`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b1f3e72fa2a2546176e3034ca99b15467d738657))
+
+### Documentation
+
+* Comment test ([`7dbeb53`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7dbeb53b3930986d7ee70ad5d547ee1ed9773700))
+
 ## v0.120.0 (2023-10-18)
 
 ### Feature
