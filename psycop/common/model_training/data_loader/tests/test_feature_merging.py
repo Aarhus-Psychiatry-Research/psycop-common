@@ -24,22 +24,28 @@ def dataloader() -> DataLoader:
     return DataLoader(data_cfg=data_cfg)
 
 
-
-@pytest.mark.parametrize(("feature_df", "expected"), [
-    ("feature_df_same_order_uuids", True),
-    ("feature_df_different_order_uuids", False),
-])
+@pytest.mark.parametrize(
+    ("feature_df", "expected"),
+    [
+        ("feature_df_same_order_uuids", True),
+        ("feature_df_different_order_uuids", False),
+    ],
+)
 def test_check_dataframes_can_be_concatenated(
     base_feature_df: pd.DataFrame,
     feature_df: pd.DataFrame,
     expected: bool,
-    request: pytest.FixtureRequest # pytest fixture
+    request: pytest.FixtureRequest,  # pytest fixture
 ):
-    feature_df = request.getfixturevalue(feature_df) # type: ignore
-    assert DataLoader._check_dataframes_can_be_concatenated(
-        datasets=[base_feature_df, feature_df],
-        uuid_column="prediction_time_uuid",
-    ) is expected
+    feature_df = request.getfixturevalue(feature_df)  # type: ignore
+    assert (
+        DataLoader._check_dataframes_can_be_concatenated(
+            datasets=[base_feature_df, feature_df],
+            uuid_column="prediction_time_uuid",
+        )
+        is expected
+    )
+
 
 def test_check_and_merge_feature_sets_concatenated_correct_output(
     base_feature_df: pd.DataFrame,

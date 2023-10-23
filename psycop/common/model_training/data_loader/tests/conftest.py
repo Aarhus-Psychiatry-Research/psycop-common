@@ -39,8 +39,8 @@ y_2011,3,y,2021-01-01""",
 
 @pytest.fixture()
 def feature_df_different_split() -> pd.DataFrame:
-    return str_to_df(   
-            """prediction_time_uuid,feature_name_1,dw_ek_borger,timestamp
+    return str_to_df(
+        """prediction_time_uuid,feature_name_1,dw_ek_borger,timestamp
 z_2010,0,x,2010-01-01
 z_2011,0,x,2011-01-01
 v_2010,1,y,2010-01-01
