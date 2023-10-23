@@ -98,7 +98,7 @@ z_2010,4,z,2010""",
     )
     with pytest.raises(
         ValueError,
-        match="The datasets have a different amount of rows. Ensure that they have been created with the same prediction times.",
+        match="The datasets have a different amount of rows.*",
     ):
         dataloader._check_and_merge_feature_sets(
             datasets=[base_feature_df, feature_df_too_many_rows],
