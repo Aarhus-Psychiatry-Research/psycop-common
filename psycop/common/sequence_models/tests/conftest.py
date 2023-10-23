@@ -8,7 +8,6 @@ from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import (
     Patient,
     PatientSlice,
-    patients_to_infinite_slices,
 )
 from psycop.common.sequence_models import (
     BEHRTEmbedder,
@@ -53,7 +52,7 @@ def patients() -> list[Patient]:
 
 @pytest.fixture()
 def patient_slices(patients: list[Patient]) -> Sequence[PatientSlice]:
-    return patients_to_infinite_slices(patients)
+    return [p.as_slice() for p in patients]
 
 
 @pytest.fixture()

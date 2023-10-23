@@ -67,7 +67,11 @@ class Patient:
     def static_features(self) -> Sequence[StaticFeature]:
         return self._static_features
 
-    def to_patient_slice(
+    def as_slice(self) -> PatientSlice:
+        """Returns the patient's entire history of temporal events."""
+        return self.slice(time_interval=None)
+
+    def slice(  # noqa: A003
         self,
         time_interval: TimeInterval | None,
     ) -> PatientSlice:
@@ -103,7 +107,7 @@ class Patient:
                 start=prediction_timestamp - lookbehind,
                 end=prediction_timestamp,
             )
-            patient_slice = self.to_patient_slice(
+            patient_slice = self.slice(
                 time_interval=time_interval,
             )
 
@@ -129,16 +133,3 @@ class Patient:
 class PatientSlice:
     patient: Patient
     temporal_events: Sequence[TemporalEvent]
-
-
-def patients_to_infinite_slices(patients: Sequence[Patient]) -> Sequence[PatientSlice]:
-    """Convert a sequence of patients to full slices; i.e. get their entire history of temporal events. Basically just a type recast."""
-    patient_slices = []
-    for patient in patients:
-        patient_slices.append(
-            patient.to_patient_slice(
-                time_interval=None,
-            ),
-        )
-
-    return patient_slices
