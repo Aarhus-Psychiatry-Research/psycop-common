@@ -10,7 +10,7 @@ from psycop.common.model_training.data_loader.data_loader import DataLoader
 
 
 def test_load_dataset_from_dir(
-    tmpdir, # type: ignore
+    tmpdir: str, 
     base_feature_df: pd.DataFrame,
     feature_df_different_split: pd.DataFrame,
 ):
