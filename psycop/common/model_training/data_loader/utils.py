@@ -78,8 +78,12 @@ def load_train_raw(
     convert_timestamp_types_and_nans: bool = True,
 ) -> pd.DataFrame:
     """Load the data."""
-    path = Path(cfg.data.dir)
-    file_names = list(path.glob(pattern=r"*train*"))
+    if not isinstance(cfg.data.dir, Path):
+        raise ValueError(
+            f"cfg.data.dir must be a Path, got {type(cfg.data.dir)}",
+        )
+
+    file_names = list(cfg.data.dir.glob(pattern=r"*train*"))
 
     if len(file_names) == 1:
         file_name = file_names[0]

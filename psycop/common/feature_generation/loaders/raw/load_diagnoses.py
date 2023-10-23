@@ -277,6 +277,80 @@ def type_2_diabetes(
     return df_filtered
 
 
+def ischemic_stroke(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code=[
+            "I63",  # Cerebral infarction
+            "I64",  # Stroke, not specified as hemorrhage or infarction
+        ],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
+
+    return df
+
+
+def chronic_lung_disease(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code=[
+            "J40",  # Bronchitis, not specified as acute or chronic
+            "J41",  # Chronic bronchitis
+            "J42",  # Unspecified chronic bronchitis
+            "J43",  # Emphysema
+            "J44",  # Other chronic obstructive pulmonary disease
+        ],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
+
+    return df
+
+
+def acute_myocardial_infarction(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    df = from_contacts(
+        icd_code=[
+            "I21",  # Acute myocardial infarction
+        ],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+        keep_code_col=True,
+    )
+
+    return df
+
+
 def SCORE2_CVD(
     n_rows: int | None = None,
     shak_location_col: str | None = None,
@@ -286,10 +360,9 @@ def SCORE2_CVD(
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
-            "I21",
-            "I22",
-            "I23",
-            "I6",
+            "I21",  # Acute myocardial infarction
+            "I23",  # Complications after acute myocardial infarction
+            "I6",  # Cerebrovascular disease
         ],
         wildcard_icd_code=True,
         n_rows=n_rows,
