@@ -88,9 +88,9 @@ if __name__ == "__main__":
             ),
         ),
         model=ModelConfSchema(
-            name="random-forest",
+            name="xgboost",
             require_imputation=True,
-            args={"max_depth": 3},
+            args={"max_depth": 2},
         ),
         n_crossval_splits=10,
     )

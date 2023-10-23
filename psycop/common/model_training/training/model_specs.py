@@ -25,5 +25,4 @@ MODELS = {
     "logistic-regression": logistic,
     "xgboost": xgboost,
     "naive-bayes": nb,
-    "random-forest": {"model": RandomForestClassifier, "static_hyperparameters": {}},
 }
