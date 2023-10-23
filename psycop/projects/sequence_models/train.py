@@ -28,7 +28,6 @@ from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import (
     PatientSlice,
-    patients_to_infinite_slices,
 )
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
@@ -211,11 +210,11 @@ if __name__ == "__main__":
         split=SplitName.VALIDATION,
         patient_column_names=config.training_config.patient_column_names,
     )
-    train_dataset = PatientSliceDataset(patients_to_infinite_slices(train_patients))
-    val_dataset = PatientSliceDataset(patients_to_infinite_slices(val_patients))
+    train_dataset = PatientSliceDataset([p.as_slice() for p in train_patients])
+    val_dataset = PatientSliceDataset([p.as_slice() for p in val_patients])
 
     model = create_behrt_MLM_model(
-        patient_slices=patients_to_infinite_slices(train_patients),
+        patient_slices=[p.as_slice() for p in train_patients],
         config=config,
     )
 
