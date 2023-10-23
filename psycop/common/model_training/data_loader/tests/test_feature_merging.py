@@ -1,4 +1,6 @@
 # pyright: reportPrivateUsage=false
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -14,7 +16,7 @@ from psycop.common.test_utils.str_to_df import str_to_df
 @pytest.fixture()
 def dataloader() -> DataLoader:
     data_cfg = DataSchema(
-        dir="",
+        dir=Path(""),
         suffix="",
         splits_for_training=[""],
         n_training_samples=None,
@@ -22,60 +24,22 @@ def dataloader() -> DataLoader:
     return DataLoader(data_cfg=data_cfg)
 
 
-## write test for merging feature sets
-@pytest.fixture()
-def base_feature_df() -> pd.DataFrame:
-    return str_to_df(
-        """prediction_time_uuid,feature_name_1,dw_ek_borger,timestamp
-x_2010,0,x,2010
-x_2011,0,x,2011
-y_2010,1,y,2010
-y_2011,1,y,2021""",
-    )
 
-
-@pytest.fixture()
-def feature_df_same_order_uuids() -> pd.DataFrame:
-    return str_to_df(
-        """prediction_time_uuid,feature_name_2,dw_ek_borger,timestamp
-x_2010,2,x,2010
-x_2011,2,x,2011
-y_2010,3,y,2010
-y_2011,3,y,2021""",
-    )
-
-
-@pytest.fixture()
-def feature_df_different_order_uuids() -> pd.DataFrame:
-    return str_to_df(
-        """prediction_time_uuid,feature_name_2,dw_ek_borger,timestamp
-y_2010,3,y,2010
-x_2010,2,x,2010
-x_2011,2,x,2011
-y_2011,3,y,2021""",
-    )
-
-
+@pytest.mark.parametrize(("feature_df", "expected"), [
+    ("feature_df_same_order_uuids", True),
+    ("feature_df_different_order_uuids", False),
+])
 def test_check_dataframes_can_be_concatenated(
     base_feature_df: pd.DataFrame,
-    feature_df_same_order_uuids: pd.DataFrame,
+    feature_df: pd.DataFrame,
+    expected: bool,
+    request: pytest.FixtureRequest # pytest fixture
 ):
-    assert DataLoader._check_dataframes_can_be_concatenated(  #
-        datasets=[base_feature_df, feature_df_same_order_uuids],
+    feature_df = request.getfixturevalue(feature_df) # type: ignore
+    assert DataLoader._check_dataframes_can_be_concatenated(
+        datasets=[base_feature_df, feature_df],
         uuid_column="prediction_time_uuid",
-    )
-
-
-def test_check_dataframes_can_be_concatenated_false(
-    base_feature_df: pd.DataFrame,
-    feature_df_different_order_uuids: pd.DataFrame,
-):
-    with pytest.raises(AssertionError):
-        assert DataLoader._check_dataframes_can_be_concatenated(
-            datasets=[base_feature_df, feature_df_different_order_uuids],
-            uuid_column="prediction_time_uuid",
-        )
-
+    ) is expected
 
 def test_check_and_merge_feature_sets_concatenated_correct_output(
     base_feature_df: pd.DataFrame,
