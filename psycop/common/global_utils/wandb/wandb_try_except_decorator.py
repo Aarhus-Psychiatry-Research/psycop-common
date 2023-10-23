@@ -5,7 +5,7 @@ from typing import Any, Callable
 import wandb
 
 
-def wandb_alert_on_exception(func: Callable) -> Callable:
+def wandb_alert_on_exception(func: Callable) -> Callable:  # type: ignore
     """Alerts wandb on exception."""
 
     def wrapper(*args: Any, **kwargs: Any) -> Any:

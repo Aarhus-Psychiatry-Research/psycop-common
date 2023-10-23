@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.124.0 (2023-10-23)
+
+### Feature
+
+* Actually use the sliced timeframes for finetuning ([`52950a5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/52950a5c557b67e8bf3c1ddba7f8515a4c6e0836))
+* Add patientslice ([`77e86bc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/77e86bc1d89bd9321698e5a18572222e32f2982c))
+
+### Documentation
+
+* Add todo ([`5eab729`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5eab729cb937bd324bd1d05bf1aab659906de034))
+
 ## v0.123.0 (2023-10-23)
 
 ### Feature

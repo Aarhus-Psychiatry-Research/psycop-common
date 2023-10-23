@@ -24,7 +24,7 @@ class DataLoader:
     def __init__(
         self,
         data_cfg: DataSchema,
-        column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,
+        column_name_checker: Optional[Callable] = check_columns_exist_in_dataset,  # type: ignore
     ):
         self.data_cfg = data_cfg
         self.data_dir = data_cfg.dir

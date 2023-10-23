@@ -89,7 +89,7 @@ def load_from_codes(
     exclude_codes: list[str] | None = None,
     administration_route: str | None = None,
     administration_method: str | None = None,
-    fixed_doses: tuple | None = None,
+    fixed_doses: tuple[int, ...] | None = None,
     shak_location_col: str | None = None,
     shak_code: int | None = None,
     keep_code_col: bool = False,

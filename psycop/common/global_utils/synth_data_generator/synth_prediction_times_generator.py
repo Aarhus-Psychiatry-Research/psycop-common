@@ -13,7 +13,7 @@ from psycop.common.global_utils.synth_data_generator.utils import replace_vals_w
 
 
 def generate_synth_data(
-    predictors: Iterable[dict],
+    predictors: Iterable[dict],  # type: ignore
     outcome_column_name: str,
     n_samples: int,
     logistic_outcome_model: str,
@@ -56,7 +56,7 @@ def generate_synth_data(
 
     # Sigmoid it to get probabilities with mean = 0.5
     df[outcome_column_name] = create_outcome_values(
-        n_samples=n_samples,
+        n_samples=n_samples,  # type: ignore
         logistic_outcome_model=logistic_outcome_model,
         intercept=intercept,
         noise_mean_sd=noise_mean_sd,

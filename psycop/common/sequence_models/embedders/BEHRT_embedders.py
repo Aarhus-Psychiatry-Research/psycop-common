@@ -146,7 +146,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         return padded_sequences_ids
 
-    def add_position_and_segment(self, events: list[dict]) -> list[dict]:
+    def add_position_and_segment(self, events: list[dict]) -> list[dict]:  # type: ignore
         # add position and segment
         for i, e_input in enumerate(events):
             e_input["position"] = torch.tensor(i)
@@ -272,7 +272,11 @@ class BEHRTEmbedder(nn.Module, Embedder):
             for p in patient_slices
             for e in self.filter_events(p.temporal_events)
         ]
-        diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
+
+        # Check that the values only include diagnosis codes
+        assert all(isinstance(e.value, str) for p, e in patient_events)
+
+        diagnosis_codes: list[str] = [str(e.value) for p, e in patient_events]
 
         # map diagnosis codes
         if map_diagnosis_codes:

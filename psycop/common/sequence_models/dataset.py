@@ -10,7 +10,7 @@ from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 
 
-class PatientSliceDataset(Dataset):
+class PatientSliceDataset(Dataset[PatientSlice]):
     def __init__(self, patient_slices: Sequence[PatientSlice]) -> None:
         self.patient_slices: Sequence[PatientSlice] = patient_slices
 
@@ -21,7 +21,7 @@ class PatientSliceDataset(Dataset):
         return self.patient_slices[idx]
 
 
-class PatientSlicesWithLabels(Dataset):
+class PatientSlicesWithLabels(Dataset[tuple[PatientSlice, int]]):
     def __init__(self, prediction_times: Sequence[PredictionTime]) -> None:
         self.prediction_times = prediction_times
 

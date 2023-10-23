@@ -69,7 +69,7 @@ def sql_load(
 
         df[datetime_col_names] = df[datetime_col_names].apply(pd.to_datetime)  # type: ignore # type: ignore
 
-    conn.close()
-    engine.dispose()
+    conn.close()  # type: ignore
+    engine.dispose()  # type: ignore
 
     return df  # type: ignore

@@ -9,13 +9,13 @@ np.random.seed(42)
 
 
 def bootstrap_estimates(
-    metric: Callable,
-    input_1: pd.Series,
-    input_2: pd.Series,
+    metric: Callable,  # type: ignore
+    input_1: pd.Series,  # type: ignore
+    input_2: pd.Series,  # type: ignore
     n_bootstraps: int = 100,
     ci_width: float = 0.95,
     **kwargs: Any,
-) -> pd.Series:
+) -> pd.Series:  # type: ignore
     _kwargs = {
         "method": "basic",
         "n_resamples": n_bootstraps,
@@ -24,8 +24,8 @@ def bootstrap_estimates(
 
     # Calculate the confidence interval
     def metric_wrapper(
-        true: np.ndarray,
-        pred: np.ndarray,
+        true: np.ndarray,  # type: ignore
+        pred: np.ndarray,  # type: ignore
         **kwargs: Any,  # noqa: ARG001
     ) -> float:
         # bootstrap function requires the metric function to

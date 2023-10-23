@@ -7,4 +7,4 @@ class ModelConfSchema(PSYCOPBaseModel):
 
     name: str  # Model, can currently take xgboost
     require_imputation: bool  # Whether the model requires imputation. (shouldn't this be false?)
-    args: dict
+    args: dict  # type: ignore

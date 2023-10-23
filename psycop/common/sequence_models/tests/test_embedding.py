@@ -37,7 +37,7 @@ def test_embeddings(patient_slices: Sequence[PatientSlice], embedding_module: Em
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_diagnosis_mapping(
-    patient_slices: list,
+    patient_slices: list,  # type: ignore
     embedding_module: BEHRTEmbedder,
 ):
     """

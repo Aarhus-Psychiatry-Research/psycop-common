@@ -11,9 +11,9 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 def bootstrap_roc(
     n_bootstraps: int,
-    y: pd.Series,
-    y_hat_probs: pd.Series,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    y: pd.Series,  # type: ignore
+    y_hat_probs: pd.Series,  # type: ignore
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:  # type: ignore
     tprs_bootstrapped = []
     aucs_bootstrapped = []
 

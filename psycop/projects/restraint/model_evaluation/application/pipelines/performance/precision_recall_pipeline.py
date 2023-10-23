@@ -19,9 +19,9 @@ from psycop.projects.restraint.utils.best_runs import Run
 
 def bootstrap_pr(
     n_bootstraps: int,
-    y: pd.Series,
-    y_hat_probs: pd.Series,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    y: pd.Series,  # type: ignore
+    y_hat_probs: pd.Series,  # type: ignore
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:  # type: ignore
     recs_bootstrapped = []
     prec_bootstrapped = []
 
