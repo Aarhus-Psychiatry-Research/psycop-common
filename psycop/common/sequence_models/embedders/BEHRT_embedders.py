@@ -190,7 +190,7 @@ class BEHRTEmbedder(nn.Module):
                 filtered_events.append(event)
         return filtered_events
 
-    def get_mapped_diagnosis_codes(
+    def map_icd10_to_caliber(
         self,
         diagnosis_codes: list[str],
     ) -> list[str]:
@@ -267,7 +267,7 @@ class BEHRTEmbedder(nn.Module):
 
         # map diagnosis codes
         if map_diagnosis_codes:
-            diagnosis_codes = self.get_mapped_diagnosis_codes(
+            diagnosis_codes = self.map_icd10_to_caliber(
                 diagnosis_codes=diagnosis_codes,
             )
 

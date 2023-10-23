@@ -95,7 +95,7 @@ def test_diagnosis_mapping(
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
     # map diagnosis codes
-    mapped_diagnosis_codes = embedding_module.get_mapped_diagnosis_codes(
+    mapped_diagnosis_codes = embedding_module.map_icd10_to_caliber(
         diagnosis_codes=diagnosis_codes,
     )
 
