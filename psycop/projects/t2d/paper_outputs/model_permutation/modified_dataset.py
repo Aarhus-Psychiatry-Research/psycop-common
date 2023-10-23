@@ -35,7 +35,7 @@ def train_model_with_modified_dataset(
     boolean_dataset_dir: Path,
 ) -> float:
     cfg.data.Config.allow_mutation = True
-    cfg.data.dir = str(boolean_dataset_dir)
+    cfg.data.dir = Path(boolean_dataset_dir)
     cfg.data.splits_for_training = ["train"]
     cfg.data.splits_for_evaluation = ["test"]
 
