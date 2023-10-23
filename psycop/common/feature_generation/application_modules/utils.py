@@ -8,7 +8,7 @@ import pandas as pd
 
 
 def print_df_dimensions_diff(  # noqa: ANN201
-    func: Callable,
+    func: Callable[[pd.DataFrame], pd.DataFrame],
     print_when_starting: bool = False,
     print_when_no_diff: bool = False,
 ):

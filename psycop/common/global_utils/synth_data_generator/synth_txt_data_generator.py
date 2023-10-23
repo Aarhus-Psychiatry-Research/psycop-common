@@ -15,7 +15,7 @@ from psycop.common.global_utils.synth_data_generator.utils import replace_vals_w
 
 
 def generate_synth_txt_data(
-    predictors: dict,
+    predictors: dict,  # type: ignore
     n_samples: int,
     text_prompt: str = "The quick brown fox jumps over the lazy dog",
     na_prob: Optional[float] = 0.1,

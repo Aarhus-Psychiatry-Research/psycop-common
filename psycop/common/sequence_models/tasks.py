@@ -10,7 +10,7 @@ from torchmetrics import Metric
 from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 from transformers import AdamW, get_linear_schedule_with_warmup
 
-from psycop.common.data_structures.patient import Patient
+from psycop.common.data_structures.patient import PatientSlice
 
 from .aggregators import AggregationModule
 from .embedders.BEHRT_embedders import BEHRTEmbedder
@@ -150,12 +150,14 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def collate_fn(
         self,
-        patients: list[Patient],
+        patient_slices: list[PatientSlice],
     ) -> BatchWithLabels:
         """
-        Takes a list of patients and returns a dictionary of padded sequence ids.
+        Takes a list of PredictionTime and returns a dictionary of padded sequence ids.
         """
-        padded_sequence_ids = self.embedding_module.collate_patients(patients)
+        padded_sequence_ids = self.embedding_module.collate_patient_slices(
+            patient_slices,
+        )
         # Masking
         batch_with_labels = self.masking_fn(padded_sequence_ids)
         return batch_with_labels
@@ -298,14 +300,16 @@ class EncoderForClassification(pl.LightningModule):
 
     def collate_fn(
         self,
-        patients_with_labels: list[tuple[Patient, int]],
+        patient_slices_with_labels: list[tuple[PatientSlice, int]],
     ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
         """
         Takes a list of patients and returns a dictionary of padded sequence ids.
         """
-        patients, outcomes = list(zip(*patients_with_labels))  # type: ignore
-        patients: list[Patient] = list(patients)
-        padded_sequence_ids = self.embedding_module.collate_patients(patients)
+        patient_slices, outcomes = list(zip(*patient_slices_with_labels))  # type: ignore
+        patient_slices: list[PatientSlice] = list(patient_slices)
+        padded_sequence_ids = self.embedding_module.collate_patient_slices(
+            patient_slices,
+        )
 
         outcome_tensor = torch.tensor(outcomes)
         return padded_sequence_ids, outcome_tensor

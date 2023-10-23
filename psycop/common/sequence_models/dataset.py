@@ -2,30 +2,34 @@
 Defines the dataset class for patient data
 """
 
+from collections.abc import Sequence
+
 from torch.utils.data import Dataset
 
-from psycop.common.data_structures import Patient
+from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.data_structures.prediction_time import PredictionTime
 
 
-class PatientDataset(Dataset):
-    def __init__(self, patients: list[Patient]) -> None:
-        self.patients: list[Patient] = patients
-
-    def __len__(self) -> int:
-        return len(self.patients)
-
-    def __getitem__(self, idx: int) -> Patient:
-        return self.patients[idx]
-
-
-class PatientDatasetWithLabels(Dataset):
-    def __init__(self, patients: list[Patient], labels: list[int]) -> None:
-        self.patients: list[Patient] = patients
-        self.labels: list[int] = labels
-        assert len(self.patients) == len(self.labels)
+class PatientSliceDataset(Dataset[PatientSlice]):
+    def __init__(self, patient_slices: Sequence[PatientSlice]) -> None:
+        self.patient_slices: Sequence[PatientSlice] = patient_slices
 
     def __len__(self) -> int:
-        return len(self.patients)
+        return len(self.patient_slices)
 
-    def __getitem__(self, idx: int) -> tuple[Patient, int]:
-        return self.patients[idx], self.labels[idx]
+    def __getitem__(self, idx: int) -> PatientSlice:
+        return self.patient_slices[idx]
+
+
+class PatientSlicesWithLabels(Dataset[tuple[PatientSlice, int]]):
+    def __init__(self, prediction_times: Sequence[PredictionTime]) -> None:
+        self.prediction_times = prediction_times
+
+    def __len__(self) -> int:
+        return len(self.prediction_times)
+
+    def __getitem__(self, idx: int) -> tuple[PatientSlice, int]:
+        pred_time = self.prediction_times[idx]
+        label = int(pred_time.outcome)
+
+        return (pred_time.patient_slice, label)

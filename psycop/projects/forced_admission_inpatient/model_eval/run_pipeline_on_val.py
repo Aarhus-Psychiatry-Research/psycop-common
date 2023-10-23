@@ -43,8 +43,8 @@ def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) -> Path:
 
 def _train_pipeline_on_test(
     pipeline_to_train: PipelineRun,
-    splits_for_training: list | None = None,
-    splits_for_evaluation: list | None = None,
+    splits_for_training: list | None = None,  # type: ignore
+    splits_for_evaluation: list | None = None,  # type: ignore
 ):
     if splits_for_training is None:
         splits_for_training = ["train"]
@@ -83,8 +83,8 @@ def _check_directory_exists(dir_path: Path) -> bool:
 
 def test_selected_model_pipeline(
     pipeline_to_test: PipelineRun,
-    splits_for_training: list | None = None,
-    splits_for_evaluation: list | None = None,
+    splits_for_training: list | None = None,  # type: ignore
+    splits_for_evaluation: list | None = None,  # type: ignore
 ) -> PipelineRun:
     # Check if the pipeline has already been trained on the test set
     # If so, return the existing run

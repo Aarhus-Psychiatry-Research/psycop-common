@@ -1,9 +1,11 @@
 import datetime as dt
+from collections.abc import Sequence
 
 import pytest
 import torch
 
-from psycop.common.data_structures import Patient, TemporalEvent
+from psycop.common.data_structures import TemporalEvent
+from psycop.common.data_structures.patient import Patient, PatientSlice
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.embedders.interface import Embedder
 
@@ -12,13 +14,13 @@ from psycop.common.sequence_models.embedders.interface import Embedder
     "embedding_module",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_embeddings(patients: list, embedding_module: Embedder):
+def test_embeddings(patient_slices: Sequence[PatientSlice], embedding_module: Embedder):
     """
     Test embedding interface
     """
-    embedding_module.fit(patients)
+    embedding_module.fit(patient_slices)
 
-    inputs_ids = embedding_module.collate_patients(patients)
+    inputs_ids = embedding_module.collate_patient_slices(patient_slices)
 
     assert isinstance(inputs_ids, dict)
     assert isinstance(inputs_ids["diagnosis"], torch.Tensor)  # type: ignore
@@ -35,7 +37,7 @@ def test_embeddings(patients: list, embedding_module: Embedder):
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_diagnosis_mapping(
-    patients: list,
+    patient_slices: list,  # type: ignore
     embedding_module: BEHRTEmbedder,
 ):
     """
@@ -90,7 +92,7 @@ def test_diagnosis_mapping(
 
     patient_events: list[tuple[Patient, TemporalEvent]] = [
         (p, e)
-        for p in [*patients, patient]
+        for p in [*patient_slices, patient]
         for e in embedding_module.filter_events(p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore

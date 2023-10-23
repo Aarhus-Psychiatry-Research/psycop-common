@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 data_loaders = catalogue.create("timeseriesflattener", "data_loaders")
 
 
-def format_dict_for_printing(d: dict) -> str:
+def format_dict_for_printing(d: dict[str, Any]) -> str:
     """Format a dictionary for printing. Removes extra apostrophes, formats
     colon to dashes, separates items with underscores and removes curly
     brackets.

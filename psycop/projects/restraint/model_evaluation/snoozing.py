@@ -4,10 +4,10 @@ import pandas as pd
 
 
 def snoozing_filter(
-    dates: pd.Series,
-    predictions: pd.Series,
+    dates: pd.Series,  # type: ignore
+    predictions: pd.Series,  # type: ignore
     snoozing_timedelta: dt.timedelta,
-    snooze_on: set,
+    snooze_on: set,  # type: ignore
 ) -> tuple[list[dt.datetime], list[int]]:
     """
     Filter out all predictions that are within snoozing_threshold of each other.

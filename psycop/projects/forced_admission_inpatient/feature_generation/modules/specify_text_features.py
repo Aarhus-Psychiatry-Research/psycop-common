@@ -29,7 +29,7 @@ class TextFeatureSpecifier:
 
     def _get_sentence_transformer_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[Callable],  # type: ignore
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating sentence transformer specs --------")
@@ -75,7 +75,7 @@ class TextFeatureSpecifier:
 
     def _get_tfidf_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[Callable],  # type: ignore
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating tfidf specs --------")

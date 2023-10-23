@@ -21,7 +21,7 @@ from psycop.common.model_training.training_output.dataclasses import ModelEvalDa
 TEST_PLOT_PATH = PSYCOP_PKG_ROOT / "tests" / "plots_from_tests"
 
 
-def format_dict_for_printing(d: dict) -> str:
+def format_dict_for_printing(d: dict) -> str:  # type: ignore
     """Format a dictionary for printing. Removes extra apostrophes, formats
     colon to dashes, separates items with underscores and removes curly
     brackets.
@@ -48,7 +48,7 @@ def format_dict_for_printing(d: dict) -> str:
 
 
 def flatten_nested_dict(
-    d: dict,
+    d: dict,  # type: ignore
     parent_key: str = "",
     sep: str = ".",
 ) -> dict[str, Any]:
@@ -85,7 +85,7 @@ def drop_records_if_datediff_days_smaller_than(
     t2_col_name: str,
     t1_col_name: str,
     threshold_days: float,
-) -> pd.Series:
+) -> pd.DataFrame:
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
     Args:
@@ -102,7 +102,10 @@ def drop_records_if_datediff_days_smaller_than(
     ]
 
 
-def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
+def round_floats_to_edge(
+    series: pd.Series,  # type: ignore
+    bins: list[float],
+) -> pd.Series:  # type: ignore
     """Rounds a float to the lowest value it is larger than. E.g. if bins = [0, 1, 2, 3],
     0.9 will be rounded to 0, 1.8 will be rounded to 1, etc.
 
@@ -120,11 +123,11 @@ def round_floats_to_edge(series: pd.Series, bins: list[float]) -> pd.Series:
 
 
 def bin_continuous_data(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     bins: Sequence[float],
     min_n_in_bin: int = 5,
     use_min_as_label: bool = False,
-) -> tuple[pd.Series, pd.Series]:
+) -> tuple[pd.Series, pd.Series]:  # type: ignore
     """For prettier formatting of continuous binned data such as age.
 
     Args:
@@ -193,8 +196,8 @@ def bin_continuous_data(
 
 
 def positive_rate_to_pred_probs(
-    pred_probs: pd.Series,
-    positive_rates: Iterable,
+    pred_probs: pd.Series,  # type: ignore
+    positive_rates: Iterable,  # type: ignore
 ) -> list[Any]:
     """Get thresholds for a set of percentiles. E.g. if one
     positive_rate == 1, return the value where 1% of predicted

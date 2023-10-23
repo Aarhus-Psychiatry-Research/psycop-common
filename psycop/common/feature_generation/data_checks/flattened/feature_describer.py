@@ -35,14 +35,14 @@ UNICODE_HIST = {
 HIST_BINS = 8
 
 
-def get_value_proportion(series: pd.Series, value: Any) -> float:
+def get_value_proportion(series: pd.Series, value: Any) -> float:  # type: ignore
     """Get proportion of series that is equal to the value argument."""
     if np.isnan(value):
         return round(series.isna().mean(), 2)  # type: ignore
     return round(series.eq(value).mean(), 2)  # type: ignore
 
 
-def _find_nearest(array: np.ndarray, value: Any) -> np.ndarray:
+def _find_nearest(array: np.ndarray, value: Any) -> np.ndarray:  # type: ignore
     """Find the nearest numerical match to value in an array.
 
     Args:
@@ -57,7 +57,7 @@ def _find_nearest(array: np.ndarray, value: Any) -> np.ndarray:
     return array[idx]
 
 
-def create_unicode_hist(series: pd.Series) -> pd.Series:
+def create_unicode_hist(series: pd.Series) -> pd.Series:  # type: ignore
     """Return a histogram rendered in block unicode. Given a pandas series of
     numerical values, returns a series with one entry, the original series
     name, and a histogram made up of unicode characters.
@@ -91,7 +91,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:
 
 
 def generate_temporal_feature_description(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     predictor_spec: PredictorSpec,
     feature_name: str | None = None,
 ) -> dict[str, Any]:
@@ -123,7 +123,7 @@ def generate_temporal_feature_description(
 
 
 def generate_static_feature_description(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     predictor_spec: StaticSpec,
 ) -> dict[str, Any]:
     """Generate a row with feature description for a static predictor."""
@@ -140,10 +140,10 @@ def generate_static_feature_description(
 
 
 def generate_feature_description_row(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     predictor_spec: StaticSpec | PredictorSpec,
     feature_name: str | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Generate a row with feature description.
 
     Args:

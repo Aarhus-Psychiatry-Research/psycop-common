@@ -36,12 +36,12 @@ def convert_list_of_texts_to_sentence_pairs(texts: list[str]) -> list[InputExamp
     return [InputExample(texts=[s, s]) for s in texts]
 
 
-def make_data_loader(train_data: list[InputExample], batch_size: int) -> DataLoader:
+def make_data_loader(train_data: list[InputExample], batch_size: int) -> DataLoader:  # type: ignore
     return DataLoader(train_data, batch_size=batch_size, shuffle=True)  # type: ignore
 
 
 def train_simcse_model(
-    dataloader: DataLoader,
+    dataloader: DataLoader,  # type: ignore
     model: SentenceTransformer,
     epochs: int,
     model_name: str,

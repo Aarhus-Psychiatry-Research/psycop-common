@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 def check_df_conforms_to_feature_spec(
     df: pd.DataFrame,
     msg_prefix: str,
-    arg_dict: dict,
+    arg_dict: dict,  # type: ignore
     allowed_nan_value_prop: float = 0.01,
     required_columns: Sequence[str] = ("dw_ek_borger", "timestamp", "value"),
     subset_duplicates_columns: Sequence[str] = ("dw_ek_borger", "timestamp", "value"),
@@ -69,7 +69,7 @@ def check_df_conforms_to_feature_spec(
     return None
 
 
-def get_predictor_df_with_loader_fn(d: dict, n_rows: int) -> pd.DataFrame:
+def get_predictor_df_with_loader_fn(d: dict, n_rows: int) -> pd.DataFrame:  # type: ignore
     """Get predictor_df from d.
 
     Args:
@@ -88,7 +88,7 @@ def get_predictor_df_with_loader_fn(d: dict, n_rows: int) -> pd.DataFrame:
 
 
 def get_unique_predictor_dfs(
-    predictor_dict_list: Sequence[dict],
+    predictor_dict_list: Sequence[dict],  # type: ignore
     required_keys: list[str],
 ) -> list[Any]:
     """Get unique predictor_dfs from predictor_dict_list.

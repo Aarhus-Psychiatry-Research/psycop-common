@@ -19,9 +19,9 @@ from psycop.projects.restraint.utils.best_runs import Run
 
 
 def bootstrap_results(
-    y: pd.Series,
-    y_hat_probs: pd.Series,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    y: pd.Series,  # type: ignore
+    y_hat_probs: pd.Series,  # type: ignore
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:  # type: ignore
     tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_roc(
         n_bootstraps=1000,
         y=y,
@@ -32,9 +32,9 @@ def bootstrap_results(
 
 
 def plot_auc_roc(
-    tprs_bootstrapped: np.ndarray,
-    aucs_bootstrapped: np.ndarray,
-    base_fpr: np.ndarray,
+    tprs_bootstrapped: np.ndarray,  # type: ignore
+    aucs_bootstrapped: np.ndarray,  # type: ignore
+    base_fpr: np.ndarray,  # type: ignore
     title: str = "Receiver Operating Characteristic (ROC) Curve",
 ) -> pn.ggplot:
     # We need a custom bootstrap implementation, because using scipy.bootstrap

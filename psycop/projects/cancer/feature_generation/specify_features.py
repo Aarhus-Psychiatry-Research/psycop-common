@@ -247,7 +247,7 @@ class FeatureSpecifier:
 
     def _get_text_specs(
         self,
-        resolve_multiple: list[Callable],
+        resolve_multiple: list[Callable],  # type: ignore
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating text specs --------")
@@ -349,7 +349,7 @@ class FeatureSpecifier:
             log.warning(
                 "--- !!! Using the minimum set of features for debugging !!! ---",
             )
-            return self._get_temporal_predictor_specs() + self._get_outcome_specs()
+            return self._get_temporal_predictor_specs() + self._get_outcome_specs()  # type: ignore
 
         return (
             self._get_temporal_predictor_specs()
