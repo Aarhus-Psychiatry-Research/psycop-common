@@ -38,7 +38,7 @@
 | psycop/common/feature\_generation/loaders/raw/load\_lab\_results.py                                             |      180 |       92 |     49% |31-54, 73-95, 113-139, 157-180, 198-238, 249, 261-308, 320, 332, 344-351, 363, 375, 387, 399, 411, 423, 435, 447, 459, 471, 483, 495, 507, 519, 531, 543, 555, 567, 579, 591, 603, 615, 627, 639, 651, 663, 675, 687, 699, 711, 723, 735, 747, 762 |
 | psycop/common/feature\_generation/loaders/raw/load\_medications.py                                              |      201 |       77 |     62% |53-113, 135-144, 168, 189, 217, 254, 279, 303, 327, 351, 374, 397, 426, 452, 476, 502, 521, 540, 559, 578, 597, 617, 638, 658, 679, 698, 717, 750, 774, 797, 817, 837, 857, 876, 895, 914, 933, 952, 971, 990, 1010, 1030, 1049, 1068, 1087, 1106, 1125, 1144, 1163, 1182, 1201, 1220, 1239, 1258, 1277, 1296, 1315, 1334, 1353, 1373 |
 | psycop/common/feature\_generation/loaders/raw/load\_moves.py                                                    |       16 |       10 |     38% |12-18, 24-30, 34 |
-| psycop/common/feature\_generation/loaders/raw/load\_structured\_sfi.py                                          |       86 |       53 |     38% |13, 34-61, 66, 78-94, 99-116, 121, 131, 141, 151-160, 165-174, 179-189, 194-208, 213-226, 231-241, 246-258, 265-293 |
+| psycop/common/feature\_generation/loaders/raw/load\_structured\_sfi.py                                          |       96 |       60 |     38% |13, 34-61, 66, 78-94, 99-116, 121, 131, 141, 151-160, 165-174, 179-189, 194-208, 213-226, 231-241, 246-258, 265-293, 301-317, 323-325, 329-331 |
 | psycop/common/feature\_generation/loaders/raw/load\_t2d\_outcomes.py                                            |       19 |       11 |     42% |13-24, 29-42 |
 | psycop/common/feature\_generation/loaders/raw/load\_text.py                                                     |       54 |       33 |     39% |18-20, 32, 77-87, 113-146, 167-183, 200, 219, 240, 265-277 |
 | psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       77 |       46 |     40% |65-169, 178, 192-203, 212, 228, 247-258, 269, 286, 296-308 |
@@ -171,7 +171,7 @@
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
-|                                                                                                       **TOTAL** | **5308** | **1505** | **72%** |           |
+|                                                                                                       **TOTAL** | **5318** | **1512** | **72%** |           |
 
 
 ## Setup coverage badge
