@@ -296,7 +296,7 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
 
 
 def _get_blood_pressure_pulse(
-    subtype: Literal["Systolisk", "Diastolisk", "Pulsslag / min"]
+    subtype: Literal["Systolisk", "Diastolisk", "Pulsslag / min"],
 ) -> pl.LazyFrame:
     df = (
         pl.from_pandas(
@@ -306,13 +306,16 @@ def _get_blood_pressure_pulse(
         )
         .lazy()
         .rename(
-            {"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"}
+            {
+                "datotid_senest_aendret_i_sfien": "timestamp",
+                "numelementvaerdi": "value",
+            },
         )
     )
 
-    subset = df.select(["dw_ek_borger", "timestamp", "value", "elementledetekst"])
+    df.select(["dw_ek_borger", "timestamp", "value", "elementledetekst"])
     return df.filter(pl.col("elementledetekst") == pl.lit(subtype)).select(
-        ["dw_ek_borger", "timestamp", "value"]
+        ["dw_ek_borger", "timestamp", "value"],
     )
 
 
