@@ -180,7 +180,7 @@ class PaperOutputSettings:
         )
 
 
-class PipelineRun:
+class ForcedAdmissionInpatientPipelineRun:
     def __init__(
         self,
         name: str,

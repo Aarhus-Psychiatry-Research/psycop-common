@@ -8,14 +8,14 @@ from psycop.common.model_evaluation.patchwork.patchwork_grid import (
     create_patchwork_grid,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
 )
 
 msg = Printer(timestamp=True)
 
 
 def fa_create_patchwork_figure(
-    run: PipelineRun,
+    run: ForcedAdmissionInpatientPipelineRun,
     plot_fns: Sequence[Callable],  # type: ignore
     output_filename: str,
     single_plot_dimensions: tuple[float, float] = (5, 5),

@@ -7,7 +7,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
 )
 
 
@@ -90,7 +90,9 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
     return p
 
 
-def fa_sensitivity_by_time_to_event(pipeline_run: PipelineRun) -> pn.ggplot:
+def fa_sensitivity_by_time_to_event(
+    pipeline_run: ForcedAdmissionInpatientPipelineRun,
+) -> pn.ggplot:
     eval_ds = pipeline_run.pipeline_outputs.get_eval_dataset()
 
     p = sensitivity_by_time_to_event(eval_dataset=eval_ds)

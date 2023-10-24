@@ -10,11 +10,13 @@ from psycop.projects.forced_admission_inpatient.utils.feature_name_to_readable i
     feature_name_to_readable,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
 )
 
 
-def generate_feature_importance_table(pipeline_run: PipelineRun) -> pl.DataFrame:
+def generate_feature_importance_table(
+    pipeline_run: ForcedAdmissionInpatientPipelineRun,
+) -> pl.DataFrame:
     pipeline = pipeline_run.pipeline_outputs.pipe
 
     # Get feature importance scores
