@@ -14,7 +14,10 @@ from psycop.common.sequence_models import (
     EncoderForClassification,
     PatientSlicesWithLabels,
 )
-from psycop.common.sequence_models.aggregators import CLSAggregationModule
+from psycop.common.sequence_models.aggregators import (
+    AveragePooler,
+    CLSAggregationModule,
+)
 
 
 @pytest.fixture()
@@ -55,12 +58,9 @@ def encoder_module() -> nn.Module:
     return encoder
 
 
-@pytest.fixture()
-def aggregation_module() -> CLSAggregationModule:
-    """
-    Aggregation module that takes the hidden state of the first token (i.e. the CLS token)
-    """
-    return CLSAggregationModule()
+pytestmark = pytest.mark.parametrize(
+    "aggregation_module", [CLSAggregationModule(), AveragePooler()]
+)
 
 
 def test_encoder_for_clf(
