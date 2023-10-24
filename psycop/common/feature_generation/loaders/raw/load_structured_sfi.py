@@ -244,7 +244,7 @@ def unsupervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
 def smoking_continuous() -> pd.DataFrame:
     """Gets smoking as a continuous variable. The unit is 'pack-years', i.e. number of years smoked times packs smoked per day."""
     df = pl.from_pandas(
-        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]")
+        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]"),
     )
 
     df_pl_subset = df.select(
@@ -252,11 +252,11 @@ def smoking_continuous() -> pd.DataFrame:
             "dw_ek_borger",
             "datotid_senest_aendret_i_sfien",
             "numelementvaerdi",
-        ]
+        ],
     ).filter(pl.col("numelementvaerdi").is_not_null())
 
     return df_pl_subset.rename(
-        {"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"}
+        {"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"},
     ).to_pandas()
 
 
@@ -275,7 +275,7 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
         }
 
     df = pl.from_pandas(
-        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]")
+        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]"),
     )
 
     df_pl_subset = df.select(
@@ -283,13 +283,13 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
             "dw_ek_borger",
             "datotid_senest_aendret_i_sfien",
             "rygning_samlet",
-        ]
+        ],
     ).filter(pl.col("rygning_samlet").is_not_null())
 
     mapped = df_pl_subset.with_columns(
-        pl.col("rygning_samlet").apply(lambda x: mapping.get(x), return_dtype=pl.Int16)  # type: ignore
+        pl.col("rygning_samlet").apply(lambda x: mapping.get(x), return_dtype=pl.Int16),  # type: ignore
     )
 
     return mapped.rename(
-        {"rygning_samlet": "value", "datotid_senest_aendret_i_sfien": "timestamp"}
+        {"rygning_samlet": "value", "datotid_senest_aendret_i_sfien": "timestamp"},
     ).to_pandas()
