@@ -207,7 +207,7 @@ def push_to_branch(c: Context):
 
 def create_pr(c: Context):
     c.run(
-        "gh pr create --base main --fill --web --repo Aarhus-Psychiatry-Research/psycop-common",
+        "gh pr create --base main --fill --web",
         pty=NOT_WINDOWS,
     )
 
