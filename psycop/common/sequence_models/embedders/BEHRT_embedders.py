@@ -215,7 +215,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         return mapped_diagnosis_codes
 
-    def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:
+    def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:  # type: ignore
         # add cls token to start of sequence
         cls_token = {
             "age": torch.tensor(self.vocab.age["CLS"]),
