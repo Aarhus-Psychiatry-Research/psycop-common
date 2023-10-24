@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import polars as pl
+
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
 
@@ -237,3 +239,57 @@ def unsupervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
     df["value"] = 1
 
     return df
+
+
+def smoking_continuous() -> pd.DataFrame:
+    """Gets smoking as a continuous variable. The unit is 'pack-years', i.e. number of years smoked times packs smoked per day."""
+    df = pl.from_pandas(
+        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]")
+    )
+
+    df_pl_subset = df.select(
+        [
+            "dw_ek_borger",
+            "datotid_senest_aendret_i_sfien",
+            "numelementvaerdi",
+        ]
+    ).filter(pl.col("numelementvaerdi").is_not_null())
+
+    return df_pl_subset.rename(
+        {"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"}
+    ).to_pandas()
+
+
+def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
+    """Smoking as a categorical variable. See mapping within the function for definition, or provide your own."""
+    if mapping is None:
+        mapping = {
+            "Ryger dagligt": 6,
+            "Ryger": 5,
+            "Ryger lejlighedsvis": 4,
+            "Andet": 3,
+            "Andet (f.eks. snus, e-cigaretter mv.)": 3,
+            "Eks ryger": 2,
+            "Tidligere ryger": 2,
+            "Aldrig røget": 1,
+        }
+
+    df = pl.from_pandas(
+        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]")
+    )
+
+    df_pl_subset = df.select(
+        [
+            "dw_ek_borger",
+            "datotid_senest_aendret_i_sfien",
+            "rygning_samlet",
+        ]
+    ).filter(pl.col("rygning_samlet").is_not_null())
+
+    mapped = df_pl_subset.with_columns(
+        pl.col("rygning_samlet").apply(lambda x: mapping.get(x), return_dtype=pl.Int16)  # type: ignore
+    )
+
+    return mapped.rename(
+        {"rygning_samlet": "value", "datotid_senest_aendret_i_sfien": "timestamp"}
+    ).to_pandas()
