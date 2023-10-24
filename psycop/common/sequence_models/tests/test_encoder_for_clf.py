@@ -9,12 +9,12 @@ from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.sequence_models import (
     AggregationModule,
-    AveragePooler,
     BEHRTEmbedder,
     BEHRTForMaskedLM,
     EncoderForClassification,
     PatientSlicesWithLabels,
 )
+from psycop.common.sequence_models.aggregators import CLSAggregationModule
 
 
 @pytest.fixture()
@@ -56,11 +56,11 @@ def encoder_module() -> nn.Module:
 
 
 @pytest.fixture()
-def aggregation_module() -> AveragePooler:
+def aggregation_module() -> CLSAggregationModule:
     """
-    A mean pooling module
+    Aggregation module that takes the hidden state of the first token (i.e. the CLS token)
     """
-    return AveragePooler()
+    return CLSAggregationModule()
 
 
 def test_encoder_for_clf(

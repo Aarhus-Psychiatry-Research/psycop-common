@@ -11,7 +11,23 @@ class AggregationModule(nn.Module):
         last_hidden: torch.Tensor,
         attention_mask: torch.Tensor,
     ) -> torch.Tensor:
-        return last_hidden[0, 0, :]  # last_hidden[:,0,:]?
+        pass
+
+
+class CLSAggregationModule(AggregationModule):
+    """
+    Takes the hidden state corresponding to the first token (i.e. the CLS token).
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def forward(
+        self,
+        last_hidden: torch.Tensor,
+        attention_mask: torch.Tensor,
+    ) -> torch.Tensor:
+        return last_hidden[:, 0, :]
 
 
 class AveragePooler(AggregationModule):
