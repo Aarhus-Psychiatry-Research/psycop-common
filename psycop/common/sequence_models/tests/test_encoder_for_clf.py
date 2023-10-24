@@ -59,7 +59,8 @@ def encoder_module() -> nn.Module:
 
 
 pytestmark = pytest.mark.parametrize(
-    "aggregation_module", [CLSAggregationModule(), AveragePooler()]
+    "aggregation_module",
+    [CLSAggregationModule(), AveragePooler()],
 )
 
 

@@ -25,7 +25,7 @@ class CLSAggregationModule(AggregationModule):
     def forward(
         self,
         last_hidden: torch.Tensor,
-        attention_mask: torch.Tensor,
+        attention_mask: torch.Tensor,  # noqa: ARG002
     ) -> torch.Tensor:
         return last_hidden[:, 0, :]
 
