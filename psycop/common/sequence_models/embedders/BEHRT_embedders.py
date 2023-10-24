@@ -232,12 +232,12 @@ class BEHRTEmbedder(nn.Module, Embedder):
         events = self.filter_events(events)
         event_inputs = [self.collate_event(event, patient_slice) for event in events]
 
+        event_inputs = self.add_cls_token_to_sequence(event_inputs)
+
         # reduce to max sequence length
         # take the first max_sequence_length events (probably better to use the last max_sequence_length events)
         # but this is the same as the original implementation
         event_inputs = event_inputs[: self.max_sequence_length]
-
-        event_inputs = self.add_cls_token_to_sequence(event_inputs)
 
         event_inputs = self.add_position_and_segment(event_inputs)
 

@@ -11,7 +11,7 @@ class AggregationModule(nn.Module):
         last_hidden: torch.Tensor,
         attention_mask: torch.Tensor,
     ) -> torch.Tensor:
-        pass
+        return last_hidden[0, 0, :]  # last_hidden[:,0,:]?
 
 
 class AveragePooler(AggregationModule):
