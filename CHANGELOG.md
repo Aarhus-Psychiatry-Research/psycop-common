@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.126.0 (2023-10-24)
+
+### Feature
+
+* Add blood pressure loaders ([`a9d8c26`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a9d8c2642a9859e4995197702828dee0da39941b))
+* Init loader ([`62b580c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/62b580c2d70fbe7e60a7c58e82364da5b70079f8))
+
+### Fix
+
+* Error-handling ([`c5f8997`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c5f899718cd5209aeb1eb6f50b67b50958760ef9))
+
 ## v0.125.0 (2023-10-24)
 
 ### Feature
