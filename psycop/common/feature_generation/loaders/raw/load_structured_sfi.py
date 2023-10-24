@@ -293,3 +293,23 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
     return mapped.rename(
         {"rygning_samlet": "value", "datotid_senest_aendret_i_sfien": "timestamp"},
     ).to_pandas()
+
+
+def systolic_blood_pressure() -> pd.DataFrame:
+    df = pl.from_pandas(
+        sql_load(
+            query="SELECT * FROM [fct].[FOR_SFI_Blodtyk_Puls_psyk_somatik_inkl_2021]",
+        ),
+    )
+
+    df_pl_subset = df.select(
+        [
+            "dw_ek_borger",
+            "datotid_senest_aendret_i_sfien",
+            "numelementvaerdi",
+        ],
+    ).filter(pl.col("numelementvaerdi").is_not_null())
+
+    return df_pl_subset.rename(
+        {"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"},
+    ).to_pandas()
