@@ -468,7 +468,11 @@ def lint(c: Context, auto_fix: bool = False):
 def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     """Run all checks and update the PR."""
     if create_pr:
-        update_pr(c)
+        try:
+            update_pr(c)
+        except Exception as e:
+            print(f"{msg_type.FAIL} Could not update PR: {e}")
+            exit(1)
     add_and_commit(c)
     lint(c, auto_fix=auto_fix)
     static_type_checks(c)
