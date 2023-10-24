@@ -21,8 +21,8 @@ def sfi_loader(
     view with numelementværdi as the value column.
 
     Args:
-        aktivitetstypenavn (str): Type of structured_sfi, e.g. 'broeset_violence_checklist', 'selvmordsvurdering'. Defaults to None. # noqa: DAR102
-        elementledetekst (str): elementledetekst which specifies which sub-element of the SFI, e.g. 'Sum', "Selvmordstanker". Defaults to None.
+        aktivitetstypenavn (str): Fiter by type of structured_sfi, e.g. 'broeset_violence_checklist', 'selvmordsvurdering'. Defaults to None, in which case all sfis are loaded. # noqa: DAR102
+        elementledetekst (str): elementledetekst to filter on, e.g. 'Sum', "Selvmordstanker". Defaults to None, in which case all sfis are loade.
         n_rows: Number of rows to return. Defaults to None which returns entire structured_sfi data view.
         value_col: Column to return as value col. Defaults to 'numelementvaerdi'.
 
