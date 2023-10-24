@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.125.0 (2023-10-24)
+
+### Feature
+
+* Add smoking data ([`6547223`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6547223397707a8ed4bf9aa6132c66d2bc127cee))
+
+### Documentation
+
+* Improve documentatin ([`0fdca6f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0fdca6f12c528a02978b46d1200084c1f3ef9ce3))
+
 ## v0.124.0 (2023-10-23)
 
 ### Feature
