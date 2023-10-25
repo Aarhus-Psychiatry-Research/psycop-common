@@ -6,7 +6,7 @@ from torch import nn
 
 from psycop.common.sequence_models import BEHRTForMaskedLM
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
-from psycop.projects.sequence_models.train import Config
+from psycop.projects.sequence_models.pretrain import Config
 
 
 @pytest.mark.parametrize(
