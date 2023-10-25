@@ -36,8 +36,8 @@ class PreSplitValueCleaner:
             if dataset[colname].dtype != "datetime64[ns]":
                 # Convert all 0s in colname to NaT
                 dataset[colname] = dataset[colname].apply(
-                    lambda x: pd.NaT if x == "0" else x,
-                )
+                    lambda x: pd.NaT if x == "0" else x,  # type: ignore
+                )  # type: ignore
                 dataset[colname] = pd.to_datetime(dataset[colname])
 
         return dataset

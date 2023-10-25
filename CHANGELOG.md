@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.127.0 (2023-10-25)
+
+### Feature
+
+* Add cls token to behrt embedder ([`568224f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/568224f40ecc59b7dd079b1847448b335a0d5e3f))
+
 ## v0.126.0 (2023-10-24)
 
 ### Feature
