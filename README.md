@@ -118,9 +118,9 @@
 | psycop/common/model\_training/utils/decorators.py                                                               |       43 |        1 |     98% |        31 |
 | psycop/common/model\_training/utils/utils.py                                                                    |       89 |       29 |     67% |40, 119-122, 148, 153-154, 162, 167, 216-222, 234-235, 252, 256, 286-289, 297-301, 309-319, 331-335 |
 | psycop/common/sequence\_models/\_\_init\_\_.py                                                                  |        6 |        0 |    100% |           |
-| psycop/common/sequence\_models/aggregators.py                                                                   |       12 |        1 |     92% |        14 |
+| psycop/common/sequence\_models/aggregators.py                                                                   |       17 |        1 |     94% |        14 |
 | psycop/common/sequence\_models/dataset.py                                                                       |       20 |        0 |    100% |           |
-| psycop/common/sequence\_models/embedders/BEHRT\_embedders.py                                                    |      151 |        3 |     98% |75, 141, 177 |
+| psycop/common/sequence\_models/embedders/BEHRT\_embedders.py                                                    |      157 |        3 |     98% |75, 141, 177 |
 | psycop/common/sequence\_models/embedders/interface.py                                                           |       20 |        5 |     75% |31, 34, 37, 43, 49 |
 | psycop/common/sequence\_models/tasks.py                                                                         |      142 |       12 |     92% |226-229, 232-234, 244-245, 320-330 |
 | psycop/common/sequence\_models/tests/\_\_init\_\_.py                                                            |        0 |        0 |    100% |           |
@@ -171,7 +171,7 @@
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
-|                                                                                                       **TOTAL** | **5318** | **1512** | **72%** |           |
+|                                                                                                       **TOTAL** | **5329** | **1512** | **72%** |           |
 
 
 ## Setup coverage badge
