@@ -41,7 +41,7 @@
 | psycop/common/feature\_generation/loaders/raw/load\_structured\_sfi.py                                          |       96 |       60 |     38% |13, 34-61, 66, 78-94, 99-116, 121, 131, 141, 151-160, 165-174, 179-189, 194-208, 213-226, 231-241, 246-258, 265-293, 301-317, 323-325, 329-331 |
 | psycop/common/feature\_generation/loaders/raw/load\_t2d\_outcomes.py                                            |       19 |       11 |     42% |13-24, 29-42 |
 | psycop/common/feature\_generation/loaders/raw/load\_text.py                                                     |       54 |       33 |     39% |18-20, 32, 77-87, 113-146, 167-183, 200, 219, 240, 265-277 |
-| psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       77 |       46 |     40% |65-169, 178, 192-203, 212, 228, 247-258, 269, 286, 296-308 |
+| psycop/common/feature\_generation/loaders/raw/load\_visits.py                                                   |       80 |       49 |     39% |67-175, 184, 198-209, 218, 234, 253-264, 275, 292, 302-314 |
 | psycop/common/feature\_generation/loaders/raw/sql\_load.py                                                      |       21 |       13 |     38% |     42-70 |
 | psycop/common/feature\_generation/loaders/raw/utils.py                                                          |       74 |       55 |     26% |27-38, 55-77, 133-291 |
 | psycop/common/feature\_generation/sequences/cohort\_definer\_to\_prediction\_times.py                           |       40 |        3 |     92% |   102-115 |
@@ -171,7 +171,7 @@
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
-|                                                                                                       **TOTAL** | **5329** | **1512** | **72%** |           |
+|                                                                                                       **TOTAL** | **5332** | **1515** | **72%** |           |
 
 
 ## Setup coverage badge
