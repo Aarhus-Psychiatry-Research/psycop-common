@@ -15,6 +15,12 @@ def load_shak_to_location_mapping() -> pl.DataFrame:
         pl.col("shak_6").cast(str),
     )
 
+def shak_codes_to_drop() -> list[str]:
+    """Dropping Børne og ungdomspsykiatrisk afdeling/center as we don't use 
+    data from child psychiatry. Dropping central visitation as it is just a 
+    place of administration"""
+    return ["660011", "660020", "660021"]
+
 
 if __name__ == "__main__":
     shak_to_location_df = load_shak_to_location_mapping()
@@ -27,7 +33,7 @@ if __name__ == "__main__":
             pl.col("shak_location").str.slice(offset=0, length=6).alias("shak_6"),
         )
         .join(shak_to_location_df, on="shak_6", how="left")
-    )
+    ).filter(~pl.col("shak_6").is_in(shak_codes_to_drop()))
 
     pl.Config.set_fmt_str_lengths(100)  # to print full cell content
 
@@ -39,3 +45,12 @@ if __name__ == "__main__":
     df.groupby("dw_ek_borger").agg(
         pl.col("unit").n_unique().alias("n_unique_locations"),
     )["n_unique_locations"].value_counts()
+
+
+
+# vest = herning, holstebro, gødstrup
+# midt = silkeborg, viborg, skive
+# øst = horsens, aarhus, risskov
+# nord = randers
+
+
