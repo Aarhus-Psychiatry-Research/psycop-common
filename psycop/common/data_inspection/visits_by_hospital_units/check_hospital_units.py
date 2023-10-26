@@ -10,7 +10,10 @@ def count_and_sort_values_of_series(series: pl.Series) -> pl.DataFrame:
 
 
 def load_shak_to_location_mapping() -> pl.DataFrame:
-    # from https://sor-filer.sundhedsdata.dk/sor_produktion/data/shak/shakcomplete/shakcomplete.txt
+    """vest = herning, holstebro, gødstrup
+    midt = silkeborg, viborg, skive
+    øst = horsens, aarhus, risskov, randers"""
+    # shak mapping from https://sor-filer.sundhedsdata.dk/sor_produktion/data/shak/shakcomplete/shakcomplete.txt
     return pl.read_csv(Path(__file__).parent / "shak_mapping.csv").with_columns(
         pl.col("shak_6").cast(str),
     )
@@ -60,9 +63,6 @@ if __name__ == "__main__":
     ).sort("n_patients", descending=True)
 
 
-# vest = herning, holstebro, gødstrup
-# midt = silkeborg, viborg, skive
-# øst = horsens, aarhus, risskov, randers
 
 
-# tilføj antal besøg ved unique pateint ats visit
+
