@@ -14,8 +14,8 @@ from psycop.projects.cancer.feature_generation.cohort_definition.eligible_predic
     CancerPrevalentFilter,
     CancerWashoutMoveFilter,
 )
-from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.first_cancer_diagnosis import (
-    get_first_cancer_diagnosis,
+from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.cancer_outcomes import (
+    get_first_breast_cancer_diagnosis,
 )
 
 
@@ -42,7 +42,7 @@ class CancerCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
-        return pl.from_pandas(get_first_cancer_diagnosis())
+        return pl.from_pandas(get_first_breast_cancer_diagnosis())
 
 
 if __name__ == "__main__":

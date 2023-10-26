@@ -1,7 +1,7 @@
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.cancer_eligible_config import (
+from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
 )
 

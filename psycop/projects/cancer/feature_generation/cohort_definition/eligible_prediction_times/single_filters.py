@@ -7,7 +7,7 @@ from psycop.common.feature_generation.application_modules.filter_prediction_time
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
-from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.add_age import (
+from psycop.projects.cancer.feature_generation.cohort_definition.add_age import (
     add_age,
 )
 from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.cancer_eligible_config import (
@@ -15,7 +15,7 @@ from psycop.projects.cancer.feature_generation.cohort_definition.eligible_predic
     MIN_AGE,
     MIN_DATE,
 )
-from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.first_cancer_diagnosis import (
+from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specification.cancer_outcomes import (
     get_first_cancer_diagnosis,
 )
 
