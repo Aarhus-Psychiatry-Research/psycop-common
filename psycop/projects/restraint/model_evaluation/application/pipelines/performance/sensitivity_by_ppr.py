@@ -92,7 +92,7 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
 
     for ppr in [0.01, 0.03, 0.05]:
         df = get_sensitivity_by_timedelta_df(
-            y=eval_ds.y,
+            y=eval_ds.y,  # type: ignore
             y_hat=eval_ds.get_predictions_for_positive_rate(
                 desired_positive_rate=ppr,
             )[0],

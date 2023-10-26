@@ -21,8 +21,8 @@ def roc_auc_by_calendar_time(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
     binned_df = create_roc_auc_by_absolute_time_df(
-        labels=eval_ds.y,
-        y_hat_probs=eval_ds.y_hat_probs,
+        labels=eval_ds.y,  # type: ignore
+        y_hat_probs=eval_ds.y_hat_probs,  # type: ignore
         timestamps=eval_ds.pred_timestamps,
         bin_period="Y",
         confidence_interval=True,

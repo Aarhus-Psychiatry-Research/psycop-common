@@ -14,8 +14,8 @@ def t2d_auroc_by_quarter(run: T2DPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = create_roc_auc_by_absolute_time_df(
-        labels=eval_ds.y,
-        y_hat_probs=eval_ds.y_hat_probs,
+        labels=eval_ds.y,  # type: ignore
+        y_hat_probs=eval_ds.y_hat_probs,  # type: ignore
         timestamps=eval_ds.pred_timestamps,
         bin_period="Q",
         confidence_interval=True,
