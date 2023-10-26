@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import polars as pl
 
@@ -293,3 +293,39 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
     return mapped.rename(
         {"rygning_samlet": "value", "datotid_senest_aendret_i_sfien": "timestamp"},
     ).to_pandas()
+
+
+def _get_blood_pressure_pulse(
+    subtype: Literal["Systolisk", "Diastolisk", "Pulsslag / min"],
+) -> pl.LazyFrame:
+    df = (
+        pl.from_pandas(
+            sql_load(
+                query="SELECT * FROM [fct].[FOR_SFI_Blodtyk_Puls_psyk_somatik_inkl_2021]",
+            ),
+        )
+        .lazy()
+        .rename(
+            {
+                "datotid_senest_aendret_i_sfien": "timestamp",
+                "numelementvaerdi": "value",
+            },
+        )
+    )
+
+    df.select(["dw_ek_borger", "timestamp", "value", "elementledetekst"])
+    return df.filter(pl.col("elementledetekst") == pl.lit(subtype)).select(
+        ["dw_ek_borger", "timestamp", "value"],
+    )
+
+
+def systolic_blood_pressure() -> pd.DataFrame:
+    df = _get_blood_pressure_pulse(subtype="Systolisk")
+
+    return df.collect().to_pandas()
+
+
+def diastolic_blood_pressure() -> pd.DataFrame:
+    df = _get_blood_pressure_pulse(subtype="Diastolisk")
+
+    return df.collect().to_pandas()

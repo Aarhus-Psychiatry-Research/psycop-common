@@ -14,6 +14,22 @@ class AggregationModule(nn.Module):
         pass
 
 
+class CLSAggregationModule(AggregationModule):
+    """
+    Takes the hidden state corresponding to the first token (i.e. the CLS token).
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def forward(
+        self,
+        last_hidden: torch.Tensor,
+        attention_mask: torch.Tensor,  # noqa: ARG002
+    ) -> torch.Tensor:
+        return last_hidden[:, 0, :]
+
+
 class AveragePooler(AggregationModule):
     """
     Parameter-free poolers to get the sentence embedding

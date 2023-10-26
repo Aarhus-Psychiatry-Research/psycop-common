@@ -20,7 +20,7 @@ if __name__ == "__main__":
     df_weight = weight_in_kg(n_rows=100_000)
 
 
-def unique_and_percentage(series: pd.Series) -> pd.Series:
+def unique_and_percentage(series: pd.Series) -> pd.Series:  # type: ignore
     """Return unique values and their percentage of the total number of values
     in the series.
 

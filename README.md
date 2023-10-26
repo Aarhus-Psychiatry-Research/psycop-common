@@ -33,7 +33,7 @@ The shared code across the PSYCOP projects.
 If you're working on Ovartaci, all you need is to activate the shared environment by
 
 ```
-conda activate psycop
+conda activate psycop-main
 ```
 
 ### Method 3: Virtual environment install
