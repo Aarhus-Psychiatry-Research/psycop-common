@@ -61,8 +61,3 @@ if __name__ == "__main__":
         pl.col("dw_ek_borger").unique().count().alias("n_patients"),
         pl.col("dw_ek_borger").count().alias("n_visits"),
     ).sort("n_patients", descending=True)
-
-
-
-
-
