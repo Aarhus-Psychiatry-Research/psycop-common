@@ -27,6 +27,6 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
-          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common
+          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
           push: filter
           refFilterForPush: refs/heads/main
