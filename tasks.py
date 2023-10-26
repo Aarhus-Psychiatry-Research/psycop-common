@@ -468,6 +468,7 @@ def lint(c: Context, auto_fix: bool = False):
 def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     """Run all checks and update the PR."""
     add_and_commit(c)
+    push_to_branch(c)
 
     if create_pr:
         try:
@@ -478,7 +479,6 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     lint(c, auto_fix=auto_fix)
     static_type_checks(c)
     test(c)
-    push_to_branch(c)
 
 
 @task
