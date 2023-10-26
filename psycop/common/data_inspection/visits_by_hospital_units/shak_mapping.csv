@@ -1,8 +1,8 @@
-shak_6,department,unit,cardinal
+shak_6,department,unit,grouping
 660001,Regionspsykiatri Vest,Herning Holstebro,vest
 660002,Regionspsykiatri Midt,Viborg(Skive?),midt
 660003,Regionspsykiatri Horsens,Horsens,øst
-660004,Regionspsykiatri Randers,Randers,nord
+660004,Regionspsykiatri Randers,Randers,øst
 660005,Regionspsykiatri Silkeborg,Silkeborg,midt
 660006,Afdeling for Psykoser (Risskov),Aarhus,øst
 660007,ADA (Risskov),Aarhus,øst
@@ -11,7 +11,7 @@ shak_6,department,unit,cardinal
 660010,Center for psykiatrisk forskning (Risskov),Aarhus,øst
 660011,Børne og ungdomspsykiatrisk Center - BUC,Risskov Viborg Herning,na
 660019,Friklinik (Risskov),Aarhus,øst
-660020,Psykiatriens centrale visitation,Silkeborg,midt
+660020,Psykiatriens centrale visitation,Silkeborg,na
 660021,Børne og ungdomspsykiatrisk afdeling,Gødstrup Aarhus Viborg,na
 660031,Retspsykiatrisk afd. (AUH),Aarhus,øst
 660041,Afdeling for psykoser (AUH),Aarhus,øst
