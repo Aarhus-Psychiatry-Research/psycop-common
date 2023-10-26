@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.127.1 (2023-10-26)
+
+### Fix
+
+* Pydantic requires types to be callable. Removed subscripting of pd.Series. ([`95d89a6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/95d89a61d8a004a90bb1137e9d3f9e900233a16e))
+
 ## v0.127.0 (2023-10-25)
 
 ### Feature

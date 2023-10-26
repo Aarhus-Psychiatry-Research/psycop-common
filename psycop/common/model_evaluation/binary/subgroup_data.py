@@ -12,7 +12,7 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 def get_auroc_by_input_df(
     eval_dataset: EvalDataset,
-    input_values: pd.Series,
+    input_values: pd.Series,  # type: ignore
     input_name: str,
     bins: Sequence[float] = (0, 1, 2, 5, 10),
     bin_continuous_input: Optional[bool] = True,

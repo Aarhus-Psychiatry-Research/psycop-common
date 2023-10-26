@@ -32,9 +32,5 @@ RUN pip install -r requirements.txt
 COPY test-requirements.txt .
 RUN pip install -r test-requirements.txt
 
-## Run static-type-checks
-COPY tasks.py pyproject.toml ./
-RUN inv static-type-checks
-
 COPY . /app
 RUN pip install -e .

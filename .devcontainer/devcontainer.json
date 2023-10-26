@@ -6,9 +6,9 @@
 		// Sets the run context to one level up instead of the .devcontainer folder.
 		"context": "..",
 		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-		"dockerfile": "../Dockerfile.dev",
+		"dockerfile": "../Dockerfile",
 		"cacheFrom": [
-			"type=registry,ref=ghcr.io/aarhus-psychiatry-research/psycop-common:latest"
+			"ghcr.io/aarhus-psychiatry-research/psycop-common:latest"
 		]
 	},
 	// "features": {},
@@ -27,6 +27,7 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
+	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

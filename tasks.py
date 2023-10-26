@@ -207,7 +207,7 @@ def push_to_branch(c: Context):
 
 def create_pr(c: Context):
     c.run(
-        "gh pr create --web",
+        "gh pr create --base main --fill --web",
         pty=NOT_WINDOWS,
     )
 
@@ -467,17 +467,18 @@ def lint(c: Context, auto_fix: bool = False):
 @task
 def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     """Run all checks and update the PR."""
+    add_and_commit(c)
+    push_to_branch(c)
+
     if create_pr:
         try:
             update_pr(c)
         except Exception as e:
-            print(f"{msg_type.FAIL} Could not update PR: {e}")
-            exit(1)
-    add_and_commit(c)
+            print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
+
     lint(c, auto_fix=auto_fix)
     static_type_checks(c)
     test(c)
-    push_to_branch(c)
 
 
 @task

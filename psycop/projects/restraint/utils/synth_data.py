@@ -44,10 +44,10 @@ def return_0_with_prob(prob: float) -> Literal[0, 1]:
 
 
 def null_series_with_prob(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     prob: float,
     null_value: Any = np.NaN,
-) -> Union[pd.Series, None]:
+) -> Union[pd.Series, None]:  # type: ignore
     """Overwrite values in series with null_value with a given probability.
 
     Args:
@@ -68,10 +68,10 @@ def null_series_with_prob(
 
 
 def overwrite_prop_with_null(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     prop: float,
     null_value: Optional[Any] = np.NaN,
-) -> pd.Series:
+) -> pd.Series:  # type: ignore
     """Overwrite a proportion of all values in a series with a null value (NaN
     or NaT).
 
