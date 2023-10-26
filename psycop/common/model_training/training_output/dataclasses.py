@@ -40,16 +40,16 @@ class EvalDataset(PSYCOPBaseModel):
     consistent.
     """
 
-    ids: pd.Series[int]  # type: ignore
-    pred_time_uuids: pd.Series[str]
-    pred_timestamps: pd.Series[pd.Timestamp]
-    outcome_timestamps: Optional[pd.Series[pd.Timestamp]] = None
-    y: Union[pd.Series[int], pd.DataFrame]  # type: ignore
-    y_hat_probs: Union[pd.Series[float], pd.DataFrame]  # type: ignore
-    age: Optional[pd.Series[float]] = None
-    is_female: Optional[pd.Series[int]] = None
-    exclusion_timestamps: Optional[pd.Series[pd.Timestamp]] = None
-    custom_columns: Optional[dict[str, pd.Series[Any]]] = None  # type: ignore
+    ids: pd.Series  # type: ignore
+    pred_time_uuids: pd.Series  # type: ignore
+    pred_timestamps: pd.Series  # type: ignore
+    outcome_timestamps: Optional[pd.Series] = None  # type: ignore
+    y: Union[pd.Series, pd.DataFrame]  # type: ignore
+    y_hat_probs: Union[pd.Series, pd.DataFrame]  # type: ignore
+    age: Optional[pd.Series] = None  # type: ignore
+    is_female: Optional[pd.Series] = None  # type: ignore
+    exclusion_timestamps: Optional[pd.Series] = None  # type: ignore
+    custom_columns: Optional[dict[str, pd.Series]] = None  # type: ignore
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
