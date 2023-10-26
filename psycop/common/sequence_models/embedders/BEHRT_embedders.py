@@ -14,7 +14,9 @@ from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.sequence_models.dataset import PatientSliceDataset
 
+from ..registry import Registry
 from .interface import EmbeddedSequence, Embedder
 
 
@@ -275,10 +277,13 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
     def fit(
         self,
-        patient_slices: Sequence[PatientSlice],
+        patient_slices: Sequence[PatientSlice] | PatientSliceDataset,
         add_mask_token: bool = True,
         map_diagnosis_codes: bool = True,
     ):
+        if isinstance(patient_slices, PatientSliceDataset):
+            patient_slices = patient_slices.patient_slices
+
         patient_events = [
             (p, e)
             for p in patient_slices
@@ -329,3 +334,20 @@ class BEHRTEmbedder(nn.Module, Embedder):
         )
 
         self.is_fitted = True
+
+
+@Registry.embedders.register("behrt_embedder")
+def create_behrt_embedder(
+    d_model: int,
+    dropout_prob: float,
+    max_sequence_length: int,
+    patient_slices: Sequence[PatientSlice] | PatientSliceDataset,
+) -> BEHRTEmbedder:
+    embedder = BEHRTEmbedder(
+        d_model=d_model,
+        dropout_prob=dropout_prob,
+        max_sequence_length=max_sequence_length,
+    )
+
+    embedder.fit(patient_slices=patient_slices)
+    return embedder

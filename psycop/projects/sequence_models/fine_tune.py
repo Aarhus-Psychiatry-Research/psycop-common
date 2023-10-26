@@ -6,19 +6,27 @@ from pydantic import BaseModel, FilePath
 from torch.utils.data import DataLoader
 
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
-from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import \
-    CohortToPredictionTimes
+from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
+    CohortToPredictionTimes,
+)
 from psycop.common.feature_generation.sequences.patient_loaders import (
-    DiagnosisLoader, PatientLoader)
+    DiagnosisLoader,
+    PatientLoader,
+)
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.common.sequence_models.aggregators import (AggregationModule,
-                                                       CLSAggregationModule)
+from psycop.common.sequence_models.aggregators import (
+    AggregationModule,
+    CLSAggregationModule,
+)
 from psycop.common.sequence_models.dataset import PatientSlicesWithLabels
-from psycop.common.sequence_models.tasks import (BEHRTForMaskedLM,
-                                                 EncoderForClassification)
+from psycop.common.sequence_models.tasks import (
+    BEHRTForMaskedLM,
+    EncoderForClassification,
+)
 from psycop.projects.sequence_models.pretrain import create_default_trainer
-from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import \
-    T2DCohortDefiner
+from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
+    T2DCohortDefiner,
+)
 
 
 class DataCfg(BaseModel):
@@ -88,7 +96,7 @@ def create_loaders(cfg: FinetuningConfig, model: EncoderForClassification):  # n
         patient_dataset_with_labels,
         batch_size=cfg.data.batch_size,
         shuffle=True,
-        collate_fn=model.collate_fn,  # noqa
+        collate_fn=model.collate_fn,
     )
 
     return train_dataloader, val_dataloader
@@ -132,7 +140,7 @@ if __name__ == "__main__":
 
     save_dir = project_root / "data"
     save_dir.mkdir(parents=True, exist_ok=True)
-    trainer = create_default_trainer(save_dir=save_dir, config=config) # noqa
+    trainer = create_default_trainer(save_dir=save_dir, config=config)  # noqa
     trainer.fit(
         model=model,
         train_dataloaders=train_dataloader,
