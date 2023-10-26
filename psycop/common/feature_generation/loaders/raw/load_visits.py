@@ -42,6 +42,7 @@ def physical_visits(
     visit_types: Sequence[
         Literal["admissions", "ambulatory_visits", "emergency_visits"]
     ] = ("admissions", "ambulatory_visits", "emergency_visits"),
+    return_shak_location: bool = False,
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
 
@@ -55,6 +56,7 @@ def physical_visits(
         n_rows (Optional[int], optional): Number of rows to return. Defaults to None.
         return_value_as_visit_length_days (Optional[bool], optional): Whether to return length of visit in days as the value for the loader. Defaults to False which results in value=1 for all visits.
         visit_types (list[Literal["admissions", "ambulatory_visits", "emergency_visits"]]]): Which visit types to load. Defaults to ["admissions", "ambulatory_visits", "emergency_visits"].
+        return_shape_location (bool): Whether to return the shak code of the visit
 
     Returns:
         pd.DataFrame: Dataframe with all physical visits to psychiatry. Has columns dw_ek_borger and timestamp.
@@ -118,7 +120,7 @@ def physical_visits(
     dfs = []
 
     for schema in chosen_schemas.values():
-        cols = f"{schema.start_datetime_col_name}, {schema.end_datetime_col_name}, dw_ek_borger"
+        cols = f"{schema.start_datetime_col_name}, {schema.end_datetime_col_name}, dw_ek_borger, {schema.location_col_name}"
 
         sql = f"SELECT {cols} FROM [fct].{schema.view} WHERE {schema.start_datetime_col_name} IS NOT NULL {schema.where_clause}"
 
@@ -134,6 +136,7 @@ def physical_visits(
             columns={
                 schema.end_datetime_col_name: "timestamp_end",
                 schema.start_datetime_col_name: "timestamp_start",
+                schema.location_col_name: "shak_location",
             },
         )
 
@@ -165,8 +168,11 @@ def physical_visits(
     log.info("Loaded physical visits")
 
     output_df = output_df.rename(columns={output_timestamp_col_name: "timestamp"})
+    output_cols = ["dw_ek_borger", "timestamp", "value"]
+    if return_shak_location:
+        output_cols = [*output_cols, "shak_location"]
 
-    return output_df[["dw_ek_borger", "timestamp", "value"]].reset_index(drop=True)
+    return output_df[output_cols].reset_index(drop=True)
 
 
 @data_loaders.register("physical_visits")
