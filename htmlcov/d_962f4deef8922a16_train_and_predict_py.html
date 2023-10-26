@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_962f4deef8922a16_utils_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-10-25 06:41 +0000
+            created at 2023-10-26 09:06 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -170,7 +170,7 @@
     <p class="pln"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">        <span class="nam">msg</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs],oof_y_pred), 3)}"</span><span class="op">)</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">        <span class="nam">train_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">val_idxs</span><span class="op">,</span> <span class="str">"oof_y_hat"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">oof_y_pred</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">        <span class="nam">train_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">val_idxs</span><span class="op">,</span> <span class="str">"oof_y_hat"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">oof_y_pred</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">    <span class="key">return</span> <span class="nam">train_df</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -235,7 +235,7 @@
     <p class="pln"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">        <span class="key">for</span> <span class="nam">x</span><span class="op">,</span> <span class="nam">col_name</span> <span class="key">in</span> <span class="nam">enumerate</span><span class="op">(</span><span class="nam">outcome_col_name</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="nam">train_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">val_idxs</span><span class="op">,</span> <span class="str">f"y_hat_prob_{col_name}"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">oof_y_pred</span><span class="op">[</span><span class="op">:</span><span class="op">,</span> <span class="nam">x</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="nam">train_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">val_idxs</span><span class="op">,</span> <span class="str">f"y_hat_prob_{col_name}"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">oof_y_pred</span><span class="op">[</span><span class="op">:</span><span class="op">,</span> <span class="nam">x</span><span class="op">]</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">    <span class="key">return</span> <span class="nam">train_df</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -480,7 +480,7 @@
             <a id="nextFileLink" class="nav" href="d_962f4deef8922a16_utils_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-10-25 06:41 +0000
+            created at 2023-10-26 09:06 +0000
         </p>
     </div>
 </footer>
