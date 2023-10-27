@@ -11,4 +11,5 @@ class Registry(registry):
     loggers = catalogue.create("psycop", "loggers")
 
     optimizers = catalogue.create("psycop", "optimizers")
-    lr_schedulers = catalogue.create("psycop", "lr_schedules")
+    lr_schedulers = catalogue.create("psycop", "lr_schedulers")
+    callbacks = catalogue.create("psycop", "callbacks")

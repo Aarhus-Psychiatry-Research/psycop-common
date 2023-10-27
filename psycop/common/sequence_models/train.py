@@ -21,6 +21,16 @@ def populate_registry() -> None:
     It is also possible to do this using hooks, but this is more explicit
     and easier to debug for people who are not familiar with python setup hooks.
     """
+    from .callbacks import create_learning_rate_monitor, create_model_checkpoint  # noqa
+    from .embedders.BEHRT_embedders import create_behrt_embedder
+    from .logger import create_wandb_logger
+    from .model_layers import create_encoder_layer, create_transformers_encoder
+    from .optimizers import (
+        create_adam,
+        create_adamw,
+        create_linear_schedule_with_warmup,
+    )
+    from .tasks import create_behrt, create_encoder_for_clf
 
 
 populate_registry()

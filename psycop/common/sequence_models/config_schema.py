@@ -5,12 +5,13 @@ The config Schema for sequence models.
 from pathlib import Path
 from typing import Any, Optional, Union
 
+from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers.wandb import WandbLogger
 from pydantic import BaseModel
+from sequence_models.tasks import BEHRTForMaskedLM, EncoderForClassification
 from torch.utils.data import Dataset
 
 from psycop.common.data_structures import PatientSlice
-from sequence_models.tasks import BEHRTForMaskedLM, EncoderForClassification
 
 
 class TrainerConfigSchema(BaseModel):
@@ -26,6 +27,7 @@ class TrainerConfigSchema(BaseModel):
     strategy: str = "auto"
     devices: Union[list[int], str, int] = "auto"
     num_nodes: int = 1
+    callbacks: list[Callback] = []
     precision: str = "32-true"
     logger: WandbLogger
     max_epochs: Optional[int] = None
