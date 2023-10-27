@@ -32,7 +32,7 @@ class TrainerConfigSchema(BaseModel):
     min_epochs: Optional[int] = None
     max_steps: int = 10
     min_steps: Optional[int] = None
-    limit_train_batches: Optional[Union[int, float]] = None
+    limit_train_batches: int | float | None = None
     limit_val_batches: Optional[Union[int, float]] = None
     limit_test_batches: Optional[Union[int, float]] = None
     limit_predict_batches: Optional[Union[int, float]] = None
