@@ -1,24 +1,27 @@
+from collections.abc import Iterable
 from functools import partial
-from typing import Any, Callable
+from typing import Callable
 
 import torch
-from torch.optim.lr_scheduler import _LRScheduler  # noqa: ANN001, # type: ignore
+from torch.optim.lr_scheduler import _LRScheduler  # , # type: ignore
 from transformers import get_linear_schedule_with_warmup
 
 from .registry import Registry
 
-OptimizerFn = Callable[[Any], torch.optim.Optimizer]
+OptimizerFn = Callable[[Iterable[torch.nn.parameter.Parameter]], torch.optim.Optimizer]
 LRSchedulerFn = Callable[[torch.optim.Optimizer], _LRScheduler]
 
 
 def _configure_adam(
-    parameters, lr  # noqa: ANN001, # type: ignore
+    parameters,  # noqa: ANN001, # type: ignore
+    lr,  # noqa: ANN001, # type: ignore
 ) -> torch.optim.Optimizer:
     return torch.optim.Adam(parameters, lr=lr)
 
 
 def _configure_adamw(
-    parameters, lr  # noqa: ANN001, # type: ignore
+    parameters,  # noqa: ANN001, # type: ignore
+    lr,  # noqa: ANN001, # type: ignore
 ) -> torch.optim.Optimizer:
     return torch.optim.AdamW(parameters, lr=lr)
 
@@ -49,7 +52,9 @@ def _configure_linear_schedule_with_warmup(
 
 @Registry.lr_schedulers.register("linear_schedule_with_warmup")
 def create_linear_schedule_with_warmup(
-    num_warmup_steps: int, num_training_steps: int, last_epoch: int = -1
+    num_warmup_steps: int,
+    num_training_steps: int,
+    last_epoch: int = -1,
 ) -> LRSchedulerFn:
     return partial(
         _configure_linear_schedule_with_warmup,

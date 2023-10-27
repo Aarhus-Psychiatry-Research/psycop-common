@@ -6,13 +6,11 @@ import wandb
 from omegaconf import DictConfig, OmegaConf
 from random_word import RandomWords
 
+from psycop.common.global_utils.config_utils import flatten_nested_dict
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.utils.utils import (
-    create_wandb_folders,
-    flatten_nested_dict,
-)
+from psycop.common.model_training.utils.utils import create_wandb_folders
 
 
 class WandbHandler:

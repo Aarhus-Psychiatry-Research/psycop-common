@@ -202,6 +202,7 @@ joblib
 
 # logging
 lightning_logs/*
+logs/*
 
 # Allow mapping file to be uploaded
 !**/diagnosis_code_mapping.json

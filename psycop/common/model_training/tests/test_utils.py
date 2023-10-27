@@ -2,10 +2,10 @@
 import numpy as np
 import pandas as pd
 
+from psycop.common.global_utils.config_utils import flatten_nested_dict
 from psycop.common.model_training.utils.utils import (
     bin_continuous_data,
     drop_records_if_datediff_days_smaller_than,
-    flatten_nested_dict,
 )
 from psycop.common.test_utils.str_to_df import str_to_df
 

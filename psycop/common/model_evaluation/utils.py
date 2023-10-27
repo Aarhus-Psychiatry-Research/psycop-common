@@ -5,7 +5,7 @@ utilities.
 import math
 import sys
 import tempfile
-from collections.abc import Iterable, MutableMapping, Sequence
+from collections.abc import Iterable, Sequence
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Optional, Union
@@ -60,39 +60,6 @@ def format_dict_for_printing(d: dict) -> str:  # type: ignore
         .replace("}", "")
         .replace(", ", "_")
     )
-
-
-def flatten_nested_dict(
-    d: dict,  # type: ignore
-    parent_key: str = "",
-    sep: str = ".",
-) -> dict[str, Any]:
-    """Recursively flatten an infinitely nested dict.
-
-    E.g. {"level1": {"level2": "level3": {"level4": 5}}}} becomes
-    {"level1.level2.level3.level4": 5}.
-
-    Args:
-        d (dict): dict to flatten.
-        parent_key (str): The parent key for the current dict, e.g. "level1" for the first iteration.
-        sep (str): How to separate each level in the dict. Defaults to ".".
-
-    Returns:
-        dict: The flattened dict.
-    """
-
-    items: list[dict[str, Any]] = []
-
-    for k, v in d.items():
-        new_key = parent_key + sep + k if parent_key else k
-        if isinstance(v, MutableMapping):
-            items.extend(
-                flatten_nested_dict(d=v, parent_key=new_key, sep=sep).items(),  # type: ignore
-            )  # typing: ignore
-        else:
-            items.append((new_key, v))  # type: ignore
-
-    return dict(items)  # type: ignore
 
 
 def drop_records_if_datediff_days_smaller_than(
