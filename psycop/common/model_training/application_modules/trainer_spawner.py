@@ -55,7 +55,7 @@ def start_trainer(
 
     if dataset_dir is not None:
         # adding quotes to correctly parse if dataset_dir is a list
-        subprocess_args.insert(4, f"'data.dir={dataset_dir}'")
+        subprocess_args.insert(4, f"data.dir={dataset_dir}")
 
     msg.info(f'{" ".join(subprocess_args)}')
 

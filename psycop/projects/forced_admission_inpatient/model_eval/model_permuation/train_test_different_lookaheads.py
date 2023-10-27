@@ -128,8 +128,12 @@ def train_model(
 
 
 def main(run: ForcedAdmissionInpatientPipelineRun):
-    run = run
-    pass
+    cfg = run.inputs.cfg
+
+    train_model(
+        cfg=cfg,
+        outcome_col_name_for_test="outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
+    )
 
 
 if __name__ == "__main__":
