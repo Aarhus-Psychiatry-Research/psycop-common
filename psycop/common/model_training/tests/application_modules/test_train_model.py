@@ -1,17 +1,29 @@
 """Test that the model trains correctly."""
 
 
+from pathlib import Path
+
 import pytest
 
+from psycop.common.model_training.application_modules.get_search_space import (
+    SearchSpaceInferrer,
+)
+from psycop.common.model_training.application_modules.process_manager_setup import (
+    setup_wandb,
+)
 from psycop.common.model_training.application_modules.train_model.main import (
     post_wandb_setup_train_model,
     train_model,
+)
+from psycop.common.model_training.application_modules.trainer_spawner import (
+    spawn_trainers,
 )
 from psycop.common.model_training.application_modules.wandb_handler import WandbHandler
 from psycop.common.model_training.config_schemas.conf_utils import (
     load_test_cfg_as_pydantic,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.common.model_training.data_loader.data_loader import DataLoader
 from psycop.common.model_training.training.model_specs import MODELS
 
 INTEGRATION_TEST_FILE_NAME = "default_config.yaml"
@@ -88,3 +100,27 @@ def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSche
     # Train with the wrapper
     wrapped_return_value = post_wandb_setup_train_model(cfg)
     assert wrapped_return_value == 0.5
+
+
+def test_spawn_trainers(muteable_test_config: FullConfigSchema):
+    """Test crossvalidation."""
+    cfg = muteable_test_config
+    wandb_group = setup_wandb(cfg=cfg)
+
+    train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")
+
+    trainer_specs = SearchSpaceInferrer(
+        cfg=cfg,
+        train_df=train_df,
+        model_names=["xgboost", "logistic-regression"],
+    ).get_trainer_specs()
+
+    spawn_trainers(
+        cfg=cfg,
+        config_file_name="default_config.yaml",
+        wandb_prefix=wandb_group,
+        trainer_specs=trainer_specs,
+        train_single_model_file_path=Path(
+            "psycop/common/model_training/tests/application_modules/utils/train_model_from_application_module.py",
+        ),
+    )
