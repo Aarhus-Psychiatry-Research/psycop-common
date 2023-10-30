@@ -22,15 +22,15 @@ def populate_registry() -> None:
     and easier to debug for people who are not familiar with python setup hooks.
     """
     from .callbacks import create_learning_rate_monitor, create_model_checkpoint  # noqa
-    from .embedders.BEHRT_embedders import create_behrt_embedder
-    from .logger import create_wandb_logger
-    from .model_layers import create_encoder_layer, create_transformers_encoder
+    from .embedders.BEHRT_embedders import create_behrt_embedder  # noqa
+    from .logger import create_wandb_logger  # noqa
+    from .model_layers import create_encoder_layer, create_transformers_encoder  # noqa
     from .optimizers import (
-        create_adam,
-        create_adamw,
-        create_linear_schedule_with_warmup,
+        create_adam,  # noqa
+        create_adamw,  # noqa
+        create_linear_schedule_with_warmup,  # noqa
     )
-    from .tasks import create_behrt, create_encoder_for_clf
+    from .tasks import create_behrt, create_encoder_for_clf  # noqa
 
 
 populate_registry()

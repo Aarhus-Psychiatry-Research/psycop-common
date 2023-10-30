@@ -8,10 +8,10 @@ from typing import Any, Optional, Union
 from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers.wandb import WandbLogger
 from pydantic import BaseModel
-from sequence_models.tasks import BEHRTForMaskedLM, EncoderForClassification
 from torch.utils.data import Dataset
 
 from psycop.common.data_structures import PatientSlice
+from sequence_models.tasks import BEHRTForMaskedLM, EncoderForClassification
 
 
 class TrainerConfigSchema(BaseModel):

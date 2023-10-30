@@ -281,7 +281,6 @@ class BEHRTEmbedder(nn.Module, Embedder):
         add_mask_token: bool = True,
         map_diagnosis_codes: bool = True,
     ):
-
         patient_events = [
             (p, e)
             for p in patient_slices
