@@ -11,11 +11,9 @@ from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 
 from psycop.common.data_structures.patient import PatientSlice
 
-from .aggregators import AggregationModule
-from .embedders.BEHRT_embedders import BEHRTEmbedder
-from .optimizers import LRSchedulerFn, OptimizerFn
-from .registry import Registry
-
+from ..aggregators import AggregationModule
+from ..embedders.BEHRT_embedders import BEHRTEmbedder
+from ..optimizers import LRSchedulerFn, OptimizerFn
 
 
 @dataclass
@@ -46,7 +44,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         lr_scheduler_fn: LRSchedulerFn,
     ):
         super().__init__()
-        self.save_hyperparameters(ignore=['encoder_module', 'embedding_module'])
+        self.save_hyperparameters()
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.optimizer_fn = optimizer_fn
@@ -170,21 +168,6 @@ class BEHRTForMaskedLM(pl.LightningModule):
         optimizer = self.optimizer_fn(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
-
-
-@Registry.tasks.register("behrt")
-def create_behrt(
-    embedding_module: BEHRTEmbedder,
-    encoder_module: nn.Module,
-    optimizer: OptimizerFn,
-    lr_scheduler: LRSchedulerFn,
-) -> BEHRTForMaskedLM:
-    return BEHRTForMaskedLM(
-        embedding_module=embedding_module,
-        encoder_module=encoder_module,
-        optimizer_fn=optimizer,
-        lr_scheduler_fn=lr_scheduler,
-    )
 
 
 class EncoderForClassification(pl.LightningModule):
@@ -329,22 +312,3 @@ class EncoderForClassification(pl.LightningModule):
         optimizer = self.optimizer_fn(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
-
-
-@Registry.tasks.register("encoder_for_clf")
-def create_encoder_for_clf(
-    embedding_module: BEHRTEmbedder,
-    encoder_module: nn.Module,
-    aggregation_module: AggregationModule,
-    optimizer: OptimizerFn,
-    lr_scheduler: LRSchedulerFn,
-    num_classes: int = 2,
-) -> EncoderForClassification:
-    return EncoderForClassification(
-        embedding_module=embedding_module,
-        encoder_module=encoder_module,
-        aggregation_module=aggregation_module,
-        optimizer_fn=optimizer,
-        lr_scheduler_fn=lr_scheduler,
-        num_classes=num_classes,
-    )
