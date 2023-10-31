@@ -23,55 +23,57 @@ def subset_feature_df(feature_set_path: str):
         non_text_pred_cols = list(
             set(all_pred_cols) - set(tfidf_cols) - set(sent_trans_cols),
         )
+        non_text_pred_cols.remove('pred_age_in_years')
+        non_text_pred_cols.remove('pred_sex_female') 
 
         # Only tfidf
         tfidf_df = full_df.copy().drop(columns=sent_trans_cols + non_text_pred_cols)
 
-        tfidf_path = FULL_PATH.parent / f"tfidf_750_feature_set/{split}.parquet"
+        tfidf_path = FULL_PATH.parent / "tfidf_750_feature_set"
 
         Path.mkdir(tfidf_path, exist_ok=True)
 
-        tfidf_df.to_parquet(tfidf_path)
+        tfidf_df.to_parquet(tfidf_path / f"{split}.parquet")
 
         # Only sentence embeddings
         sent_trans_df = full_df.copy().drop(columns=tfidf_cols + non_text_pred_cols)
 
-        sent_trans_path = FULL_PATH.parent / f"sent_trans_feature_set/{split}.parquet"
+        sent_trans_path = FULL_PATH.parent / "sent_trans_feature_set"
 
         Path.mkdir(sent_trans_path, exist_ok=True)
 
-        sent_trans_df.to_parquet(sent_trans_path)
+        sent_trans_df.to_parquet(sent_trans_path / f"{split}.parquet")
 
         # Structured + tfidf
         structured_and_tfidf_df = full_df.copy().drop(columns=sent_trans_cols)
 
         structured_and_tfidf_path = (
-            FULL_PATH.parent / f"structutred_and_tfidf_750_feature_set/{split}.parquet"
+            FULL_PATH.parent / "structured_and_tfidf_750_feature_set"
         )
 
         Path.mkdir(structured_and_tfidf_path, exist_ok=True)
 
-        structured_and_tfidf_df.to_parquet(structured_and_tfidf_path)
+        structured_and_tfidf_df.to_parquet(structured_and_tfidf_path / f"{split}.parquet")
 
         # Structured + sentence embeddings
         structured_and_sent_trans_df = full_df.copy().drop(columns=tfidf_cols)
 
         structured_and_sent_trans_path = (
-            FULL_PATH.parent / f"structutred_and_sent_trans_feature_set/{split}.parquet"
+            FULL_PATH.parent / "structured_and_sent_trans_feature_set"
         )
 
         Path.mkdir(structured_and_sent_trans_path, exist_ok=True)
 
-        structured_and_sent_trans_df.to_parquet(structured_and_sent_trans_path)
+        structured_and_sent_trans_df.to_parquet(structured_and_sent_trans_path / f"{split}.parquet")
 
         # Only structured
         structured_df = full_df.copy().drop(columns=tfidf_cols + sent_trans_cols)
 
-        structured_path = FULL_PATH.parent / f"structutred_feature_set/{split}.parquet"
+        structured_path = FULL_PATH.parent / "structured_feature_set"
 
         Path.mkdir(structured_path, exist_ok=True)
 
-        structured_df.to_parquet(structured_path)
+        structured_df.to_parquet(structured_path / f"{split}.parquet")
 
 
 if __name__ == "__main__":
