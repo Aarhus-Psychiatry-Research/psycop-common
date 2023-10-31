@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from torch.utils.data import Dataset
 
 from psycop.common.data_structures import PatientSlice
-from sequence_models.tasks import BEHRTForMaskedLM, EncoderForClassification
+from psycop.common.sequence_models.tasks import BEHRTForMaskedLM, EncoderForClassification
 
 
 class TrainerConfigSchema(BaseModel):

@@ -28,15 +28,15 @@ class Patient:
 
     patient_id: PATIENT_ID
     date_of_birth: dt.datetime
-    _temporal_events: list[TemporalEvent] = field(default_factory=list)
-    _static_features: list[StaticFeature] = field(default_factory=list)
+    unsorted_temporal_events: list[TemporalEvent] = field(default_factory=list)
+    unsorted_static_features: list[StaticFeature] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"""
     patient_id: {self.patient_id}
     date_of_birth: {self.date_of_birth}
-    n temporal_events: {len(self._temporal_events)}
-    n static_features: {len(self._static_features)}"""
+    n temporal_events: {len(self.unsorted_temporal_events)}
+    n static_features: {len(self.unsorted_static_features)}"""
 
     @staticmethod
     def _filter_events_within_time_interval(
@@ -51,21 +51,21 @@ class Patient:
 
     def add_events(self, events: Sequence[TemporalEvent | StaticFeature]):
         # add patient reference to each event
-        self._temporal_events += [
+        self.unsorted_temporal_events += [
             event for event in events if isinstance(event, TemporalEvent)
         ]
-        self._static_features += [
+        self.unsorted_static_features += [
             event for event in events if isinstance(event, StaticFeature)
         ]
 
     @property
     def temporal_events(self) -> Sequence[TemporalEvent]:
-        self._temporal_events.sort(key=lambda event: event.timestamp)
-        return self._temporal_events
+        self.unsorted_temporal_events.sort(key=lambda event: event.timestamp)
+        return self.unsorted_temporal_events
 
     @property
     def static_features(self) -> Sequence[StaticFeature]:
-        return self._static_features
+        return self.unsorted_static_features
 
     def as_slice(self) -> PatientSlice:
         """Returns the patient's entire history of temporal events."""
