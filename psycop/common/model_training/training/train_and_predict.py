@@ -62,7 +62,7 @@ def stratified_cross_validation(
         y=y,
         groups=train_df[cfg.data.col_name.id],
     )
-
+ 
     # Perform CV and get out of fold predictions
     train_df["oof_y_hat"] = np.nan
 

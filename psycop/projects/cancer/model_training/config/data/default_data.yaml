@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\cancer\flattened_datasets
+  dir: E:\shared_resources\cancer\flattened_datasets\breast_cancer_feature_set
   suffix: parquet
 
   # Feature specs

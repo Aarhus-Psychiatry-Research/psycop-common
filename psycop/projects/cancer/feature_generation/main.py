@@ -27,5 +27,5 @@ if __name__ == "__main__":
         feature_specs=get_cancer_feature_specifications(),
         generate_in_chunks=True,
         chunksize=10,
-        feature_set_name="with_sentence_transformer",
+        feature_set_name="breast_cancer_feature_set",
     )
