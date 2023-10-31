@@ -77,7 +77,6 @@ def create_behrt(
     emb.fit(
         patient_slices=patient_slices,
         add_mask_token=True,
-        map_diagnosis_codes=True,
     )
 
     encoder_layer = nn.TransformerEncoderLayer(

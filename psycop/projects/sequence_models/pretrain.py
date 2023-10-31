@@ -51,7 +51,6 @@ class ModelConfig:
     dim_feedforward = 512
     dropout_prob: float = 0.1
     max_sequence_length: int = 256
-    map_diagnosis_codes: bool = True
 
 
 class TorchAccelerator(enum.Enum):
@@ -130,7 +129,6 @@ def create_behrt_MLM_model(
     emb.fit(
         patient_slices=patient_slices,
         add_mask_token=True,
-        map_diagnosis_codes=config.model_config.map_diagnosis_codes,
     )
 
     encoder_layer = nn.TransformerEncoderLayer(

@@ -6,6 +6,7 @@ import json
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+import logging
 
 import numpy as np
 import torch
@@ -19,6 +20,8 @@ from psycop.common.sequence_models.dataset import PatientSliceDataset
 from ..registry import Registry
 from .interface import EmbeddedSequence, Embedder
 
+
+log = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class BEHRTVocab:
@@ -35,11 +38,13 @@ class BEHRTEmbedder(nn.Module, Embedder):
         d_model: int,
         dropout_prob: float,
         max_sequence_length: int,
+        map_diagnosis_codes: bool = True
     ):
         super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
 
+        self.map_diagnosis_codes = map_diagnosis_codes
         self.is_fitted: bool = False
 
         self.LayerNorm = nn.LayerNorm(d_model, eps=1e-12)
@@ -198,8 +203,8 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
     def map_icd10_to_caliber(
         self,
-        diagnosis_codes: list[str],
-    ) -> list[str]:
+        diagnosis_code: str,
+    ) -> str | None:
         with open(  # noqa: PTH123
             "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
         ) as fp:
@@ -207,15 +212,10 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         # For each diagnosis code, attempt to map to caliber code
         # If no mapping exists, remove one character from the end of the code and try again
-        mapped_diagnosis_codes = []
-        for d in diagnosis_codes:
-            while len(d) > 2:  # only attempt codes with at least 3 characters
-                if d in mapping:
-                    mapped_diagnosis_codes.append(mapping[d])
-                    break
-                d = d[:-1]  # noqa: PLW2901
-
-        return mapped_diagnosis_codes
+        while len(diagnosis_code) > 2:  # only attempt codes with at least 3 characters
+            if diagnosis_code in mapping:
+                return mapping[diagnosis_code]
+            diagnosis_code = diagnosis_code[:-1]  # noqa: PLW2901
 
     def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:  # type: ignore
         # add cls token to start of sequence
@@ -232,7 +232,10 @@ class BEHRTEmbedder(nn.Module, Embedder):
     ) -> dict[str, torch.Tensor]:
         events = patient_slice.temporal_events
         events = self.filter_events(events)
-        event_inputs = [self.collate_event(event, patient_slice) for event in events]
+        event_inputs = [self.collate_event(event, patient_slice) for event in events if self.collate_event(event, patient_slice)]
+
+        if len(event_inputs) == 0:
+            log.warning("Patient contains no temporal events (after filtering diagnoses and mapping them to caliber codes).")
 
         event_inputs = self.add_cls_token_to_sequence(event_inputs)
 
@@ -258,28 +261,31 @@ class BEHRTEmbedder(nn.Module, Embedder):
         self,
         event: TemporalEvent,
         patient_slice: PatientSlice,
-    ) -> dict[str, torch.Tensor]:
-        age = self.get_patient_age(event, patient_slice.patient.date_of_birth)
+    ) -> dict[str, torch.Tensor] | None:
+        if self.map_diagnosis_codes:
+            diagnosis: str | None = self.map_icd10_to_caliber(event.value) # type: ignore
+        else:
+            diagnosis: str = event.value # type: ignore
 
-        age2idx = self.vocab.age
-        diagnosis2idx = self.vocab.diagnosis
+        if diagnosis: 
+            age = self.get_patient_age(event, patient_slice.patient.date_of_birth)
 
-        diagnosis: str = event.value  # type: ignore
+            age2idx = self.vocab.age
+            diagnosis2idx = self.vocab.diagnosis
 
-        age_idx: int = age2idx.get(age, age2idx["UNK"])
-        diagnosis_idx: int = diagnosis2idx.get(diagnosis, diagnosis2idx["UNK"])
+            age_idx: int = age2idx.get(age, age2idx["UNK"])
+            diagnosis_idx: int = diagnosis2idx.get(diagnosis, diagnosis2idx["UNK"])
 
-        return {
-            "age": torch.tensor(age_idx),
-            "diagnosis": torch.tensor(diagnosis_idx),
-            "is_padding": torch.tensor(0),
-        }
+            return {
+                "age": torch.tensor(age_idx),
+                "diagnosis": torch.tensor(diagnosis_idx),
+                "is_padding": torch.tensor(0),
+            }
 
     def fit(
         self,
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
-        map_diagnosis_codes: bool = True,
     ):
         patient_events = [
             (p, e)
@@ -293,13 +299,11 @@ class BEHRTEmbedder(nn.Module, Embedder):
         diagnosis_codes: list[str] = [str(e.value) for p, e in patient_events]
 
         # map diagnosis codes
-        if map_diagnosis_codes:
-            diagnosis_codes = self.map_icd10_to_caliber(
-                diagnosis_codes=diagnosis_codes,
-            )
+        if self.map_diagnosis_codes:
+            diagnosis_codes = [self.map_icd10_to_caliber(d) for d in diagnosis_codes]
 
         # create dianosis2idx mapping
-        diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
+        diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes)) if d is not None}
         diagnosis2idx["UNK"] = len(diagnosis2idx)
         diagnosis2idx["PAD"] = len(diagnosis2idx)
         diagnosis2idx["CLS"] = len(diagnosis2idx)
@@ -351,3 +355,4 @@ def create_behrt_embedder(
 
     embedder.fit(patient_slices=patient_slices)
     return embedder
+
