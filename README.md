@@ -36,7 +36,7 @@ If you're working on Ovartaci, all you need is to activate the shared environmen
 conda activate psycop-main
 ```
 
-to reinstall the packages in the environment see the `setup_overtaci.sh``
+To reinstall the packages in the environment, run `setup_overtaci.sh` in a `git bash` session.
 
 ### Method 3: Virtual environment install
 If you're working locally:
