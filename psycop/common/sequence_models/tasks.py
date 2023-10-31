@@ -46,7 +46,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         lr_scheduler_fn: LRSchedulerFn,
     ):
         super().__init__()
-        self.save_hyperparameters(ignore=['encoder_module'])
+        self.save_hyperparameters(ignore=['encoder_module', 'embedding_module'])
         self.embedding_module = embedding_module
         self.encoder_module = encoder_module
         self.optimizer_fn = optimizer_fn
