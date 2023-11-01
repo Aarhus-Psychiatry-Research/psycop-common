@@ -5,7 +5,7 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
     generate_performance_by_ppr_table,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
 )
 
 msg = Printer(timestamp=True)
@@ -70,7 +70,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     return renamed_df
 
 
-def fa_output_performance_by_ppr(run: PipelineRun):
+def fa_output_performance_by_ppr(run: ForcedAdmissionInpatientPipelineRun):
     output_path = run.paper_outputs.paths.tables / "performance_by_ppr.xlsx"
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 

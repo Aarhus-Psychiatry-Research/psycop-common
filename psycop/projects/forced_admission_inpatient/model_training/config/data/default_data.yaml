@@ -8,11 +8,11 @@ data:
 
   # Feature specs
   pred_prefix: pred_
-  outc_prefix: outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous
+  outc_prefix: outc_forced_admissions_within_360_days_maximum_fallback_0_dichotomous
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: timestamp_outcome__within_180_days_earliest_fallback_nan_dichotomous
+    outcome_timestamp: timestamp_outcome__within_360_days_earliest_fallback_nan_dichotomous
     is_female: pred_sex_female
     id: dw_ek_borger
     age: pred_age_in_years

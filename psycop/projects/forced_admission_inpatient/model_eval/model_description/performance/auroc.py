@@ -7,11 +7,11 @@ from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import 
     get_best_eval_pipeline,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
 )
 
 
-def fa_auroc_plot(run: PipelineRun) -> pn.ggplot:
+def fa_auroc_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     p = plot_auc_roc(
