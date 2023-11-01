@@ -1,16 +1,13 @@
 from collections.abc import Sequence
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import count, mean
+from timeseriesflattener.aggregation_fns import mean
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
     PredictorSpec,
 )
 
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    essential_hypertension,
-)
 from psycop.common.feature_generation.loaders.raw.load_lab_results import ldl
 from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     smoking_categorical,
