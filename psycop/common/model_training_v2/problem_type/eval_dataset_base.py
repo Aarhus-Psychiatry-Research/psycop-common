@@ -1,9 +1,10 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
 
 import polars as pl
+
+from psycop.common.model_training_v2.metrics.binary_metrics.base import BinaryMetric
 
 from ..presplit_preprocessing.polars_frame import PolarsFrame
 
@@ -16,11 +17,6 @@ class BaseEvalDataset:
     df: PolarsFrame
 
     def to_disk(self, path: Path) -> None:
-        ...
-
-
-class BinaryMetric(Protocol):
-    def calculate(self, y_hat_probs: Iterable[float], y: Iterable[int]) -> float:
         ...
 
 
