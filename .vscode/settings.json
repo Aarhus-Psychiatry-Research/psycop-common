@@ -5,6 +5,7 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
+    "python.analysis.importFormat": "relative",
     "explorer.excludeGitIgnore": false,
     "files.exclude": {
         "**/.git": true,
