@@ -4,17 +4,23 @@ from typing import Protocol
 from psycop.common.model_training_v2.classifier_pipelines.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )
+from psycop.common.model_training_v2.training_method.base_training_method import (
+    TrainingResult,
+)
 
 from ..classifier_pipelines.multiclass_classification_pipeline import (
     MulticlassClassificationPipeline,
 )
-from ..metrics.binary_metrics.base_binary_metric import BinaryMetric
-from ..metrics.multilabel_metrics.base_multilabel_metric import MultilabelMetric
+from ..metrics.binary_metrics.base import BinaryMetric
+from ..metrics.multilabel_metrics.base import MultilabelMetric
 from ..presplit_preprocessing.polars_frame import PolarsFrame
 
 
 class ProblemType(Protocol):
-    def train(self, x: PolarsFrame, y: PolarsFrame) -> float:
+    def train(self, x: PolarsFrame, y: PolarsFrame):
+        ...
+
+    def evaluate(self, x: PolarsFrame, y: PolarsFrame) -> TrainingResult:
         ...
 
 
