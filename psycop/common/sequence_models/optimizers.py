@@ -42,7 +42,7 @@ def _configure_linear_schedule_with_warmup(
     num_training_steps: int,
     last_epoch: int = -1,
 ) -> _LRScheduler:
-    return get_linear_schedule_with_warmup(
+    return get_linear_schedule_with_warmup(  # type: ignore
         optimizer,
         num_warmup_steps=num_warmup_steps,
         num_training_steps=num_training_steps,
