@@ -75,6 +75,7 @@ class DatasetsConfigSchema(BaseModel):
 
 class ResolvedConfigSchema(BaseModel):
     class Config:
+        extra = "forbid"
         allow_mutation = False
         arbitrary_types_allowed = True
 
