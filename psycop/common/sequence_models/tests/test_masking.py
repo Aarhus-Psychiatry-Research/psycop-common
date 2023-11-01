@@ -7,7 +7,6 @@ from torch import nn
 from psycop.common.sequence_models import BEHRTForMaskedLM
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
-from psycop.projects.sequence_models.pretrain import Config
 
 
 @pytest.mark.parametrize(
@@ -27,8 +26,6 @@ def test_masking_fn(
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
     embedding_module.fit(patient_slices)
-
-    Config()
 
     task = BEHRTForMaskedLM(
         embedding_module=embedding_module,
