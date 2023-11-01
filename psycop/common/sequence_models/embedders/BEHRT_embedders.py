@@ -258,7 +258,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slice: PatientSlice,
     ) -> dict[str, torch.Tensor]:
         age = self.get_patient_age(event, patient_slice.patient.date_of_birth)
-        diagnosis: str = event.value
+        diagnosis: str = event.value  # type: ignore
 
         age2idx = self.vocab.age
         diagnosis2idx = self.vocab.diagnosis
@@ -290,11 +290,11 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         # map diagnosis codes
         if self.map_diagnosis_codes:
-            diagnosis_codes = [self.map_icd10_to_caliber(d) for d in diagnosis_codes]
+            diagnosis_codes = [self.map_icd10_to_caliber(d) for d in diagnosis_codes]  # type: ignore
 
         # create dianosis2idx mapping
         diagnosis2idx = {
-            d: i for i, d in enumerate(set(diagnosis_codes)) if d is not None
+            d: i for i, d in enumerate(set(diagnosis_codes)) if d is not None  # type: ignore
         }
         diagnosis2idx["UNK"] = len(diagnosis2idx)
         diagnosis2idx["PAD"] = len(diagnosis2idx)
