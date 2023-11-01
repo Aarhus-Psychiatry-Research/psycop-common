@@ -20,14 +20,18 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"ms-python.black-formatter",
-				"GitHub.vscode-pull-request-github"
+				"GitHub.vscode-pull-request-github",
+				"Graphite.gti-vscode"
 			]
 		}
 	},
+	"mounts": [
+		"source=${localEnv:HOME}/.config/gh/hosts.yml,target=/root/.config/gh/hosts.yml,type=bind,consistency=cache" // GitHub CLI authentication login
+	],
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
-	"postCreateCommand": "pre-commit run && inv static-type-checks",
+	"postCreateCommand": "inv static-type-checks & inv lint",
 	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
