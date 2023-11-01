@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.127.2 (2023-11-01)
+
+### Fix
+
+* Allow list of data dirs for multirtun ([`d77186e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d77186e9c0331883ad2dd08e37a77852fd36846e))
+* Update fa subset feature fns ([`7197efe`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7197efe2e4460aecdaaa8770d81056880e73c7fd))
+* Allow list of data dirs in cfg ([`064f8cb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/064f8cb1e44abf62d2db90963cd69a495d6d1b2e))
+* Remove redundant quatation marks ([`f61209f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f61209ff287691d7834d926efce1b61269c01dd0))
+
 ## v0.127.1 (2023-10-26)
 
 ### Fix
