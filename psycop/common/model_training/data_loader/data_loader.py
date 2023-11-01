@@ -191,7 +191,7 @@ class DataLoader:
             self._load_dataset_from_dir(
                 split_names=split_names,
                 nrows=nrows,
-                dataset_dir=dataset_dir,
+                dataset_dir=Path(dataset_dir),
             )
             for dataset_dir in dataset_dirs
         ]

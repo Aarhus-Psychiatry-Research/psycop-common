@@ -34,6 +34,13 @@ def test_crossvalidation(muteable_test_config: FullConfigSchema):
     train_model(cfg)
 
 
+def test_list_of_data_dirs(muteable_test_config: FullConfigSchema):
+    """Test train model can resolve list of data dir paths."""
+    cfg = muteable_test_config
+    cfg.data.dir = ["psycop/common/model_training/tests/test_data/synth_splits_subsampled/", "psycop/common/model_training/tests/test_data/synth_splits_subsampled/"]  # type: ignore
+    train_model(cfg)
+
+
 def test_train_val_predict(muteable_test_config: FullConfigSchema):
     """Test train without crossvalidation."""
     cfg = muteable_test_config

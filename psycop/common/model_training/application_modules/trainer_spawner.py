@@ -19,7 +19,7 @@ def start_trainer(
     lookahead_days: int,
     wandb_group_override: str,
     model_name: str,
-    dataset_dir: Optional[Union[Path, list[Path]]] = None,
+    dataset_dir: Optional[Union[Path, list[Path], list[str]]] = None,
     train_single_model_file_path: Optional[Path] = None,
 ) -> subprocess.Popen:  # type: ignore
     """Start a trainer."""
@@ -54,8 +54,10 @@ def start_trainer(
         subprocess_args.insert(3, "++model.args.tree_method='gpu_hist'")
 
     if dataset_dir is not None:
-        # adding quotes to correctly parse if dataset_dir is a list
-        subprocess_args.insert(4, f"'data.dir={dataset_dir}'")
+        if isinstance(dataset_dir, list):
+            dataset_dir = [str(d) for d in dataset_dir]
+
+        subprocess_args.insert(4, f"data.dir={dataset_dir}")
 
     msg.info(f'{" ".join(subprocess_args)}')
 
