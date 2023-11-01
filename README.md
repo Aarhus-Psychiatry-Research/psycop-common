@@ -90,7 +90,7 @@
 | psycop/common/model\_training/config\_schemas/train.py                                                          |        5 |        0 |    100% |           |
 | psycop/common/model\_training/data\_loader/\_\_init\_\_.py                                                      |        0 |        0 |    100% |           |
 | psycop/common/model\_training/data\_loader/col\_name\_checker.py                                                |       29 |        0 |    100% |           |
-| psycop/common/model\_training/data\_loader/data\_loader.py                                                      |       82 |        8 |     90% |43, 149, 155, 163, 188, 202-205, 225 |
+| psycop/common/model\_training/data\_loader/data\_loader.py                                                      |       82 |        5 |     94% |43, 149, 155, 163, 225 |
 | psycop/common/model\_training/data\_loader/tests/conftest.py                                                    |       15 |        0 |    100% |           |
 | psycop/common/model\_training/data\_loader/utils.py                                                             |       33 |       15 |     55% |23, 81-102 |
 | psycop/common/model\_training/preprocessing/\_\_init\_\_.py                                                     |        0 |        0 |    100% |           |
@@ -171,7 +171,7 @@
 | psycop/projects/t2d/paper\_outputs/utils/create\_patchwork\_figure.py                                           |       30 |       22 |     27% |     22-58 |
 | psycop/projects/t2d/utils/feature\_name\_to\_readable.py                                                        |       26 |        5 |     81% | 15, 44-47 |
 | psycop/projects/t2d/utils/pipeline\_objects.py                                                                  |      121 |       62 |     49% |19-20, 28, 50, 54-62, 66-72, 75-77, 96-110, 113-117, 120, 123, 137-139, 152-156, 159-161, 165, 177-184, 197-204, 221-236, 247 |
-|                                                                                                       **TOTAL** | **5332** | **1515** | **72%** |           |
+|                                                                                                       **TOTAL** | **5332** | **1512** | **72%** |           |
 
 
 ## Setup coverage badge
