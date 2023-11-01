@@ -1,17 +1,19 @@
 from collections.abc import Sequence
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import count, mean
+from timeseriesflattener.aggregation_fns import mean
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
     PredictorSpec,
 )
 
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    essential_hypertension,
-)
 from psycop.common.feature_generation.loaders.raw.load_lab_results import ldl
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
+    smoking_categorical,
+    smoking_continuous,
+    systolic_blood_pressure,
+)
 from psycop.projects.cvd.feature_generation.feature_layeres.base import (
     FeatureLayer,
 )
@@ -27,16 +29,45 @@ class CVDLayer1(FeatureLayer):
             lookbehind_days=[lookbehind_days],
         ).create_combinations()
 
-        essential_hypertension_spec = PredictorGroupSpec(
+        systolic_blood_pressure_spec = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=essential_hypertension(),
-                    name=f"essential_hypertension_layer_{layer}",
+                    df=systolic_blood_pressure(),
+                    name=f"systolic_blood_pressure_layer_{layer}",
                 ),
             ),
-            aggregation_fns=[count],
+            aggregation_fns=[mean],
             fallback=[0],
             lookbehind_days=[lookbehind_days],
         ).create_combinations()
 
-        return ldl_spec + essential_hypertension_spec
+        smoking_continuous_spec = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(
+                    df=smoking_continuous(),
+                    name=f"smoking_continuous_layer_{layer}",
+                ),
+            ),
+            aggregation_fns=[mean],
+            fallback=[0],
+            lookbehind_days=[lookbehind_days],
+        ).create_combinations()
+
+        smoking_categorical_spec = PredictorGroupSpec(
+            named_dataframes=(
+                NamedDataframe(
+                    df=smoking_categorical(),
+                    name=f"smoking_categorical_layer_{layer}",
+                ),
+            ),
+            aggregation_fns=[mean],
+            fallback=[0],
+            lookbehind_days=[lookbehind_days],
+        ).create_combinations()
+
+        return (
+            ldl_spec
+            + systolic_blood_pressure_spec
+            + smoking_continuous_spec
+            + smoking_categorical_spec
+        )

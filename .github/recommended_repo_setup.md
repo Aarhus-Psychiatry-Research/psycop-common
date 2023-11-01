@@ -35,3 +35,6 @@
          * pytest (tests)
          * check_for_rej (check for residual cruft updates)
      * Require conversation resolution before merging
+
+### Publishing to PyPI
+If do not wish to pypi, you can just delete the `release.yml` file. If you do wish to publish, you need to setup trusted publishing [here](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/).

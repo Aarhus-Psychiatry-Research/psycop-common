@@ -23,10 +23,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create github hosts file
+        run: | # If this file is not created, the dev container fails because of non-existant mount
+          mkdir -p ~/.config/gh
+          touch ~/.config/gh/hosts.yml
+
       - name: Pre-build dev container image
         uses: devcontainers/ci@v0.3
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
-          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common
+          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
           push: filter
           refFilterForPush: refs/heads/main

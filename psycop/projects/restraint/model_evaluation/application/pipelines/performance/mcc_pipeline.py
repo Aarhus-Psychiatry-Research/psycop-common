@@ -16,11 +16,11 @@ from psycop.projects.restraint.utils.best_runs import Run
 
 
 def bootstrap_mcc(
-    y: pd.Series,
-    y_hat: pd.Series,
+    y: pd.Series,  # type: ignore
+    y_hat: pd.Series,  # type: ignore
     confidence_interval: bool = True,
     n_bootstraps: int = 1000,
-) -> pd.Series:
+) -> pd.Series:  # type: ignore
     mcc = {"mcc": matthews_corrcoef(y, y_hat)}
 
     if confidence_interval:

@@ -215,6 +215,15 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         return mapped_diagnosis_codes
 
+    def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:  # type: ignore
+        # add cls token to start of sequence
+        cls_token = {
+            "age": torch.tensor(self.vocab.age["CLS"]),
+            "diagnosis": torch.tensor(self.vocab.diagnosis["CLS"]),
+            "is_padding": torch.tensor(0),
+        }
+        return [cls_token, *events]
+
     def collate_patient_slice(
         self,
         patient_slice: PatientSlice,
@@ -222,6 +231,8 @@ class BEHRTEmbedder(nn.Module, Embedder):
         events = patient_slice.temporal_events
         events = self.filter_events(events)
         event_inputs = [self.collate_event(event, patient_slice) for event in events]
+
+        event_inputs = self.add_cls_token_to_sequence(event_inputs)
 
         # reduce to max sequence length
         # take the first max_sequence_length events (probably better to use the last max_sequence_length events)
@@ -234,6 +245,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         output: dict[str, torch.Tensor] = {}
         for key in event_inputs[0]:
             output[key] = torch.stack([e[key] for e in event_inputs])
+
         return output
 
     def get_patient_age(self, event: TemporalEvent, date_of_birth: datetime) -> int:
@@ -288,6 +300,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
         diagnosis2idx["UNK"] = len(diagnosis2idx)
         diagnosis2idx["PAD"] = len(diagnosis2idx)
+        diagnosis2idx["CLS"] = len(diagnosis2idx)
         if add_mask_token:
             diagnosis2idx["MASK"] = len(diagnosis2idx)
 
@@ -302,6 +315,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         age2idx: dict[str | int, int] = {a: i for i, a in enumerate(set(ages))}
         age2idx["UNK"] = len(age2idx)
         age2idx["PAD"] = len(age2idx)
+        age2idx["CLS"] = len(age2idx)
 
         self.vocab = BEHRTVocab(age=age2idx, diagnosis=diagnosis2idx)
 

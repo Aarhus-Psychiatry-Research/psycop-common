@@ -13,7 +13,10 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
     DiagnosisLoader,
     PatientLoader,
 )
-from psycop.common.sequence_models.aggregators import AggregationModule, AveragePooler
+from psycop.common.sequence_models.aggregators import (
+    AggregationModule,
+    CLSAggregationModule,
+)
 from psycop.common.sequence_models.dataset import PatientSlicesWithLabels
 from psycop.common.sequence_models.tasks import (
     BEHRTForMaskedLM,
@@ -47,7 +50,7 @@ class FinetuningConfig(BaseModel):
 
 if __name__ == "__main__":
     encoder_cfg = EncoderCfg(
-        aggregation_module=AveragePooler(),
+        aggregation_module=CLSAggregationModule(),
         optimizer_kwargs={"lr": 1e-3},
         lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
     )

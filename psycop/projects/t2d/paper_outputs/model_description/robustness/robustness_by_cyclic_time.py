@@ -14,8 +14,8 @@ def t2d_auroc_by_day_of_week(run: T2DPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
-        labels=eval_ds.y,
-        y_hat_probs=eval_ds.y_hat_probs,
+        labels=eval_ds.y,  # type: ignore
+        y_hat_probs=eval_ds.y_hat_probs,  # type: ignore
         timestamps=eval_ds.pred_timestamps,
         bin_period="D",
     )
@@ -32,8 +32,8 @@ def t2d_auroc_by_month_of_year(run: T2DPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
-        labels=eval_ds.y,
-        y_hat_probs=eval_ds.y_hat_probs,
+        labels=eval_ds.y,  # type: ignore
+        y_hat_probs=eval_ds.y_hat_probs,  # type: ignore
         timestamps=eval_ds.pred_timestamps,
         bin_period="M",
     )

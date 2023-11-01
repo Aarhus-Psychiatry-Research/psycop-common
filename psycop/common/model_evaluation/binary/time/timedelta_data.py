@@ -23,7 +23,7 @@ def get_timedelta_series(
     df: pd.DataFrame,
     t2_col_name: str,
     t1_col_name: str,
-) -> pd.Series:
+) -> pd.Series:  # type: ignore
     """Calculate the time difference between two timestamps."""
     if direction == "t1-t2":
         df["unit_from_event"] = (df[t1_col_name] - df[t2_col_name]) / np.timedelta64(
