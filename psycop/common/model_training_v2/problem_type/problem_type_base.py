@@ -8,8 +8,8 @@ from psycop.common.model_training_v2.classifier_pipelines.binary_classification_
 from ..classifier_pipelines.multiclass_classification_pipeline import (
     MulticlassClassificationPipeline,
 )
-from ..metrics.binary_metrics.base import BinaryMetric
-from ..metrics.multilabel_metrics.base import MultilabelMetric
+from ..metrics.binary_metrics.base_binary_metric import BinaryMetric
+from ..metrics.multilabel_metrics.base_multilabel_metric import MultilabelMetric
 from ..presplit_preprocessing.polars_frame import PolarsFrame
 
 
