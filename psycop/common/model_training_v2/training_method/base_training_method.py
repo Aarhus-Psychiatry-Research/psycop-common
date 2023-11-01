@@ -11,12 +11,6 @@ from ..problem_type.problem_type_base import ProblemType
 
 
 @dataclass(frozen=True)
-class LabelledDataset:
-    X: PolarsFrame  # Predictors
-    y: PolarsFrame  # True labels
-
-
-@dataclass(frozen=True)
 class TrainingResult:
     metric: float
     eval_dataset: BaseEvalDataset
@@ -30,7 +24,8 @@ class TrainingMethod(Protocol):
 class CrossValidatorTrainer(TrainingMethod):
     def __init__(
         self,
-        data: LabelledDataset,
+        data: PolarsFrame,
+        outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         problem_type: ProblemType,
         n_splits: int,
@@ -45,8 +40,10 @@ class CrossValidatorTrainer(TrainingMethod):
 class SplitTrainer(TrainingMethod):
     def __init__(
         self,
-        training_data: LabelledDataset,
-        validation_data: LabelledDataset,
+        training_data: PolarsFrame,
+        training_outcome_col_name: str,
+        validation_data: PolarsFrame,
+        validation_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         problem_type: ProblemType,
         logger: BaselineLogger,
