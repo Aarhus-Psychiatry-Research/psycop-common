@@ -5,7 +5,6 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.analysis.importFormat": "relative",
     "python.defaultInterpreterPath": "/usr/local/bin/python",
     "explorer.excludeGitIgnore": false,
     "files.exclude": {
