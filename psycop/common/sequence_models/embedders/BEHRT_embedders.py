@@ -219,7 +219,8 @@ class BEHRTEmbedder(nn.Module, Embedder):
         return None
 
     def filter_and_reformat_events(
-        self, patient_slices: Sequence[PatientSlice]
+        self,
+        patient_slices: Sequence[PatientSlice],
     ) -> Sequence[PatientSlice]:
         """
         Take patients and filter events to only include diagnosis codes. Then reformat the diagnosis codes by mapping them to caliber codes.
@@ -236,7 +237,12 @@ class BEHRTEmbedder(nn.Module, Embedder):
         # map diagnosis codes
         if self.map_diagnosis_codes:
             patient_events = [
-                (p, e._replace(value=self.map_icd10_to_caliber(e.value)))  # TODO
+                (
+                    p,
+                    e._replace(  # TODO: doesn't have _replace method
+                        value=self.map_icd10_to_caliber(e.value)
+                    ),
+                )
                 for p, e in patient_events
             ]
 
