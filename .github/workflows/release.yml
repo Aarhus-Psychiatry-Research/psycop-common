@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: release
 
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' }}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
     steps:
       # Checkout action is required for token to persist
       - uses: actions/checkout@v3..
