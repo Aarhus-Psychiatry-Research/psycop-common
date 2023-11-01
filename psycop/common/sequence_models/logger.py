@@ -1,21 +1,21 @@
+import sys
 from pathlib import Path
 from typing import Optional
 
 from lightning.pytorch.loggers.wandb import WandbLogger
 
 from .registry import Registry
-import sys
+
 
 def handle_wandb_folder():
     """
     creates a folder for the debugger which otherwise causes an error
     """
     if sys.platform == "win32":
-        Path("C:\\Users\\adminkenene\\AppData\\Local\\Temp\\debug-cli.onerm").mkdir(
+        (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
             exist_ok=True,
             parents=True,
         )
-
 
 
 @Registry.loggers.register("wandb")
@@ -31,7 +31,6 @@ def create_wandb_logger(
     prefix: str = "",
     checkpoint_name: Optional[str] = None,
 ) -> WandbLogger:
-    
     handle_wandb_folder()
 
     return WandbLogger(

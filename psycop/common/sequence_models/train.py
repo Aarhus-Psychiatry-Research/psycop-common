@@ -64,7 +64,7 @@ def train(config_path: Path | None = None) -> None:
         shuffle=True,
         collate_fn=model.collate_fn,
         num_workers=training_cfg.num_workers_for_dataloader,
-        persistent_workers=True
+        persistent_workers=True,
     )
     val_loader = DataLoader(
         validation_dataset,
@@ -72,7 +72,7 @@ def train(config_path: Path | None = None) -> None:
         shuffle=False,
         collate_fn=model.collate_fn,
         num_workers=training_cfg.num_workers_for_dataloader,
-        persistent_workers=True
+        persistent_workers=True,
     )
 
     trainer = pl.Trainer(**trainer_kwargs)

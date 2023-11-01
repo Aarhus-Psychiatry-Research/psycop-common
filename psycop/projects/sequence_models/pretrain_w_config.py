@@ -1,5 +1,5 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 project_path = Path(__file__).parents[3]
 print(project_path)
@@ -14,7 +14,6 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
 from psycop.common.sequence_models.dataset import PatientSliceDataset
 from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.train import train
-
 
 
 @Registry.datasets.register("diagnosis_only_patient_slice_dataset")
