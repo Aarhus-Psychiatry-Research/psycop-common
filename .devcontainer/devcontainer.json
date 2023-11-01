@@ -20,16 +20,16 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"ms-python.black-formatter",
-				"GitHub.vscode-pull-request-github"
+				"GitHub.vscode-pull-request-github",
+				"Graphite.gti-vscode"
 			]
 		}
 	},
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/meaningful-ooo/devcontainer-features/homebrew:2": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
-	"postCreateCommand": "brew install withgraphite/tap/graphite && pre-commit run && inv static-type-checks",
-	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt"
+	"postCreateCommand": "npm install -g @withgraphite/graphite-cli@stable",
+	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt && pip install -e ."
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
