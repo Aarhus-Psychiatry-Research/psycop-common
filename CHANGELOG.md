@@ -2,6 +2,27 @@
 
 <!--next-version-placeholder-->
 
+## v0.128.0 (2023-11-01)
+
+### Feature
+
+* Apply diagnosis mapping ([`6c75e7f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6c75e7f4e8df43d17021b48b6a90f541ca9fec5f))
+* Add smoking and hypertension ([`a43a1bf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a43a1bf2f12cd929e3381a6050f039dd05593d3a))
+* Added new config ([`5811509`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/58115097ea7ae1be382ee40be9948ddab9a17994))
+
+### Fix
+
+* Refactor tasks structure ([`12f2632`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/12f2632f16fd62ad588804ea9338114b37aed72d))
+* Allow training from overtaci remote desktop ([`7e9b1d7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7e9b1d746a4152d66f44e0b52c015542dc97a26c))
+* Remove warnings ([`66c529e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/66c529edad11a40553a6696443be593fc55c41f2))
+* Added hotfix for wandb folder during debugging ([`52fb95e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/52fb95e180cb0bf9226639891f7a12be8b3d065f))
+* Error made by pl lightning when saving hp ([`e1f507d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e1f507dfa21416451e62659725aa00080b99abe7))
+* Added callbacks ([`983908a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/983908a27f46714c0b7d74c9c3f1164efab00e8e))
+* Removed hotfix for behrt embedder ([`7112773`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/711277318db2a1551414d86b50f6fdbd0185287d))
+* Fix based on pr comments ([`4e71238`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4e71238d9632af0bf77e0d9c8b6199a06243ec17))
+* Undo edit ([`af04d12`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/af04d12af39e6ed000082dd8e25f70e62078a0fd))
+* Removed todo comment ([`17c463a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/17c463a2aa26e040e1710146910e1f82c1013d59))
+
 ## v0.127.2 (2023-11-01)
 
 ### Fix
