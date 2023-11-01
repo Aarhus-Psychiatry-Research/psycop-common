@@ -4,6 +4,7 @@ import pytest
 
 from psycop.common.sequence_models.dataset import PatientSliceDataset
 from psycop.common.sequence_models.registry import Registry
+from psycop.common.sequence_models.train import train
 
 from .utils import create_patients
 
@@ -17,3 +18,8 @@ def config_path() -> Path:
 def create_test_dataset() -> PatientSliceDataset:
     patients = create_patients()
     return PatientSliceDataset(patient_slices=[p.as_slice() for p in patients])
+
+
+def test_train(config_path: Path):
+    """test of the train function"""
+    train(config_path)
