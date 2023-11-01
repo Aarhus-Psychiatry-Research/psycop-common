@@ -6,6 +6,7 @@ import json
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+import logging
 
 import numpy as np
 import torch
@@ -18,6 +19,8 @@ from psycop.common.sequence_models.dataset import PatientSliceDataset
 
 from ..registry import Registry
 from .interface import EmbeddedSequence, Embedder
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -214,6 +217,45 @@ class BEHRTEmbedder(nn.Module, Embedder):
                 return mapping[diagnosis_code]
             diagnosis_code = diagnosis_code[:-1]
         return None
+
+    def filter_and_reformat_events(
+        self, patient_slices: Sequence[PatientSlice]
+    ) -> Sequence[PatientSlice]:
+        """
+        Take patients and filter events to only include diagnosis codes. Then reformat the diagnosis codes by mapping them to caliber codes.
+        """
+        patient_events = [
+            (p, e)
+            for p in patient_slices
+            for e in self.filter_events(p.temporal_events)
+        ]
+
+        # Check that the values only include diagnosis codes
+        assert all(isinstance(e.value, str) for p, e in patient_events)
+
+        # map diagnosis codes
+        if self.map_diagnosis_codes:
+            patient_events = [
+                (p, e._replace(value=self.map_icd10_to_caliber(e.value)))  # TODO
+                for p, e in patient_events
+            ]
+
+        # remove events with no mapping
+        patient_events = [(p, e) for p, e in patient_events if e.value is not None]
+
+        # remove patients with no events
+        patient_events = [
+            (p, e) for p, e in patient_events if len(p.temporal_events) > 0
+        ]
+
+        # count number of lost patients
+        n_lost_patients = len(patient_slices) - len(patient_events)
+        if n_lost_patients > 0:
+            log.warning(
+                f"Lost {n_lost_patients} patients ({round(n_lost_patients / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
+            )
+
+        return [PatientSlice(p.patient, p.temporal_events) for p, e in patient_events]
 
     def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:  # type: ignore
         # add cls token to start of sequence
