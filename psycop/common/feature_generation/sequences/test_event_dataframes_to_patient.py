@@ -9,7 +9,9 @@ from psycop.common.feature_generation.sequences.event_dataframes_to_patient impo
     EventDataFramesToPatientSlices,
     PatientSliceColumnNames,
 )
-from psycop.common.feature_generation.sequences.patient_loaders import DiagnosisLoader
+from psycop.common.feature_generation.sequences.patient_loaders import (
+    DiagnosisLoader,
+)
 from psycop.common.feature_generation.sequences.utils_for_testing import (
     get_test_date_of_birth_df,
 )
@@ -60,7 +62,9 @@ def test_temporal_events():
     )
     expected_patients = [patient_1, patient_2]
 
-    unpacked = EventDataFramesToPatientSlices().unpack(
+    unpacked = EventDataFramesToPatientSlices(
+        column_names=PatientSliceColumnNames(source_subtype_col_name=None),
+    ).unpack(
         source_event_dataframes=[test_data],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
     )
@@ -113,7 +117,9 @@ def test_multiple_event_sources():
         [expected_static_event, expected_temporal_event],
     )
 
-    unpacked = EventDataFramesToPatientSlices().unpack(
+    unpacked = EventDataFramesToPatientSlices(
+        column_names=PatientSliceColumnNames(source_subtype_col_name=None),
+    ).unpack(
         source_event_dataframes=[test_data, test_data2],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1]),
     )
@@ -159,7 +165,9 @@ def test_passing_patient_colnames():
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
     )
 
-    unpacked_without_source_subtype_column = EventDataFramesToPatientSlices().unpack(
+    unpacked_without_source_subtype_column = EventDataFramesToPatientSlices(
+        column_names=PatientSliceColumnNames(source_subtype_col_name=None),
+    ).unpack(
         source_event_dataframes=[formatted_df],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
     )

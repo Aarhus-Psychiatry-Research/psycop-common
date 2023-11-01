@@ -11,7 +11,6 @@ from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, loa
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
     EventDataFramesToPatientSlices,
-    PatientSliceColumnNames,
 )
 
 
@@ -101,7 +100,6 @@ class PatientLoader:
     def get_split(
         event_loaders: Sequence[EventDfLoader],
         split: SplitName,
-        patient_column_names: PatientSliceColumnNames | None = None,
     ) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         split_ids = pl.from_pandas(load_ids(split=split)).lazy()
@@ -112,9 +110,7 @@ class PatientLoader:
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
         )
 
-        unpacked_patients = EventDataFramesToPatientSlices(
-            column_names=patient_column_names,
-        ).unpack(
+        unpacked_patients = EventDataFramesToPatientSlices().unpack(
             source_event_dataframes=[events_after_2013.collect()],
             date_of_birth_df=PatientLoader.load_date_of_birth_df(),
         )

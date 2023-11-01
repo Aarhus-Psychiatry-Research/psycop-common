@@ -14,7 +14,9 @@ from torch.nn.utils.rnn import pad_sequence
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
+from psycop.common.sequence_models.dataset import PatientSliceDataset
 
+from ..registry import Registry
 from .interface import EmbeddedSequence, Embedder
 
 
@@ -33,11 +35,13 @@ class BEHRTEmbedder(nn.Module, Embedder):
         d_model: int,
         dropout_prob: float,
         max_sequence_length: int,
+        map_diagnosis_codes: bool = True,
     ):
         super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
 
+        self.map_diagnosis_codes = map_diagnosis_codes
         self.is_fitted: bool = False
 
         self.LayerNorm = nn.LayerNorm(d_model, eps=1e-12)
@@ -196,8 +200,8 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
     def map_icd10_to_caliber(
         self,
-        diagnosis_codes: list[str],
-    ) -> list[str]:
+        diagnosis_code: str,
+    ) -> str | None:
         with open(  # noqa: PTH123
             "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
         ) as fp:
@@ -205,15 +209,11 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         # For each diagnosis code, attempt to map to caliber code
         # If no mapping exists, remove one character from the end of the code and try again
-        mapped_diagnosis_codes = []
-        for d in diagnosis_codes:
-            while len(d) > 2:  # only attempt codes with at least 3 characters
-                if d in mapping:
-                    mapped_diagnosis_codes.append(mapping[d])
-                    break
-                d = d[:-1]  # noqa: PLW2901
-
-        return mapped_diagnosis_codes
+        while len(diagnosis_code) > 2:  # only attempt codes with at least 3 characters
+            if diagnosis_code in mapping:
+                return mapping[diagnosis_code]
+            diagnosis_code = diagnosis_code[:-1]
+        return None
 
     def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:  # type: ignore
         # add cls token to start of sequence
@@ -258,11 +258,10 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slice: PatientSlice,
     ) -> dict[str, torch.Tensor]:
         age = self.get_patient_age(event, patient_slice.patient.date_of_birth)
+        diagnosis: str = event.value  # type: ignore
 
         age2idx = self.vocab.age
         diagnosis2idx = self.vocab.diagnosis
-
-        diagnosis: str = event.value  # type: ignore
 
         age_idx: int = age2idx.get(age, age2idx["UNK"])
         diagnosis_idx: int = diagnosis2idx.get(diagnosis, diagnosis2idx["UNK"])
@@ -277,7 +276,6 @@ class BEHRTEmbedder(nn.Module, Embedder):
         self,
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
-        map_diagnosis_codes: bool = True,
     ):
         patient_events = [
             (p, e)
@@ -291,13 +289,13 @@ class BEHRTEmbedder(nn.Module, Embedder):
         diagnosis_codes: list[str] = [str(e.value) for p, e in patient_events]
 
         # map diagnosis codes
-        if map_diagnosis_codes:
-            diagnosis_codes = self.map_icd10_to_caliber(
-                diagnosis_codes=diagnosis_codes,
-            )
+        if self.map_diagnosis_codes:
+            diagnosis_codes = [self.map_icd10_to_caliber(d) for d in diagnosis_codes]  # type: ignore
 
         # create dianosis2idx mapping
-        diagnosis2idx = {d: i for i, d in enumerate(set(diagnosis_codes))}
+        diagnosis2idx = {
+            d: i for i, d in enumerate(set(diagnosis_codes)) if d is not None  # type: ignore
+        }
         diagnosis2idx["UNK"] = len(diagnosis2idx)
         diagnosis2idx["PAD"] = len(diagnosis2idx)
         diagnosis2idx["CLS"] = len(diagnosis2idx)
@@ -329,3 +327,23 @@ class BEHRTEmbedder(nn.Module, Embedder):
         )
 
         self.is_fitted = True
+
+
+@Registry.embedders.register("behrt_embedder")
+def create_behrt_embedder(
+    d_model: int,
+    dropout_prob: float,
+    max_sequence_length: int,
+    patient_slices: Sequence[PatientSlice] | PatientSliceDataset,
+) -> BEHRTEmbedder:
+    embedder = BEHRTEmbedder(
+        d_model=d_model,
+        dropout_prob=dropout_prob,
+        max_sequence_length=max_sequence_length,
+    )
+
+    if isinstance(patient_slices, PatientSliceDataset):
+        patient_slices = patient_slices.patient_slices
+
+    embedder.fit(patient_slices=patient_slices)
+    return embedder

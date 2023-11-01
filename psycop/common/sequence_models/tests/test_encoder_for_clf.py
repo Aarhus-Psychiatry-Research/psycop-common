@@ -18,6 +18,7 @@ from psycop.common.sequence_models.aggregators import (
     AveragePooler,
     CLSAggregationModule,
 )
+from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 
 
 @pytest.fixture()
@@ -69,14 +70,16 @@ def test_encoder_for_clf(
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
+    optimizer_fn: OptimizerFn,
+    lr_scheduler_fn: LRSchedulerFn,
 ):
     clf = EncoderForClassification(
         embedding_module=embedding_module,
         encoder_module=encoder_module,
         aggregation_module=aggregation_module,
         num_classes=2,
-        optimizer_kwargs={"lr": 1e-3},
-        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
+        optimizer_fn=optimizer_fn,
+        lr_scheduler_fn=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -97,14 +100,16 @@ def test_encoder_for_clf_for_multiclass(
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
+    optimizer_fn: OptimizerFn,
+    lr_scheduler_fn: LRSchedulerFn,
 ):
     clf = EncoderForClassification(
         embedding_module=embedding_module,
         encoder_module=encoder_module,
         aggregation_module=aggregation_module,
         num_classes=4,  # more than 2 classes
-        optimizer_kwargs={"lr": 1e-3},
-        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
+        optimizer_fn=optimizer_fn,
+        lr_scheduler_fn=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -123,6 +128,8 @@ def test_encoder_for_clf_for_multiclass(
 def test_pretrain_from_checkpoint(
     patient_dataset_with_labels: PatientSlicesWithLabels,
     aggregation_module: AggregationModule,
+    optimizer_fn: OptimizerFn,
+    lr_scheduler_fn: LRSchedulerFn,
 ):
     """
     Check whether we can continue pre-training from an existing checkpoint.
@@ -132,7 +139,7 @@ def test_pretrain_from_checkpoint(
     test_behrt: test_module_with_trainer
     """
     path = Path(__file__).parent / "test_checkpoints"
-    checkpoint_path = path / "epoch=4-step=5.ckpt"
+    checkpoint_path = path / "epoch=4-step=14.ckpt"
 
     loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
 
@@ -141,8 +148,8 @@ def test_pretrain_from_checkpoint(
         encoder_module=loaded_model.encoder_module,
         aggregation_module=aggregation_module,
         num_classes=2,
-        optimizer_kwargs={"lr": 1e-3},
-        lr_scheduler_kwargs={"num_warmup_steps": 2, "num_training_steps": 10},
+        optimizer_fn=optimizer_fn,
+        lr_scheduler_fn=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(

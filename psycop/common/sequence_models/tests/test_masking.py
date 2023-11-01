@@ -6,14 +6,19 @@ from torch import nn
 
 from psycop.common.sequence_models import BEHRTForMaskedLM
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
-from psycop.projects.sequence_models.train import Config
+from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 
 
 @pytest.mark.parametrize(
     "embedding_module",
     [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_masking_fn(patient_slices: list, embedding_module: BEHRTEmbedder):  # type: ignore
+def test_masking_fn(
+    patient_slices: list,  # type: ignore
+    embedding_module: BEHRTEmbedder,
+    optimizer_fn: OptimizerFn,
+    lr_scheduler_fn: LRSchedulerFn,
+):  # type: ignore
     """
     Test masking function
     """
@@ -22,13 +27,11 @@ def test_masking_fn(patient_slices: list, embedding_module: BEHRTEmbedder):  # t
 
     embedding_module.fit(patient_slices)
 
-    config = Config()
-
     task = BEHRTForMaskedLM(
         embedding_module=embedding_module,
         encoder_module=encoder,
-        optimizer_kwargs=config.optimization_config.optimizer_kwargs,
-        lr_scheduler_kwargs=config.optimization_config.lr_scheduler_kwargs,
+        optimizer_fn=optimizer_fn,
+        lr_scheduler_fn=lr_scheduler_fn,
     )
 
     inputs_ids = embedding_module.collate_patient_slices(patient_slices)

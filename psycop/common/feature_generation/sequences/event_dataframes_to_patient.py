@@ -22,7 +22,7 @@ class PatientSliceColumnNames:
     timestamp_col_name: str = "timestamp"
     source_col_name: str = "source"
     value_col_name: str = "value"
-    source_subtype_col_name: str | None = None
+    source_subtype_col_name: str | None = "type"
 
 
 class EventDataFramesToPatientSlices:
