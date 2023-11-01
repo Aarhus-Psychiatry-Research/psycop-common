@@ -6,6 +6,7 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.analysis.importFormat": "relative",
+    "python.defaultInterpreterPath": "/usr/bin/python3",
     "explorer.excludeGitIgnore": false,
     "files.exclude": {
         "**/.git": true,

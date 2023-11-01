@@ -28,7 +28,7 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
-	"postCreateCommand": "npm install -g @withgraphite/graphite-cli@stable",
+	"postCreateCommand": "inv static-type-checks & inv lint",
 	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt && pip install -e ."
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

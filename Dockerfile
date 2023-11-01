@@ -21,10 +21,10 @@ ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 # Install dev tools
 RUN npm install -g @withgraphite/graphite-cli@stable
 
-COPY dev-requirements.txt /app/
+COPY dev-requirements.txt .
 RUN pip install -r dev-requirements.txt
 
-COPY test-requirements.txt /app/
+COPY test-requirements.txt .
 RUN pip install -r test-requirements.txt
 
 # Set the working directory to /app
