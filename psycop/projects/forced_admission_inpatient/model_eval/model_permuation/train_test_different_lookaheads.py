@@ -1,6 +1,5 @@
 """Experiments with models trained and evaluated using different lookaheads for the outcome columns"""
 
-
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
@@ -127,13 +126,28 @@ def train_model(
     return roc_auc  # type: ignore
 
 
-def main(run: ForcedAdmissionInpatientPipelineRun):
-    cfg = run.inputs.cfg
-
-    train_model(
-        cfg=cfg,
-        outcome_col_name_for_test="outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
+def performance_by_lookahead_table(
+    run: ForcedAdmissionInpatientPipelineRun,
+    lookaheads_for_performance_eval: list[float],
+):
+    output_path = (
+        run.paper_outputs.paths.tables
+        / f"performance_by_lookahead_table_{run.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_days_lookahead"
     )
+
+    roc_auc_table = {}
+
+    for _, lookahead in enumerate(lookaheads_for_performance_eval):
+        roc_auc = train_model(
+            cfg=run.inputs.cfg,
+            outcome_col_name_for_test=f"outc_forced_admissions_within_{lookahead}_days_maximum_fallback_0_dichotomous",
+        )
+
+        roc_auc_table[f"{lookahead} days"] = roc_auc
+
+    df = pd.DataFrame(list(roc_auc_table.items()), columns=["Lookahead days", "AUROC"])
+
+    df.to_excel(output_path, index=False)
 
 
 if __name__ == "__main__":
@@ -141,4 +155,7 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    main(run=get_best_eval_pipeline())
+    performance_by_lookahead_table(
+        run=get_best_eval_pipeline(),
+        lookaheads_for_performance_eval=[30, 90, 180, 360],
+    )
