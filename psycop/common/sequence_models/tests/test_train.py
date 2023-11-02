@@ -22,6 +22,6 @@ def create_test_dataset() -> PatientSliceDataset:
 
 def test_train(
     config_path: Path,
-):  # TODO: this test fails, had to remove it to merge the other branch, added it again here but needs to be debugged
+):
     """test of the train function"""
     train(config_path)

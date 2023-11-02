@@ -21,4 +21,6 @@ def load_config(config_path: Path | None = None) -> Config:
 
 
 def parse_config(config: Config) -> ResolvedConfigSchema:
-    return Registry.resolve(config, schema=ResolvedConfigSchema)  # type: ignore
+    cfg = Registry.resolve(config)
+    return ResolvedConfigSchema(**cfg)
+
