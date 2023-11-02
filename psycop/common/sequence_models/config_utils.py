@@ -23,4 +23,3 @@ def load_config(config_path: Path | None = None) -> Config:
 def parse_config(config: Config) -> ResolvedConfigSchema:
     cfg = Registry.resolve(config)
     return ResolvedConfigSchema(**cfg)
-
