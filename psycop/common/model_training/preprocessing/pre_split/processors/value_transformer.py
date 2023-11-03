@@ -46,7 +46,9 @@ class PreSplitValueTransformer:
         datetime_dtypes = {"datetime64[ns]", "<M8[ns]"}
 
         dt_columns = [
-            c for c in dataset.columns if dataset[c].dtypes in datetime_dtypes  # type: ignore
+            c
+            for c in dataset.columns
+            if dataset[c].dtypes in datetime_dtypes  # type: ignore
         ]
 
         # convert datetime columns

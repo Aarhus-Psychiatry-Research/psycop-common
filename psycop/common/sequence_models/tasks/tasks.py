@@ -164,7 +164,10 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def configure_optimizers(
         self,
-    ) -> tuple[list[torch.optim.Optimizer], list[torch.optim.lr_scheduler._LRScheduler]]:  # type: ignore
+    ) -> tuple[
+        list[torch.optim.Optimizer],
+        list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
+    ]:  # type: ignore
         optimizer = self.optimizer_fn(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
@@ -308,7 +311,10 @@ class EncoderForClassification(pl.LightningModule):
 
     def configure_optimizers(
         self,
-    ) -> tuple[list[torch.optim.Optimizer], list[torch.optim.lr_scheduler._LRScheduler]]:  # type: ignore
+    ) -> tuple[
+        list[torch.optim.Optimizer],
+        list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
+    ]:  # type: ignore
         optimizer = self.optimizer_fn(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]

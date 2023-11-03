@@ -729,6 +729,9 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_lab_result_specs(resolve_multiple=[boolean], interval_days=[30])  # type: ignore
+            return self._get_lab_result_specs(
+                resolve_multiple=[boolean],
+                interval_days=[30],
+            )  # type: ignore
 
         return self._get_static_predictor_specs() + self._get_temporal_predictor_specs()

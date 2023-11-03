@@ -117,7 +117,11 @@ def test_generate_feature_description_row_for_temporal_spec(
     assert isinstance(row["Mean"], Number)
     assert isinstance(row["Proportion using fallback"], Number)
 
-    generate_feature_description_df(df=df, predictor_specs=predictor_specs, prefixes_to_describe="pred_")  # type: ignore
+    generate_feature_description_df(
+        df=df,
+        predictor_specs=predictor_specs,  # type: ignore
+        prefixes_to_describe="pred_",  # type: ignore
+    )  # type: ignore
 
 
 def test_generate_feature_description_row_for_static_spec(

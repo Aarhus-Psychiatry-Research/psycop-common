@@ -23,7 +23,7 @@ def generate_shap_df_for_predictor_col(
         {
             "feature_name": colname,
             "feature_value": X[colname],
-            "pred_time_index": list(range(0, len(X))),
+            "pred_time_index": list(range(len(X))),
             "shap_value": shap_values[:, colname_index],  # type: ignore
         },
     )
@@ -96,7 +96,8 @@ def get_shap_bundle_for_best_run(
 
     flattened_ds: pl.DataFrame = (
         pl.concat(
-            run.inputs.get_flattened_split_as_lazyframe(split=split) for split in ["train", "val"]  # type: ignore
+            run.inputs.get_flattened_split_as_lazyframe(split=split)  # type: ignore
+            for split in ["train", "val"]  # type: ignore
         )
         .collect()
         .sample(n=n_rows)
@@ -163,5 +164,3 @@ if __name__ == "__main__":
     )
 
     long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore
-
-    pass
