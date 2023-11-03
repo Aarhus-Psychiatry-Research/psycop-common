@@ -41,7 +41,7 @@ class ClozapineMinAgeFilter(PredictionTimeFilter):
 class ClozapineSchizophrenia(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
-        schizophrenia_df = add_only_patients_with_schizophrenia(df=df).select(
+        schizophrenia_df = add_only_patients_with_schizophrenia().select(
             pl.col("timestamp").alias("timestamp_schizophrenia"),
             pl.col("dw_ek_borger"),
         )
