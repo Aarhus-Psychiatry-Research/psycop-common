@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.129.0 (2023-11-03)
+
+### Feature
+
+* Performance by lookahead ([`671f4e9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/671f4e9fde6d9b9d7d4c1a829de309c5ea03f1d4))
+* Different lookaheads ([`d7538bf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d7538bf1b68309df74f25c31b9c36ebc399e7b2f))
+* Add script for train test on diff lookaheads ([`41a29d8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/41a29d8d6a43176ffafb3908f9ed7ac7100569c3))
+* Add script for train test on diff lookaheads ([`ce8f59f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ce8f59fc2cc6bb6b7a1e2951e2ed3504a109a933))
+* Add shap ([`4029cd8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4029cd8b0940ccbc616b3d28bec09d750027a946))
+
 ## v0.128.0 (2023-11-01)
 
 ### Feature
