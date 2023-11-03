@@ -96,7 +96,8 @@ def get_shap_bundle_for_best_run(
 
     flattened_ds: pl.DataFrame = (
         pl.concat(
-            run.inputs.get_flattened_split_as_lazyframe(split=split) for split in ["train", "val"]  # type: ignore
+            run.inputs.get_flattened_split_as_lazyframe(split=split)
+            for split in ["train", "val"]  # type: ignore
         )
         .collect()
         .sample(n=n_rows)

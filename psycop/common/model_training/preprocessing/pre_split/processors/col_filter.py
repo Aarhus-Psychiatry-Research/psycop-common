@@ -197,7 +197,9 @@ class PresSplitColFilter:
     ) -> pd.DataFrame:
         """Drop all datetime columns from the dataset."""
         columns_to_drop = [
-            c for c in dataset.columns if dataset[c].dtype in drop_dtypes  # type: ignore
+            c
+            for c in dataset.columns
+            if dataset[c].dtype in drop_dtypes  # type: ignore
         ]
         columns_to_drop = [c for c in columns_to_drop if c.startswith(pred_prefix)]
 

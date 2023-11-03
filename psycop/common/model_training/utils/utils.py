@@ -251,7 +251,8 @@ def get_selected_features_dict(
         Union[None, dict[str, int]]: Dictionary of selected features. 0 if not selected, 1 if selected.
     """
     is_selected = [
-        int(i) for i in pipe["preprocessing"]["feature_selection"].get_support()  # type: ignore
+        int(i)
+        for i in pipe["preprocessing"]["feature_selection"].get_support()  # type: ignore
     ]
     return dict(
         zip(train_col_names, is_selected),

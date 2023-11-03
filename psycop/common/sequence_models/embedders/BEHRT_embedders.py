@@ -294,7 +294,9 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         # create dianosis2idx mapping
         diagnosis2idx = {
-            d: i for i, d in enumerate(set(diagnosis_codes)) if d is not None  # type: ignore
+            d: i
+            for i, d in enumerate(set(diagnosis_codes))
+            if d is not None  # type: ignore
         }
         diagnosis2idx["UNK"] = len(diagnosis2idx)
         diagnosis2idx["PAD"] = len(diagnosis2idx)

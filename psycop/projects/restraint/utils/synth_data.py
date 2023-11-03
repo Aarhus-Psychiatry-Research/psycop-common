@@ -155,10 +155,11 @@ if __name__ == "__main__":
     )
 
     msg.info("Generating synth outcome timestamps")
-    df["outcome_timestamp"] = df.groupby("dw_ek_borger")[  # type: ignore
-        "admission_timestamp"
-    ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, days_to_seconds(days=5)),  # type: ignore
+    df["outcome_timestamp"] = (
+        df.groupby("dw_ek_borger")["admission_timestamp"].transform("min")  # type: ignore
+        + dt.timedelta(
+            seconds=np.random.randint(0, days_to_seconds(days=5)),  # type: ignore
+        )
     )
 
     df["outcome_timestamp"] = (
