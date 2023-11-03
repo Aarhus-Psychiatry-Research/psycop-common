@@ -100,7 +100,7 @@ def main(
         )
 
     split_and_save_dataset_to_disk(
-        flattened_df=flattened_df,
+        flattened_df=flattened_df,  # type: ignore
         project_info=project_info,
         feature_set_dir=feature_set_dir,
     )
