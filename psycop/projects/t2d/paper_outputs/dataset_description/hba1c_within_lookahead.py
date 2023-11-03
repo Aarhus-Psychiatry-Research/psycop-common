@@ -95,7 +95,9 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             drop_pred_times_with_insufficient_look_distance=False,
         )
 
-        lookahead_days = get_best_eval_pipeline().inputs.cfg.preprocessing.pre_split.min_lookahead_days
+        lookahead_days = (
+            get_best_eval_pipeline().inputs.cfg.preprocessing.pre_split.min_lookahead_days
+        )
 
         hba1c_timestamps = hba1c()
         hba1c_timestamps["value"] = hba1c_timestamps["timestamp"]

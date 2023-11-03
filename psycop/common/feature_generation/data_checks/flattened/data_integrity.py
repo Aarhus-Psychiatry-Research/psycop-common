@@ -438,7 +438,9 @@ def save_feature_set_integrity_checks_from_dir(
         file_suffix=dataset_format,
     )
 
-    failed_checks = {}  # Collect failed checks for error messages at the end of the function
+    failed_checks = (
+        {}
+    )  # Collect failed checks for error messages at the end of the function
 
     # Check if file splits exist before running checks
     for split_name in splits:
