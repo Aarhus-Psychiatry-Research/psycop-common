@@ -123,10 +123,11 @@ if __name__ == "__main__":
 
     # Generate t2d timestamps
     msg.info("Generating T2D-timestamps")
-    df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[  # type: ignore
-        "timestamp_first_pred_time"
-    ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, years_to_seconds(years=5)),  # type: ignore
+    df["timestamp_t2d_diag"] = (
+        df.groupby("dw_ek_borger")["timestamp_first_pred_time"].transform("min")  # type: ignore
+        + dt.timedelta(
+            seconds=np.random.randint(0, years_to_seconds(years=5)),  # type: ignore
+        )
     )
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_t2d_diag"].apply(
         lambda x: null_series_with_prob(x, prob=0.85),
@@ -134,10 +135,11 @@ if __name__ == "__main__":
 
     # Generate first HbA1c timestamps
     msg.info("Generating HbA1c timestamps")
-    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[  # type: ignore
-        "timestamp_first_pred_time"
-    ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, years_to_seconds(years=4)),  # type: ignore
+    df["timestamp_first_hba1c"] = (
+        df.groupby("dw_ek_borger")["timestamp_first_pred_time"].transform("min")  # type: ignore
+        + dt.timedelta(
+            seconds=np.random.randint(0, years_to_seconds(years=4)),  # type: ignore
+        )
     )
     df["timestamp_hba1c_copy"] = df["timestamp_first_hba1c"]
 

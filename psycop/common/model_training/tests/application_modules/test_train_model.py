@@ -37,7 +37,10 @@ def test_crossvalidation(muteable_test_config: FullConfigSchema):
 def test_list_of_data_dirs(muteable_test_config: FullConfigSchema):
     """Test train model can resolve list of data dir paths."""
     cfg = muteable_test_config
-    cfg.data.dir = ["psycop/common/model_training/tests/test_data/synth_splits_subsampled/", "psycop/common/model_training/tests/test_data/synth_splits_subsampled/"]  # type: ignore
+    cfg.data.dir = [
+        "psycop/common/model_training/tests/test_data/synth_splits_subsampled/",
+        "psycop/common/model_training/tests/test_data/synth_splits_subsampled/",
+    ]  # type: ignore
     train_model(cfg)
 
 
@@ -60,9 +63,7 @@ def test_feature_selection(muteable_test_config: FullConfigSchema):
     cfg = muteable_test_config
     cfg.preprocessing.post_split.feature_selection.Config.allow_mutation = True
     cfg.preprocessing.post_split.feature_selection.name = "mutual_info_classif"
-    cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
-        "percentile"
-    ] = 10
+    cfg.preprocessing.post_split.feature_selection.params["percentile"] = 10  # type: ignore
     train_model(cfg)
 
 
@@ -75,9 +76,7 @@ def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSche
     """
     cfg = muteable_test_config
     cfg.preprocessing.post_split.imputation_method = None
-    cfg.preprocessing.post_split.feature_selection.params[  # type: ignore
-        "percentile"
-    ] = 10
+    cfg.preprocessing.post_split.feature_selection.params["percentile"] = 10  # type: ignore
     cfg.preprocessing.post_split.feature_selection.name = "mutual_info_classif"
 
     # Train without the wrapper

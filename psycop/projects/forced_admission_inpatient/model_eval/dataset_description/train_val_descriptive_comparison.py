@@ -152,7 +152,9 @@ def _calc_feature_corr_with_outcome(
     print("Calculating correlations!")
 
     if only_tfidf:
-        pred_cols = [col for col in train_df.columns if col.startswith("pred_pred_tfidf")]  # type: ignore
+        pred_cols = [
+            col for col in train_df.columns if col.startswith("pred_pred_tfidf")
+        ]  # type: ignore
 
         train_correlations = train_df[
             [
@@ -197,7 +199,8 @@ def _calc_feature_corr_with_outcome(
             "feature": pred_cols,
             "train_split_correlations": train_correlations[pred_cols],  # type: ignore
             "val_split_correlations": val_correlations[pred_cols],  # type: ignore
-            "correlation_diffs": train_correlations[pred_cols] - val_correlations[pred_cols],  # type: ignore
+            "correlation_diffs": train_correlations[pred_cols]
+            - val_correlations[pred_cols],  # type: ignore
         },
     ).reset_index(drop=True)
 

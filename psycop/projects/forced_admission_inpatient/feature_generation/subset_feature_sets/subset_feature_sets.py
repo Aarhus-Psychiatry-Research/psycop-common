@@ -17,8 +17,12 @@ def subset_feature_df(feature_set_path: str):
         full_df = pd.read_parquet(FULL_PATH / f"{split}.parquet")
 
         # Get column subsets
-        sent_trans_cols = [col for col in full_df.columns if col.startswith("pred_pred_sent")]  # type: ignore
-        tfidf_cols = [col for col in full_df.columns if col.startswith("pred_pred_tfidf")]  # type: ignore
+        sent_trans_cols = [
+            col for col in full_df.columns if col.startswith("pred_pred_sent")
+        ]  # type: ignore
+        tfidf_cols = [
+            col for col in full_df.columns if col.startswith("pred_pred_tfidf")
+        ]  # type: ignore
         all_pred_cols = [col for col in full_df.columns if col.startswith("pred_")]  # type: ignore
         non_text_pred_cols = list(
             set(all_pred_cols) - set(tfidf_cols) - set(sent_trans_cols),
