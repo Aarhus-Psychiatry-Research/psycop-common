@@ -31,48 +31,26 @@ jobs:
       cancel-in-progress: true
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout (GitHub)
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2 
         with:
-          python-version: ${{ matrix.python-version }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        shell: bash
-        run: |
-          pip install invoke
-          pip install -r test-requirements.txt -r requirements.txt -r gpu-requirements.txt
+      - name: Create github hosts file
+        run: | # If this file is not created, the dev container fails because of non-existant mount
+          mkdir -p ~/.config/gh
+          touch ~/.config/gh/hosts.yml
 
-      - name: Run and write pytest
-        shell: bash
-        run: |
-          # Specifying two sets of "--pytest-args" is required for invoke to parse it as a list
-          inv test --pytest-args="--durations=0" --pytest-args="--junitxml=pytest.xml --cov-report=term-missing --cov=psycop/"
-          
-
-      - name: Test report on failures
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        id: test_report_with_annotations
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10' &&  github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (success() || failure()) }} # Do not run for dependabot, run whether tests failed or succeeded
+      - name: Pre-build dev container image
+        uses: devcontainers/ci@v0.3
         with:
-          comment_mode: "failures"
-          files: |
-            pytest.xml
-
-      - name: Coverage comment
-        id: coverage_comment
-        uses: py-cov-action/python-coverage-comment-action@c5b0a2ebd92a0db3bddeee5898632ebd2609a818
-        with:
-          GITHUB_TOKEN: ${{ github.token }}
-          ANNOTATE_MISSING_LINES: true
-          ANNOTATION_TYPE: "warning"
-
-      - name: Store Pull Request comment to be posted
-        uses: actions/upload-artifact@v3
-        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
-        with:
-          # If you use a different name, update COMMENT_ARTIFACT_NAME accordingly
-          name: python-coverage-comment-action
-          # If you use a different name, update COMMENT_FILENAME accordingly
-          path: python-coverage-comment-action.txt
+          imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
+          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
+          push: never
+          refFilterForPush: refs/heads/main
+          runCmd: inv test
