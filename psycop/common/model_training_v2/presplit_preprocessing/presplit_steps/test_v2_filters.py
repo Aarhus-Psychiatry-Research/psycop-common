@@ -24,6 +24,6 @@ def test_age_filter(min_age: int, max_age: int, n_remaining: int):
     """,
     )
 
-    result = AgeFilter(min_age=min_age, max_age=max_age).apply(df)
+    result = AgeFilter(min_age=min_age, max_age=max_age, age_col_name="age").apply(df)
 
     assert len(result) == n_remaining

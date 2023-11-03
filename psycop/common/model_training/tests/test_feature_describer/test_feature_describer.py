@@ -119,8 +119,8 @@ def test_generate_feature_description_row_for_temporal_spec(
 
     generate_feature_description_df(
         df=df,
-        predictor_specs=predictor_specs,
-        prefixes_to_describe="pred_",
+        predictor_specs=predictor_specs,  # type: ignore
+        prefixes_to_describe="pred_",  # type: ignore
     )  # type: ignore
 
 
