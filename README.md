@@ -18,7 +18,7 @@
 
 <!-- start short-description -->
 
-The shared code across the PSYCOP projects. Pt. 1.
+The shared code across the PSYCOP projects. Pt. 12.
 
 <!-- end short-description -->
 
