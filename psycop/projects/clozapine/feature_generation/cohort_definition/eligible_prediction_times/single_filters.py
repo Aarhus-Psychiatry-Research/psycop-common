@@ -70,7 +70,7 @@ class ClozapineSchizophrenia(PredictionTimeFilter):
             valid_timestamp_schizophrenia.groupby("dw_ek_borger")
             .agg(
                 [
-                    pl.col("timestamp").sort().unique().alias("timestamp"),
+                    pl.col("timestamp").unique().alias("timestamp"),
                 ],
             )
             .explode("timestamp")
