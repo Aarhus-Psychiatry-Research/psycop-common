@@ -53,4 +53,3 @@ jobs:
           cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
           push: never
           refFilterForPush: refs/heads/main
-          runCmd: inv test
