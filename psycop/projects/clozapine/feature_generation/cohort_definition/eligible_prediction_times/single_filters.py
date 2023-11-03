@@ -52,7 +52,7 @@ class ClozapineSchizophrenia(PredictionTimeFilter):
             how="inner",
         )
 
-        days_in_10_years = 10 * 365.25
+        days_in_10_years = 10 * 365
 
         valid_timestamp_schizophrenia = prediction_times_with_schizophrenia_df.filter(
             (pl.col("timestamp_schizophrenia") <= pl.col("timestamp"))
