@@ -23,6 +23,9 @@ class ProblemType(Protocol):
     def evaluate(self, x: PolarsFrame, y: PolarsFrame) -> TrainingResult:
         ...
 
+    def predict_proba(self, x: PolarsFrame, y: PolarsFrame) -> float:
+        ...
+
 
 class BinaryClassification:
     def __init__(

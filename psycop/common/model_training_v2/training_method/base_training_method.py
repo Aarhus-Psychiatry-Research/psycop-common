@@ -48,7 +48,35 @@ class SplitTrainer(TrainingMethod):
         problem_type: ProblemType,
         logger: BaselineLogger,
     ):
-        ...
+        self.training_data = training_data
+        self.training_outcome_col_name = training_outcome_col_name
+        self.validation_data = validation_data
+        self.validation_outcome_col_name = validation_outcome_col_name
+        self.preprocessing_pipeline = preprocessing_pipeline
+        self.problem_type = problem_type
+        self.logger = logger
 
     def train(self) -> TrainingResult:
-        ...
+        training_data_preprocessed = self.preprocessing_pipeline.apply(
+            data=self.training_data
+        )
+        self.preprocessing_pipeline.apply(
+            data=self.validation_data,
+        )
+        training_metric = self.problem_type.train(
+            x=training_data_preprocessed.drop(self.training_outcome_col_name),
+            y=training_data_preprocessed.select(self.training_outcome_col_name),
+        )
+        validation_metric = self.problem_type.evaluate(
+            x=self.validation_data.drop(self.validation_outcome_col_name),
+            y=self.validation_data.select(self.validation_outcome_col_name),
+        )
+        self.logger.log_metric(name="metric", value=metric)
+
+        return TrainingResult(
+            metric=metric,
+            eval_dataset=BaseEvalDataset(
+                training_data=training_data_preprocessed,
+                validation_data=self.validation_data,
+            ),
+        )
