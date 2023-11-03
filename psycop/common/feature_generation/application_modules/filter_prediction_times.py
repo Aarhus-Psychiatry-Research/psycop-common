@@ -62,13 +62,14 @@ class PredictionTimeFilterer:
         if len(uuid_cols) == 0:
             self.added_pred_time_uuid_col = True
 
-            self.prediction_times_df[self.pred_time_uuid_col_name] = (
-                self.prediction_times_df[self.entity_id_col_name].astype(
-                    str,
-                )
-                + self.prediction_times_df[timestamp_col_name].dt.strftime(
-                    "-%Y-%m-%d-%H-%M-%S",
-                )
+            self.prediction_times_df[
+                self.pred_time_uuid_col_name
+            ] = self.prediction_times_df[self.entity_id_col_name].astype(
+                str,
+            ) + self.prediction_times_df[
+                timestamp_col_name
+            ].dt.strftime(
+                "-%Y-%m-%d-%H-%M-%S",
             )
 
     def _filter_prediction_times_by_quarantine_period(self) -> pd.DataFrame:

@@ -87,7 +87,7 @@ def stratified_cross_validation(
         ]
 
         msg.info(
-            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs],oof_y_pred), 3)}"
+            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs],oof_y_pred), 3)}",
         )  # type: ignore
 
         train_df.loc[val_idxs, "oof_y_hat"] = oof_y_pred  # type: ignore
