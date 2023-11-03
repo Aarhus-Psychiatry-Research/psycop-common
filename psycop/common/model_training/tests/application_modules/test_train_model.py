@@ -1,6 +1,8 @@
 """Test that the model trains correctly."""
 
 
+from pathlib import Path
+
 import pytest
 
 from psycop.common.model_training.application_modules.train_model.main import (
@@ -38,8 +40,8 @@ def test_list_of_data_dirs(muteable_test_config: FullConfigSchema):
     """Test train model can resolve list of data dir paths."""
     cfg = muteable_test_config
     cfg.data.dir = [
-        "psycop/common/model_training/tests/test_data/synth_splits_subsampled/",
-        "psycop/common/model_training/tests/test_data/synth_splits_subsampled/",
+        Path("psycop/common/model_training/tests/test_data/synth_splits_subsampled/"),
+        Path("psycop/common/model_training/tests/test_data/synth_splits_subsampled/"),
     ]  # type: ignore
     train_model(cfg)
 

@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class CalculatedMetric():
+class CalculatedMetric:
     name: str
     value: float

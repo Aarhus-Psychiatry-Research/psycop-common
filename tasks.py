@@ -225,10 +225,6 @@ def update_pr(c: Context):
 
         if branch_name not in pr_result.stdout:
             create_pr(c)
-        else:
-            open_web = input("Open in browser? [y/n] ")
-            if "y" in open_web.lower():
-                c.run("gh pr view --web", pty=NOT_WINDOWS)
 
 
 def exit_if_error_in_stdout(result: Result):
@@ -423,7 +419,7 @@ def test_for_rej(c: Context):
     c = c
     search_dirs = [
         d
-        for d in Path(".").iterdir()
+        for d in Path().iterdir()
         if d.is_dir()
         and not (
             "venv" in d.name
@@ -440,7 +436,7 @@ def test_for_rej(c: Context):
     )
 
     # Get top_level rej files
-    rej_files = list(Path(".").glob("*.rej"))
+    rej_files = list(Path().glob("*.rej"))
 
     for d in search_dirs:
         rej_files_in_dir = list(d.rglob("*.rej"))
