@@ -4,7 +4,9 @@ from pathlib import Path
 
 import polars as pl
 
-from psycop.common.model_training_v2.metrics.binary_metrics.base import BinaryMetric
+from psycop.common.model_training_v2.metrics.binary_metrics.base_binary_metric import (
+    BinaryMetric,
+)
 
 from ..presplit_preprocessing.polars_frame import PolarsFrame
 
