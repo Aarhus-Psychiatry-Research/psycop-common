@@ -6,8 +6,8 @@ import pytest
 from psycop.common.model_training_v2.classifier_pipelines.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )
-from psycop.common.model_training_v2.classifier_pipelines.estimator_steps.xgboost import (
-    xgboost_classifier_step,
+from psycop.common.model_training_v2.classifier_pipelines.estimator_steps.logistic_regression import (
+    logistic_regression_step,
 )
 from psycop.common.model_training_v2.metrics.binary_metrics.base_binary_metric import (
     BinaryMetric,
@@ -29,16 +29,11 @@ from psycop.common.model_training_v2.training_method.base_training_method import
 )
 
 
-@pytest.fixture()
-def xgb_pipe() -> BinaryClassificationPipeline:
-    return BinaryClassificationPipeline(steps=[xgboost_classifier_step()])
-
-
 @pytest.mark.parametrize(
     ("pipe", "main_metric", "supplementary_metrics", "x", "y", "main_metric_expected"),
     [
         (
-            "xgb_pipe",
+            BinaryClassificationPipeline(steps=[logistic_regression_step()]),
             BinaryAUROC(),
             None,
             pl.DataFrame({"x": [1, 1, 2, 2]}),
@@ -54,9 +49,7 @@ def test_binary_classification(
     x: PolarsFrame,
     y: pl.Series,
     main_metric_expected: float,
-    request: type[pytest.FixtureRequest],
 ):
-    pipe = request.getfixturevalue(pipe)
     binary_classification_problem = BinaryClassification(
         pipe=pipe,
         main_metric=main_metric,

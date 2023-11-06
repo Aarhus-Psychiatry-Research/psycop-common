@@ -7,8 +7,8 @@ import pytest
 from psycop.common.model_training_v2.classifier_pipelines.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )
-from psycop.common.model_training_v2.classifier_pipelines.estimator_steps.xgboost import (
-    xgboost_classifier_step,
+from psycop.common.model_training_v2.classifier_pipelines.estimator_steps.logistic_regression import (
+    logistic_regression_step,
 )
 from psycop.common.model_training_v2.classifier_pipelines.model_step import ModelStep
 from psycop.common.model_training_v2.presplit_preprocessing.polars_frame import (
@@ -20,7 +20,7 @@ from psycop.common.model_training_v2.presplit_preprocessing.polars_frame import 
     ("steps", "x", "y"),
     [
         (
-            [xgboost_classifier_step()],
+            [logistic_regression_step()],
             pl.DataFrame({"x": [1, 2, 3, 4]}),
             pl.Series([0, 0, 1, 1]),
         ),

@@ -30,6 +30,7 @@ class BinaryClassification:
         self.pipe = pipe
         self.main_metric = main_metric
         self.supplementary_metrics = supplementary_metrics
+        self.is_fitted = False
 
     def train(
         self,
@@ -37,11 +38,14 @@ class BinaryClassification:
         y: pl.Series,
     ) -> None:
         self.pipe.fit(x=x, y=y)
+        self.is_fitted = True
 
     def predict_proba(self, x: PolarsFrame) -> PredProbaSeries:
         return self.pipe.predict_proba(x)
 
     def evaluate(self, x: PolarsFrame, y: pl.Series) -> TrainingResult:
+        if self.is_fitted is False:
+            raise RuntimeError("Model must be fitted before evaluating")
         if isinstance(x, pl.LazyFrame):
             x = x.collect()
         y_hat_probs = self.pipe.predict_proba(x)
