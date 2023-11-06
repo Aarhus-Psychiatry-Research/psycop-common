@@ -110,3 +110,75 @@ def test_diagnosis_mapping(
         "Transient ischaemic attack",
         "Hyperkinetic disorders",
     ]
+
+
+@pytest.mark.parametrize(
+    "embedding_module",
+    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+)
+def test_diagnosis_mapping(
+    patient_slices: list,  # type: ignore
+    embedding_module: BEHRTEmbedder,
+):
+    """
+    Test mapping of diagnosis from ICD10 to caliber
+    """
+    # Check that diagnosis codes that are not in the mapping are excluded
+    # (this patient has no diagnosis codes in the mapping)
+    patient = Patient(
+        patient_id=11,
+        date_of_birth=dt.datetime(year=1990, month=1, day=1),
+    )
+
+    # Add temporal events to check that diagnosis codes are mapped correctly
+    temporal_events = [
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 1),
+            value="A00",
+            source_type="diagnosis",
+            source_subtype="A",
+        ),
+        # Check that two different ICD10 codes map to the same caliber code (A00, A30 -> Bacterial Diseases (excl TB))
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="A30",
+            source_type="diagnosis",
+            source_subtype="A",
+        ),
+        # Check that diagnoses with different subtype than A are excluded
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="A30",
+            source_type="diagnosis",
+            source_subtype="B",
+        ),
+        # Check that ICD10 code maps to different caliber code than those above (I65 -> Transient ischaemic attack)
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="I65",
+            source_type="diagnosis",
+            source_subtype="A",
+        ),
+        # Check that F909 is mapped to F90 (Hyperkinetic disorders) since F909 is not in the mapping
+        TemporalEvent(
+            timestamp=dt.datetime(2021, 1, 3),
+            value="F909",
+            source_type="diagnosis",
+            source_subtype="A",
+        ),
+    ]
+
+    patient.add_events(temporal_events)
+    patient_slices_mapped = embedding_module.filter_and_reformat_events(
+        [patient.as_slice()]
+    )
+    diagnosis_codes = [
+        e.value for ps in patient_slices_mapped for e in ps.temporal_events
+    ]
+
+    assert diagnosis_codes == [
+        "Bacterial Diseases (excl TB)",
+        "Bacterial Diseases (excl TB)",
+        "Transient ischaemic attack",
+        "Hyperkinetic disorders",
+    ]

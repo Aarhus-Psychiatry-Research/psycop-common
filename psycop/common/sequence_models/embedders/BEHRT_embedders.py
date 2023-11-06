@@ -3,10 +3,10 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
 import json
+import logging
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-import logging
 
 import numpy as np
 import torch
@@ -218,50 +218,56 @@ class BEHRTEmbedder(nn.Module, Embedder):
             diagnosis_code = diagnosis_code[:-1]
         return None
 
+    # def filter_events(self, patient_slices: Sequence[PatientSlice]) -> list[PatientSlice]:
+
     def filter_and_reformat_events(
         self,
         patient_slices: Sequence[PatientSlice],
-    ) -> Sequence[PatientSlice]:
+    ) -> list[PatientSlice]:
         """
+        Fitler and reformats events.
+
+        Filtering: Filter out events that
+
         Take patients and filter events to only include diagnosis codes. Then reformat the diagnosis codes by mapping them to caliber codes.
         """
-        patient_events = [
-            (p, e)
-            for p in patient_slices
-            for e in self.filter_events(p.temporal_events)
-        ]
+        assert all(
+            e.source_type == "diagnosis" for ps in patient_slices for e in ps.temporal_events
+        ), "PatientSlice.temporal_events must only include diagnosis codes"
 
-        # Check that the values only include diagnosis codes
-        assert all(isinstance(e.value, str) for p, e in patient_events)
+        patient_events = [
+            PatientSlice(p.patient, self.filter_events(p.temporal_events))
+            for p in patient_slices
+        ]
+        if not self.map_diagnosis_codes:
+            return patient_events
 
         # map diagnosis codes
-        if self.map_diagnosis_codes:
-            patient_events = [
-                (
-                    p,
-                    e._replace(  # TODO: doesn't have _replace method
-                        value=self.map_icd10_to_caliber(e.value)
-                    ),
-                )
-                for p, e in patient_events
-            ]
+        _patient_slices = []
+        n_filtered = 0
+        for p in patient_events:
+            temporal_events = []
+            for e in p.temporal_events:
+                value = self.map_icd10_to_caliber(e.value)  # type: ignore
+                if value is not None:
+                    event = TemporalEvent(
+                        timestamp=e.timestamp,
+                        source_type=e.source_type,
+                        source_subtype=e.source_subtype,
+                        value=value,
+                    )
+                    temporal_events.append(event)
 
-        # remove events with no mapping
-        patient_events = [(p, e) for p, e in patient_events if e.value is not None]
+            if temporal_events:
+                _patient_slices.append(PatientSlice(p.patient, temporal_events))
+            else:
+                n_filtered += 1
 
-        # remove patients with no events
-        patient_events = [
-            (p, e) for p, e in patient_events if len(p.temporal_events) > 0
-        ]
+        log.warning(
+            f"Lost {n_filtered} patients ({round(n_filtered / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
+        )
 
-        # count number of lost patients
-        n_lost_patients = len(patient_slices) - len(patient_events)
-        if n_lost_patients > 0:
-            log.warning(
-                f"Lost {n_lost_patients} patients ({round(n_lost_patients / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
-            )
-
-        return [PatientSlice(p.patient, p.temporal_events) for p, e in patient_events]
+        return _patient_slices
 
     def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:  # type: ignore
         # add cls token to start of sequence
@@ -325,16 +331,11 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
-        patient_events = [
-            (p, e)
-            for p in patient_slices
-            for e in self.filter_events(p.temporal_events)
+        patient_slices = self.filter_and_reformat_events(patient_slices)
+
+        diagnosis_codes: list[str] = [
+            str(e.value) for p in patient_slices for e in p.temporal_events
         ]
-
-        # Check that the values only include diagnosis codes
-        assert all(isinstance(e.value, str) for p, e in patient_events)
-
-        diagnosis_codes: list[str] = [str(e.value) for p, e in patient_events]
 
         # map diagnosis codes
         if self.map_diagnosis_codes:
@@ -354,7 +355,8 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         ages: list[int] = [
             self.get_patient_age(e, ps.patient.date_of_birth)
-            for ps, e in patient_events
+            for ps in patient_slices
+            for e in ps.temporal_events
         ]
 
         # create age2idx mapping
