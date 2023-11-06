@@ -60,16 +60,18 @@ class SplitTrainer(TrainingMethod):
         training_data_preprocessed = self.preprocessing_pipeline.apply(
             data=self.training_data,
         )
-        self.preprocessing_pipeline.apply(
+        validation_data = self.preprocessing_pipeline.apply(
             data=self.validation_data,
         )
+
         self.problem_type.train(
             x=training_data_preprocessed.drop(self.training_outcome_col_name),
             y=training_data_preprocessed.select(self.training_outcome_col_name),
         )
+
         result = self.problem_type.evaluate(
-            x=self.validation_data.drop(self.validation_outcome_col_name),
-            y=self.validation_data.select(self.validation_outcome_col_name),
+            x=validation_data.drop(self.validation_outcome_col_name),
+            y=validation_data.select(self.validation_outcome_col_name),
         )
 
         self.logger.log_metric(name="metric", value=result.metric)
