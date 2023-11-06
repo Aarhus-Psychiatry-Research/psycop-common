@@ -31,7 +31,7 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
-	"postCreateCommand": "pre-commit install & inv static-type-checks & inv lint",
+	"postCreateCommand": "inv static-type-checks & inv lint",
 	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
