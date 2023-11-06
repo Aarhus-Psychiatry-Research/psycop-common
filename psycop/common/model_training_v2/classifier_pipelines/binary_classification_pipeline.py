@@ -9,7 +9,7 @@ from psycop.common.model_training_v2.presplit_preprocessing.polars_frame import 
     PolarsFrame,
 )
 
-PredProbaSeries = pd.Series[float]  # name should be "y_hat_probs"
+PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
 
 class BinaryClassificationPipeline:
@@ -25,6 +25,6 @@ class BinaryClassificationPipeline:
         """Returns the predicted probabilities of the `1`
         class"""
         if isinstance(x, pl.LazyFrame):
-            x = x.collect()  # type: ignore
+            x = x.collect()
         pred_probs = self.pipe.predict_proba(x.to_pandas())[:, 1]
         return pd.Series(pred_probs, name="y_hat_probs")
