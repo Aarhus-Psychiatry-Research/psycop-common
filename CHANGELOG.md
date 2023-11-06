@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.129.1 (2023-11-06)
+
+### Fix
+
+* Collect lazyframe and return pl.series ([`ffca056`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ffca05615286027d03fdf07c52ac4729b61447e3))
+
 ## v0.129.0 (2023-11-03)
 
 ### Feature
