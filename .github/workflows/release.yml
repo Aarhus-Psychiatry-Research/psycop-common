@@ -8,6 +8,7 @@
 name: Release
 on:
   push:
+    branches: [main]
     paths:
       - "psycop/common/**"
 jobs:
