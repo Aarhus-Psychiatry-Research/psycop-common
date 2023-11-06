@@ -57,9 +57,10 @@ def train(config_path: Path | None = None) -> None:
     flat_config = flatten_nested_dict(config_dict)
     logger.experiment.config.update(flat_config)
 
-    # filter dataset # TODO uncomment this
-    # training_dataset.filter(model.filter)
-    # validation_dataset.filter(model.filter)
+    # filter dataset 
+    filter_fn = model.embedding_module.filter_and_reformat_events
+    training_dataset.filter(filter_fn)
+    validation_dataset.filter(filter_fn)
 
     # create dataloader:
     train_loader = DataLoader(

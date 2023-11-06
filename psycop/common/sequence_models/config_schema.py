@@ -16,6 +16,8 @@ from psycop.common.sequence_models.tasks import (
     EncoderForClassification,
 )
 
+from .dataset import PatientSliceDataset, PatientSlicesWithLabels
+
 
 class TrainerConfigSchema(BaseModel):
     """
@@ -69,8 +71,8 @@ class DatasetsConfigSchema(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    training: Dataset[PatientSlice]
-    validation: Dataset[PatientSlice]
+    training: PatientSliceDataset | PatientSlicesWithLabels
+    validation: PatientSliceDataset | PatientSlicesWithLabels
 
 
 class ResolvedConfigSchema(BaseModel):
