@@ -15,13 +15,15 @@ class BinaryClassificationPipeline:
 
     def fit(self, X: PolarsFrame, y: pl.Series) -> None:
         if isinstance(X, pl.LazyFrame):
-            X = X.collect()
+            # pyright thinks "X" is a constant since it's all caps
+            # hence we type ignore
+            X = X.collect()  # type: ignore
         self.pipe.fit(X.to_pandas(), y)
 
     def predict_proba(self, X: PolarsFrame) -> pl.Series:
         """Returns the predicted probabilities of the `1`
         class"""
         if isinstance(X, pl.LazyFrame):
-            X = X.collect()
+            X = X.collect()  # type: ignore
         pred_probs = self.pipe.predict_proba(X.to_pandas())[:, 1]
         return pl.Series("y_hat_probs", pred_probs)
