@@ -6,6 +6,7 @@ name: static_type_checks
 on:
   pull_request:
   push:
+    branches: [main]
 
 jobs:
   static_type_checks:
