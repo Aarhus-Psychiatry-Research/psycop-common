@@ -20,9 +20,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up QEMU for multi-architecture builds
+        if: matrix.docker_platform == 'linux/arm64'
         uses: docker/setup-qemu-action@v2
 
       - name: Setup Docker buildx for multi-architecture builds
+        if: matrix.docker_platform == 'linux/arm64'
         uses: docker/setup-buildx-action@v2
         with:
           use: true
@@ -43,5 +45,6 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
+          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
           platform: ${{ matrix.docker_platform}}
           push: always
