@@ -11,13 +11,7 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: read
-      checks: write
-      pull-requests: write
-
-    # This allows a subsequently queued workflow run to interrupt previous runs
+    permissions: write-all
     concurrency:
       group: "${{ github.workflow }} @ ${{ github.ref }}"
       cancel-in-progress: true
