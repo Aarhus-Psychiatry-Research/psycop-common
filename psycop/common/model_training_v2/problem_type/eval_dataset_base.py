@@ -4,7 +4,6 @@ from pathlib import Path
 
 import polars as pl
 
-from psycop.common.global_utils.pickle import write_to_pickle
 from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 from psycop.common.model_training_v2.metrics.binary_metrics.base_binary_metric import (
     BinaryMetric,
@@ -34,11 +33,11 @@ class BinaryEvalDataset(BaseEvalDataset):
     ) -> list[CalculatedMetric]:
         return [
             metric.calculate(
-                y_true=self.df.get_column(self.y),
-                y_pred=self.df.get_column(self.y_hat_probs),
+                y_true=self.df.get_column(self.y).to_pandas(),
+                y_pred=self.df.get_column(self.y_hat_probs).to_pandas(),
             )
             for metric in metrics
         ]
 
     def to_disk(self, path: Path) -> None:
-        write_to_pickle(self, filepath=path)
+        self.df.write_parquet(path)

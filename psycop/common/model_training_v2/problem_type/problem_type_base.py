@@ -5,6 +5,7 @@ import polars as pl
 
 from psycop.common.model_training_v2.classifier_pipelines.binary_classification_pipeline import (
     BinaryClassificationPipeline,
+    PredProbaSeries,
 )
 from psycop.common.model_training_v2.problem_type.eval_dataset_base import (
     BinaryEvalDataset,
@@ -51,7 +52,7 @@ class BinaryClassification:
     ) -> None:
         self.pipe.fit(X, y)
 
-    def predict_proba(self, x: PolarsFrame) -> pl.Series:
+    def predict_proba(self, x: PolarsFrame) -> PredProbaSeries:
         return self.pipe.predict_proba(x)
 
     def evaluate(self, x: PolarsFrame, y: pl.Series) -> TrainingResult:
@@ -62,7 +63,7 @@ class BinaryClassification:
         df = x.with_columns(y_hat_probs, y)
         eval_dataset = BinaryEvalDataset(
             pred_time_uuids="pred_time_uuids",  # need to get this column from somewhere!
-            y_hat_probs=y_hat_probs.name,
+            y_hat_probs=str(y_hat_probs.name),
             y=y.name,
             df=df,
         )
