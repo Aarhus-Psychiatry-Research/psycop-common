@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y curl
 
 # Install dev tools
 COPY test-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r test-requirements.txt --cache-dir==/tmp/cache
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r test-requirements.txt
 
 COPY dev-requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r dev-requirements.txt
