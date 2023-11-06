@@ -7,6 +7,9 @@ from psycop.common.model_training_v2.classifier_pipelines.binary_classification_
     BinaryClassificationPipeline,
     PredProbaSeries,
 )
+from psycop.common.model_training_v2.metrics.binary_metrics.base_binary_metric import (
+    BinaryMetric,
+)
 from psycop.common.model_training_v2.problem_type.eval_dataset_base import (
     BinaryEvalDataset,
 )
@@ -17,7 +20,6 @@ from psycop.common.model_training_v2.training_method.base_training_method import
 from ..classifier_pipelines.multiclass_classification_pipeline import (
     MulticlassClassificationPipeline,
 )
-from ..metrics.binary_metrics.base_binary_metric import BinaryMetric
 from ..metrics.multilabel_metrics.base import MultilabelMetric
 from ..presplit_preprocessing.polars_frame import PolarsFrame
 

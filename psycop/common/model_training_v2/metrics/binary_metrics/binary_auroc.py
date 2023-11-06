@@ -1,13 +1,20 @@
-import pandas as pd
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sklearn.metrics import roc_auc_score
 
-from psycop.common.model_training_v2.classifier_pipelines.binary_classification_pipeline import (
-    PredProbaSeries,
-)
 from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 from psycop.common.model_training_v2.metrics.binary_metrics.base_binary_metric import (
     BinaryMetric,
 )
+
+if TYPE_CHECKING:
+    import pandas as pd
+
+    from psycop.common.model_training_v2.classifier_pipelines.binary_classification_pipeline import (
+        PredProbaSeries,
+    )
 
 
 class BinaryAUROC(BinaryMetric):
