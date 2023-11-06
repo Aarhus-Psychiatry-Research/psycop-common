@@ -19,6 +19,14 @@ jobs:
       - name: Checkout (GitHub)
         uses: actions/checkout@v3
 
+      - name: Free disk space on runners
+        run: | 
+          docker rmi $(docker image ls -aq)
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          df -h
+
       - name: Set up QEMU for multi-architecture builds
         uses: docker/setup-qemu-action@v2
 
