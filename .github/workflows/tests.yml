@@ -34,5 +34,5 @@ jobs:
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
           cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
-          push: never
+          push: filter
           runCmd: inv test
