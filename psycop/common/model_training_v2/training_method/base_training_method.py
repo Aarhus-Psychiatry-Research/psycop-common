@@ -1,7 +1,10 @@
 # Implement this object for cross-validation, split-validation
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Protocol
+
+from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 
 from ..loggers.base_logger import BaselineLogger
 from ..presplit_preprocessing.pipeline import PreprocessingPipeline
@@ -12,7 +15,8 @@ from ..problem_type.problem_type_base import ProblemType
 
 @dataclass(frozen=True)
 class TrainingResult:
-    metric: float
+    main_metric: CalculatedMetric
+    supplementary_metrics: Sequence[CalculatedMetric] | None
     eval_dataset: BaseEvalDataset
 
 
@@ -72,6 +76,6 @@ class SplitTrainer(TrainingMethod):
             y=self.validation_data.select(self.validation_outcome_col_name),
         )
 
-        self.logger.log_metric(name="metric", value=result.metric)
+        self.logger.log_metric(name="metric", value=result.main_metric.value)
 
         return result
