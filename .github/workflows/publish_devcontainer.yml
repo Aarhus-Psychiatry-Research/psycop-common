@@ -9,6 +9,9 @@ on:
 
 jobs:
   pytest:
+    strategy:
+      matrix:
+        docker_platform: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
     permissions: write-all
 
@@ -40,5 +43,6 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
-          platform: linux/amd64,linux/arm64
+          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
+          platform: ${{ matrix.docker_platform}}
           push: always
