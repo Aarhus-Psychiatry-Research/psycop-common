@@ -9,9 +9,6 @@ on:
 
 jobs:
   publish-devcontainer:
-    strategy:
-      matrix:
-        docker_platform: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
     permissions: write-all
 
@@ -19,6 +16,7 @@ jobs:
       - name: Checkout (GitHub)
         uses: actions/checkout@v3
 
+      # Our builds are so large that we need to free up space on the runners
       - name: Free disk space on runners
         run: | 
           docker rmi $(docker image ls -aq)
@@ -52,5 +50,5 @@ jobs:
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
           cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
-          platform: ${{ matrix.docker_platform}}
+          platform: linux/amd64,linux/arm64
           push: always
