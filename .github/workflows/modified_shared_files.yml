@@ -6,8 +6,6 @@ on:
   pull_request:
     paths:
         - "psycop/common/**"
-    branches: [main]
-
 jobs:
   modified-library-files:
     permissions:

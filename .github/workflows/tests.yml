@@ -5,12 +5,7 @@
 name: tests
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.json'
   pull_request:
-    branches: [main]
 
 jobs:
   pytest:
