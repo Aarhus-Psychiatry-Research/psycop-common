@@ -3,6 +3,8 @@ FROM python:3.10
 RUN apt-get update && apt-get install -y curl
 
 # Install dev tools
+# The cache mount caches downloaded packages for Docker
+# The --no-compile options defers compilation to runtime, instead of install-time. This can dramatically save on build time, at the cost of slightly increased first-run times.
 COPY test-requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r test-requirements.txt --no-compile
 
