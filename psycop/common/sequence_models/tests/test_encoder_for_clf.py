@@ -65,9 +65,11 @@ pytestmark = pytest.mark.parametrize(
     [CLSAggregationModule(), AveragePooler()],
 )
 
+
 def skip_if_arm_within_docker() -> bool:
     """Check if we are running on ARM within docker. ARM on Mac is "arm64", and non-arm on Linux is "x86_64"""
     return "aarch64" in platform.machine()
+
 
 def test_encoder_for_clf(
     patient_dataset_with_labels: PatientSlicesWithLabels,
@@ -78,7 +80,9 @@ def test_encoder_for_clf(
     lr_scheduler_fn: LRSchedulerFn,
 ):
     if skip_if_arm_within_docker():
-        pytest.skip("Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348")
+        pytest.skip(
+            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348"
+        )
 
     clf = EncoderForClassification(
         embedding_module=embedding_module,
@@ -146,7 +150,9 @@ def test_pretrain_from_checkpoint(
     test_behrt: test_module_with_trainer
     """
     if skip_if_arm_within_docker():
-        pytest.skip("Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348")
+        pytest.skip(
+            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348"
+        )
 
     path = Path(__file__).parent / "test_checkpoints"
     checkpoint_path = path / "epoch=4-step=14.ckpt"
