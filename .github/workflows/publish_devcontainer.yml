@@ -8,7 +8,7 @@ on:
     branches: main
 
 jobs:
-  pytest:
+  publish-devcontainer:
     strategy:
       matrix:
         docker_platform: [linux/amd64, linux/arm64]
