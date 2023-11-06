@@ -1,5 +1,10 @@
 pr:
+	make merge-main
 	inv pr
+
+merge-main:
+	git fetch
+	git merge --no-edit origin/main
 
 squash-from-parent:
 	git fetch
@@ -12,6 +17,12 @@ grow:
 	@echo "––– Growing into a new branch 🌳 –––"
 	make create-random-branch
 	make squash-from-parent
+
+#################
+# Short aliases #
+#################
+mm:
+	make merge-main
 
 g:
 	make grow
