@@ -31,6 +31,7 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
+	"initializeCommand": "docker pull ghcr.io/aarhus-psychiatry-research/psycop-common:latest",
 	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
