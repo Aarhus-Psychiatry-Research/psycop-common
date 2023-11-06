@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from typing import Protocol
 
+from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
+
 from ..loggers.base_logger import BaselineLogger
 from ..presplit_preprocessing.pipeline import PreprocessingPipeline
 from ..presplit_preprocessing.polars_frame import PolarsFrame
@@ -12,7 +14,7 @@ from ..problem_type.problem_type_base import ProblemType
 
 @dataclass(frozen=True)
 class TrainingResult:
-    metric: float
+    metric: CalculatedMetric
     eval_dataset: BaseEvalDataset
 
 
@@ -74,6 +76,6 @@ class SplitTrainer(TrainingMethod):
             y=validation_data.select(self.validation_outcome_col_name),
         )
 
-        self.logger.log_metric(name="metric", value=result.metric)
+        self.logger.log_metric(result.metric)
 
         return result
