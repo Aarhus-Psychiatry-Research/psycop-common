@@ -81,7 +81,7 @@ def test_encoder_for_clf(
 ):
     if skip_if_arm_within_docker():
         pytest.skip(
-            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348"
+            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
         )
 
     clf = EncoderForClassification(
@@ -151,7 +151,7 @@ def test_pretrain_from_checkpoint(
     """
     if skip_if_arm_within_docker():
         pytest.skip(
-            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348"
+            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
         )
 
     path = Path(__file__).parent / "test_checkpoints"
