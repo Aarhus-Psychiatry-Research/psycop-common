@@ -116,8 +116,7 @@ def test_diagnosis_mapping(
     "embedding_module",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_diagnosis_mapping(
-    patient_slices: list,  # type: ignore
+def test_reformat_and_filter(
     embedding_module: BEHRTEmbedder,
 ):
     """
@@ -170,7 +169,7 @@ def test_diagnosis_mapping(
 
     patient.add_events(temporal_events)
     patient_slices_mapped = embedding_module.filter_and_reformat_events(
-        [patient.as_slice()]
+        [patient.as_slice()],
     )
     diagnosis_codes = [
         e.value for ps in patient_slices_mapped for e in ps.temporal_events

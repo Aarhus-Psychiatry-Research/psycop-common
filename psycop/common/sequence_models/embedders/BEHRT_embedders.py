@@ -232,7 +232,9 @@ class BEHRTEmbedder(nn.Module, Embedder):
         Take patients and filter events to only include diagnosis codes. Then reformat the diagnosis codes by mapping them to caliber codes.
         """
         assert all(
-            e.source_type == "diagnosis" for ps in patient_slices for e in ps.temporal_events
+            e.source_type == "diagnosis"
+            for ps in patient_slices
+            for e in ps.temporal_events
         ), "PatientSlice.temporal_events must only include diagnosis codes"
 
         patient_events = [

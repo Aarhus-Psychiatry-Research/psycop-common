@@ -21,8 +21,9 @@ class PatientSliceDataset(Dataset[PatientSlice]):
     def __getitem__(self, idx: int) -> PatientSlice:
         return self.patient_slices[idx]
 
-    def filter(
-        self, filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]]
+    def filter_patients(
+        self,
+        filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
     ) -> None:
         self.patient_slices = filter_fn(self.patient_slices)
 
@@ -40,7 +41,8 @@ class PatientSlicesWithLabels(Dataset[tuple[PatientSlice, int]]):
 
         return (pred_time.patient_slice, label)
 
-    def filter(
-        self, filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]]
+    def filter_patients(
+        self,
+        filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
     ) -> None:
         raise NotImplementedError

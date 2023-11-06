@@ -25,11 +25,9 @@ def populate_registry() -> None:
     from .embedders.BEHRT_embedders import create_behrt_embedder  # noqa
     from .logger import create_wandb_logger  # noqa
     from .model_layers import create_encoder_layer, create_transformers_encoder  # noqa
-    from .optimizers import (
-        create_adam,  # noqa
-        create_adamw,  # noqa
-        create_linear_schedule_with_warmup,  # noqa
-    )
+    from .optimizers import create_adam  # noqa
+    from .optimizers import create_adamw  # noqa
+    from .optimizers import create_linear_schedule_with_warmup  # noqa
     from .tasks import create_behrt, create_encoder_for_clf  # noqa
 
 
@@ -57,10 +55,10 @@ def train(config_path: Path | None = None) -> None:
     flat_config = flatten_nested_dict(config_dict)
     logger.experiment.config.update(flat_config)
 
-    # filter dataset 
+    # filter dataset
     filter_fn = model.embedding_module.filter_and_reformat_events
-    training_dataset.filter(filter_fn)
-    validation_dataset.filter(filter_fn)
+    training_dataset.filter_patients(filter_fn)
+    validation_dataset.filter_patients(filter_fn)
 
     # create dataloader:
     train_loader = DataLoader(
