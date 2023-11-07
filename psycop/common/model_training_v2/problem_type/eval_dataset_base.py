@@ -4,29 +4,40 @@ from pathlib import Path
 
 import polars as pl
 
+from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 from psycop.common.model_training_v2.metrics.binary_metrics.base_binary_metric import (
     BinaryMetric,
 )
 
-from ..presplit_preprocessing.polars_frame import PolarsFrame
-
 
 @dataclass
 class BaseEvalDataset:
-    pred_time_uuids: pl.Expr
-    y_hat_probs: pl.Expr
-    y: pl.Expr
-    df: PolarsFrame
+    pred_time_uuids: str
+    y_hat_probs: str
+    y: str
+    df: pl.DataFrame
 
     def to_disk(self, path: Path) -> None:
         ...
 
 
-class BinaryEvalDataset(pl.DataFrame):
-    pred_time_uuids: pl.Expr
-    y_hat_probs: pl.Expr
-    y: pl.Expr
-    df: PolarsFrame
+class BinaryEvalDataset(BaseEvalDataset):
+    pred_time_uuids: str
+    y_hat_probs: str
+    y: str
+    df: pl.DataFrame
 
-    def calculate_metrics(self, metrics: Iterable[BinaryMetric]) -> dict[str, float]:
-        ...
+    def calculate_metrics(
+        self,
+        metrics: Iterable[BinaryMetric],
+    ) -> list[CalculatedMetric]:
+        return [
+            metric.calculate(
+                y_true=self.df.get_column(self.y).to_pandas(),
+                y_pred=self.df.get_column(self.y_hat_probs).to_pandas(),
+            )
+            for metric in metrics
+        ]
+
+    def to_disk(self, path: Path) -> None:
+        self.df.write_parquet(path)
