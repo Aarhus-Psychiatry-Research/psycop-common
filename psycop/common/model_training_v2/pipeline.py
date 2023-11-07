@@ -10,6 +10,9 @@ from .loggers.base_logger import BaselineLogger
 
 
 class BaselineSchema(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
     experiment_path: Path
     logger: BaselineLogger
     training_method: TrainingMethod
