@@ -29,7 +29,7 @@ class ProblemType(Protocol):
         ...
 
 
-class BinaryClassification:
+class BinaryClassification(ProblemType): # type: ignore # TODO: #380 Implement classification and remove type ignore
     def __init__(
         self,
         pipe: BinaryClassificationPipeline,
@@ -48,7 +48,7 @@ class BinaryClassification:
         ...
 
 
-class MultilabelClassification:
+class MultilabelClassification(ProblemType): # type: ignore # TODO: #381 Implement multilabelclassification and remove type ignore
     def __init__(
         self,
         pipe: MulticlassClassificationPipeline,
