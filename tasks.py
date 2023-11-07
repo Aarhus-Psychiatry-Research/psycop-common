@@ -473,6 +473,7 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
             print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
 
     lint(c, auto_fix=auto_fix)
+    push_to_branch(c)
     static_type_checks(c)
     test(c)
 
