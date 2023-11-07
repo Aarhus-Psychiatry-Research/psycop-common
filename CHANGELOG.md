@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.131.0 (2023-11-07)
+
+### Feature
+
+* Add logger.info() ([#382](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/382)) ([`0b59e91`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0b59e910636cccb56f243dea749b7b6396299d51))
+
 ## v0.130.0 (2023-11-07)
 
 ### Feature
