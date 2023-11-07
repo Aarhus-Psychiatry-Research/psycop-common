@@ -27,12 +27,13 @@ def encode_tfidf_values_to_df(
 
 if __name__ == "__main__":
     tfidf_model = load_text_model(
-        "tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_095_min_df_2_max_features_750.pkl",
+        "tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_099_min_df_2_max_features_10000.pkl",
     )
 
     corpus = pl.from_pandas(
         pd.read_parquet(
-            path=PREPROCESSED_TEXT_DIR / "psycop_train_all_sfis_preprocessed.parquet",
+            path=PREPROCESSED_TEXT_DIR
+            / "psycop_train_val_test_all_sfis_preprocessed.parquet",
         ),
     )
 

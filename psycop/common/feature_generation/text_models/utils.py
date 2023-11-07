@@ -2,10 +2,19 @@
 
 from typing import Any
 
+import polars as pl
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.global_utils.pickle import read_pickle, write_to_pickle
+
+
+def chunk_dataframe(input_df: pl.DataFrame, n: int) -> list[pl.DataFrame]:
+    chunk_size = -(-len(input_df) // n)  # Ceiling division to get chunk size
+    return [
+        input_df.slice(offset=i, length=chunk_size)
+        for i in range(0, len(input_df), chunk_size)
+    ]
 
 
 def save_text_model_to_dir(
