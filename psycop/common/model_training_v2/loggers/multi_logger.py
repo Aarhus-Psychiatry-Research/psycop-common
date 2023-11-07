@@ -8,13 +8,14 @@ from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 
 class MultiLogger(BaselineLogger):
     """This logger allows combining multiple loggers. E.g. you can combine a TerminalLogger and a FileLogger."""
+
     def __init__(self, *args: BaselineLogger):
         self.loggers = args
 
     def _run_on_loggers(self, func: Callable[[BaselineLogger], None]):
         """Run a function on all loggers."""
         Seq(self.loggers).map(func).to_list()
-    
+
     def info(self, message: str):
         self._run_on_loggers(lambda logger: logger.info(message))
 
@@ -32,4 +33,3 @@ class MultiLogger(BaselineLogger):
 
     def log_config(self, config: dict[str, Any]):
         self._run_on_loggers(lambda logger: logger.log_config(config=config))
-    
