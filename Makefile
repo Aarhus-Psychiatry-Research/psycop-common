@@ -4,7 +4,10 @@ pr:
 
 merge-main:
 	git fetch
-	git merge --no-edit origin/main
+	git merge --squash --no-edit origin/main
+
+enable-automerge:
+	gh pr merge --auto --squash --delete-branch
 
 enable-automerge:
 	gh pr merge --auto --squash --delete-branch

@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.131.0 (2023-11-07)
+
+### Feature
+
+* Add logger.info() ([#382](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/382)) ([`0b59e91`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0b59e910636cccb56f243dea749b7b6396299d51))
+
+## v0.130.0 (2023-11-07)
+
+### Feature
+
+* Log calculated metric with SplitTrainer ([#364](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/364)) ([`9759f7c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9759f7c40d8f1c5362e1b1b5c4857d031e494bd4))
+
 ## v0.129.1 (2023-11-06)
 
 ### Fix
