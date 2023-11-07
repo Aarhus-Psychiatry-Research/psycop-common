@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from pydantic import BaseModel, DirectoryPath
 
 from psycop.common.model_training_v2.training_method.base_training_method import (
@@ -13,7 +11,7 @@ class BaselineSchema(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    experiment_path: DirectoryPath # Experiment_path must be a directory which exists
+    experiment_path: DirectoryPath  # Experiment_path must be a directory which exists
     logger: BaselineLogger
     training_method: TrainingMethod
 
