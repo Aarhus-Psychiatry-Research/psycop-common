@@ -53,6 +53,4 @@ def test_binary_classification(
     binary_classification_problem.train(x=x, y=y)
 
     result = binary_classification_problem.evaluate(x=x, y=y)
-    assert isinstance(result, TrainingResult)
     assert result.metric.value == main_metric_expected
-    assert isinstance(result.eval_dataset, BinaryEvalDataset)

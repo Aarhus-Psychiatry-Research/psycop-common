@@ -48,7 +48,7 @@ class BinaryClassification:
         df = x.with_columns(pl.Series(y_hat_probs).alias(str(y_hat_probs.name)), y)
 
         eval_dataset = BinaryEvalDataset(
-            pred_time_uuids="pred_time_uuids",  # need to get this column from somewhere!
+            pred_time_uuids="pred_time_uuids", # TODO: #383 Ensure that pred_time_uuids are passed through the entire pipeline
             y_hat_probs=str(y_hat_probs.name),
             y=y.name,
             df=df,
