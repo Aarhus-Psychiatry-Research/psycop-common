@@ -23,4 +23,4 @@ def train_baseline_model(cfg: BaselineSchema) -> float:
     result = cfg.training_method.train()
     result.eval_dataset.to_disk(path=cfg.experiment_path)
 
-    return result.main_metric.value
+    return result.metric.value
