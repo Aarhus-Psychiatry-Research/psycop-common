@@ -14,7 +14,7 @@ class PreprocessingPipeline(Protocol):
         ...
 
 
-class BaselinePreprocessingPipeline:
+class BaselinePreprocessingPipeline(PreprocessingPipeline):
     def __init__(self, steps: Sequence[PresplitStep]) -> None:
         self.steps = steps
 
