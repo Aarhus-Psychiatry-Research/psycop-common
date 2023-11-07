@@ -9,6 +9,9 @@ merge-main:
 enable-automerge:
 	gh pr merge --auto --squash --delete-branch
 
+enable-automerge:
+	gh pr merge --auto --squash --delete-branch
+
 squash-from-parent:
 	git fetch
 	git reset $$(git merge-base origin/main $$(git rev-parse --abbrev-ref HEAD)) ; git add -A ; git commit -m "Squash changes from parent branch"
