@@ -42,9 +42,10 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                                      6,0,0,99
                                      """,
     )
+    logger = TerminalLogger()
     schema = BaselineSchema(
         experiment_path=tmpdir,
-        logger=TerminalLogger(),
+        logger=logger,
         training_method=SplitTrainer(
             training_data=training_data,
             training_outcome_col_name="outcome",
