@@ -24,5 +24,5 @@ def logistic_regression_step(
 
     return (
         "logistic_regression",
-        LogisticRegression(penalty=penalty, solver=solver, C=C, l1_ratio=l1_ratio, random_state=41),
+        LogisticRegression(penalty=penalty, solver=solver, C=C, l1_ratio=l1_ratio, random_state=41), # Random_state is required for reproducibility, e.g. getting the same result on every test
     )
