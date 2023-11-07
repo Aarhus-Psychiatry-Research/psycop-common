@@ -56,6 +56,6 @@ class BinaryClassification:
         main_metric = eval_dataset.calculate_metrics([self.main_metric])[0]
 
         return TrainingResult(
-            main_metric=main_metric,
+            metric=main_metric,
             eval_dataset=eval_dataset,
         )

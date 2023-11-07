@@ -35,7 +35,6 @@ from psycop.common.model_training_v2.training_method.base_training_method import
         (
             BinaryClassificationPipeline(steps=[logistic_regression_step()]),
             BinaryAUROC(),
-            None,
             pl.DataFrame({"x": [1, 1, 2, 2]}),
             pl.Series("y", [0, 0, 1, 1]),
             1.0,
@@ -45,7 +44,6 @@ from psycop.common.model_training_v2.training_method.base_training_method import
 def test_binary_classification(
     pipe: BinaryClassificationPipeline,
     main_metric: BinaryMetric,
-    supplementary_metrics: Sequence[BinaryMetric] | None,
     x: PolarsFrame,
     y: pl.Series,
     main_metric_expected: float,
@@ -53,11 +51,10 @@ def test_binary_classification(
     binary_classification_problem = BinaryClassification(
         pipe=pipe,
         main_metric=main_metric,
-        supplementary_metrics=supplementary_metrics,
     )
     binary_classification_problem.train(x=x, y=y)
 
     result = binary_classification_problem.evaluate(x=x, y=y)
     assert isinstance(result, TrainingResult)
-    assert result.main_metric.value == main_metric_expected
+    assert result.metric.value == main_metric_expected
     assert isinstance(result.eval_dataset, BinaryEvalDataset)
