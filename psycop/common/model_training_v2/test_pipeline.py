@@ -19,10 +19,10 @@ from psycop.common.model_training_v2.presplit_preprocessing.pipeline import (
 from psycop.common.model_training_v2.presplit_preprocessing.presplit_steps.filters import (
     AgeFilter,
 )
-from psycop.common.model_training_v2.problem_type.problem_type_base import (
+from psycop.common.model_training_v2.problem_type.binary_classification import (
     BinaryClassification,
 )
-from psycop.common.model_training_v2.training_method.base_training_method import (
+from psycop.common.model_training_v2.training_method.split_trainer import (
     SplitTrainer,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
