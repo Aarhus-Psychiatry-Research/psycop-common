@@ -1,5 +1,3 @@
-from collections.abc import Sequence
-
 import polars as pl
 import pytest
 
