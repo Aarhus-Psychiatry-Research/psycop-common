@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.132.0 (2023-11-07)
+
+### Feature
+
+* Add multilogger ([`dc52e55`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dc52e55d0eab7152dc17101244aadf5c0c600d54))
+
 ## v0.131.0 (2023-11-07)
 
 ### Feature
