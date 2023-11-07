@@ -7,6 +7,9 @@ from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 
 
 class BaselineLogger(Protocol):
+    def info(self, message: str) -> None:
+        ...
+    
     def good(self, message: str) -> None:
         ...
 
@@ -27,6 +30,9 @@ class TerminalLogger(BaselineLogger):
     def __init__(self) -> None:
         self._l = wasabi.Printer(timestamp=True)
 
+    def info(self, message: str) -> None:
+        self._l.info(message
+    
     def good(self, message: str) -> None:
         self._l.good(message)
 
