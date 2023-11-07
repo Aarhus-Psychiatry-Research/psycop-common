@@ -8,16 +8,22 @@ on:
     branches: main
 
 jobs:
-  pytest:
+  publish-devcontainer:
     runs-on: ubuntu-latest
     permissions: write-all
-    concurrency:
-      group: "${{ github.workflow }} @ ${{ github.ref }}"
-      cancel-in-progress: true
 
     steps:
       - name: Checkout (GitHub)
         uses: actions/checkout@v3
+
+      # Our builds are so large that we need to free up space on the runners
+      - name: Free disk space on runners
+        run: | 
+          docker rmi $(docker image ls -aq)
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          df -h
 
       - name: Set up QEMU for multi-architecture builds
         uses: docker/setup-qemu-action@v2
@@ -43,5 +49,6 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
+          cacheFrom: ghcr.io/aarhus-psychiatry-research/psycop-common:latest
           platform: linux/amd64,linux/arm64
           push: always
