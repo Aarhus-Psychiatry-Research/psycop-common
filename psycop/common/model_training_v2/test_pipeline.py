@@ -46,7 +46,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
 
     schema = BaselineSchema(
         experiment_path=tmpdir,
-        loggers=logger,
+        logger=logger,
         training_method=SplitTrainer(
             training_data=training_data,
             training_outcome_col_name="outcome",
