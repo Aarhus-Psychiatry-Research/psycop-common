@@ -19,12 +19,6 @@ from psycop.common.model_training_v2.presplit_preprocessing.polars_frame import 
 from psycop.common.model_training_v2.problem_type.binary_classification import (
     BinaryClassification,
 )
-from psycop.common.model_training_v2.problem_type.eval_dataset_base import (
-    BinaryEvalDataset,
-)
-from psycop.common.model_training_v2.training_method.base_training_method import (
-    TrainingResult,
-)
 
 
 @pytest.mark.parametrize(
