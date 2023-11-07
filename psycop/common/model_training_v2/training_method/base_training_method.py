@@ -37,5 +37,3 @@ class CrossValidatorTrainer(TrainingMethod):
 
     def train(self) -> TrainingResult:
         ...
-
-
