@@ -13,12 +13,13 @@ from psycop.common.model_training_v2.presplit_preprocessing.polars_frame import 
 from psycop.common.model_training_v2.problem_type.eval_dataset_base import (
     BinaryEvalDataset,
 )
+from psycop.common.model_training_v2.problem_type.problem_type_base import ProblemType
 from psycop.common.model_training_v2.training_method.base_training_method import (
     TrainingResult,
 )
 
 
-class BinaryClassification:
+class BinaryClassification(ProblemType):
     def __init__(
         self,
         pipe: BinaryClassificationPipeline,

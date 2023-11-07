@@ -1,5 +1,8 @@
 from collections.abc import Sequence
 
+import pandas as pd
+import polars as pl
+
 from psycop.common.model_training_v2.classifier_pipelines.multiclass_classification_pipeline import (
     MulticlassClassificationPipeline,
 )
@@ -9,9 +12,13 @@ from psycop.common.model_training_v2.metrics.multilabel_metrics.base import (
 from psycop.common.model_training_v2.presplit_preprocessing.polars_frame import (
     PolarsFrame,
 )
+from psycop.common.model_training_v2.problem_type.problem_type_base import ProblemType
+from psycop.common.model_training_v2.training_method.base_training_method import (
+    TrainingResult,
+)
 
 
-class MultilabelClassification:
+class MultilabelClassification(ProblemType):
     def __init__(
         self,
         pipe: MulticlassClassificationPipeline,
@@ -26,5 +33,11 @@ class MultilabelClassification:
         self,
         x: PolarsFrame,
         y: PolarsFrame,
-    ) -> float:
+    ):
+        ...
+
+    def predict_proba(self, x: PolarsFrame) -> pd.Series[float]:
+        ...
+
+    def evaluate(self, x: PolarsFrame, y: PolarsFrame) -> TrainingResult:
         ...
