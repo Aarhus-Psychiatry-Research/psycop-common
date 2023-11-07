@@ -21,19 +21,3 @@ class TrainingResult:
 class TrainingMethod(Protocol):
     def train(self) -> TrainingResult:
         ...
-
-
-class CrossValidatorTrainer(TrainingMethod):
-    def __init__(
-        self,
-        data: PolarsFrame,
-        outcome_col_name: str,
-        preprocessing_pipeline: PreprocessingPipeline,
-        problem_type: ProblemType,
-        n_splits: int,
-        logger: BaselineLogger,
-    ):
-        ...
-
-    def train(self) -> TrainingResult:
-        ...
