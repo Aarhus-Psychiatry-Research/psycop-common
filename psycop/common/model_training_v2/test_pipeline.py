@@ -31,7 +31,7 @@ from psycop.common.model_training_v2.training_method.split_trainer import (
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 
-def test_v2_train_model_pipeline(tmpdir: Path):
+def test_smoke_v2_pipeline(tmpdir: Path):
     training_data = str_to_pl_df(
         """pred_time_uuid,pred_1,outcome,pred_age
                                      1,1,1,1
@@ -42,11 +42,9 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                                      6,0,0,99
                                      """,
     )
-    logger = TerminalLogger()
-
     schema = BaselineSchema(
         experiment_path=tmpdir,
-        logger=logger,
+        logger=TerminalLogger(),
         training_method=SplitTrainer(
             training_data=training_data,
             training_outcome_col_name="outcome",
