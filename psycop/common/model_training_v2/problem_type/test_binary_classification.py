@@ -28,7 +28,7 @@ from psycop.common.model_training_v2.training_method.base_training_method import
 
 
 @pytest.mark.parametrize(
-    ("pipe", "main_metric", "supplementary_metrics", "x", "y", "main_metric_expected"),
+    ("pipe", "main_metric", "x", "y", "main_metric_expected"),
     [
         (
             BinaryClassificationPipeline(steps=[logistic_regression_step()]),
