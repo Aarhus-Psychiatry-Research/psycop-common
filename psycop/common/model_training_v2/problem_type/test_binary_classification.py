@@ -28,7 +28,7 @@ from psycop.common.model_training_v2.problem_type.binary_classification import (
             BinaryClassificationPipeline(steps=[logistic_regression_step()]),
             BinaryAUROC(),
             pl.DataFrame({"x": [1, 1, 2, 2]}),
-            pl.Series("y", [0, 0, 1, 1]),
+            pl.DataFrame({"y": [0, 0, 1, 1]}),
             1.0,
         ),
     ],
@@ -37,7 +37,7 @@ def test_binary_classification(
     pipe: BinaryClassificationPipeline,
     main_metric: BinaryMetric,
     x: PolarsFrame,
-    y: pl.Series,
+    y: pl.DataFrame,
     main_metric_expected: float,
 ):
     binary_classification_problem = BinaryClassification(
