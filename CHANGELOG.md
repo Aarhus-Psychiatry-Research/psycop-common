@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.133.0 (2023-11-07)
+
+### Feature
+
+* Add multilogger ([#388](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/388)) ([`7e6d8ef`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7e6d8efe449bd3092fd2e07b9c411b3ab31295ab))
+
 ## v0.132.0 (2023-11-07)
 
 ### Feature
