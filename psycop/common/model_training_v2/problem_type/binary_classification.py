@@ -19,6 +19,15 @@ from psycop.common.model_training_v2.training_method.base_training_method import
 )
 
 
+def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
+    if isinstance(polarsframe, pl.LazyFrame):
+        polarsframe = polarsframe.collect()
+
+    assert len(polarsframe.columns) == 1
+
+    return polarsframe.to_series()
+
+
 class BinaryClassification(ProblemType):
     def __init__(
         self,
@@ -34,7 +43,7 @@ class BinaryClassification(ProblemType):
         y: PolarsFrame,
     ) -> None:
         assert len(y.columns) == 1
-        y_series = pl.Series(y)
+        y_series = polarsframe_to_series(y)
 
         self.pipe.fit(x=x, y=y_series)
         self.is_fitted = True
@@ -45,7 +54,7 @@ class BinaryClassification(ProblemType):
     def evaluate(self, x: PolarsFrame, y: PolarsFrame) -> TrainingResult:
         if isinstance(x, pl.LazyFrame):
             x = x.collect()
-        y_series = pl.Series(y)
+        y_series = polarsframe_to_series(y)
 
         y_hat_probs = self.pipe.predict_proba(x)
 
