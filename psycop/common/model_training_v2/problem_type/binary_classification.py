@@ -35,7 +35,7 @@ class BinaryClassification(ProblemType):
     ) -> None:
         assert len(y.columns) == 1
         y_series = pl.Series(y)
-        
+
         self.pipe.fit(x=x, y=y_series)
         self.is_fitted = True
 
@@ -46,10 +46,13 @@ class BinaryClassification(ProblemType):
         if isinstance(x, pl.LazyFrame):
             x = x.collect()
         y_series = pl.Series(y)
-            
+
         y_hat_probs = self.pipe.predict_proba(x)
 
-        df = x.with_columns(pl.Series(y_hat_probs).alias(str(y_hat_probs.name)), y_series)
+        df = x.with_columns(
+            pl.Series(y_hat_probs).alias(str(y_hat_probs.name)),
+            y_series,
+        )
 
         eval_dataset = BinaryEvalDataset(
             pred_time_uuids="pred_time_uuids",  # TODO: #383 Ensure that pred_time_uuids are passed through the entire pipeline
