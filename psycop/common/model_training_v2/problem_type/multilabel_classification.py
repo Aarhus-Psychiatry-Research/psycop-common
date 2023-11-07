@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 
 import pandas as pd
-import polars as pl
 
 from psycop.common.model_training_v2.classifier_pipelines.multiclass_classification_pipeline import (
     MulticlassClassificationPipeline,
