@@ -52,15 +52,18 @@ def train(config_path: Path | None = None) -> None:
     trainer_kwargs = training_cfg.trainer.to_dict()
 
     # update config
+    std_logger.info("Updating Config")
     flat_config = flatten_nested_dict(config_dict)
     logger.experiment.config.update(flat_config)
 
     # filter dataset
+    std_logger.info("Filtering Patients")
     filter_fn = model.embedding_module.filter_and_reformat_events
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
 
-    # create dataloader:
+
+    std_logger.info("Creating dataloaders")
     train_loader = DataLoader(
         training_dataset,
         batch_size=training_cfg.batch_size,
@@ -78,6 +81,7 @@ def train(config_path: Path | None = None) -> None:
         persistent_workers=True,
     )
 
+    std_logger.info("Initalizing trainer")
     trainer = pl.Trainer(**trainer_kwargs)
 
     std_logger.info("Starting training")
