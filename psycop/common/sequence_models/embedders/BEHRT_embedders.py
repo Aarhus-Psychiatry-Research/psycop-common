@@ -397,5 +397,6 @@ def create_behrt_embedder(
     if isinstance(patient_slices, PatientSliceDataset):
         patient_slices = patient_slices.patient_slices
 
+    log.info("Fitting Embedding Module")
     embedder.fit(patient_slices=patient_slices)
     return embedder
