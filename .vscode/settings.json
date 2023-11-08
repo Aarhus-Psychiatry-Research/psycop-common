@@ -15,7 +15,8 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        "**/BUILD": true
+        "**/BUILD": true,
+        "**/__pycache__": true,
     },
     "terminal.integrated.env.osx": {
         "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"
