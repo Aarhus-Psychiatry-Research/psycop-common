@@ -475,9 +475,23 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     static_type_checks(c)
     test(c)
 
+
 @task
-def qtest(c: Context):  # noqa: B006
-    test(c, pytest_args=["psycop", "-rfE", "--failed-first", "-p no:cov", "--disable-warnings", "-q", "--durations=5", "--testmon"])
+def qtest(c: Context):
+    test(
+        c,
+        pytest_args=[
+            "psycop",
+            "-rfE",
+            "--failed-first",
+            "-p no:cov",
+            "--disable-warnings",
+            "-q",
+            "--durations=5",
+            "--testmon",
+        ],
+    )
+
 
 @task
 def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
@@ -494,6 +508,7 @@ def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     push_to_branch(c)
     static_type_checks(c)
     qtest(c)
+
 
 @task
 def docs(c: Context, view: bool = False, view_only: bool = False):
