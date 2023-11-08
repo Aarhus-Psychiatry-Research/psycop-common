@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.133.1 (2023-11-08)
+
+### Fix
+
+* Invalid imports ([`4d27c03`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4d27c0388b955b79c90a9d992b9839bcbab555df))
+
+## v0.133.0 (2023-11-07)
+
+### Feature
+
+* Add multilogger ([#388](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/388)) ([`7e6d8ef`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7e6d8efe449bd3092fd2e07b9c411b3ab31295ab))
+
+## v0.132.0 (2023-11-07)
+
+### Feature
+
+* Add multilogger ([`dc52e55`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dc52e55d0eab7152dc17101244aadf5c0c600d54))
+
 ## v0.131.0 (2023-11-07)
 
 ### Feature

@@ -27,7 +27,7 @@ from psycop.common.model_training_v2.problem_type.binary_classification import (
         (
             BinaryClassificationPipeline(steps=[logistic_regression_step()]),
             BinaryAUROC(),
-            pl.DataFrame({"x": [1, 1, 2, 2]}),
+            pl.DataFrame({"x": [1, 1, 2, 2], "uuid": ["a", "b", "c", "d"]}),
             pl.DataFrame({"y": [0, 0, 1, 1]}),
             1.0,
         ),
@@ -43,6 +43,7 @@ def test_binary_classification(
     binary_classification_problem = BinaryClassification(
         pipe=pipe,
         main_metric=main_metric,
+        pred_time_uuid_col_name="uuid",
     )
     binary_classification_problem.train(x=x, y=y)
 

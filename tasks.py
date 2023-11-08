@@ -464,8 +464,6 @@ def lint(c: Context, auto_fix: bool = False):
 def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     """Run all checks and update the PR."""
     add_and_commit(c)
-    push_to_branch(c)
-
     if create_pr:
         try:
             update_pr(c)
@@ -476,6 +474,42 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     push_to_branch(c)
     static_type_checks(c)
     test(c)
+
+
+@task
+def qtest(c: Context):
+    test(
+        c,
+        pytest_args=[
+            "psycop",
+            "-rfE",
+            "--failed-first",
+            "-p no:cov",
+            "--disable-warnings",
+            "-q",
+            "--durations=5",
+            "--testmon",
+        ],
+    )
+
+
+# TODO: #390 Make more durable testmon implementation
+
+
+@task
+def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
+    """Run all checks and update the PR."""
+    add_and_commit(c)
+    if create_pr:
+        try:
+            update_pr(c)
+        except Exception as e:
+            print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
+
+    lint(c, auto_fix=auto_fix)
+    push_to_branch(c)
+    static_type_checks(c)
+    qtest(c)
 
 
 @task

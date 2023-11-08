@@ -207,3 +207,6 @@ logs/*
 # Allow mapping file to be uploaded
 !**/diagnosis_code_mapping.json
 !.devcontainer/devcontainer.json
+
+# Ignore testmon database
+.testmon*
