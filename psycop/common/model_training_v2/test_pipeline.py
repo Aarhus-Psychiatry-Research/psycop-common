@@ -1,32 +1,32 @@
 from pathlib import Path
 
-from psycop.common.model_training_v2.classifier_pipelines.binary_classification_pipeline import (
-    BinaryClassificationPipeline,
-)
-from psycop.common.model_training_v2.classifier_pipelines.estimator_steps.logistic_regression import (
-    logistic_regression_step,
-)
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
-)
-from psycop.common.model_training_v2.metrics.binary_metrics.binary_auroc import (
-    BinaryAUROC,
 )
 from psycop.common.model_training_v2.pipeline import (
     BaselineSchema,
     train_baseline_model,
 )
-from psycop.common.model_training_v2.presplit_preprocessing.pipeline import (
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
-from psycop.common.model_training_v2.presplit_preprocessing.presplit_steps.filters import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.filters import (
     AgeFilter,
 )
-from psycop.common.model_training_v2.problem_type.binary_classification import (
+from psycop.common.model_training_v2.trainer.split_trainer import (
+    SplitTrainer,
+)
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification import (
     BinaryClassification,
 )
-from psycop.common.model_training_v2.training_method.split_trainer import (
-    SplitTrainer,
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
+    BinaryClassificationPipeline,
+)
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics import (
+    BinaryAUROC,
+)
+from psycop.common.model_training_v2.trainer.task.estimator_steps import (
+    logistic_regression_step,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -46,7 +46,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
     schema = BaselineSchema(
         experiment_path=tmpdir,
         logger=logger,
-        training_method=SplitTrainer(
+        trainer=SplitTrainer(
             training_data=training_data,
             training_outcome_col_name="outcome",
             validation_data=training_data,
@@ -54,7 +54,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
             preprocessing_pipeline=BaselinePreprocessingPipeline(
                 [AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")],
             ),
-            problem_type=BinaryClassification(
+            task=BinaryClassification(
                 pipe=BinaryClassificationPipeline(steps=[logistic_regression_step()]),
                 main_metric=BinaryAUROC(),
             ),

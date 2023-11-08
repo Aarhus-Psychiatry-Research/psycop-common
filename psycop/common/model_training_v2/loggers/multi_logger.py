@@ -1,7 +1,9 @@
 from typing import Any, Callable
 
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
-from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
+from psycop.common.model_training_v2.trainer.task.base_metric import (
+    CalculatedMetric,
+)
 
 
 class MultiLogger(BaselineLogger):
