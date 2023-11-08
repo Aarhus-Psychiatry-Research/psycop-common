@@ -3,7 +3,7 @@ from typing import Any, Protocol, runtime_checkable
 import wasabi
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
-from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
+from psycop.common.model_training_v2.training_method.problem_type.base_metric import CalculatedMetric
 
 
 @runtime_checkable
