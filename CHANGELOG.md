@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.133.1 (2023-11-08)
+
+### Fix
+
+* Invalid imports ([`4d27c03`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4d27c0388b955b79c90a9d992b9839bcbab555df))
+
 ## v0.133.0 (2023-11-07)
 
 ### Feature
