@@ -19,7 +19,7 @@ from psycop.common.sequence_models.dataset import PatientSliceDataset
 
 from ..registry import Registry
 from .interface import EmbeddedSequence, Embedder
-
+from tqdm import tqdm
 log = logging.getLogger(__name__)
 
 
@@ -49,6 +49,17 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         self.LayerNorm = nn.LayerNorm(d_model, eps=1e-12)
         self.dropout = nn.Dropout(dropout_prob)
+        self.icd2caliber = self.load_icd_to_caliber_mapping()
+
+
+    @staticmethod
+    def load_icd_to_caliber_mapping() -> dict[str, str]:
+        with open(  # noqa: PTH123
+            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
+        ) as fp:
+            mapping = json.load(fp)
+        
+        return mapping
 
     def initialize_embeddings_layers(
         self,
@@ -201,20 +212,17 @@ class BEHRTEmbedder(nn.Module, Embedder):
                 filtered_events.append(event)
         return filtered_events
 
+
     def map_icd10_to_caliber(
         self,
         diagnosis_code: str,
     ) -> str | None:
-        with open(  # noqa: PTH123
-            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
-        ) as fp:
-            mapping = json.load(fp)
 
         # For each diagnosis code, attempt to map to caliber code
         # If no mapping exists, remove one character from the end of the code and try again
         while len(diagnosis_code) > 2:  # only attempt codes with at least 3 characters
-            if diagnosis_code in mapping:
-                return mapping[diagnosis_code]
+            if diagnosis_code in self.icd2caliber:
+                return self.icd2caliber[diagnosis_code]
             diagnosis_code = diagnosis_code[:-1]
         return None
 
@@ -239,7 +247,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         patient_events = [
             PatientSlice(p.patient, self.filter_events(p.temporal_events))
-            for p in patient_slices
+            for p in tqdm(patient_slices)
         ]
         if not self.map_diagnosis_codes:
             return patient_events
@@ -247,7 +255,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         # map diagnosis codes
         _patient_slices = []
         n_filtered = 0
-        for p in patient_events:
+        for p in tqdm(patient_events):
             temporal_events = []
             for e in p.temporal_events:
                 value = self.map_icd10_to_caliber(e.value)  # type: ignore

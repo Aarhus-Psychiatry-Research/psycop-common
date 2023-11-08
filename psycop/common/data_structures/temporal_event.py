@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 @dataclass
 class TemporalEvent:
+    """
+    Attributes:
+        source_type: E.g. "lab"/"diagnosis"
+        source_subtype: E.g. "Hba1c"/"hypertension" or "A" for diagnoses. Is optional, since some source types might not have a name, only a source and value.
+    """
     timestamp: dt.datetime
-    source_type: str  # E.g. "lab"/"diagnosis"
-    source_subtype: str | None  # E.g. "Hba1c"/"hypertension" or "A" for diagnoses. Is optional, since some source types might not have a name, only a source and value.
+    source_type: str 
+    source_subtype: str | None  
     value: float | str | bool
