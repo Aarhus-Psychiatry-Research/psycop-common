@@ -1,7 +1,7 @@
 # Implement this object for cross-validation, split-validation
 
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 
@@ -14,6 +14,7 @@ class TrainingResult:
     eval_dataset: BaseEvalDataset
 
 
+@runtime_checkable
 class TrainingMethod(Protocol):
     def train(self) -> TrainingResult:
         ...

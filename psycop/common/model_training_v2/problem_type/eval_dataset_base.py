@@ -40,4 +40,4 @@ class BinaryEvalDataset(BaseEvalDataset):
         ]
 
     def to_disk(self, path: Path) -> None:
-        self.df.write_parquet(path)
+        self.df.write_parquet(path / "pred_results.parquet")
