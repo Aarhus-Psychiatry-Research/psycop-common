@@ -482,7 +482,7 @@ def qtest(c: Context):  # noqa: B006
 @task
 def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     """Run all checks and update the PR."""
-    c.run("gh pr create --fill", pty=NOT_WINDOWS, hide=True)
+    c.run("gh pr create --fill", pty=NOT_WINDOWS)
     add_and_commit(c)
     if create_pr:
         try:
