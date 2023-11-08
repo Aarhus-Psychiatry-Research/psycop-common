@@ -4,17 +4,17 @@ from typing import TYPE_CHECKING
 
 from sklearn.metrics import roc_auc_score
 
-from psycop.common.model_training_v2.training_method.problem_type.base_metric import (
+from psycop.common.model_training_v2.trainer.task.base_metric import (
     CalculatedMetric,
 )
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics.base_binary_metric import (
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.base_binary_metric import (
     BinaryMetric,
 )
 
 if TYPE_CHECKING:
     import pandas as pd
 
-    from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
+    from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
         PredProbaSeries,
     )
 

@@ -4,10 +4,10 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
+from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.training_method.problem_type.model_step import (
+from psycop.common.model_training_v2.trainer.task.model_step import (
     ModelStep,
 )
 

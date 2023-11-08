@@ -2,7 +2,7 @@ from typing import Literal
 
 from sklearn.linear_model import LogisticRegression
 
-from psycop.common.model_training_v2.training_method.problem_type.model_step import (
+from psycop.common.model_training_v2.trainer.task.model_step import (
     ModelStep,
 )
 

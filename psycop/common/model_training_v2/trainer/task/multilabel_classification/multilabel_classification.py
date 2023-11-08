@@ -2,24 +2,24 @@ from collections.abc import Sequence
 
 import pandas as pd
 
-from psycop.common.model_training_v2.training_method.base_training_method import (
+from psycop.common.model_training_v2.trainer.base_trainer import (
     TrainingResult,
 )
-from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
+from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.training_method.problem_type.multilabel_classification.multiclass_classification_pipeline import (
+from psycop.common.model_training_v2.trainer.task.base_task import (
+    BaselineTask,
+)
+from psycop.common.model_training_v2.trainer.task.multilabel_classification.multiclass_classification_pipeline import (
     MulticlassClassificationPipeline,
 )
-from psycop.common.model_training_v2.training_method.problem_type.multilabel_classification.multilabel_metrics.base import (
+from psycop.common.model_training_v2.trainer.task.multilabel_classification.multilabel_metrics.base import (
     MultilabelMetric,
 )
-from psycop.common.model_training_v2.training_method.problem_type.problem_type_base import (
-    ProblemType,
-)
 
 
-class MultilabelClassification(ProblemType):
+class MultilabelClassification(BaselineTask):
     def __init__(
         self,
         pipe: MulticlassClassificationPipeline,

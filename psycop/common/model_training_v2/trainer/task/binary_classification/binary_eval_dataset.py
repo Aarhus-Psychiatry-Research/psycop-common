@@ -3,13 +3,13 @@ from pathlib import Path
 
 import polars as pl
 
-from psycop.common.model_training_v2.training_method.problem_type.base_metric import (
+from psycop.common.model_training_v2.trainer.task.base_metric import (
     CalculatedMetric,
 )
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics import (
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics import (
     BinaryMetric,
 )
-from psycop.common.model_training_v2.training_method.problem_type.eval_dataset_base import (
+from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
     BaseEvalDataset,
 )
 

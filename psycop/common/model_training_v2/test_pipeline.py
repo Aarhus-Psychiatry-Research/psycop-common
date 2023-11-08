@@ -7,26 +7,26 @@ from psycop.common.model_training_v2.pipeline import (
     BaselineSchema,
     train_baseline_model,
 )
-from psycop.common.model_training_v2.training_method.preprocessing.pipeline import (
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
-from psycop.common.model_training_v2.training_method.preprocessing.steps.filters import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.filters import (
     AgeFilter,
 )
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification import (
+from psycop.common.model_training_v2.trainer.split_trainer import (
+    SplitTrainer,
+)
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification import (
     BinaryClassification,
 )
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics import (
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics import (
     BinaryAUROC,
 )
-from psycop.common.model_training_v2.training_method.problem_type.estimator_steps import (
+from psycop.common.model_training_v2.trainer.task.estimator_steps import (
     logistic_regression_step,
-)
-from psycop.common.model_training_v2.training_method.split_trainer import (
-    SplitTrainer,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 

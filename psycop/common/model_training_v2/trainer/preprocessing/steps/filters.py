@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.model_training_v2.training_method.preprocessing.step import (
+from psycop.common.model_training_v2.trainer.preprocessing.step import (
     PolarsFrame_T0,
     PresplitStep,
 )

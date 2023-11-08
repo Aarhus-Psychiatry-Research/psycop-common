@@ -1,26 +1,26 @@
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
-from psycop.common.model_training_v2.training_method.base_training_method import (
-    TrainingMethod,
+from psycop.common.model_training_v2.trainer.base_trainer import (
+    BaselineTrainer,
     TrainingResult,
 )
-from psycop.common.model_training_v2.training_method.preprocessing.pipeline import (
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
-from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
+from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.training_method.problem_type.problem_type_base import (
-    ProblemType,
+from psycop.common.model_training_v2.trainer.task.base_task import (
+    BaselineTask,
 )
 
 
-class CrossValidatorTrainer(TrainingMethod):
+class CrossValidatorTrainer(BaselineTrainer):
     def __init__(
         self,
         data: PolarsFrame,
         outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
-        problem_type: ProblemType,
+        task: BaselineTask,
         n_splits: int,
         logger: BaselineLogger,
     ):

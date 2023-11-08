@@ -4,16 +4,16 @@ import pandas as pd
 import polars as pl
 import pytest
 
-from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
+from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )
-from psycop.common.model_training_v2.training_method.problem_type.estimator_steps.logistic_regression import (
+from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regression import (
     logistic_regression_step,
 )
-from psycop.common.model_training_v2.training_method.problem_type.model_step import (
+from psycop.common.model_training_v2.trainer.task.model_step import (
     ModelStep,
 )
 

@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING
 import pandas as pd
 import pytest
 
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics.binary_auroc import (
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.binary_auroc import (
     BinaryAUROC,
 )
 
 if TYPE_CHECKING:
-    from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
+    from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
         PredProbaSeries,
     )
 

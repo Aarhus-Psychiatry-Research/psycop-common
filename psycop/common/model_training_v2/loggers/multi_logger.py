@@ -1,7 +1,7 @@
 from typing import Any, Callable
 
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
-from psycop.common.model_training_v2.training_method.problem_type.base_metric import (
+from psycop.common.model_training_v2.trainer.task.base_metric import (
     CalculatedMetric,
 )
 

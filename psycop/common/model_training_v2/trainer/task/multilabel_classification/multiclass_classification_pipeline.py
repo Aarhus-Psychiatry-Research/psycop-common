@@ -1,10 +1,10 @@
 from collections.abc import Sequence
 from typing import Protocol
 
-from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
+from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.training_method.problem_type.model_step import (
+from psycop.common.model_training_v2.trainer.task.model_step import (
     ModelStep,
 )
 

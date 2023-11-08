@@ -1,20 +1,20 @@
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
-from psycop.common.model_training_v2.training_method.base_training_method import (
-    TrainingMethod,
+from psycop.common.model_training_v2.trainer.base_trainer import (
+    BaselineTrainer,
     TrainingResult,
 )
-from psycop.common.model_training_v2.training_method.preprocessing.pipeline import (
+from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
-from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
+from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.training_method.problem_type.problem_type_base import (
-    ProblemType,
+from psycop.common.model_training_v2.trainer.task.base_task import (
+    BaselineTask,
 )
 
 
-class SplitTrainer(TrainingMethod):
+class SplitTrainer(BaselineTrainer):
     def __init__(
         self,
         training_data: PolarsFrame,
@@ -22,7 +22,7 @@ class SplitTrainer(TrainingMethod):
         validation_data: PolarsFrame,
         validation_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
-        problem_type: ProblemType,
+        task: BaselineTask,
         logger: BaselineLogger,
     ):
         self.training_data = training_data
@@ -30,7 +30,7 @@ class SplitTrainer(TrainingMethod):
         self.validation_data = validation_data
         self.validation_outcome_col_name = validation_outcome_col_name
         self.preprocessing_pipeline = preprocessing_pipeline
-        self.problem_type = problem_type
+        self.problem_type = task
         self.logger = logger
 
     def train(self) -> TrainingResult:
