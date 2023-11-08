@@ -347,10 +347,6 @@ class BEHRTEmbedder(nn.Module, Embedder):
             str(e.value) for p in patient_slices for e in p.temporal_events
         ]
 
-        # map diagnosis codes
-        if self.map_diagnosis_codes:
-            diagnosis_codes = [self.map_icd10_to_caliber(d) for d in diagnosis_codes]  # type: ignore
-
         # create dianosis2idx mapping
         diagnosis2idx = {
             d: i for i, d in enumerate(set(diagnosis_codes)) if d is not None  # type: ignore
