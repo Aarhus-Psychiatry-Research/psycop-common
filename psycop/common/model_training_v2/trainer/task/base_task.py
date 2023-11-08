@@ -10,6 +10,7 @@ if TYPE_CHECKING:
         PolarsFrame,
     )
 
+
 class BaselineTask(Protocol):
     def train(self, x: PolarsFrame, y: PolarsFrame) -> None:
         """Train the model"""
