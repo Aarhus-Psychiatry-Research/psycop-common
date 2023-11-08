@@ -2,17 +2,19 @@
 The main training entrypoint for sequence models.
 """
 import logging
-from pathlib import Path
 import os
+from pathlib import Path
 
 import lightning.pytorch as pl
 from torch.utils.data import DataLoader
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
+
 from .config_utils import load_config, parse_config
 
 std_logger = logging.getLogger(__name__)
-os.environ["WANDB__SERVICE_WAIT"] = "300" # to avoid issues with wandb service
+os.environ["WANDB__SERVICE_WAIT"] = "300"  # to avoid issues with wandb service
+
 
 def populate_registry() -> None:
     """
@@ -61,7 +63,6 @@ def train(config_path: Path | None = None) -> None:
     filter_fn = model.embedding_module.filter_and_reformat_events
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
-
 
     std_logger.info("Creating dataloaders")
     train_loader = DataLoader(
