@@ -493,6 +493,8 @@ def qtest(c: Context):
     )
 
 
+# TODO: #390 Make more durable testmon implementation
+
 @task
 def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     """Run all checks and update the PR."""
