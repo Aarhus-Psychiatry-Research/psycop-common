@@ -1,7 +1,5 @@
 from typing import Any, Callable
 
-from functionalpy import Seq
-
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.metrics.base_metric import CalculatedMetric
 
@@ -14,7 +12,7 @@ class MultiLogger(BaselineLogger):
 
     def _run_on_loggers(self, func: Callable[[BaselineLogger], None]):
         """Run a function on all loggers."""
-        Seq(self.loggers).map(func).to_list()
+        [func(logger) for logger in self.loggers]
 
     def info(self, message: str):
         self._run_on_loggers(lambda logger: logger.info(message))
