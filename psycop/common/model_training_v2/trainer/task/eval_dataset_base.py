@@ -13,5 +13,3 @@ class BaseEvalDataset:
 
     def to_disk(self, path: Path) -> None:
         ...
-
-

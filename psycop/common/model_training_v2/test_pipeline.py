@@ -1,16 +1,7 @@
 from pathlib import Path
 
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
-    BinaryClassificationPipeline,
-)
-from psycop.common.model_training_v2.training_method.problem_type.estimator_steps import (
-    logistic_regression_step,
-)
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
-)
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics import (
-    BinaryAUROC,
 )
 from psycop.common.model_training_v2.pipeline import (
     BaselineSchema,
@@ -24,6 +15,15 @@ from psycop.common.model_training_v2.training_method.preprocessing.steps.filters
 )
 from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification import (
     BinaryClassification,
+)
+from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
+    BinaryClassificationPipeline,
+)
+from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics import (
+    BinaryAUROC,
+)
+from psycop.common.model_training_v2.training_method.problem_type.estimator_steps import (
+    logistic_regression_step,
 )
 from psycop.common.model_training_v2.training_method.split_trainer import (
     SplitTrainer,

@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING, Protocol
 if TYPE_CHECKING:
     import pandas as pd
 
+    from psycop.common.model_training_v2.training_method.problem_type.base_metric import (
+        CalculatedMetric,
+    )
     from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
         PredProbaSeries,
     )
-    from psycop.common.model_training_v2.training_method.problem_type.base_metric import CalculatedMetric
 
 
 class BinaryMetric(Protocol):

@@ -1,20 +1,23 @@
 import polars as pl
 
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
-    BinaryClassificationPipeline,
-    PredProbaSeries,
-)
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics.base_binary_metric import (
-    BinaryMetric,
+from psycop.common.model_training_v2.training_method.base_training_method import (
+    TrainingResult,
 )
 from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_eval_dataset import \
-    BinaryEvalDataset
-from psycop.common.model_training_v2.training_method.problem_type.problem_type_base import ProblemType
-from psycop.common.model_training_v2.training_method.base_training_method import (
-    TrainingResult,
+from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_classification_pipeline import (
+    BinaryClassificationPipeline,
+    PredProbaSeries,
+)
+from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_eval_dataset import (
+    BinaryEvalDataset,
+)
+from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics.base_binary_metric import (
+    BinaryMetric,
+)
+from psycop.common.model_training_v2.training_method.problem_type.problem_type_base import (
+    ProblemType,
 )
 
 

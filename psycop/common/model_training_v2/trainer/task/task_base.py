@@ -8,8 +8,9 @@ if TYPE_CHECKING:
     from psycop.common.model_training_v2.training_method.base_training_method import (
         TrainingResult,
     )
-
-    from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import PolarsFrame
+    from psycop.common.model_training_v2.training_method.preprocessing.polars_frame import (
+        PolarsFrame,
+    )
 
 
 class Task(Protocol):

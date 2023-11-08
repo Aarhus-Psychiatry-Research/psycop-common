@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from typing import Protocol
 
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+
 from .polars_frame import PolarsFrame
 from .step import PresplitStep
 

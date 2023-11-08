@@ -1,13 +1,17 @@
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import polars as pl
 
-from psycop.common.model_training_v2.training_method.problem_type.base_metric import \
-    CalculatedMetric
-from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics import \
-    BinaryMetric
-from psycop.common.model_training_v2.training_method.problem_type.eval_dataset_base import BaseEvalDataset
+from psycop.common.model_training_v2.training_method.problem_type.base_metric import (
+    CalculatedMetric,
+)
+from psycop.common.model_training_v2.training_method.problem_type.binary_classification.binary_metrics import (
+    BinaryMetric,
+)
+from psycop.common.model_training_v2.training_method.problem_type.eval_dataset_base import (
+    BaseEvalDataset,
+)
 
 
 class BinaryEvalDataset(BaseEvalDataset):

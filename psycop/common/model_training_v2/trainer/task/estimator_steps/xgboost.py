@@ -3,7 +3,9 @@ from typing import Any
 import numpy as np
 from xgboost import XGBClassifier
 
-from psycop.common.model_training_v2.training_method.problem_type.model_step import ModelStep
+from psycop.common.model_training_v2.training_method.problem_type.model_step import (
+    ModelStep,
+)
 
 
 def xgboost_classifier_step(**kwargs: Any) -> ModelStep:
