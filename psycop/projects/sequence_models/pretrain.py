@@ -15,6 +15,7 @@ from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.train import train
 
 
+
 @Registry.datasets.register("diagnosis_only_patient_slice_dataset")
 def create_patient_slice_dataset(
     min_n_visits: int,
@@ -30,7 +31,7 @@ def create_patient_slice_dataset(
 
 
 if __name__ == "__main__":
-    config_path = Path(__file__).parent / "pretrain.cfg"
+    config_path = Path(__file__).parent / "pretrain_behrt.cfg"
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s",

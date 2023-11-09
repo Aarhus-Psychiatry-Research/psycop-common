@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
 from .config_utils import load_config, parse_config
+import torch
 
 std_logger = logging.getLogger(__name__)
 os.environ["WANDB__SERVICE_WAIT"] = "300" # to avoid issues with wandb service
@@ -32,6 +33,7 @@ def populate_registry() -> None:
 
 
 populate_registry()
+
 
 
 def train(config_path: Path | None = None) -> None:
@@ -85,4 +87,5 @@ def train(config_path: Path | None = None) -> None:
     trainer = pl.Trainer(**trainer_kwargs)
 
     std_logger.info("Starting training")
+    torch.set_float32_matmul_precision('medium')
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)  # type: ignore
