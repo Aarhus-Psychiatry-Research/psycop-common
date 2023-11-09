@@ -485,6 +485,7 @@ def qtest(c: Context):
             "-rfE",
             "--failed-first",
             "-p no:cov",
+            "-p no:xdist",
             "--disable-warnings",
             "-q",
             "--durations=5",
