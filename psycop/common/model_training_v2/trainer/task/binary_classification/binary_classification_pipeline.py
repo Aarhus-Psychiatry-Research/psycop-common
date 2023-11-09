@@ -15,7 +15,7 @@ PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
 
 class BinaryClassificationPipeline:
-    def __init__(self, steps: Sequence[ModelStep]):
+    def __init__(self, *args: ModelStep, **kwargs: ModelStep):
         self.pipe = Pipeline(steps=steps)
 
     def fit(self, x: PolarsFrame, y: pl.Series) -> None:

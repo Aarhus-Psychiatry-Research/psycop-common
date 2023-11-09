@@ -9,3 +9,6 @@ class Registry(registry):
     baseline_preprocessing = catalogue.create(
         "psycop", "baseline_preprocessing"
     )
+    baseline_task_pipelines = catalogue.create(
+        "psycop", "baseline_task_pipelines"
+    )
