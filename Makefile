@@ -6,18 +6,12 @@ merge-main:
 	git fetch
 	git merge --no-edit origin/main
 
-stage-and-stash:
-	git add .
-	git stash
-
-apply-latest-stash:
-	git stash apply
-
 enable-automerge:
 	gh pr merge --auto --delete-branch
 
 create-random-branch:
-	@git checkout -b "$$(date +'%y_%m_%d_%H')_$(shell cat /dev/urandom | env LC_ALL=C tr -dc 'a-z' | fold -w 5 | head -n 1)"
+	# The -m flag brings your current modifications into the new target branch
+	@git checkout -m "$$(date +'%y_%m_%d_%H')_$(shell cat /dev/urandom | env LC_ALL=C tr -dc 'a-z' | fold -w 5 | head -n 1)"
 
 grow:
 	git pull
