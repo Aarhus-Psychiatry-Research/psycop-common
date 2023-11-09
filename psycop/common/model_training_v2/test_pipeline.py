@@ -13,6 +13,9 @@ from psycop.common.model_training_v2.config.config_utils import (
     load_baseline_config,
     load_config,
 )
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
 )
@@ -64,11 +67,11 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
             task=BinaryClassification(
-                pipe=BinaryClassificationPipeline(
+                pred_time_uuid_col_name="pred_time_uuid",
+                task_pipe=BinaryClassificationPipeline(
                     pipe=Pipeline([logistic_regression_step()]),
                 ),
                 main_metric=BinaryAUROC(),
-                pred_time_uuid_col_name="pred_time_uuid",
             ),
             logger=logger,
         ),
@@ -77,6 +80,9 @@ def test_v2_train_model_pipeline(tmpdir: Path):
     assert train_baseline_model(schema) == 1.0
 
 def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
-    config = load_baseline_config(Path(__file__).parent / "config" / "test_config.cfg")
+    populate_baseline_registry()
+    config = load_baseline_config(Path(__file__).parent / "config" / "baseline_test_config.cfg")
+    config.project_info.Config.allow_mutation = True
+    config.project_info.experiment_path = tmpdir
 
     pass

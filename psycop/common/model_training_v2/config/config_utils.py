@@ -3,10 +3,10 @@ from pathlib import Path
 
 from confection import Config
 
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import (
     BaselineSchema,
 )
-from psycop.common.sequence_models import Registry
 
 
 def load_config(config_path: Path) -> Config:
@@ -16,7 +16,7 @@ def load_config(config_path: Path) -> Config:
 
 def resolve_config(config: Config) -> BaselineSchema:
     """Gets a config object and resolves it from the registry"""
-    resolved= Registry.resolve(config)
+    resolved= BaselineRegistry.resolve(config)
     return BaselineSchema(**resolved)  
 
 

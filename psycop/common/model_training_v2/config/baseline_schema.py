@@ -1,3 +1,5 @@
+from typing import runtime_checkable
+
 from pydantic import BaseModel, DirectoryPath
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel

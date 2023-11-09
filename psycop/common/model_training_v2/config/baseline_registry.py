@@ -2,9 +2,10 @@ import catalogue
 from confection import registry
 
 
-class Registry(registry):
-    baseline_tasks = catalogue.create("psycop", "baseline_tasks")
+class BaselineRegistry(registry):
     baseline_loggers = catalogue.create("psycop", "baseline_loggers")
+
+    baseline_tasks = catalogue.create("psycop", "baseline_tasks")
 
     baseline_preprocessing = catalogue.create(
         "psycop", "baseline_preprocessing"
@@ -12,3 +13,8 @@ class Registry(registry):
     baseline_task_pipelines = catalogue.create(
         "psycop", "baseline_task_pipelines"
     )
+    baseline_estimator_steps = catalogue.create(
+        "psycop", "baseline_estimator_steps"
+    )
+
+    baseline_metrics = catalogue.create("psycop", "baseline_metrics")

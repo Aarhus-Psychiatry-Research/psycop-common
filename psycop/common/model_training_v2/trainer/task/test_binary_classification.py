@@ -43,7 +43,7 @@ def test_binary_classification(
     main_metric_expected: float,
 ):
     binary_classification_problem = BinaryClassification(
-        pipe=pipe,
+        task_pipe=pipe,
         main_metric=main_metric,
         pred_time_uuid_col_name="uuid",
     )

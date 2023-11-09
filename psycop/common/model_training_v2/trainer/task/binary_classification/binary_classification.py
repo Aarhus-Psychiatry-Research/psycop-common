@@ -1,5 +1,6 @@
 import polars as pl
 
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_trainer import (
     TrainingResult,
 )
@@ -28,14 +29,15 @@ def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
     return polarsframe.to_series()
 
 
+@BaselineRegistry.baseline_tasks.register("binary_classification")
 class BinaryClassification(BaselineTask):
     def __init__(
         self,
-        pipe: BinaryClassificationPipeline,
+        task_pipe: BinaryClassificationPipeline,
         main_metric: BinaryMetric,
         pred_time_uuid_col_name: str,
     ):
-        self.pipe = pipe
+        self.pipe = task_pipe
         self.main_metric = main_metric
         self.pred_time_uuid_col_name = pred_time_uuid_col_name
 
