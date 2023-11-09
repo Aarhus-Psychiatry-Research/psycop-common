@@ -29,7 +29,7 @@ def test_binary_classification_pipeline(
     x: PolarsFrame,
     y: pl.Series,
 ):
-    pipeline = BinaryClassificationPipeline(pipe=pipe)
+    pipeline = BinaryClassificationPipeline(sklearn_pipe=pipe)
     pipeline.fit(x=x, y=y)
 
     y_hat_probs = pipeline.predict_proba(x=x)

@@ -4,6 +4,8 @@ from confection import registry
 
 class BaselineRegistry(registry):
     baseline_loggers = catalogue.create("psycop", "baseline_loggers")
+    baseline_trainers = catalogue.create("psycop", "baseline_trainers")
+    baseline_data = catalogue.create("psycop", "baseline_data")
 
     baseline_tasks = catalogue.create("psycop", "baseline_tasks")
 

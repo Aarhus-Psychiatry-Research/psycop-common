@@ -7,20 +7,15 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.config.baseline_schema import (
     BaselineSchema,
 )
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 
-
-def load_config(config_path: Path) -> Config:
-    cfg = Config().from_disk(config_path)
-    return cfg
-
-
-def resolve_config(config: Config) -> BaselineSchema:
-    """Gets a config object and resolves it from the registry"""
-    resolved= BaselineRegistry.resolve(config)
-    return BaselineSchema(**resolved)  
+populate_baseline_registry()
 
 
 def load_baseline_config(config_path: Path) -> BaselineSchema:
     """Loads the baseline config from disk and resolves it."""
     cfg = Config().from_disk(config_path)
-    return resolve_config(cfg)
+    resolved= BaselineRegistry.resolve(cfg)
+    return BaselineSchema(**resolved)

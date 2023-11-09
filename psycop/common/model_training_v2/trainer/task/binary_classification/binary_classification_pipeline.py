@@ -12,13 +12,13 @@ PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
 @BaselineRegistry.baseline_task_pipelines.register("binary_classification_pipeline")
 class BinaryClassificationPipeline:
-    def __init__(self, pipe: Pipeline):
-        self.pipe = pipe
+    def __init__(self, sklearn_pipe: Pipeline):
+        self.pipe = sklearn_pipe
 
     def fit(self, x: PolarsFrame, y: pl.Series) -> None:
         if isinstance(x, pl.LazyFrame):
             x = x.collect()
-        self.pipe.fit(x.to_pandas(), y)
+        self.pipe.fit(X=x.to_pandas(), y=y)
 
     def predict_proba(self, x: PolarsFrame) -> PredProbaSeries:
         """Returns the predicted probabilities of the `1`

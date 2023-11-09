@@ -1,4 +1,7 @@
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 
 
 def train_baseline_model(cfg: BaselineSchema) -> float:
