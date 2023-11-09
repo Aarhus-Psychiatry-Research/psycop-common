@@ -37,7 +37,6 @@ def test_embeddings(patient_slices: Sequence[PatientSlice], embedding_module: Em
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_diagnosis_mapping(
-    patient_slices: list,  # type: ignore
     embedding_module: BEHRTEmbedder,
 ):
     """
@@ -92,7 +91,7 @@ def test_diagnosis_mapping(
 
     patient_events: list[tuple[Patient, TemporalEvent]] = [
         (p, e)
-        for p in [*patient_slices, patient]
+        for p in [patient]
         for e in embedding_module.filter_events(p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore

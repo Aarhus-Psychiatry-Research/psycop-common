@@ -12,6 +12,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
+from tqdm import tqdm
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
@@ -19,7 +20,7 @@ from psycop.common.sequence_models.dataset import PatientSliceDataset
 
 from ..registry import Registry
 from .interface import EmbeddedSequence, Embedder
-from tqdm import tqdm
+
 log = logging.getLogger(__name__)
 
 
@@ -51,14 +52,13 @@ class BEHRTEmbedder(nn.Module, Embedder):
         self.dropout = nn.Dropout(dropout_prob)
         self.icd2caliber = self.load_icd_to_caliber_mapping()
 
-
     @staticmethod
     def load_icd_to_caliber_mapping() -> dict[str, str]:
         with open(  # noqa: PTH123
             "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
         ) as fp:
             mapping = json.load(fp)
-        
+
         return mapping
 
     def initialize_embeddings_layers(
@@ -212,12 +212,10 @@ class BEHRTEmbedder(nn.Module, Embedder):
                 filtered_events.append(event)
         return filtered_events
 
-
     def map_icd10_to_caliber(
         self,
         diagnosis_code: str,
     ) -> str | None:
-
         # For each diagnosis code, attempt to map to caliber code
         # If no mapping exists, remove one character from the end of the code and try again
         while len(diagnosis_code) > 2:  # only attempt codes with at least 3 characters
