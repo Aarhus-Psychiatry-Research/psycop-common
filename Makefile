@@ -6,12 +6,12 @@ merge-main:
 	git fetch
 	git merge --no-edit origin/main
 
-stage-and-stash:
-	git add .
-	git stash
+stash:
+	# Git stash save creates a stash, even if there are no changes to stash. Needed for apply-latest-stash to work after a grow.
+	git stash save
 
 apply-latest-stash:
-	git stash apply
+	git stash pop
 
 enable-automerge:
 	gh pr merge --auto --delete-branch
@@ -21,7 +21,7 @@ create-random-branch:
 
 grow:
 	git pull
-	make stage-and-stash
+	make stash
 	@echo "––– Growing into a new branch 🌳 –––"
 	make create-random-branch
 	make merge-main
