@@ -1,10 +1,17 @@
 pr:
 	make merge-main
-	inv pr
+	inv qpr
 
 merge-main:
 	git fetch
 	git merge --no-edit origin/main
+
+stage-and-stash:
+	git add .
+	git stash
+
+apply-latest-stash:
+	git stash apply
 
 enable-automerge:
 	gh pr merge --auto --delete-branch
@@ -14,9 +21,11 @@ create-random-branch:
 
 grow:
 	git pull
+	make stage-and-stash
 	@echo "––– Growing into a new branch 🌳 –––"
 	make create-random-branch
 	make merge-main
+	make apply-latest-stash
 
 #################
 # Short aliases #
