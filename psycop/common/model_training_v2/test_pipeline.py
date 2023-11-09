@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from sklearn.pipeline import Pipeline
+
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
 )
@@ -55,7 +57,9 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                 [AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")],
             ),
             task=BinaryClassification(
-                pipe=BinaryClassificationPipeline(steps=[logistic_regression_step()]),
+                pipe=BinaryClassificationPipeline(
+                    pipe=Pipeline([logistic_regression_step()]),
+                ),
                 main_metric=BinaryAUROC(),
             ),
             logger=logger,
