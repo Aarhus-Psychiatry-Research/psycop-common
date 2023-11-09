@@ -15,11 +15,9 @@ create-random-branch:
 
 grow:
 	git pull
-	make stage-and-stash
 	@echo "––– Growing into a new branch 🌳 –––"
 	make create-random-branch
 	make merge-main
-	make apply-latest-stash
 
 #################
 # Short aliases #
