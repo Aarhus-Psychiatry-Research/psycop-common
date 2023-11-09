@@ -1,5 +1,3 @@
-from collections.abc import Sequence
-
 import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
@@ -7,16 +5,13 @@ from sklearn.pipeline import Pipeline
 from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
-from psycop.common.model_training_v2.trainer.task.model_step import (
-    ModelStep,
-)
 
 PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
 
 class BinaryClassificationPipeline:
-    def __init__(self, *args: ModelStep, **kwargs: ModelStep):
-        self.pipe = Pipeline(steps=steps)
+    def __init__(self, pipe: Pipeline):
+        self.pipe = pipe
 
     def fit(self, x: PolarsFrame, y: pl.Series) -> None:
         if isinstance(x, pl.LazyFrame):
