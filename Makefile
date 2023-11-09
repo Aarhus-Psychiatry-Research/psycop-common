@@ -13,6 +13,7 @@ create-random-branch:
 	@git checkout -b "$$(date +'%y_%m_%d_%H')_$(shell cat /dev/urandom | env LC_ALL=C tr -dc 'a-z' | fold -w 5 | head -n 1)"
 
 grow:
+	git pull
 	@echo "––– Growing into a new branch 🌳 –––"
 	make create-random-branch
 	make merge-main
