@@ -61,6 +61,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                     pipe=Pipeline([logistic_regression_step()]),
                 ),
                 main_metric=BinaryAUROC(),
+                pred_time_uuid_col_name="pred_time_uuid",
             ),
             logger=logger,
         ),
