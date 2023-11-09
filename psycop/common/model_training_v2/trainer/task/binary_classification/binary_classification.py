@@ -33,9 +33,11 @@ class BinaryClassification(BaselineTask):
         self,
         pipe: BinaryClassificationPipeline,
         main_metric: BinaryMetric,
+        pred_time_uuid_col_name: str,
     ):
         self.pipe = pipe
         self.main_metric = main_metric
+        self.pred_time_uuid_col_name = pred_time_uuid_col_name
 
     def train(
         self,
@@ -45,7 +47,7 @@ class BinaryClassification(BaselineTask):
         assert len(y.columns) == 1
         y_series = polarsframe_to_series(y)
 
-        self.pipe.fit(x=x, y=y_series)
+        self.pipe.fit(x=x.drop(self.pred_time_uuid_col_name), y=y_series)
         self.is_fitted = True
 
     def predict_proba(self, x: PolarsFrame) -> PredProbaSeries:
@@ -56,7 +58,7 @@ class BinaryClassification(BaselineTask):
             x = x.collect()
         y_series = polarsframe_to_series(y)
 
-        y_hat_probs = self.pipe.predict_proba(x)
+        y_hat_probs = self.pipe.predict_proba(x.drop(self.pred_time_uuid_col_name))
 
         df = x.with_columns(
             pl.Series(y_hat_probs).alias(str(y_hat_probs.name)),
@@ -64,7 +66,7 @@ class BinaryClassification(BaselineTask):
         )
 
         eval_dataset = BinaryEvalDataset(
-            pred_time_uuids="pred_time_uuids",  # TODO: #383 Ensure that pred_time_uuids are passed through the entire pipeline
+            pred_time_uuids=self.pred_time_uuid_col_name,
             y_hat_probs=str(y_hat_probs.name),
             y=y_series.name,
             df=df,
