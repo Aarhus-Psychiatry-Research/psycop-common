@@ -9,5 +9,3 @@ from psycop.common.model_training_v2.trainer.task.model_step import (
 @BaselineRegistry.baseline_task_pipelines.register("pipe_constructor")
 def pipeline_constructor(*args: ModelStep) -> Pipeline:
     return Pipeline(args)
-
-    

@@ -1,6 +1,6 @@
-from pathlib import Path, PosixPath
+from pathlib import Path
 
-from polars import DataFrame, LazyFrame
+from polars import LazyFrame
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.config.baseline_pipeline import (
@@ -13,9 +13,6 @@ from psycop.common.model_training_v2.config.baseline_schema import (
 )
 from psycop.common.model_training_v2.config.config_utils import (
     load_baseline_config,
-)
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
 )
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
@@ -49,7 +46,7 @@ from psycop.common.test_utils.str_to_df import str_to_pl_df
 class MinimalTestData(BaselineDataLoader):
     def __init__(self) -> None:
         pass
-    
+
     def load(self) -> LazyFrame:
         data = str_to_pl_df(
             """pred_time_uuid,pred_1,outcome,pred_age
@@ -63,6 +60,7 @@ class MinimalTestData(BaselineDataLoader):
         ).lazy()
 
         return data
+
 
 def test_v2_train_model_pipeline(tmpdir: Path):
     logger = TerminalLogger()
@@ -91,10 +89,13 @@ def test_v2_train_model_pipeline(tmpdir: Path):
     assert train_baseline_model(schema) == 1.0
 
 
-
 def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
-    config = load_baseline_config(Path(__file__).parent / "config" / "baseline_test_config.cfg")
+    config = load_baseline_config(
+        Path(__file__).parent / "config" / "baseline_test_config.cfg",
+    )
     config.project_info.Config.allow_mutation = True
-    config.project_info.experiment_path = Path(tmpdir) # For some reason, the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
+    config.project_info.experiment_path = Path(
+        tmpdir,
+    )  # For some reason, the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
 
     assert train_baseline_model(config) == 1.0

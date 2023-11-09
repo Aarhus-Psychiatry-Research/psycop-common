@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from confection import Config
@@ -17,5 +16,5 @@ populate_baseline_registry()
 def load_baseline_config(config_path: Path) -> BaselineSchema:
     """Loads the baseline config from disk and resolves it."""
     cfg = Config().from_disk(config_path)
-    resolved= BaselineRegistry.resolve(cfg)
+    resolved = BaselineRegistry.resolve(cfg)
     return BaselineSchema(**resolved)

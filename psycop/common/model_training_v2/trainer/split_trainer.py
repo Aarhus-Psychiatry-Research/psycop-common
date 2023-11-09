@@ -1,5 +1,3 @@
-from typing import Callable
-
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
@@ -9,9 +7,6 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 )
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
-)
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
 )
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,

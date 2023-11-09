@@ -10,13 +10,16 @@ class BaselineRegistry(registry):
     baseline_tasks = catalogue.create("psycop", "baseline_tasks")
 
     baseline_preprocessing = catalogue.create(
-        "psycop", "baseline_preprocessing"
+        "psycop",
+        "baseline_preprocessing",
     )
     baseline_task_pipelines = catalogue.create(
-        "psycop", "baseline_task_pipelines"
+        "psycop",
+        "baseline_task_pipelines",
     )
     baseline_estimator_steps = catalogue.create(
-        "psycop", "baseline_estimator_steps"
+        "psycop",
+        "baseline_estimator_steps",
     )
 
     baseline_metrics = catalogue.create("psycop", "baseline_metrics")
