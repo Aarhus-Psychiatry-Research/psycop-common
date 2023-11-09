@@ -16,8 +16,8 @@ class PreprocessingPipeline(Protocol):
 
 
 class BaselinePreprocessingPipeline(PreprocessingPipeline):
-    def __init__(self, steps: Sequence[PresplitStep]) -> None:
-        self.steps = steps
+    def __init__(self, *args: PresplitStep, **kwargs: PresplitStep) -> None:
+        self.steps = list(args, *kwargs.values())
 
     def apply(self, data: PolarsFrame) -> PolarsFrame:
         for step in self.steps:

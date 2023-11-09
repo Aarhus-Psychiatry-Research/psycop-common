@@ -1,11 +1,18 @@
 from pathlib import Path
 
+from psycop.common.model_training_v2.config.baseline_pipeline import (
+    train_baseline_model,
+)
+from psycop.common.model_training_v2.config.baseline_schema import (
+    BaselineSchema,
+    ProjectInfo,
+)
+from psycop.common.model_training_v2.config.config_utils import (
+    load_baseline_config,
+    load_config,
+)
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
-)
-from psycop.common.model_training_v2.pipeline import (
-    BaselineSchema,
-    train_baseline_model,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
@@ -44,15 +51,15 @@ def test_v2_train_model_pipeline(tmpdir: Path):
     )
     logger = TerminalLogger()
     schema = BaselineSchema(
-        experiment_path=tmpdir,
+        project_info=ProjectInfo(experiment_path=tmpdir),
         logger=logger,
         trainer=SplitTrainer(
             training_data=training_data,
             training_outcome_col_name="outcome",
             validation_data=training_data,
             validation_outcome_col_name="outcome",
-            preprocessing_pipeline=BaselinePreprocessingPipeline(
-                [AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")],
+            preprocessing_pipeline=BaselinePreprocessingPipeline(age_filter=
+                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
             task=BinaryClassification(
                 pipe=BinaryClassificationPipeline(steps=[logistic_regression_step()]),
@@ -64,3 +71,8 @@ def test_v2_train_model_pipeline(tmpdir: Path):
     )
 
     assert train_baseline_model(schema) == 1.0
+
+def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
+    config = load_baseline_config(Path(__file__).parent / "config" / "test_config.cfg")
+
+    pass
