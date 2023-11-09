@@ -7,6 +7,6 @@ def train_baseline_model(cfg: BaselineSchema) -> float:
     )  # Dict handling, might have to be flattened depending on the logger. Probably want all loggers to take flattened dicts.
 
     result = cfg.trainer.train()
-    result.eval_dataset.to_disk(path=cfg.experiment_path)
+    result.eval_dataset.to_disk(path=cfg.project_info.experiment_path)
 
     return result.metric.value
