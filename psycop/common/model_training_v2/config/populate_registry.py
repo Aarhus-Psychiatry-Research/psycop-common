@@ -6,3 +6,4 @@ def populate_baseline_registry() -> None:
     and easier to debug for people who are not familiar with python setup hooks.
     """
     from ..loggers.base_logger import TerminalLogger  # noqa
+    from ..trainer.task.pipeline_constructor import pipeline_constructor  # noqa
