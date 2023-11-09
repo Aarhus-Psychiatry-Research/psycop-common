@@ -1,6 +1,6 @@
 pr:
 	make merge-main
-	inv pr
+	inv qpr
 
 merge-main:
 	git fetch
