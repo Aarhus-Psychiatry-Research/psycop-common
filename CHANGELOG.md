@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.133.2 (2023-11-09)
+
+### Fix
+
+* Pass pred time uuid to binaryclassification task ([`078cb92`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/078cb92df2839b1ee90d0e0ba896aa2656a8b764))
+
 ## v0.133.1 (2023-11-08)
 
 ### Fix
