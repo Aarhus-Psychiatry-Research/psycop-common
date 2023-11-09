@@ -17,7 +17,6 @@ from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.train import train
 
 
-
 @Registry.datasets.register("diagnosis_only_patient_slice_dataset")
 def create_patient_slice_dataset(
     min_n_visits: int,
