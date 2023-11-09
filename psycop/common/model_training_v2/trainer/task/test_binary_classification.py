@@ -27,7 +27,9 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
     ("pipe", "main_metric", "x", "y", "main_metric_expected"),
     [
         (
-            BinaryClassificationPipeline(pipe=Pipeline([logistic_regression_step()])),
+            BinaryClassificationPipeline(
+                sklearn_pipe=Pipeline([logistic_regression_step()]),
+            ),
             BinaryAUROC(),
             pl.DataFrame({"x": [1, 1, 2, 2], "uuid": [1, 2, 3, 4]}),
             pl.DataFrame({"y": [0, 0, 1, 1]}),
@@ -43,7 +45,7 @@ def test_binary_classification(
     main_metric_expected: float,
 ):
     binary_classification_problem = BinaryClassification(
-        pipe=pipe,
+        task_pipe=pipe,
         main_metric=main_metric,
         pred_time_uuid_col_name="uuid",
     )
