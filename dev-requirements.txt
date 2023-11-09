@@ -4,5 +4,5 @@ invoke==2.1.0
 pre-commit==3.4.0
 pyright==1.1.332
 pytest-sugar==0.9.7
-ruff==0.0.272
+ruff==0.1.5
 pandas-stubs==2.1.1.230928

@@ -53,6 +53,7 @@ reportUnusedImport = "none"                 # Fixed by ruff
 reportPrivateImportUsage = "none"
 
 [tool.ruff]
+line-length = 100
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
 select = [
   "A",
