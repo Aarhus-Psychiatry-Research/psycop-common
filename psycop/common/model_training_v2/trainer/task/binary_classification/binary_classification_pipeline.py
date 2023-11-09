@@ -10,7 +10,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
 PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
 
-@BaselineRegistry.baseline_task_pipelines.register("binary_classification_pipeline")
+@BaselineRegistry.task_pipelines.register("binary_classification_pipeline")
 class BinaryClassificationPipeline:
     def __init__(self, sklearn_pipe: Pipeline):
         self.pipe = sklearn_pipe

@@ -8,7 +8,7 @@ from psycop.common.model_training_v2.trainer.task.model_step import (
 )
 
 
-@BaselineRegistry.baseline_estimator_steps.register("logistic_regression")
+@BaselineRegistry.estimator_steps.register("logistic_regression")
 def logistic_regression_step(
     penalty: Literal["l1", "l2", "elasticnet"] = "elasticnet",
     solver: Literal[

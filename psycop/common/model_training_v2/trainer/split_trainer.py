@@ -13,7 +13,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import (
 )
 
 
-@BaselineRegistry.baseline_trainers.register("split_trainer")
+@BaselineRegistry.trainers.register("split_trainer")
 class SplitTrainer(BaselineTrainer):
     def __init__(
         self,

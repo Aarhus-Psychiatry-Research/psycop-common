@@ -42,7 +42,7 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps import (
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 
-@BaselineRegistry.baseline_data.register("minimal_test_data")
+@BaselineRegistry.data.register("minimal_test_data")
 class MinimalTestData(BaselineDataLoader):
     def __init__(self) -> None:
         pass

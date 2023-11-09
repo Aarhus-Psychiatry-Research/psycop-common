@@ -30,7 +30,7 @@ class BaselineLogger(Protocol):
         ...
 
 
-@BaselineRegistry.baseline_loggers.register("terminal_logger")
+@BaselineRegistry.loggers.register("terminal_logger")
 class TerminalLogger(BaselineLogger):
     def __init__(self) -> None:
         self._l = wasabi.Printer(timestamp=True)

@@ -7,7 +7,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import (
 )
 
 
-@BaselineRegistry.baseline_preprocessing.register("age_filter")
+@BaselineRegistry.preprocessing.register("age_filter")
 class AgeFilter(PresplitStep):
     def __init__(self, min_age: int, max_age: int, age_col_name: str):
         self.min_age = min_age

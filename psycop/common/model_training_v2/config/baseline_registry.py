@@ -3,23 +3,23 @@ from confection import registry
 
 
 class BaselineRegistry(registry):
-    baseline_loggers = catalogue.create("psycop", "baseline_loggers")
-    baseline_trainers = catalogue.create("psycop", "baseline_trainers")
-    baseline_data = catalogue.create("psycop", "baseline_data")
+    loggers = catalogue.create("psycop", "loggers")
+    trainers = catalogue.create("psycop", "trainers")
+    data = catalogue.create("psycop", "data")
 
-    baseline_tasks = catalogue.create("psycop", "baseline_tasks")
+    tasks = catalogue.create("psycop", "tasks")
 
-    baseline_preprocessing = catalogue.create(
+    preprocessing = catalogue.create(
         "psycop",
-        "baseline_preprocessing",
+        "preprocessing",
     )
-    baseline_task_pipelines = catalogue.create(
+    task_pipelines = catalogue.create(
         "psycop",
-        "baseline_task_pipelines",
+        "task_pipelines",
     )
-    baseline_estimator_steps = catalogue.create(
+    estimator_steps = catalogue.create(
         "psycop",
-        "baseline_estimator_steps",
+        "estimator_steps",
     )
 
-    baseline_metrics = catalogue.create("psycop", "baseline_metrics")
+    metrics = catalogue.create("psycop", "metrics")

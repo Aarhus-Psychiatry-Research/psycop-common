@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     )
 
 
-@BaselineRegistry.baseline_metrics.register("binary_auroc")
+@BaselineRegistry.metrics.register("binary_auroc")
 class BinaryAUROC(BinaryMetric):
     def __init__(self) -> None:
         pass

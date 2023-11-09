@@ -17,7 +17,7 @@ class PreprocessingPipeline(Protocol):
         ...
 
 
-@BaselineRegistry.baseline_preprocessing.register("baseline_preprocessing_pipeline")
+@BaselineRegistry.preprocessing.register("baseline_preprocessing_pipeline")
 class BaselinePreprocessingPipeline(
     PreprocessingPipeline,
 ):  # TODO: #406 Does registering this into a registry remove protocol checking? E.g. the __init__ method does not adhered to PreprocessingPipeline
