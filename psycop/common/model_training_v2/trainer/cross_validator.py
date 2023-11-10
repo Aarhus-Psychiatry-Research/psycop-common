@@ -1,17 +1,14 @@
 from sklearn.model_selection import StratifiedGroupKFold
+
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-import numpy as np
 from psycop.common.model_training_v2.trainer.base_trainer import (
     BaselineTrainer,
     TrainingResult,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
-)
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
 )
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
@@ -48,7 +45,7 @@ class CrossValidatorTrainer(BaselineTrainer):
             groups=training_data_preprocessed.select(self.group_col_name),
         )
 
-        for i, (train_idxs, val_idxs) in enumerate(folds):
+        for _i, (train_idxs, val_idxs) in enumerate(folds):
             X_train, y_train = (
                 training_data_preprocessed.loc[train_idxs],
                 training_data_preprocessed.loc[train_idxs],
