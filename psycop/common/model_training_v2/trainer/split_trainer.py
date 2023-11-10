@@ -75,6 +75,13 @@ class SplitTrainer(BaselineTrainer):
             y=validation_y,
         )
 
+        result = self._rename_result_col_name_to_validation_col_name(result)
+
         self.logger.log_metric(result.metric)
 
+        return result
+
+    def _rename_result_col_name_to_validation_col_name(self, result: TrainingResult) -> TrainingResult:
+        result.eval_dataset.y = self.validation_outcome_col_name
+        result.eval_dataset.df = result.eval_dataset.df.rename({self.shared_outcome_col_name: self.validation_outcome_col_name})
         return result
