@@ -54,8 +54,11 @@ def str_to_df(
     for i, line in enumerate(string.split("\n")):
         is_header = i == 0
         if is_header:
-            # Remove all whitespace
-            line = "".join(line.split())  # noqa: PLW2901
+            # Remove whitespace at the start and end of headers
+            header_items = line.split(",")
+            header_items_stripped = [item.strip() for item in header_items]
+            line = ",".join(header_items_stripped)  # noqa: PLW2901
+            
         # Remove leading whitespace
         if " #" in line:
             line = line[: line.rfind("#")]  # noqa
