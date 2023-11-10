@@ -25,35 +25,36 @@ class AgeFilter(PresplitStep):
 class LookbehindCombinationFilter(PresplitStep):
     def __init__(
         self,
-        lookbehind_combination: set[int],
+        lookbehinds: set[int],
         pred_col_prefix: str,
         logger: BaselineLogger,
     ):
-        self.lookbehind_combination = lookbehind_combination
+        self.lookbehinds = lookbehinds
         self.pred_col_prefix = pred_col_prefix
+        self.lookbehind_pattern = r"within_(\d+)_days"
         self.logger = logger
 
     def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
         pred_cols_with_lookbehind = [
             col
             for col in input_df.columns
-            if col.startswith("pred_") and "within" in col
+            if col.startswith(self.pred_col_prefix) and "within" in col
         ]
 
         lookbehinds_in_dataset = {
-            int(re.findall(pattern=r"within_(\d+)_days", string=col)[0])
+            int(re.findall(pattern=self.lookbehind_pattern, string=col)[0])
             for col in pred_cols_with_lookbehind
         }
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
-        if not self.lookbehind_combination.issubset(
+        if not self.lookbehinds.issubset(
             lookbehinds_in_dataset,
         ):
             self.logger.warn(
-                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {self.lookbehind_combination - lookbehinds_in_dataset}",
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {self.lookbehinds - lookbehinds_in_dataset}",
             )
 
-            lookbehinds_to_keep = self.lookbehind_combination.intersection(
+            lookbehinds_to_keep = self.lookbehinds.intersection(
                 lookbehinds_in_dataset,
             )
 
@@ -65,12 +66,23 @@ class LookbehindCombinationFilter(PresplitStep):
 
             self.logger.warn(f"Training on {lookbehinds_to_keep}.")
         else:
-            lookbehinds_to_keep = self.lookbehind_combination
+            lookbehinds_to_keep = self.lookbehinds
 
-        cols_to_drop = [
+        cols_to_drop = self._cols_with_lookbehind_not_in_lookbehinds(
+            pred_cols_with_lookbehind,
+            lookbehinds_to_keep,
+        )
+
+        return input_df.drop(columns=cols_to_drop)
+
+    def _cols_with_lookbehind_not_in_lookbehinds(
+        self,
+        pred_cols_with_lookbehind: list[str],
+        lookbehinds_to_keep: set[int],
+    ) -> list[str]:
+        """Identify columns that have a lookbehind that is not in lookbehinds_to_keep."""
+        return [
             c
             for c in pred_cols_with_lookbehind
             if all(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
         ]
-
-        return input_df.drop(columns=cols_to_drop)

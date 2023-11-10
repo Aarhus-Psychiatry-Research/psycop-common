@@ -19,10 +19,10 @@ from psycop.common.test_utils.str_to_df import str_to_pl_df
 )
 def test_age_filter(min_age: int, max_age: int, n_remaining: int):
     df = str_to_pl_df(
-        """age,pred_age,
-    1, 2,
-    2, 3,
-    3, 4,
+        """age,
+    1,
+    2,
+    3,
     """,
     )
 
@@ -42,7 +42,7 @@ def test_lookbehind_combination_filter():
 
     logger = TerminalLogger()
     result = LookbehindCombinationFilter(
-        lookbehind_combination={2, 3},
+        lookbehinds={2, 3},
         pred_col_prefix="pred_",
         logger=logger,
     ).apply(df)
