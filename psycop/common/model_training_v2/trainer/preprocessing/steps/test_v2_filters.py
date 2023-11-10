@@ -41,7 +41,6 @@ def test_lookbehind_combination_filter():
     )
 
     logger = TerminalLogger()
-
     result = LookbehindCombinationFilter(
         lookbehind_combination={2, 3},
         pred_col_prefix="pred_",

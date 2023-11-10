@@ -59,6 +59,9 @@ class LookbehindCombinationFilter(PresplitStep):
 
             if not lookbehinds_to_keep:
                 self.logger.fail("No predictors left after dropping lookbehinds.")
+                raise ValueError(
+                    "Endng training because no predictors left after dropping lookbehinds.",
+                )
 
             self.logger.warn(f"Training on {lookbehinds_to_keep}.")
         else:
