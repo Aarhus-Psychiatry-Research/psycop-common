@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.134.0 (2023-11-10)
+
+### Feature
+
+* Support spaces within column names ([`56e1019`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/56e10193f7b46cf8a1a96f83879c375c00f58ad2))
+* Add support for spaces in header titles ([`52140a1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/52140a1c116f6a482b8576318a0d030d63a67a8b))
+
 ## v0.133.4 (2023-11-09)
 
 ### Fix
