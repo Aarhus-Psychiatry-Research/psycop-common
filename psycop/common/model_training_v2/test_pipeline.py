@@ -21,7 +21,7 @@ from psycop.common.model_training_v2.trainer.base_dataloader import BaselineData
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
-from psycop.common.model_training_v2.trainer.preprocessing.steps.filters import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters import (
     AgeFilter,
 )
 from psycop.common.model_training_v2.trainer.split_trainer import (

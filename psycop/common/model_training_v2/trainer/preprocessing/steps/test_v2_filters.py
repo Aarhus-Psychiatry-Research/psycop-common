@@ -1,9 +1,11 @@
 import pytest
 
 from psycop.common.model_training_v2.loggers.base_logger import TerminalLogger
-from psycop.common.model_training_v2.trainer.preprocessing.steps.filters import (
-    AgeFilter,
+from psycop.common.model_training_v2.trainer.preprocessing.steps.col_filters import (
     LookbehindCombinationFilter,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters import (
+    AgeFilter,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
