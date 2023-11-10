@@ -1,4 +1,4 @@
-from typing import Sequence
+from collections.abc import Sequence
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
@@ -59,11 +59,11 @@ class SplitTrainer(BaselineTrainer):
         )
 
         training_y = training_data_preprocessed.select(
-            self.training_outcome_col_name
+            self.training_outcome_col_name,
         ).rename({self.training_outcome_col_name: self.shared_outcome_col_name})
 
         validation_y = validation_data_preprocessed.select(
-            self.validation_outcome_col_name
+            self.validation_outcome_col_name,
         ).rename({self.validation_outcome_col_name: self.shared_outcome_col_name})
 
         self.problem_type.train(
