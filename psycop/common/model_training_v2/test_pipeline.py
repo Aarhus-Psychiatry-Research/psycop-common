@@ -49,13 +49,13 @@ class MinimalTestData(BaselineDataLoader):
 
     def load(self) -> LazyFrame:
         data = str_to_pl_df(
-            """pred_time_uuid,pred_1,outcome,pred_age
-                                        1,1,1,1
-                                        2,1,1,99
-                                        3,1,1,99
-                                        4,0,0,99
-                                        5,0,0,99
-                                        6,0,0,99
+            """ pred_time_uuid, pred_1, outcome,    outcome_val,    pred_age
+                1,              1,      1,          1,              1
+                2,              1,      1,          1,              99
+                3,              1,      1,          1,              99
+                4,              0,      0,          1,              99
+                5,              0,      0,          1,              99
+                6,              0,      0,          1,              99
                                         """,
         ).lazy()
 
@@ -71,7 +71,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
             training_data=MinimalTestData(),
             training_outcome_col_name="outcome",
             validation_data=MinimalTestData(),
-            validation_outcome_col_name="outcome",
+            validation_outcome_col_name="outcome_val",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
