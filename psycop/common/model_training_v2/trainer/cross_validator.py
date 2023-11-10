@@ -40,7 +40,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         training_data_preprocessed = self.preprocessing_pipeline.apply(
             data=self.training_data,
         )
-¨
+
         # do we need to convert to matrix? or would that be too slow?
         folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
             X=training_data_preprocessed.drop(self.training_outcome_col_name),
