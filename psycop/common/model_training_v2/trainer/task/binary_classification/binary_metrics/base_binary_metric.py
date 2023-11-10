@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     )
 
 
+@runtime_checkable
 class BinaryMetric(Protocol):
     def calculate(
         self,

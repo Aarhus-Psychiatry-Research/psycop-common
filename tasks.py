@@ -485,6 +485,7 @@ def qtest(c: Context):
             "-rfE",
             "--failed-first",
             "-p no:cov",
+            "-p no:xdist",
             "--disable-warnings",
             "-q",
             "--durations=5",
@@ -508,8 +509,8 @@ def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
 
     lint(c, auto_fix=auto_fix)
     push_to_branch(c)
-    static_type_checks(c)
     qtest(c)
+    static_type_checks(c)
 
 
 @task

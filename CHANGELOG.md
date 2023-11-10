@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.133.4 (2023-11-09)
+
+### Fix
+
+* Change BinaryClassificatinoPipeline to take sklearn Pipeline instead of Sequence[ModelStep] ([`aa5615e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/aa5615ed548eab4a6cd38f1c6e45363e77ea4f8b))
+
+## v0.133.3 (2023-11-09)
+
+### Fix
+
+* Change BinaryClassificatinoPipeline to take sklearn Pipeline instead of Sequence[ModelStep] ([`b23e6e0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b23e6e01b3cfcae0786100b09d77a51e720fd10c))
+
 ## v0.133.2 (2023-11-09)
 
 ### Fix

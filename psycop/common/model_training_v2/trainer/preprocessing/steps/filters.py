@@ -2,6 +2,7 @@ import re
 
 import polars as pl
 
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
     PolarsFrame_T0,
@@ -9,6 +10,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import (
 )
 
 
+@BaselineRegistry.preprocessing.register("age_filter")
 class AgeFilter(PresplitStep):
     def __init__(self, min_age: int, max_age: int, age_col_name: str):
         self.min_age = min_age
@@ -19,6 +21,7 @@ class AgeFilter(PresplitStep):
         return input_df.filter((self.age >= self.min_age) & (self.age <= self.max_age))
 
 
+@BaselineRegistry.preprocessing.register("lookbehind_combination_filter")
 class LookbehindCombinationFilter(PresplitStep):
     def __init__(
         self,
