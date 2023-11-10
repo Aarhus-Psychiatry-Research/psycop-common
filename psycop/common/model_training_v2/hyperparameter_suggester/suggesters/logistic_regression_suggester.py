@@ -1,7 +1,11 @@
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any
 
 import optuna
+
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
+    Suggester,
+)
 
 
 @dataclass(frozen=True)
@@ -12,12 +16,8 @@ class FloatSpace:
 
     def suggest(self, trial: optuna.Trial, name: str) -> float:
         return trial.suggest_float(
-            name=name, low=self.low, high=self.high, log=self.logarithmic
+            name=name, low=self.low, high=self.high, log=self.logarithmic,
         )
-
-class Suggester(Protocol):
-    def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
-        ...
 
 class LogisticRegressionSuggester(Suggester):
     def __init__(self, C: FloatSpace, l1_ratio: FloatSpace):
@@ -30,5 +30,5 @@ class LogisticRegressionSuggester(Suggester):
                 "@estimator_steps": "logistic_regression",
                 "C": self.C.suggest(trial, "C"),
                 "l1_ratio": self.l1_ratio.suggest(trial, "l1_ratio"),
-            }
+            },
         }
