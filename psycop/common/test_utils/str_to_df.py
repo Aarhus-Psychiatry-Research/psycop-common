@@ -58,7 +58,7 @@ def str_to_df(
             header_items = line.split(",")
             header_items_stripped = [item.strip() for item in header_items]
             line = ",".join(header_items_stripped)  # noqa: PLW2901
-            
+
         # Remove leading whitespace
         if " #" in line:
             line = line[: line.rfind("#")]  # noqa
