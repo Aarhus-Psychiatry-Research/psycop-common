@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.135.0 (2023-11-10)
+
+### Feature
+
+* Filter cols by lookbehind combination filter ([`92b6998`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/92b6998131eecd95f9ff2a672a1aefdbaecb8f06))
+
+### Fix
+
+* Clean up after review ([`6020174`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6020174155a309e80889d2720f40d92b38b2ee98))
+* Update error message ([`74ca01a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/74ca01ad433f1b9cf20270589125f8a355709f58))
+
 ## v0.134.0 (2023-11-10)
 
 ### Feature
