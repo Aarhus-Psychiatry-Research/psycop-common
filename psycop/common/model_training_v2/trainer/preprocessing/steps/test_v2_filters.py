@@ -2,7 +2,7 @@ import pytest
 
 from psycop.common.model_training_v2.loggers.base_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.steps.col_filters import (
-    LookbehindCombinationFilter,
+    LookbehindCombinationColFilter,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters import (
     AgeFilter,
@@ -43,7 +43,7 @@ def test_lookbehind_combination_filter():
     )
 
     logger = TerminalLogger()
-    result = LookbehindCombinationFilter(
+    result = LookbehindCombinationColFilter(
         lookbehinds={2, 3},
         pred_col_prefix="pred_",
         logger=logger,

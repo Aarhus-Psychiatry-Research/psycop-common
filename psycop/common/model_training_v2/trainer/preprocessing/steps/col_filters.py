@@ -8,8 +8,8 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import (
 )
 
 
-@BaselineRegistry.preprocessing.register("lookbehind_combination_filter")
-class LookbehindCombinationFilter(PresplitStep):
+@BaselineRegistry.preprocessing.register("lookbehind_combination_col_filter")
+class LookbehindCombinationColFilter(PresplitStep):
     def __init__(
         self,
         lookbehinds: set[int],
