@@ -33,8 +33,8 @@ class TestHyperparameterSuggster:
             "model": SearchSpace(
                 suggesters=(
                     LogisticRegressionSuggester(
-                        C=float_space_for_test(),
-                        l1_ratio=float_space_for_test(),
+                        C=(0,1,False),
+                        l1_ratio=(0,1,False),
                     ),
                 ),
             ),
