@@ -20,6 +20,8 @@ class FloatSpace:
         )
 
 class LogisticRegressionSuggester(Suggester):
+    # XXX: Should we move this to the logistic regression creator, and then subclass the suggester?
+    # Perhaps that makes it hard to decorate, though?
     def __init__(self, C: FloatSpace, l1_ratio: FloatSpace):
         self.C = C
         self.l1_ratio = l1_ratio
