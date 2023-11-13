@@ -57,12 +57,16 @@ class BinaryClassification(BaselineTask):
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
         return self.pipe.predict_proba(x)
 
-    def evaluate(self, x: pd.DataFrame, y: pd.DataFrame, y_col_name: str) -> TrainingResult:
+    def evaluate(
+        self,
+        x: pd.DataFrame,
+        y: pd.DataFrame,
+        y_col_name: str,
+    ) -> TrainingResult:
         x_pl = pl.from_pandas(x)
-        
+
         y_hat_probs = self.pipe.predict_proba(x.drop(self.pred_time_uuid_col_name))
         y_true = y[y_col_name]
-
 
         df = x_pl.with_columns(
             pl.Series(y_hat_probs).alias(str(y_hat_probs.name)),

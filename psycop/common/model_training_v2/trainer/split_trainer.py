@@ -60,11 +60,15 @@ class SplitTrainer(BaselineTrainer):
             data=self.validation_data,
         )
 
-        training_y = training_data_preprocessed.rename(columns={self.training_outcome_col_name: self.shared_outcome_col_name})[
+        training_y = training_data_preprocessed.rename(
+            columns={self.training_outcome_col_name: self.shared_outcome_col_name},
+        )[
             self.training_outcome_col_name,
         ]
 
-        validation_y = validation_data_preprocessed.select.rename({self.validation_outcome_col_name: self.shared_outcome_col_name})[
+        validation_y = validation_data_preprocessed.select.rename(
+            {self.validation_outcome_col_name: self.shared_outcome_col_name},
+        )[
             self.validation_outcome_col_name,
         ]
 

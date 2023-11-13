@@ -1,13 +1,9 @@
 from __future__ import annotations
 
 import pandas as pd
-import polars as pl
 import pytest
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
-)
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )

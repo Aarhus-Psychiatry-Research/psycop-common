@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pandas as pd
-import polars as pl
-from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
-)
+
+if TYPE_CHECKING:
+    from sklearn.pipeline import Pipeline
 
 PredProbaSeries = pd.Series[float]  # name should be "y_hat_probs", series of floats
 

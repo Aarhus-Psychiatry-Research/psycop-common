@@ -6,9 +6,6 @@ if TYPE_CHECKING:
     import pandas as pd
 
     from psycop.common.model_training_v2.trainer.base_trainer import TrainingResult
-    from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-        PolarsFrame,
-    )
 
 
 @runtime_checkable
@@ -17,7 +14,12 @@ class BaselineTask(Protocol):
         """Train the model"""
         ...
 
-    def evaluate(self, x: pd.DataFrame, y: pd.DataFrame, y_col_name: str) -> TrainingResult:
+    def evaluate(
+        self,
+        x: pd.DataFrame,
+        y: pd.DataFrame,
+        y_col_name: str,
+    ) -> TrainingResult:
         ...
 
     def predict_proba(self, x: pd.DataFrame) -> pd.Series[float]:

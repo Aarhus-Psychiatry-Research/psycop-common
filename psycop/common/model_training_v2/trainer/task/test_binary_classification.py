@@ -1,12 +1,8 @@
 import pandas as pd
-import polars as pl
 import pytest
 from pandas.testing import assert_series_equal
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
-)
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification import (
     BinaryClassification,
 )
