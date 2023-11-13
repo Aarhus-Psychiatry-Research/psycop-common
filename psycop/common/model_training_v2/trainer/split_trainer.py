@@ -1,5 +1,7 @@
 from collections.abc import Sequence
 
+import pandas as pd
+
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
 )
@@ -38,7 +40,7 @@ class SplitTrainer(BaselineTrainer):
         self.validation_data = validation_data.load()
         self.validation_outcome_col_name = validation_outcome_col_name
         self.preprocessing_pipeline = preprocessing_pipeline
-        self.problem_type = task
+        self.task = task
         self.logger = logger
 
         # When using sklearn pipelines, the outcome column must retain its name
@@ -58,21 +60,23 @@ class SplitTrainer(BaselineTrainer):
             data=self.validation_data,
         )
 
-        training_y = training_data_preprocessed.select(
+        training_y = training_data_preprocessed.rename(columns={self.training_outcome_col_name: self.shared_outcome_col_name})[
             self.training_outcome_col_name,
-        ).rename({self.training_outcome_col_name: self.shared_outcome_col_name})
+        ]
 
-        validation_y = validation_data_preprocessed.select(
+        validation_y = validation_data_preprocessed.select.rename({self.validation_outcome_col_name: self.shared_outcome_col_name})[
             self.validation_outcome_col_name,
-        ).rename({self.validation_outcome_col_name: self.shared_outcome_col_name})
+        ]
 
-        self.problem_type.train(
+        self.task.train(
             x=training_data_preprocessed.drop(self.outcome_columns),
-            y=training_y,
+            y=pd.DataFrame(training_y),
+            y_col_name=self.shared_outcome_col_name,
         )
-        result = self.problem_type.evaluate(
+        result = self.task.evaluate(
             x=validation_data_preprocessed.drop(self.outcome_columns),
-            y=validation_y,
+            y=pd.DataFrame(validation_y),
+            y_col_name=self.shared_outcome_col_name,
         )
 
         result = self._rename_result_col_name_to_validation_col_name(result)
