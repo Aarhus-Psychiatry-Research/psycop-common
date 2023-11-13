@@ -1,13 +1,7 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
 import pandas as pd
+from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-
-if TYPE_CHECKING:
-    from sklearn.pipeline import Pipeline
 
 PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
@@ -17,7 +11,7 @@ class BinaryClassificationPipeline:
     def __init__(self, sklearn_pipe: Pipeline):
         self.pipe = sklearn_pipe
 
-    def fit(self, x: pd.DataFrame, y: pd.Series[int]) -> None:
+    def fit(self, x: pd.DataFrame, y: pd.Series) -> None: # type: ignore
         self.pipe.fit(X=x, y=y)
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
