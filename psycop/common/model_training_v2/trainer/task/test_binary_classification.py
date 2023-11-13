@@ -28,7 +28,8 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
                 sklearn_pipe=Pipeline([logistic_regression_step()]),
             ),
             BinaryAUROC(),
-            pd.DataFrame({"x": [1, 1, 2, 2], "uuid": [1, 2, 3, 4], "y": [0, 0, 1, 1]}),
+            pd.DataFrame({"x": [1, 1, 2, 2], "uuid": [1, 2, 3, 4]}),
+            pd.DataFrame({"y": [0, 0, 1, 1]}),
             1.0,
         ),
     ],
@@ -48,7 +49,11 @@ def test_binary_classification(
     binary_classification_problem.train(x=x, y=y, y_col_name="y")
 
     x["y_hat"] = binary_classification_problem.predict_proba(x=x)
-    result = binary_classification_problem.evaluate(df=x, y_hat_col="y_hat", y_col="y")
+    result = binary_classification_problem.evaluate(
+        df=pd.concat([x, y], axis=1),
+        y_hat_col="y_hat",
+        y_col="y",
+    )
     assert result.metric.value == main_metric_expected
 
     pred_uuids = result.eval_dataset.df.to_pandas()[
