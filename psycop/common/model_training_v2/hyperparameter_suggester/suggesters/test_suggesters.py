@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any
 
 import optuna
@@ -19,8 +20,13 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logisti
 def float_space_for_test() -> FloatSpace:
     return FloatSpace(low=0, high=1, logarithmic=False)
 
+@dataclass(frozen=True)
+class TestSuggestion:
+    pre_resolution: dict[str, Any]
+    resolved: dict[str, Any]
 
-def suggester_tester(suggester: Suggester) -> dict[str, Any]:
+
+def suggester_tester(suggester: Suggester) -> TestSuggestion:
     """Test utility function which ensures that the suggester:
     1. Interfaces correctly with Optuna
     2. Can be resolved from the BaselineRegistry
@@ -35,7 +41,7 @@ def suggester_tester(suggester: Suggester) -> dict[str, Any]:
         populate_baseline_registry()
         cfg = BaselineRegistry.resolve(result)
 
-    return cfg
+    return TestSuggestion(pre_resolution=result, resolved=cfg)
 
 
 def test_logistic_regression_suggester():
@@ -45,4 +51,6 @@ def test_logistic_regression_suggester():
             l1_ratio=(0,1,False),
         ),
     )
-    assert set(result["logistic_regression"].keys()) == {"@estimator_steps", "C", "l1_ratio"}
+
+    pre_resolution = result.pre_resolution
+    assert set(pre_resolution["logistic_regression"].keys()) == {"@estimator_steps", "C", "l1_ratio"}
