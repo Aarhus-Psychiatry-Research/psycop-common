@@ -21,6 +21,10 @@ def float_space_for_test() -> FloatSpace:
 
 
 def suggester_tester(suggester: Suggester) -> dict[str, Any]:
+    """Test utility function which ensures that the suggester:
+    1. Interfaces correctly with Optuna
+    2. Can be resolved from the BaselineRegistry
+    """
     sampler = optuna.samplers.RandomSampler()
 
     with StorageSupplier("inmemory") as storage:
@@ -35,11 +39,10 @@ def suggester_tester(suggester: Suggester) -> dict[str, Any]:
 
 
 def test_logistic_regression_suggester():
-    suggester_tester(
+    result = suggester_tester(
         suggester=LogisticRegressionSuggester(
-            C=float_space_for_test(),
-            l1_ratio=float_space_for_test(),
+            C=(0,1,False),
+            l1_ratio=(0,1,False),
         ),
     )
-
-    # XXX: Ensure this tests more than resolution. E.g. that the return value is meaningful.
+    assert set(result["logistic_regression"].keys()) == {"@estimator_steps", "C", "l1_ratio"}
