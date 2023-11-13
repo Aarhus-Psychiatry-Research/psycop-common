@@ -48,7 +48,8 @@ def test_binary_classification(
     )
     binary_classification_problem.train(x=x, y=y, y_col_name="y")
 
-    result = binary_classification_problem.evaluate(df=x, y_hat_col=y, y_col="y")
+    x["y_hat"] = binary_classification_problem.predict_proba(x=x)
+    result = binary_classification_problem.evaluate(df=x, y_hat_col="y_hat", y_col="y")
     assert result.metric.value == main_metric_expected
 
     pred_uuids = result.eval_dataset.df.to_pandas()[
