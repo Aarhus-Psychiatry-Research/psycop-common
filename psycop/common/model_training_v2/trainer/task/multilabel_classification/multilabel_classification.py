@@ -5,9 +5,6 @@ import pandas as pd
 from psycop.common.model_training_v2.trainer.base_trainer import (
     TrainingResult,
 )
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
-)
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,
 )
@@ -32,13 +29,19 @@ class MultilabelClassification(BaselineTask):
 
     def train(
         self,
-        x: PolarsFrame,
-        y: PolarsFrame,
+        x: pd.DataFrame,
+        y: pd.DataFrame,
+        y_col_name: str,
     ):
         ...
 
-    def predict_proba(self, x: PolarsFrame) -> pd.Series[float]:
+    def predict_proba(self, x: pd.DataFrame) -> pd.Series[float]:
         ...
 
-    def evaluate(self, x: PolarsFrame, y: PolarsFrame) -> TrainingResult:
+    def evaluate(
+        self,
+        x: pd.DataFrame,
+        y: pd.DataFrame,
+        y_col_name: str,
+    ) -> TrainingResult:
         ...
