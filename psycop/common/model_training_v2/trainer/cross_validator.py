@@ -21,7 +21,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         training_data: BaselineDataLoader,  # make into list?
         training_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
-        task: BaselineTask,  # make more generalisable?
+        task: BaselineTask,
         logger: BaselineLogger,
         n_splits: int = 5,
         group_col_name: str = "dw_ek_borger",
@@ -39,10 +39,67 @@ class CrossValidatorTrainer(BaselineTrainer):
             data=self.training_data,
         )
 
-        StratifiedGroupKFold(n_splits=self.n_splits).split(
-            X=training_data_preprocessed.drop(
-                self.training_outcome_col_name,
-            ).to_pandas(),
-            y=pd.DataFrame(training_data_preprocessed),
+        X = training_data_preprocessed.drop(
+            self.training_outcome_col_name,
+            axis=1,
+        )
+        y = pd.DataFrame(
+            training_data_preprocessed[self.training_outcome_col_name],
+            columns=[self.training_outcome_col_name],
+        )
+
+        folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
+            X=X,
+            y=y,
             groups=training_data_preprocessed[self.group_col_name],
         )
+
+        training_data_preprocessed["y_hat_prob"] = 0
+
+        for _i, (train_idxs, val_idxs) in enumerate(folds):
+            X_train, y_train = (
+                X.loc[train_idxs],
+                y.loc[train_idxs],
+            )
+
+            self.task.train(X_train, y_train, y_col_name=self.training_outcome_col_name)
+
+            y_pred = self.task.evaluate(
+                X_train,
+                y_train,
+                y_col_name=self.training_outcome_col_name,
+            )
+
+            self.logger.log_metric(y_pred.metric)
+
+            X_val, y_val = (
+                X.loc[val_idxs],
+                y.loc[val_idxs],
+            )
+
+            oof_y_pred = self.task.evaluate(
+                X_val,
+                y_val,
+                y_col_name=self.training_outcome_col_name,
+            )
+
+            self.logger.log_metric(oof_y_pred.metric)
+
+            oof_y_prob = self.task.predict_proba(
+                X_val.drop(
+                    self.group_col_name,
+                    axis=1,
+                ),
+            )
+
+            training_data_preprocessed.loc[val_idxs, "y_hat_prob"] = oof_y_prob
+
+        result = self.task.evaluate(
+            X,
+            pd.DataFrame(training_data_preprocessed["y_hat_prob"]),
+            y_col_name=self.training_outcome_col_name,
+        )
+
+        self.logger.log_metric(result.metric)
+
+        return result
