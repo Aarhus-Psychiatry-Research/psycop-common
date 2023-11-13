@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any
 
 import optuna
 from optuna.testing.storage import StorageSupplier
@@ -7,7 +7,9 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.config.populate_registry import (
     populate_baseline_registry,
 )
-from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import Suggester
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
+    Suggester,
+)
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logistic_regression_suggester import (
     FloatSpace,
     LogisticRegressionSuggester,
@@ -35,7 +37,8 @@ def suggester_tester(suggester: Suggester) -> dict[str, Any]:
 def test_logistic_regression_suggester():
     suggester_tester(
         suggester=LogisticRegressionSuggester(
-            C=float_space_for_test(), l1_ratio=float_space_for_test(),
+            C=float_space_for_test(),
+            l1_ratio=float_space_for_test(),
         ),
     )
 

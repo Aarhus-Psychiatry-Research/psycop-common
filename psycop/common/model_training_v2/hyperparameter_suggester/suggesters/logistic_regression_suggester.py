@@ -16,8 +16,12 @@ class FloatSpace:
 
     def suggest(self, trial: optuna.Trial, name: str) -> float:
         return trial.suggest_float(
-            name=name, low=self.low, high=self.high, log=self.logarithmic,
+            name=name,
+            low=self.low,
+            high=self.high,
+            log=self.logarithmic,
         )
+
 
 class LogisticRegressionSuggester(Suggester):
     # XXX: Should we move this to the logistic regression creator, and then subclass the suggester?

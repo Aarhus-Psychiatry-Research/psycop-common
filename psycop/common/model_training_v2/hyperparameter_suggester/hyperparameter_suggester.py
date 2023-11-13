@@ -1,6 +1,6 @@
-
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
 
 import optuna
 
@@ -9,20 +9,25 @@ from .suggesters.base_suggester import Suggester
 
 @dataclass(frozen=True)
 class SearchSpace:
-    suggesters: Sequence[Suggester] 
+    suggesters: Sequence[Suggester]
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
-        suggester_dict = {suggester.__class__.__name__: suggester for suggester in self.suggesters} 
+        suggester_dict = {
+            suggester.__class__.__name__: suggester for suggester in self.suggesters
+        }
 
         # XXX: Replace __repr__ with something better
         suggester_names = list(suggester_dict.keys())
-        suggester_name: str = trial.suggest_categorical("suggester", suggester_names) # type: ignore # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
+        suggester_name: str = trial.suggest_categorical("suggester", suggester_names)  # type: ignore # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
 
         suggester = suggester_dict[suggester_name]
         return suggester.suggest_hyperparameters(trial=trial)
 
-        
-def hyperparameter_suggester(base_cfg: dict[str, Any], trial: optuna.Trial) -> dict[str, Any]:
+
+def hyperparameter_suggester(
+    base_cfg: dict[str, Any],
+    trial: optuna.Trial,
+) -> dict[str, Any]:
     """Suggest hyperparameters in a config.
 
 
@@ -36,6 +41,7 @@ def hyperparameter_suggester(base_cfg: dict[str, Any], trial: optuna.Trial) -> d
     process_all_values_in_dict(d=cfg, trial=trial)
     return cfg
 
+
 def process_all_values_in_dict(d: dict[str, Any], trial: optuna.Trial):
     for key, value in d.items():
         match value:
@@ -44,4 +50,6 @@ def process_all_values_in_dict(d: dict[str, Any], trial: optuna.Trial):
             case SearchSpace():
                 d[key] = value.suggest_hyperparameters(trial=trial)
             case _:
-                raise ValueError(f"Unexpected value.\n\tType is: {type(value)}\n\tValue: {value}")
+                raise ValueError(
+                    f"Unexpected value.\n\tType is: {type(value)}\n\tValue: {value}",
+                )
