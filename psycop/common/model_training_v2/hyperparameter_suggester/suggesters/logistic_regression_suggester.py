@@ -24,8 +24,10 @@ class FloatSpace:
 
 
 class LogisticRegressionSuggester(Suggester):
-    # XXX: Should we move this to the logistic regression creator, and then subclass the suggester?
+    # XXX: Should we move this to the logistic regression creator, and then have the creator also subclass suggester?
     # Perhaps that makes it hard to decorate, though?
+
+    # XXX: When using confection, this class becomes _much_ easier to initialise if FloatSpace is instead a tuple of (low, high, logarithmic). Otherwise, we will have to initialise a dataclass every time. Ask Kenneth here.
     def __init__(self, C: FloatSpace, l1_ratio: FloatSpace):
         self.C = C
         self.l1_ratio = l1_ratio
