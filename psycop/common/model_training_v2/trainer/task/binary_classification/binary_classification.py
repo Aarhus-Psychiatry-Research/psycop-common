@@ -2,9 +2,6 @@ import pandas as pd
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.base_trainer import (
-    TrainingResult,
-)
 from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
     PolarsFrame,
 )
@@ -15,9 +12,6 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_c
 )
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_eval_dataset import (
     BinaryEvalDataset,
-)
-from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.base_binary_metric import (
-    BinaryMetric,
 )
 
 
@@ -35,11 +29,9 @@ class BinaryClassification(BaselineTask):
     def __init__(
         self,
         task_pipe: BinaryClassificationPipeline,
-        main_metric: BinaryMetric,
         pred_time_uuid_col_name: str,
     ):
         self.pipe = task_pipe
-        self.main_metric = main_metric
         self.pred_time_uuid_col_name = pred_time_uuid_col_name
 
     def train(
@@ -57,12 +49,12 @@ class BinaryClassification(BaselineTask):
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
         return self.pipe.predict_proba(x.drop(self.pred_time_uuid_col_name, axis=1))
 
-    def evaluate(
+    def construct_eval_dataset(
         self,
         df: pd.DataFrame,
         y_hat_col: str,
         y_col: str,
-    ) -> TrainingResult:
+    ) -> BinaryEvalDataset:
         pl_df = pl.from_pandas(df)
 
         eval_dataset = BinaryEvalDataset(
@@ -71,9 +63,5 @@ class BinaryClassification(BaselineTask):
             y_col=y_col,
             df=pl_df,
         )
-        main_metric = eval_dataset.calculate_metrics([self.main_metric])[0]
 
-        return TrainingResult(
-            metric=main_metric,
-            eval_dataset=eval_dataset,
-        )
+        return eval_dataset

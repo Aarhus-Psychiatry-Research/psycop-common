@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, runtime_checkable
+
+from psycop.common.model_training_v2.trainer.task.base_metric import BaseMetric
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @runtime_checkable
-class BinaryMetric(Protocol):
+class BinaryMetric(BaseMetric):
     def calculate(
         self,
         y_true: pd.Series[int],

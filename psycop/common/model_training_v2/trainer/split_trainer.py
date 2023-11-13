@@ -18,6 +18,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
+from psycop.common.model_training_v2.trainer.task.base_metric import BaseMetric
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,
 )
@@ -33,6 +34,7 @@ class SplitTrainer(BaselineTrainer):
         validation_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         task: BaselineTask,
+        metric: BaseMetric,
         logger: BaselineLogger,
     ):
         self.training_data = training_data.load()
@@ -41,6 +43,7 @@ class SplitTrainer(BaselineTrainer):
         self.validation_outcome_col_name = validation_outcome_col_name
         self.preprocessing_pipeline = preprocessing_pipeline
         self.task = task
+        self.metric = metric
         self.logger = logger
 
         # When using sklearn pipelines, the outcome column must retain its name
@@ -70,12 +73,16 @@ class SplitTrainer(BaselineTrainer):
         validation_data_preprocessed["y_hat"] = self.task.predict_proba(
             x=validation_data_preprocessed.drop(self.outcome_columns, axis=1),
         )
-        result = self.task.evaluate(
+        eval_dataset = self.task.construct_eval_dataset(
             df=validation_data_preprocessed,
             y_hat_col="y_hat",
             y_col=self.validation_outcome_col_name,
         )
 
-        self.logger.log_metric(result.metric)
+        main_metric = eval_dataset.calculate_metrics([self.metric])[0]
+        self.logger.log_metric(main_metric)
 
-        return result
+        return TrainingResult(
+            metric=main_metric,
+            eval_dataset=eval_dataset,
+        )

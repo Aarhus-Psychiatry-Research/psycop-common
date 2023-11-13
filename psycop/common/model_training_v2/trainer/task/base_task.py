@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 if TYPE_CHECKING:
     import pandas as pd
 
-    from psycop.common.model_training_v2.trainer.base_trainer import TrainingResult
+    from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
+        BaseEvalDataset,
+    )
 
 
 @runtime_checkable
@@ -14,12 +16,12 @@ class BaselineTask(Protocol):
         """Train the model"""
         ...
 
-    def evaluate(
+    def construct_eval_dataset(
         self,
         df: pd.DataFrame,
         y_hat_col: str,
         y_col: str,
-    ) -> TrainingResult:
+    ) -> BaseEvalDataset:
         ...
 
     def predict_proba(self, x: pd.DataFrame) -> pd.Series[float]:

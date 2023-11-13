@@ -2,11 +2,11 @@ from collections.abc import Sequence
 
 import pandas as pd
 
-from psycop.common.model_training_v2.trainer.base_trainer import (
-    TrainingResult,
-)
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,
+)
+from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
+    BaseEvalDataset,
 )
 from psycop.common.model_training_v2.trainer.task.multilabel_classification.multiclass_classification_pipeline import (
     MulticlassClassificationPipeline,
@@ -38,10 +38,10 @@ class MultilabelClassification(BaselineTask):
     def predict_proba(self, x: pd.DataFrame) -> pd.Series[float]:
         ...
 
-    def evaluate(
+    def construct_eval_dataset(
         self,
         df: pd.DataFrame,
         y_hat_col: str,
         y_col: str,
-    ) -> TrainingResult:
+    ) -> BaseEvalDataset:
         ...
