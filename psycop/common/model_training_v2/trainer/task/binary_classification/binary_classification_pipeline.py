@@ -9,7 +9,7 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 if TYPE_CHECKING:
     from sklearn.pipeline import Pipeline
 
-PredProbaSeries = pd.Series[float]  # name should be "y_hat_probs", series of floats
+PredProbaSeries = pd.Series # name should be "y_hat_probs", series of floats
 
 
 @BaselineRegistry.task_pipelines.register("binary_classification_pipeline")
