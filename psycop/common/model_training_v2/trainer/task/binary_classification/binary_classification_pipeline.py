@@ -11,7 +11,7 @@ class BinaryClassificationPipeline:
     def __init__(self, sklearn_pipe: Pipeline):
         self.pipe = sklearn_pipe
 
-    def fit(self, x: pd.DataFrame, y: pd.Series) -> None: # type: ignore
+    def fit(self, x: pd.DataFrame, y: pd.Series) -> None:  # type: ignore
         self.pipe.fit(X=x, y=y)
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
