@@ -55,7 +55,7 @@ class BinaryClassification(BaselineTask):
         self.is_fitted = True
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
-        return self.pipe.predict_proba(x)
+        return self.pipe.predict_proba(x.drop(self.pred_time_uuid_col_name, axis=1))
 
     def evaluate(
         self,
