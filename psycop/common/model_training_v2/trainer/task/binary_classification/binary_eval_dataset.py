@@ -15,9 +15,9 @@ from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
 
 
 class BinaryEvalDataset(BaseEvalDataset):
-    pred_time_uuids: str
-    y_hat_probs: str
-    y: str
+    pred_time_uuid_col: str
+    y_hat_col: str
+    y_col: str
     df: pl.DataFrame
 
     def calculate_metrics(
@@ -26,8 +26,8 @@ class BinaryEvalDataset(BaseEvalDataset):
     ) -> list[CalculatedMetric]:
         return [
             metric.calculate(
-                y_true=self.df.get_column(self.y).to_pandas(),
-                y_pred=self.df.get_column(self.y_hat_probs).to_pandas(),
+                y_true=self.df.get_column(self.y_col).to_pandas(),
+                y_pred=self.df.get_column(self.y_hat_col).to_pandas(),
             )
             for metric in metrics
         ]

@@ -59,27 +59,17 @@ class BinaryClassification(BaselineTask):
 
     def evaluate(
         self,
-        x: pd.DataFrame,
-        y: pd.DataFrame,
-        y_col_name: str,
+        df: pd.DataFrame,
+        y_hat_col: str,
+        y_col: str,
     ) -> TrainingResult:
-        x_pl = pl.from_pandas(x)
-
-        y_hat_probs = self.pipe.predict_proba(
-            x.drop(self.pred_time_uuid_col_name, axis=1),
-        )
-        y_true = y[y_col_name]
-
-        df = x_pl.with_columns(
-            pl.Series(y_hat_probs).alias(str(y_hat_probs.name)),
-            pl.Series(y_true),
-        )
+        pl_df = pl.from_pandas(df)
 
         eval_dataset = BinaryEvalDataset(
-            pred_time_uuids=self.pred_time_uuid_col_name,
-            y_hat_probs=str(y_hat_probs.name),
-            y=y_col_name,
-            df=df,
+            pred_time_uuid_col=self.pred_time_uuid_col_name,
+            y_hat_col=y_hat_col,
+            y_col=y_col,
+            df=pl_df,
         )
         main_metric = eval_dataset.calculate_metrics([self.main_metric])[0]
 

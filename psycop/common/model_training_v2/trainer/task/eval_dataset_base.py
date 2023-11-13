@@ -6,9 +6,9 @@ import polars as pl
 
 @dataclass
 class BaseEvalDataset:
-    pred_time_uuids: str
-    y_hat_probs: str
-    y: str
+    pred_time_uuid_col: str
+    y_hat_col: str
+    y_col: str
     df: pl.DataFrame
 
     def to_disk(self, path: Path) -> None:

@@ -16,9 +16,9 @@ class BaselineTask(Protocol):
 
     def evaluate(
         self,
-        x: pd.DataFrame,
-        y: pd.DataFrame,
-        y_col_name: str,
+        df: pd.DataFrame,
+        y_hat_col: str,
+        y_col: str,
     ) -> TrainingResult:
         ...
 

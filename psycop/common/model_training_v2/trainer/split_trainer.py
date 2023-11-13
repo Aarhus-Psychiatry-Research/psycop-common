@@ -67,11 +67,13 @@ class SplitTrainer(BaselineTrainer):
             y_col_name=self.training_outcome_col_name,
         )
 
-        validation_y = validation_data_preprocessed[self.validation_outcome_col_name]
-        result = self.task.evaluate(
+        validation_data_preprocessed["y_hat"] = self.task.predict_proba(
             x=validation_data_preprocessed.drop(self.outcome_columns, axis=1),
-            y=pd.DataFrame(validation_y),
-            y_col_name=self.validation_outcome_col_name,
+        )
+        result = self.task.evaluate(
+            df=validation_data_preprocessed,
+            y_hat_col="y_hat",
+            y_col=self.validation_outcome_col_name,
         )
 
         self.logger.log_metric(result.metric)

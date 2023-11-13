@@ -48,8 +48,10 @@ def test_binary_classification(
     )
     binary_classification_problem.train(x=x, y=y, y_col_name="y")
 
-    result = binary_classification_problem.evaluate(x=x, y=y, y_col_name="y")
+    result = binary_classification_problem.evaluate(df=x, y_hat_col=y, y_col="y")
     assert result.metric.value == main_metric_expected
 
-    pred_uuids = result.eval_dataset.df.to_pandas()[result.eval_dataset.pred_time_uuids]
+    pred_uuids = result.eval_dataset.df.to_pandas()[
+        result.eval_dataset.pred_time_uuid_col
+    ]
     assert_series_equal(pred_uuids, x["uuid"])
