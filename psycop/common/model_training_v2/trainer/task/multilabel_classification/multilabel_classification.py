@@ -41,7 +41,7 @@ class MultilabelClassification(BaselineTask):
     def evaluate(
         self,
         df: pd.DataFrame,
-        y_hat_col: pd.DataFrame,
+        y_hat_col: str,
         y_col: str,
     ) -> TrainingResult:
         ...
