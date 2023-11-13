@@ -79,7 +79,7 @@ class SplitTrainer(BaselineTrainer):
             y_col=self.validation_outcome_col_name,
         )
 
-        main_metric = eval_dataset.calculate_metrics([self.metric])[0]
+        main_metric = self.metric.calculate(eval_dataset)
         self.logger.log_metric(main_metric)
 
         return TrainingResult(

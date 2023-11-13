@@ -9,9 +9,6 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_c
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )
-from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.base_binary_metric import (
-    BinaryMetric,
-)
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.binary_auroc import (
     BinaryAUROC,
 )
@@ -36,28 +33,25 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
 )
 def test_binary_classification(
     pipe: BinaryClassificationPipeline,
-    main_metric: BinaryMetric,
+    main_metric: BinaryAUROC,
     x: pd.DataFrame,
     y: pd.DataFrame,
     main_metric_expected: float,
 ):
     binary_classification_problem = BinaryClassification(
         task_pipe=pipe,
-        main_metric=main_metric,
         pred_time_uuid_col_name="uuid",
     )
     binary_classification_problem.train(x=x, y=y, y_col_name="y")
 
     x["y_hat"] = binary_classification_problem.predict_proba(x=x)
-    result = binary_classification_problem.construct_eval_dataset(
+    eval_ds = binary_classification_problem.construct_eval_dataset(
         df=pd.concat([x, y], axis=1),
         y_hat_col="y_hat",
         y_col="y",
     )
 
-    assert result.metric.value == main_metric_expected
+    assert main_metric.calculate(eval_ds) == main_metric_expected
 
-    pred_uuids = result.eval_dataset.df.to_pandas()[
-        result.eval_dataset.pred_time_uuid_col
-    ]
+    pred_uuids = eval_ds.df.to_pandas()[eval_ds.pred_time_uuid_col]
     assert_series_equal(pred_uuids, x["uuid"])
