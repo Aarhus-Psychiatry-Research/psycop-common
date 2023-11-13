@@ -51,7 +51,14 @@ def str_to_df(
     """
     # Drop comments for each line if any exist inside the str
     lines = []
-    for line in string.split("\n"):
+    for i, line in enumerate(string.split("\n")):
+        is_header = i == 0
+        if is_header:
+            # Remove whitespace at the start and end of headers
+            header_items = line.split(",")
+            header_items_stripped = [item.strip() for item in header_items]
+            line = ",".join(header_items_stripped)  # noqa: PLW2901
+
         # Remove leading whitespace
         if " #" in line:
             line = line[: line.rfind("#")]  # noqa

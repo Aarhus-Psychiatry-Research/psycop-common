@@ -2,6 +2,32 @@
 
 <!--next-version-placeholder-->
 
+## v0.136.0 (2023-11-10)
+
+### Feature
+
+* Ensure that evaluation can run with different outcome col names ([#418](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/418)) ([`c236d58`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c236d589e47a1ae6ad38a9e2cecd3057dd0bb284))
+* Support spaces within column names ([`abfb810`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/abfb810bf47dde3e3c1259788b90c1d5ec543fa4))
+* Add support for spaces in header titles ([`6109822`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6109822266e8b67f67946500616cf5b280de3abf))
+
+## v0.135.0 (2023-11-10)
+
+### Feature
+
+* Filter cols by lookbehind combination filter ([`92b6998`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/92b6998131eecd95f9ff2a672a1aefdbaecb8f06))
+
+### Fix
+
+* Clean up after review ([`6020174`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6020174155a309e80889d2720f40d92b38b2ee98))
+* Update error message ([`74ca01a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/74ca01ad433f1b9cf20270589125f8a355709f58))
+
+## v0.134.0 (2023-11-10)
+
+### Feature
+
+* Support spaces within column names ([`56e1019`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/56e10193f7b46cf8a1a96f83879c375c00f58ad2))
+* Add support for spaces in header titles ([`52140a1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/52140a1c116f6a482b8576318a0d030d63a67a8b))
+
 ## v0.133.4 (2023-11-09)
 
 ### Fix
