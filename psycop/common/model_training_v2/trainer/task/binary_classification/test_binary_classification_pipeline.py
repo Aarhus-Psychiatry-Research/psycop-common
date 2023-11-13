@@ -23,7 +23,7 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
 def test_binary_classification_pipeline(
     pipe: Pipeline,
     x: pd.DataFrame,
-    y: pd.Series[int],
+    y: pd.Series, # type: ignore
 ):
     pipeline = BinaryClassificationPipeline(sklearn_pipe=pipe)
     pipeline.fit(x=x, y=y)
