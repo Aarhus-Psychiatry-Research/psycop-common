@@ -9,12 +9,8 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
 def test_logistic_regression_suggester():
     suggester_tester(
         suggester=LogisticRegressionSuggester(
-            C_low=0.1,
-            C_high=1,
-            C_log=False,
-            l1_ratio_low=0.1,
-            l1_ratio_high=1,
-            l1_ratio_log=False,
+            C={"low": 0.1, "high": 1, "logarithmic": False},
+            l1_ratio={"low": 0.1, "high": 1, "logarithmic": False},
             solvers=("saga","lbfgs")
         ),
     )

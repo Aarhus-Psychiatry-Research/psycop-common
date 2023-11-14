@@ -8,7 +8,9 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
     Suggester,
 )
 
-FloatSpaceT = Mapping[str, float | bool]
+FloatSpaceT = Mapping[str, float | bool] 
+    # Used when specifying mappings in the confection .cfg, which is then immediately cast to a FloatSpace
+    # As such, requires keys that correspond to the FloatSpace's attributes
 
 
 @dataclass(frozen=True)
@@ -25,13 +27,20 @@ class FloatSpace:
             log=self.logarithmic,
         )
 
+    @classmethod
+    def from_mapping(cls, mapping: FloatSpaceT) -> "FloatSpace":
+        return cls(
+            low=mapping["low"],
+            high=mapping["high"],
+            logarithmic=mapping["logarithmic"], # type: ignore
+        )
+
 @dataclass(frozen=True)
 class CategoricalSpace:
     choices: Sequence[str]
 
     def suggest(self, trial: optuna.Trial, name: str) -> Any:
         return trial.suggest_categorical(name=name, choices=self.choices)
-
 
 @BaselineRegistry.estimator_steps.register("mock_suggester")
 class MockSuggester(Suggester):
