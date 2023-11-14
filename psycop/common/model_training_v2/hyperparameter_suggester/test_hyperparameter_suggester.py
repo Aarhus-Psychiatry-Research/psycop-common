@@ -81,7 +81,8 @@ class TestHyperparameterSuggester:
         model_dict = suggestion["model"]["logistic_regression"]
         assert model_dict["@estimator_steps"] == "logistic_regression"
 
-        for hparam in ("C", "l1_ratio"):
-            assert isinstance(model_dict[hparam], float)
+        for float_hparam in ("C", "l1_ratio"):
+            assert isinstance(model_dict[float_hparam], float)
 
-    # TODO: #425 Test using SearchSpace in confection
+        for str_hparam in ("solver", "penalty"):
+            assert isinstance(model_dict[str_hparam], str)

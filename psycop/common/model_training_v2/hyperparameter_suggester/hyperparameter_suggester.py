@@ -5,12 +5,15 @@ from typing import Any
 
 import optuna
 
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+
 from .suggesters.base_suggester import Suggester
 
 
-@dataclass(frozen=True)
+@BaselineRegistry.suggesters.register("suggester_space")
 class SuggesterSpace:
-    suggesters: Sequence[Suggester]
+    def __init__(self, *args: Suggester):
+        self.suggesters = args
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         suggester_dict = {
@@ -22,7 +25,6 @@ class SuggesterSpace:
 
         suggester = suggester_dict[suggester_name]
         return suggester.suggest_hyperparameters(trial=trial)
-
 
 def suggest_hyperparams_from_cfg(
     base_cfg: dict[str, Any],
