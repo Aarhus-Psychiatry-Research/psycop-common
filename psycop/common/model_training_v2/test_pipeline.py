@@ -65,7 +65,9 @@ class MinimalTestData(BaselineDataLoader):
 def test_v2_train_model_pipeline(tmpdir: Path):
     logger = TerminalLogger()
     schema = BaselineSchema(
-        project_info=ProjectInfo(experiment_path=tmpdir),
+        project_info=ProjectInfo(
+            experiment_path=Path(tmpdir),
+        ),  # Must recast to Path, since the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
         logger=logger,
         trainer=SplitTrainer(
             training_data=MinimalTestData(),
