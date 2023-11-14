@@ -39,7 +39,7 @@ class FloatSpace:
 
 @dataclass(frozen=True)
 class CategoricalSpace:
-    choices: Sequence[str]
+    choices: Sequence[optuna.distributions.CategoricalChoiceType]
 
     def suggest(self, trial: optuna.Trial, name: str) -> Any:
         return trial.suggest_categorical(name=name, choices=self.choices)
