@@ -13,8 +13,8 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_m
 )
 
 if TYPE_CHECKING:
-    from psycop.common.model_training_v2.trainer.task.binary_classification.binary_eval_dataset import (
-        BinaryEvalDataset,
+    from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
+        BaseEvalDataset,
     )
 
     pass
@@ -27,7 +27,7 @@ class BinaryAUROC(BinaryMetric):
 
     def calculate(
         self,
-        eval_dataset: BinaryEvalDataset,
+        eval_dataset: BaseEvalDataset,
     ) -> CalculatedMetric:
         return CalculatedMetric(
             name="BinaryAUROC",

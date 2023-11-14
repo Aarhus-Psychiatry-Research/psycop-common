@@ -1,5 +1,6 @@
+from typing import Protocol, runtime_checkable
+
 from psycop.common.model_training_v2.trainer.task.base_metric import (
-    BaseMetric,
     CalculatedMetric,
 )
 from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
@@ -7,7 +8,8 @@ from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
 )
 
 
-class MultilabelMetric(BaseMetric):
+@runtime_checkable
+class MultilabelMetric(Protocol):
     def calculate(
         self,
         eval_dataset: BaseEvalDataset,
