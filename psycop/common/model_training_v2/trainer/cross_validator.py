@@ -59,7 +59,6 @@ class CrossValidatorTrainer(BaselineTrainer):
             groups=training_data_preprocessed[self.group_col_name],
         )
 
-
         for _i, (train_idxs, val_idxs) in enumerate(folds):
             X_train, y_train = (
                 X.loc[train_idxs],
@@ -72,7 +71,12 @@ class CrossValidatorTrainer(BaselineTrainer):
                 X_train,
             )
 
-            self.logger.log_metric(self.metric.calculate(y_train[self.training_outcome_col_name], y_hat_prob))
+            self.logger.log_metric(
+                self.metric.calculate(
+                    y_train[self.training_outcome_col_name],
+                    y_hat_prob,
+                ),
+            )
 
             X_val, y_val = (
                 X.loc[val_idxs],
@@ -83,9 +87,16 @@ class CrossValidatorTrainer(BaselineTrainer):
                 X.loc[val_idxs],
             )
 
-            self.logger.log_metric(self.metric.calculate(y.loc[val_idxs][self.training_outcome_col_name], oof_y_hat_prob))
+            self.logger.log_metric(
+                self.metric.calculate(
+                    y.loc[val_idxs][self.training_outcome_col_name],
+                    oof_y_hat_prob,
+                ),
+            )
 
-            training_data_preprocessed.loc[val_idxs, "y_hat_prob"] = np.asarray(oof_y_hat_prob)
+            training_data_preprocessed.loc[val_idxs, "y_hat_prob"] = np.asarray(
+                oof_y_hat_prob,
+            )
 
         main_metric = self.metric.calculate(
             y=training_data_preprocessed[self.training_outcome_col_name],
@@ -93,4 +104,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         )
         self.logger.log_metric(main_metric)
 
-        return TrainingResult(metric=main_metric, df=pl.DataFrame(training_data_preprocessed))
+        return TrainingResult(
+            metric=main_metric,
+            df=pl.DataFrame(training_data_preprocessed),
+        )
