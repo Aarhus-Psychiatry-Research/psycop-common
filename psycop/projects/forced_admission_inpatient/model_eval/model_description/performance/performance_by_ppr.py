@@ -70,7 +70,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     return renamed_df
 
 
-def fa_output_performance_by_ppr(run: ForcedAdmissionInpatientPipelineRun):
+def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipelineRun):
     output_path = run.paper_outputs.paths.tables / "performance_by_ppr.xlsx"
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
@@ -88,4 +88,4 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    fa_output_performance_by_ppr(run=get_best_eval_pipeline())
+    fa_inpatient_output_performance_by_ppr(run=get_best_eval_pipeline())

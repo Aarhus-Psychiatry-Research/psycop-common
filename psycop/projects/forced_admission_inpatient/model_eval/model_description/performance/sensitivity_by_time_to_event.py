@@ -44,7 +44,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     return p
 
 
-def fa_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
+def fa_inpatient_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -85,12 +85,12 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
 
     plot_df = pd.concat(dfs)
 
-    p = fa_plot_sensitivity_by_time_to_event(plot_df)
+    p = fa_inpatient_plot_sensitivity_by_time_to_event(plot_df)
 
     return p
 
 
-def fa_sensitivity_by_time_to_event(
+def fa_inpatient_sensitivity_by_time_to_event(
     pipeline_run: ForcedAdmissionInpatientPipelineRun,
 ) -> pn.ggplot:
     eval_ds = pipeline_run.pipeline_outputs.get_eval_dataset()
@@ -111,4 +111,4 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    fa_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())
+    fa_inpatient_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())

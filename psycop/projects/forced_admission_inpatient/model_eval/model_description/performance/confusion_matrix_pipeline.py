@@ -15,7 +15,9 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 )
 
 
-def fa_confusion_matrix_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggplot:
+def fa_inpatient_confusion_matrix_plot(
+    run: ForcedAdmissionInpatientPipelineRun,
+) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pd.DataFrame(
@@ -39,4 +41,4 @@ def fa_confusion_matrix_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggp
 
 
 if __name__ == "__main__":
-    fa_confusion_matrix_plot(run=get_best_eval_pipeline())
+    fa_inpatient_confusion_matrix_plot(run=get_best_eval_pipeline())

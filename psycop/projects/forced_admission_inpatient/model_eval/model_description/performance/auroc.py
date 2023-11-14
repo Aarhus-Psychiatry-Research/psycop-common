@@ -11,7 +11,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 )
 
 
-def fa_auroc_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggplot:
+def fa_inpatient_auroc_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     p = plot_auc_roc(
@@ -25,4 +25,4 @@ def fa_auroc_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggplot:
 
 
 if __name__ == "__main__":
-    fa_auroc_plot(run=get_best_eval_pipeline())
+    fa_inpatient_auroc_plot(run=get_best_eval_pipeline())
