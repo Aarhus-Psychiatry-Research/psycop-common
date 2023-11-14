@@ -8,7 +8,7 @@ from .suggesters.base_suggester import Suggester
 
 
 @dataclass(frozen=True)
-class SearchSpace:
+class SuggesterSpace:
     suggesters: Sequence[Suggester]
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
@@ -16,7 +16,6 @@ class SearchSpace:
             suggester.__class__.__name__: suggester for suggester in self.suggesters
         }
 
-        # XXX: Replace __repr__ with something better
         suggester_names = list(suggester_dict.keys())
         suggester_name: str = trial.suggest_categorical("suggester", suggester_names)  # type: ignore # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
 
@@ -47,7 +46,7 @@ def _suggest_hyperparams_for_nodes(d: dict[str, Any], trial: optuna.Trial):
         match value:
             case dict():
                 _suggest_hyperparams_for_nodes(value, trial=trial)
-            case SearchSpace():
+            case SuggesterSpace() | Suggester():
                 d[key] = value.suggest_hyperparameters(trial=trial)
             case _:
                 # Values which do not require processing, pass

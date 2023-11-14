@@ -1,18 +1,39 @@
+from pathlib import Path
 from typing import Any
 
 import optuna
+import pytest
+from confection import Config
 from optuna.testing.storage import StorageSupplier
 
+from psycop.common.model_training_v2.config.config_utils import (
+    load_baseline_config,
+    load_hyperparam_config,
+)
 from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_suggester import (
-    SearchSpace,
+    SuggesterSpace,
     suggest_hyperparams_from_cfg,
+)
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
+    Suggester,
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logistic_regression_suggester import (
     LogisticRegressionSuggester,
+    MockSuggester,
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.test_suggesters import (
     float_space_for_test,
 )
+
+
+def parametrised_suggester() -> Suggester:
+    return MockSuggester(
+        value_low=0.01,
+        value_high=0.99,
+        log=True,
+    )
+    
+
 
 
 class TestHyperparameterSuggester:
@@ -30,12 +51,10 @@ class TestHyperparameterSuggester:
 
     def test_hyperparameter_suggester(self):
         base_cfg = {
-            "model": SearchSpace(
+            "model": SuggesterSpace(
                 suggesters=(
-                    LogisticRegressionSuggester(
-                        C=(0,1,False),
-                        l1_ratio=(0,1,False),
-                    ),
+                    parametrised_suggester(),
+                    parametrised_suggester(),
                 ),
             ),
         }
@@ -43,39 +62,35 @@ class TestHyperparameterSuggester:
         suggestion = self._get_suggestions(base_cfg=base_cfg)
 
         model = suggestion["model"]
-        hyperparam_keys = {"C", "l1_ratio"}
-
-        assert set(model["logistic_regression"].keys()) == {"@estimator_steps"}.union(
-            hyperparam_keys,
-        )
-        assert model["logistic_regression"]["@estimator_steps"] == "logistic_regression"
+        assert isinstance(model["mock_value"], float)
 
     def test_nested_hyperparameter_suggestion(self):
         base_cfg = {
             "level_1": {
-                "level_2": SearchSpace(
+                "level_2": SuggesterSpace(
                     suggesters=(
-                        LogisticRegressionSuggester(
-                            C=(0,1,False),
-                            l1_ratio=(0,1,False),
-                        ),
+                        parametrised_suggester(),
                     ),
                 ),
             },
         }
 
         suggestion = self._get_suggestions(base_cfg=base_cfg)
-        model = suggestion["level_1"]["level_2"]
-
-        hyperparam_keys = {"C", "l1_ratio"}
-        assert set(model["logistic_regression"].keys()) == {"@estimator_steps"}.union(
-            hyperparam_keys,
-        )
-        assert model["logistic_regression"]["@estimator_steps"] == "logistic_regression"
-
-    # XXX: Add a test using confection
+        assert set(suggestion["level_1"]["level_2"].keys()) == {"mock_value"}
 
     def test_no_search(self):
         base_cfg = {"int": 1, "str": "a", "float": 1.0, "list": [1, 2, 3]}
         suggestion = self._get_suggestions(base_cfg=base_cfg)
         assert suggestion == base_cfg
+
+    def test_confection_integration(self):
+        cfg = load_hyperparam_config(Path(__file__).parent / "test_hyperparam_search.cfg")
+
+        suggestion = self._get_suggestions(base_cfg=cfg)
+        model_dict = suggestion["model"]["logistic_regression"]
+        assert model_dict["@estimator_steps"] == "logistic_regression"
+
+        for hparam in ("C", "l1_ratio"):
+            assert isinstance(model_dict[hparam], float)
+
+    # TODO: #425 Test using SearchSpace in confection
