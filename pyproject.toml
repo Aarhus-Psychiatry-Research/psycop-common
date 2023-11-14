@@ -65,6 +65,7 @@ select = [
   "E",
   "ERA",
   "F",
+  "FIX003", # Fail if 'XXX' on a line. Useful to mark areas that should be fixed before merge.
   "I",
   "ICN",
   "NPY001",
