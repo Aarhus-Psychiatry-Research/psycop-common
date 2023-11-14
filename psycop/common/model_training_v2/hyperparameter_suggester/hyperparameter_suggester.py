@@ -19,7 +19,8 @@ class SuggesterSpace:
         suggester_names = list(suggester_dict.keys())
         optuna_key = ".".join(
             suggester_names,
-        )  # We want the optuna key to be unique for each space, so it knows to optimise them individually
+        )  
+        # We want the optuna key to be unique for each space, so it knows to optimise them individually
 
         suggester_name: str = trial.suggest_categorical(optuna_key, suggester_names)  # type: ignore # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
 
