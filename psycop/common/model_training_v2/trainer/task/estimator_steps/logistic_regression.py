@@ -30,7 +30,7 @@ LogRegPenalties = Literal["l1", "l2", "elasticnet"]
 
 @BaselineRegistry.estimator_steps.register("logistic_regression")
 def logistic_regression_step(
-    penalty: Literal["l1", "l2", "elasticnet"] = "elasticnet",
+    penalty: LogRegPenalties = "elasticnet",
     solver: LogRegSolvers = "saga",
     C: float = 1.0,
     l1_ratio: float = 0.5,
