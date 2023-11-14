@@ -56,3 +56,9 @@ class TerminalLogger(BaselineLogger):
         config = flatten_nested_dict(config)
         cfg_str = "\n".join([f"{k}: {v}" for k, v in config.items()])
         self._l.info(cfg_str)
+
+class MLFlowLogger(BaselineLogger):
+    def __init__(self, tracking_uri: str) -> None:
+        import mlflow
+        mlflow.set_tracking_uri(tracking_uri)
+        self._mlflow = mlflow
