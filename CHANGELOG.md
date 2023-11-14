@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.137.0 (2023-11-14)
+
+### Feature
+
+* Use deepcopy ([`8b905a3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8b905a3c2371d27b0c8fcc41d61591d17feb55f8))
+* First working version ([`1cfd388`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1cfd388a7c68eca064b6b3567017c5de46724bed))
+* Add searchspace ([`7967297`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7967297e21eacb0eca791353ea7d80bff9012b33))
+
 ## v0.136.0 (2023-11-10)
 
 ### Feature
