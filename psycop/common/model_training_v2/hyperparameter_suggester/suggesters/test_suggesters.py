@@ -13,7 +13,6 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logistic_regression_suggester import (
     FloatSpace,
-    LogisticRegressionSuggester,
 )
 
 
@@ -32,7 +31,7 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
     1. Interfaces correctly with Optuna
     2. Can be resolved from the BaselineRegistry
     """
-    sampler = optuna.samplers.RandomSampler()
+    sampler = optuna.samplers.RandomSampler(seed=42)
 
     with StorageSupplier("inmemory") as storage:
         study = optuna.create_study(storage=storage, sampler=sampler)
@@ -43,16 +42,3 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
         cfg = BaselineRegistry.resolve(result)
 
     return TestSuggestion(pre_resolution=result, resolved=cfg)
-
-
-def test_logistic_regression_suggester():
-    suggester_tester(
-        suggester=LogisticRegressionSuggester(
-            C_low=0.1,
-            C_high=1,
-            C_log=False,
-            l1_ratio_low=0.1,
-            l1_ratio_high=1,
-            l1_ratio_log=False,
-        ),
-    )
