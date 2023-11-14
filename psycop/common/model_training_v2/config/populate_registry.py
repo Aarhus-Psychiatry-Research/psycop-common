@@ -7,4 +7,6 @@ def populate_baseline_registry() -> None:
     """
     from ..loggers.base_logger import TerminalLogger  # noqa
     from ..trainer.task.pipeline_constructor import pipeline_constructor  # noqa
-    from ..trainer.task.estimator_steps.logistic_regression import logistic_regression_step  # noqa
+    from ..trainer.task.estimator_steps.logistic_regression import (
+        logistic_regression_step, # noqa
+    )  
