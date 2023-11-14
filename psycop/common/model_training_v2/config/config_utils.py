@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 from confection import Config
 
@@ -18,3 +19,10 @@ def load_baseline_config(config_path: Path) -> BaselineSchema:
     cfg = Config().from_disk(config_path)
     resolved = BaselineRegistry.resolve(cfg)
     return BaselineSchema(**resolved)
+
+
+def load_hyperparam_config(config_path: Path) -> dict[str, Any]:
+    """Loads the baseline config from disk and resolves it."""
+    cfg = Config().from_disk(config_path)
+    resolved = BaselineRegistry.resolve(cfg)
+    return resolved

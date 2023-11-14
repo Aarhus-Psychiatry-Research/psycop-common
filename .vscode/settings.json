@@ -1,7 +1,7 @@
 {
     "python.analysis.typeCheckingMode": "strict",
     "python.testing.pytestArgs": [
-        "psycop"
+        "."
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
@@ -17,6 +17,7 @@
         "**/Thumbs.db": true,
         "**/BUILD": true,
         "**/__pycache__": true,
+        "**/.testmon*": true,
     },
     "terminal.integrated.env.osx": {
         "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"
