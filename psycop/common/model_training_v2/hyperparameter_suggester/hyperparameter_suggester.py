@@ -1,3 +1,4 @@
+import copy
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -36,7 +37,7 @@ def suggest_hyperparams_from_cfg(
         base_cfg: The base config, a tree of options.
         trial: The optuna trial to use for suggesting hyperparameters.
     """
-    cfg = base_cfg.copy()
+    cfg = copy.deepcopy(base_cfg)
     _suggest_hyperparams_for_nodes(d=cfg, trial=trial)
     return cfg
 
