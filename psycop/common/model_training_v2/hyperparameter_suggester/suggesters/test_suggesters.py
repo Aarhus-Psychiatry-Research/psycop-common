@@ -48,8 +48,12 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
 def test_logistic_regression_suggester():
     result = suggester_tester(
         suggester=LogisticRegressionSuggester(
-            C=(0, 1, False),
-            l1_ratio=(0, 1, False),
+            C_low=0.1,
+            C_high=1,
+            C_log=False,
+            l1_ratio_low=0.1,
+            l1_ratio_high=1,
+            l1_ratio_log=False,
         ),
     )
 
