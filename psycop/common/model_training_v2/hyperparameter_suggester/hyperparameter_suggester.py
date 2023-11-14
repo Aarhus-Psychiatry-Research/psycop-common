@@ -14,12 +14,14 @@ class SuggesterSpace:
         self.suggesters = args
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
-        suggester_dict = {
-            s.__class__.__name__: s for s in self.suggesters
-        }
+        suggester_dict = {s.__class__.__name__: s for s in self.suggesters}
 
         suggester_names = list(suggester_dict.keys())
-        suggester_name: str = trial.suggest_categorical("suggester", suggester_names)  # type: ignore # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
+        optuna_key = ".".join(
+            suggester_names
+        )  # We want the optuna key to be unique for each space, so it knows to optimise them individually
+
+        suggester_name: str = trial.suggest_categorical(optuna_key, suggester_names)  # type: ignore # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
 
         suggester = suggester_dict[suggester_name]
         return suggester.suggest_hyperparameters(trial=trial)
