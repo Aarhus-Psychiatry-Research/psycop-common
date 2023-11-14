@@ -12,6 +12,7 @@ class CalculatedMetric:
 
 PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
+
 @runtime_checkable
 class BaseMetric(Protocol):
     def calculate(

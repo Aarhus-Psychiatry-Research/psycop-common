@@ -81,6 +81,6 @@ class SplitTrainer(BaselineTrainer):
         return TrainingResult(
             metric=main_metric,
             df=pl.DataFrame(
-                pd.concat([validation_data_preprocessed, y_hat_prob], axis=1)
+                pd.concat([validation_data_preprocessed, y_hat_prob], axis=1),
             ),
         )
