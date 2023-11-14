@@ -82,9 +82,9 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
                 ),
-                main_metric=BinaryAUROC(),
             ),
             logger=logger,
+            metric=BinaryAUROC(),
         ),
     )
 

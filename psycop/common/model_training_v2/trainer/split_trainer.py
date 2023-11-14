@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 
 import pandas as pd
+import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
@@ -18,6 +19,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
+from psycop.common.model_training_v2.trainer.task.base_metric import BaseMetric
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,
 )
@@ -33,6 +35,7 @@ class SplitTrainer(BaselineTrainer):
         validation_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         task: BaselineTask,
+        metric: BaseMetric,
         logger: BaselineLogger,
     ):
         self.training_data = training_data.load()
@@ -41,6 +44,7 @@ class SplitTrainer(BaselineTrainer):
         self.validation_outcome_col_name = validation_outcome_col_name
         self.preprocessing_pipeline = preprocessing_pipeline
         self.task = task
+        self.metric = metric
         self.logger = logger
 
         # When using sklearn pipelines, the outcome column must retain its name
@@ -67,13 +71,16 @@ class SplitTrainer(BaselineTrainer):
             y_col_name=self.training_outcome_col_name,
         )
 
-        validation_y = validation_data_preprocessed[self.validation_outcome_col_name]
-        result = self.task.evaluate(
+        y_hat_prob = self.task.predict_proba(
             x=validation_data_preprocessed.drop(self.outcome_columns, axis=1),
-            y=pd.DataFrame(validation_y),
-            y_col_name=self.validation_outcome_col_name,
         )
 
-        self.logger.log_metric(result.metric)
+        main_metric = self.metric.calculate(y=training_y, y_hat_prob=y_hat_prob)
+        self.logger.log_metric(main_metric)
 
-        return result
+        return TrainingResult(
+            metric=main_metric,
+            df=pl.DataFrame(
+                pd.concat([validation_data_preprocessed, y_hat_prob], axis=1),
+            ),
+        )
