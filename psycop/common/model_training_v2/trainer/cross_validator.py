@@ -78,11 +78,6 @@ class CrossValidatorTrainer(BaselineTrainer):
                 ),
             )
 
-            X_val, y_val = (
-                X.loc[val_idxs],
-                y.loc[val_idxs],
-            )
-
             oof_y_hat_prob = self.task.predict_proba(
                 X.loc[val_idxs],
             )
