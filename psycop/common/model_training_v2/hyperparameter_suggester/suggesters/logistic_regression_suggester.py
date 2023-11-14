@@ -1,5 +1,6 @@
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Mapping, Sequence, Type
+from typing import Any
 
 import optuna
 
@@ -8,9 +9,9 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
     Suggester,
 )
 
-FloatSpaceT = Mapping[str, float | bool] 
-    # Used when specifying mappings in the confection .cfg, which is then immediately cast to a FloatSpace
-    # As such, requires keys that correspond to the FloatSpace's attributes
+FloatSpaceT = Mapping[str, float | bool]
+# Used when specifying mappings in the confection .cfg, which is then immediately cast to a FloatSpace
+# As such, requires keys that correspond to the FloatSpace's attributes
 
 
 @dataclass(frozen=True)
@@ -28,12 +29,13 @@ class FloatSpace:
         )
 
     @classmethod
-    def from_mapping(cls: Type["FloatSpace"], mapping: FloatSpaceT) -> "FloatSpace":
+    def from_mapping(cls: type["FloatSpace"], mapping: FloatSpaceT) -> "FloatSpace":
         return cls(
             low=mapping["low"],
             high=mapping["high"],
-            logarithmic=mapping["logarithmic"], # type: ignore
+            logarithmic=mapping["logarithmic"],  # type: ignore
         )
+
 
 @dataclass(frozen=True)
 class CategoricalSpace:
@@ -41,6 +43,7 @@ class CategoricalSpace:
 
     def suggest(self, trial: optuna.Trial, name: str) -> Any:
         return trial.suggest_categorical(name=name, choices=self.choices)
+
 
 @BaselineRegistry.estimator_steps.register("mock_suggester")
 class MockSuggester(Suggester):
@@ -51,5 +54,3 @@ class MockSuggester(Suggester):
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         return {"mock_value": self.value.suggest(trial, "mock_suggester")}
-
-

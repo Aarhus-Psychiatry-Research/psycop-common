@@ -42,5 +42,3 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
         cfg = BaselineRegistry.resolve(result)
 
     return TestSuggestion(pre_resolution=result, resolved=cfg)
-
-

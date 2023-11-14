@@ -11,6 +11,6 @@ def test_logistic_regression_suggester():
         suggester=LogisticRegressionSuggester(
             C={"low": 0.1, "high": 1, "logarithmic": False},
             l1_ratio={"low": 0.1, "high": 1, "logarithmic": False},
-            solvers=("saga","lbfgs")
+            solvers=("saga", "lbfgs"),
         ),
     )

@@ -1,4 +1,5 @@
-from typing import Any, Literal, Sequence
+from collections.abc import Sequence
+from typing import Any, Literal
 
 import optuna
 from sklearn.linear_model import LogisticRegression
