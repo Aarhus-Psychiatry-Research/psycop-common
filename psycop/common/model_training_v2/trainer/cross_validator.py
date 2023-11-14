@@ -88,11 +88,11 @@ class CrossValidatorTrainer(BaselineTrainer):
                 ),
             )
 
-            training_data_preprocessed.loc[val_idxs, oof_y_hat_prob.name] = oof_y_hat_prob.to_list()  # type: ignore
+            training_data_preprocessed.loc[val_idxs, "oof_y_hat_probs"] = oof_y_hat_prob.to_list()
 
         main_metric = self.metric.calculate(
             y=training_data_preprocessed[self.training_outcome_col_name],
-            y_hat_prob=training_data_preprocessed["y_hat_prob"],
+            y_hat_prob=training_data_preprocessed["oof_y_hat_probs"],
         )
         self.logger.log_metric(main_metric)
 
