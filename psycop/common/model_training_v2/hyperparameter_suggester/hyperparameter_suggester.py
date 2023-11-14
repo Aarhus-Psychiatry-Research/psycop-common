@@ -1,6 +1,4 @@
 import copy
-from collections.abc import Sequence
-from dataclasses import dataclass
 from typing import Any
 
 import optuna
@@ -25,6 +23,7 @@ class SuggesterSpace:
 
         suggester = suggester_dict[suggester_name]
         return suggester.suggest_hyperparameters(trial=trial)
+
 
 def suggest_hyperparams_from_cfg(
     base_cfg: dict[str, Any],
