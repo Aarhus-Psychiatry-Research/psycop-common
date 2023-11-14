@@ -17,6 +17,7 @@
         "**/Thumbs.db": true,
         "**/BUILD": true,
         "**/__pycache__": true,
+        "**/.testmon*": true,
     },
     "terminal.integrated.env.osx": {
         "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"

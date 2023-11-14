@@ -9,7 +9,7 @@ authors = [
   { name = "Jakob G. Damgaard" },
   { name = "Erik Perfalk" },
 ]
-version = "0.136.0"
+version = "0.137.0"
 description = "PSYCOP"
 classifiers = [
   "Operating System :: POSIX :: Linux",
@@ -65,6 +65,7 @@ select = [
   "E",
   "ERA",
   "F",
+  "FIX003", # Fail if 'XXX' on a line. Useful to mark areas that should be fixed before merge.
   "I",
   "ICN",
   "NPY001",
