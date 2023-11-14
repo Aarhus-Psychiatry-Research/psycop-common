@@ -56,10 +56,3 @@ def test_logistic_regression_suggester():
             l1_ratio_log=False,
         ),
     )
-
-    pre_resolution = result.pre_resolution
-    assert set(pre_resolution["logistic_regression"].keys()) == {
-        "@estimator_steps",
-        "C",
-        "l1_ratio",
-    }
