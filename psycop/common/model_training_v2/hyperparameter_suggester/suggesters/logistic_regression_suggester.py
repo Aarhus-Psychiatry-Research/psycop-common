@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Sequence, Type
 
 import optuna
 
@@ -28,7 +28,7 @@ class FloatSpace:
         )
 
     @classmethod
-    def from_mapping(cls, mapping: FloatSpaceT) -> "FloatSpace":
+    def from_mapping(cls: Type["FloatSpace"], mapping: FloatSpaceT) -> "FloatSpace":
         return cls(
             low=mapping["low"],
             high=mapping["high"],
