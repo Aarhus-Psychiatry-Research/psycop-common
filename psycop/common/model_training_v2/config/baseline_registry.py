@@ -23,3 +23,10 @@ class BaselineRegistry(registry):
     )
 
     metrics = catalogue.create("psycop", "metrics")
+
+    def to_dict(self) -> dict[str, catalogue.Registry]:
+        return {
+            attribute_name: getattr(self, attribute_name)
+            for attribute_name in dir(self)
+            if isinstance(getattr(self, attribute_name), catalogue.Registry)
+        }
