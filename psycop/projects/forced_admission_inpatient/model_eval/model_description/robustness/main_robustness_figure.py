@@ -5,9 +5,6 @@ from psycop.projects.forced_admission_inpatient.model_eval.model_description.rob
     fa_inpatient_auroc_by_day_of_week,
     fa_inpatient_auroc_by_month_of_year,
 )
-from psycop.projects.forced_admission_inpatient.model_eval.model_description.robustness.robustness_by_n_hba1c import (
-    fa_inpatient_auroc_by_n_hba1c,
-)
 from psycop.projects.forced_admission_inpatient.model_eval.model_description.robustness.robustness_by_sex import (
     fa_inpatient_auroc_by_sex,
 )
@@ -33,7 +30,6 @@ def fa_inpatient_create_main_robustness_figure(
         plot_fns=(
             fa_inpatient_auroc_by_sex,
             fa_inpatient_auroc_by_age,
-            fa_inpatient_auroc_by_n_hba1c,
             fa_inpatient_auroc_by_time_from_first_visit,
             fa_inpatient_auroc_by_month_of_year,
             fa_inpatient_auroc_by_day_of_week,
