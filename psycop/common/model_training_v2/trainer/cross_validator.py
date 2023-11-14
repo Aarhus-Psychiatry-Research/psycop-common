@@ -20,7 +20,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 class CrossValidatorTrainer(BaselineTrainer):
     def __init__(
         self,
-        training_data: BaselineDataLoader,  # make into list?
+        training_data: BaselineDataLoader,
         training_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         task: BaselineTask,
