@@ -15,7 +15,7 @@ class SuggesterSpace:
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         suggester_dict = {
-            suggester.__class__.__name__: suggester for suggester in self.suggesters
+            s.__class__.__name__: s for s in self.suggesters
         }
 
         suggester_names = list(suggester_dict.keys())
