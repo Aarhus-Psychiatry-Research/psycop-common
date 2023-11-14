@@ -45,7 +45,7 @@ def gain_pipeline(model: Literal["baseline", "text"], top_n: int = 20):
         zip(
             pipe.named_steps.model.feature_names,
             pipe.named_steps.model.feature_importances_,
-        ),
+        ),  # type: ignore
     )
 
     # create and save gain plot
