@@ -43,10 +43,8 @@ class TestHyperparameterSuggester:
     def test_hyperparameter_suggester(self):
         base_cfg = {
             "model": SuggesterSpace(
-                suggesters=(
                     parametrised_suggester(),
                     parametrised_suggester(),
-                ),
             ),
         }
 
@@ -59,7 +57,7 @@ class TestHyperparameterSuggester:
         base_cfg = {
             "level_1": {
                 "level_2": SuggesterSpace(
-                    suggesters=(parametrised_suggester(),),
+                    parametrised_suggester(),
                 ),
             },
         }
