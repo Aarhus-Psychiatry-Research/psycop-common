@@ -2,12 +2,9 @@ from pathlib import Path
 from typing import Any
 
 import optuna
-import pytest
-from confection import Config
 from optuna.testing.storage import StorageSupplier
 
 from psycop.common.model_training_v2.config.config_utils import (
-    load_baseline_config,
     load_hyperparam_config,
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_suggester import (
@@ -18,11 +15,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
     Suggester,
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logistic_regression_suggester import (
-    LogisticRegressionSuggester,
     MockSuggester,
-)
-from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.test_suggesters import (
-    float_space_for_test,
 )
 
 
@@ -32,8 +25,6 @@ def parametrised_suggester() -> Suggester:
         value_high=0.99,
         log=True,
     )
-    
-
 
 
 class TestHyperparameterSuggester:
@@ -68,9 +59,7 @@ class TestHyperparameterSuggester:
         base_cfg = {
             "level_1": {
                 "level_2": SuggesterSpace(
-                    suggesters=(
-                        parametrised_suggester(),
-                    ),
+                    suggesters=(parametrised_suggester(),),
                 ),
             },
         }
@@ -84,7 +73,9 @@ class TestHyperparameterSuggester:
         assert suggestion == base_cfg
 
     def test_confection_integration(self):
-        cfg = load_hyperparam_config(Path(__file__).parent / "test_hyperparam_search.cfg")
+        cfg = load_hyperparam_config(
+            Path(__file__).parent / "test_hyperparam_search.cfg",
+        )
 
         suggestion = self._get_suggestions(base_cfg=cfg)
         model_dict = suggestion["model"]["logistic_regression"]

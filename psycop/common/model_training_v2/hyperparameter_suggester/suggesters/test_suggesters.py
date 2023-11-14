@@ -20,6 +20,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logisti
 def float_space_for_test() -> FloatSpace:
     return FloatSpace(low=0, high=1, logarithmic=False)
 
+
 @dataclass(frozen=True)
 class TestSuggestion:
     pre_resolution: dict[str, Any]
@@ -47,10 +48,14 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
 def test_logistic_regression_suggester():
     result = suggester_tester(
         suggester=LogisticRegressionSuggester(
-            C=(0,1,False),
-            l1_ratio=(0,1,False),
+            C=(0, 1, False),
+            l1_ratio=(0, 1, False),
         ),
     )
 
     pre_resolution = result.pre_resolution
-    assert set(pre_resolution["logistic_regression"].keys()) == {"@estimator_steps", "C", "l1_ratio"}
+    assert set(pre_resolution["logistic_regression"].keys()) == {
+        "@estimator_steps",
+        "C",
+        "l1_ratio",
+    }
