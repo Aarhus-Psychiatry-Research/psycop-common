@@ -11,7 +11,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
 
 FloatSpaceT = Mapping[str, float | bool]
 # Used when specifying mappings in the confection .cfg, which is then immediately cast to a FloatSpace
-# As such, requires keys that correspond to the FloatSpace's attributes
+# As such, requires keys that correspond to the FloatSpace's attributes (see below)
 
 
 @dataclass(frozen=True)
