@@ -25,16 +25,18 @@ def chunk_tfidf_chunking_process(
     embedding_dir: Path,
     model_name: str = "tfidf_model",
 ):
-    _remove_chunk_files_from_dir(embedding_dir)
+    #_remove_chunk_files_from_dir(embedding_dir)
+
+    tfidf_df = _merge_tfidf_encoding_chunks(model_name, embedding_dir)
 
     chunked_corpus = chunk_dataframe(corpus, 50)
 
-    for i, chunk in enumerate(chunked_corpus[0:1]):
+    for i, chunk in enumerate(chunked_corpus):
         tfidf_values = encode_tfidf_values_to_df(tfidf_model, chunk["value"].to_list())
 
-        chunk_df = chunk.drop(columns=["value"])
+        chunk = chunk.drop(columns=["value"])
 
-        tfidf_notes = pl.concat([chunk_df, tfidf_values], how="horizontal")
+        tfidf_notes = pl.concat([chunk, tfidf_values], how="horizontal")
 
         embedding_dir.mkdir(exist_ok=True, parents=True)
         tfidf_notes.write_parquet(
@@ -55,6 +57,7 @@ def _merge_tfidf_encoding_chunks(model_name: str, embedding_dir: Path) -> pl.Dat
         model_name=model_name,
         embedding_dir=embedding_dir,
     )
+    
     return _merge_dfs(dfs)
 
 
