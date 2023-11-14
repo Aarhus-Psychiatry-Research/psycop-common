@@ -42,7 +42,7 @@ class LogisticRegressionSuggester(Suggester):
     # TODO: #424 Refactor so suggesters are co-located with their corresponding model steps.
     # Perhaps that makes it hard to decorate, though?
 
-    # TODO: Can suggesters take a mapping for each argument? 
+    # TODO: Can suggesters take a mapping for each argument?
     # E.g. C can be a mapping which must contain low, high and log? How do we type-hint that? A nameddict?
 
     def __init__(

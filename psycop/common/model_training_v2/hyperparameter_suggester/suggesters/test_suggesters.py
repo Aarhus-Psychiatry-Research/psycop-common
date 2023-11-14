@@ -46,7 +46,7 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
 
 
 def test_logistic_regression_suggester():
-    result = suggester_tester(
+    suggester_tester(
         suggester=LogisticRegressionSuggester(
             C_low=0.1,
             C_high=1,
