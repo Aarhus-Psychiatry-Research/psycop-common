@@ -13,11 +13,11 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_m
 )
 
 if TYPE_CHECKING:
-    from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
-        BaseEvalDataset,
-    )
+    import pandas as pd
 
-    pass
+    from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
+        PredProbaSeries,
+    )
 
 
 @BaselineRegistry.metrics.register("binary_auroc")
@@ -27,14 +27,15 @@ class BinaryAUROC(BinaryMetric):
 
     def calculate(
         self,
-        eval_dataset: BaseEvalDataset,
+        y: pd.Series,  # type: ignore
+        y_hat_prob: PredProbaSeries,
     ) -> CalculatedMetric:
         return CalculatedMetric(
             name="BinaryAUROC",
             value=float(
                 roc_auc_score(
-                    y_true=eval_dataset.df.select(eval_dataset.y_col),
-                    y_score=eval_dataset.df.select(eval_dataset.y_hat_col),
+                    y_true=y,
+                    y_score=y_hat_prob,
                 ),
             ),
         )

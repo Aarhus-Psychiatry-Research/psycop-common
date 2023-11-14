@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 
 import pandas as pd
+import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
@@ -70,19 +71,16 @@ class SplitTrainer(BaselineTrainer):
             y_col_name=self.training_outcome_col_name,
         )
 
-        validation_data_preprocessed["y_hat"] = self.task.predict_proba(
+        y_hat_prob = self.task.predict_proba(
             x=validation_data_preprocessed.drop(self.outcome_columns, axis=1),
         )
-        eval_dataset = self.task.construct_eval_dataset(
-            df=validation_data_preprocessed,
-            y_hat_col="y_hat",
-            y_col=self.validation_outcome_col_name,
-        )
 
-        main_metric = self.metric.calculate(eval_dataset)
+        main_metric = self.metric.calculate(y=training_y, y_hat_prob=y_hat_prob)
         self.logger.log_metric(main_metric)
 
         return TrainingResult(
             metric=main_metric,
-            eval_dataset=eval_dataset,
+            df=pl.DataFrame(
+                pd.concat([validation_data_preprocessed, y_hat_prob], axis=1)
+            ),
         )

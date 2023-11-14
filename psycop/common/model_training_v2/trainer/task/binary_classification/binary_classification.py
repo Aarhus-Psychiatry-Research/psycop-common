@@ -10,9 +10,6 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_c
     BinaryClassificationPipeline,
     PredProbaSeries,
 )
-from psycop.common.model_training_v2.trainer.task.binary_classification.binary_eval_dataset import (
-    BinaryEvalDataset,
-)
 
 
 def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
@@ -48,20 +45,3 @@ class BinaryClassification(BaselineTask):
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
         return self.pipe.predict_proba(x.drop(self.pred_time_uuid_col_name, axis=1))
-
-    def construct_eval_dataset(
-        self,
-        df: pd.DataFrame,
-        y_hat_col: str,
-        y_col: str,
-    ) -> BinaryEvalDataset:
-        pl_df = pl.from_pandas(df)
-
-        eval_dataset = BinaryEvalDataset(
-            pred_time_uuid_col=self.pred_time_uuid_col_name,
-            y_hat_col=y_hat_col,
-            y_col=y_col,
-            df=pl_df,
-        )
-
-        return eval_dataset

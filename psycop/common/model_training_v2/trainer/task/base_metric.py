@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
-from psycop.common.model_training_v2.trainer.task.eval_dataset_base import (
-    BaseEvalDataset,
+import pandas as pd
+
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
+    PredProbaSeries,
 )
 
 
@@ -16,6 +18,7 @@ class CalculatedMetric:
 class BaseMetric(Protocol):
     def calculate(
         self,
-        eval_dataset: BaseEvalDataset,
+        y: pd.Series,  # type: ignore
+        y_hat_prob: PredProbaSeries,
     ) -> CalculatedMetric:
         ...

@@ -44,14 +44,11 @@ def test_binary_classification(
     )
     binary_classification_problem.train(x=x, y=y, y_col_name="y")
 
-    x["y_hat"] = binary_classification_problem.predict_proba(x=x)
-    eval_ds = binary_classification_problem.construct_eval_dataset(
-        df=pd.concat([x, y], axis=1),
-        y_hat_col="y_hat",
-        y_col="y",
+    y_hat_prob = binary_classification_problem.predict_proba(x=x)
+
+    assert (
+        main_metric.calculate(y=y["y"], y_hat_prob=y_hat_prob) == main_metric_expected
     )
 
-    assert main_metric.calculate(eval_ds) == main_metric_expected
-
-    pred_uuids = eval_ds.df.to_pandas()[eval_ds.pred_time_uuid_col]
+    pred_uuids = x["uuid"]
     assert_series_equal(pred_uuids, x["uuid"])
