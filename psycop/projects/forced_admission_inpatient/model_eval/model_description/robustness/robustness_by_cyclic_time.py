@@ -34,7 +34,9 @@ def fa_inpatient_auroc_by_day_of_week(
     )
 
 
-def t2d_auroc_by_month_of_year(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggplot:
+def fa_inpatient_auroc_by_month_of_year(
+    run: ForcedAdmissionInpatientPipelineRun,
+) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = roc_auc_by_periodic_time_df(
@@ -54,4 +56,4 @@ def t2d_auroc_by_month_of_year(run: ForcedAdmissionInpatientPipelineRun) -> pn.g
 
 if __name__ == "__main__":
     fa_inpatient_auroc_by_day_of_week(run=get_best_eval_pipeline())
-    t2d_auroc_by_month_of_year(run=get_best_eval_pipeline())
+    fa_inpatient_auroc_by_month_of_year(run=get_best_eval_pipeline())

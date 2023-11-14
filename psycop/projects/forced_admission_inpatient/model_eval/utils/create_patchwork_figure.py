@@ -14,7 +14,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 msg = Printer(timestamp=True)
 
 
-def fa_create_patchwork_figure(
+def fa_inpatient_create_patchwork_figure(
     run: ForcedAdmissionInpatientPipelineRun,
     plot_fns: Sequence[Callable],  # type: ignore
     output_filename: str,
