@@ -122,12 +122,12 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
                 ),
-                main_metric=BinaryAUROC(),
             ),
+            metric=BinaryAUROC(),
             n_splits=2,
             group_col_name="pred_time_uuid",
             logger=logger,
         ),
     )
 
-    assert train_baseline_model(schema) == 1.0
+    assert train_baseline_model(schema) == 0.6666666666666667
