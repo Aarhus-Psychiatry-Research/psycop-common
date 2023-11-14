@@ -47,7 +47,7 @@ def test_binary_classification(
     y_hat_prob = binary_classification_problem.predict_proba(x=x)
 
     assert (
-        main_metric.calculate(y=y["y"], y_hat_prob=y_hat_prob) == main_metric_expected
+        main_metric.calculate(y=y["y"], y_hat_prob=y_hat_prob).value == main_metric_expected
     )
 
     pred_uuids = x["uuid"]

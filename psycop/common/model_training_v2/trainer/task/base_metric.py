@@ -3,16 +3,14 @@ from typing import Protocol, runtime_checkable
 
 import pandas as pd
 
-from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
-    PredProbaSeries,
-)
-
 
 @dataclass
 class CalculatedMetric:
     name: str
     value: float
 
+
+PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
 
 @runtime_checkable
 class BaseMetric(Protocol):

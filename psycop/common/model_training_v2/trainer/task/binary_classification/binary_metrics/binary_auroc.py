@@ -15,7 +15,7 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_m
 if TYPE_CHECKING:
     import pandas as pd
 
-    from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
+    from psycop.common.model_training_v2.trainer.task.base_metric import (
         PredProbaSeries,
     )
 
