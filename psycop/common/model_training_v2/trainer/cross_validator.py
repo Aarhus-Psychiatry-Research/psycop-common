@@ -89,9 +89,7 @@ class CrossValidatorTrainer(BaselineTrainer):
                 ),
             )
 
-            training_data_preprocessed.loc[val_idxs, oof_y_hat_prob.name] = np.asarray(
-                oof_y_hat_prob,
-            )  # type: ignore
+            training_data_preprocessed.loc[val_idxs, oof_y_hat_prob.name] =  oof_y_hat_prob.to_list()  # type: ignore
 
         main_metric = self.metric.calculate(
             y=training_data_preprocessed[self.training_outcome_col_name],
