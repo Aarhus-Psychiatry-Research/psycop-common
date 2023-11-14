@@ -2,8 +2,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-
-PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
+from psycop.common.model_training_v2.trainer.task.base_metric import PredProbaSeries
 
 
 @BaselineRegistry.task_pipelines.register("binary_classification_pipeline")
