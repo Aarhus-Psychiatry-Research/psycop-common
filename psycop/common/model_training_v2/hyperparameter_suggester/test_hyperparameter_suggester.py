@@ -5,7 +5,7 @@ from optuna.testing.storage import StorageSupplier
 
 from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_suggester import (
     SearchSpace,
-    hyperparameter_suggester,
+    suggest_hyperparams_from_cfg,
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logistic_regression_suggester import (
     LogisticRegressionSuggester,
@@ -15,7 +15,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.test_su
 )
 
 
-class TestHyperparameterSuggster:
+class TestHyperparameterSuggester:
     def _get_suggestions(self, base_cfg: dict[str, Any]) -> dict[str, Any]:
         sampler = optuna.samplers.RandomSampler()
 
@@ -26,7 +26,7 @@ class TestHyperparameterSuggster:
                 study._storage.create_new_trial(study._study_id),  # type: ignore
             )
 
-            return hyperparameter_suggester(base_cfg=base_cfg, trial=trial)
+            return suggest_hyperparams_from_cfg(base_cfg=base_cfg, trial=trial)
 
     def test_hyperparameter_suggester(self):
         base_cfg = {
@@ -74,3 +74,8 @@ class TestHyperparameterSuggster:
         assert model["logistic_regression"]["@estimator_steps"] == "logistic_regression"
 
     # XXX: Add a test using confection
+
+    def test_no_search(self):
+        base_cfg = {"int": 1, "str": "a", "float": 1.0, "list": [1, 2, 3]}
+        suggestion = self._get_suggestions(base_cfg=base_cfg)
+        assert suggestion == base_cfg

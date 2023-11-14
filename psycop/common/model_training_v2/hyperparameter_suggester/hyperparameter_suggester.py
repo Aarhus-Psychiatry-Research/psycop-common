@@ -24,7 +24,7 @@ class SearchSpace:
         return suggester.suggest_hyperparameters(trial=trial)
 
 
-def hyperparameter_suggester(
+def suggest_hyperparams_from_cfg(
     base_cfg: dict[str, Any],
     trial: optuna.Trial,
 ) -> dict[str, Any]:
@@ -38,18 +38,17 @@ def hyperparameter_suggester(
         trial: The optuna trial to use for suggesting hyperparameters.
     """
     cfg = base_cfg.copy()
-    process_all_values_in_dict(d=cfg, trial=trial)
+    _suggest_hyperparams_for_nodes(d=cfg, trial=trial)
     return cfg
 
 
-def process_all_values_in_dict(d: dict[str, Any], trial: optuna.Trial):
+def _suggest_hyperparams_for_nodes(d: dict[str, Any], trial: optuna.Trial):
     for key, value in d.items():
         match value:
             case dict():
-                process_all_values_in_dict(value, trial=trial)
+                _suggest_hyperparams_for_nodes(value, trial=trial)
             case SearchSpace():
                 d[key] = value.suggest_hyperparameters(trial=trial)
             case _:
-                raise ValueError(
-                    f"Unexpected value.\n\tType is: {type(value)}\n\tValue: {value}",
-                )
+                # Values which do not require processing, pass
+                pass
