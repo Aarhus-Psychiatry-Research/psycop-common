@@ -12,7 +12,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
-from psycop.common.model_training_v2.trainer.task.base_metric import BaseMetric
+from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
@@ -24,7 +24,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         task: BaselineTask,
-        metric: BaseMetric,
+        metric: BaselineMetric,
         logger: BaselineLogger,
         n_splits: int = 5,
         group_col_name: str = "dw_ek_borger",
@@ -97,12 +97,12 @@ class CrossValidatorTrainer(BaselineTrainer):
 
             training_data_preprocessed.loc[
                 val_idxs,
-                "oof_y_hat_probs",
+                "oof_y_hat_prob",
             ] = oof_y_hat_prob.to_list()  # type: ignore
 
         main_metric = self.metric.calculate(
             y=training_data_preprocessed[self.outcome_col_name],
-            y_hat_prob=training_data_preprocessed["oof_y_hat_probs"],
+            y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
         )
         self.logger.log_metric(main_metric)
 

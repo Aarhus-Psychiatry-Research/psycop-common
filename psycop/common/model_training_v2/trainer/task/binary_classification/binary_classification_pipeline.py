@@ -17,4 +17,4 @@ class BinaryClassificationPipeline:
         """Returns the predicted probabilities of the `1`
         class"""
         pred_probs = self.pipe.predict_proba(x)[:, 1]
-        return pd.Series(pred_probs, name="y_hat_probs")
+        return pd.Series(pred_probs, name="y_hat_prob")

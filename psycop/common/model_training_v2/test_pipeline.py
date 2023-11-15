@@ -18,7 +18,7 @@ from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
 )
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-from psycop.common.model_training_v2.trainer.cross_validator import (
+from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
     CrossValidatorTrainer,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
@@ -30,11 +30,11 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters imp
 from psycop.common.model_training_v2.trainer.split_trainer import (
     SplitTrainer,
 )
-from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification import (
-    BinaryClassification,
-)
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
+)
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_task import (
+    BinaryClassificationTask,
 )
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics import (
     BinaryAUROC,
@@ -80,7 +80,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
             preprocessing_pipeline=BaselinePreprocessingPipeline(
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
-            task=BinaryClassification(
+            task=BinaryClassificationTask(
                 pred_time_uuid_col_name="pred_time_uuid",
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
@@ -117,7 +117,7 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
             preprocessing_pipeline=BaselinePreprocessingPipeline(
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
-            task=BinaryClassification(
+            task=BinaryClassificationTask(
                 pred_time_uuid_col_name="pred_time_uuid",
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
