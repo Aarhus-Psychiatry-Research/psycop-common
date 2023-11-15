@@ -9,7 +9,7 @@ from psycop.common.model_training_v2.trainer.task.model_step import (
 )
 
 
-class MulticlassClassificationPipeline(Protocol):
+class MultilabelClassificationPipeline(Protocol):
     def __init__(self, steps: Sequence[ModelStep]) -> None:
         ...
 

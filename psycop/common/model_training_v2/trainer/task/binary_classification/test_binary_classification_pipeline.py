@@ -28,6 +28,6 @@ def test_binary_classification_pipeline(
     pipeline = BinaryClassificationPipeline(sklearn_pipe=pipe)
     pipeline.fit(x=x, y=y)
 
-    y_hat_probs = pipeline.predict_proba(x=x)
-    assert isinstance(y_hat_probs, pd.Series)
-    assert y_hat_probs.name == "y_hat_probs"
+    y_hat_prob = pipeline.predict_proba(x=x)
+    assert isinstance(y_hat_prob, pd.Series)
+    assert y_hat_prob.name == "y_hat_prob"

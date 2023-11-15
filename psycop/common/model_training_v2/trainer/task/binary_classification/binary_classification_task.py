@@ -22,7 +22,7 @@ def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
 
 
 @BaselineRegistry.tasks.register("binary_classification")
-class BinaryClassification(BaselineTask):
+class BinaryClassificationTask(BaselineTask):
     def __init__(
         self,
         task_pipe: BinaryClassificationPipeline,
