@@ -19,7 +19,7 @@ REGISTERED_FUNCTION_WHITELIST = {
     "mock_suggester",
     "baseline_preprocessing_pipeline",
     "crossval_trainer",
-    "split_trainer",
+    "split_trainer",  # todo
     "binary_classification_pipeline",
     "binary_classification",
     "lookbehind_combination_col_filter",
@@ -53,7 +53,7 @@ def _identical_config_exists(filled_cfg: Config, base_filename: Path) -> bool:
 def _save_cfg_to_disk(filled_cfg: Config, base_filename: Path) -> None:
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
     base_filename.parent.mkdir(parents=True, exist_ok=True)
-    out_filename = base_filename.name + f"-{current_datetime}.yaml"
+    out_filename = base_filename.name + f"-{current_datetime}.cfg"
 
     filled_cfg.to_disk(base_filename.parent / out_filename)
 
@@ -89,7 +89,8 @@ def generate_configs_from_registered_functions() -> bool:
         This means that the function has changed in a way that breaks backwards compatability, by adding a
         *args argument. If this is intentional, add the function name to the whitelist in registries_testing_utils.py.
         Otherwise, create a copy of the function before the change and update the name of the new function in the registry,
-        e.g. func_name_v2.""",
+        e.g. func_name_v2.
+        If you whitelist a function, make sure there is a config for it in the `static_registry_configs` folder.""",
                     ) from e
 
                 raise Exception(

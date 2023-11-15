@@ -15,7 +15,6 @@ from psycop.common.model_training_v2.config.config_utils import (
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
 )
-from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
     CrossValidatorTrainer,
 )

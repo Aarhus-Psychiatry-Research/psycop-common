@@ -12,9 +12,15 @@ def populate_baseline_registry() -> None:
     )
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline  # noqa
     from ..trainer.preprocessing.steps.row_filters import AgeFilter  # noqa
-    from ..trainer.cross_validator import CrossValidatorTrainer  # noqa
+    from ..trainer.cross_validator_trainer import CrossValidatorTrainer  # noqa
     from ..trainer.split_trainer import SplitTrainer  # noqa
     from ..trainer.task.binary_classification.binary_metrics.binary_auroc import (
         BinaryAUROC,  # noqa
     )
     from ..trainer.data.minimal_test_data import MinimalTestData  # noqa
+    from ..trainer.task.binary_classification.binary_classification_pipeline import (
+        BinaryClassificationPipeline,  # noqa
+    )
+    from ..trainer.task.binary_classification.binary_classification_task import (
+        BinaryClassificationTask,  # noqa
+    )
