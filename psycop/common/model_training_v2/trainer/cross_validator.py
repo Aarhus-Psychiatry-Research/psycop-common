@@ -21,7 +21,7 @@ class CrossValidatorTrainer(BaselineTrainer):
     def __init__(
         self,
         training_data: BaselineDataLoader,
-        training_outcome_col_name: str,
+        outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         task: BaselineTask,
         metric: BaseMetric,
@@ -30,7 +30,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         group_col_name: str = "dw_ek_borger",
     ):
         self.training_data = training_data.load()
-        self.training_outcome_col_name = training_outcome_col_name
+        self.outcome_col_name = outcome_col_name
         self.preprocessing_pipeline = preprocessing_pipeline
         self.task = task
         self.metric = metric
@@ -44,12 +44,12 @@ class CrossValidatorTrainer(BaselineTrainer):
         )
 
         X = training_data_preprocessed.drop(
-            self.training_outcome_col_name,
+            self.outcome_col_name,
             axis=1,
         )
         y = pd.DataFrame(
-            training_data_preprocessed[self.training_outcome_col_name],
-            columns=[self.training_outcome_col_name],
+            training_data_preprocessed[self.outcome_col_name],
+            columns=[self.outcome_col_name],
         )
 
         folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
@@ -58,34 +58,40 @@ class CrossValidatorTrainer(BaselineTrainer):
             groups=training_data_preprocessed[self.group_col_name],
         )
 
-        for _i, (train_idxs, val_idxs) in enumerate(folds):
+        for i, (train_idxs, val_idxs) in enumerate(folds):
             X_train, y_train = (
                 X.loc[train_idxs],
                 y.loc[train_idxs],
             )
 
-            self.task.train(X_train, y_train, y_col_name=self.training_outcome_col_name)
+            self.task.train(X_train, y_train, y_col_name=self.outcome_col_name)
 
             y_hat_prob = self.task.predict_proba(
                 X_train,
             )
 
+            within_fold_metric = self.metric.calculate(
+                    y=y_train[self.outcome_col_name],
+                    y_hat_prob=y_hat_prob,
+                )
+
+            within_fold_metric.name = f"within_fold_metric_{i}"
             self.logger.log_metric(
-                self.metric.calculate(
-                    y_train[self.training_outcome_col_name],
-                    y_hat_prob,
-                ),
+                within_fold_metric,
             )
 
             oof_y_hat_prob = self.task.predict_proba(
                 X.loc[val_idxs],
             )
 
+            oof_metric = self.metric.calculate(
+                    y=y.loc[val_idxs][self.outcome_col_name],
+                    y_hat_prob=oof_y_hat_prob,
+                )
+
+            oof_metric.name = f"oof_metric_{i}"
             self.logger.log_metric(
-                self.metric.calculate(
-                    y.loc[val_idxs][self.training_outcome_col_name],
-                    oof_y_hat_prob,
-                ),
+                oof_metric,
             )
 
             training_data_preprocessed.loc[
@@ -94,7 +100,7 @@ class CrossValidatorTrainer(BaselineTrainer):
             ] = oof_y_hat_prob.to_list()  # type: ignore
 
         main_metric = self.metric.calculate(
-            y=training_data_preprocessed[self.training_outcome_col_name],
+            y=training_data_preprocessed[self.outcome_col_name],
             y_hat_prob=training_data_preprocessed["oof_y_hat_probs"],
         )
         self.logger.log_metric(main_metric)

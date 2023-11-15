@@ -113,7 +113,7 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
         logger=logger,
         trainer=CrossValidatorTrainer(
             training_data=MinimalTestData(),
-            training_outcome_col_name="outcome",
+            outcome_col_name="outcome",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
