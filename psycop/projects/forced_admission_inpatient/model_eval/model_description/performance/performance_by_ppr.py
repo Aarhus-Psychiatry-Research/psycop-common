@@ -71,7 +71,10 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 
 
 def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipelineRun):
-    output_path = run.paper_outputs.paths.tables / "performance_by_ppr.xlsx"
+    output_path = (
+        run.paper_outputs.paths.tables
+        / run.paper_outputs.artifact_names.performance_by_ppr
+    )
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore

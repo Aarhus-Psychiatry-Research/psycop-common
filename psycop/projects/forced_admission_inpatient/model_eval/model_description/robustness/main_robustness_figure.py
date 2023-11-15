@@ -34,7 +34,7 @@ def fa_inpatient_create_main_robustness_figure(
             fa_inpatient_auroc_by_month_of_year,
             fa_inpatient_auroc_by_day_of_week,
         ),
-        output_filename="main_robustness_figure.png",
+        output_filename=run.paper_outputs.artifact_names.main_robustness_figure,
         single_plot_dimensions=(5, 3),
     )
 

@@ -25,7 +25,7 @@ def fa_inpatient_create_main_performance_figure(
             fa_inpatient_confusion_matrix_plot,
             fa_inpatient_sensitivity_by_time_to_event,
         ),
-        output_filename="main_performance_figure.png",
+        output_filename=run.paper_outputs.artifact_names.main_performance_figure,
         single_plot_dimensions=(5, 3),
     )
 
