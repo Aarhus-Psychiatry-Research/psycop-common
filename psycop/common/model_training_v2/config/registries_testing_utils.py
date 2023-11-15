@@ -52,7 +52,7 @@ class RegisteredFunction:
         example_path = cfg_dir / f"{self.fn_name}_{current_datetime}.cfg"
         with example_path.open("w") as f:
             f.write(
-                f"# Example cfg for {self.fn_name}, last stored at {self.module}\n[placeholder]",
+                f"# Example cfg for {self.fn_name}\nYou can find args at:\n\t{self.module}\n[placeholder]",
             )
 
         return example_path
@@ -103,7 +103,7 @@ def _timestamped_cfg_to_disk(
 
     with filepath.open("w") as f:
         f.write(
-            f"# Example cfg for {fn.fn_name}, last stored at {fn.module}\n{contents}",
+            f"# Example cfg for {fn.fn_name}\nYou can find args at:\n\t{fn.module}\n{contents}",
         )
 
 
