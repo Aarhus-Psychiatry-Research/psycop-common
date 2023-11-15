@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from confection import Config, ConfigValidationError
 
@@ -13,34 +14,16 @@ populate_baseline_registry()
 STATIC_REGISTRY_CONFIG_DIR = Path(__file__).parent / "static_registry_configs"
 
 
-# 1 stjerne args, i whitelisten
-# 2 Stjerne args, ikke i whitelisten (erorr: hvis det er intentional, tilføj til whitelisten)
-# 3. ikke stjerne, raise error
+REGISTERED_FUNCTION_WHITELIST = {"pipe_constructor", "mock_suggester"}
 
 
-REGISTERED_FUNCTION_WHITELIST = {"pipeline_constructor"}
-
-
-def WHITELISTED_FUNCTION_ERROR_MSG(registered_function_name: str) -> str:
-    return f"Encountered ConfigValidationError in {registered_function_name}, but whitelisted, skipping"
-
-
-def STAR_ARGS_ERROR_MSG(registered_function_name: str) -> str:
-    return (
-        f"""Encountered ConfigValidationError in {registered_function_name}, with a function that's not whitelisted.
-        This means that the function has changed in a way that breaks backwards compatability, by adding a
-        *args argument. If this is intentional, add the function name to the whitelist in registries_testing_utils.py.
-        Otherwise, create a copy of the function before the change and update the name of the new function in the registry,
-        e.g. func_name_v2.""",
-    )
-
-
-def NON_DEFAULT_ARGS_ERROR_MSG(registered_function_name: str) -> str:
-    return (
-        f"""Encounted ConfigValidationError in {registered_function_name}. This means that the function has changed 
-        in a way that breaks backwards compatability by e.g. adding a new, non-default argument. 
-        Ensure that all arguments have default values and can be resolved by the registry.""",
-    )
+def convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
+    for key, value in d.items():
+        if isinstance(value, tuple):
+            d[key] = list(value)
+        elif isinstance(value, dict):
+            d[key] = convert_tuples_to_lists(value)
+    return d
 
 
 def _identical_config_exists(filled_cfg: Config, base_filename: Path) -> bool:
@@ -49,10 +32,20 @@ def _identical_config_exists(filled_cfg: Config, base_filename: Path) -> bool:
 
     for file in files_with_same_function_name:
         file_cfg = Config().from_disk(file)
-        file_identical = filled_cfg == file_cfg
+        # confection converts tuples to lists in the file config, so we need to convert
+        # tuples to lists in the filled config to compare
+        file_identical = convert_tuples_to_lists(filled_cfg) == file_cfg
         if file_identical:
             return True
     return False
+
+
+def _save_cfg_to_disk(filled_cfg: Config, base_filename: Path) -> None:
+    current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    base_filename.parent.mkdir(parents=True, exist_ok=True)
+    out_filename = base_filename.name + f"-{current_datetime}.yaml"
+
+    filled_cfg.to_disk(base_filename.parent / out_filename)
 
 
 def generate_configs_from_registered_functions() -> bool:
@@ -77,16 +70,22 @@ def generate_configs_from_registered_functions() -> bool:
                     for whitelisted_function in REGISTERED_FUNCTION_WHITELIST
                 ):
                     print(
-                        WHITELISTED_FUNCTION_ERROR_MSG(registered_function_name),
+                        f"Encountered ConfigValidationError in {registered_function_name}, but whitelisted, skipping",
                     )
                     continue
                 if "*" in str(e):
                     raise Exception(
-                        STAR_ARGS_ERROR_MSG(registered_function_name),
+                        f"""Encountered ConfigValidationError in {registered_function_name}, with a function that's not whitelisted.
+        This means that the function has changed in a way that breaks backwards compatability, by adding a
+        *args argument. If this is intentional, add the function name to the whitelist in registries_testing_utils.py.
+        Otherwise, create a copy of the function before the change and update the name of the new function in the registry,
+        e.g. func_name_v2.""",
                     ) from e
 
                 raise Exception(
-                    NON_DEFAULT_ARGS_ERROR_MSG(registered_function_name),
+                    f"""Encounted ConfigValidationError in {registered_function_name}. This means that the function has changed 
+        in a way that breaks backwards compatability by e.g. adding a new, non-default argument. 
+        Ensure that all arguments have default values and can be resolved by the registry.""",
                 ) from e
 
             base_filename = (
@@ -100,11 +99,7 @@ def generate_configs_from_registered_functions() -> bool:
             # if none, write to disk
             if not identical_file_exists:
                 generated_new_configs = True
-                current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
-                base_filename.parent.mkdir(parents=True, exist_ok=True)
-                out_filename = base_filename.name + f"-{current_datetime}.yaml"
-
-                filled_cfg.to_disk(base_filename.parent / out_filename)
+                _save_cfg_to_disk(filled_cfg, base_filename)
     return generated_new_configs
 
 
