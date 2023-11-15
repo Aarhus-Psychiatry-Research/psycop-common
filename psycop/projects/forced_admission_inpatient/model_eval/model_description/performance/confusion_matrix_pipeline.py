@@ -35,7 +35,7 @@ def fa_inpatient_confusion_matrix_plot(
         outcome_text=f"FA within {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days)}  days",
     )
 
-    p.save(run.paper_outputs.paths.figures / "fa_confusion_matrix_plot.png")
+    p.save(run.paper_outputs.paths.figures / "fa_inpatient_confusion_matrix_plot.png")
 
     return p
 

@@ -18,7 +18,7 @@ def fa_inpatient_auroc_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggpl
         eval_dataset=eval_ds,
     )
 
-    auroc_path = run.paper_outputs.paths.figures / "auc_roc.png"
+    auroc_path = run.paper_outputs.paths.figures / "fa_inpatient_auroc_plot.png"
     p.save(auroc_path)
 
     return p

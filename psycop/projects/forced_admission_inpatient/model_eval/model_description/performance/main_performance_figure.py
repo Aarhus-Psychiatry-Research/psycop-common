@@ -26,6 +26,7 @@ def fa_inpatient_create_main_performance_figure(
             fa_inpatient_sensitivity_by_time_to_event,
         ),
         output_filename="main_performance_figure.png",
+        single_plot_dimensions=(5, 3),
     )
 
 
