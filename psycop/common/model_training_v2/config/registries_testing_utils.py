@@ -58,14 +58,14 @@ class RegisteredFunction:
     def to_dot_path(self) -> str:
         return f"{self.registry_name}.{self.name}"
 
-    def _get_cfg_path(self, top_level_dir: Path) -> Path:
+    def get_cfg_path(self, top_level_dir: Path) -> Path:
         return top_level_dir / self.registry_name / f"{self.name}.cfg"
 
     def has_example_cfg(self, example_top_dir: Path) -> bool:
-        return self._get_cfg_path(example_top_dir).exists()
+        return self.get_cfg_path(example_top_dir).exists()
 
     def get_example_cfg(self, example_top_dir: Path) -> Config:
-        return Config().from_disk(self._get_cfg_path(example_top_dir))
+        return Config().from_disk(self.get_cfg_path(example_top_dir))
 
 def get_registered_functions(
     container_registry: RegistryWithDict,
@@ -106,7 +106,7 @@ def generate_configs_from_registered_functions(
     in a way that breaks backwards compatability by e.g. adding a new, non-default argument or \n\tb) No default config options exist at {output_dir}.""",
             ) from e
 
-        base_filename = fn._get_cfg_path(output_dir)
+        base_filename = fn.get_cfg_path(output_dir)
 
         # If none, write to disk
         if not _identical_config_exists(
@@ -114,7 +114,7 @@ def generate_configs_from_registered_functions(
             base_filename,
         ):
             generated_new_configs = True
-            _save_cfg_to_disk(filled_cfg, base_filename)
+            filled_cfg.to_disk(base_filename)
 
     return generated_new_configs
 
