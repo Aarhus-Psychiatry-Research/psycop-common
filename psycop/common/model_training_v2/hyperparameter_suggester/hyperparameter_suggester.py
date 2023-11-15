@@ -19,7 +19,9 @@ class SuggesterSpace:
         return f"{suggester_name}_{uuid.uuid4()}"
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
-        suggester_dict = {self._suggester_uuid(s.__class__.__name__): s for s in self.suggesters}
+        suggester_dict = {
+            self._suggester_uuid(s.__class__.__name__): s for s in self.suggesters
+        }
 
         suggester_names = list(suggester_dict.keys())
         optuna_key = ".".join(

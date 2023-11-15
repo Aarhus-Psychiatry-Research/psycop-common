@@ -28,7 +28,11 @@ def parametrised_suggester() -> Suggester:
 
 
 class TestHyperparameterSuggester:
-    def _get_suggestions(self, base_cfg: dict[str, Any], seed: int = 42) -> dict[str, Any]:
+    def _get_suggestions(
+        self,
+        base_cfg: dict[str, Any],
+        seed: int = 42,
+    ) -> dict[str, Any]:
         sampler = optuna.samplers.RandomSampler(seed=seed)
 
         with StorageSupplier("inmemory") as storage:
@@ -81,5 +85,7 @@ class TestHyperparameterSuggester:
         for i in range(n_suggestions):
             suggestions.append(self._get_suggestions(base_cfg=cfg, seed=i))
 
-        suggestion_keys = {tuple(suggestions[i]["model"].keys()) for i in range(n_suggestions)}
+        suggestion_keys = {
+            tuple(suggestions[i]["model"].keys()) for i in range(n_suggestions)
+        }
         assert suggestion_keys == {("value_1",), ("value_2",)}

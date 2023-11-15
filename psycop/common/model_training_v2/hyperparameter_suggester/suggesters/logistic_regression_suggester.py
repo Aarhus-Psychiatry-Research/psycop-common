@@ -49,7 +49,14 @@ class CategoricalSpace:
 class MockSuggester(Suggester):
     """Suggester used only for tests. Ensures tests only break if the interface breaks, not because of implementation details in e.g. LogisticRegression."""
 
-    def __init__(self, value_low: float, value_high: float, log: bool, suggested_key: str = "mock_value", optuna_key: str = "mock_suggester"):
+    def __init__(
+        self,
+        value_low: float,
+        value_high: float,
+        log: bool,
+        suggested_key: str = "mock_value",
+        optuna_key: str = "mock_suggester",
+    ):
         self.value = FloatSpace(low=value_low, high=value_high, logarithmic=log)
         self.optuna_key = optuna_key
         self.suggested_key = suggested_key
