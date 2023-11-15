@@ -27,8 +27,9 @@ class BaselineRegistry(RegistryWithDict):
         "estimator_steps",
     )
 
-    metrics = catalogue.create("psycop_baseline", "metrics")
-
+    metrics = catalogue.create("psycop", "metrics")
+    suggesters = catalogue.create("psycop", "suggester")
+    
     def to_dict(self) -> dict[str, catalogue.Registry]:
         return {
             attribute_name: getattr(self, attribute_name)
