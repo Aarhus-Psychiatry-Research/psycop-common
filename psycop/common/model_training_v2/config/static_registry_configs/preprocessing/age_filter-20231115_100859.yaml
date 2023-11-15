@@ -1,0 +1,5 @@
+[placeholder]
+@preprocessing = "age_filter"
+min_age = 0
+max_age = 150
+age_col_name = "age"

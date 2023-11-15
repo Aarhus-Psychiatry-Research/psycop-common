@@ -10,3 +10,11 @@ def populate_baseline_registry() -> None:
     from ..trainer.task.estimator_steps.logistic_regression import (
         logistic_regression_step,  # noqa
     )
+    from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline  # noqa
+    from ..trainer.preprocessing.steps.row_filters import AgeFilter  # noqa
+    from ..trainer.cross_validator import CrossValidatorTrainer  # noqa
+    from ..trainer.split_trainer import SplitTrainer  # noqa
+    from ..trainer.task.binary_classification.binary_metrics.binary_auroc import (
+        BinaryAUROC,  # noqa
+    )
+    from ..trainer.data.minimal_test_data import MinimalTestData  # noqa

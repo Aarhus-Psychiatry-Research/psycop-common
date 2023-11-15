@@ -1,12 +1,11 @@
 from pathlib import Path
 
-from polars import LazyFrame
 from sklearn.pipeline import Pipeline
+from psycop.common.model_training_v2.trainer.data.minimal_test_data import MinimalTestData
 
 from psycop.common.model_training_v2.config.baseline_pipeline import (
     train_baseline_model,
 )
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import (
     BaselineSchema,
     ProjectInfo,
@@ -17,7 +16,6 @@ from psycop.common.model_training_v2.config.config_utils import (
 from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
 )
-from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.cross_validator import (
     CrossValidatorTrainer,
 )
@@ -42,27 +40,6 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_m
 from psycop.common.model_training_v2.trainer.task.estimator_steps import (
     logistic_regression_step,
 )
-from psycop.common.test_utils.str_to_df import str_to_pl_df
-
-
-@BaselineRegistry.data.register("minimal_test_data")
-class MinimalTestData(BaselineDataLoader):
-    def __init__(self) -> None:
-        pass
-
-    def load(self) -> LazyFrame:
-        data = str_to_pl_df(
-            """ pred_time_uuid, pred_1, outcome,    outcome_val,    pred_age
-                1,              1,      1,          1,              1
-                2,              1,      1,          1,              99
-                3,              1,      1,          1,              99
-                4,              0,      0,          0,              99
-                5,              0,      0,          0,              99
-                6,              0,      0,          0,              99
-                                        """,
-        ).lazy()
-
-        return data
 
 
 def test_v2_train_model_pipeline(tmpdir: Path):

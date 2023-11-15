@@ -21,10 +21,10 @@ e.g. func_name_v2
 
 def test_registered_functions():
     generated_new_configs = generate_configs_from_registered_functions()
-    ON_CI_RUNNER = os.getenv["ON_CI_RUNNER"] == "True"
+    ON_CI_RUNNER = os.getenv("ON_CI_RUNNER") == "True"
     if generated_new_configs and ON_CI_RUNNER:
         raise Exception(
-            "New configs were generated, indicating this PR breaks backwards compatibility. Re-run the test locally, commit the new configs to the repository, and then ensure backwards compatability to continue."
+            "New configs were generated, indicating this PR breaks backwards compatibility. Re-run the test locally, commit the new configs to the repository, and then ensure backwards compatability to continue.",
         )
 
     for registry_dir in STATIC_REGISTRY_CONFIG_DIR.iterdir():

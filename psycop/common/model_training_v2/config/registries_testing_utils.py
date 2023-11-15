@@ -14,7 +14,17 @@ populate_baseline_registry()
 STATIC_REGISTRY_CONFIG_DIR = Path(__file__).parent / "static_registry_configs"
 
 
-REGISTERED_FUNCTION_WHITELIST = {"pipe_constructor", "mock_suggester"}
+REGISTERED_FUNCTION_WHITELIST = {
+    "pipe_constructor",
+    "mock_suggester",
+    "baseline_preprocessing_pipeline",
+    "crossval_trainer",
+    "split_trainer",
+    "binary_classification_pipeline",
+    "binary_classification",
+    "lookbehind_combination_col_filter",
+    "minimal_test_data",
+}
 
 
 def convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
@@ -83,8 +93,8 @@ def generate_configs_from_registered_functions() -> bool:
                     ) from e
 
                 raise Exception(
-                    f"""Encounted ConfigValidationError in {registered_function_name}. This means that the function has changed 
-        in a way that breaks backwards compatability by e.g. adding a new, non-default argument. 
+                    f"""Encounted ConfigValidationError in {registered_function_name}. This means that the function has changed
+        in a way that breaks backwards compatability by e.g. adding a new, non-default argument.
         Ensure that all arguments have default values and can be resolved by the registry.""",
                 ) from e
 

@@ -9,7 +9,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import (
 
 @BaselineRegistry.preprocessing.register("age_filter")
 class AgeFilter(PresplitStep):
-    def __init__(self, min_age: int, max_age: int, age_col_name: str):
+    def __init__(self, min_age: int = 0, max_age: int = 150, age_col_name: str = "age"):
         self.min_age = min_age
         self.max_age = max_age
         self.age = pl.col(age_col_name)
