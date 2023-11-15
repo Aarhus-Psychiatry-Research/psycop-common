@@ -84,7 +84,7 @@ select = [
   "TCH",
   "W",
 ]
-ignore = ["ANN101", "ANN401", "B007", "E402", "E501", "F401", "F841", "RET504"]
+ignore = ["ANN101", "ANN401", "B007", "E402", "E501", "F401", "F841", "RUF100", "RET504"]
 ignore-init-module-imports = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]

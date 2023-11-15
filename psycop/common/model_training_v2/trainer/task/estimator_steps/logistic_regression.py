@@ -55,8 +55,12 @@ def logistic_regression_step(
 class LogisticRegressionSuggester(Suggester):
     def __init__(
         self,
-        C: FloatSpaceT,
-        l1_ratio: FloatSpaceT,
+        C: FloatSpaceT = {"low": 1e-8, "high": 10, "logarithmic": False},  # noqa: B006
+        l1_ratio: FloatSpaceT = {  # noqa: B006
+            "low": 0.0,
+            "high": 1,
+            "logarithmic": False,
+        },
         solvers: Sequence[LogRegSolvers] = ("saga",),
         penalties: Sequence[LogRegPenalties] = ("l1", "l2", "elasticnet"),
     ):
