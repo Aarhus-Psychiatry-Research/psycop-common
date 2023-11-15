@@ -1,9 +1,8 @@
+from polars import LazyFrame
+
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.test_utils.str_to_df import str_to_pl_df
-
-
-from polars import LazyFrame
 
 
 @BaselineRegistry.data.register("minimal_test_data")

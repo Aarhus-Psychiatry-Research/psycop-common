@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from sklearn.pipeline import Pipeline
-from psycop.common.model_training_v2.trainer.data.minimal_test_data import MinimalTestData
 
 from psycop.common.model_training_v2.config.baseline_pipeline import (
     train_baseline_model,
@@ -18,6 +17,9 @@ from psycop.common.model_training_v2.loggers.base_logger import (
 )
 from psycop.common.model_training_v2.trainer.cross_validator import (
     CrossValidatorTrainer,
+)
+from psycop.common.model_training_v2.trainer.data.minimal_test_data import (
+    MinimalTestData,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
