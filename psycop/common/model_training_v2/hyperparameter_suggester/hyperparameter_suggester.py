@@ -1,4 +1,5 @@
 import copy
+import uuid
 from typing import Any
 
 import optuna
@@ -13,8 +14,12 @@ class SuggesterSpace:
     def __init__(self, *args: Suggester):
         self.suggesters = args
 
+    def _suggester_uuid(self, suggester_name: str) -> str:
+        """We have to add UUIDs in case the same suggester is used twice."""
+        return f"{suggester_name}_{uuid.uuid4()}"
+
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
-        suggester_dict = {s.__class__.__name__: s for s in self.suggesters}
+        suggester_dict = {self._suggester_uuid(s.__class__.__name__): s for s in self.suggesters}
 
         suggester_names = list(suggester_dict.keys())
         optuna_key = ".".join(

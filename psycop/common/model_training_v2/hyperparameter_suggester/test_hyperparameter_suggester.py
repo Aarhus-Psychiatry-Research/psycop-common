@@ -28,8 +28,8 @@ def parametrised_suggester() -> Suggester:
 
 
 class TestHyperparameterSuggester:
-    def _get_suggestions(self, base_cfg: dict[str, Any]) -> dict[str, Any]:
-        sampler = optuna.samplers.RandomSampler()
+    def _get_suggestions(self, base_cfg: dict[str, Any], seed: int = 42) -> dict[str, Any]:
+        sampler = optuna.samplers.RandomSampler(seed=seed)
 
         with StorageSupplier("inmemory") as storage:
             study = optuna.create_study(storage=storage, sampler=sampler)
@@ -75,12 +75,11 @@ class TestHyperparameterSuggester:
             Path(__file__).parent / "test_hyperparam_search.cfg",
         )
 
-        suggestion = self._get_suggestions(base_cfg=cfg)
-        model_dict = suggestion["model"]["logistic_regression"]
-        assert model_dict["@estimator_steps"] == "logistic_regression"
+        suggestions = []
 
-        for float_hparam in ("C", "l1_ratio"):
-            assert isinstance(model_dict[float_hparam], float)
+        n_suggestions = 1_000
+        for i in range(n_suggestions):
+            suggestions.append(self._get_suggestions(base_cfg=cfg, seed=i))
 
-        for str_hparam in ("solver", "penalty"):
-            assert isinstance(model_dict[str_hparam], str)
+        suggestion_keys = {tuple(suggestions[i]["model"].keys()) for i in range(n_suggestions)}
+        assert suggestion_keys == {("value_1",), ("value_2",)}
