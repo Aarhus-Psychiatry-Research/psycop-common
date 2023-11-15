@@ -6,6 +6,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.col_filters imp
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.column_validator import (
     ColumnExistsValidator,
+    MissingColumnError,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters import (
     AgeFilter,
@@ -68,7 +69,7 @@ def test_column_validator():
 
     # Fail
     with pytest.raises(
-        ValueError,
+        MissingColumnError,
         match=r".+\[unknown_column\] not found in dataset.*",
     ):
         ColumnExistsValidator("pred_age", "unknown_column").apply(df)
