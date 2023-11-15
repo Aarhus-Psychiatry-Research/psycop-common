@@ -35,5 +35,4 @@ jobs:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
           push: filter
           runCmd: |
-            ON_CI_RUNNER=True
             inv test
