@@ -1,3 +1,4 @@
+import polars as pl
 import pytest
 
 from psycop.common.model_training_v2.loggers.base_logger import TerminalLogger
@@ -57,12 +58,17 @@ def test_lookbehind_combination_filter():
 
 
 def test_column_validator():
-    df = str_to_pl_df(
-        """
+    df = (
+        str_to_pl_df(
+            """
         pred_age,
         1,
     """,
+        )
+        .lazy()
+        .filter(pl.col("pred_age") != pl.lit(1))
     )
+    # We use .fetch() in ColumnExistsValidator, which can return a dataframe with no rows. Ensure the validator still works in that case.
 
     # Check passing test
     ColumnExistsValidator("pred_age").apply(df)
