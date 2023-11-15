@@ -97,7 +97,7 @@ def _timestamped_cfg_to_disk(
         contents = f.read()
 
     with filepath.open("w") as f:
-        f.write(f"# Example cfg for {fn.fn_name}, last stored at {fn.module}\n{contents}"
+        f.write(f"# Example cfg for {fn.fn_name}, last stored at {fn.module}\n{contents}")
 
 
 def get_registered_functions(
