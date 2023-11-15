@@ -23,3 +23,4 @@ class BaselineRegistry(registry):
     )
 
     metrics = catalogue.create("psycop", "metrics")
+    suggesters = catalogue.create("psycop", "suggester")
