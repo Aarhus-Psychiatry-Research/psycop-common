@@ -144,7 +144,11 @@ def generate_configs_from_registered_functions(
             scaffolding_path = fn.write_scaffolding_cfg(example_top_dir=example_cfg_dir)
 
             config_validation_errors.append(
-                CouldNotGenerateConfigsError(fn=fn, error=e, scaffolding_path=scaffolding_path),
+                CouldNotGenerateConfigsError(
+                    fn=fn,
+                    error=e,
+                    scaffolding_path=scaffolding_path,
+                ),
             )
 
             continue

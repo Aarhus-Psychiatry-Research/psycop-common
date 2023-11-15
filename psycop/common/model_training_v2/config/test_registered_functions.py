@@ -42,7 +42,9 @@ def test_registered_functions(source_registry: RegistryWithDict, output_dir: Pat
 
     for fn in registered_fns:
         if not fn.has_example_cfg(output_dir):
-            raise ValueError(f"{fn.to_dot_path()} does not have an example cfg at {fn.get_cfg_dir(output_dir)}")
+            raise ValueError(
+                f"{fn.to_dot_path()} does not have an example cfg at {fn.get_cfg_dir(output_dir)}",
+            )
 
         cfgs = fn.get_example_cfgs(output_dir)
 

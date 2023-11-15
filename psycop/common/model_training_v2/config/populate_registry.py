@@ -29,10 +29,8 @@ def populate_baseline_registry() -> None:
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline  # noqa
     from ..trainer.preprocessing.steps.row_filters import AgeFilter  # noqa
-    from ..trainer.preprocessing.steps.column_validator import ColumnExistsValidator # noqa
 
     # Suggesters
-    from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace # noqa
 
     # Data
     from ..trainer.data.minimal_test_data import MinimalTestData  # noqa
