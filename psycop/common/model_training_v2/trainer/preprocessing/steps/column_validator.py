@@ -30,7 +30,7 @@ class ColumnExistsValidator(PresplitStep):
             self._column_name_exists(column_name=column, df=df)
             for column in self.column_names
             if self._column_name_exists(column_name=column, df=df) is not None
-        ] # type: ignore
+        ]  # type: ignore
 
         if errors:
             missing_columns_str = ", ".join([e.column_name for e in errors])
