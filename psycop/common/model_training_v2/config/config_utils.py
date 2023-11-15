@@ -19,11 +19,14 @@ def load_baseline_config(config_path: Path) -> BaselineSchema:
     cfg = Config().from_disk(config_path)
 
     # Fill with defaults and write to disk if relevant
-    filled = BaselineRegistry.fill(cfg)
+    filled = BaselineRegistry.fill(cfg, validate=False)
+    resolved = BaselineRegistry.resolve(filled)
+
+    # Writing to disk happens after resolution, to ensure that the
+    # config is valid
     if cfg != filled:
         filled.to_disk(config_path)
 
-    resolved = BaselineRegistry.resolve(filled)
     return BaselineSchema(**resolved)
 
 
@@ -32,7 +35,11 @@ def load_hyperparam_config(config_path: Path) -> dict[str, Any]:
     cfg = Config().from_disk(config_path)
 
     # Fill with defaults and write to disk if relevant
-    filled = BaselineRegistry.fill(cfg)
+    filled = BaselineRegistry.fill(cfg, validate=False)
+    resolved = BaselineRegistry.resolve(filled)
+
+    # Writing to disk happens after resolution, to ensure that the
+    # config is valid
     if cfg != filled:
         filled.to_disk(config_path)
 
