@@ -37,11 +37,13 @@ def test_registered_functions(source_registry: RegistryWithDict, output_dir: Pat
 
     generate_configs_from_registered_functions(
         registered_fns=registered_fns,
-        output_dir=output_dir,
+        example_cfg_dir=output_dir,
     )
 
     for fn in registered_fns:
-        assert fn.has_example_cfg(output_dir)
+        if not fn.has_example_cfg(output_dir):
+            raise ValueError(f"{fn.to_dot_path()} does not have an example cfg at {fn.get_cfg_dir(output_dir)}")
+
         cfgs = fn.get_example_cfgs(output_dir)
 
         for example_cfg in cfgs:

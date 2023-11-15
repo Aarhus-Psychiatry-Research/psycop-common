@@ -14,19 +14,25 @@ def populate_baseline_registry() -> None:
 
     # Tasks
     from ..trainer.task.pipeline_constructor import pipeline_constructor  # noqa
-    from ..trainer.task.estimator_steps.logistic_regression import (
-        logistic_regression_step,  # noqa
-    )
     from ..trainer.task.binary_classification.binary_classification_pipeline import (
         BinaryClassificationPipeline,  # noqa
+    )
+    from ..trainer.task.binary_classification.binary_metrics.binary_auroc import (
+        BinaryAUROC,  # noqa
+    )
+
+    # Estimator steps
+    from ..trainer.task.estimator_steps.logistic_regression import (
+        logistic_regression_step,  # noqa
     )
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline  # noqa
     from ..trainer.preprocessing.steps.row_filters import AgeFilter  # noqa
-    from ..trainer.task.binary_classification.binary_metrics.binary_auroc import (
-        BinaryAUROC,  # noqa
-    )
+    from ..trainer.preprocessing.steps.column_validator import ColumnExistsValidator # noqa
+
+    # Suggesters
+    from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace # noqa
 
     # Data
     from ..trainer.data.minimal_test_data import MinimalTestData  # noqa
