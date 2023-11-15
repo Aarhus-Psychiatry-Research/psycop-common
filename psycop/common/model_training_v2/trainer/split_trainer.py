@@ -64,9 +64,13 @@ class SplitTrainer(BaselineTrainer):
             data=self.validation_data,
         )
 
+        x = training_data_preprocessed.drop(self.outcome_columns, axis=1)
+        self.logger.info(f"Training on:\n\tFeatures: {training_data_preprocessed.columns}")
+        self.logger.info(f"\tOutcome: {self.shared_outcome_col_name}")
+
         training_y = training_data_preprocessed[self.training_outcome_col_name]
         self.task.train(
-            x=training_data_preprocessed.drop(self.outcome_columns, axis=1),
+            x=x,
             y=pd.DataFrame(training_y),
             y_col_name=self.training_outcome_col_name,
         )
