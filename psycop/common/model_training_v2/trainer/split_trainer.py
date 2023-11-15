@@ -19,7 +19,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
-from psycop.common.model_training_v2.trainer.task.base_metric import BaseMetric
+from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,
 )
@@ -35,7 +35,7 @@ class SplitTrainer(BaselineTrainer):
         validation_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         task: BaselineTask,
-        metric: BaseMetric,
+        metric: BaselineMetric,
         logger: BaselineLogger,
     ):
         self.training_data = training_data.load()

@@ -5,18 +5,18 @@ import pandas as pd
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,
 )
-from psycop.common.model_training_v2.trainer.task.multilabel_classification.multiclass_classification_pipeline import (
-    MulticlassClassificationPipeline,
+from psycop.common.model_training_v2.trainer.task.multilabel_classification.multilabel_classification_pipeline import (
+    MultilabelClassificationPipeline,
 )
-from psycop.common.model_training_v2.trainer.task.multilabel_classification.multilabel_metrics.base import (
+from psycop.common.model_training_v2.trainer.task.multilabel_classification.multilabel_metrics.base_multilabel_metric import (
     MultilabelMetric,
 )
 
 
-class MultilabelClassification(BaselineTask):
+class MultilabelClassificationTask(BaselineTask):
     def __init__(
         self,
-        pipe: MulticlassClassificationPipeline,
+        pipe: MultilabelClassificationPipeline,
         main_metric: MultilabelMetric,
         supplementary_metrics: Sequence[MultilabelMetric] | None = None,
     ):
