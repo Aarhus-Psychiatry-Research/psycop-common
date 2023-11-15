@@ -51,9 +51,9 @@ def _timestamped_cfg_to_disk(filled_cfg: Config, base_dir: Path) -> None:
 
 @dataclass(frozen=True)
 class RegisteredFunction:
+    fn_name: str
     registry_name: str
     container_registry: RegistryWithDict
-    fn_name: str
 
     def to_dot_path(self) -> str:
         return f"{self.registry_name}.{self.fn_name}"
@@ -111,7 +111,7 @@ def generate_configs_from_registered_functions(
             raise Exception(
                 f"""Encounted ConfigValidationError in {fn.to_dot_path()}. This means that either
                 a) No default config options exist at {fn.get_cfg_dir(output_dir)}
-                b) the function has changedin a way that breaks backwards compatability by e.g. adding a new, non-default argument""",
+                b) the function has changed in a way that breaks backwards compatability by e.g. adding a new, non-default argument""",
             ) from e
 
         base_dir = fn.get_cfg_dir(output_dir)
