@@ -1,8 +1,13 @@
 import os
+from pathlib import Path
 
+import pytest
 from confection import Config
 
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.config.baseline_registry import (
+    BaselineRegistry,
+    RegistryWithDict,
+)
 from psycop.common.model_training_v2.config.registries_testing_utils import (
     STATIC_REGISTRY_CONFIG_DIR,
     generate_configs_from_registered_functions,
@@ -19,8 +24,14 @@ e.g. func_name_v2
 """
 
 
-def test_registered_functions():
-    generated_new_configs = generate_configs_from_registered_functions()
+@pytest.mark.parametrize(
+    ("source_registry", "output_dir"),
+    [
+        (BaselineRegistry(), Path(__file__).parent / "historical_registry_configs"),
+    ],
+)
+def test_registered_functions(source_registry: RegistryWithDict, output_dir: Path):
+    generated_new_configs = generate_configs_from_registered_functions(source_registry=source_registry, output_dir=output_dir)
     if generated_new_configs:
         raise Exception(
             "New configs were generated, indicating this PR breaks backwards compatibility. Re-run the test locally, commit the new configs to the repository, and then ensure backwards compatability to continue.",
