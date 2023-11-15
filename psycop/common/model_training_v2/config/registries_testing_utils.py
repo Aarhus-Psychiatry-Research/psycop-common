@@ -48,8 +48,8 @@ class RegisteredFunction:
         cfg_dir = self.get_cfg_dir(example_top_dir)
         cfg_dir.mkdir(parents=True, exist_ok=True)
 
-        example_path = (cfg_dir / f"{self.fn_name}_{current_datetime}.cfg").open("w")
-        with example_path as f:
+        example_path = (cfg_dir / f"{self.fn_name}_{current_datetime}.cfg")
+        with example_path.open("w") as f:
             f.write("[placeholder]")
 
         return example_path
