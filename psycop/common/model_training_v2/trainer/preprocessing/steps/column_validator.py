@@ -26,11 +26,11 @@ class ColumnExistsValidator(PresplitStep):
     def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df
 
-        errors = [
+        errors: list[MissingColumnError] = [
             self._column_name_exists(column_name=column, df=df)
             for column in self.column_names
             if self._column_name_exists(column_name=column, df=df) is not None
-        ]
+        ] # type: ignore
 
         if errors:
             missing_columns_str = ", ".join([e.column_name for e in errors])
