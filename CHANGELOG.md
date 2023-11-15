@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.137.1 (2023-11-15)
+
+### Fix
+
+* Ran pre-commit ([`7ba17a4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7ba17a407ec64719253c477b8f4a2efce7fcd2e7))
+* Update test to match changes in test patients ([`814b525`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/814b525ea3a7a18e5e2e9afbcdbbf0a7c3194c03))
+* Ran pre-commit ([`06d849d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/06d849d190d749703b85e58415cb56380c8dfb8f))
+* Ensure mapping data is only loaded once ([`389adca`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/389adcadf876e69d394de8422403905aa41a5a32))
+* Ran pre-commit ([`9c7f7db`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9c7f7dba84d4e584ee41594016db56e57f17c76c))
+* Updated behrt embedder with filtering ([`9b3ca61`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9b3ca611d4e9112c96dd746d3e72d41c12a08f67))
+* Update output of create config to ensure correct type ([`c336a34`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c336a34215fb9b1196da64296644394faa3aa745))
+* Convert output of resolve config to configschema ([`2771693`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/27716932de31861b94c8646252230f36a6d87b54))
+
 ## v0.137.0 (2023-11-14)
 
 ### Feature
