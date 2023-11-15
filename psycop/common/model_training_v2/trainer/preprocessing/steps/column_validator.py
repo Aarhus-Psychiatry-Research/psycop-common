@@ -1,11 +1,9 @@
-import re
 from dataclasses import dataclass
 
 import polars as pl
-from polars import ColumnNotFoundError, LazyFrame
+from polars import LazyFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
     PolarsFrame_T0,
     PresplitStep,
@@ -42,7 +40,9 @@ class ColumnExistsValidator(PresplitStep):
         return input_df
 
     def _column_name_exists(
-        self, column_name: str, df: pl.DataFrame,
+        self,
+        column_name: str,
+        df: pl.DataFrame,
     ) -> MissingColumnError | None:
         if column_name not in df.columns:
             return MissingColumnError(column_name=column_name)
