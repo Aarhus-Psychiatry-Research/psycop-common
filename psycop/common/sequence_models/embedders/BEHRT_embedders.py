@@ -3,6 +3,7 @@ Rewrite to dict[str, vector] instead of list[dict[str, value]]
 """
 
 import json
+import logging
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -11,6 +12,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
+from tqdm import tqdm
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
@@ -18,6 +20,8 @@ from psycop.common.sequence_models.dataset import PatientSliceDataset
 
 from ..registry import Registry
 from .interface import EmbeddedSequence, Embedder
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -46,6 +50,16 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         self.LayerNorm = nn.LayerNorm(d_model, eps=1e-12)
         self.dropout = nn.Dropout(dropout_prob)
+        self.icd2caliber = self.load_icd_to_caliber_mapping()
+
+    @staticmethod
+    def load_icd_to_caliber_mapping() -> dict[str, str]:
+        with open(  # noqa: PTH123
+            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
+        ) as fp:
+            mapping = json.load(fp)
+
+        return mapping
 
     def initialize_embeddings_layers(
         self,
@@ -202,18 +216,66 @@ class BEHRTEmbedder(nn.Module, Embedder):
         self,
         diagnosis_code: str,
     ) -> str | None:
-        with open(  # noqa: PTH123
-            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
-        ) as fp:
-            mapping = json.load(fp)
-
         # For each diagnosis code, attempt to map to caliber code
         # If no mapping exists, remove one character from the end of the code and try again
         while len(diagnosis_code) > 2:  # only attempt codes with at least 3 characters
-            if diagnosis_code in mapping:
-                return mapping[diagnosis_code]
+            if diagnosis_code in self.icd2caliber:
+                return self.icd2caliber[diagnosis_code]
             diagnosis_code = diagnosis_code[:-1]
         return None
+
+    # def filter_events(self, patient_slices: Sequence[PatientSlice]) -> list[PatientSlice]:
+
+    def filter_and_reformat_events(
+        self,
+        patient_slices: Sequence[PatientSlice],
+    ) -> list[PatientSlice]:
+        """
+        Fitler and reformats events.
+
+        Filtering: Filter out events that
+
+        Take patients and filter events to only include diagnosis codes. Then reformat the diagnosis codes by mapping them to caliber codes.
+        """
+        assert all(
+            e.source_type == "diagnosis"
+            for ps in patient_slices
+            for e in ps.temporal_events
+        ), "PatientSlice.temporal_events must only include diagnosis codes"
+
+        patient_events = [
+            PatientSlice(p.patient, self.filter_events(p.temporal_events))
+            for p in tqdm(patient_slices)
+        ]
+        if not self.map_diagnosis_codes:
+            return patient_events
+
+        # map diagnosis codes
+        _patient_slices = []
+        n_filtered = 0
+        for p in tqdm(patient_events):
+            temporal_events = []
+            for e in p.temporal_events:
+                value = self.map_icd10_to_caliber(e.value)  # type: ignore
+                if value is not None:
+                    event = TemporalEvent(
+                        timestamp=e.timestamp,
+                        source_type=e.source_type,
+                        source_subtype=e.source_subtype,
+                        value=value,
+                    )
+                    temporal_events.append(event)
+
+            if temporal_events:
+                _patient_slices.append(PatientSlice(p.patient, temporal_events))
+            else:
+                n_filtered += 1
+
+        log.warning(
+            f"Lost {n_filtered} patients ({round(n_filtered / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
+        )
+
+        return _patient_slices
 
     def add_cls_token_to_sequence(self, events: list[dict]) -> list[dict]:  # type: ignore
         # add cls token to start of sequence
@@ -277,20 +339,11 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
-        patient_events = [
-            (p, e)
-            for p in patient_slices
-            for e in self.filter_events(p.temporal_events)
+        patient_slices = self.filter_and_reformat_events(patient_slices)
+
+        diagnosis_codes: list[str] = [
+            str(e.value) for p in patient_slices for e in p.temporal_events
         ]
-
-        # Check that the values only include diagnosis codes
-        assert all(isinstance(e.value, str) for p, e in patient_events)
-
-        diagnosis_codes: list[str] = [str(e.value) for p, e in patient_events]
-
-        # map diagnosis codes
-        if self.map_diagnosis_codes:
-            diagnosis_codes = [self.map_icd10_to_caliber(d) for d in diagnosis_codes]  # type: ignore
 
         # create dianosis2idx mapping
         diagnosis2idx = {
@@ -308,7 +361,8 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         ages: list[int] = [
             self.get_patient_age(e, ps.patient.date_of_birth)
-            for ps, e in patient_events
+            for ps in patient_slices
+            for e in ps.temporal_events
         ]
 
         # create age2idx mapping
@@ -347,5 +401,6 @@ def create_behrt_embedder(
     if isinstance(patient_slices, PatientSliceDataset):
         patient_slices = patient_slices.patient_slices
 
+    log.info("Fitting Embedding Module")
     embedder.fit(patient_slices=patient_slices)
     return embedder

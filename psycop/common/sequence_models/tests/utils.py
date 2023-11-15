@@ -7,13 +7,13 @@ from psycop.common.data_structures.patient import Patient
 def create_patients() -> list[Patient]:
     e1 = TemporalEvent(
         timestamp=datetime(2021, 1, 1),
-        value="d1",
+        value="I65",
         source_type="diagnosis",
         source_subtype="A",
     )
     e2 = TemporalEvent(
         timestamp=datetime(2021, 1, 3),
-        value="d2",
+        value="A30",
         source_type="diagnosis",
         source_subtype="A",
     )
