@@ -33,4 +33,3 @@ def populate_baseline_registry() -> None:
     from ..trainer.task.binary_classification.binary_classification_task import (
         BinaryClassificationTask,  # noqa
     )
-    from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace # noqa
