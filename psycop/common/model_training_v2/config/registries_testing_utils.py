@@ -122,6 +122,8 @@ def generate_configs_from_registered_functions(
                 CouldNotGenerateConfigsError(fn=fn, error=e),
             )
 
+            continue
+
         base_dir = fn.get_cfg_dir(output_dir)
 
         # If none, write to disk
