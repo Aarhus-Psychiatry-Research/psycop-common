@@ -86,4 +86,4 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    fa_inpatient_main_manuscript_eval(run=get_best_eval_pipeline())  # type: ignore
+    fa_inpatient_main_manuscript_eval(pipeline=get_best_eval_pipeline())  # type: ignore
