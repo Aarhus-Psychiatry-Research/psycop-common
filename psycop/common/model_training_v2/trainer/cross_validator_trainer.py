@@ -76,7 +76,7 @@ class CrossValidatorTrainer(BaselineTrainer):
             within_fold_metric = self.metric.calculate(
                 y=y_train[self.outcome_col_name],
                 y_hat_prob=y_hat_prob,
-                name_prefix = f"within_fold_{i}",
+                name_prefix=f"within_fold_{i}",
             )
             self.logger.log_metric(
                 within_fold_metric,
