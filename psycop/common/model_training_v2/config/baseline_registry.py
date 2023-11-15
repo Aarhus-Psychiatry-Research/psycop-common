@@ -8,26 +8,26 @@ class RegistryWithDict(registry):
 
 
 class BaselineRegistry(RegistryWithDict):
-    loggers = catalogue.create("psycop", "loggers")
-    trainers = catalogue.create("psycop", "trainers")
-    data = catalogue.create("psycop", "data")
+    loggers = catalogue.create("psycop_baseline", "loggers")
+    trainers = catalogue.create("psycop_baseline", "trainers")
+    data = catalogue.create("psycop_baseline", "data")
 
-    tasks = catalogue.create("psycop", "tasks")
+    tasks = catalogue.create("psycop_baseline", "tasks")
 
     preprocessing = catalogue.create(
-        "psycop",
+        "psycop_baseline",
         "preprocessing",
     )
     task_pipelines = catalogue.create(
-        "psycop",
+        "psycop_baseline",
         "task_pipelines",
     )
     estimator_steps = catalogue.create(
-        "psycop",
+        "psycop_baseline",
         "estimator_steps",
     )
 
-    metrics = catalogue.create("psycop", "metrics")
+    metrics = catalogue.create("psycop_baseline", "metrics")
 
     def to_dict(self) -> dict[str, catalogue.Registry]:
         return {
