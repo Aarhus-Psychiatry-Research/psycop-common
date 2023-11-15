@@ -18,6 +18,9 @@ from psycop.common.model_training_v2.loggers.base_logger import (
     TerminalLogger,
 )
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from psycop.common.model_training_v2.trainer.cross_validator import (
+    CrossValidatorTrainer,
+)
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     BaselinePreprocessingPipeline,
 )
@@ -82,9 +85,9 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
                 ),
-                main_metric=BinaryAUROC(),
             ),
             logger=logger,
+            metric=BinaryAUROC(),
         ),
     )
 
@@ -101,3 +104,30 @@ def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
     )  # For some reason, the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
 
     assert train_baseline_model(config) == 1.0
+
+
+def test_v2_crossval_model_pipeline(tmpdir: Path):
+    logger = TerminalLogger()
+    schema = BaselineSchema(
+        project_info=ProjectInfo(experiment_path=tmpdir),
+        logger=logger,
+        trainer=CrossValidatorTrainer(
+            training_data=MinimalTestData(),
+            outcome_col_name="outcome",
+            preprocessing_pipeline=BaselinePreprocessingPipeline(
+                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
+            ),
+            task=BinaryClassification(
+                pred_time_uuid_col_name="pred_time_uuid",
+                task_pipe=BinaryClassificationPipeline(
+                    sklearn_pipe=Pipeline([logistic_regression_step()]),
+                ),
+            ),
+            metric=BinaryAUROC(),
+            n_splits=2,
+            group_col_name="pred_time_uuid",
+            logger=logger,
+        ),
+    )
+
+    assert train_baseline_model(schema) == 0.6666666666666667
