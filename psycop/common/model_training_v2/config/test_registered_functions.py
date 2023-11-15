@@ -41,7 +41,7 @@ def test_registered_functions(source_registry: RegistryWithDict, output_dir: Pat
 
     for fn in registered_fns:
         assert fn.has_example_cfg(output_dir)
-        cfgs = fn.get_examples_cfgs(output_dir)
+        cfgs = fn.get_example_cfgs(output_dir)
 
         for example_cfg in cfgs:
             try:

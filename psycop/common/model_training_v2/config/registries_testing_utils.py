@@ -64,7 +64,7 @@ class RegisteredFunction:
     def has_example_cfg(self, example_top_dir: Path) -> bool:
         return self.get_cfg_dir(example_top_dir).exists()
 
-    def get_examples_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
+    def get_example_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
         cfgs = []
         for file in self.get_cfg_dir(example_top_dir).glob("*.cfg"):
             cfgs.append(Config().from_disk(file))
