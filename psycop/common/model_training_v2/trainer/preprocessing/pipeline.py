@@ -21,7 +21,7 @@ class PreprocessingPipeline(Protocol):
 
 
 @BaselineRegistry.preprocessing.register("baseline_preprocessing_pipeline")
-class BaselinePreprocessingPipeline(PreprocessingPipeline): 
+class BaselinePreprocessingPipeline(PreprocessingPipeline):
     def __init__(self, *args: PresplitStep) -> None:
         self.steps = list(args)
 
