@@ -51,7 +51,9 @@ class RegisteredFunction:
 
         example_path = cfg_dir / f"{self.fn_name}_{current_datetime}.cfg"
         with example_path.open("w") as f:
-            f.write(f"# Example cfg for {self.fn_name}, last stored at {self.module}\n[placeholder]")
+            f.write(
+                f"# Example cfg for {self.fn_name}, last stored at {self.module}\n[placeholder]",
+            )
 
         return example_path
 
@@ -89,7 +91,10 @@ def _timestamped_cfg_to_disk(
     top_level_dir: Path,
 ) -> None:
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filepath = fn.get_cfg_dir(top_level_dir=top_level_dir) / f"{fn.fn_name}_{current_datetime}.cfg"
+    filepath = (
+        fn.get_cfg_dir(top_level_dir=top_level_dir)
+        / f"{fn.fn_name}_{current_datetime}.cfg"
+    )
     filled_cfg.to_disk(filepath)
 
     # Prepend location to filepath
@@ -97,7 +102,9 @@ def _timestamped_cfg_to_disk(
         contents = f.read()
 
     with filepath.open("w") as f:
-        f.write(f"# Example cfg for {fn.fn_name}, last stored at {fn.module}\n{contents}")
+        f.write(
+            f"# Example cfg for {fn.fn_name}, last stored at {fn.module}\n{contents}",
+        )
 
 
 def get_registered_functions(
