@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.138.0 (2023-11-15)
+
+### Feature
+
+* Add more extensive logging ([#442](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/442)) ([`3eb0176`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3eb01768816e0756053bee61dec36f94680b21bf))
+
 ## v0.137.2 (2023-11-15)
 
 ### Fix
