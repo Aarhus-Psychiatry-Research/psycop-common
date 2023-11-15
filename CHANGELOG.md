@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.137.2 (2023-11-15)
+
+### Fix
+
+* Override type ([`c2638a6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c2638a6e76898c68955d171af415949ee3b98ed2))
+
+### Documentation
+
+* Comment readability ([`590a946`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/590a946bd853fd53b0d86ad2032f323bf7b4ea4e))
+
 ## v0.137.1 (2023-11-15)
 
 ### Fix
