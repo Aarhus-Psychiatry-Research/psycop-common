@@ -6,6 +6,7 @@ class RegistryWithDict(registry):
     def to_dict(self) -> dict[str, catalogue.Registry]:
         ...
 
+
 class BaselineRegistry(RegistryWithDict):
     loggers = catalogue.create("psycop", "loggers")
     trainers = catalogue.create("psycop", "trainers")

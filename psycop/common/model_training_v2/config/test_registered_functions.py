@@ -1,15 +1,12 @@
-import os
 from pathlib import Path
 
 import pytest
-from confection import Config
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
     RegistryWithDict,
 )
 from psycop.common.model_training_v2.config.registries_testing_utils import (
-    STATIC_REGISTRY_CONFIG_DIR,
     generate_configs_from_registered_functions,
     get_registered_functions,
 )

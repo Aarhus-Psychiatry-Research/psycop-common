@@ -18,6 +18,7 @@ populate_baseline_registry()
 
 STATIC_REGISTRY_CONFIG_DIR = Path(__file__).parent / "static_registry_configs"
 
+
 def _convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
     for key, value in d.items():
         if isinstance(value, tuple):
@@ -70,6 +71,7 @@ class RegisteredFunction:
             cfgs.append(Config().from_disk(file))
 
         return cfgs
+
 
 def get_registered_functions(
     container_registry: RegistryWithDict,
@@ -125,6 +127,7 @@ def generate_configs_from_registered_functions(
             _timestamped_cfg_to_disk(filled_cfg=filled_cfg, base_dir=base_dir)
 
     return generated_new_configs
+
 
 if __name__ == "__main__":
     generate_configs_from_registered_functions(
