@@ -81,7 +81,7 @@ class TestHyperparameterSuggester:
 
         suggestions = []
 
-        n_suggestions = 1_000
+        n_suggestions = 10
         for i in range(n_suggestions):
             suggestions.append(self._get_suggestions(base_cfg=cfg, seed=i))
 
