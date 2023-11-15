@@ -19,7 +19,7 @@ REGISTERED_FUNCTION_WHITELIST = {
     "mock_suggester",
     "baseline_preprocessing_pipeline",
     "crossval_trainer",
-    "split_trainer",  # todo
+    "split_trainer",
     "binary_classification_pipeline",
     "binary_classification",
     "lookbehind_combination_col_filter",
@@ -27,12 +27,12 @@ REGISTERED_FUNCTION_WHITELIST = {
 }
 
 
-def convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
+def _convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
     for key, value in d.items():
         if isinstance(value, tuple):
             d[key] = list(value)
         elif isinstance(value, dict):
-            d[key] = convert_tuples_to_lists(value)
+            d[key] = _convert_tuples_to_lists(value)
     return d
 
 
@@ -44,13 +44,13 @@ def _identical_config_exists(filled_cfg: Config, base_filename: Path) -> bool:
         file_cfg = Config().from_disk(file)
         # confection converts tuples to lists in the file config, so we need to convert
         # tuples to lists in the filled config to compare
-        file_identical = convert_tuples_to_lists(filled_cfg) == file_cfg
+        file_identical = _convert_tuples_to_lists(filled_cfg) == file_cfg
         if file_identical:
             return True
     return False
 
 
-def _save_cfg_to_disk(filled_cfg: Config, base_filename: Path) -> None:
+def _timestamped_cfg_to_disk(filled_cfg: Config, base_filename: Path) -> None:
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
     base_filename.parent.mkdir(parents=True, exist_ok=True)
     out_filename = base_filename.name + f"-{current_datetime}.cfg"
@@ -110,7 +110,7 @@ def generate_configs_from_registered_functions() -> bool:
             # if none, write to disk
             if not identical_file_exists:
                 generated_new_configs = True
-                _save_cfg_to_disk(filled_cfg, base_filename)
+                _timestamped_cfg_to_disk(filled_cfg, base_filename)
     return generated_new_configs
 
 
