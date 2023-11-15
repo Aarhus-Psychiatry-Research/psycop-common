@@ -30,11 +30,11 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters imp
 from psycop.common.model_training_v2.trainer.split_trainer import (
     SplitTrainer,
 )
-from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_task import (
-    BinaryClassificationTask,
-)
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
+)
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_task import (
+    BinaryClassificationTask,
 )
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics import (
     BinaryAUROC,
