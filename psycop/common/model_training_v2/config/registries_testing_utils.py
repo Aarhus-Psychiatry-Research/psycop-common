@@ -136,7 +136,7 @@ def generate_configs_from_registered_functions(
         fn_location_strings = "\n\t".join(fn_locations)
 
         raise Exception(
-                f"""Encounted ConfigValidationError in:\n{fn_location_strings}. This means that either
+                f"""Encounted ConfigValidationError in:{fn_location_strings}. This means that either
     a) No default config options exist at {fn.get_cfg_dir(output_dir)}
     b) the function has changed in a way that breaks backwards compatability by e.g. adding a new, non-default argument.
                 """,
