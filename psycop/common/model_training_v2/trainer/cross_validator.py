@@ -71,9 +71,9 @@ class CrossValidatorTrainer(BaselineTrainer):
             )
 
             within_fold_metric = self.metric.calculate(
-                    y=y_train[self.outcome_col_name],
-                    y_hat_prob=y_hat_prob,
-                )
+                y=y_train[self.outcome_col_name],
+                y_hat_prob=y_hat_prob,
+            )
 
             within_fold_metric.name = f"within_fold_metric_{i}"
             self.logger.log_metric(
@@ -85,9 +85,9 @@ class CrossValidatorTrainer(BaselineTrainer):
             )
 
             oof_metric = self.metric.calculate(
-                    y=y.loc[val_idxs][self.outcome_col_name],
-                    y_hat_prob=oof_y_hat_prob,
-                )
+                y=y.loc[val_idxs][self.outcome_col_name],
+                y_hat_prob=oof_y_hat_prob,
+            )
 
             oof_metric.name = f"oof_metric_{i}"
             self.logger.log_metric(
