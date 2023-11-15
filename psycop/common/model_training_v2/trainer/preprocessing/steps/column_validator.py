@@ -33,8 +33,9 @@ class ColumnExistsValidator(PresplitStep):
         ]
 
         if errors:
+            missing_columns_str = ", ".join([e.column_name for e in errors])
             raise MissingColumnError(
-                f"Column(s) [{', '.join([e.column_name for e in errors if e is not None])}] not found in dataset.",
+                f"Column(s) [{missing_columns_str}] not found in dataset.",
             )
 
         return input_df
