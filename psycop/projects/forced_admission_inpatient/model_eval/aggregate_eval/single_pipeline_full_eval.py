@@ -82,4 +82,8 @@ def fa_inpatient_main_manuscript_eval(
 
 
 if __name__ == "__main__":
-    pass
+    from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
+        get_best_eval_pipeline,
+    )
+
+    fa_inpatient_main_manuscript_eval(run=get_best_eval_pipeline())  # type: ignore
