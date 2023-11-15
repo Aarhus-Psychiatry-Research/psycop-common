@@ -75,7 +75,8 @@ class CrossValidatorTrainer(BaselineTrainer):
                 y_hat_prob=y_hat_prob,
             )
 
-            within_fold_metric.name = f"within_fold_metric_{i}"
+            metric_name = within_fold_metric.name
+            within_fold_metric.name = f"within_fold_{metric_name}_{i}"
             self.logger.log_metric(
                 within_fold_metric,
             )
@@ -89,7 +90,7 @@ class CrossValidatorTrainer(BaselineTrainer):
                 y_hat_prob=oof_y_hat_prob,
             )
 
-            oof_metric.name = f"oof_metric_{i}"
+            oof_metric.name = f"oof_{metric_name}_{i}"
             self.logger.log_metric(
                 oof_metric,
             )
