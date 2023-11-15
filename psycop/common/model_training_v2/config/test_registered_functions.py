@@ -11,6 +11,7 @@ from psycop.common.model_training_v2.config.baseline_registry import (
 from psycop.common.model_training_v2.config.registries_testing_utils import (
     STATIC_REGISTRY_CONFIG_DIR,
     generate_configs_from_registered_functions,
+    get_registered_functions,
 )
 
 REGISTERED_FUNCTION_ERROR_MSG = """
@@ -31,18 +32,20 @@ e.g. func_name_v2
     ],
 )
 def test_registered_functions(source_registry: RegistryWithDict, output_dir: Path):
-    generated_new_configs = generate_configs_from_registered_functions(source_registry=source_registry, output_dir=output_dir)
-    if generated_new_configs:
-        raise Exception(
-            "New configs were generated, indicating this PR breaks backwards compatibility. Re-run the test locally, commit the new configs to the repository, and then ensure backwards compatability to continue.",
-        )
+    registered_fns = get_registered_functions(source_registry)
 
-    for registry_dir in STATIC_REGISTRY_CONFIG_DIR.iterdir():
-        for config_file in registry_dir.iterdir():
-            cfg = Config().from_disk(config_file)
-            try:
-                BaselineRegistry().resolve(cfg)
-            except Exception as e:
-                raise Exception(
-                    f"Failed to resolve {config_file}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
-                ) from e
+    generate_configs_from_registered_functions(
+        registered_fns=registered_fns,
+        output_dir=output_dir,
+    )
+
+    for fn in registered_fns:
+        assert fn.has_example_cfg(output_dir)
+        cfg = fn.get_example_cfg(output_dir)
+
+        try:
+            fn.container_registry.resolve(cfg)
+        except Exception as e:
+            raise Exception(
+                f"Failed to resolve {fn.to_dot_path()}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
+            ) from e
