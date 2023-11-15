@@ -10,11 +10,11 @@ class CalculatedMetric:
     value: float
 
 
-PredProbaSeries = pd.Series  # name should be "y_hat_probs", series of floats
+PredProbaSeries = pd.Series  # name should be "y_hat_prob", series of floats
 
 
 @runtime_checkable
-class BaseMetric(Protocol):
+class BaselineMetric(Protocol):
     def calculate(
         self,
         y: pd.Series,  # type: ignore

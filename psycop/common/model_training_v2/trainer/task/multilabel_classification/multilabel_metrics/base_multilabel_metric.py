@@ -1,13 +1,13 @@
 import pandas as pd
 
 from psycop.common.model_training_v2.trainer.task.base_metric import (
-    BaseMetric,
+    BaselineMetric,
     CalculatedMetric,
     PredProbaSeries,
 )
 
 
-class MultilabelMetric(BaseMetric):
+class MultilabelMetric(BaselineMetric):
     def calculate(
         self,
         y: pd.Series,  # type: ignore

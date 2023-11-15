@@ -3,11 +3,11 @@ import pytest
 from pandas.testing import assert_series_equal
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification import (
-    BinaryClassification,
-)
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
+)
+from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_task import (
+    BinaryClassificationTask,
 )
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics.binary_auroc import (
     BinaryAUROC,
@@ -38,7 +38,7 @@ def test_binary_classification(
     y: pd.DataFrame,
     main_metric_expected: float,
 ):
-    binary_classification_problem = BinaryClassification(
+    binary_classification_problem = BinaryClassificationTask(
         task_pipe=pipe,
         pred_time_uuid_col_name="uuid",
     )
