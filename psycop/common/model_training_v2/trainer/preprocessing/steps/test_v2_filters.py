@@ -1,8 +1,12 @@
 import pytest
+from polars import ColumnNotFoundError
 
 from psycop.common.model_training_v2.loggers.base_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.steps.col_filters import (
     LookbehindCombinationColFilter,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.steps.column_validator import (
+    ColumnExistsValidator,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters import (
     AgeFilter,
@@ -50,3 +54,17 @@ def test_lookbehind_combination_filter():
     ).apply(df)
 
     assert len(result.columns) == 3
+
+def test_column_validator():
+    df = str_to_pl_df("""
+        pred_age,
+        1,
+    """,
+    )
+
+    # Check passing test
+    ColumnExistsValidator("pred_age").apply(df)
+
+    # Fail
+    with pytest.raises(ValueError, match=r".+\[unknown_column\] not found in dataset.*"):
+        ColumnExistsValidator("pred_age", "unknown_column").apply(df)

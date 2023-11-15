@@ -23,3 +23,5 @@ class BaselineRegistry(registry):
     )
 
     metrics = catalogue.create("psycop", "metrics")
+
+    # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/440 Move the populate registry function to the baseline registry, to make it easier to add new imports to the function
