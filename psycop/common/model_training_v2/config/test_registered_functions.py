@@ -41,11 +41,12 @@ def test_registered_functions(source_registry: RegistryWithDict, output_dir: Pat
 
     for fn in registered_fns:
         assert fn.has_example_cfg(output_dir)
-        cfg = fn.get_example_cfg(output_dir)
+        cfgs = fn.get_examples_cfgs(output_dir)
 
-        try:
-            fn.container_registry.resolve(cfg)
-        except Exception as e:
-            raise Exception(
-                f"Failed to resolve {fn.to_dot_path()}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
-            ) from e
+        for example_cfg in cfgs:
+            try:
+                fn.container_registry.resolve(example_cfg)
+            except Exception as e:
+                raise Exception(
+                    f"Failed to resolve {fn.to_dot_path()}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
+                ) from e

@@ -64,8 +64,12 @@ class RegisteredFunction:
     def has_example_cfg(self, example_top_dir: Path) -> bool:
         return self.get_cfg_dir(example_top_dir).exists()
 
-    def get_example_cfg(self, example_top_dir: Path) -> Config:
-        return Config().from_disk(self.get_cfg_dir(example_top_dir))
+    def get_examples_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
+        cfgs = []
+        for file in self.get_cfg_dir(example_top_dir).glob("*.cfg"):
+            cfgs.append(Config().from_disk(file))
+
+        return cfgs
 
 def get_registered_functions(
     container_registry: RegistryWithDict,
