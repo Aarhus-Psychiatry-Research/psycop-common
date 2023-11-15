@@ -6,6 +6,9 @@ from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
     RegistryWithDict,
 )
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 from psycop.common.model_training_v2.config.registries_testing_utils import (
     generate_configs_from_registered_functions,
     get_registered_functions,
@@ -29,6 +32,7 @@ e.g. func_name_v2
     ],
 )
 def test_registered_functions(source_registry: RegistryWithDict, output_dir: Path):
+    populate_baseline_registry()
     registered_fns = get_registered_functions(source_registry)
 
     generate_configs_from_registered_functions(

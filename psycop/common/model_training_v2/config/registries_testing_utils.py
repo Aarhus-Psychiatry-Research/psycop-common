@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from confection import Config, ConfigValidationError
+from coverage import data
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
@@ -90,6 +91,12 @@ def get_registered_functions(
     return functions
 
 
+@dataclass(frozen=True)
+class CouldNotGenerateConfigsError(Exception):
+    fn: RegisteredFunction
+    error: Exception
+
+
 def generate_configs_from_registered_functions(
     registered_fns: Sequence[RegisteredFunction],
     output_dir: Path,
@@ -100,6 +107,8 @@ def generate_configs_from_registered_functions(
     still work with the current codebase.
     Returns bool indicating whether any new configs were written to disk."""
     generated_new_configs = False
+    config_validation_errors = []
+
     for fn in registered_fns:
         cfg = Config(
             {"placeholder": {f"@{fn.registry_name}": f"{fn.fn_name}"}},
@@ -110,11 +119,8 @@ def generate_configs_from_registered_functions(
             if fn.get_cfg_dir(output_dir).exists():
                 continue
 
-            raise Exception(
-                f"""Encounted ConfigValidationError in {fn.to_dot_path()}. This means that either
-                a) No default config options exist at {fn.get_cfg_dir(output_dir)}
-                b) the function has changed in a way that breaks backwards compatability by e.g. adding a new, non-default argument""",
-            ) from e
+            config_validation_errors.append(CouldNotGenerateConfigsError(fn=fn, error=e))
+
 
         base_dir = fn.get_cfg_dir(output_dir)
 
@@ -125,6 +131,16 @@ def generate_configs_from_registered_functions(
         ):
             generated_new_configs = True
             _timestamped_cfg_to_disk(filled_cfg=filled_cfg, base_dir=base_dir)
+
+    if config_validation_errors:
+        fn_locations = [e.fn.to_dot_path() for e in config_validation_errors]
+
+        raise Exception(
+                f"""Encounted ConfigValidationError in:\n{'\n\t'.join(fn_locations)}. This means that either
+    a) No default config options exist at {fn.get_cfg_dir(output_dir)}
+    b) the function has changed in a way that breaks backwards compatability by e.g. adding a new, non-default argument.
+                """,
+        )
 
     return generated_new_configs
 
