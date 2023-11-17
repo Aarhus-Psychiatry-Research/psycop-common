@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 from xgboost import XGBClassifier
@@ -16,7 +16,8 @@ def xgboost_classifier_step(
     max_depth: int = 3,
 ) -> ModelStep:
     """Initialize XGBClassifier model with hparams specified as kwargs.
-    The 'missing' hyperparameter specifies the value to be treated as missing and is set to np.nan by default."""
+    The 'missing' hyperparameter specifies the value to be treated as missing and is set to np.nan by default.
+    """
     return (
         "xgboost",
         XGBClassifier(
