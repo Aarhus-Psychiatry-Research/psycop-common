@@ -43,4 +43,5 @@ class BaselineRegistry(RegistryWithDict):
             if isinstance(getattr(self, attribute_name), catalogue.Registry)
         }
 
+
 populate_baseline_registry()
