@@ -11,6 +11,14 @@ def populate_baseline_registry() -> None:
     # Loggers
     from ..loggers.base_logger import TerminalLogger
 
+    # Preprocessing
+    from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
+    from ..trainer.preprocessing.steps.row_filters import AgeFilter
+    from ..trainer.preprocessing.steps.column_validator import (
+        ColumnExistsValidator,
+        ColumnPrefixExpectation,
+    )
+
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
     from ..trainer.split_trainer import SplitTrainer
@@ -29,12 +37,7 @@ def populate_baseline_registry() -> None:
         logistic_regression_step,
     )
 
-    # Preprocessing
-    from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
-    from ..trainer.preprocessing.steps.row_filters import AgeFilter
-    from ..trainer.preprocessing.steps.column_validator import (
-        ColumnExistsValidator,
-    )
+    
 
     # Suggesters
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
