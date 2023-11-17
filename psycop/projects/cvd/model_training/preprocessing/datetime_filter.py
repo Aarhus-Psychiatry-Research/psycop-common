@@ -1,10 +1,4 @@
-from collections.abc import Sequence
-from dataclasses import dataclass
-
-import polars as pl
 import polars.selectors as cs
-from functionalpy import Seq
-from polars import LazyFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
