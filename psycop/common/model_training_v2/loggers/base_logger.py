@@ -24,5 +24,3 @@ class BaselineLogger(Protocol):
 
     def log_config(self, config: dict[str, Any]) -> None:
         ...
-
-
