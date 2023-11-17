@@ -98,6 +98,8 @@ def _timestamped_cfg_to_disk(
         fn.get_cfg_dir(top_level_dir=top_level_dir)
         / f"{fn.fn_name}_{current_datetime}.cfg"
     )
+    filepath.parent.mkdir(exist_ok=True, parents=True)
+
     filled_cfg.to_disk(filepath)
 
     # Prepend location to filepath
