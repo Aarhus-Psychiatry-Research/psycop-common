@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.140.0 (2023-11-17)
+
+### Feature
+
+* Add xgboost defaults ([`2ead123`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2ead123963a53956fba538ce462f6ea5adbb9a35))
+
 ## v0.139.0 (2023-11-17)
 
 ### Feature
