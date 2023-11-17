@@ -76,7 +76,6 @@ class ColumnCountExpectation:
         return cls(prefix=prefix, count=count) # type: ignore
 
 
-PrefixedColumnCountExpectation = tuple[str, int]
 @BaselineRegistry.preprocessing.register("column_exists_validator")
 class ColumnPrefixExpectation(PresplitStep):
     def __init__(
