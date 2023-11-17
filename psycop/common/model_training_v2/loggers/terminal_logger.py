@@ -26,8 +26,7 @@ class TerminalLogger(BaselineLogger):
         self._l.fail(message)
 
     def log_metric(self, metric: CalculatedMetric) -> None:
-        self._l.divider(f"Logging metric {metric.name}")
-        self._l.info(f"{metric.name}: {metric.value}")
+        self._l.info(f"{metric.name}: {round(metric.value, 2)}")
 
     def log_config(self, config: dict[str, Any]) -> None:
         self._l.divider("Logging config")
