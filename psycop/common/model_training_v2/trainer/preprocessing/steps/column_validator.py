@@ -91,12 +91,13 @@ class ColumnPrefixExpectation(PresplitStep):
                 ),
             )
             .flatten()
+            .to_iter()
         )
 
         if errors:
-            missing_columns_str = ", ".join([e.column_name for e in errors])
             raise ColumnCountError(
-                f"Column(s) [{missing_columns_str}] not found in dataset.",
+                "Column count expectation(s) not met:\n\t"
+                + "\n\t".join([str(e) for e in errors]),
             )
 
         return input_df
@@ -105,7 +106,7 @@ class ColumnPrefixExpectation(PresplitStep):
     def _column_count_as_expected(
         expectation: ColumnCountExpectation,
         df: pl.DataFrame,
-    ) -> Sequence[ColumnCountError]:
+    ) -> list[ColumnCountError]:
         matching_columns = [
             column for column in df.columns if column.startswith(expectation.prefix)
         ]
