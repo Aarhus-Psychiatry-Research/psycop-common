@@ -1,9 +1,8 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
 
 import polars as pl
 from functionalpy import Seq
-from polars import LazyFrame, count
+from polars import LazyFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
@@ -101,7 +100,7 @@ class ColumnPrefixExpectation(PresplitStep):
                 ),
             )
             .flatten()
-            .to_iter()
+            .to_list()
         )
 
         if errors:
@@ -113,7 +112,11 @@ class ColumnPrefixExpectation(PresplitStep):
         return input_df
 
     @staticmethod
+    def _wrap_str_in_quotes(string: str) -> str:
+        return f'"{string}"'
+
     def _column_count_as_expected(
+        self,
         expectation: ColumnCountExpectation,
         df: pl.DataFrame,
     ) -> list[ColumnCountError]:
@@ -122,10 +125,9 @@ class ColumnPrefixExpectation(PresplitStep):
         ]
 
         if len(matching_columns) != expectation.count:
-            matched_columns_str = "\n\t".join(matching_columns)
             return [
                 ColumnCountError(
-                    f'Number of columns with prefix {expectation.prefix} does not match expectation of {expectation.count}. Columns that matched: {matched_columns_str if matching_columns else "None"}',
+                    f'{self._wrap_str_in_quotes(expectation.prefix)} matched {matching_columns if matching_columns else "None"}, expected {expectation.count}.',
                 ),
             ]
 
