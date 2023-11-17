@@ -193,8 +193,8 @@ def generate_configs_from_registered_functions(
 
         raise Exception(
             f"""Encounted ConfigValidationErrors. For each, it means that either
-    a) No example config exists at the cfg dir. In this case, scaffolding-configs have been generated for you.
-    b) The function has changed in a way that breaks backwards compatability by e.g. adding a new, non-default argument.
+    a) No example config exists at the cfg dir. In this case, scaffolding-configs have been generated for you, which can be filled in with a valid example config. These ensure that, when we edit the file in the future, we are alerted if the edits are not backwards compatible.
+    b) The function has changed in a way that breaks backwards compatability by e.g. adding a new, non-default argument. In this case, you should create a new function with a new name in the (e.g. fn_v2), and register it in the registry. The old function should be archived in the archive folder.
 
 Errors:
 {fn_errors}

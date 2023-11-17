@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import polars as pl
+from functionalpy import Seq
 from polars import LazyFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -49,3 +50,87 @@ class ColumnExistsValidator(PresplitStep):
             return MissingColumnError(column_name=column_name)
 
         return None
+
+
+class ColumnCountError(Exception):
+    ...
+
+
+@dataclass(frozen=True)
+class ColumnCountExpectation:
+    prefix: str
+    count: int
+
+    @classmethod
+    def from_list(
+        cls: type["ColumnCountExpectation"],
+        args: list[str | int],
+    ) -> "ColumnCountExpectation":
+        if not len(args) == 2:
+            raise ValueError(
+                f"ColumnCountExpectation.from_list() takes exactly 2 arguments, ({len(args)} given)",
+            )
+
+        prefix = args[0]
+        count = args[1]  # noqa: F811
+        return cls(prefix=prefix, count=count)  # type: ignore
+
+
+@BaselineRegistry.preprocessing.register("prefix_count_validator")
+class ColumnPrefixExpectation(PresplitStep):
+    def __init__(
+        self,
+        *args: list[str | int],
+    ):
+        self.column_expectations = (
+            Seq(args)
+            .map(
+                lambda x: ColumnCountExpectation.from_list(x),
+            )
+            .to_list()
+        )
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df
+
+        errors = (
+            Seq(self.column_expectations)
+            .map(
+                lambda expectation: self._column_count_as_expected(
+                    expectation=expectation,
+                    df=df,
+                ),
+            )
+            .flatten()
+            .to_list()
+        )
+
+        if errors:
+            raise ColumnCountError(
+                "Column count expectation(s) not met:\n\t"
+                + "\n\t".join([str(e) for e in errors]),
+            )
+
+        return input_df
+
+    @staticmethod
+    def _wrap_str_in_quotes(string: str) -> str:
+        return f'"{string}"'
+
+    def _column_count_as_expected(
+        self,
+        expectation: ColumnCountExpectation,
+        df: pl.DataFrame,
+    ) -> list[ColumnCountError]:
+        matching_columns = [
+            column for column in df.columns if column.startswith(expectation.prefix)
+        ]
+
+        if len(matching_columns) != expectation.count:
+            return [
+                ColumnCountError(
+                    f'{self._wrap_str_in_quotes(expectation.prefix)} matched {matching_columns if matching_columns else "None"}, expected {expectation.count}.',
+                ),
+            ]
+
+        return []
