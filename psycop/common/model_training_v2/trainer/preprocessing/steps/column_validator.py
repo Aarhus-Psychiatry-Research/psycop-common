@@ -52,8 +52,6 @@ class ColumnExistsValidator(PresplitStep):
         return None
 
 
-
-
 class ColumnCountError(Exception):
     ...
 
@@ -64,7 +62,10 @@ class ColumnCountExpectation:
     count: int
 
     @classmethod
-    def from_list(cls: type["ColumnCountExpectation"], args: list[str | int]) -> "ColumnCountExpectation":
+    def from_list(
+        cls: type["ColumnCountExpectation"],
+        args: list[str | int],
+    ) -> "ColumnCountExpectation":
         if not len(args) == 2:
             raise ValueError(
                 f"ColumnCountExpectation.from_list() takes exactly 2 arguments, ({len(args)} given)",
@@ -72,7 +73,7 @@ class ColumnCountExpectation:
 
         prefix = args[0]
         count = args[1]  # noqa: F811
-        return cls(prefix=prefix, count=count) # type: ignore
+        return cls(prefix=prefix, count=count)  # type: ignore
 
 
 @BaselineRegistry.preprocessing.register("column_exists_validator")
@@ -96,7 +97,8 @@ class ColumnPrefixExpectation(PresplitStep):
             Seq(self.column_expectations)
             .map(
                 lambda expectation: self._column_count_as_expected(
-                    expectation=expectation, df=df,
+                    expectation=expectation,
+                    df=df,
                 ),
             )
             .flatten()

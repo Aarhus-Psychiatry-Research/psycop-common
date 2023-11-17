@@ -82,16 +82,14 @@ def test_columns_exist_validator():
     ):
         ColumnExistsValidator("pred_age", "unknown_column").apply(df)
 
+
 def test_column_prefix_expectation():
-    df = (
-        str_to_pl_df(
-            """
+    df = str_to_pl_df(
+        """
         pred_age,
         1,
     """,
-        )
-        .lazy()
-    )
+    ).lazy()
 
     # Check passing test
     ColumnPrefixExpectation(["pred_", 1]).apply(df)
