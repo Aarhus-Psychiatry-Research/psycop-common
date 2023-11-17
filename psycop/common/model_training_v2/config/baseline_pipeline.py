@@ -8,5 +8,6 @@ def train_baseline_model(cfg: BaselineSchema) -> float:
 
     result = cfg.trainer.train()
     result.df.write_parquet(cfg.project_info.experiment_path / "eval_df.parquet")
+    # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/447 Allow dynamic generation of experiments paths
 
     return result.metric.value
