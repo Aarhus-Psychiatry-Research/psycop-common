@@ -37,8 +37,6 @@ def populate_baseline_registry() -> None:
         logistic_regression_step,
     )
 
-    
-
     # Suggesters
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
 
