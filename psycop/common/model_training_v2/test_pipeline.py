@@ -12,7 +12,7 @@ from psycop.common.model_training_v2.config.baseline_schema import (
 from psycop.common.model_training_v2.config.config_utils import (
     load_baseline_config,
 )
-from psycop.common.model_training_v2.loggers.base_logger import (
+from psycop.common.model_training_v2.loggers.terminal_logger import (
     TerminalLogger,
 )
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
