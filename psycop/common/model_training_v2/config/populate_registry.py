@@ -36,6 +36,9 @@ def populate_baseline_registry() -> None:
     from ..trainer.task.estimator_steps.logistic_regression import (
         logistic_regression_step,
     )
+    from ..trainer.task.estimator_steps.xgboost import (
+        xgboost_classifier_step,
+    )
 
     # Suggesters
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
