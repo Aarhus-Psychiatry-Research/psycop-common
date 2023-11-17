@@ -19,6 +19,6 @@ class RegexColumnBlacklist(PresplitStep):
 
     def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
         for blacklist in self.regex_blacklist:
-            input_df = input_df.select(pl.exclude(blacklist))
+            input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
 
         return input_df
