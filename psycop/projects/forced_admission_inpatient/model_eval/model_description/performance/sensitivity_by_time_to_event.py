@@ -98,7 +98,7 @@ def fa_inpatient_sensitivity_by_time_to_event(
     p = sensitivity_by_time_to_event(eval_dataset=eval_ds)
 
     p.save(
-        pipeline_run.paper_outputs.paths.figures / "fa_inpatient_sensitivity_by_time_to_event.png",
+        pipeline_run.paper_outputs.paths.figures / "fa_inpatient_sens_by_time_to_event.png",
         width=7,
         height=7,
     )

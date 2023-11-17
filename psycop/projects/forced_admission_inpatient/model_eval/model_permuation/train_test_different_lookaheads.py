@@ -128,7 +128,7 @@ def train_model(
 
 def performance_by_lookahead_table(
     run: ForcedAdmissionInpatientPipelineRun,
-    lookaheads_for_performance_eval: list[float],
+    lookaheads_for_performance_eval: list[float] = [30, 90, 180, 360],
 ):
 
     roc_auc_table = {}
@@ -145,7 +145,7 @@ def performance_by_lookahead_table(
 
     with (
         run.paper_outputs.paths.tables
-        / f"performance_by_lookahead_table_{run.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_days_lookahead.html"
+        / f"performance_by_la_{run.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_days_la.html"
     ).open("w") as html_file:
         html = df.to_html()
         html_file.write(html)

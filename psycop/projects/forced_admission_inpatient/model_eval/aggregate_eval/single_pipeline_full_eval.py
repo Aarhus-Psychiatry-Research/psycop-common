@@ -14,6 +14,9 @@ from psycop.projects.forced_admission_inpatient.model_eval.model_description.per
 from psycop.projects.forced_admission_inpatient.model_eval.model_description.robustness.main_robustness_figure import (
     fa_inpatient_create_main_robustness_figure,
 )
+from psycop.projects.forced_admission_inpatient.model_eval.model_permuation.train_test_different_lookaheads import (
+    performance_by_lookahead_table
+)
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
@@ -77,6 +80,8 @@ def fa_inpatient_main_manuscript_eval(
     fa_inpatient_output_performance_by_ppr(run=pipeline)
     fa_inpatient_create_main_performance_figure(run=pipeline)
     fa_inpatient_create_main_robustness_figure(run=pipeline)
+    performance_by_lookahead_table(run=pipeline)
+
 
     return fa_inpatient_create_markdown_artifacts(pipeline=pipeline)
 
