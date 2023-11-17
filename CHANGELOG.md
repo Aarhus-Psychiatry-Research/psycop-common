@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.139.0 (2023-11-17)
+
+### Feature
+
+* Prefix conut validator ([`c42178c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c42178cb8cfec52b3f46f252c8b5a7f1f2915b7b))
+
+### Documentation
+
+* More info on config update. ([`5e546e9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5e546e9f69ce49e5e216cdf552986079dce901b5))
+
 ## v0.138.0 (2023-11-15)
 
 ### Feature
