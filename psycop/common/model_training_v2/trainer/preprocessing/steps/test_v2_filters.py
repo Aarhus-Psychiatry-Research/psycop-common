@@ -1,7 +1,7 @@
 import polars as pl
 import pytest
 
-from psycop.common.model_training_v2.loggers.base_logger import TerminalLogger
+from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.preprocessing.steps.col_filters import (
     LookbehindCombinationColFilter,
 )

@@ -9,7 +9,7 @@ def populate_baseline_registry() -> None:
     and easier to debug for people who are not familiar with python setup hooks.
     """
     # Loggers
-    from ..loggers.base_logger import TerminalLogger
+    from ..loggers.terminal_logger import TerminalLogger
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
