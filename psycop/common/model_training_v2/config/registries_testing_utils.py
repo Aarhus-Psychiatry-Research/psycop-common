@@ -33,6 +33,7 @@ class RegisteredFunction:
     fn_name: str
     registry_name: str
     container_registry: RegistryWithDict
+    module: str
 
     def to_dot_path(self) -> str:
         return f"{self.registry_name}.{self.fn_name}"
@@ -50,7 +51,12 @@ class RegisteredFunction:
 
         example_path = cfg_dir / f"{self.fn_name}_{current_datetime}.cfg"
         with example_path.open("w") as f:
-            f.write("[placeholder]")
+            f.write(
+                f"""
+# Example cfg for {self.fn_name}
+# You can find args at:
+#    {self.module}\n[placeholder]""",
+            )
 
         return example_path
 
@@ -88,10 +94,22 @@ def _timestamped_cfg_to_disk(
     top_level_dir: Path,
 ) -> None:
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filled_cfg.to_disk(
+    filepath = (
         fn.get_cfg_dir(top_level_dir=top_level_dir)
-        / f"{fn.fn_name}_{current_datetime}.cfg",
+        / f"{fn.fn_name}_{current_datetime}.cfg"
     )
+    filled_cfg.to_disk(filepath)
+
+    # Prepend location to filepath
+    with filepath.open("r") as f:
+        contents = f.read()
+
+    with filepath.open("w") as f:
+        f.write(
+            f"""# Example cfg for {fn.fn_name}
+# You can find args at:
+#    {fn.module}\n{contents}""",
+        )
 
 
 def get_registered_functions(
@@ -105,6 +123,7 @@ def get_registered_functions(
                     registry_name=registry_name,
                     fn_name=registered_function_name,
                     container_registry=container_registry,
+                    module=registry.get_all()[registered_function_name].__module__,
                 ),
             )
 
