@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import polars as pl
 from functionalpy import Seq
-from polars import LazyFrame
+from polars import LazyFrame, count
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
@@ -53,7 +53,6 @@ class ColumnExistsValidator(PresplitStep):
         return None
 
 
-PrefixedColumnCountExpectation = tuple[str, int]
 
 
 class ColumnCountError(Exception):
@@ -65,17 +64,29 @@ class ColumnCountExpectation:
     prefix: str
     count: int
 
+    @classmethod
+    def from_list(cls: type["ColumnCountExpectation"], args: list[str | int]) -> "ColumnCountExpectation":
+        if not len(args) == 2:
+            raise ValueError(
+                f"ColumnCountExpectation.from_list() takes exactly 2 arguments, ({len(args)} given)",
+            )
 
+        prefix = args[0]
+        count = args[1]  # noqa: F811
+        return cls(prefix=prefix, count=count) # type: ignore
+
+
+PrefixedColumnCountExpectation = tuple[str, int]
 @BaselineRegistry.preprocessing.register("column_exists_validator")
 class ColumnPrefixExpectation(PresplitStep):
     def __init__(
         self,
-        *args: PrefixedColumnCountExpectation,
+        *args: list[str | int],
     ):
         self.column_expectations = (
             Seq(args)
             .map(
-                lambda x: ColumnCountExpectation(prefix=x[0], count=x[1]),
+                lambda x: ColumnCountExpectation.from_list(x),
             )
             .to_list()
         )
