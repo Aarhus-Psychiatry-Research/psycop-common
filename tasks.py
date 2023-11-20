@@ -477,6 +477,20 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
 
 
 @task
+def snyk(c: Context):
+    for requirements_file in [
+        "requirements.txt",
+        "dev-requirements.txt",
+        "gpu-requirements.txt",
+        "test-requirements.txt",
+    ]:
+        c.run(
+            f"snyk test --file={requirements_file} --package-manager=pip",
+            pty=NOT_WINDOWS,
+        )
+
+
+@task
 def qtest(c: Context):
     test(
         c,
