@@ -2,6 +2,17 @@ pr:
 	make merge-main
 	inv qpr
 
+push:
+	@echo "––– Pushing to origin/main –––"
+	@git push --set-upstream origin HEAD
+	@git push
+	echo "✅✅✅ Succesful push! ✅✅✅"
+
+create-pr:
+	@echo "––– Creating PR –––"
+	@gh pr create --title "$$(git rev-parse --abbrev-ref HEAD | tr -d '[:digit:]' | tr '-' ' ')" --body "Auto-created" -w || true
+	@echo "✅✅✅ PR created succesfully! ✅✅✅"
+
 merge-main:
 	git fetch
 	git merge --no-edit origin/main
