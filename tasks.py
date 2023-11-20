@@ -458,6 +458,7 @@ def lint(c: Context, auto_fix: bool = False):
     test_for_venv(c)
     test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
+    print("✅✅✅ Succesful linting! ✅✅✅")
 
 
 @task
@@ -492,6 +493,7 @@ def qtest(c: Context):
             "--testmon",
         ],
     )
+    print("✅✅✅ Tests ran succesfully! ✅✅✅")
 
 
 # TODO: #390 Make more durable testmon implementation
