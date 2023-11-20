@@ -1,24 +1,36 @@
 import copy
-from collections.abc import Sequence
-from dataclasses import dataclass
+import uuid
 from typing import Any
 
 import optuna
 
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+
 from .suggesters.base_suggester import Suggester
 
 
-@dataclass(frozen=True)
+@BaselineRegistry.suggesters.register("suggester_space")
 class SuggesterSpace:
-    suggesters: Sequence[Suggester]
+    def __init__(self, *args: Suggester):
+        self.suggesters = args
+
+    def _suggester_uuid(self, suggester_name: str) -> str:
+        """We have to add UUIDs in case the same suggester is used twice."""
+        return f"{suggester_name}_{uuid.uuid4()}"
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         suggester_dict = {
-            suggester.__class__.__name__: suggester for suggester in self.suggesters
+            self._suggester_uuid(s.__class__.__name__): s for s in self.suggesters
         }
 
         suggester_names = list(suggester_dict.keys())
-        suggester_name: str = trial.suggest_categorical("suggester", suggester_names)  # type: ignore # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
+        optuna_key = ".".join(
+            suggester_names,
+        )
+        # We want the optuna key to be unique for each space, so it knows to optimise them individually
+
+        suggester_name: str = trial.suggest_categorical(optuna_key, suggester_names)  # type: ignore
+        # We know this is a string, because it must suggest from the suggester_names. Optuna should type-hint with a generic, but haven't. MB has created an issue here: https://github.com/optuna/optuna/issues/5104
 
         suggester = suggester_dict[suggester_name]
         return suggester.suggest_hyperparameters(trial=trial)

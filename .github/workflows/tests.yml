@@ -34,4 +34,5 @@ jobs:
         with:
           imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
           push: filter
-          runCmd: inv test
+          runCmd: |
+            inv test

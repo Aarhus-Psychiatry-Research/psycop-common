@@ -28,8 +28,12 @@ def parametrised_suggester() -> Suggester:
 
 
 class TestHyperparameterSuggester:
-    def _get_suggestions(self, base_cfg: dict[str, Any]) -> dict[str, Any]:
-        sampler = optuna.samplers.RandomSampler()
+    def _get_suggestions(
+        self,
+        base_cfg: dict[str, Any],
+        seed: int = 42,
+    ) -> dict[str, Any]:
+        sampler = optuna.samplers.RandomSampler(seed=seed)
 
         with StorageSupplier("inmemory") as storage:
             study = optuna.create_study(storage=storage, sampler=sampler)
@@ -43,10 +47,8 @@ class TestHyperparameterSuggester:
     def test_hyperparameter_suggester(self):
         base_cfg = {
             "model": SuggesterSpace(
-                suggesters=(
-                    parametrised_suggester(),
-                    parametrised_suggester(),
-                ),
+                parametrised_suggester(),
+                parametrised_suggester(),
             ),
         }
 
@@ -59,7 +61,7 @@ class TestHyperparameterSuggester:
         base_cfg = {
             "level_1": {
                 "level_2": SuggesterSpace(
-                    suggesters=(parametrised_suggester(),),
+                    parametrised_suggester(),
                 ),
             },
         }
@@ -77,11 +79,13 @@ class TestHyperparameterSuggester:
             Path(__file__).parent / "test_hyperparam_search.cfg",
         )
 
-        suggestion = self._get_suggestions(base_cfg=cfg)
-        model_dict = suggestion["model"]["logistic_regression"]
-        assert model_dict["@estimator_steps"] == "logistic_regression"
+        suggestions = []
 
-        for hparam in ("C", "l1_ratio"):
-            assert isinstance(model_dict[hparam], float)
+        n_suggestions = 10
+        for i in range(n_suggestions):
+            suggestions.append(self._get_suggestions(base_cfg=cfg, seed=i))
 
-    # TODO: #425 Test using SearchSpace in confection
+        suggestion_keys = {
+            tuple(suggestions[i]["model"].keys()) for i in range(n_suggestions)
+        }
+        assert suggestion_keys == {("value_1",), ("value_2",)}
