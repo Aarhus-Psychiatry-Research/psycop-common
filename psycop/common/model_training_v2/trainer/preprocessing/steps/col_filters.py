@@ -1,7 +1,9 @@
 import re
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+from psycop.common.model_training_v2.loggers.base_logger import (
+    BaselineLogger,
+)
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
     PolarsFrame_T0,
     PresplitStep,

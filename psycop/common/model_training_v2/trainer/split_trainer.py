@@ -19,7 +19,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
-from psycop.common.model_training_v2.trainer.task.base_metric import BaseMetric
+from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
 from psycop.common.model_training_v2.trainer.task.base_task import (
     BaselineTask,
 )
@@ -35,7 +35,7 @@ class SplitTrainer(BaselineTrainer):
         validation_outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
         task: BaselineTask,
-        metric: BaseMetric,
+        metric: BaselineMetric,
         logger: BaselineLogger,
     ):
         self.training_data = training_data.load()
@@ -64,9 +64,15 @@ class SplitTrainer(BaselineTrainer):
             data=self.validation_data,
         )
 
+        x = training_data_preprocessed.drop(self.outcome_columns, axis=1)
+        self.logger.info(
+            f"Training on:\n\tFeatures: {training_data_preprocessed.columns}",
+        )
+        self.logger.info(f"\tOutcome: {self.shared_outcome_col_name}")
+
         training_y = training_data_preprocessed[self.training_outcome_col_name]
         self.task.train(
-            x=training_data_preprocessed.drop(self.outcome_columns, axis=1),
+            x=x,
             y=pd.DataFrame(training_y),
             y_col_name=self.training_outcome_col_name,
         )
