@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.141.0 (2023-11-20)
+
+### Feature
+
+* Train cvd with v2 ([#455](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/455)) ([`6f66569`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6f6656967f8c448993c237a21000b354e24d527f))
+* Add xgboost defaults ([`51bde84`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/51bde842e98a8300e874c73c25285d3d274f2912))
+* Add vertical concatenator ([`607cf3a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/607cf3ae0690c7fc312899d467aab0509bb5c923))
+
+### Documentation
+
+* Add todo ([`01fe0e7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/01fe0e76b62f20c0bf80f7628e7c49e0ab950aed))
+
 ## v0.140.0 (2023-11-17)
 
 ### Feature
