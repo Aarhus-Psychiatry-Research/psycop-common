@@ -1,10 +1,6 @@
 import catalogue
 from confection import registry
 
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
-
 
 class RegistryWithDict(registry):
     def to_dict(self) -> dict[str, catalogue.Registry]:
@@ -42,6 +38,3 @@ class BaselineRegistry(RegistryWithDict):
             for attribute_name in dir(self)
             if isinstance(getattr(self, attribute_name), catalogue.Registry)
         }
-
-
-populate_baseline_registry()
