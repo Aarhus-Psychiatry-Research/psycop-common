@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from psycop.common.model_training_v2.trainer.task.base_metric import (
     CalculatedMetric,
