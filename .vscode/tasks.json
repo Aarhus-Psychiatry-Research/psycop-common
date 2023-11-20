@@ -11,12 +11,27 @@
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Static type check"
+                "Static type check",
+                "Merge main"
             ],
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
             }
+        },
+        {
+            "label": "Merge main",
+            "type": "shell",
+            "command": "make merge-main",
+            "presentation": {
+                "reveal": "always",
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
+            },
+            "problemMatcher": []
         },
         {
             "label": "Lint",
@@ -24,17 +39,21 @@
             "command": "inv lint",
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
             },
             "problemMatcher": []
         },
         {
             "label": "Test",
             "type": "shell",
-            "command": "inv test",
+            "command": "inv qtest",
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
             },
         },
         {
@@ -43,7 +62,9 @@
             "command": "inv static-type-checks",
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
             }
         }
     ]
