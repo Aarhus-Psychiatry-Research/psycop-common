@@ -1,8 +1,5 @@
 from typing import Any, Protocol, runtime_checkable
 
-import wasabi
-
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.task.base_metric import (
     CalculatedMetric,
 )
