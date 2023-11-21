@@ -59,7 +59,7 @@
         {
             "label": "Static type check",
             "type": "shell",
-            "command": "inv static-type-checks",
+            "command": "inv qtypes",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
