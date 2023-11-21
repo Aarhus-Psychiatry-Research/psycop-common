@@ -1,5 +1,7 @@
 import re
 
+import polars as pl
+
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import (
     BaselineLogger,
@@ -75,3 +77,15 @@ class LookbehindCombinationColFilter(PresplitStep):
             for c in pred_cols_with_lookbehind
             if all(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
         ]
+
+
+@BaselineRegistry.preprocessing.register("regex_column_blacklist")
+class RegexColumnBlacklist(PresplitStep):
+    def __init__(self, *args: str):
+        self.regex_blacklist = args
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        for blacklist in self.regex_blacklist:
+            input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
+
+        return input_df
