@@ -1,6 +1,7 @@
 from psycop.common.model_training_v2.trainer.preprocessing.steps.column_filters import (
     LookbehindCombinationColFilter,
     RegexColumnBlacklist,
+    TemporalColumnFilter,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -34,3 +35,12 @@ def test_regex_column_blacklist():
 
     filtered = RegexColumnBlacklist("pred_.*").apply(df)
     assert filtered.columns == [c for c in df.columns if not c.startswith("pred_")]
+
+
+def test_temporal_column_filter():
+    df = str_to_pl_df(
+        """timestamp,pred_1,
+                      2020-01-01,1,""",
+    )
+    filtered = TemporalColumnFilter().apply(df)
+    assert filtered.columns == ["pred_1"]
