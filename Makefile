@@ -14,6 +14,7 @@ create-pr:
 	@echo "✅✅✅ PR created succesfully! ✅✅✅"
 
 merge-main:
+	@sleep 5
 	git fetch
 	git merge --no-edit origin/main
 
