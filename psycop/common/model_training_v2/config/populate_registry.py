@@ -18,6 +18,9 @@ def populate_baseline_registry() -> None:
         ColumnExistsValidator,
         ColumnPrefixExpectation,
     )
+    from ..trainer.preprocessing.steps.dataloaders import (
+        ParquetVerticalConcatenator,
+    )
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
