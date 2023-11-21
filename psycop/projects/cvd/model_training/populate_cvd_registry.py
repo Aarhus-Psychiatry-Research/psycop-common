@@ -5,7 +5,7 @@ def populate_with_cvd_registry() -> None:
     from psycop.projects.cvd.model_training.data_loader.trainval_loader import (
         ParquetVerticalConcatenator,
     )
-    from psycop.projects.cvd.model_training.preprocessing.regex_filter import (
+    from psycop.common.model_training_v2.trainer.preprocessing.steps.column_filters import (
         RegexColumnBlacklist,
     )
     from psycop.common.model_training_v2.trainer.preprocessing.steps.col_filters import (

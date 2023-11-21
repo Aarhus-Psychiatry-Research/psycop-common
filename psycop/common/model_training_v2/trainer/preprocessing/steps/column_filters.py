@@ -1,5 +1,6 @@
 import re
 
+import polars as pl
 import polars.selectors as cs
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -87,3 +88,15 @@ class TemporalColumnFilter(PresplitStep):
     def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
         temporal_columns = input_df.select(cs.temporal()).columns
         return input_df.drop(temporal_columns)
+
+
+@BaselineRegistry.preprocessing.register("regex_column_blacklist")
+class RegexColumnBlacklist(PresplitStep):
+    def __init__(self, *args: str):
+        self.regex_blacklist = args
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        for blacklist in self.regex_blacklist:
+            input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
+
+        return input_df
