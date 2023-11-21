@@ -35,6 +35,18 @@ SUPPORTED_PYTHON_VERSIONS = [
 NOT_WINDOWS = platform.system() != "Windows"
 
 
+def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
+    files_modified_since_main = c.run(
+        "git diff --name-only origin/main",
+        hide=True,
+    ).stdout.splitlines()
+
+    if any(file.endswith(file_suffix) for file in files_modified_since_main):
+        return True
+
+    return False
+
+
 def on_ovartaci() -> bool:
     import platform
 
@@ -273,6 +285,15 @@ def pre_commit(c: Context, auto_fix: bool):
 
 
 @task
+def qtypes(c: Context):
+    """Run static type checks."""
+    if filetype_modified_since_head(c, ".py"):
+        static_type_checks(c)
+    else:
+        print("🟢 No python files modified since main, skipping static type checks")
+
+
+@task
 def static_type_checks(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
@@ -452,17 +473,6 @@ def test_for_rej(c: Context):
         print(f"{msg_type.GOOD} No .rej files found.")
 
 
-def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
-    files_modified_since_main = c.run(
-        "git diff --name-only main",
-    ).stdout.splitlines()
-
-    if any(file.endswith(file_suffix) for file in files_modified_since_main):
-        return True
-
-    return False
-
-
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project."""
@@ -490,21 +500,24 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
 
 @task
 def qtest(c: Context):
-    test(
-        c,
-        pytest_args=[
-            "psycop",
-            "-rfE",
-            "--failed-first",
-            "-p no:cov",
-            "-p no:xdist",
-            "--disable-warnings",
-            "-q",
-            "--durations=5",
-            "--testmon",
-        ],
-    )
-    print("✅✅✅ Tests ran succesfully! ✅✅✅")
+    if any(filetype_modified_since_head(c, suffix) for suffix in (".py", ".cfg")):
+        test(
+            c,
+            pytest_args=[
+                "psycop",
+                "-rfE",
+                "--failed-first",
+                "-p no:cov",
+                "-p no:xdist",
+                "--disable-warnings",
+                "-q",
+                "--durations=5",
+                "--testmon",
+            ],
+        )
+        print("✅✅✅ Tests ran succesfully! ✅✅✅")
+    else:
+        print("🟢 No python files modified since main, skipping tests")
 
 
 # TODO: #390 Make more durable testmon implementation
@@ -523,7 +536,7 @@ def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     lint(c, auto_fix=auto_fix)
     push_to_branch(c)
     qtest(c)
-    static_type_checks(c)
+    qtypes(c)
 
 
 @task
