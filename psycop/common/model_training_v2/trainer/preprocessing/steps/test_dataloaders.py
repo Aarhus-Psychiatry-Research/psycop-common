@@ -1,8 +1,10 @@
 from pathlib import Path
 
 import polars as pl
+import pytest
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.dataloaders import (
+    MissingPathError,
     ParquetVerticalConcatenator,
 )
 
@@ -26,3 +28,8 @@ def test_vertical_concatenator(tmpdir: Path):
 
     assert len(concatenated) == len(df) * n_paths
     assert concatenated.columns == df.columns
+
+    with pytest.raises(MissingPathError):
+        ParquetVerticalConcatenator(
+            paths=[str(p) for p in parquet_paths] + ["non_existent_path"],
+        ).load()
