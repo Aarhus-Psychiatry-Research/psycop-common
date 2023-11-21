@@ -452,6 +452,17 @@ def test_for_rej(c: Context):
         print(f"{msg_type.GOOD} No .rej files found.")
 
 
+def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
+    files_modified_since_main = c.run(
+        "git diff --name-only main",
+    ).stdout.splitlines()
+
+    if any(file.endswith(file_suffix) for file in files_modified_since_main):
+        return True
+
+    return False
+
+
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project."""
