@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.142.0 (2023-11-21)
+
+### Feature
+
+* Better scaffolding cfg generation ([`349a5f4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/349a5f454e0ba4dc035b2074547d1293622c8984))
+
 ## v0.141.0 (2023-11-20)
 
 ### Feature
