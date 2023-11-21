@@ -55,7 +55,10 @@ class RegisteredFunction:
                 f"""
 # Example cfg for {self.fn_name}
 # You can find args at:
-#    {self.module}\n[placeholder]""",
+#    {self.module}
+[placeholder]
+@{self.registry_name} = "{self.fn_name}"
+""",
             )
 
         return example_path
