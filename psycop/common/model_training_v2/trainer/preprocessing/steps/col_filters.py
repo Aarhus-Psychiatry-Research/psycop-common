@@ -1,5 +1,7 @@
 import re
 
+import polars.selectors as cs
+
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import (
     BaselineLogger,
@@ -75,3 +77,13 @@ class LookbehindCombinationColFilter(PresplitStep):
             for c in pred_cols_with_lookbehind
             if all(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
         ]
+
+
+@BaselineRegistry.preprocessing.register("temporal_col_filter")
+class TemporalColumnFilter(PresplitStep):
+    def __init__(self):
+        pass
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        temporal_columns = input_df.select(cs.temporal()).columns
+        return input_df.drop(temporal_columns)
