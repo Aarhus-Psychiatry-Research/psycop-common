@@ -3,7 +3,7 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from psycop.common.model_training_v2.trainer.preprocessing.steps.dataloaders import (
+from psycop.common.model_training_v2.trainer.data.dataloaders import (
     MissingPathError,
     ParquetVerticalConcatenator,
 )

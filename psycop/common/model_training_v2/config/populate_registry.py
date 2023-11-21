@@ -18,7 +18,7 @@ def populate_baseline_registry() -> None:
         ColumnExistsValidator,
         ColumnPrefixExpectation,
     )
-    from ..trainer.preprocessing.steps.dataloaders import (
+    from ..trainer.data.dataloaders import (
         ParquetVerticalConcatenator,
     )
 
