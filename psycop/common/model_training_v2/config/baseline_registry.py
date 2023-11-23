@@ -1,10 +1,6 @@
 import catalogue
 from confection import registry
 
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
-
 
 class RegistryWithDict(registry):
     def to_dict(self) -> dict[str, catalogue.Registry]:
