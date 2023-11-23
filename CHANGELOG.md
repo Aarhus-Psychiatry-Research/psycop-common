@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.145.0 (2023-11-23)
+
+### Feature
+
+* Add RegexColumnBlacklist to common ([#472](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/472)) ([`a34066a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a34066a3fc95c99cda214506d90b66d92630dba6))
+* Add RegexColumnBlacklist to common ([`12f30f9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/12f30f9f05fd4cc2909bfcdcb944c481e7f6a2cf))
+* Add cfg ([`3fe31ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3fe31edf9c7f20584d739761001977930b7f29f3))
+* Add RegexColumnBlacklist to common ([`a67b1bc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a67b1bcdcc1efd48a8ba03d27a7e58aa35a7c93e))
+
 ## v0.144.0 (2023-11-23)
 
 ### Feature
