@@ -42,6 +42,3 @@ class BaselineRegistry(RegistryWithDict):
             for attribute_name in dir(self)
             if isinstance(getattr(self, attribute_name), catalogue.Registry)
         }
-
-
-populate_baseline_registry()
