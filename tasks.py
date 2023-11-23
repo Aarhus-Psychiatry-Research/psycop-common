@@ -217,6 +217,7 @@ def push_to_branch(c: Context):
         c.run("git push")
 
 
+@task
 def create_pr(c: Context):
     pr_result: Result = c.run(
         "gh pr list --state OPEN",
@@ -407,11 +408,6 @@ def test(
 
     if test_result.return_code != 0:
         exit(test_result.return_code)
-
-
-@task
-def create_pr_from_branch_name(c: Context):
-    create_pr(c)
 
 
 @task
