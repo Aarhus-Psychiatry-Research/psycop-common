@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.146.0 (2023-11-23)
+
+### Feature
+
+* Add BoolToInt to common ([#477](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/477)) ([`39c093f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/39c093f986cf44af1fac9d53b02ea273cd33f1f6))
+* Add BoolToInt to common ([`3c12927`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3c12927603203b33ef9dd3aa9bf1d8bbf1fe737f))
+
 ## v0.145.0 (2023-11-23)
 
 ### Feature
