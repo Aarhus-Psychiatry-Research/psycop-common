@@ -25,6 +25,9 @@ def populate_baseline_registry() -> None:
         TemporalColumnFilter,
         RegexColumnBlacklist,
     )
+    from ..trainer.preprocessing.steps.cell_transformers import (
+        BoolToInt,
+    )
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
