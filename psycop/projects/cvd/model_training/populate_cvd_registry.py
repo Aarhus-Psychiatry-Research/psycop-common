@@ -2,7 +2,7 @@
 
 
 def populate_with_cvd_registry() -> None:
-    from psycop.projects.cvd.model_training.data_loader.trainval_loader import (
+    from psycop.common.model_training_v2.trainer.data.dataloaders import (
         ParquetVerticalConcatenator,
     )
     from psycop.common.model_training_v2.trainer.preprocessing.steps.column_filters import (
