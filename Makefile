@@ -3,18 +3,18 @@ pr:
 	inv qpr
 
 push:
-	@echo "––– Pushing to origin/main –––"
+	@echo "\n––– Pushing to origin/main –––"
 	@git push --set-upstream origin HEAD
 	@git push
-	echo "✅✅✅ Succesful push! ✅✅✅"
+	@echo "✅✅✅ Succesful push! ✅✅✅"
 
 create-pr:
-	@echo "––– Creating PR –––"
+	@echo "\n––– Creating PR –––"
 	@gh pr create --title "$$(git rev-parse --abbrev-ref HEAD | tr -d '[:digit:]' | tr '-' ' ')" --body "Auto-created" -w || true
 	@echo "✅✅✅ PR created succesfully! ✅✅✅"
 
 merge-main:
-	@echo "––– Merging main –––"
+	@echo "\n––– Merging main –––"
 	git fetch
 	git merge --no-edit origin/main
 	@echo "✅✅✅ Succesful merge! ✅✅✅"
@@ -26,7 +26,7 @@ create-random-branch:
 	@git checkout -b "$$(date +'%y_%m_%d_%H')_$(shell cat /dev/urandom | env LC_ALL=C tr -dc 'a-z' | fold -w 5 | head -n 1)"
 
 grow:
-	@echo "––– Growing into a new branch 🌳 –––"
+	@echo "\n––– Growing into a new branch 🌳 –––"
 	make create-random-branch
 	make merge-main
 
