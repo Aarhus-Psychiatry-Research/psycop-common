@@ -14,9 +14,10 @@ create-pr:
 	@echo "✅✅✅ PR created succesfully! ✅✅✅"
 
 merge-main:
-	@sleep 5
+	@echo "––– Merging main –––"
 	git fetch
 	git merge --no-edit origin/main
+	@echo "✅✅✅ Succesful merge! ✅✅✅"
 
 enable-automerge:
 	gh pr merge --auto --delete-branch
