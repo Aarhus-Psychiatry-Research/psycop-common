@@ -219,23 +219,26 @@ def push_to_branch(c: Context):
 
 @task
 def create_pr(c: Context):
-    pr_result: Result = c.run(
-        "gh pr view --json url -q '.url'",
-        pty=False,
-        hide=True,
-    )
-    if "no pull requests found" in pr_result.stdout:
-        pr_title = c.run(
-            "$$(git rev-parse --abbrev-ref HEAD | tr -d '[:digit:]' | tr '-' ' ')",
+    try:
+        pr_result: Result = c.run(
+            "gh pr view --json url -q '.url'",
+            pty=False,
+            hide=True,
+        )
+        print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
+    except:
+        branch_title = c.run(
+            "git rev-parse --abbrev-ref HEAD", hide=True
         ).stdout.strip()
+        preprocessed_pr_title = branch_title.split("-")[1:]
+        preprocessed_pr_title[0] = f"{preprocessed_pr_title[0]}:"
+        pr_title = " ".join(preprocessed_pr_title)
 
         c.run(
-            f"gh pr create --title {pr_title} --body 'Automatically created PR from invoke' -w",
+            f'gh pr create --title "{pr_title}" --body "Automatically created PR from invoke" -w',
             pty=NOT_WINDOWS,
         )
         print(f"{msg_type.GOOD} PR created")
-    else:
-        print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
 
 
 def update_pr(c: Context):
