@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.143.0 (2023-11-23)
+
+### Feature
+
+* Add TemporalColumnFilter to common ([`59d3a6d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/59d3a6d63fae871fc0bfdcd4b16d9f2e6aae4b38))
+* Add RegexColumnBlacklist to common ([`b7b66e7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b7b66e786f1ad56b8685ec35831e19c288b85a04))
+
+## v0.142.0 (2023-11-21)
+
+### Feature
+
+* Better scaffolding cfg generation ([`349a5f4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/349a5f454e0ba4dc035b2074547d1293622c8984))
+
 ## v0.141.0 (2023-11-20)
 
 ### Feature

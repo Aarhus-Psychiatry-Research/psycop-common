@@ -20,6 +20,9 @@ def populate_baseline_registry() -> None:
     )
     from ..trainer.data.dataloaders import (
         ParquetVerticalConcatenator,
+    from ..trainer.preprocessing.steps.column_filters import (
+        TemporalColumnFilter,
+        RegexColumnBlacklist,
     )
 
     # Trainers
