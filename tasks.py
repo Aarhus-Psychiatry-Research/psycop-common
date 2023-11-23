@@ -220,13 +220,11 @@ def push_to_branch(c: Context):
 @task
 def create_pr(c: Context):
     pr_result: Result = c.run(
-        "gh pr list --state OPEN",
+        "gh pr view --json url -q '.url'",
         pty=False,
         hide=True,
     )
-    branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
-
-    if branch_name not in pr_result.stdout:
+    if "no pull requests found" in pr_result.stdout:
         pr_title = c.run(
             "$$(git rev-parse --abbrev-ref HEAD | tr -d '[:digit:]' | tr '-' ' ')",
         ).stdout.strip()
@@ -237,7 +235,7 @@ def create_pr(c: Context):
         )
         print(f"{msg_type.GOOD} PR created")
     else:
-        print(f"{msg_type.GOOD} PR already exists")
+        print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
 
 
 def update_pr(c: Context):
