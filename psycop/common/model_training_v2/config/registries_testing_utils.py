@@ -55,7 +55,7 @@ class RegisteredCallable:
         example_path = cfg_dir / f"{self.callable_name}_{current_datetime}.cfg"
 
         with example_path.open("w") as f:
-            arg_names = self._get_callable_args()
+            arg_names = self._get_callable_arg_names()
             f.write(
                 f"""
 # Example cfg for {self.callable_name}
@@ -69,11 +69,15 @@ class RegisteredCallable:
 
         return example_path
 
-    def _get_callable_args(self) -> Sequence[str]:
+    def _get_callable_arg_names(self) -> Sequence[str]:
+        """Get the names of the arguments of the callable.
+
+        If the callable is a class, get args of __init__, omitting self."""
         if inspect.isfunction(self.callable_obj):
             arg_names = inspect.getfullargspec(self.callable_obj).args
         elif inspect.isclass(self.callable_obj):
             arg_names = inspect.getfullargspec(self.callable_obj.__init__).args[1:]
+            # Slice from 1 to omit self
 
             has_starargs = (
                 inspect.getfullargspec(self.callable_obj.__init__).varargs is not None
