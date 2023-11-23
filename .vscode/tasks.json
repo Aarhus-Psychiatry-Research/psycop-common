@@ -55,6 +55,10 @@
                 "clear": true,
                 "showReuseMessage": false,
             },
+            "dependsOn": [
+                "Lint",
+                "Merge main"
+            ]
         },
         {
             "label": "Static type check",
@@ -65,7 +69,11 @@
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
-            }
+            },
+            "dependsOn": [
+                "Lint",
+                "Merge main"
+            ]
         }
     ]
 }
