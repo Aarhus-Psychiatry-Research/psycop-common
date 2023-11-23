@@ -218,10 +218,25 @@ def push_to_branch(c: Context):
 
 
 def create_pr(c: Context):
-    c.run(
-        "gh pr create --base main --fill --web",
-        pty=NOT_WINDOWS,
+    pr_result: Result = c.run(
+        "gh pr list --state OPEN",
+        pty=False,
+        hide=True,
     )
+    branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
+
+    if branch_name not in pr_result.stdout:
+        pr_title = c.run(
+            "$$(git rev-parse --abbrev-ref HEAD | tr -d '[:digit:]' | tr '-' ' ')",
+        ).stdout.strip()
+
+        c.run(
+            f"gh pr create --title {pr_title} --body 'Automatically created PR from invoke' -w",
+            pty=NOT_WINDOWS,
+        )
+        print(f"{msg_type.GOOD} PR created")
+    else:
+        print(f"{msg_type.GOOD} PR already exists")
 
 
 def update_pr(c: Context):
@@ -392,6 +407,11 @@ def test(
 
     if test_result.return_code != 0:
         exit(test_result.return_code)
+
+
+@task
+def create_pr_from_branch_name(c: Context):
+    create_pr(c)
 
 
 @task

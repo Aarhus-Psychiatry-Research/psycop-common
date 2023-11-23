@@ -8,11 +8,6 @@ push:
 	@git push
 	@echo "✅✅✅ Succesful push! ✅✅✅"
 
-create-pr:
-	@echo "\n––– Creating PR –––"
-	@gh pr create --title "$$(git rev-parse --abbrev-ref HEAD | tr -d '[:digit:]' | tr '-' ' ')" --body "Auto-created" -w || true
-	@echo "✅✅✅ PR created succesfully! ✅✅✅"
-
 merge-main:
 	@echo "\n––– Merging main –––"
 	git fetch
