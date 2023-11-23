@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.144.0 (2023-11-23)
+
+### Feature
+
+* Add support for mlflow experiment tracker ([`c290c2b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c290c2b605379c4645c966537c940e2f1a5d8eb6))
+* Add vertical concatinator to common ([`9379854`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/93798543874f610c1618319f4391f18bad5db010))
+
 ## v0.143.0 (2023-11-23)
 
 ### Feature
