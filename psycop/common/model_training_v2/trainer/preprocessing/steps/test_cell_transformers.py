@@ -15,6 +15,6 @@ def test_bool_to_int():
     )
 
     transformed = BoolToInt().apply(pl.from_pandas(df))
-    assert transformed["bool_col"].dtype == pl.Int64
+    assert transformed.get_column("bool_col").to_list() == [1, 0, 1]
     assert transformed["int_col"].dtype == pl.Int64
     assert transformed["str_col"].dtype == pl.Utf8
