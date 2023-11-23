@@ -18,7 +18,10 @@ def populate_baseline_registry() -> None:
         ColumnExistsValidator,
         ColumnPrefixExpectation,
     )
-    from ..trainer.preprocessing.steps.column_filters import RegexColumnBlacklist
+    from ..trainer.preprocessing.steps.column_filters import (
+        TemporalColumnFilter,
+        RegexColumnBlacklist,
+    )
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
