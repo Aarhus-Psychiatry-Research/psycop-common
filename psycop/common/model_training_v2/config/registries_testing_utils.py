@@ -123,7 +123,7 @@ def _identical_config_exists(
     return False
 
 
-def _timestamped_cfg_to_disk(
+def _new_timestamped_cfg_to_disk(
     filled_cfg: Config,
     fn: RegisteredCallable,
     top_level_dir: Path,
@@ -191,12 +191,15 @@ def generate_configs_from_registered_functions(
             {"placeholder": {f"@{fn.registry_name}": f"{fn.callable_name}"}},
         )
         try:
+            # Fill with default values.
             filled_cfg = fn.container_registry.fill(placeholder_cfg)
         except ConfigValidationError as e:
+            # Could not fill with default values.
+            # This means we need to provide them in the example cfg.
             if fn.has_example_cfg(example_top_dir=example_cfg_dir):
                 continue
 
-            # Create an empty file at the location
+            # Create a scaffolding cfg at the location
             scaffolding_path = fn.write_scaffolding_cfg(
                 example_top_dir=example_cfg_dir,
             )
@@ -208,7 +211,6 @@ def generate_configs_from_registered_functions(
                     scaffolding_path=scaffolding_path,
                 ),
             )
-
             continue
 
         # If none, write to disk
@@ -218,7 +220,7 @@ def generate_configs_from_registered_functions(
             fn=fn,
         ):
             generated_new_configs = True
-            _timestamped_cfg_to_disk(
+            _new_timestamped_cfg_to_disk(
                 filled_cfg=filled_cfg,
                 fn=fn,
                 top_level_dir=example_cfg_dir,
