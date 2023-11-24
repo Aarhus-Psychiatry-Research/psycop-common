@@ -1,4 +1,5 @@
 from psycop.common.model_training_v2.trainer.preprocessing.steps.column_filters import (
+    FilterColumnsWithinSubset,
     LookbehindCombinationColFilter,
     RegexColumnBlacklist,
     TemporalColumnFilter,
@@ -44,3 +45,17 @@ def test_temporal_column_filter():
     )
     filtered = TemporalColumnFilter().apply(df)
     assert filtered.columns == ["pred_1"]
+
+
+def test_filter_within_subset():
+    df = str_to_pl_df(
+        """timestamp,pred_1,pred_2,
+                      2020-01-01,1,1,""",
+    )
+
+    filtered = FilterColumnsWithinSubset(
+        subset_rule="^pred_.+",
+        keep_matching=".+1.*",
+    ).apply(df)
+
+    assert filtered.columns == ["timestamp", "pred_1"]
