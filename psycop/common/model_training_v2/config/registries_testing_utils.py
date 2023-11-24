@@ -49,6 +49,12 @@ class RegisteredCallable:
         self,
         example_top_dir: Path,
     ) -> Path:
+        _new_timestamped_cfg_to_disk(
+            filled_cfg=Config(),
+            fn=self,
+            top_level_dir=example_top_dir,
+        )
+
         cfg_dir = self.get_cfg_dir(example_top_dir)
         cfg_dir.mkdir(parents=True, exist_ok=True)
         current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -58,9 +64,6 @@ class RegisteredCallable:
             arg_names = self._get_callable_arg_names()
             f.write(
                 f"""
-# Example cfg for {self.callable_name}
-# You can find args at:
-#    {self.module}
 [{self.callable_name}]
 @{self.registry_name} = "{self.callable_name}"
 """
@@ -148,17 +151,6 @@ def _new_timestamped_cfg_to_disk(
     filepath.parent.mkdir(exist_ok=True, parents=True)
 
     filled_cfg.to_disk(filepath)
-
-    # Prepend location to filepath
-    with filepath.open("r") as f:
-        contents = f.read()
-
-    with filepath.open("w") as f:
-        f.write(
-            f"""# Example cfg for {fn.callable_name}
-# You can find args at:
-#    {fn.module}\n{contents}""",
-        )
 
 
 def get_registered_functions(
