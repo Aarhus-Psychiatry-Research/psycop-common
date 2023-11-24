@@ -92,15 +92,6 @@ class RegisteredCallable:
     def callable_obj(self) -> Callable:  # type: ignore
         return self.container_registry.get(self.registry_name, self.callable_name)
 
-    def get_example_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
-        cfgs = []
-        for file in self.get_cfg_dir(example_top_dir).glob("*.cfg"):
-            cfgs.append(Config().from_disk(file))
-
-    @property
-    def callable_obj(self) -> Callable:  # type: ignore
-        return self.container_registry.get(self.registry_name, self.callable_name)
-
 
 def get_example_cfgs(example_top_dir: Path) -> Sequence[Config]:
     cfgs: list[Config] = []
