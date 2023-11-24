@@ -9,7 +9,7 @@ hydra-joblib-launcher==1.2.0
 hydra-optuna-sweeper==1.2.0
 Levenshtein==0.21.0
 numpy==1.26.0
-pandas==1.5.2
+pandas==2.1.2
 patchworklib==0.6.2
 plotnine==0.12.2
 polars==0.18.2
@@ -25,7 +25,7 @@ shap==0.41.0
 sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
-timeseriesflattener==1.7.0
+timeseriesflattener==1.8.0
 wandb==0.15.4
 wasabi==0.9.1
 xgboost==1.7.3
