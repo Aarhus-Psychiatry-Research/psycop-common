@@ -49,12 +49,6 @@ class RegisteredCallable:
         self,
         example_top_dir: Path,
     ) -> Path:
-        _new_timestamped_cfg_to_disk(
-            filled_cfg=Config(),
-            fn=self,
-            top_level_dir=example_top_dir,
-        )
-
         cfg_dir = self.get_cfg_dir(example_top_dir)
         cfg_dir.mkdir(parents=True, exist_ok=True)
         current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -93,6 +87,15 @@ class RegisteredCallable:
             )
 
         return arg_names
+
+    @property
+    def callable_obj(self) -> Callable:  # type: ignore
+        return self.container_registry.get(self.registry_name, self.callable_name)
+
+    def get_example_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
+        cfgs = []
+        for file in self.get_cfg_dir(example_top_dir).glob("*.cfg"):
+            cfgs.append(Config().from_disk(file))
 
     @property
     def callable_obj(self) -> Callable:  # type: ignore
