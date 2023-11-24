@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.147.1 (2023-11-24)
+
+### Fix
+
+* Log text representation of config ([#486](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/486)) ([`5866cd2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5866cd2053fec15085bea7b816559d76365778bb))
+* Log text representation of config ([`8fc4b91`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8fc4b91133ffd9ce305acdb9dc124c8de2897950))
+* Log text representation of config ([`dc1585a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dc1585a267e5d6f2b10fee9779ef77ee062064b3))
+
 ## v0.147.0 (2023-11-24)
 
 ### Feature
