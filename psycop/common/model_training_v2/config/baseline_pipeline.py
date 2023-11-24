@@ -1,7 +1,22 @@
+from pathlib import Path
+
+from confection import Config
+
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
 
 
-def train_baseline_model(cfg: BaselineSchema) -> float:
+def train_baseline_model(cfg_file: Path) -> float:
+    cfg_raw = Config().from_disk(cfg_file).to_str()
+    resolved = BaselineRegistry.resolve(cfg_raw)
+    cfg_schema = BaselineSchema(**resolved)
+
+    cfg_schema.logger.log_config(
+        cfg_raw.to_str(),
+    )  # Dict handling, might have to be flattened depending on the logger. Probably want all loggers to take flattened dicts.
+
+
+def train_baseline_model_from_schema(cfg: BaselineSchema) -> float:
     cfg.logger.log_config(
         cfg.dict(),
     )  # Dict handling, might have to be flattened depending on the logger. Probably want all loggers to take flattened dicts.
