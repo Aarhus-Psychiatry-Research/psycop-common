@@ -32,7 +32,10 @@ e.g. func_name_v2
         (BaselineRegistry(), Path(__file__).parent / "historical_registry_configs"),
     ],
 )
-def test_registered_functions(source_registry: RegistryWithDict, output_dir: Path):
+def test_registered_callables_should_have_valid_example_cfgs(
+    source_registry: RegistryWithDict,
+    output_dir: Path,
+):
     populate_baseline_registry()
     registered_fns = get_registered_functions(source_registry)
 
