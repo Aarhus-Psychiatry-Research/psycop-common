@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.147.0 (2023-11-24)
+
+### Feature
+
+* Add FilterWithinSubset ([#478](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/478)) ([`38b8d17`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/38b8d17c599377af43d65ff57d1ff9fe7430df7f))
+* Add FilterWithinSubset ([`7799ad3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7799ad35a325add2a6d0657a8353d6d99787be06))
+
+### Documentation
+
+* Small improvements to docstrings ([`f659c96`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f659c96a9e1b358e52cc0ff118133c01cfaab36b))
+* Small improvements to docstrings ([`f2e019b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f2e019b94ac840d99eda6d6176a4035293fcae07))
+* Add relevant docstring ([`987f4d8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/987f4d88ff0a8f5479137f9a5cd21d613f507eab))
+
 ## v0.146.0 (2023-11-23)
 
 ### Feature
