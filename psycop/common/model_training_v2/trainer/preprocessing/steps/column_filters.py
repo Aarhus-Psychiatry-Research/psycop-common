@@ -100,3 +100,31 @@ class RegexColumnBlacklist(PresplitStep):
             input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
 
         return input_df
+
+
+@BaselineRegistry.preprocessing.register("filter_columns_within_subset")
+class FilterColumnsWithinSubset(PresplitStep):
+    """Creates a subset matching one regex rule, and then within that subset, drops columns that do not match another rule"""
+
+    def __init__(self, subset_rule: str, keep_matching: str):
+        self.subset_rule = subset_rule
+        self.keep_matching = keep_matching
+
+        for rule in (subset_rule, keep_matching):
+            try:
+                re.compile(rule)
+            except re.error as e:
+                raise ValueError(f"Invalid regex rule: {rule}") from e
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        all_columns = input_df.columns
+        subset_columns = [
+            column for column in all_columns if re.match(self.subset_rule, column)
+        ]
+        columns_to_drop = [
+            column
+            for column in subset_columns
+            if not re.match(self.keep_matching, column)
+        ]
+
+        return input_df.drop(columns_to_drop)

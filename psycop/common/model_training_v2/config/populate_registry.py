@@ -24,6 +24,7 @@ def populate_baseline_registry() -> None:
     from ..trainer.preprocessing.steps.column_filters import (
         TemporalColumnFilter,
         RegexColumnBlacklist,
+        FilterColumnsWithinSubset,
     )
     from ..trainer.preprocessing.steps.cell_transformers import (
         BoolToInt,
