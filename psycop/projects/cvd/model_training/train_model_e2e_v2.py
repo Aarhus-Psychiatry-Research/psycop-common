@@ -1,10 +1,7 @@
 from pathlib import Path
 
 from psycop.common.model_training_v2.config.baseline_pipeline import (
-    train_baseline_model_from_schema,
-)
-from psycop.common.model_training_v2.config.config_utils import (
-    load_baseline_config,
+    train_baseline_model,
 )
 from psycop.projects.cvd.model_training.populate_cvd_registry import (
     populate_with_cvd_registry,
@@ -12,5 +9,4 @@ from psycop.projects.cvd.model_training.populate_cvd_registry import (
 
 if __name__ == "__main__":
     populate_with_cvd_registry()
-    config = load_baseline_config(Path(__file__).parent / "cvd_baseline.cfg")
-    train_baseline_model_from_schema(config)
+    train_baseline_model(Path(__file__).parent / "cvd_baseline.cfg")
