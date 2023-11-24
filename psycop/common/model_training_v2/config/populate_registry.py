@@ -8,10 +8,6 @@ def populate_baseline_registry() -> None:
     It is also possible to do this using hooks, but this is more explicit
     and easier to debug for people who are not familiar with python setup hooks.
     """
-    # Trainers
-    from ..trainer.cross_validator_trainer import CrossValidatorTrainer
-    from ..trainer.split_trainer import SplitTrainer
-
     # Loggers
     from ..loggers.terminal_logger import TerminalLogger
 
@@ -32,6 +28,10 @@ def populate_baseline_registry() -> None:
     from ..trainer.preprocessing.steps.cell_transformers import (
         BoolToInt,
     )
+
+    # Trainers
+    from ..trainer.cross_validator_trainer import CrossValidatorTrainer
+    from ..trainer.split_trainer import SplitTrainer
 
     # Tasks
     from ..trainer.task.pipeline_constructor import pipeline_constructor
