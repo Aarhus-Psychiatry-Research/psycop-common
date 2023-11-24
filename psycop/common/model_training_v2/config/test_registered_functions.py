@@ -11,6 +11,7 @@ from psycop.common.model_training_v2.config.populate_registry import (
 )
 from psycop.common.model_training_v2.config.registries_testing_utils import (
     generate_configs_from_registered_functions,
+    get_example_cfgs,
     get_registered_functions,
 )
 
@@ -41,17 +42,24 @@ def test_registered_functions(source_registry: RegistryWithDict, output_dir: Pat
     )
 
     for fn in registered_fns:
+        missing_example_cfgs: list[ValueError] = []
         if not fn.has_example_cfg(output_dir):
-            raise ValueError(
-                f"{fn.to_dot_path()} does not have an example cfg at {fn.get_cfg_dir(output_dir)}",
+            missing_example_cfgs.append(
+                ValueError(
+                    f"{fn.to_dot_path()} does not have an example cfg at {fn.get_cfg_dir(output_dir)}",
+                ),
+            )
+        if missing_example_cfgs:
+            raise Exception(
+                f"Encountered the following errors:\n{missing_example_cfgs}",
             )
 
-        cfgs = fn.get_example_cfgs(output_dir)
+    cfgs = get_example_cfgs(output_dir)
 
-        for example_cfg in cfgs:
-            try:
-                fn.container_registry.resolve(example_cfg)
-            except Exception as e:
-                raise Exception(
-                    f"Failed to resolve {fn.to_dot_path()}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
-                ) from e
+    for example_cfg in cfgs:
+        try:
+            BaselineRegistry.resolve(example_cfg)
+        except Exception as e:
+            raise Exception(
+                f"Failed to resolve {example_cfg}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
+            ) from e
