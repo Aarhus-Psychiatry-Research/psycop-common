@@ -63,12 +63,24 @@ class RegisteredFunction:
 
         return example_path
 
-    def get_example_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
-        cfgs = []
-        for file in self.get_cfg_dir(example_top_dir).glob("*.cfg"):
-            cfgs.append(Config().from_disk(file))
 
-        return cfgs
+def get_example_cfgs(example_top_dir: Path) -> Sequence[Config]:
+    cfgs: list[Config] = []
+    missing_decorated_fn = []
+
+    for file in (example_top_dir).rglob("*.cfg"):
+        if "@" not in file.read_text():
+            missing_decorated_fn.append(
+                f"{file.name} does not have a decorated fn",
+            )
+        cfgs.append(Config().from_disk(file))
+
+    if missing_decorated_fn:
+        raise ValueError(
+            "\n".join(missing_decorated_fn),
+        )
+
+    return cfgs
 
 
 def _identical_config_exists(
