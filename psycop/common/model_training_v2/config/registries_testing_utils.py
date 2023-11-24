@@ -58,9 +58,6 @@ class RegisteredCallable:
             arg_names = self._get_callable_arg_names()
             f.write(
                 f"""
-# Example cfg for {self.callable_name}
-# You can find args at:
-#    {self.module}
 [{self.callable_name}]
 @{self.registry_name} = "{self.callable_name}"
 """
@@ -95,12 +92,24 @@ class RegisteredCallable:
     def callable_obj(self) -> Callable:  # type: ignore
         return self.container_registry.get(self.registry_name, self.callable_name)
 
-    def get_example_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
-        cfgs = []
-        for file in self.get_cfg_dir(example_top_dir).glob("*.cfg"):
-            cfgs.append(Config().from_disk(file))
 
-        return cfgs
+def get_example_cfgs(example_top_dir: Path) -> Sequence[Config]:
+    cfgs: list[Config] = []
+    missing_decorated_fn = []
+
+    for file in (example_top_dir).rglob("*.cfg"):
+        if "@" not in file.read_text():
+            missing_decorated_fn.append(
+                f"{file.name} does not have a decorated fn",
+            )
+        cfgs.append(Config().from_disk(file))
+
+    if missing_decorated_fn:
+        raise ValueError(
+            "\n".join(missing_decorated_fn),
+        )
+
+    return cfgs
 
 
 def _identical_config_exists(
@@ -136,17 +145,6 @@ def _new_timestamped_cfg_to_disk(
     filepath.parent.mkdir(exist_ok=True, parents=True)
 
     filled_cfg.to_disk(filepath)
-
-    # Prepend location to filepath
-    with filepath.open("r") as f:
-        contents = f.read()
-
-    with filepath.open("w") as f:
-        f.write(
-            f"""# Example cfg for {fn.callable_name}
-# You can find args at:
-#    {fn.module}\n{contents}""",
-        )
 
 
 def get_registered_functions(
