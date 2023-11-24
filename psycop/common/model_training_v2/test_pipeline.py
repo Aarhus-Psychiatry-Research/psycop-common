@@ -3,6 +3,7 @@ from pathlib import Path
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.config.baseline_pipeline import (
+    train_baseline_model,
     train_baseline_model_from_schema,
 )
 from psycop.common.model_training_v2.config.baseline_schema import (
