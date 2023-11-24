@@ -104,7 +104,6 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
             ),
             metric=BinaryAUROC(),
             n_splits=2,
-            group_col_name="pred_time_uuid",
             logger=logger,
         ),
     )
