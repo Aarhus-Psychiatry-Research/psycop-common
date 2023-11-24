@@ -3,7 +3,7 @@ from pathlib import Path
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.config.baseline_pipeline import (
-    train_baseline_model,
+    train_baseline_model_from_schema,
 )
 from psycop.common.model_training_v2.config.baseline_schema import (
     BaselineSchema,
@@ -70,7 +70,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
         ),
     )
 
-    assert train_baseline_model(schema) == 1.0
+    assert train_baseline_model_from_schema(schema) == 1.0
 
 
 def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
@@ -82,7 +82,7 @@ def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
         tmpdir,
     )  # For some reason, the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
 
-    assert train_baseline_model(config) == 1.0
+    assert train_baseline_model_from_schema(config) == 1.0
 
 
 def test_v2_crossval_model_pipeline(tmpdir: Path):
@@ -109,4 +109,4 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
         ),
     )
 
-    assert train_baseline_model(schema) == 0.6666666666666667
+    assert train_baseline_model_from_schema(schema) == 0.6666666666666667
