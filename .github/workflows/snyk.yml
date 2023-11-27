@@ -53,6 +53,6 @@ jobs:
           message: |
             Looks like Snyk failed. Please check the logs for more details.
 
-      # - name: Fail workflow
-      #   if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
-      #   run: exit 1
+      - name: Fail workflow
+        if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
+        run: exit 1
