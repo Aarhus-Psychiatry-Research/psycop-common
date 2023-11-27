@@ -86,7 +86,8 @@ if __name__ == "__main__":
             "2100-01-01 00:00:00",
         )  # set cutoff to 2100 if patient only has visits in one region
         .otherwise(pl.col("cutoff_timestamp"))
-        .str.strptime(pl.Datetime),
+        .str.strptime(pl.Datetime)
+        .alias("cutoff_timestamp"),
     )
 
     GEOGRAPHICAL_SPLIT_PATH.parent.mkdir(parents=True, exist_ok=True)
