@@ -57,13 +57,13 @@ jobs:
           message: |
             Snyk successfully passed 🐕
             
-        - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
-        id: fail_comment
-        with:
-          message-id: ${{ steps.find_comment.outputs.comment-id }}
-          message: |
-            Looks like Snyk failed. Please check the logs for more details.
+        # - uses: mshick/add-pr-comment@v2
+        # if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
+        # id: fail_comment
+        # with:
+        #   message-id: ${{ steps.find_comment.outputs.comment-id }}
+        #   message: |
+        #     Looks like Snyk failed. Please check the logs for more details.
 
       - name: Fail workflow
         if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
