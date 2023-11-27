@@ -31,8 +31,8 @@ jobs:
           pip install invoke
           pip install -r requirements.txt -r test-requirements.txt -r dev-requirements.txt -r gpu-requirements.txt
 
-      # - name: Install snyk
-      #   run: npm install -g snyk
+      - name: Install snyk
+        run: npm install -g snyk
 
       - name: Run Snyk to check for vulnerabilities
         id: snyk
