@@ -20,7 +20,7 @@ def add_age_is_female(
     """
     ids = pd.DataFrame({id_column_name: df[id_column_name].unique()})
     ids["age"] = np.random.randint(18, 95, len(ids))
-    ids["is_female"] = [np.random.randint(0, 2) for _ in range(0, len(ids))]
+    ids["is_female"] = [np.random.randint(0, 2) for _ in range(len(ids))]
 
     return df.merge(ids)
 

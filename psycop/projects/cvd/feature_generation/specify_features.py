@@ -31,7 +31,6 @@ from psycop.projects.cvd.feature_generation.feature_layeres.layer_3 import CVDLa
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    pass
 
 log = logging.getLogger(__name__)
 
@@ -99,5 +98,3 @@ class CVDFeatureSpecifier:
 if __name__ == "__main__":
     outcome_specs = CVDFeatureSpecifier()._get_outcome_specs()  # type: ignore
     outcome_df = outcome_specs[0].timeseries_df
-
-    pass

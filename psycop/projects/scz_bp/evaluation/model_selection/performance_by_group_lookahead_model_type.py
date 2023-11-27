@@ -102,5 +102,3 @@ DEVELOPMENT_PIPELINE_RUN = PipelineRun(
 
 if __name__ == "__main__":
     df = get_publication_ready_performance_for_group(run_group=run_group)
-
-    pass

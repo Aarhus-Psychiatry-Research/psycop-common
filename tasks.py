@@ -453,9 +453,8 @@ def test_for_venv(c: Context):
 
 
 @task
-def test_for_rej(c: Context):
+def test_for_rej(c: Context):  # noqa
     # Get all paths in current directory or subdirectories that end in .rej
-    c = c
     search_dirs = [
         d
         for d in Path().iterdir()
