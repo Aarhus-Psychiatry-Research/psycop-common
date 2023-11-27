@@ -25,6 +25,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version}}
 
+      - name: Install invoke
+        run: pip install invoke==2.1.0
+
       - name: Install snyk
         run: npm install -g snyk
 
