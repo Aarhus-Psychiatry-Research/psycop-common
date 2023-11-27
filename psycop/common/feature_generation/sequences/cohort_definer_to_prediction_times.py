@@ -111,5 +111,3 @@ if __name__ == "__main__":
         lookbehind=dt.timedelta(days=365),
         lookahead=dt.timedelta(days=365),
     )
-
-    pass

@@ -39,5 +39,3 @@ def pad() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = pad()
-
-    pass
