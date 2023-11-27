@@ -34,7 +34,7 @@ jobs:
       - name: Run Snyk to check for vulnerabilities
         id: snyk
         env:
-          SNYK_TOKEN: ${{ secrets.snyk_token }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: false
         run: |
           if inv snyk; then
