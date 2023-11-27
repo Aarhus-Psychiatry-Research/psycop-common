@@ -9,6 +9,7 @@ if the patient has only received treatment in one region.
 from pathlib import Path
 
 import polars as pl
+
 from psycop.common.data_inspection.visits_by_hospital_units.check_hospital_units import (
     load_shak_to_location_mapping,
 )
@@ -80,6 +81,13 @@ if __name__ == "__main__":
             }
         )
         .drop("timestamp")
+    ).with_columns(
+        pl.when(pl.col("cutoff_timestamp").is_null())
+        .then(
+            "2100-01-01 00:00:00"
+        )  # set cutoff to 2100 if patient only has visits in one region
+        .otherwise(pl.col("cutoff_timestamp"))
+        .str.strptime(pl.Datetime)
     )
 
     GEOGRAPHICAL_SPLIT_PATH.parent.mkdir(parents=True, exist_ok=True)
