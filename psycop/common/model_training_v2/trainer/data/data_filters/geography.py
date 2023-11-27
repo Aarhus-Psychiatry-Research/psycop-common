@@ -1,5 +1,4 @@
-from collections.abc import Iterable
-from typing import Literal
+from typing import Collection, Literal
 
 import polars as pl
 
@@ -17,7 +16,7 @@ from psycop.common.model_training_v2.trainer.data.data_filters.base_data_filter 
 class GeographyDataFilter(BaselineDataFilter):
     def __init__(
         self,
-        regions: Iterable[Literal["vest", "midt", "øst"]],
+        regions: Collection[Literal["vest", "midt", "øst"]],
         id_col_name: str,
         timestamp_col_name: str,
     ):
