@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.147.2 (2023-11-27)
+
+### Fix
+
+* Drop entity id column during stratified crossval ([#487](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/487)) ([`400baa4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/400baa428b19d5b386ee1cd728878010673de2dc))
+
 ## v0.147.1 (2023-11-24)
 
 ### Fix
