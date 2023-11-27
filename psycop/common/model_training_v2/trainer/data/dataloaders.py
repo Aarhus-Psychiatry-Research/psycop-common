@@ -6,6 +6,9 @@ from functionalpy import Seq
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from psycop.common.model_training_v2.trainer.data.data_filters.base_data_filter import (
+    BaselineDataFilter,
+)
 
 
 class MissingPathError(Exception):
@@ -48,3 +51,16 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
             how="vertical",
             items=[pl.scan_parquet(path) for path in self.dataset_paths],
         )
+
+
+@BaselineRegistry.data.register("dataloader_filterer")
+class DataLoaderFilterer(BaselineDataLoader):
+    """Filter the rows from dataloader using a filter, such as by geographical region,
+    id split, or other filters."""
+
+    def __init__(self, dataloader: BaselineDataLoader, filter: BaselineDataFilter):
+        self.dataloader = dataloader
+        self.filter = filter
+
+    def load(self) -> pl.LazyFrame:
+        return self.filter.apply(self.dataloader)
