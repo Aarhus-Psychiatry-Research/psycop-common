@@ -50,8 +50,16 @@ jobs:
           fi
 
       - uses: mshick/add-pr-comment@v2
+        if: ${{ steps.snyk.outputs.snyk_failed == 0 && github.event_name == 'pull_request' }}
+        id: success_comment
+        with:
+          message-id: ${{ steps.find_comment.outputs.comment-id }}
+          message: |
+            Snyk successfully passed 🐕
+            
+        - uses: mshick/add-pr-comment@v2
         if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
-        id: add_comment
+        id: fail_comment
         with:
           message-id: ${{ steps.find_comment.outputs.comment-id }}
           message: |
