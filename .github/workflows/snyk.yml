@@ -1,0 +1,70 @@
+# GitHub action to run Snyk check for vulnerabilities in all requirement files.
+
+name: run-snyk
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.10"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        id: setup_python
+        with:
+          python-version: ${{ matrix.python-version}}
+
+      # - name: Install snyk
+      #   run: pip install snyk
+
+      - name: Run Snyk to check for vulnerabilities
+        id: snyk
+        env:
+          SNYK_TOKEN: ${{ secrets.snyk_token }}
+        continue-on-error: true
+        run: |
+          if inv snyk; then
+            echo "Snyk check passed"
+            echo "snyk_failed=0" >> $GITHUB_OUTPUT
+          else
+            echo "Snyk check failed"
+            echo "snyk_failed=1" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      # - uses: mshick/add-pr-comment@v2
+      #   if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
+      #   id: add_comment
+      #   with:
+      #     message: |
+      #       Looks like some formatting rules failed.
+            
+      #       To debug, you can:
+
+      #       🏎️ Get results locally by running `pre-commit run --all-files`
+      #       🕵️ Examine the results in the `Run pre-commit` section of this workflow `pre-commit` 
+
+      #       We also strongly recommend setting up the `ruff` and `black` extensions to auto-format on save in your chosen editor.
+
+      # - name: Commit formatting
+      #   if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
+      #   run: |
+      #     git config user.name github-actions
+      #     git config user.email github-actions@github.com
+      #     git commit -am "style: linting"
+      #     git push --no-verify
+
+      # - name: Fail workflow
+      #   if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
+      #   run: exit 1
