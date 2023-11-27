@@ -1,4 +1,5 @@
-from typing import Collection, Literal
+from collections.abc import Collection
+from typing import Literal
 
 import polars as pl
 
@@ -12,7 +13,7 @@ from psycop.common.model_training_v2.trainer.data.data_filters.base_data_filter 
 )
 
 
-@BaselineRegistry.data.register("geography_data_filter")
+@BaselineRegistry.data_filters.register("geography_data_filter")
 class GeographyDataFilter(BaselineDataFilter):
     def __init__(
         self,

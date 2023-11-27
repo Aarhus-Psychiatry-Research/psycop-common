@@ -54,10 +54,12 @@ def populate_baseline_registry() -> None:
     # Data
     from ..trainer.data.dataloaders import (
         ParquetVerticalConcatenator,
-        DataLoaderFilterer,
+        FilteredDataLoader,
     )
     from ..trainer.data.minimal_test_data import MinimalTestData
     from ..trainer.task.binary_classification.binary_classification_task import (
         BinaryClassificationTask,
     )
+
+    # Data filters
     from ..trainer.data.data_filters.geography import GeographyDataFilter

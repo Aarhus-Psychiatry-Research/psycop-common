@@ -5,7 +5,7 @@ import pytest
 
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
-    DataLoaderFilterer,
+    FilteredDataLoader,
     MissingPathError,
     ParquetVerticalConcatenator,
 )
@@ -47,7 +47,7 @@ def test_dataloader_filterer():
         def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
             return dataloader.load().filter(pl.col("dw_ek_borger") == 1)
 
-    filter_dataloader = DataLoaderFilterer(
+    filter_dataloader = FilteredDataLoader(
         dataloader=base_dataloader,
         data_filter=TestDataFilter(),
     )
