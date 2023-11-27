@@ -2,8 +2,8 @@
 with columns: dw_ek_borger, region, second_region, cutoff_timestamp.
 
 cutoff_timestamp indicates the first time a patient moves to a different region
-for treatment (7570 cases) and can be used to drop visits after this date. Is null
-if the patient has only received treatment in one region.
+for treatment (7570 cases) and can be used to drop visits after this date. Is set
+to 2100-01-01 if the patient has only received treatment in one region.
 """
 
 from pathlib import Path
