@@ -34,6 +34,7 @@ class GeographyDataFilter(BaselineDataFilter):
             dataloader.load()
             .join(filtered_geography_id_df, on=self.id_col_name, how="inner")
             .filter(pl.col(self.timestamp_col_name) < pl.col("cutoff_timestamp"))
+            .drop(columns=["region", "second_region", "cutoff_timestamp"])
         )
 
     def _load_and_prepare_geography_df(self) -> pl.LazyFrame:
