@@ -32,7 +32,7 @@ jobs:
         id: snyk
         env:
           SNYK_TOKEN: ${{ secrets.snyk_token }}
-        continue-on-error: true
+        continue-on-error: false
         run: |
           if inv snyk; then
             echo "Snyk check passed"
