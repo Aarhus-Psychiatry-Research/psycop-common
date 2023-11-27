@@ -58,9 +58,9 @@ class DataLoaderFilterer(BaselineDataLoader):
     """Filter the rows from dataloader using a filter, such as by geographical region,
     id split, or other filters."""
 
-    def __init__(self, dataloader: BaselineDataLoader, filter: BaselineDataFilter):
+    def __init__(self, dataloader: BaselineDataLoader, data_filter: BaselineDataFilter):
         self.dataloader = dataloader
-        self.filter = filter
+        self.data_filter = data_filter
 
     def load(self) -> pl.LazyFrame:
-        return self.filter.apply(self.dataloader)
+        return self.data_filter.apply(self.dataloader)

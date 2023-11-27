@@ -2,15 +2,16 @@ from pathlib import Path
 
 import polars as pl
 import pytest
-from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-from psycop.common.model_training_v2.trainer.data.data_filters.test_data_filter import TestDataFilter
 
+from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
     DataLoaderFilterer,
     MissingPathError,
     ParquetVerticalConcatenator,
 )
-from psycop.common.model_training_v2.trainer.data.minimal_test_data import MinimalTestData
+from psycop.common.model_training_v2.trainer.data.minimal_test_data import (
+    MinimalTestData,
+)
 
 
 def test_vertical_concatenator(tmpdir: Path):
@@ -41,11 +42,14 @@ def test_vertical_concatenator(tmpdir: Path):
 
 def test_dataloader_filterer():
     base_dataloader = MinimalTestData()
-    
+
     class TestDataFilter:
-        def apply(self, dataloader: BaselineDataLoader):
+        def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
             return dataloader.load().filter(pl.col("dw_ek_borger") == 1)
-    
-    filter_dataloader = DataLoaderFilterer(dataloader=base_dataloader, filter=TestDataFilter())
+
+    filter_dataloader = DataLoaderFilterer(
+        dataloader=base_dataloader,
+        data_filter=TestDataFilter(),
+    )
 
     assert filter_dataloader.load().collect().shape == (1, 6)

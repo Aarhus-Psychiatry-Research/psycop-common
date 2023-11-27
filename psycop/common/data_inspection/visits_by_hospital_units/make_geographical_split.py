@@ -3,16 +3,13 @@ with columns: dw_ek_borger, region, second_region, cutoff_timestamp.
 
 cutoff_timestamp indicates the first time a patient moves to a different region
 for treatment (7570 cases) and can be used to drop visits after this date. Is null
-if the patient has only received treatment in one region. 
+if the patient has only received treatment in one region.
 """
 
 from pathlib import Path
 
 import polars as pl
 
-from psycop.common.data_inspection.visits_by_hospital_units.check_hospital_units import (
-    load_shak_to_location_mapping,
-)
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits
 
 GEOGRAPHICAL_SPLIT_PATH = Path("E:/shared_resources/splits/geographical_split.parquet")
@@ -61,7 +58,7 @@ if __name__ == "__main__":
 
     # get the first visit
     first_visit_at_first_region = first_visit_at_each_region.groupby(
-        "dw_ek_borger"
+        "dw_ek_borger",
     ).first()
 
     # get the first visit at a different region
@@ -73,21 +70,23 @@ if __name__ == "__main__":
 
     geographical_split_df = (
         first_visit_at_first_region.join(
-            first_visit_at_second_region, how="left", on="dw_ek_borger"
+            first_visit_at_second_region,
+            how="left",
+            on="dw_ek_borger",
         )
         .rename(
             {
                 "grouping": "region",
-            }
+            },
         )
         .drop("timestamp")
     ).with_columns(
         pl.when(pl.col("cutoff_timestamp").is_null())
         .then(
-            "2100-01-01 00:00:00"
+            "2100-01-01 00:00:00",
         )  # set cutoff to 2100 if patient only has visits in one region
         .otherwise(pl.col("cutoff_timestamp"))
-        .str.strptime(pl.Datetime)
+        .str.strptime(pl.Datetime),
     )
 
     GEOGRAPHICAL_SPLIT_PATH.parent.mkdir(parents=True, exist_ok=True)
