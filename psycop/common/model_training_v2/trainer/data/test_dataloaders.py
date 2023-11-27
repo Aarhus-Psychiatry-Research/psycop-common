@@ -2,6 +2,7 @@ from pathlib import Path
 
 import polars as pl
 import pytest
+from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.data.data_filters.test_data_filter import TestDataFilter
 
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
@@ -40,6 +41,11 @@ def test_vertical_concatenator(tmpdir: Path):
 
 def test_dataloader_filterer():
     base_dataloader = MinimalTestData()
+    
+    class TestDataFilter:
+        def apply(self, dataloader: BaselineDataLoader):
+            return dataloader.load().filter(pl.col("dw_ek_borger") == 1)
+    
     filter_dataloader = DataLoaderFilterer(dataloader=base_dataloader, filter=TestDataFilter())
 
     assert filter_dataloader.load().collect().shape == (1, 6)
