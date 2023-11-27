@@ -46,27 +46,12 @@ jobs:
             exit 1
           fi
 
-      # - uses: mshick/add-pr-comment@v2
-      #   if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
-      #   id: add_comment
-      #   with:
-      #     message: |
-      #       Looks like some formatting rules failed.
-            
-      #       To debug, you can:
-
-      #       🏎️ Get results locally by running `pre-commit run --all-files`
-      #       🕵️ Examine the results in the `Run pre-commit` section of this workflow `pre-commit` 
-
-      #       We also strongly recommend setting up the `ruff` and `black` extensions to auto-format on save in your chosen editor.
-
-      # - name: Commit formatting
-      #   if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
-      #   run: |
-      #     git config user.name github-actions
-      #     git config user.email github-actions@github.com
-      #     git commit -am "style: linting"
-      #     git push --no-verify
+      - uses: mshick/add-pr-comment@v2
+        if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
+        id: add_comment
+        with:
+          message: |
+            Looks like Snyk failed. Please check the logs for more details.
 
       # - name: Fail workflow
       #   if: ${{ steps.pre_commit.outputs.pre_commit_failed == 1 && github.event_name == 'pull_request' }}
