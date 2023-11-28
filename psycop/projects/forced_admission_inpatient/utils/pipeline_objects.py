@@ -176,7 +176,7 @@ class PaperOutputSettings:
         self.name = name
         self.pos_rate = pos_rate
         artifact_root = (
-            (EVAL_ROOT / f"{model_name}" / name) if artifact_root is None else artifact_root
+            (EVAL_ROOT / f"{model_name}-eval" / name) if artifact_root is None else artifact_root
         )
         self.artifact_path = (
             artifact_root / f"{lookahead_days}_{model_type}_{self.name}"
