@@ -128,7 +128,7 @@ def train_model(
 
 def performance_by_lookahead_table(
     run: ForcedAdmissionInpatientPipelineRun,
-    lookaheads_for_performance_eval: list[float] = [30, 90, 180, 360],
+    lookaheads_for_performance_eval: list[float],
 ):
 
     roc_auc_table = {}
