@@ -31,3 +31,4 @@ timeseriesflattener==1.7.0
 wandb==0.15.4
 wasabi==0.9.1
 xgboost==1.7.3
+ipython==8.9.0
