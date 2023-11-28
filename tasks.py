@@ -524,14 +524,12 @@ def snyk(c: Context):
         "gpu-requirements.txt",
         "test-requirements.txt",
     ]:
-        try:
+        if Path(requirements_file).exists() is False:
+            print("One of the provided files could not be found.")
+        else:
             c.run(
                 f"snyk test --file={requirements_file} --package-manager=pip",
                 pty=NOT_WINDOWS,
-            )
-        except Exception:
-            print(
-                f"{msg_type.FAIL}. One of the provided requirements files could not be found.",
             )
 
 
