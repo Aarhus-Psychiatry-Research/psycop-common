@@ -3,45 +3,71 @@ from typing import Literal
 
 import polars as pl
 
-from psycop.common.data_inspection.visits_by_hospital_units.make_geographical_split import (
-    GEOGRAPHICAL_SPLIT_PATH,
-)
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.data.data_filters.base_data_filter import (
     BaselineDataFilter,
 )
+from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
+    get_regional_split_df,
+)
 
 
-@BaselineRegistry.data_filters.register("geography_data_filter")
-class GeographyDataFilter(BaselineDataFilter):
+@BaselineRegistry.data_filters.register("regional_data_filter")
+class RegionalFilter(BaselineDataFilter):
     def __init__(
         self,
-        regions: Collection[Literal["vest", "midt", "øst"]],
-        id_col_name: str,
-        timestamp_col_name: str,
+        regions_to_keep: Collection[Literal["vest", "midt", "øst"]],
+        id_col_name: str = "dw_ek_borger",
+        timestamp_col_name: str = "timestamp",
+        regional_move_df: pl.LazyFrame | None = None,
+        region_col_name: str = "region",
+        timestamp_cutoff_col_name: str = "first_regional_move_timestamp",
     ):
-        self.splits = regions
+        """Filter data to only include ids from the desired regions. Removes
+        predictions times after the patient has moved to a different region to
+        avoid target leakage. If regional_move_df is None, the standard regional
+        move dataframe is loaded .
+
+        Args:
+            regions_to_keep (Collection[Literal["vest", "midt", "øst"]]): The regions to keep
+            id_col_name (str, optional): The name of the id column. Defaults to "dw_ek_borger".
+            timestamp_col_name (str, optional): The name of the timestamp column. Defaults to "timestamp".
+            regional_move_df (pl.LazyFrame | None, optional): The dataframe containing the regional move data. Defaults to None.
+                If supplied, should contain "dw_ek_borger", a region col and a timestamp column indicating when the patient moved.
+            region_col_name (str, optional): The name of the region column in regional_move_df. Defaults to "region".
+            timestamp_cutoff_col_name (str, optional): The name of the timestamp column in regional_move_df. Defaults to "first_regional_move_timestamp".
+        """
+        self.regions_to_keep = regions_to_keep
         self.id_col_name = id_col_name
         self.timestamp_col_name = timestamp_col_name
+        self.region_col_name = region_col_name
+        self.timestamp_cutoff_col_name = timestamp_cutoff_col_name
+
+        if regional_move_df is None:
+            self.filtered_regional_move_df = self._prepare_regional_move_df(
+                get_regional_split_df()
+            )
+        else:
+            self.filtered_regional_move_df = self._prepare_regional_move_df(
+                regional_move_df
+            )
 
     def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
-        """Filter the dataloader to only include ids from the desired regions
-        and remove prediction times after a move to a different region"""
-        filtered_geography_id_df = self._load_and_prepare_geography_df()
-
+        """Only include data from the first region a patient visits, to avoid
+        target leakage."""
         return (
             dataloader.load()
-            .join(filtered_geography_id_df, on=self.id_col_name, how="inner")
-            .filter(pl.col(self.timestamp_col_name) < pl.col("cutoff_timestamp"))
-            .drop(columns=["region", "second_region", "cutoff_timestamp"])
+            .join(self.filtered_regional_move_df, on=self.id_col_name, how="inner")
+            .filter(
+                pl.col(self.timestamp_col_name) < pl.col(self.timestamp_cutoff_col_name)
+            )
+            .drop(columns=[self.region_col_name, self.timestamp_cutoff_col_name])
         )
 
-    def _load_and_prepare_geography_df(self) -> pl.LazyFrame:
+    def _prepare_regional_move_df(self, df: pl.LazyFrame) -> pl.LazyFrame:
         """Keep only the ids from the desired regions and rename dw_ek_borger
         to match the id_col_name of the incoming dataloader"""
-        return (
-            pl.scan_parquet(GEOGRAPHICAL_SPLIT_PATH)
-            .filter(pl.col("region").is_in(self.splits))
-            .rename({"dw_ek_borger": self.id_col_name})
-        )
+        return df.filter(
+            pl.col(self.region_col_name).is_in(self.regions_to_keep)
+        ).rename({"dw_ek_borger": self.id_col_name})
