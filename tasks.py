@@ -523,7 +523,6 @@ def snyk(c: Context):
         "dev-requirements.txt",
         "gpu-requirements.txt",
         "test-requirements.txt",
-        "test.txt",
     ]:
         if Path(requirements_file).exists() is False:
             raise FileNotFoundError("One of the provided files could not be found.")
