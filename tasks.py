@@ -23,7 +23,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-from invoke import Context, Result, task
+from invoke import Context, Result, UnexpectedExit, task
 
 # Extract supported python versions from the pyproject.toml classifiers key
 SUPPORTED_PYTHON_VERSIONS = [
@@ -507,7 +507,7 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     if create_pr:
         try:
             update_pr(c)
-        except Exception as e:
+        except UnexpectedExit as e:
             print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
 
     lint(c, auto_fix=auto_fix)
