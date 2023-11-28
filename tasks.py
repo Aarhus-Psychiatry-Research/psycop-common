@@ -523,7 +523,7 @@ def snyk(c: Context):
         "dev-requirements.txt",
         "gpu-requirements.txt",
         "test-requirements.txt",
-        "test.txt"
+        "test.txt",
     ]:
         c.run(
             f"snyk test --file={requirements_file} --package-manager=pip",
