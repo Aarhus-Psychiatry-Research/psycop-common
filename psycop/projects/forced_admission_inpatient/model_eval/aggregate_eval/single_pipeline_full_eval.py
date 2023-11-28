@@ -81,7 +81,8 @@ def fa_inpatient_main_manuscript_eval(
     fa_inpatient_create_main_performance_figure(run=pipeline)
     fa_inpatient_create_main_robustness_figure(run=pipeline)
     performance_by_lookahead_table(
-        run=pipeline, lookaheads_for_performance_eval=[30, 90, 180, 360]
+        run=pipeline,
+        lookaheads_for_performance_eval=[30, 90, 180, 360],
     )
 
     return fa_inpatient_create_markdown_artifacts(pipeline=pipeline)
