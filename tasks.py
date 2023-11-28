@@ -530,7 +530,10 @@ def snyk(c: Context):
                 pty=NOT_WINDOWS,
             )
         except Exception:
-            print(f"{msg_type.FAIL}. One of the provided requirements files could not be found.")
+            print(
+                f"{msg_type.FAIL}. One of the provided requirements files could not be found.",
+            )
+
 
 @task
 def qtest(c: Context):
