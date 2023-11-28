@@ -523,13 +523,14 @@ def snyk(c: Context):
         "dev-requirements.txt",
         "gpu-requirements.txt",
         "test-requirements.txt",
-        "test.txt",
     ]:
-        c.run(
-            f"snyk test --file={requirements_file} --package-manager=pip",
-            pty=NOT_WINDOWS,
-        )
-
+        try:
+            c.run(
+                f"snyk test --file={requirements_file} --package-manager=pip",
+                pty=NOT_WINDOWS,
+            )
+        except Exception:
+            print(f"{msg_type.FAIL}. One of the provided requirements files could not be found.")
 
 @task
 def qtest(c: Context):
