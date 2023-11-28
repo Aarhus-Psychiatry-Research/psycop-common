@@ -23,7 +23,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-from invoke import Context, Result, UnexpectedExit, task
+from invoke import Context, Result, task
 
 # Extract supported python versions from the pyproject.toml classifiers key
 SUPPORTED_PYTHON_VERSIONS = [
@@ -507,7 +507,7 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     if create_pr:
         try:
             update_pr(c)
-        except UnexpectedExit as e:
+        except Exception as e:
             print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
 
     lint(c, auto_fix=auto_fix)
@@ -523,14 +523,15 @@ def snyk(c: Context):
         "dev-requirements.txt",
         "gpu-requirements.txt",
         "test-requirements.txt",
+        "test.txt",
     ]:
         if Path(requirements_file).exists() is False:
-            print("One of the provided files could not be found.")
-        else:
-            c.run(
-                f"snyk test --file={requirements_file} --package-manager=pip",
-                pty=NOT_WINDOWS,
-            )
+            raise FileNotFoundError("One of the provided files could not be found.")
+
+        c.run(
+            f"snyk test --file={requirements_file} --package-manager=pip",
+            pty=NOT_WINDOWS,
+        )
 
 
 @task
