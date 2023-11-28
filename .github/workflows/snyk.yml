@@ -10,20 +10,13 @@ on:
 jobs:
   snyk:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.10"]
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
-        id: setup_python
         with:
-          python-version: ${{ matrix.python-version}}
+          python-version: "3.10"
 
       - name: Install dependencies
         shell: bash
@@ -35,7 +28,6 @@ jobs:
         run: npm install -g snyk
 
       - name: Run Snyk to check for vulnerabilities
-        id: snyk
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: false
