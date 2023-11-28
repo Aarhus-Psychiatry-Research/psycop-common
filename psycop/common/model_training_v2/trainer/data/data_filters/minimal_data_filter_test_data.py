@@ -11,3 +11,13 @@ def mock_regional_move_df() -> pl.LazyFrame:
         1,vest,2020-03-01
         2,vest,2100-01-01""",
     ).lazy()
+
+
+@BaselineRegistry.data.register("mock_split_id_series")
+def mock_split_id_series() -> pl.Series:
+    # TODO: make numpy array
+    return pl.Series("dw_ek_borger", [1])
+
+
+if __name__ == "__main__":
+    x = mock_split_id_series()

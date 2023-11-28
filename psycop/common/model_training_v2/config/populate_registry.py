@@ -17,7 +17,7 @@ def populate_baseline_registry() -> None:
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
 
     # Data filters
-    from ..trainer.data.data_filters.geography import GeographyDataFilter
+    from ..trainer.data.data_filters.geography import RegionalFilter
     from ..trainer.data.data_filters.original_ids import OriginalIDDataFilter
 
     # Data
@@ -70,7 +70,8 @@ def populate_baseline_registry() -> None:
     )
     from ..trainer.data.minimal_test_data import MinimalTestData
     from ..trainer.data.data_filters.minimal_data_filter_test_data import (
-        mock_regional_move_df,  # type: ignore
+        mock_regional_move_df,
+        mock_split_id_series,
     )
     from ..trainer.task.binary_classification.binary_classification_task import (
         BinaryClassificationTask,

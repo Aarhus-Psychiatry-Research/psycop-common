@@ -10,8 +10,19 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            // "justMyCode": false,
-            "env": {"PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"},
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
+            },
+        },
+        {
+            "name": "Python Debug Test",
+            "type": "python",
+            "request": "test",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
+            },
         },
     ]
 }
