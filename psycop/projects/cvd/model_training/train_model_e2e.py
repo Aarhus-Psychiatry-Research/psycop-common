@@ -97,5 +97,3 @@ if __name__ == "__main__":
 
     auroc = train_model(cfg=cfg)
     print(auroc)
-
-    pass

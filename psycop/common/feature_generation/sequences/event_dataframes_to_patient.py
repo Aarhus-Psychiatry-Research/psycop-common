@@ -144,11 +144,11 @@ class EventDataFramesToPatientSlices:
         cohort_dict = {}
 
         for patient_dict in patient_dicts:
-            patient_id = list(patient_dict.keys())[0]
-            if patient_id not in cohort_dict.keys():
+            patient_id = list(patient_dict.keys())[0]  # noqa: RUF015
+            if patient_id not in cohort_dict:
                 cohort_dict.update(patient_dict)
             else:
-                patient_events = list(patient_dict.values())[0]
+                patient_events = list(patient_dict.values())[0]  # noqa: RUF015
                 cohort_dict[patient_id] += patient_events
 
         date_of_birth_dict = self._date_of_birth_df_to_dict(

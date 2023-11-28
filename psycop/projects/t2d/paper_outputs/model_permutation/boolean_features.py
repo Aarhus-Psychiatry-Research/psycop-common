@@ -69,5 +69,3 @@ if __name__ == "__main__":
         run=get_best_eval_pipeline(),
         feature_modifier=CreateBooleanDataset(),
     )
-
-    pass

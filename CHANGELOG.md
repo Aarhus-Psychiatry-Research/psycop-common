@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.147.3 (2023-11-27)
+
+### Fix
+
+* Updated based on new pre-commit ([`e58adfb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e58adfbdb82a3605955f2f9b2ccf69a4b2305cef))
+
 ## v0.147.2 (2023-11-27)
 
 ### Fix

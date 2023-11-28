@@ -25,6 +25,10 @@ grow:
 	make create-random-branch
 	make merge-main
 
+lint:
+	@echo "\n––– Linting –––"
+	pre-commit run --all-files
+
 #################
 # Short aliases #
 #################
