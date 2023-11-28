@@ -46,11 +46,11 @@ class RegionalFilter(BaselineDataFilter):
 
         if regional_move_df is None:
             self.filtered_regional_move_df = self._prepare_regional_move_df(
-                get_regional_split_df()
+                get_regional_split_df(),
             )
         else:
             self.filtered_regional_move_df = self._prepare_regional_move_df(
-                regional_move_df
+                regional_move_df,
             )
 
     def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
@@ -60,7 +60,8 @@ class RegionalFilter(BaselineDataFilter):
             dataloader.load()
             .join(self.filtered_regional_move_df, on=self.id_col_name, how="inner")
             .filter(
-                pl.col(self.timestamp_col_name) < pl.col(self.timestamp_cutoff_col_name)
+                pl.col(self.timestamp_col_name)
+                < pl.col(self.timestamp_cutoff_col_name),
             )
             .drop(columns=[self.region_col_name, self.timestamp_cutoff_col_name])
         )
@@ -69,5 +70,5 @@ class RegionalFilter(BaselineDataFilter):
         """Keep only the ids from the desired regions and rename dw_ek_borger
         to match the id_col_name of the incoming dataloader"""
         return df.filter(
-            pl.col(self.region_col_name).is_in(self.regions_to_keep)
+            pl.col(self.region_col_name).is_in(self.regions_to_keep),
         ).rename({"dw_ek_borger": self.id_col_name})

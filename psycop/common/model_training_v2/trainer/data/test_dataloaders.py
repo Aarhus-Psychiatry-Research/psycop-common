@@ -53,4 +53,3 @@ def test_dataloader_filterer():
     )
 
     assert filter_dataloader.load().collect().shape == (1, 6)
-

@@ -6,8 +6,7 @@ for treatment (7570 cases) and can be used to drop visits after this date. Is se
 to 2100-01-01 if the patient has only received treatment in one region.
 """
 
-from pathlib import Path
-from typing import Collection
+from collections.abc import Collection
 
 import polars as pl
 
@@ -25,7 +24,7 @@ def load_shak_to_location_mapping() -> pl.DataFrame:
             PSYCOP_PKG_ROOT
             / "data_inspection"
             / "visits_by_hospital_units"
-            / "shak_mapping.csv"
+            / "shak_mapping.csv",
         )
         .with_columns(
             pl.col("shak_6").cast(str),
@@ -56,7 +55,7 @@ def get_first_visit_at_second_region_by_patient(df: pl.DataFrame) -> pl.DataFram
         df.groupby("dw_ek_borger")
         .apply(lambda group: group[1])
         .rename(
-            {"timestamp": "first_regional_move_timestamp", "region": "second_region"}
+            {"timestamp": "first_regional_move_timestamp", "region": "second_region"},
         )
     )
 
@@ -116,25 +115,28 @@ def get_regional_split_df() -> pl.LazyFrame:
 
     # find timestamp of first visit at each different region
     first_visit_at_each_region = get_first_visit_at_each_region_by_patient(
-        df=sorted_all_visits_df
+        df=sorted_all_visits_df,
     )
 
     # get the first visit
     first_visit_at_first_region = get_first_visit_by_patient(
-        df=first_visit_at_each_region
+        df=first_visit_at_each_region,
     )
 
     # get the first visit at a different region
     first_visit_at_second_region = get_first_visit_at_second_region_by_patient(
-        df=first_visit_at_each_region
+        df=first_visit_at_each_region,
     )
 
     # add the migration date for each patient
     geographical_split_df = add_migration_date_by_patient(
-        first_visit_at_first_region, first_visit_at_second_region
+        first_visit_at_first_region,
+        first_visit_at_second_region,
     )
     return geographical_split_df.select(
-        "dw_ek_borger", "region", "first_regional_move_timestamp"
+        "dw_ek_borger",
+        "region",
+        "first_regional_move_timestamp",
     ).lazy()
 
 
