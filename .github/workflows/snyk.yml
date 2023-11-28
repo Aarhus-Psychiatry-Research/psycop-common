@@ -48,23 +48,3 @@ jobs:
             echo "snyk_failed=1" >> $GITHUB_OUTPUT
             exit 1
           fi
-
-      - uses: mshick/add-pr-comment@v2
-        if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
-        id: fail_comment
-        with:
-          message-id: ${{ steps.find_comment.outputs.comment-id }}
-          message: |
-            Looks like Snyk detected vulnerabilities 🐕 Please check the logs for more details.
-            
-        # - uses: mshick/add-pr-comment@v2
-        # if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
-        # id: fail_comment
-        # with:
-        #   message-id: ${{ steps.find_comment.outputs.comment-id }}
-        #   message: |
-        #     Looks like Snyk failed. 
-
-      - name: Fail workflow
-        if: ${{ steps.snyk.outputs.snyk_failed == 1 && github.event_name == 'pull_request' }}
-        run: exit 1
