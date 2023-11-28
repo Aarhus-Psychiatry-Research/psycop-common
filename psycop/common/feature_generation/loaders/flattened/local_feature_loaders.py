@@ -47,7 +47,7 @@ def load_split(
     Returns:
         pd.DataFrame: The loaded dataframe
     """
-    file_path = list(feature_set_dir.glob(f"*{split}*{file_suffix}"))[0]
+    file_path = list(feature_set_dir.glob(f"*{split}*{file_suffix}"))[0]  # noqa: RUF015
 
     return load_dataset_from_file(file_path=file_path, nrows=nrows)
 

@@ -10,13 +10,13 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_m
 )
 
 if TYPE_CHECKING:
-    from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
+    from psycop.common.model_training_v2.trainer.task.base_metric import (
         PredProbaSeries,
     )
 
 
 @pytest.mark.parametrize(
-    ("y_true", "y_pred", "expected"),
+    ("y", "y_hat_prob", "expected"),
     [
         (
             pd.Series([1, 1, 0, 0]),
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
         ),
     ],
 )
-def test_binary_auroc(y_true: pd.Series[int], y_pred: PredProbaSeries, expected: float):
+def test_binary_auroc(y: pd.Series[int], y_hat_prob: PredProbaSeries, expected: float):
     auroc = BinaryAUROC()
-    calculated_metric = auroc.calculate(y_true=y_true, y_pred=y_pred)
+    calculated_metric = auroc.calculate(y=y, y_hat_prob=y_hat_prob)
     assert calculated_metric.value == expected

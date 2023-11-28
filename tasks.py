@@ -35,6 +35,18 @@ SUPPORTED_PYTHON_VERSIONS = [
 NOT_WINDOWS = platform.system() != "Windows"
 
 
+def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
+    files_modified_since_main = c.run(
+        "git diff --name-only origin/main",
+        hide=True,
+    ).stdout.splitlines()
+
+    if any(file.endswith(file_suffix) for file in files_modified_since_main):
+        return True
+
+    return False
+
+
 def on_ovartaci() -> bool:
     import platform
 
@@ -205,11 +217,29 @@ def push_to_branch(c: Context):
         c.run("git push")
 
 
+@task
 def create_pr(c: Context):
-    c.run(
-        "gh pr create --base main --fill --web",
-        pty=NOT_WINDOWS,
-    )
+    try:
+        pr_result: Result = c.run(
+            "gh pr view --json url -q '.url'",
+            pty=False,
+            hide=True,
+        )
+        print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
+    except Exception:
+        branch_title = c.run(
+            "git rev-parse --abbrev-ref HEAD",
+            hide=True,
+        ).stdout.strip()
+        preprocessed_pr_title = branch_title.split("-")[1:]
+        preprocessed_pr_title[0] = f"{preprocessed_pr_title[0]}:"
+        pr_title = " ".join(preprocessed_pr_title)
+
+        c.run(
+            f'gh pr create --title "{pr_title}" --body "Automatically created PR from invoke" -w',
+            pty=NOT_WINDOWS,
+        )
+        print(f"{msg_type.GOOD} PR created")
 
 
 def update_pr(c: Context):
@@ -270,6 +300,15 @@ def pre_commit(c: Context, auto_fix: bool):
         if result.return_code != 0:
             print(f"{msg_type.FAIL} Pre-commit checks failed")
             exit(1)
+
+
+@task
+def qtypes(c: Context):
+    """Run static type checks."""
+    if filetype_modified_since_head(c, ".py"):
+        static_type_checks(c)
+    else:
+        print("🟢 No python files modified since main, skipping static type checks")
 
 
 @task
@@ -414,9 +453,8 @@ def test_for_venv(c: Context):
 
 
 @task
-def test_for_rej(c: Context):
+def test_for_rej(c: Context):  # noqa
     # Get all paths in current directory or subdirectories that end in .rej
-    c = c
     search_dirs = [
         d
         for d in Path().iterdir()
@@ -458,6 +496,7 @@ def lint(c: Context, auto_fix: bool = False):
     test_for_venv(c)
     test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
+    print("✅✅✅ Succesful linting! ✅✅✅")
 
 
 @task
@@ -477,21 +516,39 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
 
 
 @task
+def snyk(c: Context):
+    for requirements_file in [
+        "requirements.txt",
+        "dev-requirements.txt",
+        "gpu-requirements.txt",
+        "test-requirements.txt",
+    ]:
+        c.run(
+            f"snyk test --file={requirements_file} --package-manager=pip",
+            pty=NOT_WINDOWS,
+        )
+
+
+@task
 def qtest(c: Context):
-    test(
-        c,
-        pytest_args=[
-            "psycop",
-            "-rfE",
-            "--failed-first",
-            "-p no:cov",
-            "-p no:xdist",
-            "--disable-warnings",
-            "-q",
-            "--durations=5",
-            "--testmon",
-        ],
-    )
+    if any(filetype_modified_since_head(c, suffix) for suffix in (".py", ".cfg")):
+        test(
+            c,
+            pytest_args=[
+                "psycop",
+                "-rfE",
+                "--failed-first",
+                "-p no:cov",
+                "-p no:xdist",
+                "--disable-warnings",
+                "-q",
+                "--durations=5",
+                "--testmon",
+            ],
+        )
+        print("✅✅✅ Tests ran succesfully! ✅✅✅")
+    else:
+        print("🟢 No python files modified since main, skipping tests")
 
 
 # TODO: #390 Make more durable testmon implementation
@@ -510,7 +567,7 @@ def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     lint(c, auto_fix=auto_fix)
     push_to_branch(c)
     qtest(c)
-    static_type_checks(c)
+    qtypes(c)
 
 
 @task

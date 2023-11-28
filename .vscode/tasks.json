@@ -6,17 +6,32 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "gh pr create -w",
+            "command": "make push && inv create-pr",
             "group": "test",
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Static type check"
+                "Static type check",
+                "Merge main"
             ],
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
             }
+        },
+        {
+            "label": "Merge main",
+            "type": "shell",
+            "command": "make merge-main && make push",
+            "presentation": {
+                "reveal": "always",
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
+            },
+            "problemMatcher": []
         },
         {
             "label": "Lint",
@@ -24,27 +39,41 @@
             "command": "inv lint",
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
             },
             "problemMatcher": []
         },
         {
             "label": "Test",
             "type": "shell",
-            "command": "inv test",
+            "command": "inv qtest",
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
             },
+            "dependsOn": [
+                "Lint",
+                "Merge main"
+            ]
         },
         {
             "label": "Static type check",
             "type": "shell",
-            "command": "inv static-type-checks",
+            "command": "inv qtypes",
             "presentation": {
                 "reveal": "always",
-                "group": "pr"
-            }
+                "group": "pr",
+                "clear": true,
+                "showReuseMessage": false,
+            },
+            "dependsOn": [
+                "Lint",
+                "Merge main"
+            ]
         }
     ]
 }

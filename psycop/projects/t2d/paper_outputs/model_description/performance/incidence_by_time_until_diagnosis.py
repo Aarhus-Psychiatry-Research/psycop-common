@@ -35,7 +35,7 @@ def t2d_first_pred_to_event(run: T2DPipelineRun) -> pn.ggplot:
         + pn.geom_histogram(binwidth=1, fill="orange")
         + pn.xlab("Years from first positive prediction\n to event")
         + pn.scale_x_reverse(
-            breaks=range(0, int(plot_df["years_from_pred_to_event"].max() + 1)),
+            breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)),
         )
         + pn.ylab("n")
         + pn.geom_vline(xintercept=median_years, linetype="dashed", size=1)

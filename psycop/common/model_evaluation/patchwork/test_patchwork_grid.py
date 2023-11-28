@@ -31,5 +31,3 @@ def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
     )
 
     patchwork.savefig(TEST_PLOT_PATH / "patchwork.png")
-
-    pass
