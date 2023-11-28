@@ -59,3 +59,22 @@ def populate_baseline_registry() -> None:
 
     # Tasks
     from ..trainer.task.pipeline_constructor import pipeline_constructor
+
+    # Suggesters
+    from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
+
+    # Data
+    from ..trainer.data.dataloaders import (
+        ParquetVerticalConcatenator,
+        FilteredDataLoader,
+    )
+    from ..trainer.data.minimal_test_data import MinimalTestData
+    from ..trainer.data.data_filters.minimal_data_filter_test_data import (
+        mock_regional_move_df,  # type: ignore
+    )
+    from ..trainer.task.binary_classification.binary_classification_task import (
+        BinaryClassificationTask,
+    )
+
+    # Data filters
+    from ..trainer.data.data_filters.geography import RegionalFilter

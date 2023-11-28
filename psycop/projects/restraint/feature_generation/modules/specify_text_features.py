@@ -37,7 +37,6 @@ class TextFeatureSpecifier:
         embedded_text_filename: str,
     ) -> list[PredictorSpec]:
         log.info("-------- Generating tf-idf specs --------")
-        embedded_text_filename = embedded_text_filename
 
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",

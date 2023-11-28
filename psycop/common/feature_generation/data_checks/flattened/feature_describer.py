@@ -96,9 +96,7 @@ def generate_temporal_feature_description(
     feature_name: str | None = None,
 ) -> dict[str, Any]:
     """Generate a row with feature description for a temporal predictor."""
-    if feature_name is not None:
-        feature_name = feature_name
-    else:
+    if feature_name is None:
         feature_name = predictor_spec.feature_base_name
 
     d = {

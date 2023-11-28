@@ -17,8 +17,6 @@ def test_get_percentage_of_events_captured_from_eval_dataset(
         positive_rate=0.02,
     )
 
-    pass
-
 
 def test_get_percentage_of_events_captured():
     input_df = str_to_df(
@@ -38,5 +36,3 @@ def test_get_percentage_of_events_captured():
 
 def test_get_true_positives(synth_eval_dataset: EvalDataset):
     get_true_positives(eval_dataset=synth_eval_dataset, positive_rate=0.02)
-
-    pass

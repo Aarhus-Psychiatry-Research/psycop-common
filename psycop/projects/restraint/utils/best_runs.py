@@ -27,7 +27,7 @@ class RunGroup:
 
     @property
     def flattened_ds_dir(self) -> Path:
-        first_run = list(self.group_dir.glob(r"*"))[0]
+        first_run = list(self.group_dir.glob(r"*"))[0]  # noqa: RUF015
 
         config_path = first_run / "cfg.json"
 
