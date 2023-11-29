@@ -18,9 +18,6 @@ def populate_baseline_registry() -> None:
         ColumnExistsValidator,
         ColumnPrefixExpectation,
     )
-    from ..trainer.data.dataloaders import (
-        ParquetVerticalConcatenator,
-    )
     from ..trainer.preprocessing.steps.column_filters import (
         TemporalColumnFilter,
         RegexColumnBlacklist,
@@ -55,7 +52,17 @@ def populate_baseline_registry() -> None:
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
 
     # Data
+    from ..trainer.data.dataloaders import (
+        ParquetVerticalConcatenator,
+        FilteredDataLoader,
+    )
     from ..trainer.data.minimal_test_data import MinimalTestData
+    from ..trainer.data.data_filters.minimal_data_filter_test_data import (
+        mock_regional_move_df,  # type: ignore
+    )
     from ..trainer.task.binary_classification.binary_classification_task import (
         BinaryClassificationTask,
     )
+
+    # Data filters
+    from ..trainer.data.data_filters.geography import RegionalFilter
