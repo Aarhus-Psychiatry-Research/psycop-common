@@ -30,7 +30,7 @@ class RegionalFilter(BaselineDataFilter):
         move dataframe is loaded .
 
         Args:
-            regions_to_keep (Collection[Literal["vest", "midt", "øst"]]): The regions to keep
+            regions_to_keep: The regions to keep
             id_col_name (str, optional): The name of the id column. Defaults to "dw_ek_borger".
             timestamp_col_name (str, optional): The name of the timestamp column. Defaults to "timestamp".
             regional_move_df (pl.LazyFrame | None, optional): The dataframe containing the regional move data. Defaults to None.
