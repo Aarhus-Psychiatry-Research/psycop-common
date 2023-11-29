@@ -8,15 +8,16 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 
 
-@BaselineRegistry.data_filters.register("original_id_data_filter")
-class OriginalIDDataFilter:
+@BaselineRegistry.data_filters.register("id_data_filter")
+class IDDataFilter:
     def __init__(
         self,
         splits_to_keep: Sequence[Literal["train", "val", "test"]] | None,
         split_ids: Sequence[int] | pl.Series | None = None,
         id_col_name: str = "dw_ek_borger",
     ):
-        """Filter the data to only include ids from the original datasplit.
+        """Filter the data to only include ids from the original datasplit or a
+        custom data split.
         If `split_series` is None, will load the ids from the original datasplit
         based on the `splits_to_keep` argument. If `split_ids` is not None,
         provide a sequence with the ids to keep."""

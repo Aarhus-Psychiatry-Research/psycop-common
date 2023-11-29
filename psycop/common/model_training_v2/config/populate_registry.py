@@ -18,7 +18,7 @@ def populate_baseline_registry() -> None:
 
     # Data filters
     from ..trainer.data.data_filters.geography import RegionalFilter
-    from ..trainer.data.data_filters.original_ids import OriginalIDDataFilter
+    from ..trainer.data.data_filters.original_ids import IDDataFilter
 
     # Data
     from ..trainer.data.dataloaders import (
