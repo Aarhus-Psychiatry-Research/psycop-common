@@ -219,6 +219,9 @@ def push_to_branch(c: Context):
 
 @task
 def create_pr(c: Context):
+    """
+    Created a PR, does not run tests or similar
+    """
     try:
         pr_result: Result = c.run(
             "gh pr view --json url -q '.url'",
@@ -451,50 +454,10 @@ def test_for_venv(c: Context):
     else:
         print("Running on Windows, not checking for virtual environment.")
 
-
-@task
-def test_for_rej(c: Context):  # noqa
-    # Get all paths in current directory or subdirectories that end in .rej
-    search_dirs = [
-        d
-        for d in Path().iterdir()
-        if d.is_dir()
-        and not (
-            "venv" in d.name
-            or ".git" in d.name
-            or "build" in d.name
-            or ".tox" in d.name
-            or "cache" in d.name
-            or "vscode" in d.name
-            or "wandb" in d.name
-        )
-    ]
-    print(
-        f"Looking for .rej files in the current dir and {[d.name for d in search_dirs]}",
-    )
-
-    # Get top_level rej files
-    rej_files = list(Path().glob("*.rej"))
-
-    for d in search_dirs:
-        rej_files_in_dir = list(d.rglob("*.rej"))
-        rej_files += rej_files_in_dir
-
-    if len(rej_files) > 0:
-        print(f"\n{msg_type.FAIL} Found .rej files leftover from cruft update.\n")
-        for file in rej_files:
-            print(f"    /{file}")
-        print("\nResolve the conflicts and try again. \n")
-        exit(1)
-    else:
-        print(f"{msg_type.GOOD} No .rej files found.")
-
-
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project."""
     test_for_venv(c)
-    test_for_rej(c)
     pre_commit(c=c, auto_fix=auto_fix)
     print("✅✅✅ Succesful linting! ✅✅✅")
 
@@ -534,6 +497,8 @@ def install_requirements(c: Context):
 
 @task
 def qtest(c: Context):
+    """Quick tests, runs a subset of the tests"""
+    # TODO: #390 Make more durable testmon implementation
     if any(filetype_modified_since_head(c, suffix) for suffix in (".py", ".cfg")):
         test(
             c,
@@ -554,8 +519,6 @@ def qtest(c: Context):
         print("🟢 No python files modified since main, skipping tests")
 
 
-# TODO: #390 Make more durable testmon implementation
-
 
 @task
 def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
@@ -571,26 +534,3 @@ def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     push_to_branch(c)
     qtest(c)
     qtypes(c)
-
-
-@task
-def docs(c: Context, view: bool = False, view_only: bool = False):
-    """
-    Build and view docs. If neither build or view are specified, both are run.
-    """
-    if not view_only:
-        echo_header(f"{msg_type.DOING}: Building docs")
-        c.run("tox -e docs")
-
-    if view or view_only:
-        echo_header(f"{msg_type.EXAMINE}: Opening docs in browser")
-        # check the OS and open the docs in the browser
-        if platform.system() == "Windows":
-            c.run("start docs/_build/html/index.html")
-        else:
-            c.run("open docs/_build/html/index.html")
-
-
-@task
-def update_deps(c: Context):
-    c.run("pip install --upgrade -r requirements.txt")
