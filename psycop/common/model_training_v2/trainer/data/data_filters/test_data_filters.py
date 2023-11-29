@@ -43,12 +43,12 @@ def test_regional_filter():
 
 
 def test_id_filter():
-    split_series = pl.Series("dw_ek_borger", [1])
+    split_sequence = pl.Series("dw_ek_borger", [1])
     dataloader = MockDataLoaderForFilters()
     id_filter = OriginalIDDataFilter(
         splits_to_keep=None,
-        split_series=split_series,
+        split_ids=split_sequence,
     )
     filtered_df = id_filter.apply(dataloader).collect()
- 
+
     assert filtered_df.shape == (3, 2)

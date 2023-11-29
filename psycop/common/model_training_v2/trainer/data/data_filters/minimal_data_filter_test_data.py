@@ -1,3 +1,6 @@
+from typing import Any
+
+import numpy as np
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -13,11 +16,7 @@ def mock_regional_move_df() -> pl.LazyFrame:
     ).lazy()
 
 
-@BaselineRegistry.data.register("mock_split_id_series")
-def mock_split_id_series() -> pl.Series:
-    # TODO: make numpy array
-    return pl.Series("dw_ek_borger", [1])
-
-
-if __name__ == "__main__":
-    x = mock_split_id_series()
+@BaselineRegistry.data.register("mock_split_id_sequence")
+def mock_split_id_sequence() -> list[int]:
+    # converting to list as confection cannot resolve polars series
+    return pl.Series("dw_ek_borger", [1]).to_list()

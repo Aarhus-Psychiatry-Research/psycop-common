@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from typing import Literal
+from typing import Literal, Sequence
 
 import polars as pl
 
@@ -13,41 +13,39 @@ class OriginalIDDataFilter:
     def __init__(
         self,
         splits_to_keep: Collection[Literal["train", "val", "test"]] | None,
-        split_series: pl.Series | None = None,
+        split_ids: Sequence[int] | pl.Series | None = None,
         id_col_name: str = "dw_ek_borger",
     ):
         """Filter the data to only include ids from the original datasplit.
         If `split_series` is None, will load the ids from the original datasplit
-        based on the `splits_to_keep` argument. If `split_df` is not None,
-        provide a pl.Series with the ids to keep."""
-        if splits_to_keep is not None and split_series is None:
+        based on the `splits_to_keep` argument. If `split_ids` is not None,
+        provide a sequence with the ids to keep."""
+        if splits_to_keep is not None and split_ids is None:
             raise ValueError(
                 """splits_to_keep must be supplied when using the original
                 id split.""",
             )
-        if splits_to_keep is not None and split_series is not None:
+        if splits_to_keep is not None and split_ids is not None:
             raise ValueError(
-                """splits_to_keep and split_series cannot both be supplied.
+                """splits_to_keep and split_ids cannot both be supplied.
                 splits_to_keep is used to load the ids from the original
-                datasplit, while split_series is used to filter the data
+                datasplit, while split_ids is used to filter the data
                 based on a custom id split.""",
             )
 
         self.splits_to_keep = splits_to_keep
         self.id_col_name = id_col_name
-        if split_series is None:
-            self.split_series = self._load_and_prepare_original_ids_df()
+        if split_ids is None:
+            self.split_ids = self._load_and_filter_original_ids_df_by_split()
         else:
-            self.split_series = split_series
+            self.split_ids = split_ids
 
     def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
         """Filter the dataloader to only include ids from the desired splits
         from the original datasplit"""
-        return dataloader.load().filter(
-            pl.col(self.id_col_name).is_in(self.split_series)
-        )
+        return dataloader.load().filter(pl.col(self.id_col_name).is_in(self.split_ids))
 
-    def _load_and_prepare_original_ids_df(self) -> pl.Series:
+    def _load_and_filter_original_ids_df_by_split(self) -> pl.Series:
         split_names: list[SplitName] = []
 
         for split_name in self.splits_to_keep:  # type: ignore already guarded in init

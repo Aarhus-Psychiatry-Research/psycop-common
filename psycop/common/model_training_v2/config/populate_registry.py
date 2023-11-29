@@ -71,7 +71,7 @@ def populate_baseline_registry() -> None:
     from ..trainer.data.minimal_test_data import MinimalTestData
     from ..trainer.data.data_filters.minimal_data_filter_test_data import (
         mock_regional_move_df,
-        mock_split_id_series,
+        mock_split_id_sequence,
     )
     from ..trainer.task.binary_classification.binary_classification_task import (
         BinaryClassificationTask,
