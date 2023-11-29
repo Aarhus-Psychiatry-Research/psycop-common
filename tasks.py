@@ -516,17 +516,20 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
 
 
 @task
-def snyk(c: Context):
-    for requirements_file in [
-        "requirements.txt",
-        "dev-requirements.txt",
-        "gpu-requirements.txt",
-        "test-requirements.txt",
-    ]:
+def vulnerability_scan(c: Context):
+    requirements_files = Path().parent.glob("*requirements.txt")
+    for requirements_file in requirements_files:
         c.run(
             f"snyk test --file={requirements_file} --package-manager=pip",
             pty=NOT_WINDOWS,
         )
+
+
+@task
+def install_requirements(c: Context):
+    requirements_files = Path().parent.glob("*requirements.txt")
+    requirements_string = " -r ".join([str(file) for file in requirements_files])
+    c.run(f"pip install -r {requirements_string}")
 
 
 @task

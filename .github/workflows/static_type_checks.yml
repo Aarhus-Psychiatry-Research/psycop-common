@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           pip install invoke
-          pip install -r requirements.txt -r test-requirements.txt -r dev-requirements.txt -r gpu-requirements.txt
+          inv install-requirements
 
       - name: Run static type checker
         id: pyright
