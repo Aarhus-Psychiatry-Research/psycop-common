@@ -4,7 +4,6 @@ from pathlib import Path
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 
 def load_shak_to_location_mapping() -> pl.DataFrame:

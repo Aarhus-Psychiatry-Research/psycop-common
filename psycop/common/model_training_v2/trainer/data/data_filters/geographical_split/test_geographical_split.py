@@ -107,7 +107,9 @@ def test_get_first_visit_at_second_region_by_patient(mock_geography_data: pl.Dat
     assert_frame_equal(
         first_visit_at_second_region_df,
         expected.select(
-            "dw_ek_borger", "second_region", "first_regional_move_timestamp"
+            "dw_ek_borger",
+            "second_region",
+            "first_regional_move_timestamp",
         ),
     )
 
