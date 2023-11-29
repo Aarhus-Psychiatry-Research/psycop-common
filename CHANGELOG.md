@@ -2,6 +2,30 @@
 
 <!--next-version-placeholder-->
 
+## v0.148.0 (2023-11-29)
+
+### Feature
+
+* Add snyk workflow ([#493](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/493)) ([`72381b3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/72381b35cfd525f35a3faad7802ef57ecffe0530))
+* Add snyk workflow ([`1114d13`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1114d13916abb09ba608d7ff6c4865b4561d66e3))
+* Load geographical split ([`45917e2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/45917e23718cb867c25d82e8ddcf252010e56d89))
+* Make geographical split ids file ([`f206bce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f206bce87d5b970449bf22f72541216f63083cd5))
+* Add dataloaderfilterer ([`3e2768c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3e2768c4ded0aa420629d91e869ea2391e583d91))
+*  update of full eval pipeline ([`a408542`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a40854296eed30927c2b1a4c1e4dd7929793fc47))
+* Add full eval pipeline ([`08fa21c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/08fa21c740bd31c3503cc484da339ef18115eed9))
+* Add auroc by time to event ([`2026ee3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2026ee3806f0e7e9b605c223ff1bc14da9d48bb3))
+* Main performance figure ([`d0ba595`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d0ba595cbf9ad88473cee4b852d6615f6ed0ad04))
+* Finish adaptning robustness ([`2199f01`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2199f016c589e1869552b33aa3568eeae463d867))
+* Adapt robustness eval ([`7f9fcff`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7f9fcff15e180046189467ce9b3a0ac16bf67ae1))
+
+### Fix
+
+* Arg updates ([`066471b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/066471bec6463d88acf7e84e4a38412ca138607b))
+* Update run arg type ([`460b851`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/460b8513ed6ecf232b205e28bb559f3aa7d40b9e))
+* Run full eval pipeline ([`5beefdf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5beefdf580088642360ff61c2bbdb6a53a0418d4))
+* Naming and etc. ([`88be891`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/88be891aed0c3535cc173d20706d38fba75ade06))
+* Robustness figs ([`2290be0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2290be0a9296c64e3e8e9e92993fcabfba9beaf7))
+
 ## v0.147.3 (2023-11-27)
 
 ### Fix
