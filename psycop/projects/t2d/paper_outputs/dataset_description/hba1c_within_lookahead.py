@@ -225,7 +225,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             + pn.labs(color="")
         )
 
-        plot.save(Path(".") / "test.png")
+        plot.save(Path() / "test.png")
 
         return plot
 

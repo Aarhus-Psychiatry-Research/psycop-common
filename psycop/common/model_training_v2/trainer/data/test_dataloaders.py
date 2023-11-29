@@ -43,13 +43,13 @@ def test_vertical_concatenator(tmpdir: Path):
 def test_dataloader_filterer():
     base_dataloader = MinimalTestData()
 
-    class TestDataFilter:
+    class MockDataFilter:
         def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
             return dataloader.load().filter(pl.col("dw_ek_borger") == 1)
 
     filter_dataloader = FilteredDataLoader(
         dataloader=base_dataloader,
-        data_filter=TestDataFilter(),
+        data_filter=MockDataFilter(),
     )
 
     assert filter_dataloader.load().collect().shape == (1, 6)

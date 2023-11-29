@@ -18,5 +18,3 @@ def get_first_type_1_diabetes_diagnosis() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = get_first_type_1_diabetes_diagnosis()
-
-    pass

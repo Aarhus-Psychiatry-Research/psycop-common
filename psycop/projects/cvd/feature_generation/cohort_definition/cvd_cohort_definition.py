@@ -55,5 +55,3 @@ class CVDCohortDefiner(CohortDefiner):
 
 if __name__ == "__main__":
     outcome_timestamps = CVDCohortDefiner.get_outcome_timestamps()
-
-    pass

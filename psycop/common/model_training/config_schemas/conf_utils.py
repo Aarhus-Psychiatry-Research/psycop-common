@@ -47,7 +47,7 @@ def load_cfg_as_omegaconf(
 
         # Override the type so we can get autocomplete and renaming
         # correctly working
-        cfg: FullConfigSchema = cfg  # type: ignore
+        cfg: FullConfigSchema = cfg  # type: ignore # noqa
 
         gpu = cfg.project.gpu
 

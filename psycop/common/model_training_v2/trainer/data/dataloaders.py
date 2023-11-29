@@ -53,7 +53,7 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
         )
 
 
-@BaselineRegistry.data.register("dataloader_filterer")
+@BaselineRegistry.data.register("filtered_dataloader")
 class FilteredDataLoader(BaselineDataLoader):
     """Filter the rows from dataloader using a filter, such as by geographical region,
     id split, or other filters."""
