@@ -143,6 +143,13 @@ class PipelineOutputs:
         return load_file_from_pkl(self.dir_path / "pipe.pkl")
 
 
+@dataclass
+class ForcedAdmissionInpatientArtifactNames:
+    main_performance_figure: str = "fa_inpatient_main_performance_figure.png"
+    main_robustness_figure: str = "fa_inpatient_main_robustness.png"
+    performance_by_ppr: str = "fa_inpatient_performance_by_ppr.xlsx"
+
+
 class PaperOutputPaths:
     def __init__(self, artifact_path: Path, create_output_paths_on_init: bool = True):
         self.artifact = artifact_path
@@ -169,11 +176,14 @@ class PaperOutputSettings:
         self.name = name
         self.pos_rate = pos_rate
         artifact_root = (
-            (EVAL_ROOT / model_name / name) if artifact_root is None else artifact_root
+            (EVAL_ROOT / f"{model_name}-eval" / name)
+            if artifact_root is None
+            else artifact_root
         )
         self.artifact_path = (
             artifact_root / f"{lookahead_days}_{model_type}_{self.name}"
         )
+        self.artifact_names = ForcedAdmissionInpatientArtifactNames()
         self.paths = PaperOutputPaths(
             self.artifact_path,
             create_output_paths_on_init=create_output_paths_on_init,
