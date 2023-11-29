@@ -1,17 +1,9 @@
-"""Script to get the ids for a split based on geography. Saves a .parquet file
-with columns: dw_ek_borger, region, second_region, cutoff_timestamp.
-
-cutoff_timestamp indicates the first time a patient moves to a different region
-for treatment (7570 cases) and can be used to drop visits after this date. Is set
-to 2100-01-01 if the patient has only received treatment in one region.
-"""
-
 from collections.abc import Collection
+from pathlib import Path
 
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits
-from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 
 
 def load_shak_to_location_mapping() -> pl.DataFrame:
@@ -21,10 +13,7 @@ def load_shak_to_location_mapping() -> pl.DataFrame:
     # shak mapping from https://sor-filer.sundhedsdata.dk/sor_produktion/data/shak/shakcomplete/shakcomplete.txt
     return (
         pl.read_csv(
-            PSYCOP_PKG_ROOT
-            / "data_inspection"
-            / "visits_by_hospital_units"
-            / "shak_mapping.csv",
+            Path(__file__).parent / "shak_mapping.csv",
         )
         .with_columns(
             pl.col("shak_6").cast(str),
@@ -33,7 +22,7 @@ def load_shak_to_location_mapping() -> pl.DataFrame:
     )
 
 
-def unused_shak_codes() -> list[str]:
+def non_adult_psychiatry_shak() -> list[str]:
     """Dropping Børne og ungdomspsykiatrisk afdeling/center as we don't use
     data from child psychiatry. Dropping central visitation as it is just a
     place of administration"""
@@ -110,7 +99,7 @@ def get_regional_split_df() -> pl.LazyFrame:
     sorted_all_visits_df = add_shak_to_region_mapping(
         visits=visits,
         shak_to_location_df=shak_to_location_df,
-        shak_codes_to_drop=unused_shak_codes(),
+        shak_codes_to_drop=non_adult_psychiatry_shak(),
     ).sort(["dw_ek_borger", "timestamp"])
 
     # find timestamp of first visit at each different region

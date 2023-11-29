@@ -34,10 +34,10 @@ def mock_geography_data() -> pl.DataFrame:
 def test_add_shak_to_region_mapping():
     visits_df = str_to_pl_df(
         """dw_ek_borger,timestamp,shak_location
-        1, 2020-01-01, 660010
-        2, 2020-01-01, 660061
-        3, 2020-01-01, 660005
-        4, 2020-01-01, 660011""",
+        1, 2020-01-01, 660010 # øst
+        2, 2020-01-01, 660061 # vest
+        3, 2020-01-01, 660005 # midt
+        4, 2020-01-01, 660011 # dropped""",
     ).with_columns(pl.col("shak_location").cast(str))
 
     shak_to_location_mapping_df = load_shak_to_location_mapping()
@@ -66,13 +66,16 @@ def test_get_first_visit_at_each_region_by_patient(mock_geography_data: pl.DataF
         2,2020-01-01,vest
         3,2020-01-01,øst
         4,2020-01-01,vest""",
-    ).select("dw_ek_borger", "region", "timestamp")
+    )
 
     first_visit_at_each_region_df = get_first_visit_at_each_region_by_patient(
         df=mock_geography_data,
     )
-
-    assert_frame_equal(first_visit_at_each_region_df, expected)
+    # select to reorder colunns to match output
+    assert_frame_equal(
+        first_visit_at_each_region_df,
+        expected.select("dw_ek_borger", "region", "timestamp"),
+    )
 
 
 def test_get_first_visit_by_patient(mock_geography_data: pl.DataFrame):
@@ -92,7 +95,7 @@ def test_get_first_visit_at_second_region_by_patient(mock_geography_data: pl.Dat
     expected = str_to_pl_df(
         """dw_ek_borger,first_regional_move_timestamp,second_region
         1,2020-03-01,midt""",
-    ).select("dw_ek_borger", "second_region", "first_regional_move_timestamp")
+    )
 
     first_visit_at_each_region_df = get_first_visit_at_each_region_by_patient(
         df=mock_geography_data,
@@ -100,8 +103,15 @@ def test_get_first_visit_at_second_region_by_patient(mock_geography_data: pl.Dat
     first_visit_at_second_region_df = get_first_visit_at_second_region_by_patient(
         df=first_visit_at_each_region_df,
     )
-
-    assert_frame_equal(first_visit_at_second_region_df, expected)
+    # select to reorder colunns to match output
+    assert_frame_equal(
+        first_visit_at_second_region_df,
+        expected.select(
+            "dw_ek_borger",
+            "second_region",
+            "first_regional_move_timestamp",
+        ),
+    )
 
 
 def test_add_migration_date_for_each_patient():
