@@ -518,11 +518,8 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
 
 @task
 def vulnerability_scan(c: Context):
-    requirements_files = Path().parent.rglob("*requirements.txt")
-    top_level_files = [file for file in requirements_files if file.parent == Path()]
-    for requirements_file in top_level_files:
-        if requirements_file.exists() is False:
-            raise FileNotFoundError(f"{requirements_file} does not exist.")
+    requirements_files = Path().parent.glob("*requirements.txt")
+    for requirements_file in requirements_files:
 
         c.run(
             f"snyk test --file={requirements_file} --package-manager=pip",
@@ -532,9 +529,8 @@ def vulnerability_scan(c: Context):
 
 @task
 def install_requirements(c: Context):
-    requirements_files = Path().parent.rglob("*requirements.txt")
-    top_level_files = [file for file in requirements_files if file.parent == Path()]
-    requirements_string = " -r ".join([str(file) for file in top_level_files])
+    requirements_files = Path().parent.glob("*requirements.txt")
+    requirements_string = " -r ".join([str(file) for file in requirements_files])
     c.run(f"pip install -r {requirements_string}")
 
 
@@ -602,7 +598,3 @@ def update_deps(c: Context):
     c.run("pip install --upgrade -r requirements.txt")
 
 
-if __name__ == "__main__":
-    vulnerability_scan(Context())
-
-    pass
