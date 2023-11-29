@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.149.0 (2023-11-29)
+
+### Feature
+
+* Create split based on id ([#496](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/496)) ([`38870f6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/38870f6683a7d51afcd1230a8da27060af639d52))
+* Add original id filter ([`d3c38aa`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d3c38aafedd18df37356fa5cb4a0d890505049f3))
+
 ## v0.148.0 (2023-11-29)
 
 ### Feature
