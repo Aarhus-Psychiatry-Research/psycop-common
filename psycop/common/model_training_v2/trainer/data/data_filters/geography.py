@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from typing import Literal
+from typing import Literal, Sequence
 
 import polars as pl
 
@@ -17,7 +17,7 @@ from psycop.common.model_training_v2.trainer.data.data_filters.geographical_spli
 class RegionalFilter(BaselineDataFilter):
     def __init__(
         self,
-        regions_to_keep: Collection[Literal["vest", "midt", "øst"]],
+        regions_to_keep: Sequence[Literal["vest", "midt", "øst"]],
         id_col_name: str = "dw_ek_borger",
         timestamp_col_name: str = "timestamp",
         regional_move_df: pl.LazyFrame | None = None,
@@ -36,7 +36,8 @@ class RegionalFilter(BaselineDataFilter):
             regional_move_df (pl.LazyFrame | None, optional): The dataframe containing the regional move data. Defaults to None.
                 If supplied, should contain "dw_ek_borger", a region col and a timestamp column indicating when the patient moved.
             region_col_name (str, optional): The name of the region column in regional_move_df. Defaults to "region".
-            timestamp_cutoff_col_name (str, optional): The name of the timestamp column in regional_move_df. Defaults to "first_regional_move_timestamp".
+            timestamp_cutoff_col_name (str, optional): The name of the timestamp column in regional_move_df to
+                be used for dropping rows after this time. Defaults to "first_regional_move_timestamp".
         """
         self.regions_to_keep = regions_to_keep
         self.id_col_name = id_col_name
@@ -45,11 +46,11 @@ class RegionalFilter(BaselineDataFilter):
         self.timestamp_cutoff_col_name = timestamp_cutoff_col_name
 
         if regional_move_df is None:
-            self.filtered_regional_move_df = self._prepare_regional_move_df(
+            self.filtered_regional_move_df = self._filter_regional_move_df_by_regions(
                 get_regional_split_df(),
             )
         else:
-            self.filtered_regional_move_df = self._prepare_regional_move_df(
+            self.filtered_regional_move_df = self._filter_regional_move_df_by_regions(
                 regional_move_df,
             )
 
@@ -66,9 +67,9 @@ class RegionalFilter(BaselineDataFilter):
             .drop(columns=[self.region_col_name, self.timestamp_cutoff_col_name])
         )
 
-    def _prepare_regional_move_df(self, df: pl.LazyFrame) -> pl.LazyFrame:
+    def _filter_regional_move_df_by_regions(self, df: pl.LazyFrame) -> pl.LazyFrame:
         """Keep only the ids from the desired regions and rename dw_ek_borger
         to match the id_col_name of the incoming dataloader"""
-        return df.filter(
+        return df.rename({"dw_ek_borger": self.id_col_name}).filter(
             pl.col(self.region_col_name).is_in(self.regions_to_keep),
-        ).rename({"dw_ek_borger": self.id_col_name})
+        )

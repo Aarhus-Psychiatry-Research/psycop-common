@@ -15,6 +15,7 @@ class MockDataLoaderForFilters(BaselineDataLoader):
             1, 2020-02-01
             1, 2020-03-01
             2, 2020-01-01
+            3, 2020-01-01
             """,
         ).lazy()
 
@@ -24,7 +25,8 @@ def test_regional_filter():
     regional_move_df = str_to_pl_df(
         """dw_ek_borger,region,first_regional_move_timestamp
         1,vest,2020-03-01
-        2,vest,2100-01-01""",
+        2,vest,2100-01-01
+        3,øst,2100-01-01""",
     ).lazy()
 
     regional_filter = RegionalFilter(
