@@ -30,13 +30,5 @@ jobs:
       - name: Run Snyk to check for vulnerabilities
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: false
         run: |
-          if inv snyk; then
-            echo "Snyk check passed"
-            echo "snyk_failed=0" >> $GITHUB_OUTPUT
-          else
-            echo "Snyk check failed"
-            echo "snyk_failed=1" >> $GITHUB_OUTPUT
-            exit 1
-          fi
+          inv snyk

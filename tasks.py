@@ -525,7 +525,7 @@ def snyk(c: Context):
         "test-requirements.txt",
     ]:
         if Path(requirements_file).exists() is False:
-            raise FileNotFoundError("One of the provided files could not be found.")
+            raise FileNotFoundError(f"{requirements_file} does not exist")
 
         c.run(
             f"snyk test --file={requirements_file} --package-manager=pip",
