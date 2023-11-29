@@ -520,7 +520,6 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
 def vulnerability_scan(c: Context):
     requirements_files = Path().parent.glob("*requirements.txt")
     for requirements_file in requirements_files:
-
         c.run(
             f"snyk test --file={requirements_file} --package-manager=pip",
             pty=NOT_WINDOWS,
@@ -596,5 +595,3 @@ def docs(c: Context, view: bool = False, view_only: bool = False):
 @task
 def update_deps(c: Context):
     c.run("pip install --upgrade -r requirements.txt")
-
-
