@@ -66,4 +66,3 @@ def test_registered_callables_should_have_valid_example_cfgs(
             raise Exception(
                 f"Failed to resolve {example_cfg}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
             ) from e
-

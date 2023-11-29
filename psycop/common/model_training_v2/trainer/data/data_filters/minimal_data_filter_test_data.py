@@ -1,6 +1,3 @@
-from typing import Any
-
-import numpy as np
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
