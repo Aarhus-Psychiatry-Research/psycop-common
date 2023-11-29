@@ -1,4 +1,4 @@
-from collections.abc import Collection, Sequence
+from collections.abc import Sequence
 from typing import Literal
 
 import polars as pl
@@ -12,7 +12,7 @@ from psycop.common.model_training_v2.trainer.base_dataloader import BaselineData
 class OriginalIDDataFilter:
     def __init__(
         self,
-        splits_to_keep: Collection[Literal["train", "val", "test"]] | None,
+        splits_to_keep: Sequence[Literal["train", "val", "test"]] | None,
         split_ids: Sequence[int] | pl.Series | None = None,
         id_col_name: str = "dw_ek_borger",
     ):
