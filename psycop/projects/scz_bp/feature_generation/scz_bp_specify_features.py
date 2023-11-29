@@ -1,64 +1,20 @@
 """Feature specification module."""
 import logging
-from typing import Sequence
+from typing import TYPE_CHECKING
 
-import numpy as np
 from timeseriesflattener.aggregation_fns import (
-    AggregationFunType,
-    latest,
     maximum,
-    mean,
-    minimum,
-)
-from timeseriesflattener.df_transforms import (
-    df_with_multiple_values_to_named_dataframes,
 )
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
-    PredictorGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
     AnySpec,
     OutcomeSpec,
-    PredictorSpec,
     StaticSpec,
 )
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
-from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
-    f0_disorders,
-    f1_disorders,
-    f2_disorders,
-    f3_disorders,
-    f4_disorders,
-    f5_disorders,
-    f6_disorders,
-    f7_disorders,
-    f8_disorders,
-    f9_disorders,
-)
-from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
-    EmbeddedTextLoader,
-)
-from psycop.common.feature_generation.loaders.raw.load_lab_results import hba1c
-from psycop.common.feature_generation.loaders.raw.load_medications import (
-    antipsychotics,
-    benzodiazepine_related_sleeping_agents,
-    benzodiazepines,
-    clozapine,
-    lamotrigine,
-    lithium,
-    pregabaline,
-    selected_nassa,
-    snri,
-    ssri,
-    tca,
-    valproate,
-)
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,
 )
@@ -90,6 +46,9 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
     get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin,
     get_time_of_first_scz_or_bp_diagnosis_after_washin,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 log = logging.getLogger(__name__)
 
@@ -147,7 +106,9 @@ class SczBpFeatureSpecifier:
         ]
 
     def get_feature_specs(
-        self, max_layer: int, lookbehind_days: list[float] = [730.0]
+        self,
+        max_layer: int,
+        lookbehind_days: list[float],
     ) -> list[AnySpec]:
         if max_layer not in SczBpFeatureLayers:
             raise ValueError(f"Layer {max_layer} not supported.")
@@ -160,7 +121,7 @@ class SczBpFeatureSpecifier:
         for layer in range(1, max_layer + 1):
             feature_specs.append(
                 SczBpFeatureLayers[layer]().get_features(
-                    lookbehind_days=lookbehind_days
+                    lookbehind_days=lookbehind_days,
                 ),
             )
 

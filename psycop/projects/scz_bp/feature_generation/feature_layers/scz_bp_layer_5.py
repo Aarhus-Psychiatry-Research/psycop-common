@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import List
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import mean

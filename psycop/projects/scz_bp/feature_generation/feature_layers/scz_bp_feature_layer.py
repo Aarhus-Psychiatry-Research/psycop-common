@@ -1,9 +1,8 @@
 from collections.abc import Sequence
-from typing import List, Protocol
+from typing import Protocol
 
 from timeseriesflattener.feature_specs.single_specs import (
     AnySpec,
-    PredictorSpec,
 )
 
 

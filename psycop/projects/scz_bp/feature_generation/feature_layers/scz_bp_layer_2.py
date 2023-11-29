@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import List
 
 from timeseriesflattener.aggregation_fns import count
 from timeseriesflattener.feature_specs.group_specs import (
