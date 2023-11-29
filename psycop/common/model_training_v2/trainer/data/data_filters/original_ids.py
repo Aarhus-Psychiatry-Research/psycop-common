@@ -9,7 +9,9 @@ from psycop.common.model_training_v2.trainer.base_dataloader import BaselineData
 @BaselineRegistry.data_filters.register("original_id_data_filter")
 class OriginalIDDataFilter:
     def __init__(
-        self, splits: Collection[Literal["train", "val", "test"]], id_col_name: str
+        self,
+        splits: Collection[Literal["train", "val", "test"]],
+        id_col_name: str = "dw_ek_borger",
     ):
         self.splits = splits
         self.id_col_name = id_col_name
@@ -26,12 +28,12 @@ class OriginalIDDataFilter:
         for split_name in self.splits:
             match split_name:
                 case "train":
-                    split_names.append(SplitName.TRAIN)  # noqa: PLW2901
+                    split_names.append(SplitName.TRAIN)
                 case "val":
-                    split_names.append(SplitName.VALIDATION)  # noqa: PLW2901
+                    split_names.append(SplitName.VALIDATION)
                 case "test":
-                    split_names.append(SplitName.TEST)  # noqa: PLW2901
-                case _:
+                    split_names.append(SplitName.TEST)
+                case _:  # pyright: ignore [reportUnnecessaryComparison]
                     raise ValueError(
                         f"Splitname {split_name} is not allowed, try from ['train', 'test', 'val']",
                     )
