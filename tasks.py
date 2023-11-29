@@ -601,6 +601,7 @@ def docs(c: Context, view: bool = False, view_only: bool = False):
 def update_deps(c: Context):
     c.run("pip install --upgrade -r requirements.txt")
 
+
 if __name__ == "__main__":
     vulnerability_scan(Context())
 
