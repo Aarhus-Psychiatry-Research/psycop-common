@@ -13,8 +13,10 @@ def train_baseline_model(cfg_file: Path) -> float:
     cfg_schema.logger.log_config(
         cfg,
     )
-    cfg_schema.logger.warn("""Config is not filled, so defaults will not be logged. 
-                           Waiting for https://github.com/explosion/confection/issues/47 to be resolved.""")
+    cfg_schema.logger.warn(
+        """Config is not filled, so defaults will not be logged.
+                           Waiting for https://github.com/explosion/confection/issues/47 to be resolved.""",
+    )
 
     return train_baseline_model_from_schema(cfg_schema)
 
