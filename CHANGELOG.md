@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.149.1 (2023-11-30)
+
+### Fix
+
+* Run linter ([`6c30f8e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6c30f8e4b6baba3739e166c8fc80a8d19fd8fad9))
+
 ## v0.149.0 (2023-11-29)
 
 ### Feature
