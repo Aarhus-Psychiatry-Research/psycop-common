@@ -454,6 +454,7 @@ def test_for_venv(c: Context):
     else:
         print("Running on Windows, not checking for virtual environment.")
 
+
 @task
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project."""
@@ -517,7 +518,6 @@ def qtest(c: Context):
         print("✅✅✅ Tests ran succesfully! ✅✅✅")
     else:
         print("🟢 No python files modified since main, skipping tests")
-
 
 
 @task
