@@ -21,7 +21,7 @@ class IDDataFilter:
         If `split_series` is None, will load the ids from the original datasplit
         based on the `splits_to_keep` argument. If `split_ids` is not None,
         provide a sequence with the ids to keep."""
-        if splits_to_keep is not None and split_ids is None:
+        if splits_to_keep is None and split_ids is None:
             raise ValueError(
                 """splits_to_keep must be supplied when using the original
                 id split.""",

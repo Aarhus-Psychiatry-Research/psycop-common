@@ -29,5 +29,6 @@ if __name__ == "__main__":
             lookbehind_days=[730],
         ),
         generate_in_chunks=True,
+        chunksize=10,
         feature_set_name="layer7",
     )

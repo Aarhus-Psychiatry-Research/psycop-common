@@ -21,8 +21,8 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
         """Vertical concatenation of multiple parquet files.
 
         Args:
-            paths (Sequence[str]): Paths to parquet files.
-            validate_on_init (bool, optional): Whether to validate the paths on init.
+            paths: Paths to parquet files.
+            validate_on_init: Whether to validate the paths on init.
                 Helpful when testing the .cfg parses, where the absolute path will differ between devcontainer and Ovartaci.
                 Defaults to True.
 
