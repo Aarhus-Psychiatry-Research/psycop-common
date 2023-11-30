@@ -13,7 +13,6 @@ from psycop.projects.forced_admission_inpatient.utils.feature_name_to_readable i
     ],
 )
 def test_feature_name_to_readable(feature_name: str, expected_output: str):
-    pass
     extracted_feature_name = feature_name_to_readable(feature_name)
 
     assert extracted_feature_name == expected_output

@@ -148,7 +148,7 @@ class DataLoader:
         if self.file_suffix not in ("csv", "parquet"):
             raise ValueError(f"File suffix {self.file_suffix} not supported.")
 
-        path = list(dataset_dir.glob(f"*{split_name}*.{self.file_suffix}"))[0]
+        path = list(dataset_dir.glob(f"*{split_name}*.{self.file_suffix}"))[0]  # noqa
 
         if "parquet" in self.file_suffix:
             if nrows:

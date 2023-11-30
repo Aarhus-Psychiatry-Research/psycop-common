@@ -6,7 +6,7 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "make push && make create-pr",
+            "command": "make push && inv create-pr",
             "group": "test",
             "dependsOn": [
                 "Lint",
@@ -55,17 +55,25 @@
                 "clear": true,
                 "showReuseMessage": false,
             },
+            "dependsOn": [
+                "Lint",
+                "Merge main"
+            ]
         },
         {
             "label": "Static type check",
             "type": "shell",
-            "command": "inv static-type-checks",
+            "command": "inv qtypes",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
-            }
+            },
+            "dependsOn": [
+                "Lint",
+                "Merge main"
+            ]
         }
     ]
 }

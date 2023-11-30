@@ -3,6 +3,16 @@
     "python.testing.pytestArgs": [
         "psycop"
     ],
+    "githubIssues.queries": [
+        {
+            "label": "This repo, assigned to me",
+            "query": "is:issue is:open assignee:${user} repo:${owner}/${repository} sort:updated-asc -label:waiting-for-external"
+        },
+        {
+            "label": "This repo, unassigned",
+            "query": "repo:${owner}/${repository} is:issue is:open no:assignee sort:updated-asc"
+        },
+    ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.defaultInterpreterPath": "/usr/local/bin/python",

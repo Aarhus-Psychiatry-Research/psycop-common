@@ -1,5 +1,8 @@
 import re
 
+import polars as pl
+import polars.selectors as cs
+
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import (
     BaselineLogger,
@@ -75,3 +78,53 @@ class LookbehindCombinationColFilter(PresplitStep):
             for c in pred_cols_with_lookbehind
             if all(str(l_beh) not in c for l_beh in lookbehinds_to_keep)
         ]
+
+
+@BaselineRegistry.preprocessing.register("temporal_col_filter")
+class TemporalColumnFilter(PresplitStep):
+    def __init__(self):
+        pass
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        temporal_columns = input_df.select(cs.temporal()).columns
+        return input_df.drop(temporal_columns)
+
+
+@BaselineRegistry.preprocessing.register("regex_column_blacklist")
+class RegexColumnBlacklist(PresplitStep):
+    def __init__(self, *args: str):
+        self.regex_blacklist = args
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        for blacklist in self.regex_blacklist:
+            input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
+
+        return input_df
+
+
+@BaselineRegistry.preprocessing.register("filter_columns_within_subset")
+class FilterColumnsWithinSubset(PresplitStep):
+    """Creates a subset matching one regex rule, and then within that subset, drops columns that do not match another rule"""
+
+    def __init__(self, subset_rule: str, keep_matching: str):
+        self.subset_rule = subset_rule
+        self.keep_matching = keep_matching
+
+        for rule in (subset_rule, keep_matching):
+            try:
+                re.compile(rule)
+            except re.error as e:
+                raise ValueError(f"Invalid regex rule: {rule}") from e
+
+    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+        all_columns = input_df.columns
+        subset_columns = [
+            column for column in all_columns if re.match(self.subset_rule, column)
+        ]
+        columns_to_drop = [
+            column
+            for column in subset_columns
+            if not re.match(self.keep_matching, column)
+        ]
+
+        return input_df.drop(columns_to_drop)

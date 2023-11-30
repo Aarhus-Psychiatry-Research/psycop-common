@@ -30,6 +30,7 @@ class BinaryClassificationTask(BaselineTask):
     ):
         self.pipe = task_pipe
         self.pred_time_uuid_col_name = pred_time_uuid_col_name
+        # TODO: remover pred_time_uuid_col_name from binary classification task
 
     def train(
         self,

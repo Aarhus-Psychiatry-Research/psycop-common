@@ -1,8 +1,9 @@
+import inspect
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from confection import Config, ConfigValidationError
 
@@ -29,48 +30,91 @@ def _convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
 
 
 @dataclass(frozen=True)
-class RegisteredFunction:
-    fn_name: str
+class RegisteredCallable:
+    callable_name: str
     registry_name: str
     container_registry: RegistryWithDict
     module: str
 
     def to_dot_path(self) -> str:
-        return f"{self.registry_name}.{self.fn_name}"
+        return f"{self.registry_name}.{self.callable_name}"
 
     def get_cfg_dir(self, top_level_dir: Path) -> Path:
-        return top_level_dir / self.registry_name / self.fn_name
+        return top_level_dir / self.registry_name / self.callable_name
 
     def has_example_cfg(self, example_top_dir: Path) -> bool:
         return len(list(self.get_cfg_dir(example_top_dir).glob("*.cfg"))) > 0
 
-    def write_scaffolding_cfg(self, example_top_dir: Path) -> Path:
-        current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    def write_scaffolding_cfg(
+        self,
+        example_top_dir: Path,
+    ) -> Path:
         cfg_dir = self.get_cfg_dir(example_top_dir)
         cfg_dir.mkdir(parents=True, exist_ok=True)
+        current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+        example_path = cfg_dir / f"{self.callable_name}_{current_datetime}.cfg"
 
-        example_path = cfg_dir / f"{self.fn_name}_{current_datetime}.cfg"
         with example_path.open("w") as f:
+            arg_names = self._get_callable_arg_names()
             f.write(
                 f"""
-# Example cfg for {self.fn_name}
-# You can find args at:
-#    {self.module}\n[placeholder]""",
+[{self.callable_name}]
+@{self.registry_name} = "{self.callable_name}"
+"""
+                + "\n".join(f"{arg_name} = " for arg_name in arg_names),
             )
 
         return example_path
 
-    def get_example_cfgs(self, example_top_dir: Path) -> Sequence[Config]:
-        cfgs = []
-        for file in self.get_cfg_dir(example_top_dir).glob("*.cfg"):
-            cfgs.append(Config().from_disk(file))
+    def _get_callable_arg_names(self) -> Sequence[str]:
+        """Get the names of the arguments of the callable.
 
-        return cfgs
+        If the callable is a class, get args of __init__, omitting self."""
+        if inspect.isfunction(self.callable_obj):
+            arg_names = inspect.getfullargspec(self.callable_obj).args
+        elif inspect.isclass(self.callable_obj):
+            arg_names = inspect.getfullargspec(self.callable_obj.__init__).args[1:]
+            # Slice from 1 to omit self
+
+            has_starargs = (
+                inspect.getfullargspec(self.callable_obj.__init__).varargs is not None
+            )
+            if has_starargs:
+                arg_names = [*arg_names, f"\n[{self.callable_name}.*]\nplaceholder_*"]
+        else:
+            raise ValueError(
+                f"Expected {self.callable_name} to be a function or class",
+            )
+
+        return arg_names
+
+    @property
+    def callable_obj(self) -> Callable:  # type: ignore
+        return self.container_registry.get(self.registry_name, self.callable_name)
+
+
+def get_example_cfgs(example_top_dir: Path) -> Sequence[Config]:
+    cfgs: list[Config] = []
+    missing_decorated_fn = []
+
+    for file in (example_top_dir).rglob("*.cfg"):
+        if "@" not in file.read_text():
+            missing_decorated_fn.append(
+                f"{file.name} does not have a decorated fn",
+            )
+        cfgs.append(Config().from_disk(file))
+
+    if missing_decorated_fn:
+        raise ValueError(
+            "\n".join(missing_decorated_fn),
+        )
+
+    return cfgs
 
 
 def _identical_config_exists(
     filled_cfg: Config,
-    fn: RegisteredFunction,
+    fn: RegisteredCallable,
     top_level_dir: Path,
 ) -> bool:
     """Check if an identical config file already exists on disk."""
@@ -88,42 +132,31 @@ def _identical_config_exists(
     return False
 
 
-def _timestamped_cfg_to_disk(
+def _new_timestamped_cfg_to_disk(
     filled_cfg: Config,
-    fn: RegisteredFunction,
+    fn: RegisteredCallable,
     top_level_dir: Path,
 ) -> None:
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
     filepath = (
         fn.get_cfg_dir(top_level_dir=top_level_dir)
-        / f"{fn.fn_name}_{current_datetime}.cfg"
+        / f"{fn.callable_name}_{current_datetime}.cfg"
     )
     filepath.parent.mkdir(exist_ok=True, parents=True)
 
     filled_cfg.to_disk(filepath)
 
-    # Prepend location to filepath
-    with filepath.open("r") as f:
-        contents = f.read()
-
-    with filepath.open("w") as f:
-        f.write(
-            f"""# Example cfg for {fn.fn_name}
-# You can find args at:
-#    {fn.module}\n{contents}""",
-        )
-
 
 def get_registered_functions(
     container_registry: RegistryWithDict,
-) -> Sequence[RegisteredFunction]:
+) -> Sequence[RegisteredCallable]:
     functions = []
     for registry_name, registry in container_registry.to_dict().items():
         for registered_function_name in registry.get_all():
             functions.append(
-                RegisteredFunction(
+                RegisteredCallable(
                     registry_name=registry_name,
-                    fn_name=registered_function_name,
+                    callable_name=registered_function_name,
                     container_registry=container_registry,
                     module=registry.get_all()[registered_function_name].__module__,
                 ),
@@ -134,13 +167,13 @@ def get_registered_functions(
 
 @dataclass(frozen=True)
 class CouldNotGenerateConfigsError(Exception):
-    fn: RegisteredFunction
+    fn: RegisteredCallable
     scaffolding_path: Path
     error: Exception
 
 
 def generate_configs_from_registered_functions(
-    registered_fns: Sequence[RegisteredFunction],
+    registered_fns: Sequence[RegisteredCallable],
     example_cfg_dir: Path,
 ) -> bool:
     """Generate config files from registered functions in the baseline registry
@@ -152,17 +185,22 @@ def generate_configs_from_registered_functions(
     config_validation_errors: Sequence[CouldNotGenerateConfigsError] = []
 
     for fn in registered_fns:
-        cfg = Config(
-            {"placeholder": {f"@{fn.registry_name}": f"{fn.fn_name}"}},
+        placeholder_cfg = Config(
+            {"placeholder": {f"@{fn.registry_name}": f"{fn.callable_name}"}},
         )
         try:
-            filled_cfg = fn.container_registry.fill(cfg)
+            # Fill with default values.
+            filled_cfg = fn.container_registry.fill(placeholder_cfg)
         except ConfigValidationError as e:
+            # Could not fill with default values.
+            # This means we need to provide them in the example cfg.
             if fn.has_example_cfg(example_top_dir=example_cfg_dir):
                 continue
 
-            # Create an empty file at the location
-            scaffolding_path = fn.write_scaffolding_cfg(example_top_dir=example_cfg_dir)
+            # Create a scaffolding cfg at the location
+            scaffolding_path = fn.write_scaffolding_cfg(
+                example_top_dir=example_cfg_dir,
+            )
 
             config_validation_errors.append(
                 CouldNotGenerateConfigsError(
@@ -171,7 +209,6 @@ def generate_configs_from_registered_functions(
                     scaffolding_path=scaffolding_path,
                 ),
             )
-
             continue
 
         # If none, write to disk
@@ -181,7 +218,7 @@ def generate_configs_from_registered_functions(
             fn=fn,
         ):
             generated_new_configs = True
-            _timestamped_cfg_to_disk(
+            _new_timestamped_cfg_to_disk(
                 filled_cfg=filled_cfg,
                 fn=fn,
                 top_level_dir=example_cfg_dir,

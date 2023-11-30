@@ -2,6 +2,124 @@
 
 <!--next-version-placeholder-->
 
+## v0.149.1 (2023-11-30)
+
+### Fix
+
+* Run linter ([`6c30f8e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6c30f8e4b6baba3739e166c8fc80a8d19fd8fad9))
+
+## v0.149.0 (2023-11-29)
+
+### Feature
+
+* Create split based on id ([#496](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/496)) ([`38870f6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/38870f6683a7d51afcd1230a8da27060af639d52))
+* Add original id filter ([`d3c38aa`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d3c38aafedd18df37356fa5cb4a0d890505049f3))
+
+## v0.148.0 (2023-11-29)
+
+### Feature
+
+* Add snyk workflow ([#493](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/493)) ([`72381b3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/72381b35cfd525f35a3faad7802ef57ecffe0530))
+* Add snyk workflow ([`1114d13`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1114d13916abb09ba608d7ff6c4865b4561d66e3))
+* Load geographical split ([`45917e2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/45917e23718cb867c25d82e8ddcf252010e56d89))
+* Make geographical split ids file ([`f206bce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f206bce87d5b970449bf22f72541216f63083cd5))
+* Add dataloaderfilterer ([`3e2768c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3e2768c4ded0aa420629d91e869ea2391e583d91))
+*  update of full eval pipeline ([`a408542`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a40854296eed30927c2b1a4c1e4dd7929793fc47))
+* Add full eval pipeline ([`08fa21c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/08fa21c740bd31c3503cc484da339ef18115eed9))
+* Add auroc by time to event ([`2026ee3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2026ee3806f0e7e9b605c223ff1bc14da9d48bb3))
+* Main performance figure ([`d0ba595`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d0ba595cbf9ad88473cee4b852d6615f6ed0ad04))
+* Finish adaptning robustness ([`2199f01`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2199f016c589e1869552b33aa3568eeae463d867))
+* Adapt robustness eval ([`7f9fcff`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7f9fcff15e180046189467ce9b3a0ac16bf67ae1))
+
+### Fix
+
+* Arg updates ([`066471b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/066471bec6463d88acf7e84e4a38412ca138607b))
+* Update run arg type ([`460b851`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/460b8513ed6ecf232b205e28bb559f3aa7d40b9e))
+* Run full eval pipeline ([`5beefdf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5beefdf580088642360ff61c2bbdb6a53a0418d4))
+* Naming and etc. ([`88be891`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/88be891aed0c3535cc173d20706d38fba75ade06))
+* Robustness figs ([`2290be0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2290be0a9296c64e3e8e9e92993fcabfba9beaf7))
+
+## v0.147.3 (2023-11-27)
+
+### Fix
+
+* Updated based on new pre-commit ([`e58adfb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e58adfbdb82a3605955f2f9b2ccf69a4b2305cef))
+
+## v0.147.2 (2023-11-27)
+
+### Fix
+
+* Drop entity id column during stratified crossval ([#487](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/487)) ([`400baa4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/400baa428b19d5b386ee1cd728878010673de2dc))
+
+## v0.147.1 (2023-11-24)
+
+### Fix
+
+* Log text representation of config ([#486](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/486)) ([`5866cd2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5866cd2053fec15085bea7b816559d76365778bb))
+* Log text representation of config ([`8fc4b91`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8fc4b91133ffd9ce305acdb9dc124c8de2897950))
+* Log text representation of config ([`dc1585a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dc1585a267e5d6f2b10fee9779ef77ee062064b3))
+
+## v0.147.0 (2023-11-24)
+
+### Feature
+
+* Add FilterWithinSubset ([#478](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/478)) ([`38b8d17`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/38b8d17c599377af43d65ff57d1ff9fe7430df7f))
+* Add FilterWithinSubset ([`7799ad3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7799ad35a325add2a6d0657a8353d6d99787be06))
+
+### Documentation
+
+* Small improvements to docstrings ([`f659c96`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f659c96a9e1b358e52cc0ff118133c01cfaab36b))
+* Small improvements to docstrings ([`f2e019b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f2e019b94ac840d99eda6d6176a4035293fcae07))
+* Add relevant docstring ([`987f4d8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/987f4d88ff0a8f5479137f9a5cd21d613f507eab))
+
+## v0.146.0 (2023-11-23)
+
+### Feature
+
+* Add BoolToInt to common ([#477](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/477)) ([`39c093f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/39c093f986cf44af1fac9d53b02ea273cd33f1f6))
+* Add BoolToInt to common ([`3c12927`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3c12927603203b33ef9dd3aa9bf1d8bbf1fe737f))
+
+## v0.145.0 (2023-11-23)
+
+### Feature
+
+* Add RegexColumnBlacklist to common ([#472](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/472)) ([`a34066a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a34066a3fc95c99cda214506d90b66d92630dba6))
+* Add RegexColumnBlacklist to common ([`12f30f9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/12f30f9f05fd4cc2909bfcdcb944c481e7f6a2cf))
+* Add cfg ([`3fe31ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3fe31edf9c7f20584d739761001977930b7f29f3))
+* Add RegexColumnBlacklist to common ([`a67b1bc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a67b1bcdcc1efd48a8ba03d27a7e58aa35a7c93e))
+
+## v0.144.0 (2023-11-23)
+
+### Feature
+
+* Add support for mlflow experiment tracker ([`c290c2b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c290c2b605379c4645c966537c940e2f1a5d8eb6))
+* Add vertical concatinator to common ([`9379854`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/93798543874f610c1618319f4391f18bad5db010))
+
+## v0.143.0 (2023-11-23)
+
+### Feature
+
+* Add TemporalColumnFilter to common ([`59d3a6d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/59d3a6d63fae871fc0bfdcd4b16d9f2e6aae4b38))
+* Add RegexColumnBlacklist to common ([`b7b66e7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b7b66e786f1ad56b8685ec35831e19c288b85a04))
+
+## v0.142.0 (2023-11-21)
+
+### Feature
+
+* Better scaffolding cfg generation ([`349a5f4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/349a5f454e0ba4dc035b2074547d1293622c8984))
+
+## v0.141.0 (2023-11-20)
+
+### Feature
+
+* Train cvd with v2 ([#455](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/455)) ([`6f66569`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6f6656967f8c448993c237a21000b354e24d527f))
+* Add xgboost defaults ([`51bde84`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/51bde842e98a8300e874c73c25285d3d274f2912))
+* Add vertical concatenator ([`607cf3a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/607cf3ae0690c7fc312899d467aab0509bb5c923))
+
+### Documentation
+
+* Add todo ([`01fe0e7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/01fe0e76b62f20c0bf80f7628e7c49e0ab950aed))
+
 ## v0.140.0 (2023-11-17)
 
 ### Feature
