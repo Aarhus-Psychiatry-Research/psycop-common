@@ -16,3 +16,4 @@ def load_scz_bp_feature_set(feature_set_name: str) -> pl.DataFrame:
 
 if __name__ == "__main__":
     df = load_scz_bp_feature_set("layer1")
+    print(df.columns)

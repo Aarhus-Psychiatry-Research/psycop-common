@@ -32,7 +32,8 @@ class SczBpLayer5(SczBpFeatureLayer):
             text_sfi_names=text_sfi_names,
             include_sfi_name=False,
             n_rows=None,
-        )
+        ).to_pandas()
+
         embedded_text_df = df_with_multiple_values_to_named_dataframes(
             df=embedded_text_df,  # type: ignore
             entity_id_col_name="dw_ek_borger",

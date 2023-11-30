@@ -3,6 +3,7 @@ from pathlib import Path
 from psycop.common.model_training_v2.config.baseline_pipeline import (
     train_baseline_model,
 )
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.projects.cvd.model_training.populate_cvd_registry import (
     populate_with_cvd_registry,
 )
