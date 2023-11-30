@@ -12,10 +12,7 @@ from psycop.common.cohort_definition import (
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
-    SczBpAddAge,
     SczBpExcludedByWashinFilter,
-    SczBpMaxAgeFilter,
-    SczBpMinAgeFilter,
     SczBpMinDateFilter,
     SczBpPrevalentFilter,
     SczBpWashoutMoveFilter,
@@ -30,7 +27,7 @@ log = logging.getLogger(__name__)
 class SczBpCohort(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
-        # prediction times are right before an ambulatory visit
+        # prediction times are the day before an ambulatory visit
         prediction_times = pl.from_pandas(
             ambulatory_visits(
                 timestamps_only=True,
@@ -72,9 +69,6 @@ class SczBpCohort(CohortDefiner):
     @staticmethod
     def _get_filtering_steps() -> Iterable[PredictionTimeFilter]:
         return (
-            SczBpAddAge(),
-            SczBpMinAgeFilter(),
-            SczBpMaxAgeFilter(),
             SczBpMinDateFilter(),
             SczBpExcludedByWashinFilter(),
             SczBpWashoutMoveFilter(),

@@ -85,5 +85,3 @@ if __name__ == "__main__":
     run_group = DEVELOPMENT_GROUP
 
     df = get_publication_ready_performance_for_group(run_group=run_group)
-
-    pass

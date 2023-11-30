@@ -67,6 +67,7 @@ class CrossValidatorTrainer(BaselineTrainer):
                 y.loc[train_idxs],
             )
 
+            X_train = X_train.drop(columns=self.group_col_name)
             self.task.train(X_train, y_train, y_col_name=self.outcome_col_name)
 
             y_hat_prob = self.task.predict_proba(
@@ -83,7 +84,7 @@ class CrossValidatorTrainer(BaselineTrainer):
             )
 
             oof_y_hat_prob = self.task.predict_proba(
-                X.loc[val_idxs],
+                X.loc[val_idxs].drop(columns=self.group_col_name),
             )
 
             oof_metric = self.metric.calculate(

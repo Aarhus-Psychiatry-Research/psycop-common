@@ -130,10 +130,6 @@ def performance_by_lookahead_table(
     run: ForcedAdmissionInpatientPipelineRun,
     lookaheads_for_performance_eval: list[float],
 ):
-    output_path = (
-        run.paper_outputs.paths.tables
-        / f"performance_by_lookahead_table_{run.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_days_lookahead"
-    )
 
     roc_auc_table = {}
 
@@ -147,7 +143,12 @@ def performance_by_lookahead_table(
 
     df = pd.DataFrame(list(roc_auc_table.items()), columns=["Lookahead days", "AUROC"])
 
-    df.to_excel(output_path, index=False)
+    with (
+        run.paper_outputs.paths.tables
+        / f"performance_by_la_{run.inputs.cfg.preprocessing.pre_split.min_lookahead_days}_days_la.html"
+    ).open("w") as html_file:
+        html = df.to_html()
+        html_file.write(html)
 
 
 if __name__ == "__main__":

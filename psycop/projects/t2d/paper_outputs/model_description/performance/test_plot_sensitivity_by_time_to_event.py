@@ -31,5 +31,3 @@ def test_plot_sensitivity_by_time_to_event_with_patchwork():
 
     grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
     grid.savefig(TEST_PLOT_PATH / "sensitivity_by_time_to_event.png")
-
-    pass
