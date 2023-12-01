@@ -217,6 +217,19 @@ def push_to_branch(c: Context):
         c.run("git push")
 
 
+@task(aliases=("mm",))
+def merge_main(c: Context):
+    print(f"{msg_type.DOING} Merging main into current branch")
+    c.run("git fetch")
+    c.run("git merge --no-edit origin/main")
+    print("✅✅✅ Merged main into current branch ✅✅✅")
+
+
+@task(aliases=("am",))
+def automerge(c: Context):
+    c.run("gh pr merge --auto --delete-branch")
+
+
 @task
 def create_pr(c: Context):
     """
