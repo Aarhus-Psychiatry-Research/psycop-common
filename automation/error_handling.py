@@ -7,9 +7,6 @@ from typing import Optional
 
 from invoke import Context, Result, task
 
-from automation.git import is_uncommitted_changes
-from automation.windows import NOT_WINDOWS
-
 
 def exit_if_error_in_stdout(result: Result):
     # Find N remaining using regex

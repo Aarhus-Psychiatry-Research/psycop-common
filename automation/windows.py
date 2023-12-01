@@ -7,10 +7,8 @@ from typing import Optional
 
 from invoke import Context, Result, task
 
-from automation.git import is_uncommitted_changes
-from automation.windows import NOT_WINDOWS
-
 NOT_WINDOWS = platform.system() != "Windows"
+from .logger import msg_type
 
 
 def on_ovartaci() -> bool:

@@ -25,8 +25,12 @@ from typing import Optional
 
 from invoke import Context, Result, task
 
-from automation.git import is_uncommitted_changes
-from automation.windows import NOT_WINDOWS
+from automation.git import add_and_commit, filetype_modified_since_head, push_to_branch
+from automation.github import update_pr
+from automation.lint import pre_commit, test_for_venv
+from automation.logger import echo_header, msg_type
+from automation.setup import get_python_path, git_init, setup_venv
+from automation.windows import NOT_WINDOWS, on_ovartaci
 
 
 @task

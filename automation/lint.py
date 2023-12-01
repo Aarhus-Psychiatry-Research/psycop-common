@@ -7,8 +7,10 @@ from typing import Optional
 
 from invoke import Context, Result, task
 
-from automation.git import is_uncommitted_changes
-from automation.windows import NOT_WINDOWS
+from .error_handling import exit_if_error_in_stdout
+from .git import is_uncommitted_changes
+from .logger import echo_header
+from .windows import NOT_WINDOWS
 
 
 def pre_commit(c: Context, auto_fix: bool):
