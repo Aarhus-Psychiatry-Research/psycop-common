@@ -1,3 +1,16 @@
+import multiprocessing
+import platform
+import re
+import shutil
+from pathlib import Path
+from typing import Optional
+
+from invoke import Context, Result, task
+
+from automation.git import is_uncommitted_changes
+from automation.windows import NOT_WINDOWS
+
+
 def pre_commit(c: Context, auto_fix: bool):
     """Run pre-commit checks."""
 
