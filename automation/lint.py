@@ -9,7 +9,7 @@ from invoke import Context, Result, task
 
 from .error_handling import exit_if_error_in_stdout
 from .git import is_uncommitted_changes
-from .logger import echo_header
+from .logger import echo_header, msg_type
 from .windows import NOT_WINDOWS
 
 
