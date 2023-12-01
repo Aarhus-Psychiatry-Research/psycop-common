@@ -64,10 +64,3 @@ def get_python_path(preferred_version: str) -> Optional[str]:
         f"{msg_type.WARN}: python{preferred_version} not found, continuing with default python version",
     )
     return shutil.which("python")
-
-
-@task
-def install_requirements(c: Context):
-    requirements_files = Path().parent.glob("*requirements.txt")
-    requirements_string = " -r ".join([str(file) for file in requirements_files])
-    c.run(f"pip install -r {requirements_string}")

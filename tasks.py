@@ -53,6 +53,13 @@ def setup(c: Context, python_path: Optional[str] = None):
     )
 
 
+@task
+def install_requirements(c: Context):
+    requirements_files = Path().parent.glob("*requirements.txt")
+    requirements_string = " -r ".join([str(file) for file in requirements_files])
+    c.run(f"pip install -r {requirements_string}")
+
+
 @task(aliases=("static_type_checks",))
 def types(c: Context):
     if not on_ovartaci():
