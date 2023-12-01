@@ -1,14 +1,9 @@
-import multiprocessing
-import platform
-import re
-import shutil
 from pathlib import Path
-from typing import Optional
 
-from invoke import Context, Result, task
+from invoke import Context, task
 
 from .error_handling import exit_if_error_in_stdout
-from .git import is_uncommitted_changes
+from .git import _add_commit, is_uncommitted_changes
 from .logger import echo_header, msg_type
 from .windows import NOT_WINDOWS
 

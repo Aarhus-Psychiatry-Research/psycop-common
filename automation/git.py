@@ -1,11 +1,7 @@
-import multiprocessing
-import platform
-import re
-import shutil
 from pathlib import Path
 from typing import Optional
 
-from invoke import Context, Result, task
+from invoke import Context, Result
 
 from .logger import echo_header, msg_type
 from .windows import NOT_WINDOWS

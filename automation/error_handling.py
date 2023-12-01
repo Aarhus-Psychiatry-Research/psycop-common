@@ -1,11 +1,6 @@
-import multiprocessing
-import platform
 import re
-import shutil
-from pathlib import Path
-from typing import Optional
 
-from invoke import Context, Result, task
+from invoke import Result
 
 
 def exit_if_error_in_stdout(result: Result):
