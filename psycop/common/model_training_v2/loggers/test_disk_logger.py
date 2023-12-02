@@ -3,7 +3,7 @@ import json
 from psycop.common.model_training_v2.loggers.disk_logger import DiskLogger
 
 
-def test_logging_text(tmpdir: str):
+def test_disklogger_text(tmpdir: str):
     logger = DiskLogger(experiment_path=tmpdir)
 
     message = "This is a test message"
@@ -15,7 +15,7 @@ def test_logging_text(tmpdir: str):
     assert message in logged_text
 
 
-def test_logging_config(tmpdir: str):
+def test_disklogger_log_config(tmpdir: str):
     logger = DiskLogger(experiment_path=tmpdir)
 
     config = {"param1": 123, "param2": "abc"}
