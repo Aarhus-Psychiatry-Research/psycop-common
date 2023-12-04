@@ -22,7 +22,7 @@ from typing import Optional
 
 from invoke import Context, Result, task
 
-from psycop.automation import NOT_WINDOWS, on_ovartaci
+from psycop.automation.environment import NOT_WINDOWS, on_ovartaci
 from psycop.automation.git import (
     add_and_commit,
     filetype_modified_since_head,
@@ -31,29 +31,6 @@ from psycop.automation.git import (
 from psycop.automation.github import update_pr
 from psycop.automation.lint import pre_commit
 from psycop.automation.logger import echo_header, msg_type
-
-
-@task
-def setup(c: Context, python_path: Optional[str] = None):
-    """Confirm that a git repo exists and setup a virtual environment.
-
-    Args:
-        c: Invoke context
-        python_path: Path to the python executable to use for the virtual environment. Uses the return value of `which python` if not provided.
-    """
-    git_init(c)
-
-    if python_path is None:
-        # get path to python executable
-        python_path = get_python_path(preferred_version="3.10")
-        if not python_path:
-            print(f"{msg_type.FAIL} Python executable not found")
-            exit(1)
-    venv_name = setup_venv(c, python_path=python_path)
-
-    print(
-        f"{msg_type.DOING} Activate your virtual environment by running: \n\n\t\t source {venv_name}/bin/activate \n",
-    )
 
 
 @task
@@ -164,7 +141,6 @@ def qtest(c: Context):
 @task(aliases=("format", "fmt"))
 def lint(c: Context, auto_fix: bool = False):
     """Lint the project."""
-    test_for_venv(c)
     pre_commit(c=c, auto_fix=auto_fix)
     print("✅✅✅ Succesful linting! ✅✅✅")
 
