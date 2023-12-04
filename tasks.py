@@ -18,7 +18,6 @@ If you do not wish to use invoke you can simply delete this file.
 
 import multiprocessing
 from pathlib import Path
-from typing import Optional
 
 from invoke import Context, Result, task
 

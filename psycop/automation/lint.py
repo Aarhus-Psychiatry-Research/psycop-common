@@ -1,6 +1,4 @@
-from pathlib import Path
-
-from invoke import Context, task
+from invoke import Context
 
 from .environment import NOT_WINDOWS
 from .error_handling import exit_if_error_in_stdout
