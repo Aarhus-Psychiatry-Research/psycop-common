@@ -144,8 +144,35 @@ def lint(c: Context, auto_fix: bool = False):
     print("✅✅✅ Succesful linting! ✅✅✅")
 
 
+@task(aliases=("mm",))
+def merge_main(c: Context):
+    print(f"{msg_type.DOING} Merging main into current branch")
+    c.run("git fetch")
+    c.run("git merge --no-edit origin/main")
+    print("✅✅✅ Merged main into current branch ✅✅✅")
+
+
+@task(aliases=("am",))
+def automerge(c: Context):
+    c.run("gh pr merge --auto --delete-branch")
+
+
 @task
-def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
+def vulnerability_scan(c: Context):
+    requirements_files = Path().parent.glob("*requirements.txt")
+    for requirements_file in requirements_files:
+        c.run(
+            f"snyk test --file={requirements_file} --package-manager=pip",
+            pty=NOT_WINDOWS,
+        )
+
+
+@task(aliases=("pr",))
+def check_and_submit_pull_request(
+    c: Context,
+    auto_fix: bool = True,
+    create_pr: bool = True,
+):
     """Run all checks and update the PR."""
     add_and_commit(c)
     if create_pr:
@@ -160,8 +187,12 @@ def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     test(c)
 
 
-@task
-def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
+@task(aliases=("qpr",))
+def quick_check_and_submit_pull_request(
+    c: Context,
+    auto_fix: bool = True,
+    create_pr: bool = True,
+):
     """Run all checks and update the PR, using heuristics for more speed."""
     add_and_commit(c)
     if create_pr:
@@ -174,13 +205,3 @@ def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
     push_to_branch(c)
     qtest(c)
     qtypes(c)
-
-
-@task
-def vulnerability_scan(c: Context):
-    requirements_files = Path().parent.glob("*requirements.txt")
-    for requirements_file in requirements_files:
-        c.run(
-            f"snyk test --file={requirements_file} --package-manager=pip",
-            pty=NOT_WINDOWS,
-        )

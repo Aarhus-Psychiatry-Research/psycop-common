@@ -82,8 +82,4 @@ def branch_exists_on_remote(c: Context) -> bool:
 def push_to_branch(c: Context):
     echo_header(f"{msg_type.SYNC} Syncing branch with remote")
 
-    if not branch_exists_on_remote(c):
-        c.run("git push --set-upstream origin HEAD")
-    else:
-        print("Pushing")
-        c.run("git push")
+    c.run("git push --set-upstream origin HEAD")

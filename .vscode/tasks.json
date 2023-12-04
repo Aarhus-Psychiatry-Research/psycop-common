@@ -6,7 +6,7 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "make push && inv create-pr",
+            "command": "inv push && inv create-pr",
             "group": "test",
             "dependsOn": [
                 "Lint",
