@@ -14,6 +14,7 @@ def populate_baseline_registry() -> None:
     # Loggers
     from ..loggers.terminal_logger import TerminalLogger
     from ..loggers.disk_logger import DiskLogger
+    from ..loggers.multi_logger import MultiLogger
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
