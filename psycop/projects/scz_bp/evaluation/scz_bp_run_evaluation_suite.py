@@ -21,3 +21,12 @@
 
 
 
+class PostTraining(Protocol):
+    def apply(self, cfg: BaselineSchema, pipeline: Pipeline) -> None:
+        ...
+
+class PostTrainingSavePipeline(PostTraining):
+    def apply(self, cfg: BaselineSchema, pipeline: Pipeline) -> None:
+        # save the pipeline (with the trained model) to disk
+
+class PostTrainingSaveConfig
