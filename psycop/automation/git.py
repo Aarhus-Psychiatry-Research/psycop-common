@@ -3,8 +3,8 @@ from typing import Optional
 
 from invoke import Context, Result
 
+from .environment import NOT_WINDOWS
 from .logger import echo_header, msg_type
-from .windows import NOT_WINDOWS
 
 
 def is_uncommitted_changes(c: Context) -> bool:

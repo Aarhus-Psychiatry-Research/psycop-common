@@ -2,10 +2,10 @@ from pathlib import Path
 
 from invoke import Context, task
 
+from .environment import NOT_WINDOWS
 from .error_handling import exit_if_error_in_stdout
 from .git import _add_commit, is_uncommitted_changes
 from .logger import echo_header, msg_type
-from .windows import NOT_WINDOWS
 
 
 def pre_commit(c: Context, auto_fix: bool):
@@ -40,22 +40,3 @@ def pre_commit(c: Context, auto_fix: bool):
         if result.return_code != 0:
             print(f"{msg_type.FAIL} Pre-commit checks failed")
             exit(1)
-
-
-def test_for_venv(c: Context):
-    """Test if the user is in a virtual environment."""
-    # Check if in docker environment by checking if the /.dockerenv file exists
-    IN_DOCKER = Path("/.dockerenv").exists()
-    if IN_DOCKER:
-        print("Running in docker, not checking for virtual environment.")
-        return
-
-    if NOT_WINDOWS:
-        python_path = c.run("which python", pty=NOT_WINDOWS, hide=True).stdout
-
-        if python_path is None or "venv" not in python_path:
-            print(f"\n{msg_type.FAIL} Not in a virtual environment.\n")
-            print("Activate your virtual environment and try again. \n")
-            exit(1)
-    else:
-        print("Running on Windows, not checking for virtual environment.")

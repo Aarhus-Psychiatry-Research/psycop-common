@@ -3,9 +3,9 @@ from pathlib import Path
 
 from invoke import Context, Result, task
 
+from .environment import NOT_WINDOWS, on_ovartaci
 from .git import push_to_branch
 from .logger import echo_header, msg_type
-from .windows import NOT_WINDOWS, on_ovartaci
 
 
 @task

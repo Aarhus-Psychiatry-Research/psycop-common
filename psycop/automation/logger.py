@@ -1,4 +1,4 @@
-from .windows import NOT_WINDOWS
+from .environment import NOT_WINDOWS
 
 
 class MsgType:
