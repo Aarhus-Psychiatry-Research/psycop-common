@@ -27,7 +27,6 @@ from psycop.automation.git import (
     filetype_modified_since_head,
     push_to_branch,
 )
-from psycop.automation.github import update_pr
 from psycop.automation.lint import pre_commit
 from psycop.automation.logger import echo_header, msg_type
 
@@ -199,15 +198,13 @@ def create_pr(c: Context):
 def check_and_submit_pull_request(
     c: Context,
     auto_fix: bool = True,
-    create_pr: bool = True,
 ):
     """Run all checks and update the PR."""
     add_and_commit(c)
-    if create_pr:
-        try:
-            update_pr(c)
-        except Exception as e:
-            print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
+    try:
+        create_pr(c)
+    except Exception as e:
+        print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
 
     lint(c, auto_fix=auto_fix)
     push_to_branch(c)
@@ -219,15 +216,13 @@ def check_and_submit_pull_request(
 def quick_check_and_submit_pull_request(
     c: Context,
     auto_fix: bool = True,
-    create_pr: bool = True,
 ):
     """Run all checks and update the PR, using heuristics for more speed."""
     add_and_commit(c)
-    if create_pr:
-        try:
-            update_pr(c)
-        except Exception as e:
-            print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
+    try:
+        create_pr(c)
+    except Exception as e:
+        print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
 
     lint(c, auto_fix=auto_fix)
     push_to_branch(c)
