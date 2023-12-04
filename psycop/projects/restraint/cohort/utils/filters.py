@@ -52,7 +52,7 @@ class RestraintWashoutFilter(PredictionTimeFilter):
                 >= pd.Timedelta(0, "days")
             )
             & (
-                pl.col("datotid_start") - pl.col("datotid_start")
+                pl.col("datotid_start") - pl.col("datotid_start_sei")
                 <= pd.Timedelta(WASHOUT_INTERVAL_IN_DAYS, "days")
             ),
         )
