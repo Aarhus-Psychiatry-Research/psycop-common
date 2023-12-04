@@ -12,6 +12,7 @@ def get_test_patient(
         patient_id=patient_id,
         date_of_birth=date_of_birth,
     )
+
     return patient
 
 
@@ -47,12 +48,12 @@ class TestPatientSequenceGenerator:
 
         exclude_events_after_prediction_time = prediction_sequences[
             0
-        ].temporal_events == [temporal_events[0]]
+        ].patient_slice.temporal_events == [temporal_events[0]]
         assert exclude_events_after_prediction_time
 
         exclude_events_before_start_of_lookbehind = prediction_sequences[
             1
-        ].temporal_events == [
+        ].patient_slice.temporal_events == [
             temporal_events[1],
         ]
         assert exclude_events_before_start_of_lookbehind

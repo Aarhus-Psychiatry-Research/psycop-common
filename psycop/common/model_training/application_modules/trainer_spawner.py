@@ -19,9 +19,9 @@ def start_trainer(
     lookahead_days: int,
     wandb_group_override: str,
     model_name: str,
-    dataset_dir: Optional[Union[Path, str]] = None,
+    dataset_dir: Optional[Union[Path, list[Path], list[str]]] = None,
     train_single_model_file_path: Optional[Path] = None,
-) -> subprocess.Popen:
+) -> subprocess.Popen:  # type: ignore
     """Start a trainer."""
     msg = Printer(timestamp=True)
 
@@ -54,6 +54,9 @@ def start_trainer(
         subprocess_args.insert(3, "++model.args.tree_method='gpu_hist'")
 
     if dataset_dir is not None:
+        if isinstance(dataset_dir, list):
+            dataset_dir = [str(d) for d in dataset_dir]
+
         subprocess_args.insert(4, f"data.dir={dataset_dir}")
 
     msg.info(f'{" ".join(subprocess_args)}')
@@ -71,7 +74,8 @@ def spawn_trainers(
     train_single_model_file_path: Path,
 ):
     """Train a model for each cell in the grid of possible look distances."""
-    active_trainers: list[subprocess.Popen] = []
+    active_trainers: list[subprocess.Popen] = []  # type: ignore
+    trainer_combinations_queue = trainer_specs.copy()
     trainer_combinations_queue = trainer_specs.copy()
 
     if cfg.train is None:

@@ -3,8 +3,20 @@
     "python.testing.pytestArgs": [
         "psycop"
     ],
+    "githubIssues.queries": [
+        {
+            "label": "This repo, assigned to me",
+            "query": "is:issue is:open assignee:${user} repo:${owner}/${repository} sort:updated-asc -label:waiting-for-external"
+        },
+        {
+            "label": "This repo, unassigned",
+            "query": "repo:${owner}/${repository} is:issue is:open no:assignee sort:updated-asc"
+        },
+    ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
+    "python.defaultInterpreterPath": "/usr/local/bin/python",
+    "git.autofetch": false,
     "explorer.excludeGitIgnore": false,
     "files.exclude": {
         "**/.git": true,
@@ -13,7 +25,9 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        "**/BUILD": true
+        "**/BUILD": true,
+        "**/__pycache__": true,
+        "**/.testmon*": true,
     },
     "terminal.integrated.env.osx": {
         "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"
@@ -24,6 +38,11 @@
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"
     },
+    "python.analysis.diagnosticMode": "workspace",
     "explorerExclude.backup": {},
-    "jupyter.notebookFileRoot": "${workspaceFolder}"
+    "jupyter.notebookFileRoot": "${workspaceFolder}",
+    "ruff.lint.args": [
+        "--extend-ignore",
+        "PIE790" // Do not delete unnecessary pass on save, only on pr creation
+    ]
 }

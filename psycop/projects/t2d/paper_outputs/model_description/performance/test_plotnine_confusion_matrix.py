@@ -21,4 +21,3 @@ def test_plotnine_confusion_matrix():
         height=5,
         dpi=600,
     )
-    pass

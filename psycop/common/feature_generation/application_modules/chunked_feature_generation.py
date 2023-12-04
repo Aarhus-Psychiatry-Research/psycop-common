@@ -1,4 +1,3 @@
-import glob
 from pathlib import Path
 
 import pandas as pd
@@ -95,7 +94,7 @@ class ChunkedFeatureGenerator:
     def _read_chunk_dfs_from_dir(
         feature_dir: Path,
     ) -> list[pl.DataFrame]:
-        df_dirs = glob.glob(str(feature_dir / "flattened_dataset_chunk_*.parquet"))
+        df_dirs = feature_dir.glob("flattened_dataset_chunk_*.parquet")
 
         return [pl.read_parquet(chunk_dir) for chunk_dir in df_dirs]  # type: ignore
 
@@ -115,7 +114,7 @@ class ChunkedFeatureGenerator:
     def remove_files_from_dir(
         feature_dir: Path,
     ):
-        df_dirs = glob.glob(str(feature_dir / "flattened_dataset_chunk_*.parquet"))
+        df_dirs = feature_dir.glob("flattened_dataset_chunk_*.parquet")
 
         for file in df_dirs:
             Path.unlink(Path(file))

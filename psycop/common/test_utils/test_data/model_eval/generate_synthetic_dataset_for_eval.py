@@ -43,10 +43,10 @@ def return_0_with_prob(prob: float) -> Literal[0, 1]:
 
 
 def null_series_with_prob(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     prob: float,
     null_value: Any = np.NaN,
-) -> Union[pd.Series, None]:
+) -> Union[pd.Series, None]:  # type: ignore
     """Overwrite all values in series with null_value with a given probability.
 
     Args:
@@ -66,10 +66,10 @@ def null_series_with_prob(
 
 
 def overwrite_prop_with_null(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     prop: float,
     null_value: Optional[Any] = np.NaN,
-) -> pd.Series:
+) -> pd.Series:  # type: ignore
     """Overwrite a proportion of all values in a series with a null value (NaN
     or NaT).
 
@@ -123,9 +123,11 @@ if __name__ == "__main__":
 
     # Generate t2d timestamps
     msg.info("Generating T2D-timestamps")
-    df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[  # type: ignore
+    df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
-    ].transform("min") + dt.timedelta(
+    ].transform(
+        "min",
+    ) + dt.timedelta(  # type: ignore
         seconds=np.random.randint(0, years_to_seconds(years=5)),  # type: ignore
     )
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_t2d_diag"].apply(
@@ -134,9 +136,11 @@ if __name__ == "__main__":
 
     # Generate first HbA1c timestamps
     msg.info("Generating HbA1c timestamps")
-    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[  # type: ignore
+    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
         "timestamp_first_pred_time"
-    ].transform("min") + dt.timedelta(
+    ].transform(
+        "min",
+    ) + dt.timedelta(  # type: ignore
         seconds=np.random.randint(0, years_to_seconds(years=4)),  # type: ignore
     )
     df["timestamp_hba1c_copy"] = df["timestamp_first_hba1c"]

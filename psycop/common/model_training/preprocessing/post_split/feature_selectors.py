@@ -8,7 +8,7 @@ class DropDateTimeColumns(BaseEstimator, TransformerMixin):  # type: ignore
     def __init__(
         self,
         pred_prefix: str,
-        drop_dtypes: tuple = ("datetime64[ns]", "<M8[ns]"),
+        drop_dtypes: tuple = ("datetime64[ns]", "<M8[ns]"),  # type: ignore
     ) -> None:
         """
         Args:

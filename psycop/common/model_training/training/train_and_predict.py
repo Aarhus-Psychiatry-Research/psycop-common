@@ -86,9 +86,11 @@ def stratified_cross_validation(
             1,
         ]
 
-        msg.info(f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs],oof_y_pred), 3)}")  # type: ignore
+        msg.info(
+            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs],oof_y_pred), 3)}",  # type: ignore
+        )  # type: ignore
 
-        train_df.loc[val_idxs, "oof_y_hat"] = oof_y_pred
+        train_df.loc[val_idxs, "oof_y_hat"] = oof_y_pred  # type: ignore
 
     return train_df
 
@@ -153,7 +155,7 @@ def multilabel_cross_validation(
         )
 
         for x, col_name in enumerate(outcome_col_name):
-            train_df.loc[val_idxs, f"y_hat_prob_{col_name}"] = oof_y_pred[:, x]
+            train_df.loc[val_idxs, f"y_hat_prob_{col_name}"] = oof_y_pred[:, x]  # type: ignore
 
     return train_df
 

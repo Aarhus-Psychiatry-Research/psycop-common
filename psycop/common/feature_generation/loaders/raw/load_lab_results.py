@@ -181,7 +181,7 @@ def load_all_values(
 
 
 def blood_sample(
-    blood_sample_id: str | list,
+    blood_sample_id: str | list[str],
     n_rows: int | None = None,
     values_to_load: str = "numerical_and_coerce",
 ) -> pd.DataFrame:

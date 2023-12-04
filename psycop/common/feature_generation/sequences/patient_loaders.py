@@ -5,15 +5,12 @@ from typing import Union
 
 import polars as pl
 
-from psycop.common.data_structures.patient import (
-    Patient,
-)
+from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
-    EventDataFramesToPatients,
-    PatientColumnNames,
+    EventDataFramesToPatientSlices,
 )
 
 
@@ -103,20 +100,17 @@ class PatientLoader:
     def get_split(
         event_loaders: Sequence[EventDfLoader],
         split: SplitName,
-        patient_column_names: PatientColumnNames | None = None,
-    ) -> list[Patient]:
+    ) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
-        train_ids = pl.from_pandas(load_ids(split=split)).lazy()
+        split_ids = pl.from_pandas(load_ids(split=split)).lazy()
 
-        events_from_train = train_ids.join(event_data, on="dw_ek_borger", how="left")
+        events_from_train = split_ids.join(event_data, on="dw_ek_borger", how="left")
 
         events_after_2013 = events_from_train.filter(
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
         )
 
-        unpacked_patients = EventDataFramesToPatients(
-            column_names=patient_column_names,
-        ).unpack(
+        unpacked_patients = EventDataFramesToPatientSlices().unpack(
             source_event_dataframes=[events_after_2013.collect()],
             date_of_birth_df=PatientLoader.load_date_of_birth_df(),
         )

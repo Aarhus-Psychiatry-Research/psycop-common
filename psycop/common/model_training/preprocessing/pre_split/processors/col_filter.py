@@ -173,7 +173,15 @@ class PresSplitColFilter:
 
         df = dataset.drop(col_to_drop, axis=1)
 
-        n_col_names = len(infer_outcome_col_name(df, prefix=self.data_cfg.outc_prefix))
+        try:
+            n_col_names = len(
+                infer_outcome_col_name(df, prefix=self.data_cfg.outc_prefix),
+            )
+        except ValueError as err:
+            raise ValueError(
+                f"No outcome columns matching both prefix {self.data_cfg.outc_prefix} and lookahead {self.pre_split_cfg.min_lookahead_days} found",
+            ) from err
+
         if n_col_names > 1:
             raise ValueError(
                 f"Returning {n_col_names} outcome columns, will cause problems during eval.",
@@ -185,11 +193,13 @@ class PresSplitColFilter:
     def _drop_datetime_columns(
         pred_prefix: str,
         dataset: pd.DataFrame,
-        drop_dtypes: tuple = ("datetime64[ns]", "<M8[ns]"),
+        drop_dtypes: tuple[str, ...] = ("datetime64[ns]", "<M8[ns]"),
     ) -> pd.DataFrame:
         """Drop all datetime columns from the dataset."""
         columns_to_drop = [
-            c for c in dataset.columns if dataset[c].dtype in drop_dtypes
+            c
+            for c in dataset.columns
+            if dataset[c].dtype in drop_dtypes  # type: ignore
         ]
         columns_to_drop = [c for c in columns_to_drop if c.startswith(pred_prefix)]
 

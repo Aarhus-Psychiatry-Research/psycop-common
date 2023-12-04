@@ -27,10 +27,12 @@ class ColumnNamesSchema(PSYCOPBaseModel):
 class DataSchema(PSYCOPBaseModel):
     """Data configuration."""
 
-    dir: Union[Path, str]  # Location of the dataset # noqa
+    dir: list[  # noqa: A003
+        Path
+    ] | Path  # Location of the dataset. if list, datasets will be concatenated.
     suffix: str = "parquet"  # File suffix to load.
 
-    splits_for_training: list[str] = [
+    splits_for_training: list[str] = [  # noqa: RUF012
         "train",
         "val",
     ]  # splits to use for training

@@ -6,10 +6,12 @@ from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.data_structures.test_patient import get_test_patient
 from psycop.common.feature_generation.sequences.event_dataframes_to_patient import (
-    EventDataFramesToPatients,
-    PatientColumnNames,
+    EventDataFramesToPatientSlices,
+    PatientSliceColumnNames,
 )
-from psycop.common.feature_generation.sequences.patient_loaders import DiagnosisLoader
+from psycop.common.feature_generation.sequences.patient_loaders import (
+    DiagnosisLoader,
+)
 from psycop.common.feature_generation.sequences.utils_for_testing import (
     get_test_date_of_birth_df,
 )
@@ -60,7 +62,9 @@ def test_temporal_events():
     )
     expected_patients = [patient_1, patient_2]
 
-    unpacked = EventDataFramesToPatients().unpack(
+    unpacked = EventDataFramesToPatientSlices(
+        column_names=PatientSliceColumnNames(source_subtype_col_name=None),
+    ).unpack(
         source_event_dataframes=[test_data],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
     )
@@ -80,7 +84,7 @@ def test_static_features():
         [StaticFeature(source_type="test", value=0)],
     )
 
-    unpacked = EventDataFramesToPatients().unpack(
+    unpacked = EventDataFramesToPatientSlices().unpack(
         source_event_dataframes=[test_data],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1]),
     )
@@ -113,7 +117,9 @@ def test_multiple_event_sources():
         [expected_static_event, expected_temporal_event],
     )
 
-    unpacked = EventDataFramesToPatients().unpack(
+    unpacked = EventDataFramesToPatientSlices(
+        column_names=PatientSliceColumnNames(source_subtype_col_name=None),
+    ).unpack(
         source_event_dataframes=[test_data, test_data2],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1]),
     )
@@ -129,7 +135,7 @@ def test_patient_without_date_of_birth_raises_error():
     )
 
     with pytest.raises(KeyError):
-        EventDataFramesToPatients().unpack(
+        EventDataFramesToPatientSlices().unpack(
             source_event_dataframes=[test_data],
             date_of_birth_df=get_test_date_of_birth_df(patient_ids=[2]),
         )
@@ -152,14 +158,16 @@ def test_passing_patient_colnames():
         .collect()
     )
 
-    unpacked_with_source_subtype_column = EventDataFramesToPatients(
-        column_names=PatientColumnNames(source_subtype_col_name="type"),
+    unpacked_with_source_subtype_column = EventDataFramesToPatientSlices(
+        column_names=PatientSliceColumnNames(source_subtype_col_name="type"),
     ).unpack(
         source_event_dataframes=[formatted_df],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
     )
 
-    unpacked_without_source_subtype_column = EventDataFramesToPatients().unpack(
+    unpacked_without_source_subtype_column = EventDataFramesToPatientSlices(
+        column_names=PatientSliceColumnNames(source_subtype_col_name=None),
+    ).unpack(
         source_event_dataframes=[formatted_df],
         date_of_birth_df=get_test_date_of_birth_df(patient_ids=[1, 2]),
     )

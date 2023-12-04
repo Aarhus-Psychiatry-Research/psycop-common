@@ -22,7 +22,7 @@ def load(
     exclude_atc_codes: list[str] | None = None,
     administration_route: str | None = None,
     administration_method: str | None = None,
-    fixed_doses: tuple | None = None,
+    fixed_doses: tuple[int, ...] | None = None,
 ) -> pd.DataFrame:
     """Load medications. Aggregates prescribed/administered if both true. If
     wildcard_atc_code, match from atc_code*. Aggregates all that match. Beware

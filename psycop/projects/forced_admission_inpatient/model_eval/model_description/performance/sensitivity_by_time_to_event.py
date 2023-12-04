@@ -7,7 +7,7 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
 )
 
 
@@ -44,7 +44,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     return p
 
 
-def fa_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
+def fa_inpatient_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -66,7 +66,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
 
     for ppr in [0.01, 0.03, 0.05]:
         df = get_sensitivity_by_timedelta_df(
-            y=eval_dataset.y,
+            y=eval_dataset.y,  # type: ignore
             y_hat=eval_dataset.get_predictions_for_positive_rate(
                 desired_positive_rate=ppr,
             )[0],
@@ -85,18 +85,21 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
 
     plot_df = pd.concat(dfs)
 
-    p = fa_plot_sensitivity_by_time_to_event(plot_df)
+    p = fa_inpatient_plot_sensitivity_by_time_to_event(plot_df)
 
     return p
 
 
-def fa_sensitivity_by_time_to_event(pipeline_run: PipelineRun) -> pn.ggplot:
+def fa_inpatient_sensitivity_by_time_to_event(
+    pipeline_run: ForcedAdmissionInpatientPipelineRun,
+) -> pn.ggplot:
     eval_ds = pipeline_run.pipeline_outputs.get_eval_dataset()
 
     p = sensitivity_by_time_to_event(eval_dataset=eval_ds)
 
     p.save(
-        pipeline_run.paper_outputs.paths.figures / "sensitivity_by_time_to_event.png",
+        pipeline_run.paper_outputs.paths.figures
+        / "fa_inpatient_sens_by_time_to_event.png",
         width=7,
         height=7,
     )
@@ -109,4 +112,4 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    fa_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())
+    fa_inpatient_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())

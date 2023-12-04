@@ -119,7 +119,7 @@ def first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFrame:
 
 def unpack_adm_days(
     idx: int,
-    row: pd.Series,
+    row: pd.Series,  # type: ignore
     pred_hour: int = 6,
 ) -> pd.DataFrame:
     """Unpack admissions to long format (one row per day in the admission)

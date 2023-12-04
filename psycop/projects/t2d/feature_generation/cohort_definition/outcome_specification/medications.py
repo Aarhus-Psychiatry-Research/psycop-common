@@ -32,5 +32,3 @@ def get_first_antidiabetic_medication() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = get_first_antidiabetic_medication()
-
-    pass

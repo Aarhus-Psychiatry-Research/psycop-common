@@ -29,7 +29,7 @@ def plot_gain(  #
     top_n: int = 10,
     save_path: Path = FIGURES_PATH,
     model: Literal["baseline", "text"] = "baseline",
-) -> Union[None, tuple]:
+) -> Union[None, tuple]:  # type: ignore
     """Plots feature importances based on gain.
 
     Sklearn's standard feature importance metric is "gain"/information gain,

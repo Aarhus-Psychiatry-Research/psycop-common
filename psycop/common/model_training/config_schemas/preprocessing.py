@@ -11,7 +11,7 @@ class FeatureSelectionSchema(PSYCOPBaseModel):
     name: Optional[str] = None
     # Which feature selection method to use.
 
-    params: Optional[dict] = None
+    params: Optional[dict] = None  # type: ignore
     # Parameters for the feature selection method.
 
 

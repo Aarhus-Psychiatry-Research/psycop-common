@@ -19,4 +19,3 @@ def get_first_bp_diagnosis() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = get_first_bp_diagnosis()
-    pass

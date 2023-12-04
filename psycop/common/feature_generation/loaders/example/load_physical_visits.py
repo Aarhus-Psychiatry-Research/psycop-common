@@ -7,4 +7,3 @@ if __name__ == "__main__":
     somatic = r.load_visits.physical_visits_to_somatic(n_rows=1000)
 
     print(f"Max date is {psych['timestamp'].max()}")
-    pass

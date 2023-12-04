@@ -13,10 +13,18 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 from psycop.common.model_training.data_loader.utils import (
     load_and_filter_split_from_cfg,
 )
-
-PRETRAINED_CFG_PATH = Path(
-    "E:/shared_resources/forced_admissions_inpatient/models/full_model_with_sent_transformer_and_tfidf_750_embeddings/pipeline_eval/pleats-magnetomotive/dermatopterasubvertical/cfg.json",
+from psycop.projects.forced_admission_inpatient.model_eval.config import (
+    DEV_GROUP_NAME,
+    DEVELOPMENT_GROUP,
+    PROJECT_MODEL_DIR,
 )
+
+model_name = DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[
+    0,
+    2,
+]
+
+PRETRAINED_CFG_PATH = PROJECT_MODEL_DIR / DEV_GROUP_NAME / model_name / "cfg.json"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = PROJECT_ROOT / "model_training" / "config"
@@ -89,15 +97,20 @@ def _generate_general_descriptive_stats(
     pred_cols = _get_pred_cols_df(df)
     na_ratios = pred_cols.isna().sum().sum() / (pred_cols.shape[0] * pred_cols.shape[1])
 
-    outcomes = df["outc_bool_within_182_days"].sum()
+    outcomes = df[
+        "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
+    ].sum()
     outcome_rate = outcomes / df.shape[0]
 
-    unique_patients_with_outcomes = df[df["outc_bool_within_182_days"] == 1][
-        "dw_ek_borger"
-    ].nunique()
+    unique_patients_with_outcomes = df[
+        df["outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"] == 1
+    ]["dw_ek_borger"].nunique()
 
     print(
-        df[df["outc_bool_within_182_days"] == 1]["dw_ek_borger"]
+        df[
+            df["outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"]
+            == 1
+        ]["dw_ek_borger"]
         .value_counts()
         .head(10),
     )
@@ -139,23 +152,45 @@ def _calc_feature_corr_with_outcome(
     print("Calculating correlations!")
 
     if only_tfidf:
-        pred_cols = [col for col in train_df.columns if col.startswith("pred_pred_tfidf")]  # type: ignore
+        pred_cols = [
+            col for col in train_df.columns if col.startswith("pred_pred_tfidf")
+        ]  # type: ignore
 
-        train_correlations = train_df[[*pred_cols, "outc_bool_within_182_days"]].corr()[
-            "outc_bool_within_182_days"
+        train_correlations = train_df[
+            [
+                *pred_cols,
+                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
+            ]
+        ].corr()[
+            "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
-        val_correlations = val_df[[*pred_cols, "outc_bool_within_182_days"]].corr()[
-            "outc_bool_within_182_days"
+        val_correlations = val_df[
+            [
+                *pred_cols,
+                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
+            ]
+        ].corr()[
+            "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
 
     else:
         pred_cols = [col for col in train_df.columns if col.startswith("pred_")]  # type: ignore
 
-        train_correlations = train_df[[*pred_cols, "outc_bool_within_182_days"]].corr()[
-            "outc_bool_within_182_days"
+        train_correlations = train_df[
+            [
+                *pred_cols,
+                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
+            ]
+        ].corr()[
+            "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
-        val_correlations = val_df[[*pred_cols, "outc_bool_within_182_days"]].corr()[
-            "outc_bool_within_182_days"
+        val_correlations = val_df[
+            [
+                *pred_cols,
+                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
+            ]
+        ].corr()[
+            "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
 
     # Create a DataFrame to store feature names and correlations
@@ -164,7 +199,8 @@ def _calc_feature_corr_with_outcome(
             "feature": pred_cols,
             "train_split_correlations": train_correlations[pred_cols],  # type: ignore
             "val_split_correlations": val_correlations[pred_cols],  # type: ignore
-            "correlation_diffs": train_correlations[pred_cols] - val_correlations[pred_cols],  # type: ignore
+            "correlation_diffs": train_correlations[pred_cols]
+            - val_correlations[pred_cols],  # type: ignore
         },
     ).reset_index(drop=True)
 
@@ -173,7 +209,7 @@ def _calc_feature_corr_with_outcome(
 
 def _plot_corr_diffs(
     df: pd.DataFrame,
-    shape: tuple,
+    shape: tuple,  # type: ignore
     output_dir: Optional[Path],
     feature_split: str = "features",
 ):
@@ -230,7 +266,7 @@ def main(
         df = df.rename(
             columns={
                 "citizen_ids": "dw_ek_borger",
-                "outc_t2d_within_30_days_maximum_fallback_0_dichotomous": "outc_bool_within_182_days",
+                "outc_t2d_within_30_days_maximum_fallback_0_dichotomous": "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
             },
         )
 

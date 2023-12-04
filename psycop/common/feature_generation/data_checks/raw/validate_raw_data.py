@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def median_absolute_deviation(series: pd.Series) -> float:
+def median_absolute_deviation(series: pd.Series) -> float:  # type: ignore
     """Calculates a series' median absolute deviation from its own median.
 
     Args:
@@ -37,7 +37,7 @@ def median_absolute_deviation(series: pd.Series) -> float:
     return np.median(np.abs(series - med))  # type: ignore
 
 
-def generate_column_description(series: pd.Series) -> dict:
+def generate_column_description(series: pd.Series) -> dict:  # type: ignore
     """Generates a dictionary with column description.
 
     Args:
@@ -66,7 +66,7 @@ def generate_column_description(series: pd.Series) -> dict:
     return d
 
 
-def get_na_prob(series: pd.Series) -> float:
+def get_na_prob(series: pd.Series) -> float:  # type: ignore
     """Calculates the propotion of rows that are NaT.
 
     Args:
@@ -79,7 +79,7 @@ def get_na_prob(series: pd.Series) -> float:
 
 
 def highlight_large_deviation(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     threshold_ratio: float,
     baseline_column: str,
     variation_column: str,

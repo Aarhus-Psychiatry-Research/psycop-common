@@ -20,7 +20,7 @@ log.setLevel(logging.INFO)
 def create_model_filename(
     model: Literal["bow", "tfidf"],
     corpus_name: str,
-    ngram_range: tuple,
+    ngram_range: tuple[int, int],
     max_df: float,
     min_df: int,
     max_features: Optional[int],
@@ -48,7 +48,7 @@ def text_model_pipeline(
     model: Literal["bow", "tfidf"],
     corpus_name: str = "psycop_train_all_sfis_preprocessed",
     sfi_type: Optional[Sequence[str]] = None,
-    ngram_range: tuple = (1, 1),
+    ngram_range: tuple[int, int] = (1, 1),
     max_df: float = 1.0,
     min_df: int = 1,
     max_features: Optional[int] = 100,

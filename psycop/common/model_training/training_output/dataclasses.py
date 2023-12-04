@@ -11,8 +11,8 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 
 def get_predictions_for_positive_rate(
     desired_positive_rate: float,
-    y_hat_probs: pd.Series,
-) -> tuple[pd.Series, Union[float, float64]]:
+    y_hat_probs: pd.Series,  # type: ignore
+) -> tuple[pd.Series, Union[float, float64]]:  # type: ignore
     positive_threshold = y_hat_probs.quantile(1 - desired_positive_rate)
 
     # Remap y_hat_probs to 0/1 based on positive rate threshold
@@ -27,8 +27,8 @@ def get_predictions_for_positive_rate(
 
 def get_predictions_for_threshold(
     desired_threshold: float,
-    y_hat_probs: pd.Series,
-) -> tuple[pd.Series, float]:
+    y_hat_probs: pd.Series,  # type: ignore
+) -> tuple[pd.Series, float]:  # type: ignore
     y_hat_int = (y_hat_probs > desired_threshold).astype(int)
     return y_hat_int, desired_threshold
 
@@ -40,16 +40,16 @@ class EvalDataset(PSYCOPBaseModel):
     consistent.
     """
 
-    ids: pd.Series
-    pred_time_uuids: pd.Series
-    pred_timestamps: pd.Series
-    outcome_timestamps: Optional[pd.Series] = None
-    y: Union[pd.Series, pd.DataFrame]
-    y_hat_probs: Union[pd.Series, pd.DataFrame]
-    age: Optional[pd.Series] = None
-    is_female: Optional[pd.Series] = None
-    exclusion_timestamps: Optional[pd.Series] = None
-    custom_columns: Optional[dict[str, pd.Series]] = None
+    ids: pd.Series  # type: ignore
+    pred_time_uuids: pd.Series  # type: ignore
+    pred_timestamps: pd.Series  # type: ignore
+    outcome_timestamps: Optional[pd.Series] = None  # type: ignore
+    y: Union[pd.Series, pd.DataFrame]  # type: ignore
+    y_hat_probs: Union[pd.Series, pd.DataFrame]  # type: ignore
+    age: Optional[pd.Series] = None  # type: ignore
+    is_female: Optional[pd.Series] = None  # type: ignore
+    exclusion_timestamps: Optional[pd.Series] = None  # type: ignore
+    custom_columns: Optional[dict[str, pd.Series]] = None  # type: ignore
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
@@ -59,7 +59,7 @@ class EvalDataset(PSYCOPBaseModel):
         self,
         desired_positive_rate: float,
         y_hat_probs_column: Optional[str] = "y_hat_probs",
-    ) -> tuple[pd.Series, Union[float, float64]]:
+    ) -> tuple[pd.Series, Union[float, float64]]:  # type: ignore
         """Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
 
 
@@ -77,7 +77,7 @@ class EvalDataset(PSYCOPBaseModel):
         self,
         desired_threshold: float,
         y_hat_probs_column: Optional[str] = "y_hat_probs",
-    ) -> tuple[pd.Series, float]:
+    ) -> tuple[pd.Series, float]:  # type: ignore
         """Turns predictions above `desired_threshold` to 1, rest to 0"""
         if isinstance(self.y_hat_probs, pd.Series):
             self.y_hat_probs = self.y_hat_probs.to_frame(name="y_hat_probs")

@@ -20,7 +20,7 @@ def add_age_is_female(
     """
     ids = pd.DataFrame({id_column_name: df[id_column_name].unique()})
     ids["age"] = np.random.randint(18, 95, len(ids))
-    ids["is_female"] = [np.random.randint(0, 2) for _ in range(0, len(ids))]
+    ids["is_female"] = [np.random.randint(0, 2) for _ in range(len(ids))]
 
     return df.merge(ids)
 
@@ -44,10 +44,10 @@ def return_0_with_prob(prob: float) -> Literal[0, 1]:
 
 
 def null_series_with_prob(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     prob: float,
     null_value: Any = np.NaN,
-) -> Union[pd.Series, None]:
+) -> Union[pd.Series, None]:  # type: ignore
     """Overwrite values in series with null_value with a given probability.
 
     Args:
@@ -68,10 +68,10 @@ def null_series_with_prob(
 
 
 def overwrite_prop_with_null(
-    series: pd.Series,
+    series: pd.Series,  # type: ignore
     prop: float,
     null_value: Optional[Any] = np.NaN,
-) -> pd.Series:
+) -> pd.Series:  # type: ignore
     """Overwrite a proportion of all values in a series with a null value (NaN
     or NaT).
 
@@ -155,9 +155,11 @@ if __name__ == "__main__":
     )
 
     msg.info("Generating synth outcome timestamps")
-    df["outcome_timestamp"] = df.groupby("dw_ek_borger")[  # type: ignore
+    df["outcome_timestamp"] = df.groupby("dw_ek_borger")[
         "admission_timestamp"
-    ].transform("min") + dt.timedelta(
+    ].transform(
+        "min",
+    ) + dt.timedelta(  # type: ignore
         seconds=np.random.randint(0, days_to_seconds(days=5)),  # type: ignore
     )
 

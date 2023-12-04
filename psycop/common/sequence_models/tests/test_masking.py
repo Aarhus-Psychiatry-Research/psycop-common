@@ -6,32 +6,35 @@ from torch import nn
 
 from psycop.common.sequence_models import BEHRTForMaskedLM
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
-from psycop.projects.sequence_models.train import Config
+from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 
 
 @pytest.mark.parametrize(
     "embedding_module",
     [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):
+def test_masking_fn(
+    patient_slices: list,  # type: ignore
+    embedding_module: BEHRTEmbedder,
+    optimizer_fn: OptimizerFn,
+    lr_scheduler_fn: LRSchedulerFn,
+):  # type: ignore
     """
     Test masking function
     """
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
-    embedding_module.fit(patients)
-
-    config = Config()
+    embedding_module.fit(patient_slices)
 
     task = BEHRTForMaskedLM(
         embedding_module=embedding_module,
         encoder_module=encoder,
-        optimizer_kwargs=config.optimization_config.optimizer_kwargs,
-        lr_scheduler_kwargs=config.optimization_config.lr_scheduler_kwargs,
+        optimizer_fn=optimizer_fn,
+        lr_scheduler_fn=lr_scheduler_fn,
     )
 
-    inputs_ids = embedding_module.collate_patients(patients)
+    inputs_ids = embedding_module.collate_patient_slices(patient_slices)
 
     masked_input_ids, masked_labels = task.masking_fn(inputs_ids)
 
@@ -46,7 +49,7 @@ def test_masking_fn(patients: list, embedding_module: BEHRTEmbedder):
 
 
 @pytest.mark.parametrize("masking_fn", [BEHRTForMaskedLM.mask])
-def test_masking_never_masks_0_elements_in_seq(masking_fn: Callable):
+def test_masking_never_masks_0_elements_in_seq(masking_fn: Callable):  # type: ignore
     # If no element in the batch is masked we get an error since the MLM module expects
     # at least one element to be masked.
     n_diagnoses_in_vocab = 4

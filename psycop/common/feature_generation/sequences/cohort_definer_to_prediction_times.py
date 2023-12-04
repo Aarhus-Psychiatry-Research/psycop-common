@@ -21,9 +21,13 @@ PATIENT_ID = str | int
 
 
 class CohortToPredictionTimes:
-    def __init__(self, cohort_definer: CohortDefiner, patient_objects: list[Patient]):
+    def __init__(
+        self,
+        cohort_definer: CohortDefiner,
+        patients: Sequence[Patient],
+    ):
         self.cohort_definer = cohort_definer
-        self.patients = patient_objects
+        self.patients = patients
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
@@ -102,10 +106,8 @@ if __name__ == "__main__":
 
     prediction_times = CohortToPredictionTimes(
         cohort_definer=T2DCohortDefiner(),
-        patient_objects=patients,
+        patients=patients,
     ).create_prediction_times(
         lookbehind=dt.timedelta(days=365),
         lookahead=dt.timedelta(days=365),
     )
-
-    pass

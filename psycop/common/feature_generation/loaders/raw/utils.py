@@ -89,7 +89,7 @@ def load_from_codes(
     exclude_codes: list[str] | None = None,
     administration_route: str | None = None,
     administration_method: str | None = None,
-    fixed_doses: tuple | None = None,
+    fixed_doses: tuple[int, ...] | None = None,
     shak_location_col: str | None = None,
     shak_code: int | None = None,
     keep_code_col: bool = False,
@@ -132,22 +132,30 @@ def load_from_codes(
     """
     fct = f"[{view}]"
 
-    if isinstance(codes_to_match, list) and len(codes_to_match) > 1:
-        match_col_sql_str = list_to_sql_logic(
-            codes_to_match=codes_to_match,
-            code_sql_col_name=code_col_name,
-            load_diagnoses=load_diagnoses,
-            match_with_wildcard=match_with_wildcard,
-        )
-    elif isinstance(codes_to_match, str):
-        match_col_sql_str = str_to_sql_match_logic(
-            code_to_match=codes_to_match,
-            code_sql_col_name=code_col_name,
-            load_diagnoses=load_diagnoses,
-            match_with_wildcard=match_with_wildcard,
-        )
-    else:
-        raise ValueError("codes_to_match must be either a list or a string.")
+    match codes_to_match:
+        case str():
+            match_col_sql_str = str_to_sql_match_logic(
+                code_to_match=codes_to_match,
+                code_sql_col_name=code_col_name,
+                load_diagnoses=load_diagnoses,
+                match_with_wildcard=match_with_wildcard,
+            )
+        case list() if len(codes_to_match) == 1:
+            match_col_sql_str = str_to_sql_match_logic(
+                code_to_match=codes_to_match[0],
+                code_sql_col_name=code_col_name,
+                load_diagnoses=load_diagnoses,
+                match_with_wildcard=match_with_wildcard,
+            )
+        case [*codes_to_match] if len(codes_to_match) > 1:
+            match_col_sql_str = list_to_sql_logic(
+                codes_to_match=codes_to_match,
+                code_sql_col_name=code_col_name,
+                load_diagnoses=load_diagnoses,
+                match_with_wildcard=match_with_wildcard,
+            )
+        case list():
+            raise ValueError("List is neither of len==1 or len>1")
 
     sql = (
         f"SELECT dw_ek_borger, {source_timestamp_col_name}, {code_col_name} "

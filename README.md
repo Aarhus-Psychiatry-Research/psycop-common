@@ -24,17 +24,23 @@ The shared code across the PSYCOP projects.
 
 ## Installation
 ### Method 1: Dev container
-1. Install Orbstack or Docker Desktop
-2. Install VSCode
-3. Press the "Dev containers: Open" badge above or this [link](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Aarhus-Psychiatry-Research/psycop-common)
-4. Select "From Dev Container"
+1. Install [Orbstack](https://orbstack.dev/) or Docker Desktop. Make sure to complete the full install process before continuing.
+2. If not installed, install VSCode
+3. Clone the repository and open it in VSCode
+4. Press rebuild
+
+![208704841-6bcefca0-9d76-48c5-b449-04d534340c4d](https://github.com/Aarhus-Psychiatry-Research/psycop-common/assets/8526086/d05d8dc7-cbb0-49ea-beb2-11d701440242)
+
+5. Profit!
 
 ### Method 2: Ovartaci
 If you're working on Ovartaci, all you need is to activate the shared environment by
 
 ```
-conda activate psycop
+conda activate psycop-main
 ```
+
+To reinstall the packages in the environment, run `setup_overtaci.sh` in a `git bash` session.
 
 ### Method 3: Virtual environment install
 If you're working locally:

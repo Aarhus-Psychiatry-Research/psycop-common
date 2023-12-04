@@ -17,20 +17,20 @@ PatientDict = dict[str | int, list[TemporalEvent | StaticFeature]]
 
 
 @dataclass(frozen=True)
-class PatientColumnNames:
+class PatientSliceColumnNames:
     patient_id_col_name: str = "dw_ek_borger"
     timestamp_col_name: str = "timestamp"
     source_col_name: str = "source"
     value_col_name: str = "value"
-    source_subtype_col_name: str | None = None
+    source_subtype_col_name: str | None = "type"
 
 
-class EventDataFramesToPatients:
+class EventDataFramesToPatientSlices:
     """Unpacks a sequence of dataframes containing events into a list of patients."""
 
-    def __init__(self, column_names: PatientColumnNames | None = None) -> None:
+    def __init__(self, column_names: PatientSliceColumnNames | None = None) -> None:
         self._column_names = (
-            column_names if column_names is not None else PatientColumnNames()
+            column_names if column_names is not None else PatientSliceColumnNames()
         )
 
     def _temporal_event_dict_to_event_obj(
@@ -82,12 +82,12 @@ class EventDataFramesToPatients:
 
         return patient_dict  # type: ignore
 
-    def _cohort_dict_to_patients(
+    def _cohort_dict_to_patient_slices(
         self,
         cohort_dict: PatientDict,
         date_of_birth_dict: dict[int | str, datetime],
     ) -> list[Patient]:
-        patient_cohort = []
+        patient_cohort: list[Patient] = []
 
         for patient_id, patient_events in cohort_dict.items():
             try:
@@ -98,7 +98,10 @@ class EventDataFramesToPatients:
                     "Please make sure that the date of birth is included in the "
                     "date_of_birth_df.",
                 ) from e
-            patient = Patient(patient_id=patient_id, date_of_birth=date_of_birth)
+            patient = Patient(
+                patient_id=patient_id,
+                date_of_birth=date_of_birth,
+            )
             patient.add_events(patient_events)
             patient_cohort.append(patient)
 
@@ -141,18 +144,18 @@ class EventDataFramesToPatients:
         cohort_dict = {}
 
         for patient_dict in patient_dicts:
-            patient_id = list(patient_dict.keys())[0]
-            if patient_id not in cohort_dict.keys():
+            patient_id = list(patient_dict.keys())[0]  # noqa: RUF015
+            if patient_id not in cohort_dict:
                 cohort_dict.update(patient_dict)
             else:
-                patient_events = list(patient_dict.values())[0]
+                patient_events = list(patient_dict.values())[0]  # noqa: RUF015
                 cohort_dict[patient_id] += patient_events
 
         date_of_birth_dict = self._date_of_birth_df_to_dict(
             date_of_birth_df=date_of_birth_df,
         )
 
-        patient_cohort = self._cohort_dict_to_patients(
+        patient_cohort = self._cohort_dict_to_patient_slices(
             cohort_dict=cohort_dict,
             date_of_birth_dict=date_of_birth_dict,
         )

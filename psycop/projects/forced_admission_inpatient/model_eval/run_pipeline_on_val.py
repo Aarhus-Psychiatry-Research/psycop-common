@@ -12,29 +12,33 @@ from psycop.projects.forced_admission_inpatient.model_eval.config import (
     MODEL_NAME,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
     RunGroup,
 )
 
 msg = Printer(timestamp=True)  # type: ignore
 
 
-def _get_test_run_name(pipeline_to_train: PipelineRun) -> str:
+def _get_test_run_name(pipeline_to_train: ForcedAdmissionInpatientPipelineRun) -> str:
     return f"{pipeline_to_train.name}-eval-on-test"
 
 
-def _get_test_group_name(pipeline_to_train: PipelineRun) -> str:
+def _get_test_group_name(pipeline_to_train: ForcedAdmissionInpatientPipelineRun) -> str:
     return f"{pipeline_to_train.group.group_name!s}-eval-on-test"
 
 
-def _get_test_group_path(pipeline_to_train: PipelineRun) -> Path:
+def _get_test_group_path(
+    pipeline_to_train: ForcedAdmissionInpatientPipelineRun,
+) -> Path:
     return Path(
         pipeline_to_train.group.group_dir.parent
         / _get_test_group_name(pipeline_to_train=pipeline_to_train),
     )
 
 
-def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) -> Path:
+def _get_test_pipeline_dir(
+    pipeline_to_train: ForcedAdmissionInpatientPipelineRun,
+) -> Path:
     """Get the path to the directory where the pipeline is evaluated on the test set."""
     return _get_test_group_path(
         pipeline_to_train=pipeline_to_train,
@@ -42,9 +46,9 @@ def _get_test_pipeline_dir(pipeline_to_train: PipelineRun) -> Path:
 
 
 def _train_pipeline_on_test(
-    pipeline_to_train: PipelineRun,
-    splits_for_training: list | None = None,
-    splits_for_evaluation: list | None = None,
+    pipeline_to_train: ForcedAdmissionInpatientPipelineRun,
+    splits_for_training: list | None = None,  # type: ignore
+    splits_for_evaluation: list | None = None,  # type: ignore
 ):
     if splits_for_training is None:
         splits_for_training = ["train"]
@@ -82,10 +86,10 @@ def _check_directory_exists(dir_path: Path) -> bool:
 
 
 def test_selected_model_pipeline(
-    pipeline_to_test: PipelineRun,
-    splits_for_training: list | None = None,
-    splits_for_evaluation: list | None = None,
-) -> PipelineRun:
+    pipeline_to_test: ForcedAdmissionInpatientPipelineRun,
+    splits_for_training: list | None = None,  # type: ignore
+    splits_for_evaluation: list | None = None,  # type: ignore
+) -> ForcedAdmissionInpatientPipelineRun:
     # Check if the pipeline has already been trained on the test set
     # If so, return the existing run
     pipeline_has_been_evaluated_on_test = _check_directory_exists(
@@ -113,7 +117,7 @@ def test_selected_model_pipeline(
                     "Model will not be reavluated. Loading previous evaluation pipeline run.",
                 )
                 done_evaluating = True
-                return PipelineRun(
+                return ForcedAdmissionInpatientPipelineRun(
                     group=RunGroup(
                         model_name=MODEL_NAME,
                         group_name=_get_test_group_name(pipeline_to_test),
@@ -143,7 +147,7 @@ def test_selected_model_pipeline(
             splits_for_evaluation=splits_for_evaluation,
         )
 
-    return PipelineRun(
+    return ForcedAdmissionInpatientPipelineRun(
         group=RunGroup(
             model_name=MODEL_NAME,
             group_name=_get_test_group_name(pipeline_to_test),

@@ -12,7 +12,7 @@ from tqdm import tqdm
 from wasabi import msg
 
 
-def chunker(seq: Sequence | pd.DataFrame, size: int) -> Generator:
+def chunker(seq: Sequence | pd.DataFrame, size: int) -> Generator:  # type: ignore
     """Yield successive n-sized chunks from seq."""
     # from http://stackoverflow.com/a/434328
     return (seq[pos : pos + size] for pos in range(0, len(seq), size))
@@ -90,9 +90,9 @@ def write_df_to_sql(
         df=df,
         table_name=table_name,
         rows_per_chunk=rows_per_chunk,
-        conn=conn,
+        conn=conn,  # type: ignore
         if_exists=if_exists,
     )
 
-    conn.close()
-    engine.dispose()
+    conn.close()  # type: ignore
+    engine.dispose()  # type: ignore

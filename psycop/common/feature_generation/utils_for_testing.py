@@ -1,6 +1,8 @@
 """Utilites for testing."""
 
 
+from typing import Any
+
 import pandas as pd
 import pytest
 from pandas import DataFrame
@@ -44,7 +46,7 @@ def load_event_times() -> pd.DataFrame:
     return str_to_df(event_times_str)
 
 
-def check_any_item_in_list_has_str(list_of_str: list, str_: str) -> bool:
+def check_any_item_in_list_has_str(list_of_str: list[Any], str_: str) -> bool:
     """Check if any item in a list contains a string.
 
     Args:

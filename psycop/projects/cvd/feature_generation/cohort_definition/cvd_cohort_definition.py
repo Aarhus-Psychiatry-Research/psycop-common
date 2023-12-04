@@ -30,7 +30,7 @@ class CVDCohortDefiner(CohortDefiner):
             ),
         )
 
-        return filter_prediction_times(
+        result = filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
             filtering_steps=(
                 CVDMinDateFilter(),
@@ -42,14 +42,16 @@ class CVDCohortDefiner(CohortDefiner):
             entity_id_col_name="dw_ek_borger",
         )
 
+        return result
+
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
-        return pl.from_pandas(get_first_cvd_indicator())
+        return (
+            pl.from_pandas(get_first_cvd_indicator())
+            .with_columns(value=pl.lit(1))
+            .select(["dw_ek_borger", "timestamp", "value"])
+        )
 
 
 if __name__ == "__main__":
-    bundle = CVDCohortDefiner.get_filtered_prediction_times_bundle()
-
-    df = bundle.prediction_times
-
     outcome_timestamps = CVDCohortDefiner.get_outcome_timestamps()

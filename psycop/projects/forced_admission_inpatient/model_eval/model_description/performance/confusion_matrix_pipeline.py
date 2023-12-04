@@ -11,11 +11,13 @@ from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import 
     get_best_eval_pipeline,
 )
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    PipelineRun,
+    ForcedAdmissionInpatientPipelineRun,
 )
 
 
-def fa_confusion_matrix_plot(run: PipelineRun) -> pn.ggplot:
+def fa_inpatient_confusion_matrix_plot(
+    run: ForcedAdmissionInpatientPipelineRun,
+) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pd.DataFrame(
@@ -30,13 +32,13 @@ def fa_confusion_matrix_plot(run: PipelineRun) -> pn.ggplot:
 
     p = plotnine_confusion_matrix(
         matrix=confusion_matrix,
-        outcome_text=f"FA within {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days)}  days",
+        outcome_text=f"FAs within {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days)} days",
     )
 
-    p.save(run.paper_outputs.paths.figures / "fa_confusion_matrix_plot.png")
+    p.save(run.paper_outputs.paths.figures / "fa_inpatient_confusion_matrix.png")
 
     return p
 
 
 if __name__ == "__main__":
-    fa_confusion_matrix_plot(run=get_best_eval_pipeline())
+    fa_inpatient_confusion_matrix_plot(run=get_best_eval_pipeline())
