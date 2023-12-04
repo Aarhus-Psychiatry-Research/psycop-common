@@ -153,7 +153,7 @@ def merge_main(c: Context):
 
 @task(aliases=("am",))
 def automerge(c: Context):
-    c.run("gh pr merge --auto --delete-branch")
+    c.run("gh pr merge --merge --auto --delete-branch")
 
 
 @task(aliases=("vuln",))
