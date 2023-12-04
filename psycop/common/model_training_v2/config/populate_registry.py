@@ -8,10 +8,12 @@ def populate_baseline_registry() -> None:
     It is also possible to do this using hooks, but this is more explicit
     and easier to debug for people who are not familiar with python setup hooks.
     """
-    # Loggers
     # Suggesters
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
+
+    # Loggers
     from ..loggers.terminal_logger import TerminalLogger
+    from ..loggers.disk_logger import DiskLogger
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
