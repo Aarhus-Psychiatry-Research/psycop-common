@@ -16,319 +16,30 @@ If you do not wish to use invoke you can simply delete this file.
 """
 
 
-import multiprocessing
-import platform
-import re
-import shutil
+import multiprocessing  # noqa: I001
 from pathlib import Path
-from typing import Optional
 
 from invoke import Context, Result, task
 
-# Extract supported python versions from the pyproject.toml classifiers key
-SUPPORTED_PYTHON_VERSIONS = [
-    line.split("::")[-1].strip().replace('"', "").replace(",", "")
-    for line in Path("pyproject.toml").read_text().splitlines()
-    if "Programming Language :: Python ::" in line
-]
-
-NOT_WINDOWS = platform.system() != "Windows"
-
-
-def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
-    files_modified_since_main = c.run(
-        "git diff --name-only origin/main",
-        hide=True,
-    ).stdout.splitlines()
-
-    if any(file.endswith(file_suffix) for file in files_modified_since_main):
-        return True
-
-    return False
-
-
-def on_ovartaci() -> bool:
-    import platform
-
-    if platform.node() == "RMAPPS1279":
-        print(f"\n{msg_type.GOOD} On Ovartaci")
-        return True
-
-    print(f"\n{msg_type.GOOD} Not on Ovartaci")
-    return False
-
-
-def echo_header(msg: str):
-    print(f"\n--- {msg} ---")
-
-
-class MsgType:
-    # Emojis have to be encoded as bytes to not break the terminal on Windows
-    @property
-    def DOING(self) -> str:
-        return b"\xf0\x9f\xa4\x96".decode() if NOT_WINDOWS else "DOING:"
-
-    @property
-    def GOOD(self) -> str:
-        return b"\xe2\x9c\x85".decode() if NOT_WINDOWS else "DONE:"
-
-    @property
-    def FAIL(self) -> str:
-        return b"\xf0\x9f\x9a\xa8".decode() if NOT_WINDOWS else "FAILED:"
-
-    @property
-    def WARN(self) -> str:
-        return b"\xf0\x9f\x9a\xa7".decode() if NOT_WINDOWS else "WARNING:"
-
-    @property
-    def SYNC(self) -> str:
-        return b"\xf0\x9f\x9a\x82".decode() if NOT_WINDOWS else "SYNCING:"
-
-    @property
-    def PY(self) -> str:
-        return b"\xf0\x9f\x90\x8d".decode() if NOT_WINDOWS else ""
-
-    @property
-    def CLEAN(self) -> str:
-        return b"\xf0\x9f\xa7\xb9".decode() if NOT_WINDOWS else "CLEANING:"
-
-    @property
-    def TEST(self) -> str:
-        return b"\xf0\x9f\xa7\xaa".decode() if NOT_WINDOWS else "TESTING:"
-
-    @property
-    def COMMUNICATE(self) -> str:
-        return b"\xf0\x9f\x93\xa3".decode() if NOT_WINDOWS else "COMMUNICATING:"
-
-    @property
-    def EXAMINE(self) -> str:
-        return b"\xf0\x9f\x94\x8d".decode() if NOT_WINDOWS else "VIEWING:"
-
-
-msg_type = MsgType()
-
-
-def git_init(c: Context, branch: str = "main"):
-    """Initialize a git repository if it does not exist yet."""
-    # If no .git directory exits
-    if not Path(".git").exists():
-        echo_header(f"{msg_type.DOING} Initializing Git repository")
-        c.run(f"git init -b {branch}")
-        c.run("git add .")
-        c.run("git commit -m 'Init'")
-        print(f"{msg_type.GOOD} Git repository initialized")
-    else:
-        print(f"{msg_type.GOOD} Git repository already initialized")
-
-
-def setup_venv(
-    c: Context,
-    python_path: str,
-    venv_name: Optional[str] = None,
-) -> str:
-    """Create a virtual environment if it does not exist yet.
-
-    Args:
-        c: The invoke context.
-        python_path: The python executable to use.
-        venv_name: The name of the virtual environment. Defaults to ".venv".
-    """
-    if venv_name is None:
-        venv_name = ".venv"
-
-    if not Path(venv_name).exists():
-        echo_header(
-            f"{msg_type.DOING} Creating virtual environment using {msg_type.PY}:{python_path}",
-        )
-        c.run(f"{python_path} -m venv {venv_name}")
-        print(f"{msg_type.GOOD} Virtual environment created")
-    else:
-        print(f"{msg_type.GOOD} Virtual environment already exists")
-    return venv_name
-
-
-def _add_commit(c: Context, msg: Optional[str] = None):
-    print(f"{msg_type.DOING} Adding and committing changes")
-    c.run("git add .")
-
-    if msg is None:
-        msg = input("Commit message [--a to amend previous commit]: ")
-
-    if "--a" in msg:
-        c.run("git commit --amend --reuse-message=HEAD", pty=NOT_WINDOWS, hide=True)
-        print(f"{msg_type.GOOD} Commit amended")
-    elif msg == "-a":
-        print(
-            f"{msg_type.FAIL} You typed '-a'. Did you mean '--a' to amend the previous commit?",
-        )
-    else:
-        c.run(f'git commit -m "{msg}"', pty=NOT_WINDOWS, hide=True)
-        print(f"{msg_type.GOOD} Changes added and committed")
-
-
-def is_uncommitted_changes(c: Context) -> bool:
-    git_status_result: Result = c.run(
-        "git status --porcelain",
-        pty=NOT_WINDOWS,
-        hide=True,
-    )
-
-    uncommitted_changes = git_status_result.stdout != ""
-    return uncommitted_changes
-
-
-def add_and_commit(c: Context, msg: Optional[str] = None):
-    """Add and commit all changes."""
-    if is_uncommitted_changes(c):
-        uncommitted_changes_descr = c.run(
-            "git status --porcelain",
-            pty=NOT_WINDOWS,
-            hide=True,
-        ).stdout
-
-        echo_header(
-            f"{msg_type.WARN} Uncommitted changes detected",
-        )
-
-        for line in uncommitted_changes_descr.splitlines():
-            print(f"    {line.strip()}")
-        print("\n")
-        _add_commit(c, msg=msg)
-
-
-def branch_exists_on_remote(c: Context) -> bool:
-    branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
-
-    branch_exists_result: Result = c.run(
-        f"git ls-remote --heads origin {branch_name}",
-        hide=True,
-    )
-
-    return branch_name in branch_exists_result.stdout
-
-
-def push_to_branch(c: Context):
-    echo_header(f"{msg_type.SYNC} Syncing branch with remote")
-
-    if not branch_exists_on_remote(c):
-        c.run("git push --set-upstream origin HEAD")
-    else:
-        print("Pushing")
-        c.run("git push")
-
-
-@task(aliases=("mm",))
-def merge_main(c: Context):
-    print(f"{msg_type.DOING} Merging main into current branch")
-    c.run("git fetch")
-    c.run("git merge --no-edit origin/main")
-    print("✅✅✅ Merged main into current branch ✅✅✅")
-
-
-@task(aliases=("am",))
-def automerge(c: Context):
-    c.run("gh pr merge --auto --delete-branch")
+from psycop.automation.environment import NOT_WINDOWS, on_ovartaci
+from psycop.automation.git import (
+    add_and_commit,
+    filetype_modified_since_head,
+    push_to_branch,
+)
+from psycop.automation.lint import pre_commit
+from psycop.automation.logger import echo_header, msg_type
 
 
 @task
-def create_pr(c: Context):
-    """
-    Created a PR, does not run tests or similar
-    """
-    try:
-        pr_result: Result = c.run(
-            "gh pr view --json url -q '.url'",
-            pty=False,
-            hide=True,
-        )
-        print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
-    except Exception:
-        branch_title = c.run(
-            "git rev-parse --abbrev-ref HEAD",
-            hide=True,
-        ).stdout.strip()
-        preprocessed_pr_title = branch_title.split("-")[1:]
-        preprocessed_pr_title[0] = f"{preprocessed_pr_title[0]}:"
-        pr_title = " ".join(preprocessed_pr_title)
-
-        c.run(
-            f'gh pr create --title "{pr_title}" --body "Automatically created PR from invoke" -w',
-            pty=NOT_WINDOWS,
-        )
-        print(f"{msg_type.GOOD} PR created")
+def install_requirements(c: Context):
+    requirements_files = Path().parent.glob("*requirements.txt")
+    requirements_string = " -r ".join([str(file) for file in requirements_files])
+    c.run(f"pip install -r {requirements_string}")
 
 
-def update_pr(c: Context):
-    if not on_ovartaci():
-        echo_header(f"{msg_type.COMMUNICATE} Syncing PR")
-        # Get current branch name
-        branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
-        pr_result: Result = c.run(
-            "gh pr list --state OPEN",
-            pty=False,
-            hide=True,
-        )
-
-        if branch_name not in pr_result.stdout:
-            create_pr(c)
-
-
-def exit_if_error_in_stdout(result: Result):
-    # Find N remaining using regex
-
-    if "error" in result.stdout:
-        errors_remaining = re.findall(r"\d+(?=( remaining))", result.stdout)[
-            0
-        ]  # testing
-        if errors_remaining != "0":
-            exit(0)
-
-
-def pre_commit(c: Context, auto_fix: bool):
-    """Run pre-commit checks."""
-
-    # Essential to have a clean working directory before pre-commit to avoid committing
-    # heterogenous files under a "style: linting" commit
-    if auto_fix and is_uncommitted_changes(c):
-        print(
-            f"{msg_type.WARN} Your git working directory is not clean. Stash or commit before running pre-commit.",
-        )
-        exit(1)
-
-    echo_header(f"{msg_type.CLEAN} Running pre-commit checks")
-    pre_commit_cmd = "pre-commit run --all-files"
-    result = c.run(pre_commit_cmd, pty=NOT_WINDOWS, warn=True)
-
-    if ("fixed" in result.stdout or "reformatted" in result.stdout) and auto_fix:
-        for _ in range(2):
-            # Run 3 times to ensure ruff/black interaction is resolved
-            # E.g. ruff adding a trailing comma can make black reformat
-            # the file again
-            print(f"{msg_type.DOING} Fixed errors, re-running pre-commit checks\n\n")
-            result = c.run(pre_commit_cmd, pty=NOT_WINDOWS, warn=True)
-
-            if not ("fixed" in result.stdout or "reformatted" in result.stdout):
-                break
-
-        exit_if_error_in_stdout(result)
-        _add_commit(c, msg="style: auto-fixes from pre-commit")
-    else:
-        if result.return_code != 0:
-            print(f"{msg_type.FAIL} Pre-commit checks failed")
-            exit(1)
-
-
-@task
-def qtypes(c: Context):
-    """Run static type checks."""
-    if filetype_modified_since_head(c, ".py"):
-        static_type_checks(c)
-    else:
-        print("🟢 No python files modified since main, skipping static type checks")
-
-
-@task
-def static_type_checks(c: Context):
+@task(aliases=("static_type_checks",))
+def types(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
         c.run("pyright psycop/", pty=NOT_WINDOWS)
@@ -338,40 +49,13 @@ def static_type_checks(c: Context):
         )
 
 
-def get_python_path(preferred_version: str) -> Optional[str]:
-    """Get path to python executable."""
-    preferred_version_path = shutil.which(f"python{preferred_version}")
-
-    if preferred_version_path is not None:
-        return preferred_version_path
-
-    print(
-        f"{msg_type.WARN}: python{preferred_version} not found, continuing with default python version",
-    )
-    return shutil.which("python")
-
-
 @task
-def setup(c: Context, python_path: Optional[str] = None):
-    """Confirm that a git repo exists and setup a virtual environment.
-
-    Args:
-        c: Invoke context
-        python_path: Path to the python executable to use for the virtual environment. Uses the return value of `which python` if not provided.
-    """
-    git_init(c)
-
-    if python_path is None:
-        # get path to python executable
-        python_path = get_python_path(preferred_version="3.10")
-        if not python_path:
-            print(f"{msg_type.FAIL} Python executable not found")
-            exit(1)
-    venv_name = setup_venv(c, python_path=python_path)
-
-    print(
-        f"{msg_type.DOING} Activate your virtual environment by running: \n\n\t\t source {venv_name}/bin/activate \n",
-    )
+def qtypes(c: Context):
+    """Run static type checks."""
+    if filetype_modified_since_head(c, ".py"):
+        types(c)
+    else:
+        print("🟢 No python files modified since main, skipping static type checks")
 
 
 @task(iterable="pytest_args")
@@ -429,89 +113,8 @@ def test(
 
 
 @task
-def create_pr_from_staged_changes(c: Context):
-    start_branch_name = c.run(
-        "git rev-parse --abbrev-ref HEAD",
-        hide=True,
-    ).stdout.strip()
-
-    pr_title = input("Enter PR title: ")
-    branch_title = re.sub(r"[\-\s\:\,]", "_", pr_title).lower()
-    c.run("git checkout main")
-    c.run(f"git checkout -b {branch_title}")
-    c.run(f"git commit -m '{pr_title}'")
-    push_to_branch(c)
-    update_pr(c)
-
-    checkout_previous_branch = input("Checkout previous branch? [y/n]: ")
-    if checkout_previous_branch.lower() == "y":
-        c.run(f"git checkout {start_branch_name}")
-
-
-@task
-def test_for_venv(c: Context):
-    """Test if the user is in a virtual environment."""
-    # Check if in docker environment by checking if the /.dockerenv file exists
-    IN_DOCKER = Path("/.dockerenv").exists()
-    if IN_DOCKER:
-        print("Running in docker, not checking for virtual environment.")
-        return
-
-    if NOT_WINDOWS:
-        python_path = c.run("which python", pty=NOT_WINDOWS, hide=True).stdout
-
-        if python_path is None or "venv" not in python_path:
-            print(f"\n{msg_type.FAIL} Not in a virtual environment.\n")
-            print("Activate your virtual environment and try again. \n")
-            exit(1)
-    else:
-        print("Running on Windows, not checking for virtual environment.")
-
-
-@task
-def lint(c: Context, auto_fix: bool = False):
-    """Lint the project."""
-    test_for_venv(c)
-    pre_commit(c=c, auto_fix=auto_fix)
-    print("✅✅✅ Succesful linting! ✅✅✅")
-
-
-@task
-def pr(c: Context, auto_fix: bool = True, create_pr: bool = True):
-    """Run all checks and update the PR."""
-    add_and_commit(c)
-    if create_pr:
-        try:
-            update_pr(c)
-        except Exception as e:
-            print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
-
-    lint(c, auto_fix=auto_fix)
-    push_to_branch(c)
-    static_type_checks(c)
-    test(c)
-
-
-@task
-def vulnerability_scan(c: Context):
-    requirements_files = Path().parent.glob("*requirements.txt")
-    for requirements_file in requirements_files:
-        c.run(
-            f"snyk test --file={requirements_file} --package-manager=pip",
-            pty=NOT_WINDOWS,
-        )
-
-
-@task
-def install_requirements(c: Context):
-    requirements_files = Path().parent.glob("*requirements.txt")
-    requirements_string = " -r ".join([str(file) for file in requirements_files])
-    c.run(f"pip install -r {requirements_string}")
-
-
-@task
 def qtest(c: Context):
-    """Quick tests, runs a subset of the tests"""
+    """Quick tests, runs a subset of the tests using testmon"""
     # TODO: #390 Make more durable testmon implementation
     if any(filetype_modified_since_head(c, suffix) for suffix in (".py", ".cfg")):
         test(
@@ -533,15 +136,93 @@ def qtest(c: Context):
         print("🟢 No python files modified since main, skipping tests")
 
 
+@task(aliases=("format", "fmt"))
+def lint(c: Context, auto_fix: bool = False):
+    """Lint the project."""
+    pre_commit(c=c, auto_fix=auto_fix)
+    print("✅✅✅ Succesful linting! ✅✅✅")
+
+
+@task(aliases=("mm",))
+def merge_main(c: Context):
+    print(f"{msg_type.DOING} Merging main into current branch")
+    c.run("git fetch")
+    c.run("git merge --no-edit origin/main")
+    print("✅✅✅ Merged main into current branch ✅✅✅")
+
+
+@task(aliases=("am",))
+def automerge(c: Context):
+    c.run("gh pr merge --merge --auto --delete-branch")
+
+
+@task(aliases=("vuln",))
+def vulnerability_scan(c: Context):
+    requirements_files = Path().parent.glob("*requirements.txt")
+    for requirements_file in requirements_files:
+        c.run(
+            f"snyk test --file={requirements_file} --package-manager=pip",
+            pty=NOT_WINDOWS,
+        )
+
+
 @task
-def qpr(c: Context, auto_fix: bool = True, create_pr: bool = True):
+def create_pr(c: Context):
+    """
+    Created a PR, does not run tests or similar
+    """
+    try:
+        pr_result: Result = c.run(
+            "gh pr view --json url -q '.url'",
+            pty=False,
+            hide=True,
+        )
+        print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
+    except Exception:
+        branch_title = c.run(
+            "git rev-parse --abbrev-ref HEAD",
+            hide=True,
+        ).stdout.strip()
+        preprocessed_pr_title = branch_title.split("-")[1:]
+        preprocessed_pr_title[0] = f"{preprocessed_pr_title[0]}:"
+        pr_title = " ".join(preprocessed_pr_title)
+
+        c.run(
+            f'gh pr create --title "{pr_title}" --body "Automatically created PR from invoke" -w',
+            pty=NOT_WINDOWS,
+        )
+        print(f"{msg_type.GOOD} PR created")
+
+
+@task(aliases=("pr",))
+def check_and_submit_pull_request(
+    c: Context,
+    auto_fix: bool = True,
+):
     """Run all checks and update the PR."""
     add_and_commit(c)
-    if create_pr:
-        try:
-            update_pr(c)
-        except Exception as e:
-            print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
+    try:
+        create_pr(c)
+    except Exception as e:
+        print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
+
+    lint(c, auto_fix=auto_fix)
+    push_to_branch(c)
+    types(c)
+    test(c)
+
+
+@task(aliases=("qpr",))
+def quick_check_and_submit_pull_request(
+    c: Context,
+    auto_fix: bool = True,
+):
+    """Run all checks and update the PR, using heuristics for more speed."""
+    add_and_commit(c)
+    try:
+        create_pr(c)
+    except Exception as e:
+        print(f"{msg_type.FAIL} Could not update PR: {e}. Continuing.")
 
     lint(c, auto_fix=auto_fix)
     push_to_branch(c)
