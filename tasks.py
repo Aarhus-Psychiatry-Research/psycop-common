@@ -16,7 +16,7 @@ If you do not wish to use invoke you can simply delete this file.
 """
 
 
-import multiprocessing
+import multiprocessing  # noqa: I001
 from pathlib import Path
 
 from invoke import Context, Result, task
@@ -157,7 +157,7 @@ def automerge(c: Context):
     c.run("gh pr merge --auto --delete-branch")
 
 
-@task
+@task(aliases=("vuln",))
 def vulnerability_scan(c: Context):
     requirements_files = Path().parent.glob("*requirements.txt")
     for requirements_file in requirements_files:
@@ -165,6 +165,34 @@ def vulnerability_scan(c: Context):
             f"snyk test --file={requirements_file} --package-manager=pip",
             pty=NOT_WINDOWS,
         )
+
+
+@task
+def create_pr(c: Context):
+    """
+    Created a PR, does not run tests or similar
+    """
+    try:
+        pr_result: Result = c.run(
+            "gh pr view --json url -q '.url'",
+            pty=False,
+            hide=True,
+        )
+        print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
+    except Exception:
+        branch_title = c.run(
+            "git rev-parse --abbrev-ref HEAD",
+            hide=True,
+        ).stdout.strip()
+        preprocessed_pr_title = branch_title.split("-")[1:]
+        preprocessed_pr_title[0] = f"{preprocessed_pr_title[0]}:"
+        pr_title = " ".join(preprocessed_pr_title)
+
+        c.run(
+            f'gh pr create --title "{pr_title}" --body "Automatically created PR from invoke" -w',
+            pty=NOT_WINDOWS,
+        )
+        print(f"{msg_type.GOOD} PR created")
 
 
 @task(aliases=("pr",))

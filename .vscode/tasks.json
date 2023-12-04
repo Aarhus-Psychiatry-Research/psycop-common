@@ -6,7 +6,7 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "inv push && inv create-pr",
+            "command": "git push && inv create-pr",
             "group": "test",
             "dependsOn": [
                 "Lint",
@@ -24,7 +24,7 @@
         {
             "label": "Merge main",
             "type": "shell",
-            "command": "make merge-main && make push",
+            "command": "inv merge-main && git push",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
