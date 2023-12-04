@@ -42,7 +42,6 @@ def pre_commit(c: Context, auto_fix: bool):
             exit(1)
 
 
-@task
 def test_for_venv(c: Context):
     """Test if the user is in a virtual environment."""
     # Check if in docker environment by checking if the /.dockerenv file exists
