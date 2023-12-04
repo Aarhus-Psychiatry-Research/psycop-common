@@ -22,12 +22,15 @@ from typing import Optional
 
 from invoke import Context, Result, task
 
-from automation.git import add_and_commit, filetype_modified_since_head, push_to_branch
-from automation.github import update_pr
-from automation.lint import pre_commit, test_for_venv
-from automation.logger import echo_header, msg_type
-from automation.setup import get_python_path, git_init, setup_venv
-from automation.windows import NOT_WINDOWS, on_ovartaci
+from psycop.automation import NOT_WINDOWS, on_ovartaci
+from psycop.automation.git import (
+    add_and_commit,
+    filetype_modified_since_head,
+    push_to_branch,
+)
+from psycop.automation.github import update_pr
+from psycop.automation.lint import pre_commit
+from psycop.automation.logger import echo_header, msg_type
 
 
 @task

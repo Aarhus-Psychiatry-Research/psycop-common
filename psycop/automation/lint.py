@@ -4,7 +4,7 @@ from invoke import Context, task
 
 from .environment import NOT_WINDOWS
 from .error_handling import exit_if_error_in_stdout
-from .git import _add_commit, is_uncommitted_changes
+from .git import add_commit, is_uncommitted_changes
 from .logger import echo_header, msg_type
 
 
@@ -35,7 +35,7 @@ def pre_commit(c: Context, auto_fix: bool):
                 break
 
         exit_if_error_in_stdout(result)
-        _add_commit(c, msg="style: auto-fixes from pre-commit")
+        add_commit(c, msg="style: auto-fixes from pre-commit")
     else:
         if result.return_code != 0:
             print(f"{msg_type.FAIL} Pre-commit checks failed")

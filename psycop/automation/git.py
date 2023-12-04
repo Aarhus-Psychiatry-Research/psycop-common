@@ -30,7 +30,7 @@ def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
     return False
 
 
-def _add_commit(c: Context, msg: Optional[str] = None):
+def add_commit(c: Context, msg: Optional[str] = None):
     print(f"{msg_type.DOING} Adding and committing changes")
     c.run("git add .")
 
@@ -65,7 +65,7 @@ def add_and_commit(c: Context, msg: Optional[str] = None):
         for line in uncommitted_changes_descr.splitlines():
             print(f"    {line.strip()}")
         print("\n")
-        _add_commit(c, msg=msg)
+        add_commit(c, msg=msg)
 
 
 def branch_exists_on_remote(c: Context) -> bool:
