@@ -1,5 +1,7 @@
 import json
 
+from confection import Config
+
 from psycop.common.model_training_v2.loggers.disk_logger import DiskLogger
 
 
@@ -18,10 +20,8 @@ def test_disklogger_text(tmpdir: str):
 def test_disklogger_log_config(tmpdir: str):
     logger = DiskLogger(experiment_path=tmpdir)
 
-    config = {"param1": 123, "param2": "abc"}
+    config = Config({"parameters": {"param1": 123, "param2": "abc"}})
     logger.log_config(config)
 
-    with logger.cfg_log_path.open("r") as file:
-        logged_config = json.load(file)
-
+    logged_config = Config().from_disk(logger.cfg_log_path)
     assert logged_config == config
