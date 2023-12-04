@@ -52,8 +52,8 @@ def load_prediction_times() -> pl.DataFrame:
         entity_id_col_name="dw_ek_borger",
     ).prediction_times.select(
         pl.col(
-            ["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]
-        )
+            ["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"],
+        ),
     )
 
     unfiltered_cohort = filtered_prediction_times.join(
