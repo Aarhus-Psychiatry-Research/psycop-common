@@ -5,16 +5,6 @@ from psycop.common.cohort_definition import (
     FilteredPredictionTimeBundle,
     filter_prediction_times,
 )
-from psycop.projects.restraint.cohort.utils.functions import (
-    explode_admissions,
-    preprocess_readmissions,
-    select_outcomes,
-)
-from psycop.projects.restraint.cohort.utils.loaders import (
-    load_admissions_discharge_timestamps,
-    load_coercion_timestamps,
-)
-
 from psycop.projects.restraint.cohort.utils.filters import (
     RestraintAdmissionFilter,
     RestraintAdmissionTypeFilter,
@@ -25,6 +15,15 @@ from psycop.projects.restraint.cohort.utils.filters import (
     RestraintTreatmentUnitFilter,
     RestraintWashoutFilter,
     RestraintWithinAdmissionsFilter,
+)
+from psycop.projects.restraint.cohort.utils.functions import (
+    explode_admissions,
+    preprocess_readmissions,
+    select_outcomes,
+)
+from psycop.projects.restraint.cohort.utils.loaders import (
+    load_admissions_discharge_timestamps,
+    load_coercion_timestamps,
 )
 
 
@@ -39,7 +38,9 @@ def load_prediction_times() -> pl.DataFrame:
             RestraintMinAgeFilter(),
         ],
         entity_id_col_name="dw_ek_borger",
-    ).prediction_times.select(pl.col(["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"]))
+    ).prediction_times.select(
+        pl.col(["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"])
+    )
 
     filtered_prediction_times = preprocess_readmissions(df=filtered_prediction_times)
 
@@ -49,10 +50,16 @@ def load_prediction_times() -> pl.DataFrame:
         prediction_times=unfiltered_coercion_timestamps,
         filtering_steps=[RestraintCoercionTypeFilter()],
         entity_id_col_name="dw_ek_borger",
-    ).prediction_times.select(pl.col(["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]))
+    ).prediction_times.select(
+        pl.col(
+            ["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]
+        )
+    )
 
     unfiltered_cohort = filtered_prediction_times.join(
-        filtered_coercion_timestamps, how="left", on="dw_ek_borger"
+        filtered_coercion_timestamps,
+        how="left",
+        on="dw_ek_borger",
     )
 
     excluded_cohort = filter_prediction_times(
@@ -64,11 +71,14 @@ def load_prediction_times() -> pl.DataFrame:
     excluded_cohort = excluded_cohort.unique(keep="first")
 
     unfiltered_cohort = unfiltered_cohort.join(
-        excluded_cohort, how="anti", on=["dw_ek_borger", "datotid_start"]
+        excluded_cohort,
+        how="anti",
+        on=["dw_ek_borger", "datotid_start"],
     )
 
     deduplicated_cohort = unfiltered_cohort.unique(
-        subset=["dw_ek_borger", "datotid_start", "datotid_slut"], keep="first"
+        subset=["dw_ek_borger", "datotid_start", "datotid_slut"],
+        keep="first",
     )
 
     filtered_cohort = filter_prediction_times(

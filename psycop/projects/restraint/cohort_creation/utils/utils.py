@@ -53,7 +53,7 @@ def concat_readmissions(
             readmissions_subset.start_readmission is False,
             "datotid_slut",
         ] = readmissions_subset["datotid_slut"].shift(-1)
-        
+
         # keep only the first admission
         readmissions_subset = readmissions_subset[
             readmissions_subset.end_readmission is True
