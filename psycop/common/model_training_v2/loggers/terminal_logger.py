@@ -1,5 +1,3 @@
-from typing import Any
-
 import wasabi
 from confection import Config
 

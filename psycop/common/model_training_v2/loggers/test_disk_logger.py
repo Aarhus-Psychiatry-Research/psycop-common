@@ -1,5 +1,3 @@
-import json
-
 from confection import Config
 
 from psycop.common.model_training_v2.loggers.disk_logger import DiskLogger
