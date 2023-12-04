@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.150.2 (2023-12-04)
+
+### Fix
+
+* Correct saving and loading of cfg to disk ([`ac8531c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ac8531c3b9cc0798abfbe1416903497cf93e3832))
+* Update type hint of BaselineLoggers ([`1bfc85a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1bfc85a914c18208f8553e1964c21742588360fd))
+
 ## v0.150.1 (2023-12-04)
 
 ### Fix

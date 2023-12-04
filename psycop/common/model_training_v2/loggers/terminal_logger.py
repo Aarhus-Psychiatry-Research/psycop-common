@@ -1,6 +1,5 @@
-from typing import Any
-
 import wasabi
+from confection import Config
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -28,8 +27,8 @@ class TerminalLogger(BaselineLogger):
     def log_metric(self, metric: CalculatedMetric) -> None:
         self._l.info(f"{metric.name}: {round(metric.value, 2)}")
 
-    def log_config(self, config: dict[str, Any]) -> None:
+    def log_config(self, config: Config) -> None:
         self._l.divider("Logging config")
-        config = flatten_nested_dict(config)
+        config = flatten_nested_dict(config)  # type: ignore # Config is a subclass of dict so false positive
         cfg_str = "\n".join([f"{k}: {v}" for k, v in config.items()])
         self._l.info(cfg_str)

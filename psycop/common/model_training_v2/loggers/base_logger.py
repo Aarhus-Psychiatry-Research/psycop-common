@@ -1,4 +1,6 @@
-from typing import Any, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
+
+from confection import Config
 
 from psycop.common.model_training_v2.trainer.task.base_metric import (
     CalculatedMetric,
@@ -22,5 +24,5 @@ class BaselineLogger(Protocol):
     def log_metric(self, metric: CalculatedMetric) -> None:
         ...
 
-    def log_config(self, config: dict[str, Any]) -> None:
+    def log_config(self, config: Config) -> None:
         ...
