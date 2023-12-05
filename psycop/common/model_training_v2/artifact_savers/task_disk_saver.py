@@ -11,7 +11,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 )
 
 
-@BaselineRegistry.artifact_savers.register("disk_logger")
+@BaselineRegistry.artifact_savers.register("task_disk_saver")
 class TaskDiskSaver(BaselineArtifactSaver):
     def __init__(self, experiment_path: str):
         self.experiment_path = Path(experiment_path)
