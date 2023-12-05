@@ -1,7 +1,6 @@
 import pickle as pkl
 
 import polars as pl
-import pytest
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.artifact_savers.save_task_to_disk import (
@@ -53,7 +52,8 @@ def test_task_disk_saver(tmpdir: str):
         metric=BinaryAUROC(),
     )
     training_result = TrainingResult(
-        metric=CalculatedMetric("mock_roc", value=0.5), df=pl.DataFrame({"x": [1]})
+        metric=CalculatedMetric("mock_roc", value=0.5),
+        df=pl.DataFrame({"x": [1]}),
     )
 
     saver = TaskDiskSaver(experiment_path=tmpdir)

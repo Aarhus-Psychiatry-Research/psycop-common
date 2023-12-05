@@ -9,6 +9,8 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 @runtime_checkable
 class BaselineArtifactSaver(Protocol):
     def save_artifact(
-        self, trainer: BaselineTrainer, training_result: TrainingResult
+        self,
+        trainer: BaselineTrainer,
+        training_result: TrainingResult,
     ) -> None:
         ...
