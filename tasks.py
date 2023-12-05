@@ -24,7 +24,7 @@ from invoke import Context, Result, task
 from psycop.automation.environment import NOT_WINDOWS, on_ovartaci
 from psycop.automation.git import (
     add_and_commit,
-    filetype_modified_since_head,
+    filetype_modified_since_main,
     push_to_branch,
 )
 from psycop.automation.lint import pre_commit
@@ -52,7 +52,7 @@ def types(c: Context):
 @task
 def qtypes(c: Context):
     """Run static type checks."""
-    if filetype_modified_since_head(c, ".py"):
+    if filetype_modified_since_main(c, r"\.py$"):
         types(c)
     else:
         print("🟢 No python files modified since main, skipping static type checks")
@@ -116,7 +116,7 @@ def test(
 def qtest(c: Context):
     """Quick tests, runs a subset of the tests using testmon"""
     # TODO: #390 Make more durable testmon implementation
-    if any(filetype_modified_since_head(c, suffix) for suffix in (".py", ".cfg")):
+    if any(filetype_modified_since_main(c, suffix) for suffix in (r"\.py$", r"\.cfg$")):
         test(
             c,
             pytest_args=[
@@ -157,8 +157,18 @@ def automerge(c: Context):
 
 
 @task(aliases=("vuln",))
-def vulnerability_scan(c: Context):
+def vulnerability_scan(c: Context, modified_files_only: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
+
+    if modified_files_only and not filetype_modified_since_main(
+        c,
+        r"requirements\.txt$",
+    ):
+        print(
+            "🟢 No requirements.txt files modified since main, skipping vulnerability scan",
+        )
+        return
+
     for requirements_file in requirements_files:
         c.run(
             f"snyk test --file={requirements_file} --package-manager=pip",
