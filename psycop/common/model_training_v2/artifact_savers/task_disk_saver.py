@@ -4,12 +4,14 @@ from pathlib import Path
 from psycop.common.model_training_v2.artifact_savers.base_artifact_saver import (
     BaselineArtifactSaver,
 )
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_trainer import (
     BaselineTrainer,
     TrainingResult,
 )
 
 
+@BaselineRegistry.artifact_savers.register("disk_logger")
 class TaskDiskSaver(BaselineArtifactSaver):
     def __init__(self, experiment_path: str):
         self.experiment_path = Path(experiment_path)

@@ -80,5 +80,5 @@ def populate_baseline_registry() -> None:
         BinaryClassificationTask,
     )
 
-    # Data filters
-    from ..trainer.data.data_filters.geography import RegionalFilter
+    # Artifact Savers
+    from ..artifact_savers.task_disk_saver import TaskDiskSaver

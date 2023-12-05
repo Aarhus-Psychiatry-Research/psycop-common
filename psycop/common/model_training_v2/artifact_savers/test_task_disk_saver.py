@@ -3,7 +3,7 @@ import pickle as pkl
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training_v2.artifact_savers.save_task_to_disk import (
+from psycop.common.model_training_v2.artifact_savers.task_disk_saver import (
     TaskDiskSaver,
 )
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger

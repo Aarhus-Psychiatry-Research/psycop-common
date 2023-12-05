@@ -31,6 +31,7 @@ class BaselineRegistry(RegistryWithDict):
 
     # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/440 Move the populate registry function to the baseline registry, to make it easier to add new imports to the function
     suggesters = catalogue.create("psycop", "suggester")
+    artifact_savers = catalogue.create("psycop", "artifact_savers")
 
     def to_dict(self) -> dict[str, catalogue.Registry]:
         return {
