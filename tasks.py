@@ -161,18 +161,12 @@ def vulnerability_scan(c: Context, modified_files_only: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
 
     if modified_files_only:
-        if filetype_modified_since_main(c, r"requirements\.txt$"):
-            for requirements_file in requirements_files:
-                c.run(
-                    f"snyk test --file={requirements_file} --package-manager=pip",
-                    pty=NOT_WINDOWS,
-                )
-        else:
+        if not filetype_modified_since_main(c, r"requirements\.txt$"):
             print(
                 "🟢 No requirements.txt files modified since main, skipping vulnerability scan",
             )
+            return
 
-    else:
         for requirements_file in requirements_files:
             c.run(
                 f"snyk test --file={requirements_file} --package-manager=pip",
