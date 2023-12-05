@@ -21,7 +21,7 @@ def is_uncommitted_changes(c: Context) -> bool:
 
 def filetype_modified_since_main(c: Context, regex_pattern: re.Pattern[str]) -> bool:
     files_modified_since_main = c.run(
-        "git diff --name-only main HEAD",
+        "git diff --name-only origin/main HEAD",
         hide=True,
     ).stdout.splitlines()
 
