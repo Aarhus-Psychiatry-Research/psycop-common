@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -18,13 +19,13 @@ def is_uncommitted_changes(c: Context) -> bool:
     return uncommitted_changes
 
 
-def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
+def filetype_modified_since_head(c: Context, regex_pattern: re.Pattern[str]) -> bool:
     files_modified_since_main = c.run(
         "git diff --name-only origin/main",
         hide=True,
     ).stdout.splitlines()
 
-    if any(file.endswith(file_suffix) for file in files_modified_since_main):
+    if any(regex_pattern.search(file) for file in files_modified_since_main):
         return True
 
     return False

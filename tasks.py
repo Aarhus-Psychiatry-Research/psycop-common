@@ -18,6 +18,7 @@ If you do not wish to use invoke you can simply delete this file.
 
 import multiprocessing  # noqa: I001
 from pathlib import Path
+import re
 
 from invoke import Context, Result, task
 
@@ -52,7 +53,7 @@ def types(c: Context):
 @task
 def qtypes(c: Context):
     """Run static type checks."""
-    if filetype_modified_since_head(c, ".py"):
+    if filetype_modified_since_head(c, re.compile(r"\.py$")):
         types(c)
     else:
         print("🟢 No python files modified since main, skipping static type checks")
@@ -116,7 +117,7 @@ def test(
 def qtest(c: Context):
     """Quick tests, runs a subset of the tests using testmon"""
     # TODO: #390 Make more durable testmon implementation
-    if any(filetype_modified_since_head(c, suffix) for suffix in (".py", ".cfg")):
+    if any(filetype_modified_since_head(c, suffix) for suffix in (re.compile(r"\.py$"), re.compile(r"\.cfg$"))):
         test(
             c,
             pytest_args=[
@@ -157,13 +158,25 @@ def automerge(c: Context):
 
 
 @task(aliases=("vuln",))
-def vulnerability_scan(c: Context):
+def vulnerability_scan(c: Context, modified_files_only: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
-    for requirements_file in requirements_files:
-        c.run(
-            f"snyk test --file={requirements_file} --package-manager=pip",
-            pty=NOT_WINDOWS,
-        )
+
+    if modified_files_only:
+        if filetype_modified_since_head(c, re.compile(r"requirements\.txt$")):
+            for requirements_file in requirements_files:
+                c.run(
+                    f"snyk test --file={requirements_file} --package-manager=pip",
+                    pty=NOT_WINDOWS,
+                )
+        else:
+            print("🟢 No requirements.txt files modified since main, skipping vulnerability scan")
+
+    else:
+        for requirements_file in requirements_files:
+            c.run(
+                f"snyk test --file={requirements_file} --package-manager=pip",
+                pty=NOT_WINDOWS,
+            )
 
 
 @task
