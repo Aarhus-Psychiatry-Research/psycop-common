@@ -53,7 +53,7 @@ def types(c: Context):
 @task
 def qtypes(c: Context):
     """Run static type checks."""
-    if filetype_modified_since_main(c, re.compile(r"\.py$")):
+    if filetype_modified_since_main(c, r"\.py$"):
         types(c)
     else:
         print("🟢 No python files modified since main, skipping static type checks")
@@ -119,7 +119,7 @@ def qtest(c: Context):
     # TODO: #390 Make more durable testmon implementation
     if any(
         filetype_modified_since_main(c, suffix)
-        for suffix in (re.compile(r"\.py$"), re.compile(r"\.cfg$"))
+        for suffix in (r"\.py$", r"\.cfg$")
     ):
         test(
             c,
@@ -165,7 +165,7 @@ def vulnerability_scan(c: Context, modified_files_only: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
 
     if modified_files_only:
-        if filetype_modified_since_main(c, re.compile(r"requirements\.txt$")):
+        if filetype_modified_since_main(c, r"requirements\.txt$"):
             for requirements_file in requirements_files:
                 c.run(
                     f"snyk test --file={requirements_file} --package-manager=pip",
