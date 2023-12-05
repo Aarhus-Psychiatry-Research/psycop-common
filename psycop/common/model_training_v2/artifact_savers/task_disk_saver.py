@@ -14,15 +14,15 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 @BaselineRegistry.artifact_savers.register("task_disk_saver")
 class TaskDiskSaver(BaselineArtifactSaver):
     def __init__(self, experiment_path: str):
-        self.experiment_path = Path(experiment_path)
+        self.run_path = Path(experiment_path)
 
     def save_artifact(
         self,
         trainer: BaselineTrainer,
         training_result: TrainingResult,  # noqa: ARG002
     ) -> None:
-        self.experiment_path.mkdir(exist_ok=True, parents=True)
-        self.save_path = self.experiment_path / "task.pkl"
+        self.run_path.mkdir(exist_ok=True, parents=True)
+        self.save_path = self.run_path / "task.pkl"
 
         with self.save_path.open("wb") as f:
             pkl.dump(trainer.task, f)
