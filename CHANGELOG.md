@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.150.1 (2023-12-04)
+
+### Fix
+
+* Add multilogger to registry ([`972b929`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/972b929814dbfe627699f251875cb24d58657144))
+
+## v0.150.0 (2023-12-04)
+
+### Feature
+
+* Add disk logger ([`fcd1b46`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fcd1b46accd1f9e6826c821d82c45e241f6fa0e9))
+
 ## v0.149.1 (2023-11-30)
 
 ### Fix
