@@ -117,7 +117,10 @@ def test(
 def qtest(c: Context):
     """Quick tests, runs a subset of the tests using testmon"""
     # TODO: #390 Make more durable testmon implementation
-    if any(filetype_modified_since_head(c, suffix) for suffix in (re.compile(r"\.py$"), re.compile(r"\.cfg$"))):
+    if any(
+        filetype_modified_since_head(c, suffix)
+        for suffix in (re.compile(r"\.py$"), re.compile(r"\.cfg$"))
+    ):
         test(
             c,
             pytest_args=[
@@ -169,7 +172,9 @@ def vulnerability_scan(c: Context, modified_files_only: bool = False):
                     pty=NOT_WINDOWS,
                 )
         else:
-            print("🟢 No requirements.txt files modified since main, skipping vulnerability scan")
+            print(
+                "🟢 No requirements.txt files modified since main, skipping vulnerability scan",
+            )
 
     else:
         for requirements_file in requirements_files:
