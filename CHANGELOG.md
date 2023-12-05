@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.150.3 (2023-12-05)
+
+### Fix
+
+* Overwrite log on new run ([`c60e5d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c60e5d520b84ac3f8a41df98509e607e6855e677))
+
 ## v0.150.2 (2023-12-04)
 
 ### Fix
