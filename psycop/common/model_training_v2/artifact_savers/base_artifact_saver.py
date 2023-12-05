@@ -8,6 +8,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 
 @runtime_checkable
 class BaselineArtifactSaver(Protocol):
+    """Run at the end of training to save artifacts."""
     def save_artifact(
         self,
         trainer: BaselineTrainer,
