@@ -22,7 +22,7 @@ class TaskDiskSaver(BaselineArtifactSaver):
         training_result: TrainingResult,  # noqa: ARG002
     ) -> None:
         self.experiment_path.mkdir(exist_ok=True, parents=True)
-        self.save_path = self.experiment_path / "pipeline.pkl"
+        self.save_path = self.experiment_path / "task.pkl"
 
         with self.save_path.open("wb") as f:
             pkl.dump(trainer.task, f)
