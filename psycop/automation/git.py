@@ -25,7 +25,9 @@ def filetype_modified_since_main(c: Context, regex_pattern: str) -> bool:
         hide=True,
     ).stdout.splitlines()
 
-    if any(re.compile(regex_pattern).search(file) for file in files_modified_since_main):
+    if any(
+        re.compile(regex_pattern).search(file) for file in files_modified_since_main
+    ):
         return True
 
     return False

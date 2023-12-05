@@ -18,7 +18,6 @@ If you do not wish to use invoke you can simply delete this file.
 
 import multiprocessing  # noqa: I001
 from pathlib import Path
-import re
 
 from invoke import Context, Result, task
 
@@ -117,10 +116,7 @@ def test(
 def qtest(c: Context):
     """Quick tests, runs a subset of the tests using testmon"""
     # TODO: #390 Make more durable testmon implementation
-    if any(
-        filetype_modified_since_main(c, suffix)
-        for suffix in (r"\.py$", r"\.cfg$")
-    ):
+    if any(filetype_modified_since_main(c, suffix) for suffix in (r"\.py$", r"\.cfg$")):
         test(
             c,
             pytest_args=[
