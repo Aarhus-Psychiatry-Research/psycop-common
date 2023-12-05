@@ -1,8 +1,12 @@
 from collections.abc import Sequence
+from typing import Iterable
 
 import pandas as pd
 import polars as pl
 
+from psycop.common.model_training_v2.artifact_savers.base_artifact_saver import (
+    BaselineArtifactSaver,
+)
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
 )
@@ -37,6 +41,7 @@ class SplitTrainer(BaselineTrainer):
         task: BaselineTask,
         metric: BaselineMetric,
         logger: BaselineLogger,
+        artifact_savers: Iterable[BaselineArtifactSaver] | None = None,
     ):
         self.training_data = training_data.load()
         self.training_outcome_col_name = training_outcome_col_name
@@ -46,6 +51,7 @@ class SplitTrainer(BaselineTrainer):
         self.task = task
         self.metric = metric
         self.logger = logger
+        self.artifact_savers = artifact_savers
 
         # When using sklearn pipelines, the outcome column must retain its name
         # throughout the pipeline.
@@ -82,11 +88,22 @@ class SplitTrainer(BaselineTrainer):
         )
 
         main_metric = self.metric.calculate(y=training_y, y_hat_prob=y_hat_prob)
-        self.logger.log_metric(main_metric)
-
-        return TrainingResult(
+        training_result = TrainingResult(
             metric=main_metric,
             df=pl.DataFrame(
                 pd.concat([validation_data_preprocessed, y_hat_prob], axis=1),
             ),
         )
+
+        self.logger.log_metric(main_metric)
+        self._save_artifacts(training_result=training_result)
+
+        return training_result
+
+    def _save_artifacts(self, training_result: TrainingResult) -> None:
+        if self.artifact_savers is not None:
+            for artifact_saver in self.artifact_savers:
+                artifact_saver.save_artifact(
+                    trainer=self,
+                    training_result=training_result,
+                )

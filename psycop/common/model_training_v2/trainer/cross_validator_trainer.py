@@ -1,7 +1,12 @@
+from typing import Iterable
+
 import pandas as pd
 import polars as pl
 from sklearn.model_selection import StratifiedGroupKFold
 
+from psycop.common.model_training_v2.artifact_savers.base_artifact_saver import (
+    BaselineArtifactSaver,
+)
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
@@ -28,6 +33,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         logger: BaselineLogger,
         n_splits: int = 5,
         group_col_name: str = "dw_ek_borger",
+        artifact_savers: Iterable[BaselineArtifactSaver] | None = None,
     ):
         self.training_data = training_data.load()
         self.outcome_col_name = outcome_col_name
@@ -37,6 +43,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         self.n_splits = n_splits
         self.group_col_name = group_col_name
         self.logger = logger
+        self.artifact_savers = artifact_savers
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
@@ -106,9 +113,20 @@ class CrossValidatorTrainer(BaselineTrainer):
             y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
             name_prefix="all_oof",
         )
-        self.logger.log_metric(main_metric)
-
-        return TrainingResult(
+        training_result = TrainingResult(
             metric=main_metric,
             df=pl.DataFrame(training_data_preprocessed),
         )
+
+        self.logger.log_metric(main_metric)
+        self._save_artifacts(training_result=training_result)
+
+        return training_result
+
+    def _save_artifacts(self, training_result: TrainingResult) -> None:
+        if self.artifact_savers is not None:
+            for artifact_saver in self.artifact_savers:
+                artifact_saver.save_artifact(
+                    trainer=self,
+                    training_result=training_result,
+                )
