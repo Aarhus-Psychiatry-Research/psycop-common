@@ -25,7 +25,7 @@ from invoke import Context, Result, task
 from psycop.automation.environment import NOT_WINDOWS, on_ovartaci
 from psycop.automation.git import (
     add_and_commit,
-    filetype_modified_since_head,
+    filetype_modified_since_main,
     push_to_branch,
 )
 from psycop.automation.lint import pre_commit
@@ -53,7 +53,7 @@ def types(c: Context):
 @task
 def qtypes(c: Context):
     """Run static type checks."""
-    if filetype_modified_since_head(c, re.compile(r"\.py$")):
+    if filetype_modified_since_main(c, re.compile(r"\.py$")):
         types(c)
     else:
         print("🟢 No python files modified since main, skipping static type checks")
@@ -118,7 +118,7 @@ def qtest(c: Context):
     """Quick tests, runs a subset of the tests using testmon"""
     # TODO: #390 Make more durable testmon implementation
     if any(
-        filetype_modified_since_head(c, suffix)
+        filetype_modified_since_main(c, suffix)
         for suffix in (re.compile(r"\.py$"), re.compile(r"\.cfg$"))
     ):
         test(
@@ -165,7 +165,7 @@ def vulnerability_scan(c: Context, modified_files_only: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
 
     if modified_files_only:
-        if filetype_modified_since_head(c, re.compile(r"requirements\.txt$")):
+        if filetype_modified_since_main(c, re.compile(r"requirements\.txt$")):
             for requirements_file in requirements_files:
                 c.run(
                     f"snyk test --file={requirements_file} --package-manager=pip",
