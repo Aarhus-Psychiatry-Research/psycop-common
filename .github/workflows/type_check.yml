@@ -1,7 +1,7 @@
 # We do not include static_type_checks as a pre-commit hook because pre-commit hooks
 # are installed in their own virtual environment, so static_type_checks cannot
 # use stubs from imports
-name: static_type_checks
+name: type-check
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
     branches: [main]
 
 jobs:
-  static_type_checks:
+  type_check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
