@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-from pandas.testing import assert_series_equal
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
