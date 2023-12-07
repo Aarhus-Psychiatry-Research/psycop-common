@@ -2,6 +2,31 @@
 
 <!--next-version-placeholder-->
 
+## v0.150.3 (2023-12-05)
+
+### Fix
+
+* Overwrite log on new run ([`c60e5d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c60e5d520b84ac3f8a41df98509e607e6855e677))
+
+## v0.150.2 (2023-12-04)
+
+### Fix
+
+* Correct saving and loading of cfg to disk ([`ac8531c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ac8531c3b9cc0798abfbe1416903497cf93e3832))
+* Update type hint of BaselineLoggers ([`1bfc85a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1bfc85a914c18208f8553e1964c21742588360fd))
+
+## v0.150.1 (2023-12-04)
+
+### Fix
+
+* Add multilogger to registry ([`972b929`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/972b929814dbfe627699f251875cb24d58657144))
+
+## v0.150.0 (2023-12-04)
+
+### Feature
+
+* Add disk logger ([`fcd1b46`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fcd1b46accd1f9e6826c821d82c45e241f6fa0e9))
+
 ## v0.149.1 (2023-11-30)
 
 ### Fix

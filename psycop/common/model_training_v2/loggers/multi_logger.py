@@ -1,11 +1,15 @@
-from typing import Any, Callable
+from typing import Callable
 
+from confection import Config
+
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.task.base_metric import (
     CalculatedMetric,
 )
 
 
+@BaselineRegistry.loggers.register("multi_logger")
 class MultiLogger(BaselineLogger):
     """This logger allows combining multiple loggers. E.g. you can combine a TerminalLogger and a FileLogger."""
 
@@ -31,5 +35,5 @@ class MultiLogger(BaselineLogger):
     def log_metric(self, metric: CalculatedMetric):
         self._run_on_loggers(lambda logger: logger.log_metric(metric=metric))
 
-    def log_config(self, config: dict[str, Any]):
+    def log_config(self, config: Config):
         self._run_on_loggers(lambda logger: logger.log_config(config=config))
