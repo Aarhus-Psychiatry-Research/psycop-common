@@ -1,0 +1,22 @@
+[importlinter]
+root_package = psycop
+
+[importlinter:contract:common_projects_layers]
+name = common does not import from projects
+type = layers
+layers =
+  psycop.projects
+  psycop.common.cohort_definition
+
+[importlinter:contract:projects_are_independent]
+name = projects are independent
+type = layers
+layers =
+  psycop.projects.cancer
+  psycop.projects.clozapine
+  psycop.projects.cvd
+  psycop.projects.forced_admission_inpatient
+  psycop.projects.restraint
+  psycop.projects.scz_bp
+  psycop.projects.sequence_models
+  psycop.projects.t2d
