@@ -38,7 +38,7 @@ def install_requirements(c: Context):
     c.run(f"pip install -r {requirements_string}")
 
 
-@task(aliases=("static_type_checks",))
+@task(aliases=("static_type_checks", "type_check"))
 def types(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
