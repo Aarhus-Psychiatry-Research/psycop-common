@@ -29,6 +29,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import (
 class SplitTrainer(BaselineTrainer):
     def __init__(
         self,
+        uuid_col_name: str,
         training_data: BaselineDataLoader,
         training_outcome_col_name: str,
         validation_data: BaselineDataLoader,
@@ -38,6 +39,7 @@ class SplitTrainer(BaselineTrainer):
         metric: BaselineMetric,
         logger: BaselineLogger,
     ):
+        self.uuid_col_name = uuid_col_name
         self.training_data = training_data.load()
         self.training_outcome_col_name = training_outcome_col_name
         self.validation_data = validation_data.load()
@@ -56,6 +58,14 @@ class SplitTrainer(BaselineTrainer):
     def outcome_columns(self) -> Sequence[str]:
         return [self.training_outcome_col_name, self.validation_outcome_col_name]
 
+    @property
+    def non_predictor_columns(self) -> Sequence[str]:
+        return [
+            self.uuid_col_name,
+            self.training_outcome_col_name,
+            self.validation_outcome_col_name,
+        ]
+
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
             data=self.training_data,
@@ -64,13 +74,14 @@ class SplitTrainer(BaselineTrainer):
             data=self.validation_data,
         )
 
-        x = training_data_preprocessed.drop(self.outcome_columns, axis=1)
+        x = training_data_preprocessed.drop(self.non_predictor_columns, axis=1)
         self.logger.info(
             f"Training on:\n\tFeatures: {training_data_preprocessed.columns}",
         )
-        self.logger.info(f"\tOutcome: {self.shared_outcome_col_name}")
 
         training_y = training_data_preprocessed[self.training_outcome_col_name]
+        self.logger.info(f"\tOutcome: {self.training_outcome_col_name}")
+
         self.task.train(
             x=x,
             y=pd.DataFrame(training_y),
@@ -78,7 +89,7 @@ class SplitTrainer(BaselineTrainer):
         )
 
         y_hat_prob = self.task.predict_proba(
-            x=validation_data_preprocessed.drop(self.outcome_columns, axis=1),
+            x=validation_data_preprocessed.drop(self.non_predictor_columns, axis=1),
         )
 
         main_metric = self.metric.calculate(y=training_y, y_hat_prob=y_hat_prob)

@@ -26,11 +26,8 @@ class BinaryClassificationTask(BaselineTask):
     def __init__(
         self,
         task_pipe: BinaryClassificationPipeline,
-        pred_time_uuid_col_name: str,
     ):
         self.pipe = task_pipe
-        self.pred_time_uuid_col_name = pred_time_uuid_col_name
-        # TODO: remover pred_time_uuid_col_name from binary classification task
 
     def train(
         self,
@@ -41,8 +38,8 @@ class BinaryClassificationTask(BaselineTask):
         assert len(y.columns) == 1
         y_series = y[y_col_name]
 
-        self.pipe.fit(x=x.drop(self.pred_time_uuid_col_name, axis=1), y=y_series)
-        self.is_fitted = True
+        self.pipe.fit(x=x, y=y_series)
+        self.is_fitted = True  # @HLasse, is this maybe a property on the sklearn pipe itself, rather than the task?
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
-        return self.pipe.predict_proba(x.drop(self.pred_time_uuid_col_name, axis=1))
+        return self.pipe.predict_proba(x)
