@@ -1,7 +1,7 @@
 # We do not include static_type_checks as a pre-commit hook because pre-commit hooks
 # are installed in their own virtual environment, so static_type_checks cannot
 # use stubs from imports
-name: type-check
+name: type_check
 
 on:
   pull_request:
