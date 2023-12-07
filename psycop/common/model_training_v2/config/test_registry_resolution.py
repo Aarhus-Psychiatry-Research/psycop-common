@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from confection import Config
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
@@ -24,6 +25,16 @@ Create a copy of the function before the change and add it to the archive folder
 The changed version of the function should be registered under a new name in the registry,
 e.g. func_name_v2
 """
+
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class CfgError:
+    cfg: Config
+    location: Path
+    error: Exception
 
 
 @pytest.mark.parametrize(
@@ -58,11 +69,21 @@ def test_registered_callables_should_have_valid_example_cfgs(
             )
 
     cfgs = get_example_cfgs(output_dir)
+    cfgs_with_errors: list[CfgError] = []
 
     for example_cfg in cfgs:
         try:
-            BaselineRegistry.resolve(example_cfg)
+            BaselineRegistry.resolve(example_cfg.cfg)
         except Exception as e:
-            raise Exception(
-                f"Failed to resolve {example_cfg}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
-            ) from e
+            cfgs_with_errors.append(
+                CfgError(cfg=example_cfg.cfg, location=example_cfg.location, error=e),
+            )
+
+    if cfgs_with_errors:
+        locations = "\n\t".join(
+            f"{e.location.name}: {e.error}" for e in cfgs_with_errors
+        )
+
+        raise Exception(
+            f"Failed to resolve {locations}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
+        ) from cfgs_with_errors[0].error
