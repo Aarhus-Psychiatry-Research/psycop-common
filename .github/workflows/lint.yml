@@ -32,6 +32,5 @@ jobs:
 
       - name: Lint
         id: pre_commit
-        continue-on-error: true
         run: |
           pre-commit run --color always --all-files
