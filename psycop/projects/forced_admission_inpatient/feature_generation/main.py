@@ -50,6 +50,7 @@ def main(
     limited_feature_set: bool = False,
     lookbehind_180d_mean: bool = False,
     generate_in_chunks: bool = True,
+    washout_on_prior_forced_admissions: bool = True,
     feature_set_name: str | None = None,
     text_embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "both",
     chunksize: int = 10,
@@ -98,7 +99,7 @@ def main(
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
             project_info=project_info,
             eligible_prediction_times=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
-                washout_on_prior_forced_admissions=False,
+                washout_on_prior_forced_admissions=washout_on_prior_forced_admissions,
             ).prediction_times.to_pandas(),
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
@@ -108,7 +109,7 @@ def main(
         flattened_df = create_flattened_dataset(
             feature_specs=feature_specs,  # type: ignore
             prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
-                washout_on_prior_forced_admissions=False,
+                washout_on_prior_forced_admissions=washout_on_prior_forced_admissions,
             ).prediction_times.to_pandas(),
             drop_pred_times_with_insufficient_look_distance=False,
             project_info=project_info,
@@ -160,10 +161,11 @@ if __name__ == "__main__":
     )
 
     main(
-        add_text_features=True,
+        add_text_features=False,
         min_set_for_debug=False,
-        limited_feature_set=False,
+        limited_feature_set=True,
         lookbehind_180d_mean=False,
-        feature_set_name="full_feature_set_with_sentence_transformers_and_tfidf_750",
-        generate_in_chunks=True,
+        washout_on_prior_forced_admissions=True,
+        feature_set_name="limited_features_set_demographics_diagnoses",
+        generate_in_chunks=False,
     )
