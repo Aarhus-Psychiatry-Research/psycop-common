@@ -39,7 +39,6 @@ class BinaryClassificationTask(BaselineTask):
         y_series = y[y_col_name]
 
         self.pipe.fit(x=x, y=y_series)
-        self.is_fitted = True  # @HLasse, is this maybe a property on the sklearn pipe itself, rather than the task?
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
         return self.pipe.predict_proba(x)

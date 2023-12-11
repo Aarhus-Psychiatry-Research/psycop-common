@@ -60,11 +60,7 @@ class SplitTrainer(BaselineTrainer):
 
     @property
     def non_predictor_columns(self) -> Sequence[str]:
-        return [
-            self.uuid_col_name,
-            self.training_outcome_col_name,
-            self.validation_outcome_col_name,
-        ]
+        return [self.uuid_col_name, *self.outcome_columns]
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
