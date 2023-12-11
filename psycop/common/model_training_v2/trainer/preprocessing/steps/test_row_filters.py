@@ -41,7 +41,12 @@ def test_age_filter(min_age: int, max_age: int, n_remaining: int):
         (4, "behind", "timestamp", 0),
     ],
 )
-def test_window_filter(n_days: int, direction: Literal["ahead", "behind"], timestamp_col_name: str, n_remaining: int):
+def test_window_filter(
+    n_days: int,
+    direction: Literal["ahead", "behind"],
+    timestamp_col_name: str,
+    n_remaining: int,
+):
     df = str_to_pl_df(
         """timestamp,
     2021-01-01,
@@ -51,6 +56,10 @@ def test_window_filter(n_days: int, direction: Literal["ahead", "behind"], times
     """,
     )
 
-    result = WindowFilter(n_days=n_days, direction=direction, timestamp_col_name=timestamp_col_name).apply(df)
+    result = WindowFilter(
+        n_days=n_days,
+        direction=direction,
+        timestamp_col_name=timestamp_col_name,
+    ).apply(df)
 
     assert len(result) == n_remaining

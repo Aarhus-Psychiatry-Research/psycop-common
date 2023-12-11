@@ -23,7 +23,12 @@ class AgeFilter(PresplitStep):
 
 @BaselineRegistry.preprocessing.register("window_filter")
 class WindowFilter(PresplitStep):
-    def __init__(self, n_days: int, direction: Literal["ahead", "behind"], timestamp_col_name: str):
+    def __init__(
+        self,
+        n_days: int,
+        direction: Literal["ahead", "behind"],
+        timestamp_col_name: str,
+    ):
         self.n_days = timedelta(n_days)
         self.direction = direction
         self.timestamp_col_name = timestamp_col_name
@@ -32,16 +37,34 @@ class WindowFilter(PresplitStep):
 
         if self.direction == "ahead":
             if isinstance(input_df, pl.DataFrame):
-                max_datetime = input_df.select(pl.col(self.timestamp_col_name)).max().item() - self.n_days
+                max_datetime = (
+                    input_df.select(pl.col(self.timestamp_col_name)).max().item()
+                    - self.n_days
+                )
             else:
-                max_datetime = input_df.select(pl.col(self.timestamp_col_name)).max().collect().item() - self.n_days
+                max_datetime = (
+                    input_df.select(pl.col(self.timestamp_col_name))
+                    .max()
+                    .collect()
+                    .item()
+                    - self.n_days
+                )
             input_df = input_df.filter(pl.col(self.timestamp_col_name) < max_datetime)
 
         elif self.direction == "behind":
             if isinstance(input_df, pl.DataFrame):
-                min_datetime = input_df.select(pl.col(self.timestamp_col_name)).min().item() + self.n_days
+                min_datetime = (
+                    input_df.select(pl.col(self.timestamp_col_name)).min().item()
+                    + self.n_days
+                )
             else:
-                min_datetime = input_df.select(pl.col(self.timestamp_col_name)).min().collect().item() + self.n_days
+                min_datetime = (
+                    input_df.select(pl.col(self.timestamp_col_name))
+                    .min()
+                    .collect()
+                    .item()
+                    + self.n_days
+                )
             input_df = input_df.filter(pl.col(self.timestamp_col_name) > min_datetime)
 
         return input_df
