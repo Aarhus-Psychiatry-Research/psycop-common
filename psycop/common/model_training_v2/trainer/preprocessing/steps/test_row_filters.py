@@ -33,18 +33,17 @@ def test_age_filter(min_age: int, max_age: int, n_remaining: int):
 
 
 @pytest.mark.parametrize(
-    ("n_days", "direction", "timestamp_col_name", "n_remaining"),
+    ("n_days", "direction", "n_remaining"),
     [
-        (1, "ahead", "timestamp", 2),
-        (2, "ahead", "timestamp", 1),
-        (1, "behind", "timestamp", 2),
-        (4, "behind", "timestamp", 0),
+        (1, "ahead", 2),
+        (2, "ahead", 1),
+        (1, "behind", 2),
+        (4, "behind", 0),
     ],
 )
 def test_window_filter(
     n_days: int,
     direction: Literal["ahead", "behind"],
-    timestamp_col_name: str,
     n_remaining: int,
 ):
     df = str_to_pl_df(
@@ -59,7 +58,7 @@ def test_window_filter(
     result = WindowFilter(
         n_days=n_days,
         direction=direction,
-        timestamp_col_name=timestamp_col_name,
+        timestamp_col_name="timestamp",
     ).apply(df)
 
     assert len(result) == n_remaining
