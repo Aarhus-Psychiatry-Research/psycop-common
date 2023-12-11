@@ -63,18 +63,33 @@ class TrainerConfigSchema(BaseModel):
 
 
 class TrainingConfigSchema(BaseModel):
+    class Config:
+        extra = "forbid"
+        allow_mutation = False
+        arbitrary_types_allowed = True
+
     batch_size: int
     num_workers_for_dataloader: int = 8
     trainer: TrainerConfigSchema
 
 
 class PretrainingModelAndDataset(BaseModel):
+    class Config:
+        extra = "forbid"
+        allow_mutation = False
+        arbitrary_types_allowed = True
+
     model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
     train_dataset: PatientSliceDataset
     validation_dataset: PatientSliceDataset
 
 
 class ClassificationModelAndDataset(BaseModel):
+    class Config:
+        extra = "forbid"
+        allow_mutation = False
+        arbitrary_types_allowed = True
+
     model: EncoderForClassification
     train_dataset: PatientSlicesWithLabels
     validation_dataset: PatientSlicesWithLabels
