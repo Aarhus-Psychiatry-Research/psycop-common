@@ -320,7 +320,7 @@ class EncoderForClassification(pl.LightningModule):
     def collate_fn(
         self,
         patient_slices_with_labels: list[tuple[PatientSlice, int]],
-    ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
+    ) -> BatchWithLabels:
         """
         Takes a list of patients and returns a dictionary of padded sequence ids.
         """
@@ -331,7 +331,7 @@ class EncoderForClassification(pl.LightningModule):
         )
 
         outcome_tensor = torch.tensor(outcomes)
-        return padded_sequence_ids, outcome_tensor
+        return BatchWithLabels(inputs=padded_sequence_ids, labels=outcome_tensor)
 
     def configure_optimizers(
         self,
