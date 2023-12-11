@@ -20,6 +20,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 class CrossValidatorTrainer(BaselineTrainer):
     def __init__(
         self,
+        uuid_col_name: str,
         training_data: BaselineDataLoader,
         outcome_col_name: str,
         preprocessing_pipeline: PreprocessingPipeline,
@@ -29,6 +30,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         n_splits: int = 5,
         group_col_name: str = "dw_ek_borger",
     ):
+        self.uuid_col_name = uuid_col_name
         self.training_data = training_data.load()
         self.outcome_col_name = outcome_col_name
         self.preprocessing_pipeline = preprocessing_pipeline
@@ -44,7 +46,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         )
 
         X = training_data_preprocessed.drop(
-            self.outcome_col_name,
+            [self.outcome_col_name, self.uuid_col_name],
             axis=1,
         )
         self.logger.info(f"Training on:\n\tFeatures: {X.columns}")

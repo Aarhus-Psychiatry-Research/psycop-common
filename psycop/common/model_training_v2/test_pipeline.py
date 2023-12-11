@@ -52,6 +52,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
         ),  # Must recast to Path, since the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
         logger=logger,
         trainer=SplitTrainer(
+            uuid_col_name="pred_time_uuid",
             training_data=MinimalTestData(),
             training_outcome_col_name="outcome",
             validation_data=MinimalTestData(),
@@ -60,7 +61,6 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
             task=BinaryClassificationTask(
-                pred_time_uuid_col_name="pred_time_uuid",
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
                 ),
@@ -91,13 +91,13 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
         project_info=ProjectInfo(experiment_path=tmpdir),
         logger=logger,
         trainer=CrossValidatorTrainer(
+            uuid_col_name="pred_time_uuid",
             training_data=MinimalTestData(),
             outcome_col_name="outcome",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
             task=BinaryClassificationTask(
-                pred_time_uuid_col_name="pred_time_uuid",
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
                 ),
