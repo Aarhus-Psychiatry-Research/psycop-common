@@ -31,7 +31,7 @@ def populate_registry() -> None:
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
-    from .tasks import create_behrt, create_encoder_for_clf  # noqa
+    from .tasks import create_behrt, clf_encoder  # noqa
 
 
 populate_registry()
@@ -61,7 +61,7 @@ def train(config_path: Path | None = None) -> None:
 
     # filter dataset
     std_logger.info("Filtering Patients")
-    filter_fn = model.embedding_module.A_diagnoses_to_caliber
+    filter_fn = model.embedder.A_diagnoses_to_caliber
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
 

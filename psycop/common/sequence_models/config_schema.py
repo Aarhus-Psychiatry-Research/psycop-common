@@ -2,12 +2,15 @@
 The config Schema for sequence models.
 """
 
+from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional, Protocol, Union, final
 
+import lightning.pytorch as pl
 from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers.wandb import WandbLogger
 from pydantic import BaseModel
+from torch.utils.data import Dataset
 
 from psycop.common.sequence_models.tasks import (
     BEHRTForMaskedLM,
@@ -73,12 +76,22 @@ class DatasetsConfigSchema(BaseModel):
     validation: PatientSliceDataset | PatientSlicesWithLabels
 
 
+class PretrainingModelAndDataset:
+    model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
+    dataset: PatientSliceDataset
+
+
+class ClassificationModelAndDataset(BaseModel):
+    model: EncoderForClassification
+    dataset: PatientSlicesWithLabels
+
+
 class ResolvedConfigSchema(BaseModel):
     class Config:
         extra = "forbid"
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    dataset: DatasetsConfigSchema
-    model: BEHRTForMaskedLM | EncoderForClassification
+    # Required because dataset and model are coupled through their input and outputs
+    model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema

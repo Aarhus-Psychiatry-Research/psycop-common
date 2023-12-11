@@ -1,3 +1,4 @@
+from pathlib import Path
 from torch import nn
 
 from psycop.common.sequence_models.tasks.tasks import (
@@ -26,8 +27,8 @@ def create_behrt(
     )
 
 
-@Registry.tasks.register("encoder_for_clf")
-def create_encoder_for_clf(
+@Registry.tasks.register("clf_encoder")
+def clf_encoder(
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
     aggregation_module: AggregationModule,
@@ -43,3 +44,8 @@ def create_encoder_for_clf(
         lr_scheduler_fn=lr_scheduler,
         num_classes=num_classes,
     )
+
+@Registry.tasks.register("clf_encoder_from_pretrained")
+def clf_encoder_from_pretrained(
+    pretrained_checkpoint_path: Path,
+)

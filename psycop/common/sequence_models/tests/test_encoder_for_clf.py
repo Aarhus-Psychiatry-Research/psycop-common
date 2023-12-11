@@ -160,8 +160,8 @@ def test_pretrain_from_checkpoint(
     loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
 
     clf = EncoderForClassification(
-        embedding_module=loaded_model.embedding_module,
-        encoder_module=loaded_model.encoder_module,
+        embedding_module=loaded_model.embedder,
+        encoder_module=loaded_model.encoder,
         aggregation_module=aggregation_module,
         num_classes=2,
         optimizer_fn=optimizer_fn,

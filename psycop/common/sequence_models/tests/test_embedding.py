@@ -7,14 +7,16 @@ import torch
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import Patient, PatientSlice
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
-from psycop.common.sequence_models.embedders.interface import Embedder
+from psycop.common.sequence_models.embedders.interface import PatientSliceEmbedder
 
 
 @pytest.mark.parametrize(
     "embedding_module",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_embeddings(patient_slices: Sequence[PatientSlice], embedding_module: Embedder):
+def test_embeddings(
+    patient_slices: Sequence[PatientSlice], embedding_module: PatientSliceEmbedder
+):
     """
     Test embedding interface
     """

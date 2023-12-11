@@ -1,7 +1,8 @@
-from collections.abc import Iterator
+from abc import ABC, abstractmethod
+from collections.abc import Iterator, Sequence
 from copy import copy
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Protocol
 
 import lightning.pytorch as pl
 import torch
@@ -13,6 +14,7 @@ from psycop.common.data_structures.patient import PatientSlice
 
 from ..aggregators import AggregationModule
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
+from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 
 
@@ -45,15 +47,15 @@ class BEHRTForMaskedLM(pl.LightningModule):
     ):
         super().__init__()
         self.save_hyperparameters()
-        self.embedding_module = embedding_module
-        self.encoder_module = encoder_module
+        self.embedder = embedding_module
+        self.encoder = encoder_module
         self.optimizer_fn = optimizer_fn
         self.lr_scheduler_fn = lr_scheduler_fn
 
-        self.d_model = self.embedding_module.d_model
-        self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
+        self.d_model = self.embedder.d_model
+        self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
 
-        self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
+        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
     def training_step(  # type: ignore
@@ -77,8 +79,8 @@ class BEHRTForMaskedLM(pl.LightningModule):
         inputs: dict[str, torch.Tensor],
         masked_lm_labels: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
-        embedded_patients = self.embedding_module(inputs)
-        encoded_patients = self.encoder_module(
+        embedded_patients = self.embedder(inputs)
+        encoded_patients = self.encoder(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
         )
@@ -140,7 +142,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         # Perform masking
         masked_sequence, masked_labels = self.mask(
             diagnosis=padded_sequence_ids["diagnosis"],
-            n_diagnoses_in_vocab=self.embedding_module.n_diagnosis_codes,
+            n_diagnoses_in_vocab=self.embedder.n_diagnosis_codes,
             mask_token_id=self.mask_token_id,
             padding_mask=padding_mask,
         )
@@ -155,7 +157,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         """
         Takes a list of PredictionTime and returns a dictionary of padded sequence ids.
         """
-        padded_sequence_ids = self.embedding_module.collate_patient_slices(
+        padded_sequence_ids = self.embedder.collate_patient_slices(
             patient_slices,
         )
         # Masking
