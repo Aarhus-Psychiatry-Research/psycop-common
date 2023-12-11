@@ -68,15 +68,6 @@ class TrainingConfigSchema(BaseModel):
     trainer: TrainerConfigSchema
 
 
-DatasetType = TypeVar("DatasetType")
-
-
-@dataclass(frozen=True)
-class SplitDataset(Generic[DatasetType]):
-    training: DatasetType
-    validation: DatasetType
-
-
 class PretrainingModelAndDataset:
     model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
     train_dataset: PatientSliceDataset
