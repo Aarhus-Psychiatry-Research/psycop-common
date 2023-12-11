@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from torch import nn
 
 from psycop.common.sequence_models.tasks.tasks import (
@@ -44,8 +45,3 @@ def clf_encoder(
         lr_scheduler_fn=lr_scheduler,
         num_classes=num_classes,
     )
-
-@Registry.tasks.register("clf_encoder_from_pretrained")
-def clf_encoder_from_pretrained(
-    pretrained_checkpoint_path: Path,
-)
