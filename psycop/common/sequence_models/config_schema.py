@@ -3,8 +3,9 @@ The config Schema for sequence models.
 """
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Protocol, Union, final
+from typing import Any, Generic, Optional, Protocol, TypeVar, Union, final
 
 import lightning.pytorch as pl
 from lightning.pytorch.callbacks import Callback
@@ -67,23 +68,23 @@ class TrainingConfigSchema(BaseModel):
     trainer: TrainerConfigSchema
 
 
-class DatasetsConfigSchema(BaseModel):
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
+DatasetType = TypeVar("DatasetType")
 
-    training: PatientSliceDataset | PatientSlicesWithLabels
-    validation: PatientSliceDataset | PatientSlicesWithLabels
+
+@dataclass(frozen=True)
+class SplitDataset(Generic[DatasetType]):
+    training: DatasetType
+    validation: DatasetType
 
 
 class PretrainingModelAndDataset:
     model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
-    dataset: PatientSliceDataset
+    dataset: SplitDataset[PatientSliceDataset]
 
 
 class ClassificationModelAndDataset(BaseModel):
     model: EncoderForClassification
-    dataset: PatientSlicesWithLabels
+    dataset: SplitDataset[PatientSlicesWithLabels]
 
 
 class ResolvedConfigSchema(BaseModel):
