@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.151.0 (2023-12-11)
+
+### Feature
+
+* Add washout as an arg during feature gen ([`82ec387`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/82ec387bfa24a5e3e79218307974ab41f75a2099))
+
 ## v0.150.3 (2023-12-05)
 
 ### Fix
