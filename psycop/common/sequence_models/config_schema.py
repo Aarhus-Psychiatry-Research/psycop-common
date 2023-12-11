@@ -68,7 +68,7 @@ class TrainingConfigSchema(BaseModel):
     trainer: TrainerConfigSchema
 
 
-class PretrainingModelAndDataset:
+class PretrainingModelAndDataset(BaseModel):
     model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
     train_dataset: PatientSliceDataset
     validation_dataset: PatientSliceDataset
