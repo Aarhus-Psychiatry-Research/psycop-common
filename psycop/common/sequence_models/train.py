@@ -48,9 +48,9 @@ def train(config_path: Path | None = None) -> None:
     config = parse_config(config_dict)
 
     training_cfg = config.training
-    training_dataset = config.dataset.training
-    validation_dataset = config.dataset.validation
-    model = config.model
+    training_dataset = config.model_and_dataset.train_dataset
+    validation_dataset = config.model_and_dataset.validation_dataset
+    model = config.model_and_dataset.model
     logger = training_cfg.trainer.logger
     trainer_kwargs = training_cfg.trainer.to_dict()
 
