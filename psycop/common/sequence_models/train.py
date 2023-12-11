@@ -61,7 +61,7 @@ def train(config_path: Path | None = None) -> None:
 
     # filter dataset
     std_logger.info("Filtering Patients")
-    filter_fn = model.embedding_module.filter_and_reformat_events
+    filter_fn = model.embedding_module.A_diagnoses_to_caliber
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
 
