@@ -205,7 +205,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         return padded_sequences
 
-    def filter_events(self, events: Sequence[TemporalEvent]) -> list[TemporalEvent]:
+    def A_diagnoses_only(self, events: Sequence[TemporalEvent]) -> list[TemporalEvent]:
         filtered_events = []
         for event in events:
             if event.source_type == "diagnosis" and event.source_subtype == "A":
@@ -216,26 +216,27 @@ class BEHRTEmbedder(nn.Module, Embedder):
         self,
         diagnosis_code: str,
     ) -> str | None:
-        # For each diagnosis code, attempt to map to caliber code
-        # If no mapping exists, remove one character from the end of the code and try again
+        """Map diagnoses-codes to Caliber.
+
+        To handle different levels of granularity, map to the most specific Caliber code available. E.g. for code E12, if both E1 and E12 exist in Caliber, map to E12. If only E1 exists, map to E1.
+
+
+        Caliber codes are documented here: https://www.sciencedirect.com/science/article/pii/S2589750019300123?via%3Dihub
+        """
         while len(diagnosis_code) > 2:  # only attempt codes with at least 3 characters
             if diagnosis_code in self.icd2caliber:
                 return self.icd2caliber[diagnosis_code]
             diagnosis_code = diagnosis_code[:-1]
         return None
 
-    # def filter_events(self, patient_slices: Sequence[PatientSlice]) -> list[PatientSlice]:
-
-    def filter_and_reformat_events(
+    def A_diagnoses_to_caliber(
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> list[PatientSlice]:
         """
-        Fitler and reformats events.
-
-        Filtering: Filter out events that
-
-        Take patients and filter events to only include diagnosis codes. Then reformat the diagnosis codes by mapping them to caliber codes.
+        1. Filter to only keep A-diagnoses.
+        2. Map to Caliber codes
+        3. Drop any PatientSlice without any events after filtering and mapping
         """
         assert all(
             e.source_type == "diagnosis"
@@ -244,7 +245,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         ), "PatientSlice.temporal_events must only include diagnosis codes"
 
         patient_events = [
-            PatientSlice(p.patient, self.filter_events(p.temporal_events))
+            PatientSlice(p.patient, self.A_diagnoses_only(p.temporal_events))
             for p in tqdm(patient_slices)
         ]
         if not self.map_diagnosis_codes:
@@ -291,7 +292,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slice: PatientSlice,
     ) -> dict[str, torch.Tensor]:
         events = patient_slice.temporal_events
-        events = self.filter_events(events)
+        events = self.A_diagnoses_only(events)
         event_inputs = [self.collate_event(event, patient_slice) for event in events]
 
         event_inputs = self.add_cls_token_to_sequence(event_inputs)
@@ -339,7 +340,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
-        patient_slices = self.filter_and_reformat_events(patient_slices)
+        patient_slices = self.A_diagnoses_to_caliber(patient_slices)
 
         diagnosis_codes: list[str] = [
             str(e.value) for p in patient_slices for e in p.temporal_events

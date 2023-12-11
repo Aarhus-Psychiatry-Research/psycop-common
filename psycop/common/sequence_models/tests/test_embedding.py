@@ -92,7 +92,7 @@ def test_diagnosis_mapping(
     patient_events: list[tuple[Patient, TemporalEvent]] = [
         (p, e)
         for p in [patient]
-        for e in embedding_module.filter_events(p.temporal_events)
+        for e in embedding_module.A_diagnoses_only(p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
@@ -167,7 +167,7 @@ def test_reformat_and_filter(
     ]
 
     patient.add_events(temporal_events)
-    patient_slices_mapped = embedding_module.filter_and_reformat_events(
+    patient_slices_mapped = embedding_module.A_diagnoses_to_caliber(
         [patient.as_slice()],
     )
     diagnosis_codes = [
