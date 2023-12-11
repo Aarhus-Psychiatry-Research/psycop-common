@@ -23,36 +23,37 @@ from ...common.data_structures.prediction_time import PredictionTime
 from ...common.data_structures.temporal_event import TemporalEvent
 
 
-@Registry.datasets.register("model_from_checkpoint")
-def load_model_from_checkpoint(
-    checkpoint_path: Path,
-) -> BEHRTForMaskedLM:
-    return BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
+@Registry.datasets.register("fake_patient_slices_with_labels")
+def create_fake_patient_slices_with_labels() -> PatientSlicesWithLabels:
+    temporal_events = [
+        TemporalEvent(
+            timestamp=dt.datetime.now(),
+            source_type="fake_type",
+            source_subtype="fake_subtype",
+            value="fake_value",
+        ),
+    ]
 
-
-@Registry.datasets.register("patient_slices_with_labels_for_t2d")
-def create_patient_slices_with_labels_for_t2d(
-    min_n_visits: int,
-    split_name: Literal["train", "val", "test"],
-    lookbehind_days: int = 365,
-    lookahead_days: int = 365,
-) -> PatientSlicesWithLabels:
-    patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader(min_n_visits=min_n_visits)],
-        split=SplitName(split_name),
+    patient_slices = PatientSlicesWithLabels(
+        prediction_times=[
+            PredictionTime(
+                prediction_timestamp=dt.datetime.now(),
+                patient_slice=PatientSlice(
+                    patient=Patient(
+                        patient_id=1234,
+                        date_of_birth=dt.datetime.now(),
+                        unsorted_temporal_events=temporal_events,
+                    ),
+                    temporal_events=temporal_events,
+                ),
+                outcome=True,
+            ),
+        ],
     )
 
-    prediction_times = CohortToPredictionTimes(
-        cohort_definer=T2DCohortDefiner(),
-        patients=patients,
-    ).create_prediction_times(
-        lookbehind=dt.timedelta(days=lookbehind_days),
-        lookahead=dt.timedelta(days=lookahead_days),
-    )
-
-    return PatientSlicesWithLabels(prediction_times)
+    return patient_slices
 
 
-if __name__ == "__main__":
+def test_finetune():
     config_path = Path(__file__).parent / "fine_tune_t2d.cfg"
     train(config_path)
