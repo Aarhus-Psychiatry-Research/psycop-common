@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.sequence_models import (
-    AggregationModule,
+    Aggregator,
     BEHRTEmbedder,
     BEHRTForMaskedLM,
     EncoderForClassification,
@@ -17,7 +17,7 @@ from psycop.common.sequence_models import (
 )
 from psycop.common.sequence_models.aggregators import (
     AveragePooler,
-    CLSAggregationModule,
+    CLSAggregator,
 )
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 
@@ -62,7 +62,7 @@ def encoder_module() -> nn.Module:
 
 pytestmark = pytest.mark.parametrize(
     "aggregation_module",
-    [CLSAggregationModule(), AveragePooler()],
+    [CLSAggregator(), AveragePooler()],
 )
 
 
@@ -75,7 +75,7 @@ def test_encoder_for_clf(
     patient_dataset_with_labels: PatientSlicesWithLabels,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
-    aggregation_module: AggregationModule,
+    aggregation_module: Aggregator,
     optimizer_fn: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
@@ -110,7 +110,7 @@ def test_encoder_for_clf_for_multiclass(
     patient_dataset_with_labels: PatientSlicesWithLabels,
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
-    aggregation_module: AggregationModule,
+    aggregation_module: Aggregator,
     optimizer_fn: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
@@ -138,7 +138,7 @@ def test_encoder_for_clf_for_multiclass(
 
 def test_pretrain_from_checkpoint(
     patient_dataset_with_labels: PatientSlicesWithLabels,
-    aggregation_module: AggregationModule,
+    aggregation_module: Aggregator,
     optimizer_fn: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):

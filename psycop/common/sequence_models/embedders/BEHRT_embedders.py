@@ -16,7 +16,10 @@ from tqdm import tqdm
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
-from psycop.common.sequence_models.dataset import PatientSliceDataset
+from psycop.common.sequence_models.dataset import (
+    PatientSliceDataset,
+    PatientSlicesWithLabels,
+)
 
 from ..registry import Registry
 from .interface import EmbeddedSequence, PatientSliceEmbedder
@@ -229,14 +232,13 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
             diagnosis_code = diagnosis_code[:-1]
         return None
 
-    def A_diagnoses_to_caliber(
+    def reformat(
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> list[PatientSlice]:
         """
-        1. Filter to only keep A-diagnoses.
-        2. Map to Caliber codes
-        3. Drop any PatientSlice without any events after filtering and mapping
+        1. Filter input to only keep A-diagnoses.
+        2. Map ICD-10 to Caliber codes
         """
         assert all(
             e.source_type == "diagnosis"
@@ -253,7 +255,6 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
 
         # map diagnosis codes
         _patient_slices = []
-        n_filtered = 0
         for p in tqdm(patient_events):
             temporal_events = []
             for e in p.temporal_events:
@@ -267,14 +268,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
                     )
                     temporal_events.append(event)
 
-            if temporal_events:
-                _patient_slices.append(PatientSlice(p.patient, temporal_events))
-            else:
-                n_filtered += 1
-
-        log.warning(
-            f"Lost {n_filtered} patients ({round(n_filtered / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
-        )
+            _patient_slices.append(PatientSlice(p.patient, temporal_events))
 
         return _patient_slices
 
@@ -340,7 +334,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
-        patient_slices = self.A_diagnoses_to_caliber(patient_slices)
+        patient_slices = self.reformat(patient_slices)
 
         diagnosis_codes: list[str] = [
             str(e.value) for p in patient_slices for e in p.temporal_events
@@ -391,7 +385,9 @@ def create_behrt_embedder(
     d_model: int,
     dropout_prob: float,
     max_sequence_length: int,
-    patient_slices: Sequence[PatientSlice] | PatientSliceDataset,
+    patient_slices: Sequence[PatientSlice]
+    | PatientSliceDataset
+    | PatientSlicesWithLabels,
 ) -> BEHRTEmbedder:
     embedder = BEHRTEmbedder(
         d_model=d_model,
@@ -399,7 +395,7 @@ def create_behrt_embedder(
         max_sequence_length=max_sequence_length,
     )
 
-    if isinstance(patient_slices, PatientSliceDataset):
+    if isinstance(patient_slices, (PatientSliceDataset, PatientSlicesWithLabels)):
         patient_slices = patient_slices.patient_slices
 
     log.info("Fitting Embedding Module")

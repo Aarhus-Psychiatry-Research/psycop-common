@@ -48,7 +48,7 @@ def train(config_path: Path | None = None) -> None:
     config = parse_config(config_dict)
 
     training_cfg = config.training
-    training_dataset = config.model_and_dataset.train_dataset
+    training_dataset = config.model_and_dataset.training_dataset
     validation_dataset = config.model_and_dataset.validation_dataset
     model = config.model_and_dataset.model
     logger = training_cfg.trainer.logger
@@ -61,7 +61,7 @@ def train(config_path: Path | None = None) -> None:
 
     # filter dataset
     std_logger.info("Filtering Patients")
-    filter_fn = model.embedder.A_diagnoses_to_caliber
+    filter_fn = model.filter_and_reformat
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
 

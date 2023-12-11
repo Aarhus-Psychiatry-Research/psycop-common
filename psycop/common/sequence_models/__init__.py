@@ -1,4 +1,4 @@
-from .aggregators import AggregationModule, AveragePooler
+from .aggregators import Aggregator, AveragePooler
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 from .embedders.BEHRT_embedders import BEHRTEmbedder
 from .embedders.interface import PatientSliceEmbedder
@@ -13,6 +13,6 @@ __all__ = [
     "PatientSlicesWithLabels",
     "EncoderForClassification",
     "AveragePooler",
-    "AggregationModule",
+    "Aggregator",
     "Registry",
 ]

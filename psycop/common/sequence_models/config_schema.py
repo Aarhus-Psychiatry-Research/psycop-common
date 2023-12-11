@@ -80,7 +80,7 @@ class PretrainingModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
-    train_dataset: PatientSliceDataset
+    training_dataset: PatientSliceDataset
     validation_dataset: PatientSliceDataset
 
 
@@ -91,7 +91,7 @@ class ClassificationModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: EncoderForClassification
-    train_dataset: PatientSlicesWithLabels
+    training_dataset: PatientSlicesWithLabels
     validation_dataset: PatientSlicesWithLabels
 
 

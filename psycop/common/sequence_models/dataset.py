@@ -41,8 +41,29 @@ class PatientSlicesWithLabels(Dataset[tuple[PatientSlice, int]]):
 
         return (pred_time.patient_slice, label)
 
+    @property
+    def patient_slices(self) -> Sequence[PatientSlice]:
+        return [pred_time.patient_slice for pred_time in self.prediction_times]
+
     def filter_patients(
         self,
         filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
     ) -> None:
-        raise NotImplementedError
+        pred_times: list[PredictionTime] = []
+        for pred_time in self.prediction_times:
+            filtered_slice = filter_fn([pred_time.patient_slice])
+
+            if len(filtered_slice) != 1:
+                raise ValueError(
+                    f"Filtering resulted in {len(filtered_slice)} patient slices. "
+                    "Expected 1.",
+                )
+
+            new_pred_time = PredictionTime(
+                prediction_timestamp=pred_time.prediction_timestamp,
+                patient_slice=filtered_slice[0],
+                outcome=pred_time.outcome,
+            )
+            pred_times.append(new_pred_time)
+
+        self.prediction_times = pred_times

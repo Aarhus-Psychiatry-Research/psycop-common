@@ -15,7 +15,8 @@ from psycop.common.sequence_models.embedders.interface import PatientSliceEmbedd
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_embeddings(
-    patient_slices: Sequence[PatientSlice], embedding_module: PatientSliceEmbedder
+    patient_slices: Sequence[PatientSlice],
+    embedding_module: PatientSliceEmbedder,
 ):
     """
     Test embedding interface
@@ -169,7 +170,7 @@ def test_reformat_and_filter(
     ]
 
     patient.add_events(temporal_events)
-    patient_slices_mapped = embedding_module.A_diagnoses_to_caliber(
+    patient_slices_mapped = embedding_module.reformat(
         [patient.as_slice()],
     )
     diagnosis_codes = [

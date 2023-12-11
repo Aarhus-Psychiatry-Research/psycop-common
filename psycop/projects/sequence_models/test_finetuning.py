@@ -2,6 +2,9 @@ import datetime as dt
 from pathlib import Path
 from typing import Literal
 
+from psycop.common.data_structures.patient import Patient, PatientSlice
+from psycop.common.data_structures.prediction_time import PredictionTime
+from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
     CohortToPredictionTimes,
@@ -18,17 +21,13 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
-from ...common.data_structures.patient import Patient, PatientSlice
-from ...common.data_structures.prediction_time import PredictionTime
-from ...common.data_structures.temporal_event import TemporalEvent
-
 
 @Registry.datasets.register("fake_patient_slices_with_labels")
 def create_fake_patient_slices_with_labels() -> PatientSlicesWithLabels:
     temporal_events = [
         TemporalEvent(
             timestamp=dt.datetime.now(),
-            source_type="fake_type",
+            source_type="diagnosis",
             source_subtype="fake_subtype",
             value="fake_value",
         ),
@@ -55,5 +54,5 @@ def create_fake_patient_slices_with_labels() -> PatientSlicesWithLabels:
 
 
 def test_finetune():
-    config_path = Path(__file__).parent / "fine_tune_t2d.cfg"
+    config_path = Path(__file__).parent / "test_finetuning.cfg"
     train(config_path)
