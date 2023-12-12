@@ -53,7 +53,6 @@ def create_patient_slices_with_labels_for_t2d(
     return PatientSlicesWithLabels(prediction_times)
 
 
-
 if __name__ == "__main__":
-    config_path = Path(__file__).parent / "finetune_t2d.cfg"
+    config_path = Path(__file__).parent / "finetune_t2d-debug.cfg"
     train(config_path)
