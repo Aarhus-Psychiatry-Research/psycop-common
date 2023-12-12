@@ -19,29 +19,27 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
     get_scz_bp_patients_excluded_by_washin,
 )
 
+from .....common.types.polarsframe import PolarsFrameGeneric
+
 
 class SczBpMinDateFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("timestamp") > MIN_DATE)
 
 
 class SczBpMinAgeFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
 
 
 class SczBpMaxAgeFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col(AGE_COL_NAME) <= MAX_AGE)
 
 
 class SczBpAddAge(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        birthday_df = pl.from_pandas(birthdays())
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        birthday_df = pl.from_pandas(birthdays()).lazy()
 
         df = df.join(birthday_df, on="dw_ek_borger", how="inner")
         df = df.with_columns(
@@ -54,23 +52,21 @@ class SczBpAddAge(PredictionTimeFilter):
 
 
 class SczBpWashoutMoveFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_two_years_from_move = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=df.collect().to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
                 quarantine_interval_days=730,
                 timestamp_col_name="timestamp",
             ).run_filter(),
         )
-        return not_within_two_years_from_move
+        return not_within_two_years_from_move.lazy()
 
 
 class SczBpPrevalentFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         """Filter prediction times where the patient already has a diagnosis of
         scizophrenia or bipolar disorder"""
         time_of_first_scz_bp_diagnosis = get_first_scz_or_bp_diagnosis().select(
@@ -79,7 +75,7 @@ class SczBpPrevalentFilter(PredictionTimeFilter):
         )
 
         prediction_times_with_outcome = df.join(
-            time_of_first_scz_bp_diagnosis,
+            time_of_first_scz_bp_diagnosis.lazy(),
             on="dw_ek_borger",
             how="inner",
         )
@@ -96,7 +92,6 @@ class SczBpPrevalentFilter(PredictionTimeFilter):
 
 
 class SczBpExcludedByWashinFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         ids_to_exclude = get_scz_bp_patients_excluded_by_washin()
         return df.filter(~pl.col("dw_ek_borger").is_in(ids_to_exclude))

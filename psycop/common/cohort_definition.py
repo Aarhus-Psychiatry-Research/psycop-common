@@ -35,7 +35,7 @@ class StepDelta(PSYCOPBaseModel):
 
 
 class FilteredPredictionTimeBundle(PSYCOPBaseModel):
-    prediction_times: pl.DataFrame | pl.LazyFrame
+    prediction_times: pl.DataFrame
     filter_steps: list[StepDelta]
 
 
@@ -56,9 +56,9 @@ msg = Printer(timestamp=True)
 
 def filter_prediction_times(
     prediction_times: pl.LazyFrame,
-    get_counts: bool,
     filtering_steps: Iterable[PredictionTimeFilter],
     entity_id_col_name: str,
+    get_counts: bool = True,
 ) -> FilteredPredictionTimeBundle:
     """Apply a series of filters to prediction times.
 
@@ -100,6 +100,6 @@ def filter_prediction_times(
         prediction_times = prediction_times.drop("date_of_birth")
 
     return FilteredPredictionTimeBundle(
-        prediction_times=prediction_times,
+        prediction_times=prediction_times.collect(),
         filter_steps=stepdeltas,
     )

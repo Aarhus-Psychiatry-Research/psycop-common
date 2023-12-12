@@ -11,12 +11,12 @@ from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_
 if __name__ == "__main__":
     pred_times = SczBpCohort.get_filtered_prediction_times_bundle().prediction_times
 
-    outcome_timestamps = SczBpCohort.get_outcome_timestamps()
-    outcome_with_age = SczBpAddAge.apply(outcome_timestamps)
+    outcome_timestamps = SczBpCohort.get_outcome_timestamps().lazy()
+    outcome_with_age = SczBpAddAge().apply(outcome_timestamps)
 
     first_eligible_outcome = (
         pred_times.join(
-            outcome_with_age,
+            outcome_with_age.collect(),
             how="left",
             on="dw_ek_borger",
             suffix="_outcome",

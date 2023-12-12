@@ -26,7 +26,7 @@ class ForcedAdmissionsInpatientCohortDefiner(CohortDefiner):
     ) -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.from_pandas(
             admissions_discharge_timestamps(),
-        )
+        ).lazy()
 
         if washout_on_prior_forced_admissions:
             return filter_prediction_times(

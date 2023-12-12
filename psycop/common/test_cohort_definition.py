@@ -4,7 +4,7 @@ import polars as pl
 
 from psycop.common.types.polarsframe import PolarsFrameGeneric
 
-from .cohort_definition import LazyFilter, filter_prediction_times
+from .cohort_definition import PredictionTimeFilter, filter_prediction_times
 from .test_utils.str_to_df import str_to_pl_df
 
 
@@ -19,13 +19,13 @@ def test_filter_prediction_times():
 
     min_timestamp = datetime.strptime("2019-01-01", "%Y-%m-%d")
 
-    class MinTimestampFilter(LazyFilter):
-        @staticmethod
-        def apply(df: pl.LazyFrame) -> pl.LazyFrame:
+    class MinTimestampFilter(PredictionTimeFilter):
+        def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
             return df.filter(pl.col("timestamp") > min_timestamp)
 
     filtered = filter_prediction_times(
         prediction_times=prediction_times,
+        get_counts=False,
         filtering_steps=[MinTimestampFilter()],
         entity_id_col_name="entity_id",
     )

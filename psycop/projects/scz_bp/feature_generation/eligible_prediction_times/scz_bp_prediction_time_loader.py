@@ -42,7 +42,7 @@ class SczBpCohort(CohortDefiner):
         )
 
         filtered_prediction_time_bundle = filter_prediction_times(
-            prediction_times=prediction_times,
+            prediction_times=prediction_times.lazy(),
             filtering_steps=SczBpCohort._get_filtering_steps(),
             entity_id_col_name="dw_ek_borger",
         )
