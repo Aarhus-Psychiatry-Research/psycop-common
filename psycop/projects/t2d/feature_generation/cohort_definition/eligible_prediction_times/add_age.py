@@ -5,6 +5,8 @@ from psycop.projects.t2d.feature_generation.cohort_definition.eligible_predictio
     AGE_COL_NAME,
 )
 
+from ......common.types.polarsframe import PolarsFrameGeneric
+
 
 def add_age(df: pl.DataFrame) -> pl.DataFrame:
     birthday_df = pl.from_pandas(birthdays())
