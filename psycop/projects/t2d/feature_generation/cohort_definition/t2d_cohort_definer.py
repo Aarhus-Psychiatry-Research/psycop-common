@@ -1,10 +1,12 @@
 import polars as pl
+from wasabi import Printer
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
     filter_prediction_times,
 )
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
@@ -19,12 +21,13 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
     get_first_diabetes_indicator,
 )
 
-from .....common.feature_generation.loaders.raw.load_demographic import birthdays
+msg = Printer(timestamp=True)
 
 
 class T2DCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
+        msg.info("Getting unfiltered prediction times")
         unfiltered_prediction_times = pl.from_pandas(
             physical_visits_to_psychiatry(
                 timestamps_only=True,
@@ -32,6 +35,7 @@ class T2DCohortDefiner(CohortDefiner):
             ),
         ).lazy()
 
+        msg.info("Filtering prediction times")
         return filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
             get_counts=False,
@@ -53,4 +57,10 @@ class T2DCohortDefiner(CohortDefiner):
 if __name__ == "__main__":
     bundle = T2DCohortDefiner.get_filtered_prediction_times_bundle()
 
-    df = bundle.prediction_times
+    if isinstance(bundle.prediction_times, pl.LazyFrame):
+        msg.info("Collecting")
+        df = bundle.prediction_times.collect()
+        msg.good("Collected")
+        pass
+    else:
+        df = bundle.prediction_times

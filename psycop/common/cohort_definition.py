@@ -93,6 +93,7 @@ def filter_prediction_times(
         # For much faster speeds, we can apply the filter step to the lazy frame.
         # This means we won't get the counts before and after. If you want those, be sure to pass in a DataFrame.
         else:
+            msg.info(f"Applying {filter_step.__str__}")
             filtered_prediction_times = filter_step.apply(prediction_times)
 
     if "date_of_birth" in prediction_times.columns:
