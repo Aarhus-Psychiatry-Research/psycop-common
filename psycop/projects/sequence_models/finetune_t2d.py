@@ -40,7 +40,7 @@ def create_patient_slices_with_labels_for_t2d(
     patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader(min_n_visits=min_n_visits)],
         split=SplitName(split_name),
-        fraction=0.02, # TODO: REMOVE ME PLEASE
+        fraction=0.01, # TODO: REMOVE ME PLEASE
     )
 
     prediction_times = CohortToPredictionTimes(
