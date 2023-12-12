@@ -57,7 +57,9 @@ def train(config_path: Path | None = None) -> None:
     # update config
     std_logger.info("Updating Config")
     flat_config = flatten_nested_dict(config_dict)
-    logger.experiment.config.update(flat_config)
+
+    if logger:
+        logger.experiment.config.update(flat_config)
 
     # filter dataset
     std_logger.info("Filtering Patients")

@@ -13,10 +13,8 @@ from lightning.pytorch.loggers.wandb import WandbLogger
 from pydantic import BaseModel
 from torch.utils.data import Dataset
 
-from psycop.common.sequence_models.tasks import (
-    BEHRTForMaskedLM,
-    EncoderForClassification,
-)
+from psycop.common.sequence_models.tasks import (BEHRTForMaskedLM,
+                                                 EncoderForClassification)
 
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 
@@ -36,7 +34,7 @@ class TrainerConfigSchema(BaseModel):
     num_nodes: int = 1
     callbacks: list[Callback] = []
     precision: str = "32-true"
-    logger: WandbLogger
+    logger: Optional[WandbLogger] = None
     max_epochs: Optional[int] = None
     min_epochs: Optional[int] = None
     max_steps: int = 10
