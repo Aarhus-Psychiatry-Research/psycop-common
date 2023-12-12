@@ -2,6 +2,8 @@ from datetime import datetime
 
 import polars as pl
 
+from psycop.common.types.polarsframe import PolarsFrameGeneric
+
 from .cohort_definition import PredictionTimeFilter, filter_prediction_times
 from .test_utils.str_to_df import str_to_pl_df
 
@@ -19,7 +21,7 @@ def test_filter_prediction_times():
 
     class MinTimestampFilter(PredictionTimeFilter):
         @staticmethod
-        def apply(df: pl.DataFrame) -> pl.DataFrame:
+        def apply(df: PolarsFrameGeneric) -> PolarsFrameGeneric:
             return df.filter(pl.col("timestamp") > min_timestamp)
 
     filtered = filter_prediction_times(
