@@ -67,23 +67,22 @@ def filter_prediction_times(
 
     stepdeltas: list[StepDelta] = []
     for i, filter_step in enumerate(filtering_steps):
-
         msg.info(f"Applying filter: {filter_step.__class__.__name__}")
-        filtered_prediction_times = filter_step.apply(prediction_times)
-
         if get_counts:
             prefilter_prediction_times = prediction_times.collect()
+
+        prediction_times = filter_step.apply(prediction_times)
+
+        if get_counts:
             stepdeltas.append(
                 StepDelta(
                     step_name=filter_step.__class__.__name__,
                     n_prediction_times_before=prefilter_prediction_times.shape[0],
-                    n_prediction_times_after=filtered_prediction_times.collect().shape[
-                        0
-                    ],
+                    n_prediction_times_after=prediction_times.collect().shape[0],
                     n_ids_before=prefilter_prediction_times[
                         entity_id_col_name
                     ].n_unique(),
-                    n_ids_after=filtered_prediction_times.collect()[
+                    n_ids_after=prediction_times.collect()[
                         entity_id_col_name
                     ].n_unique(),
                     step_index=i,
