@@ -1,27 +1,19 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import Protocol, runtime_checkable
+from typing import Generic, Protocol, runtime_checkable
 
 import polars as pl
 from wasabi import Printer
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
-from psycop.common.types.polarsframe import LazyFrameGeneric, PolarsFrameGeneric
+from psycop.common.types.polarsframe import PolarsFrameGeneric
 
 
 @runtime_checkable
-class EagerFilter(Protocol):
+class PredictionTimeFilter(Protocol):
     """Interface for filtering functions applied to prediction times"""
 
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        ...
-
-
-@runtime_checkable
-class LazyFilter(Protocol):
-    @staticmethod
-    def apply(df: LazyFrameGeneric) -> LazyFrameGeneric:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         ...
 
 
@@ -43,7 +35,7 @@ class StepDelta(PSYCOPBaseModel):
 
 
 class FilteredPredictionTimeBundle(PSYCOPBaseModel):
-    prediction_times: pl.DataFrame
+    prediction_times: pl.DataFrame | pl.LazyFrame
     filter_steps: list[StepDelta]
 
 
@@ -63,8 +55,9 @@ msg = Printer(timestamp=True)
 
 
 def filter_prediction_times(
-    prediction_times: pl.DataFrame | pl.LazyFrame,
-    filtering_steps: Iterable[EagerFilter | LazyFilter],
+    prediction_times: pl.LazyFrame,
+    get_counts: bool,
+    filtering_steps: Iterable[PredictionTimeFilter],
     entity_id_col_name: str,
 ) -> FilteredPredictionTimeBundle:
     """Apply a series of filters to prediction times.
@@ -75,40 +68,37 @@ def filter_prediction_times(
 
     stepdeltas: list[StepDelta] = []
     for i, filter_step in enumerate(filtering_steps):
-        if isinstance(prediction_times, pl.DataFrame):
-            n_prediction_times_before = prediction_times.shape[0]
-            n_ids_before = prediction_times[entity_id_col_name].n_unique()
+        if get_counts:
+            collected_prediction_times = prediction_times.collect()
+            n_prediction_times_before = collected_prediction_times.shape[0]
+            n_ids_before = collected_prediction_times[entity_id_col_name].n_unique()
 
             msg.info(f"Applying filter: {filter_step.__class__.__name__}")
-            if isinstance(filter_step, EagerFilter):
-                prediction_times = filter_step.apply(prediction_times)
-            else:
-                prediction_times = filter_step.apply(prediction_times.lazy()).collect()
+            filtered_prediction_times = filter_step.apply(
+                collected_prediction_times.lazy(),
+            )
 
             stepdeltas.append(
                 StepDelta(
                     step_name=filter_step.__class__.__name__,
                     n_prediction_times_before=n_prediction_times_before,
-                    n_prediction_times_after=prediction_times.shape[0],
+                    n_prediction_times_after=collected_prediction_times.shape[0],
                     n_ids_before=n_ids_before,
-                    n_ids_after=prediction_times[entity_id_col_name].n_unique(),
+                    n_ids_after=filtered_prediction_times.collect()[
+                        entity_id_col_name
+                    ].n_unique(),
                     step_index=i,
                 ),
             )
         # For much faster speeds, we can apply the filter step to the lazy frame.
         # This means we won't get the counts before and after. If you want those, be sure to pass in a DataFrame.
         else:
-            if isinstance(filter_step, EagerFilter):
-                prediction_times = filter_step.apply(prediction_times.collect())
-            else:
-                prediction_times = filter_step.apply(prediction_times)
+            filtered_prediction_times = filter_step.apply(prediction_times)
 
     if "date_of_birth" in prediction_times.columns:
         prediction_times = prediction_times.drop("date_of_birth")
 
     return FilteredPredictionTimeBundle(
-        prediction_times=prediction_times.collect()
-        if isinstance(prediction_times, pl.LazyFrame)
-        else prediction_times,
+        prediction_times=prediction_times,
         filter_steps=stepdeltas,
     )

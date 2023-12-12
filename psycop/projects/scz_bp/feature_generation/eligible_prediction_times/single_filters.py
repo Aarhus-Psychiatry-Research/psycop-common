@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.cohort_definition import EagerFilter
+from psycop.common.cohort_definition import PredictionTimeFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -20,25 +20,25 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
 )
 
 
-class SczBpMinDateFilter(EagerFilter):
+class SczBpMinDateFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(pl.col("timestamp") > MIN_DATE)
 
 
-class SczBpMinAgeFilter(EagerFilter):
+class SczBpMinAgeFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
 
 
-class SczBpMaxAgeFilter(EagerFilter):
+class SczBpMaxAgeFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(pl.col(AGE_COL_NAME) <= MAX_AGE)
 
 
-class SczBpAddAge(EagerFilter):
+class SczBpAddAge(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         birthday_df = pl.from_pandas(birthdays())
@@ -53,7 +53,7 @@ class SczBpAddAge(EagerFilter):
         return df
 
 
-class SczBpWashoutMoveFilter(EagerFilter):
+class SczBpWashoutMoveFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         not_within_two_years_from_move = pl.from_pandas(
@@ -68,7 +68,7 @@ class SczBpWashoutMoveFilter(EagerFilter):
         return not_within_two_years_from_move
 
 
-class SczBpPrevalentFilter(EagerFilter):
+class SczBpPrevalentFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         """Filter prediction times where the patient already has a diagnosis of
@@ -95,7 +95,7 @@ class SczBpPrevalentFilter(EagerFilter):
         )
 
 
-class SczBpExcludedByWashinFilter(EagerFilter):
+class SczBpExcludedByWashinFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         ids_to_exclude = get_scz_bp_patients_excluded_by_washin()

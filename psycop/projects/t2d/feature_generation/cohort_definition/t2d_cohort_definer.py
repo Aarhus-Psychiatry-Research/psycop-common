@@ -19,6 +19,8 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
     get_first_diabetes_indicator,
 )
 
+from .....common.feature_generation.loaders.raw.load_demographic import birthdays
+
 
 class T2DCohortDefiner(CohortDefiner):
     @staticmethod
@@ -28,13 +30,14 @@ class T2DCohortDefiner(CohortDefiner):
                 timestamps_only=True,
                 timestamp_for_output="start",
             ),
-        )
+        ).lazy()
 
         return filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
+            get_counts=False,
             filtering_steps=(
                 T2DMinDateFilter(),
-                T2DMinAgeFilter(),
+                T2DMinAgeFilter(birthday_df=pl.from_pandas(birthdays()).lazy()),
                 WithoutPrevalentDiabetes(),
                 NoIncidentDiabetes(),
                 T2DWashoutMove(),

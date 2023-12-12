@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.cohort_definition import EagerFilter, LazyFilter
+from psycop.common.cohort_definition import PredictionTimeFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -23,21 +23,21 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 )
 
 from ......common.feature_generation.loaders.raw.load_demographic import birthdays
+from ......common.types.polarsframe import pl.LazyFrame
 
 
-class T2DMinDateFilter(LazyFilter):
-    @staticmethod
-    def apply(df: pl.LazyFrame) -> pl.LazyFrame:
+class T2DMinDateFilter(PredictionTimeFilter):
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
-class T2DMinAgeFilter(LazyFilter):
-    @staticmethod
-    def _add_age(df: pl.LazyFrame) -> pl.LazyFrame:
-        birthday_df = pl.from_pandas(birthdays()).lazy()
+class T2DMinAgeFilter(PredictionTimeFilter):
+    def __init__(self, birthday_df: pl.LazyFrame) -> None:
+        self.birthday_df = birthday_df
 
-        df = df.join(birthday_df, on="dw_ek_borger", how="inner")
+    def _add_age(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = df.join(self.birthday_df, on="dw_ek_borger", how="inner")
         df = df.with_columns(
             ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(
                 AGE_COL_NAME,
@@ -47,16 +47,14 @@ class T2DMinAgeFilter(LazyFilter):
 
         return df
 
-    @staticmethod
-    def apply(df: pl.LazyFrame) -> pl.LazyFrame:
-        df = T2DMinAgeFilter._add_age(df)
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = self._add_age(df)
         after_df = df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
         return after_df
 
 
-class WithoutPrevalentDiabetes(LazyFilter):
-    @staticmethod
-    def apply(df: pl.LazyFrame) -> pl.LazyFrame:
+class WithoutPrevalentDiabetes(PredictionTimeFilter):
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_diabetes_indicator = pl.from_pandas(get_first_diabetes_indicator()).lazy()
 
         indicator_before_min_date = first_diabetes_indicator.filter(
@@ -78,9 +76,8 @@ class WithoutPrevalentDiabetes(LazyFilter):
         return no_prevalent_diabetes.drop(["age"])
 
 
-class NoIncidentDiabetes(LazyFilter):
-    @staticmethod
-    def apply(df: pl.LazyFrame) -> pl.LazyFrame:
+class NoIncidentDiabetes(PredictionTimeFilter):
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         results_above_threshold = pl.from_pandas(
             get_first_diabetes_lab_result_above_threshold(),
         ).lazy()
@@ -105,17 +102,16 @@ class NoIncidentDiabetes(LazyFilter):
         return not_after_incident_diabetes.drop(["timestamp_result", "value"])
 
 
-class T2DWashoutMove(EagerFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+class T2DWashoutMove(PredictionTimeFilter):
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFram:
         not_within_two_years_from_move = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=df.collect().to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
                 quarantine_interval_days=730,
                 timestamp_col_name="timestamp",
             ).run_filter(),
-        )
+        ).lazy()
 
         return not_within_two_years_from_move

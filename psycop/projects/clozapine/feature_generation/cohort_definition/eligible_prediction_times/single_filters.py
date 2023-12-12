@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.cohort_definition import EagerFilter
+from psycop.common.cohort_definition import PredictionTimeFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -23,14 +23,14 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_spec
 )
 
 
-class ClozapineMinDateFilter(EagerFilter):
+class ClozapineMinDateFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
-class ClozapineMinAgeFilter(EagerFilter):
+class ClozapineMinAgeFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         df = add_age(df)
@@ -38,7 +38,7 @@ class ClozapineMinAgeFilter(EagerFilter):
         return after_df
 
 
-class ClozapineSchizophrenia(EagerFilter):
+class ClozapineSchizophrenia(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         schizophrenia_df = add_only_patients_with_schizophrenia().select(
@@ -79,7 +79,7 @@ class ClozapineSchizophrenia(EagerFilter):
         return after_df
 
 
-class ClozapineWashoutMoveFilter(EagerFilter):
+class ClozapineWashoutMoveFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         not_within_half_a_year_from_move = pl.from_pandas(
@@ -95,7 +95,7 @@ class ClozapineWashoutMoveFilter(EagerFilter):
         return not_within_half_a_year_from_move
 
 
-class ClozapinePrevalentFilter(EagerFilter):
+class ClozapinePrevalentFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         first_clozapine_prescription = pl.from_pandas(
