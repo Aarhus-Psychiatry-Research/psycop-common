@@ -21,24 +21,21 @@ from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specifi
 
 
 class CancerMinDateFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("timestamp") > MIN_DATE)
 
 
 class CancerMinAgeFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        df = add_age(df)
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = add_age(df.collect()).lazy()
         return df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
 
 
 class CancerWashoutMoveFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_half_a_year_from_move = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=df.collect().to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
                 quarantine_interval_days=182,
@@ -46,19 +43,18 @@ class CancerWashoutMoveFilter(PredictionTimeFilter):
             ).run_filter(),
         )
 
-        return not_within_half_a_year_from_move
+        return not_within_half_a_year_from_move.lazy()
 
 
 class CancerPrevalentFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_cancer_diagnosis = pl.from_pandas(get_first_cancer_diagnosis()).select(
             pl.col("timestamp").alias("timestamp_outcome"),
             pl.col("dw_ek_borger"),
         )
 
         prediction_times_with_outcome = df.join(
-            first_cancer_diagnosis,
+            first_cancer_diagnosis.lazy(),
             on="dw_ek_borger",
             how="inner",
         )
