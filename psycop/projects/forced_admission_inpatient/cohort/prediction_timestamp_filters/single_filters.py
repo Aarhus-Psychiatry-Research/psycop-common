@@ -19,41 +19,37 @@ from psycop.projects.forced_admission_inpatient.cohort.prediction_timestamp_filt
 
 
 class ForcedAdmissionsInpatientMinDateFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
 class ForcedAdmissionsInpatientMinAgeFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        df = add_age(df)
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = add_age(df.collect()).lazy()
         after_df = df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
         return after_df
 
 
 class ForcedAdmissionsInpatientWashoutMove(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_x_years_from_move = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=df.collect().to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
                 quarantine_interval_days=365,
                 timestamp_col_name="timestamp",
             ).run_filter(),
         )
-        return not_within_x_years_from_move
+        return not_within_x_years_from_move.lazy()
 
 
 class ForcedAdmissionsInpatientWashoutPriorForcedAdmission(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_x_years_from_forced_admission = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=df.collect().to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=forced_admissions_end_timestamps(),
                 quarantine_interval_days=730,
@@ -61,4 +57,4 @@ class ForcedAdmissionsInpatientWashoutPriorForcedAdmission(PredictionTimeFilter)
             ).run_filter(),
         )
 
-        return not_within_x_years_from_forced_admission
+        return not_within_x_years_from_forced_admission.lazy()

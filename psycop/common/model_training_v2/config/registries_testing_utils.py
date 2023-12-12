@@ -93,8 +93,14 @@ class RegisteredCallable:
         return self.container_registry.get(self.registry_name, self.callable_name)
 
 
-def get_example_cfgs(example_top_dir: Path) -> Sequence[Config]:
-    cfgs: list[Config] = []
+@dataclass(frozen=True)
+class ConfigWithLocation:
+    cfg: Config
+    location: Path
+
+
+def get_example_cfgs(example_top_dir: Path) -> Sequence[ConfigWithLocation]:
+    cfgs: list[ConfigWithLocation] = []
     missing_decorated_fn = []
 
     for file in (example_top_dir).rglob("*.cfg"):
@@ -102,7 +108,7 @@ def get_example_cfgs(example_top_dir: Path) -> Sequence[Config]:
             missing_decorated_fn.append(
                 f"{file.name} does not have a decorated fn",
             )
-        cfgs.append(Config().from_disk(file))
+        cfgs.append(ConfigWithLocation(cfg=Config().from_disk(file), location=file))
 
     if missing_decorated_fn:
         raise ValueError(

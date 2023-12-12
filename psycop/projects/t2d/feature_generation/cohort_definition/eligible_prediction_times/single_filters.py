@@ -1,4 +1,7 @@
 import polars as pl
+from wasabi import Printer
+
+msg = Printer(timestamp=True)
 
 from psycop.common.cohort_definition import PredictionTimeFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
@@ -6,9 +9,6 @@ from psycop.common.feature_generation.application_modules.filter_prediction_time
 )
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
-)
-from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.add_age import (
-    add_age,
 )
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
@@ -24,24 +24,35 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 
 
 class T2DMinDateFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
 class T2DMinAgeFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        df = add_age(df)
+    def __init__(self, birthday_df: pl.LazyFrame) -> None:
+        self.birthday_df = birthday_df
+
+    def _add_age(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = df.join(self.birthday_df, on="dw_ek_borger", how="inner")
+        df = df.with_columns(
+            ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(
+                AGE_COL_NAME,
+            ),
+        )
+        df = df.with_columns((pl.col(AGE_COL_NAME) / 365.25).alias(AGE_COL_NAME))
+
+        return df
+
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = self._add_age(df)
         after_df = df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
         return after_df
 
 
 class WithoutPrevalentDiabetes(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        first_diabetes_indicator = pl.from_pandas(get_first_diabetes_indicator())
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        first_diabetes_indicator = pl.from_pandas(get_first_diabetes_indicator()).lazy()
 
         indicator_before_min_date = first_diabetes_indicator.filter(
             pl.col("timestamp") < MIN_DATE,
@@ -53,16 +64,6 @@ class WithoutPrevalentDiabetes(PredictionTimeFilter):
             how="inner",
         )
 
-        hit_indicator = prediction_times_from_patients_with_diabetes.groupby(
-            "source",
-        ).count()
-
-        for indicator in hit_indicator.rows(named=True):
-            print(f"step_name: {indicator['source']}")
-            print(f"n_before: {df.shape[0]}")
-            print(f"n_after: {df.shape[0] - indicator['count']}")
-            print(f"n_hit: {indicator['count']}")
-
         no_prevalent_diabetes = df.join(
             prediction_times_from_patients_with_diabetes,
             on="dw_ek_borger",
@@ -73,11 +74,10 @@ class WithoutPrevalentDiabetes(PredictionTimeFilter):
 
 
 class NoIncidentDiabetes(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         results_above_threshold = pl.from_pandas(
             get_first_diabetes_lab_result_above_threshold(),
-        )
+        ).lazy()
 
         contacts_with_hba1c = df.join(
             results_above_threshold,
@@ -100,16 +100,23 @@ class NoIncidentDiabetes(PredictionTimeFilter):
 
 
 class T2DWashoutMove(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        msg.info("Collecting in T2DWashoutMove")
+        prediction_times = df.collect().to_pandas()
+
+        msg.info("Loading move dates for exclusion")
+        move_into_rm = load_move_into_rm_for_exclusion()
+
+        msg.info("Applying filter")
         not_within_two_years_from_move = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=prediction_times,
                 entity_id_col_name="dw_ek_borger",
-                quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
+                quarantine_timestamps_df=move_into_rm,
                 quarantine_interval_days=730,
                 timestamp_col_name="timestamp",
             ).run_filter(),
-        )
+        ).lazy()
 
+        msg.info("Returning")
         return not_within_two_years_from_move

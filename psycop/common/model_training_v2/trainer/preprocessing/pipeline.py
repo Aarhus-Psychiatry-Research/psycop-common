@@ -6,8 +6,8 @@ import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+from psycop.common.types.polarsframe import PolarsFrame
 
-from .polars_frame import PolarsFrame
 from .step import PresplitStep
 
 
