@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v0.151.1 (2023-12-12)
+
+### Fix
+
+* Actually apply all filters ([`5aaa13c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5aaa13c9dbec35c6224db87c16ceb6de8d07db69))
+
+### Documentation
+
+* Minor rename and documentation ([`428d2ff`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/428d2ffe0dcb66f4cbb214c1bcafb9884df0069c))
+
+### Performance
+
+* Speed up cohort definers ([`3a7bfab`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3a7bfab4ce3aa947b772d924c950d6b14439e3d8))
+* Use lazyframes for filter prediction times ([`b9972b2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b9972b2e22de0438961512fcbd5d5aa0cef9e80a))
+* Speed up cohort definers ([`fac749a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fac749a6ec8cd45adb61a0186439f11cf674b7d0))
+
 ## v0.151.0 (2023-12-11)
 
 ### Feature
