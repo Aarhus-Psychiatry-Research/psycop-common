@@ -248,14 +248,14 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
 
         patient_events = [
             PatientSlice(p.patient, self.A_diagnoses_only(p.temporal_events))
-            for p in tqdm(patient_slices)
+            for p in patient_slices
         ]
         if not self.map_diagnosis_codes:
             return patient_events
 
         # map diagnosis codes
         _patient_slices = []
-        for p in tqdm(patient_events):
+        for p in patient_events:
             temporal_events = []
             for e in p.temporal_events:
                 value = self.map_icd10_to_caliber(e.value)  # type: ignore
