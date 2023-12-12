@@ -1,6 +1,6 @@
 from typing import Protocol, TypeVar, runtime_checkable
 
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
+from psycop.common.types.polarsframe import (
     PolarsFrame,
 )
 

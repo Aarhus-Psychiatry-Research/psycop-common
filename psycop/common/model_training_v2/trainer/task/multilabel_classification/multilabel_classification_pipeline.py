@@ -1,12 +1,10 @@
 from collections.abc import Sequence
 from typing import Protocol
 
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
-)
 from psycop.common.model_training_v2.trainer.task.model_step import (
     ModelStep,
 )
+from psycop.common.types.polarsframe import PolarsFrame
 
 
 class MultilabelClassificationPipeline(Protocol):

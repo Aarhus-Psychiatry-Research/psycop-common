@@ -1,19 +1,23 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
+from typing import Protocol
 
 import polars as pl
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
+from psycop.common.types.polarsframe import PolarsFrameGeneric
 
 
-class PredictionTimeFilter(ABC):
-    """Interface for filtering functions applied to prediction times. Requried
-    to have an `apply` method that takes a `pl.DataFrame` (the unfiltered
-    prediction times) and returns a `pl.DataFrame` (the filtered prediction times).
-    """
+class PredictionTimeFilter(Protocol):
+    """Interface for filtering functions applied to prediction times"""
 
     @staticmethod
-    @abstractmethod
+    def apply(df: PolarsFrameGeneric) -> PolarsFrameGeneric:
+        ...
+
+
+class EagerFilter(Protocol):
+    @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         ...
 

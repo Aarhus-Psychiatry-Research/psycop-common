@@ -2,14 +2,12 @@ import pandas as pd
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
-)
 from psycop.common.model_training_v2.trainer.task.base_metric import PredProbaSeries
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_classification_pipeline import (
     BinaryClassificationPipeline,
 )
+from psycop.common.types.polarsframe import PolarsFrame
 
 
 def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
