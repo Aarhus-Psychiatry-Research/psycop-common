@@ -21,6 +21,7 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
+import logging
 
 @Registry.datasets.register("model_from_checkpoint")
 def load_model_from_checkpoint(
@@ -53,5 +54,6 @@ def create_patient_slices_with_labels_for_t2d(
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, datefmt='%H:%M:%S')
     config_path = Path(__file__).parent / "finetune_t2d-debug.cfg"
     train(config_path)

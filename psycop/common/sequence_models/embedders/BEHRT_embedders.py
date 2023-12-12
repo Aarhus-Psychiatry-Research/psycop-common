@@ -42,13 +42,11 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         d_model: int,
         dropout_prob: float,
         max_sequence_length: int,
-        map_diagnosis_codes: bool = True,
     ):
         super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
 
-        self.map_diagnosis_codes = map_diagnosis_codes
         self.is_fitted: bool = False
 
         self.LayerNorm = nn.LayerNorm(d_model, eps=1e-12)
@@ -208,13 +206,9 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
 
         return padded_sequences
 
-    def A_diagnoses_only(self, events: Sequence[TemporalEvent]) -> list[TemporalEvent]:
-        filtered_events = []
-        for event in events:
-            if event.source_type == "diagnosis" and event.source_subtype == "A":
-                filtered_events.append(event)
-        return filtered_events
-
+    def is_A_diagnosis(self, event: TemporalEvent) -> bool:
+        return event.source_type == "diagnosis" and event.source_subtype == "A"
+        
     def map_icd10_to_caliber(
         self,
         diagnosis_code: str,
@@ -222,7 +216,6 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         """Map diagnoses-codes to Caliber.
 
         To handle different levels of granularity, map to the most specific Caliber code available. E.g. for code E12, if both E1 and E12 exist in Caliber, map to E12. If only E1 exists, map to E1.
-
 
         Caliber codes are documented here: https://www.sciencedirect.com/science/article/pii/S2589750019300123?via%3Dihub
         """
@@ -240,24 +233,14 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         1. Filter input to only keep A-diagnoses.
         2. Map ICD-10 to Caliber codes
         """
-        assert all(
-            e.source_type == "diagnosis"
-            for ps in patient_slices
-            for e in ps.temporal_events
-        ), "PatientSlice.temporal_events must only include diagnosis codes"
 
-        patient_events = [
-            PatientSlice(p.patient, self.A_diagnoses_only(p.temporal_events))
-            for p in patient_slices
-        ]
-        if not self.map_diagnosis_codes:
-            return patient_events
-
+        log.info("mapping diagnosis codes")
         # map diagnosis codes
         _patient_slices = []
-        for p in patient_events:
+        for p in tqdm(patient_slices):
+            filtered_events = filter(self.is_A_diagnosis, p.temporal_events)
             temporal_events = []
-            for e in p.temporal_events:
+            for e in filtered_events:
                 value = self.map_icd10_to_caliber(e.value)  # type: ignore
                 if value is not None:
                     event = TemporalEvent(
