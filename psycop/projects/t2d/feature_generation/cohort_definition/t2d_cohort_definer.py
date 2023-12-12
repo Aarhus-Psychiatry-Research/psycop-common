@@ -61,6 +61,5 @@ if __name__ == "__main__":
         msg.info("Collecting")
         df = bundle.prediction_times.collect()
         msg.good("Collected")
-        pass
     else:
         df = bundle.prediction_times

@@ -2,8 +2,6 @@ from datetime import datetime
 
 import polars as pl
 
-from psycop.common.types.polarsframe import PolarsFrameGeneric
-
 from .cohort_definition import PredictionTimeFilter, filter_prediction_times
 from .test_utils.str_to_df import str_to_pl_df
 

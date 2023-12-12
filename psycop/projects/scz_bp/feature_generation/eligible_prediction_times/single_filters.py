@@ -19,8 +19,6 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
     get_scz_bp_patients_excluded_by_washin,
 )
 
-from .....common.types.polarsframe import PolarsFrameGeneric
-
 
 class SczBpMinDateFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:

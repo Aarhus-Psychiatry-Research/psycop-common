@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import Generic, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 import polars as pl
 from wasabi import Printer
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
-from psycop.common.types.polarsframe import PolarsFrameGeneric
 
 
 @runtime_checkable

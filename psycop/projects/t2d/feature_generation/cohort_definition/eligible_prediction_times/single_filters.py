@@ -10,9 +10,6 @@ from psycop.common.feature_generation.application_modules.filter_prediction_time
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
-from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.add_age import (
-    add_age,
-)
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
     MIN_AGE,
@@ -24,8 +21,6 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.lab_results import (
     get_first_diabetes_lab_result_above_threshold,
 )
-
-from ......common.feature_generation.loaders.raw.load_demographic import birthdays
 
 
 class T2DMinDateFilter(PredictionTimeFilter):
