@@ -78,8 +78,13 @@ def filter_prediction_times(
         if isinstance(prediction_times, pl.DataFrame):
             n_prediction_times_before = prediction_times.shape[0]
             n_ids_before = prediction_times[entity_id_col_name].n_unique()
+
             msg.info(f"Applying filter: {filter_step.__class__.__name__}")
-            prediction_times = filter_step.apply(prediction_times)
+            if isinstance(filter_step, EagerFilter):
+                prediction_times = filter_step.apply(prediction_times)
+            else:
+                prediction_times = filter_step.apply(prediction_times.lazy()).collect()
+
             stepdeltas.append(
                 StepDelta(
                     step_name=filter_step.__class__.__name__,
