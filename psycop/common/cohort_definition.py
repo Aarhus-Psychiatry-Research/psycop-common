@@ -77,8 +77,12 @@ def filter_prediction_times(
                 StepDelta(
                     step_name=filter_step.__class__.__name__,
                     n_prediction_times_before=prefilter_prediction_times.shape[0],
-                    n_prediction_times_after=filtered_prediction_times.collect().shape[0],
-                    n_ids_before=prefilter_prediction_times[entity_id_col_name].n_unique(),
+                    n_prediction_times_after=filtered_prediction_times.collect().shape[
+                        0
+                    ],
+                    n_ids_before=prefilter_prediction_times[
+                        entity_id_col_name
+                    ].n_unique(),
                     n_ids_after=filtered_prediction_times.collect()[
                         entity_id_col_name
                     ].n_unique(),
