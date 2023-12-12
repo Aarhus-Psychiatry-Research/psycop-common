@@ -100,9 +100,10 @@ class PatientLoader:
     def get_split(
         event_loaders: Sequence[EventDfLoader],
         split: SplitName,
+        fraction: float = 1.0,
     ) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
-        split_ids = pl.from_pandas(load_ids(split=split)).lazy()
+        split_ids = pl.from_pandas(load_ids(split=split)).sample(fraction=fraction).lazy()
 
         events_from_train = split_ids.join(event_data, on="dw_ek_borger", how="left")
 

@@ -95,7 +95,7 @@ def test_diagnosis_mapping(
     patient_events: list[tuple[Patient, TemporalEvent]] = [
         (p, e)
         for p in [patient]
-        for e in embedding_module.A_diagnoses_only(p.temporal_events)
+        for e in filter(embedding_module.is_A_diagnosis,p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 

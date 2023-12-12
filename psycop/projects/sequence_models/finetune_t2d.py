@@ -1,4 +1,5 @@
 import datetime as dt
+import logging
 from pathlib import Path
 from typing import Literal
 
@@ -21,7 +22,6 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
-import logging
 
 @Registry.datasets.register("model_from_checkpoint")
 def load_model_from_checkpoint(
@@ -40,6 +40,7 @@ def create_patient_slices_with_labels_for_t2d(
     patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader(min_n_visits=min_n_visits)],
         split=SplitName(split_name),
+        fraction=0.02, # TODO: REMOVE ME PLEASE
     )
 
     prediction_times = CohortToPredictionTimes(
@@ -54,6 +55,6 @@ def create_patient_slices_with_labels_for_t2d(
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, datefmt='%H:%M:%S')
+    logging.basicConfig(level=logging.INFO, datefmt="%H:%M:%S")
     config_path = Path(__file__).parent / "finetune_t2d-debug.cfg"
     train(config_path)

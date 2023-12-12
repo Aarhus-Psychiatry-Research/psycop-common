@@ -295,7 +295,7 @@ class EncoderForClassification(pl.LightningModule):
 
         metrics = self.calculate_metrics(logits, labels)
 
-        return {"logits": logits, "loss": loss, **metrics}
+        return {"loss": loss, **metrics}
 
     def calculate_metrics(
         self,

@@ -208,7 +208,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
 
     def is_A_diagnosis(self, event: TemporalEvent) -> bool:
         return event.source_type == "diagnosis" and event.source_subtype == "A"
-        
+
     def map_icd10_to_caliber(
         self,
         diagnosis_code: str,
@@ -269,7 +269,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         patient_slice: PatientSlice,
     ) -> dict[str, torch.Tensor]:
         events = patient_slice.temporal_events
-        events = self.A_diagnoses_only(events)
+        events = filter(self.is_A_diagnosis, events)
         event_inputs = [self.collate_event(event, patient_slice) for event in events]
 
         event_inputs = self.add_cls_token_to_sequence(event_inputs)
