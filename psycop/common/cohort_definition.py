@@ -68,22 +68,21 @@ def filter_prediction_times(
     stepdeltas: list[StepDelta] = []
     for i, filter_step in enumerate(filtering_steps):
         if get_counts:
-            collected_prediction_times = prediction_times.collect()
-            n_prediction_times_before = collected_prediction_times.shape[0]
-            n_ids_before = collected_prediction_times[entity_id_col_name].n_unique()
+            prefilter_prediction_times = prediction_times.collect()
+            n_prediction_times_before = prefilter_prediction_times.shape[0]
+            n_ids_before = prefilter_prediction_times[entity_id_col_name].n_unique()
 
-            msg.info(f"Applying filter: {filter_step.__class__.__name__}")
-            filtered_prediction_times = filter_step.apply(
-                collected_prediction_times.lazy(),
-            )
+        msg.info(f"Applying filter: {filter_step.__class__.__name__}")
+        prediction_times = filter_step.apply(prediction_times)
 
+        if get_counts:
             stepdeltas.append(
                 StepDelta(
                     step_name=filter_step.__class__.__name__,
                     n_prediction_times_before=n_prediction_times_before,
-                    n_prediction_times_after=collected_prediction_times.shape[0],
+                    n_prediction_times_after=prefilter_prediction_times.shape[0],
                     n_ids_before=n_ids_before,
-                    n_ids_after=filtered_prediction_times.collect()[
+                    n_ids_after=prediction_times.collect()[
                         entity_id_col_name
                     ].n_unique(),
                     step_index=i,
@@ -91,14 +90,11 @@ def filter_prediction_times(
             )
         # For much faster speeds, we can apply the filter step to the lazy frame.
         # This means we won't get the counts before and after. If you want those, be sure to pass in a DataFrame.
-        else:
-            msg.info(f"Applying {filter_step.__class__.__name__}")
-            filtered_prediction_times = filter_step.apply(prediction_times)
 
     if "date_of_birth" in prediction_times.columns:
         prediction_times = prediction_times.drop("date_of_birth")
 
     return FilteredPredictionTimeBundle(
-        prediction_times=filtered_prediction_times.collect(),
+        prediction_times=prediction_times.collect(),
         filter_steps=stepdeltas,
     )
