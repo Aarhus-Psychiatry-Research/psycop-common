@@ -18,9 +18,9 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
-from ...common.data_structures.patient import Patient, PatientSlice
-from ...common.data_structures.prediction_time import PredictionTime
-from ...common.data_structures.temporal_event import TemporalEvent
+from psycop.common.data_structures.patient import Patient, PatientSlice
+from psycop.common.data_structures.prediction_time import PredictionTime
+from psycop.common.data_structures.temporal_event import TemporalEvent
 
 
 @Registry.datasets.register("model_from_checkpoint")
@@ -53,6 +53,7 @@ def create_patient_slices_with_labels_for_t2d(
     return PatientSlicesWithLabels(prediction_times)
 
 
+
 if __name__ == "__main__":
-    config_path = Path(__file__).parent / "fine_tune_t2d.cfg"
+    config_path = Path(__file__).parent / "finetune_t2d.cfg"
     train(config_path)
