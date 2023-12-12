@@ -16,8 +16,6 @@ def test_filter_prediction_times():
         """,
     ).lazy()
 
-    min_timestamp = dt.strptime("2019-01-01", "%Y-%m-%d")
-
     class RemoveYear(PredictionTimeFilter):
         def __init__(self, min_timestamp: dt):
             self.year_timestamp = min_timestamp
