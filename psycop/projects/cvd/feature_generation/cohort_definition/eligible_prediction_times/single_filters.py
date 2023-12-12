@@ -21,23 +21,20 @@ from psycop.projects.t2d.feature_generation.cohort_definition.eligible_predictio
 
 
 class CVDMinDateFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
 class CVDMinAgeFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        df = add_age(df)
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = add_age(df.collect()).lazy()
         after_df = df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
         return after_df
 
 
 class WithoutPrevalentCVD(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_cvd_indicator = pl.from_pandas(get_first_cvd_indicator())
 
         indicator_before_min_date = first_cvd_indicator.filter(
@@ -45,7 +42,7 @@ class WithoutPrevalentCVD(PredictionTimeFilter):
         )
 
         prediction_times_from_patients_with_cvd = df.join(
-            indicator_before_min_date,
+            indicator_before_min_date.lazy(),
             on="dw_ek_borger",
             how="inner",
         )
@@ -60,14 +57,13 @@ class WithoutPrevalentCVD(PredictionTimeFilter):
 
 
 class NoIncidentCVD(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         contacts_with_cvd = pl.from_pandas(
             get_first_cvd_indicator(),
         )
 
         contacts_with_cvd = df.join(
-            contacts_with_cvd,
+            contacts_with_cvd.lazy(),
             on="dw_ek_borger",
             how="left",
             suffix="_result",
@@ -87,11 +83,10 @@ class NoIncidentCVD(PredictionTimeFilter):
 
 
 class CVDWashoutMove(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_two_years_from_move = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=df.collect().to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
                 quarantine_interval_days=730,
@@ -99,4 +94,4 @@ class CVDWashoutMove(PredictionTimeFilter):
             ).run_filter(),
         )
 
-        return not_within_two_years_from_move
+        return not_within_two_years_from_move.lazy()
