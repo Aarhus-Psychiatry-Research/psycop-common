@@ -80,7 +80,7 @@ def filter_prediction_times(
                     step_name=filter_step.__class__.__name__,
                     n_prediction_times_before=prefilter_prediction_times.shape[0],  # type: ignore
                     n_prediction_times_after=prediction_times.collect().shape[0],
-                    n_ids_before=prefilter_prediction_times[  # type: iggnore
+                    n_ids_before=prefilter_prediction_times[  # type: ignore
                         entity_id_col_name
                     ].n_unique(),
                     n_ids_after=prediction_times.collect()[
