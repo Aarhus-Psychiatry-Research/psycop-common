@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.cohort_definition import PredictionTimeFilter
+from psycop.common.cohort_definition import EagerFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -23,14 +23,14 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 )
 
 
-class T2DMinDateFilter(PredictionTimeFilter):
+class T2DMinDateFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
-class T2DMinAgeFilter(PredictionTimeFilter):
+class T2DMinAgeFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         df = add_age(df)
@@ -38,7 +38,7 @@ class T2DMinAgeFilter(PredictionTimeFilter):
         return after_df
 
 
-class WithoutPrevalentDiabetes(PredictionTimeFilter):
+class WithoutPrevalentDiabetes(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         first_diabetes_indicator = pl.from_pandas(get_first_diabetes_indicator())
@@ -72,7 +72,7 @@ class WithoutPrevalentDiabetes(PredictionTimeFilter):
         return no_prevalent_diabetes.drop(["age"])
 
 
-class NoIncidentDiabetes(PredictionTimeFilter):
+class NoIncidentDiabetes(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         results_above_threshold = pl.from_pandas(
@@ -99,7 +99,7 @@ class NoIncidentDiabetes(PredictionTimeFilter):
         return not_after_incident_diabetes.drop(["timestamp_result", "value"])
 
 
-class T2DWashoutMove(PredictionTimeFilter):
+class T2DWashoutMove(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         not_within_two_years_from_move = pl.from_pandas(

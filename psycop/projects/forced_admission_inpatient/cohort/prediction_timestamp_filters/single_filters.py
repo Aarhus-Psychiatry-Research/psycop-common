@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.cohort_definition import PredictionTimeFilter
+from psycop.common.cohort_definition import EagerFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -18,14 +18,14 @@ from psycop.projects.forced_admission_inpatient.cohort.prediction_timestamp_filt
 )
 
 
-class ForcedAdmissionsInpatientMinDateFilter(PredictionTimeFilter):
+class ForcedAdmissionsInpatientMinDateFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
-class ForcedAdmissionsInpatientMinAgeFilter(PredictionTimeFilter):
+class ForcedAdmissionsInpatientMinAgeFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         df = add_age(df)
@@ -33,7 +33,7 @@ class ForcedAdmissionsInpatientMinAgeFilter(PredictionTimeFilter):
         return after_df
 
 
-class ForcedAdmissionsInpatientWashoutMove(PredictionTimeFilter):
+class ForcedAdmissionsInpatientWashoutMove(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         not_within_x_years_from_move = pl.from_pandas(
@@ -48,7 +48,7 @@ class ForcedAdmissionsInpatientWashoutMove(PredictionTimeFilter):
         return not_within_x_years_from_move
 
 
-class ForcedAdmissionsInpatientWashoutPriorForcedAdmission(PredictionTimeFilter):
+class ForcedAdmissionsInpatientWashoutPriorForcedAdmission(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         not_within_x_years_from_forced_admission = pl.from_pandas(

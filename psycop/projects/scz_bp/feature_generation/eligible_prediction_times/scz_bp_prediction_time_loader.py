@@ -6,8 +6,8 @@ from wasabi import msg
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
+    EagerFilter,
     FilteredPredictionTimeBundle,
-    PredictionTimeFilter,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
@@ -67,7 +67,7 @@ class SczBpCohort(CohortDefiner):
         return get_first_scz_bp_diagnosis_after_washin()
 
     @staticmethod
-    def _get_filtering_steps() -> Iterable[PredictionTimeFilter]:
+    def _get_filtering_steps() -> Iterable[EagerFilter]:
         return (
             SczBpMinDateFilter(),
             SczBpExcludedByWashinFilter(),

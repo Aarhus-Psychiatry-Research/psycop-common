@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.cohort_definition import PredictionTimeFilter
+from psycop.common.cohort_definition import EagerFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -20,20 +20,20 @@ from psycop.projects.cancer.feature_generation.cohort_definition.outcome_specifi
 )
 
 
-class CancerMinDateFilter(PredictionTimeFilter):
+class CancerMinDateFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(pl.col("timestamp") > MIN_DATE)
 
 
-class CancerMinAgeFilter(PredictionTimeFilter):
+class CancerMinAgeFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         df = add_age(df)
         return df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
 
 
-class CancerWashoutMoveFilter(PredictionTimeFilter):
+class CancerWashoutMoveFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         not_within_half_a_year_from_move = pl.from_pandas(
@@ -49,7 +49,7 @@ class CancerWashoutMoveFilter(PredictionTimeFilter):
         return not_within_half_a_year_from_move
 
 
-class CancerPrevalentFilter(PredictionTimeFilter):
+class CancerPrevalentFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         first_cancer_diagnosis = pl.from_pandas(get_first_cancer_diagnosis()).select(

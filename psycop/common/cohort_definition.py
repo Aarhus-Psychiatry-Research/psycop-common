@@ -8,17 +8,17 @@ from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.types.polarsframe import PolarsFrameGeneric
 
 
-class PredictionTimeFilter(Protocol):
+class EagerFilter(Protocol):
     """Interface for filtering functions applied to prediction times"""
 
     @staticmethod
-    def apply(df: PolarsFrameGeneric) -> PolarsFrameGeneric:
+    def apply(df: pl.DataFrame) -> pl.DataFrame:
         ...
 
 
-class EagerFilter(Protocol):
+class LazyFilter(Protocol):
     @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(df: PolarsFrameGeneric) -> PolarsFrameGeneric:
         ...
 
 
@@ -58,7 +58,7 @@ class CohortDefiner(ABC):
 
 def filter_prediction_times(
     prediction_times: pl.DataFrame,
-    filtering_steps: Iterable[PredictionTimeFilter],
+    filtering_steps: Iterable[EagerFilter],
     entity_id_col_name: str,
 ) -> FilteredPredictionTimeBundle:
     stepdeltas: list[StepDelta] = []

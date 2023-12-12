@@ -1,6 +1,6 @@
 import polars as pl
 
-from psycop.common.cohort_definition import PredictionTimeFilter
+from psycop.common.cohort_definition import EagerFilter
 from psycop.common.feature_generation.application_modules.filter_prediction_times import (
     PredictionTimeFilterer,
 )
@@ -20,14 +20,14 @@ from psycop.projects.t2d.feature_generation.cohort_definition.eligible_predictio
 )
 
 
-class CVDMinDateFilter(PredictionTimeFilter):
+class CVDMinDateFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
-class CVDMinAgeFilter(PredictionTimeFilter):
+class CVDMinAgeFilter(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         df = add_age(df)
@@ -35,7 +35,7 @@ class CVDMinAgeFilter(PredictionTimeFilter):
         return after_df
 
 
-class WithoutPrevalentCVD(PredictionTimeFilter):
+class WithoutPrevalentCVD(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         first_cvd_indicator = pl.from_pandas(get_first_cvd_indicator())
@@ -59,7 +59,7 @@ class WithoutPrevalentCVD(PredictionTimeFilter):
         return no_prevalent_cvd.drop(["age"])
 
 
-class NoIncidentCVD(PredictionTimeFilter):
+class NoIncidentCVD(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         contacts_with_cvd = pl.from_pandas(
@@ -86,7 +86,7 @@ class NoIncidentCVD(PredictionTimeFilter):
         return not_after_incident_cvd.drop(["timestamp_result", "cause"])
 
 
-class CVDWashoutMove(PredictionTimeFilter):
+class CVDWashoutMove(EagerFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         not_within_two_years_from_move = pl.from_pandas(

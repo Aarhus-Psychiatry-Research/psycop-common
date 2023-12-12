@@ -4,7 +4,7 @@ import polars as pl
 
 from psycop.common.types.polarsframe import PolarsFrameGeneric
 
-from .cohort_definition import PredictionTimeFilter, filter_prediction_times
+from .cohort_definition import EagerFilter, filter_prediction_times
 from .test_utils.str_to_df import str_to_pl_df
 
 
@@ -19,7 +19,7 @@ def test_filter_prediction_times():
 
     min_timestamp = datetime.strptime("2019-01-01", "%Y-%m-%d")
 
-    class MinTimestampFilter(PredictionTimeFilter):
+    class MinTimestampFilter(EagerFilter):
         @staticmethod
         def apply(df: PolarsFrameGeneric) -> PolarsFrameGeneric:
             return df.filter(pl.col("timestamp") > min_timestamp)
