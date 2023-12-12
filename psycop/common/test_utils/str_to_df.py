@@ -51,9 +51,14 @@ def str_to_df(
     """
     # Drop comments for each line if any exist inside the str
     lines = []
+    header_index = 0
+
     for i, line in enumerate(string.split("\n")):
-        is_header = i == 0
-        if is_header:
+        is_blank_line = line.strip() == ""
+        if is_blank_line:
+            header_index += 1
+
+        if i == header_index:
             # Remove whitespace at the start and end of headers
             header_items = line.split(",")
             header_items_stripped = [item.strip() for item in header_items]
