@@ -45,46 +45,40 @@ def train(config_path: Path | None = None) -> None:
         config_path: path to config file if none loads default
     """
     config_dict = load_config(config_path)
-    config = parse_config(config_dict)
-
-    training_cfg = config.training
-    training_dataset = config.dataset.training
-    validation_dataset = config.dataset.validation
-    model = config.model
-    logger = training_cfg.trainer.logger
-    trainer_kwargs = training_cfg.trainer.to_dict()
+    cfg = parse_config(config_dict)
 
     # update config
     std_logger.info("Updating Config")
-    flat_config = flatten_nested_dict(config_dict)
-    logger.experiment.config.update(flat_config)
+    cfg.training.trainer.logger.experiment.config.update(
+        flatten_nested_dict(config_dict),
+    )
 
     # filter dataset
     std_logger.info("Filtering Patients")
-    filter_fn = model.embedding_module.A_diagnoses_to_caliber
-    training_dataset.filter_patients(filter_fn)
-    validation_dataset.filter_patients(filter_fn)
+    filter_fn = cfg.model.embedding_module.A_diagnoses_to_caliber
+    cfg.dataset.training.filter_patients(filter_fn)
+    cfg.dataset.validation.filter_patients(filter_fn)
 
     std_logger.info("Creating dataloaders")
     train_loader = DataLoader(
-        training_dataset,
-        batch_size=training_cfg.batch_size,
+        cfg.dataset.training,
+        batch_size=cfg.training.batch_size,
         shuffle=True,
-        collate_fn=model.collate_fn,
-        num_workers=training_cfg.num_workers_for_dataloader,
+        collate_fn=cfg.model.collate_fn,
+        num_workers=cfg.training.num_workers_for_dataloader,
         persistent_workers=True,
     )
     val_loader = DataLoader(
-        validation_dataset,
-        batch_size=training_cfg.batch_size,
+        cfg.dataset.validation,
+        batch_size=cfg.training.batch_size,
         shuffle=False,
-        collate_fn=model.collate_fn,
-        num_workers=training_cfg.num_workers_for_dataloader,
+        collate_fn=cfg.model.collate_fn,
+        num_workers=cfg.training.num_workers_for_dataloader,
         persistent_workers=True,
     )
 
     std_logger.info("Initalizing trainer")
-    trainer = pl.Trainer(**trainer_kwargs)
+    trainer = pl.Trainer(**cfg.training.trainer.to_dict())
 
     std_logger.info("Starting training")
     torch.set_float32_matmul_precision("medium")
