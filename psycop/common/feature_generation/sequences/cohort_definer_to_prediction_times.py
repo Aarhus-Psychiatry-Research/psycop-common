@@ -49,7 +49,7 @@ class CohortToPredictionTimes:
         if lookahead is not None:
             max_timestamp: dt.datetime = dataframe[patient_timestamp_col_name].max()  # type: ignore
             dataframe = dataframe.filter(
-                pl.col(patient_timestamp_col_name) < max_timestamp - lookahead,
+                pl.col(patient_timestamp_col_name) <= max_timestamp - lookahead,
             )
 
         timestamp_dicts = dataframe.iter_rows(named=True)
