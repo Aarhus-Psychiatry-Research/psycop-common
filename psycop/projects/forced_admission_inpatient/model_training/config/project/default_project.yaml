@@ -1,5 +1,5 @@
 name: forced_admissions_inpatient
-project_path: E:\shared_resources\forced_admissions_inpatient\models\full_model_with_text_features_lookahead_360
+project_path: E:\shared_resources\forced_admissions_inpatient\models\limited_feature_set_demographics_diagnoses
 seed: 42
 
 wandb:
