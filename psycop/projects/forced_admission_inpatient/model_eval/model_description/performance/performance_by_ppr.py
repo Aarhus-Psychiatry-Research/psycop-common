@@ -79,7 +79,7 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
         eval_dataset=eval_dataset,
-        positive_rates=[0.05, 0.04, 0.03, 0.02, 0.01],
+        positive_rates=[0.2, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01],
     )
 
     df = clean_up_performance_by_ppr(df)

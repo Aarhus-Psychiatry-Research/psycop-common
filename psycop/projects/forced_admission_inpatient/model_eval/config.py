@@ -9,18 +9,16 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import Ru
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-MODEL_NAME = "limited_feature_set_demographics_diagnoses"
+MODEL_NAME = "no_washout_full_model_with_text_features"
 PROJECT_MODEL_DIR = Path(
     f"E:/shared_resources/forced_admissions_inpatient/models/{MODEL_NAME}/pipeline_eval",
 )
 MODEL_ALGORITHM = 1  # 0 fo logistic regression and 1 for best xgboost
 
-DEV_GROUP_NAME = "autocades-percentage"
+DEV_GROUP_NAME = "unthickly-negating"
 DEVELOPMENT_GROUP = RunGroup(model_name=MODEL_NAME, group_name=DEV_GROUP_NAME)
-BEST_POS_RATE = 0.03
+BEST_POS_RATE = 0.05
 
-EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
-EVAL_GROUP = RunGroup(model_name=MODEL_NAME, group_name=EVAL_GROUP_NAME)
 
 ################
 # OUTPUT PATHS #
