@@ -34,14 +34,23 @@ class CohortToPredictionTimes:
         dataframe: pl.DataFrame,
         id_col_name: str,
         patient_timestamp_col_name: str,
+        lookahead: dt.timedelta | None = None,
     ) -> dict[PATIENT_ID, list[dt.datetime]]:
+        max_timestamp: dt.datetime = dataframe[patient_timestamp_col_name].max()  # type: ignore
         timestamp_dicts = dataframe.iter_rows(named=True)
 
         patient_to_prediction_times = defaultdict(list)
         for prediction_time_dict in timestamp_dicts:
+            patient_timestamp: dt.datetime = prediction_time_dict[
+                patient_timestamp_col_name
+            ]
+
+            if lookahead is not None and patient_timestamp + lookahead > max_timestamp:
+                continue
+
             patient_id = prediction_time_dict[id_col_name]
             patient_to_prediction_times[patient_id].append(
-                prediction_time_dict[patient_timestamp_col_name],
+                patient_timestamp,
             )
 
         return patient_to_prediction_times
@@ -82,6 +91,7 @@ class CohortToPredictionTimes:
             dataframe=self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times,
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
+            lookahead=lookahead,
         )
 
         prediction_times = (
