@@ -87,7 +87,10 @@ def fa_inpatient_main_manuscript_eval(
         run=pipeline,
         lookaheads_for_performance_eval=[30, 90, 180, 360],
     )
-    generate_feature_importance_table(pipeline_run=pipeline)
+    generate_feature_importance_table(
+        pipeline_run=pipeline,
+        vocab_filename="vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet",
+    )
 
     return fa_inpatient_create_markdown_artifacts(pipeline=pipeline)
 
