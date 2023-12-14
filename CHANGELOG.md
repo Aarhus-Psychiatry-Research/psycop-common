@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.154.0 (2023-12-14)
+
+### Feature
+
+* Filter based on insufficient lookahead ([#541](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/541)) ([`9624405`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/962440570fe742f2cdfe655170a37a5df1d6a031))
+* Filter based on insufficient lookahead ([`21e545a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/21e545a11e0230d3fcda1e287c04bae6df104003))
+* Filter based on insufficient lookahead ([`ab51a6e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ab51a6e9368cac5a1ac5b092bf086b73e7199f4d))
+
+### Documentation
+
+* Improvements ([`1562df8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1562df84b9d0ba5ac6d2164ba97442c2670ebf48))
+
+## v0.153.0 (2023-12-14)
+
+### Feature
+
+* Add SplitDataset generic ([`d4b99ea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d4b99eae54d43deae41f54b07a7dfa637f5270b0))
+
 ## v0.152.0 (2023-12-14)
 
 ### Feature

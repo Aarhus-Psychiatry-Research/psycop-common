@@ -1,4 +1,5 @@
-from collections.abc import Iterator
+import logging
+from collections.abc import Iterator, Sequence
 from copy import copy
 from dataclasses import dataclass
 from typing import Literal
@@ -11,9 +12,11 @@ from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 
 from psycop.common.data_structures.patient import PatientSlice
 
-from ..aggregators import AggregationModule
+from ..aggregators import Aggregator
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -45,15 +48,15 @@ class BEHRTForMaskedLM(pl.LightningModule):
     ):
         super().__init__()
         self.save_hyperparameters()
-        self.embedding_module = embedding_module
-        self.encoder_module = encoder_module
+        self.embedder = embedding_module
+        self.encoder = encoder_module
         self.optimizer_fn = optimizer_fn
         self.lr_scheduler_fn = lr_scheduler_fn
 
-        self.d_model = self.embedding_module.d_model
-        self.mask_token_id = self.embedding_module.vocab.diagnosis["MASK"]
+        self.d_model = self.embedder.d_model
+        self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
 
-        self.mlm_head = nn.Linear(self.d_model, self.embedding_module.n_diagnosis_codes)
+        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
     def training_step(  # type: ignore
@@ -77,8 +80,8 @@ class BEHRTForMaskedLM(pl.LightningModule):
         inputs: dict[str, torch.Tensor],
         masked_lm_labels: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
-        embedded_patients = self.embedding_module(inputs)
-        encoded_patients = self.encoder_module(
+        embedded_patients = self.embedder(inputs)
+        encoded_patients = self.encoder(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
         )
@@ -140,7 +143,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         # Perform masking
         masked_sequence, masked_labels = self.mask(
             diagnosis=padded_sequence_ids["diagnosis"],
-            n_diagnoses_in_vocab=self.embedding_module.n_diagnosis_codes,
+            n_diagnoses_in_vocab=self.embedder.n_diagnosis_codes,
             mask_token_id=self.mask_token_id,
             padding_mask=padding_mask,
         )
@@ -155,7 +158,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         """
         Takes a list of PredictionTime and returns a dictionary of padded sequence ids.
         """
-        padded_sequence_ids = self.embedding_module.collate_patient_slices(
+        padded_sequence_ids = self.embedder.collate_patient_slices(
             patient_slices,
         )
         # Masking
@@ -172,6 +175,25 @@ class BEHRTForMaskedLM(pl.LightningModule):
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
 
+    def filter_and_reformat(
+        self,
+        patient_slices: Sequence[PatientSlice],
+    ) -> Sequence[PatientSlice]:
+        reformatted_slices = self.embedder.reformat(patient_slices)
+        slices_with_content = [
+            patient_slice
+            for patient_slice in reformatted_slices
+            if patient_slice.temporal_events
+        ]
+
+        if len(reformatted_slices) != len(slices_with_content):
+            n_filtered = len(reformatted_slices) - len(slices_with_content)
+            log.warning(
+                f"Lost {n_filtered} patients ({round(n_filtered / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
+            )
+
+        return slices_with_content
+
 
 class EncoderForClassification(pl.LightningModule):
     """
@@ -182,14 +204,14 @@ class EncoderForClassification(pl.LightningModule):
         self,
         embedding_module: BEHRTEmbedder,
         encoder_module: nn.Module,
-        aggregation_module: AggregationModule,
+        aggregation_module: Aggregator,
         optimizer_fn: OptimizerFn,
         lr_scheduler_fn: LRSchedulerFn,
         num_classes: int = 2,
     ):
         super().__init__()
-        self.embedding_module = embedding_module
-        self.encoder_module = encoder_module
+        self.embedder = embedding_module
+        self.encoder = encoder_module
         self.optimizer_fn = optimizer_fn
         self.lr_scheduler_fn = lr_scheduler_fn
         self.aggregation_module = aggregation_module
@@ -244,8 +266,8 @@ class EncoderForClassification(pl.LightningModule):
         inputs: dict[str, torch.Tensor],
         labels: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
-        embedded_patients = self.embedding_module(inputs)
-        encoded_patients = self.encoder_module(
+        embedded_patients = self.embedder(inputs)
+        encoded_patients = self.encoder(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
         )
@@ -271,7 +293,7 @@ class EncoderForClassification(pl.LightningModule):
 
         metrics = self.calculate_metrics(logits, labels)
 
-        return {"logits": logits, "loss": loss, **metrics}
+        return {"loss": loss, **metrics}
 
     def calculate_metrics(
         self,
@@ -296,18 +318,18 @@ class EncoderForClassification(pl.LightningModule):
     def collate_fn(
         self,
         patient_slices_with_labels: list[tuple[PatientSlice, int]],
-    ) -> tuple[dict[str, torch.Tensor], torch.Tensor]:
+    ) -> BatchWithLabels:
         """
         Takes a list of patients and returns a dictionary of padded sequence ids.
         """
         patient_slices, outcomes = list(zip(*patient_slices_with_labels))  # type: ignore
         patient_slices: list[PatientSlice] = list(patient_slices)
-        padded_sequence_ids = self.embedding_module.collate_patient_slices(
+        padded_sequence_ids = self.embedder.collate_patient_slices(
             patient_slices,
         )
 
         outcome_tensor = torch.tensor(outcomes)
-        return padded_sequence_ids, outcome_tensor
+        return BatchWithLabels(inputs=padded_sequence_ids, labels=outcome_tensor)
 
     def configure_optimizers(
         self,
@@ -318,3 +340,10 @@ class EncoderForClassification(pl.LightningModule):
         optimizer = self.optimizer_fn(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
+
+    def filter_and_reformat(
+        self,
+        patient_slices: Sequence[PatientSlice],
+    ) -> Sequence[PatientSlice]:
+        reformatted_slices = self.embedder.reformat(patient_slices)
+        return reformatted_slices

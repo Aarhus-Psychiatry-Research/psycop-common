@@ -10,13 +10,14 @@ from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_tim
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
 
-class MockCohortDefiner(CohortDefiner):
+class FakeCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         df = str_to_pl_df(
             """dw_ek_borger,timestamp
     1,2021-01-01
     2,2022-01-01
+    3,2023-01-01
     """,
         )
         return FilteredPredictionTimeBundle(
@@ -37,17 +38,20 @@ class MockCohortDefiner(CohortDefiner):
 def test_polars_dataframe_to_dict():
     """Test that each prediction time is mapped to the correct patient."""
     prediction_times = CohortToPredictionTimes(
-        cohort_definer=MockCohortDefiner(),
+        cohort_definer=FakeCohortDefiner(),
         patients=[
             get_test_patient(patient_id=1),
             get_test_patient(patient_id=2),
+            get_test_patient(patient_id=3),
         ],
     ).create_prediction_times(
         lookbehind=dt.timedelta(days=1),
         lookahead=dt.timedelta(days=1),
     )
 
-    assert len(prediction_times) == 2
+    assert (
+        len(prediction_times) == 2
+    )  # Third patient is filtered out because of insufficient lookahead
     patient_1 = list(  # noqa: RUF015
         filter(lambda x: x.patient_slice.patient.patient_id == 1, prediction_times),
     )[0]

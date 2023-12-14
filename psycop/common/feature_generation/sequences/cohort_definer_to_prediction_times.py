@@ -34,14 +34,34 @@ class CohortToPredictionTimes:
         dataframe: pl.DataFrame,
         id_col_name: str,
         patient_timestamp_col_name: str,
+        lookahead: dt.timedelta | None = None,
     ) -> dict[PATIENT_ID, list[dt.datetime]]:
+        """Maps a polars dataframe to a dictionary of {patient ids: timestamps}.
+
+        Args:
+            dataframe: Polars dataframe with patient ids and timestamps.
+            id_col_name: Name of the column with patient ids.
+            patient_timestamp_col_name: Name of the column with timestamps.
+            lookahead: If not None, only timestamps before the max timestamp minus the lookahead
+                will be included. E.g. for a lookahead of 2 years, this ensures we actually have 2
+                years of data to label the outcome.
+        """
+        if lookahead is not None:
+            max_timestamp: dt.datetime = dataframe[patient_timestamp_col_name].max()  # type: ignore
+            dataframe = dataframe.filter(
+                pl.col(patient_timestamp_col_name) <= max_timestamp - lookahead,
+            )
+
         timestamp_dicts = dataframe.iter_rows(named=True)
 
         patient_to_prediction_times = defaultdict(list)
         for prediction_time_dict in timestamp_dicts:
+            patient_timestamp: dt.datetime = prediction_time_dict[
+                patient_timestamp_col_name
+            ]
             patient_id = prediction_time_dict[id_col_name]
             patient_to_prediction_times[patient_id].append(
-                prediction_time_dict[patient_timestamp_col_name],
+                patient_timestamp,
             )
 
         return patient_to_prediction_times
@@ -82,6 +102,7 @@ class CohortToPredictionTimes:
             dataframe=self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times,
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
+            lookahead=lookahead,
         )
 
         prediction_times = (

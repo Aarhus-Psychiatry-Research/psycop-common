@@ -5,7 +5,7 @@ from psycop.common.sequence_models.tasks.tasks import (
     EncoderForClassification,
 )
 
-from ..aggregators import AggregationModule
+from ..aggregators import Aggregator
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
@@ -26,11 +26,11 @@ def create_behrt(
     )
 
 
-@Registry.tasks.register("encoder_for_clf")
-def create_encoder_for_clf(
+@Registry.tasks.register("clf_encoder")
+def clf_encoder(
     embedding_module: BEHRTEmbedder,
     encoder_module: nn.Module,
-    aggregation_module: AggregationModule,
+    aggregation_module: Aggregator,
     optimizer: OptimizerFn,
     lr_scheduler: LRSchedulerFn,
     num_classes: int = 2,
