@@ -46,7 +46,12 @@ class CohortToPredictionTimes:
                 will be included. E.g. for a lookahead of 2 years, this ensures we actually have 2
                 years of data to label the outcome.
         """
-        max_timestamp: dt.datetime = dataframe[patient_timestamp_col_name].max()  # type: ignore
+        if lookahead is not None:
+            max_timestamp: dt.datetime = dataframe[patient_timestamp_col_name].max()  # type: ignore
+            dataframe = dataframe.filter(
+                pl.col(patient_timestamp_col_name) < max_timestamp - lookahead,
+            )
+
         timestamp_dicts = dataframe.iter_rows(named=True)
 
         patient_to_prediction_times = defaultdict(list)
@@ -54,10 +59,6 @@ class CohortToPredictionTimes:
             patient_timestamp: dt.datetime = prediction_time_dict[
                 patient_timestamp_col_name
             ]
-
-            if lookahead is not None and patient_timestamp + lookahead > max_timestamp:
-                continue
-
             patient_id = prediction_time_dict[id_col_name]
             patient_to_prediction_times[patient_id].append(
                 patient_timestamp,
