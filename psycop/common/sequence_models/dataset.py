@@ -21,7 +21,7 @@ class PatientSliceDataset(Dataset[PatientSlice]):
     def __getitem__(self, idx: int) -> PatientSlice:
         return self.patient_slices[idx]
 
-    def filter_patients(
+    def filter_patient_slices(
         self,
         filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
     ) -> None:
@@ -41,7 +41,7 @@ class PatientSlicesWithLabels(Dataset[tuple[PatientSlice, int]]):
 
         return (pred_time.patient_slice, label)
 
-    def filter_patients(
+    def filter_patient_slices(
         self,
         filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
     ) -> None:

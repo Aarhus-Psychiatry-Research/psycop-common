@@ -47,18 +47,19 @@ def train(config_path: Path | None = None) -> None:
     config_dict = load_config(config_path)
     cfg = parse_config(config_dict)
 
-    # update config
+    # Config
     std_logger.info("Updating Config")
     cfg.training.trainer.logger.experiment.config.update(
         flatten_nested_dict(config_dict),
     )
 
-    # filter dataset
+    # Dataset
     std_logger.info("Filtering Patients")
     filter_fn = cfg.model.embedding_module.A_diagnoses_to_caliber
-    cfg.dataset.training.filter_patients(filter_fn)
-    cfg.dataset.validation.filter_patients(filter_fn)
+    cfg.dataset.training.filter_patient_slices(filter_fn)
+    cfg.dataset.validation.filter_patient_slices(filter_fn)
 
+    # Dataloaders
     std_logger.info("Creating dataloaders")
     train_loader = DataLoader(
         cfg.dataset.training,
@@ -77,9 +78,12 @@ def train(config_path: Path | None = None) -> None:
         persistent_workers=True,
     )
 
+    # Trainer and training
     std_logger.info("Initalizing trainer")
     trainer = pl.Trainer(**cfg.training.trainer.to_dict())
 
     std_logger.info("Starting training")
     torch.set_float32_matmul_precision("medium")
-    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+    trainer.fit(
+        model=cfg.model, train_dataloaders=train_loader, val_dataloaders=val_loader
+    )
