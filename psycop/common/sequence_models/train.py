@@ -31,7 +31,7 @@ def populate_registry() -> None:
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
-    from .tasks import create_behrt, create_encoder_for_clf  # noqa
+    from .tasks import create_behrt, clf_encoder  # noqa
 
 
 populate_registry()
@@ -48,20 +48,22 @@ def train(config_path: Path | None = None) -> None:
     config = parse_config(config_dict)
 
     training_cfg = config.training
-    training_dataset = config.dataset.training
-    validation_dataset = config.dataset.validation
-    model = config.model
+    training_dataset = config.model_and_dataset.training_dataset
+    validation_dataset = config.model_and_dataset.validation_dataset
+    model = config.model_and_dataset.model
     logger = training_cfg.trainer.logger
     trainer_kwargs = training_cfg.trainer.to_dict()
 
     # update config
     std_logger.info("Updating Config")
     flat_config = flatten_nested_dict(config_dict)
-    logger.experiment.config.update(flat_config)
+
+    if logger:
+        logger.experiment.config.update(flat_config)
 
     # filter dataset
     std_logger.info("Filtering Patients")
-    filter_fn = model.embedding_module.A_diagnoses_to_caliber
+    filter_fn = model.filter_and_reformat
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
 

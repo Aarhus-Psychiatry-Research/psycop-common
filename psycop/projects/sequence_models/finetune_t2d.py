@@ -1,4 +1,5 @@
 import datetime as dt
+import logging
 from pathlib import Path
 from typing import Literal
 
@@ -36,8 +37,8 @@ def create_patient_slices_with_labels_for_t2d(
     patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader(min_n_visits=min_n_visits)],
         split=SplitName(split_name),
+        fraction=0.01,  # TODO: REMOVE ME PLEASE
     )
-    dt.timedelta(days=365)
 
     prediction_times = CohortToPredictionTimes(
         cohort_definer=T2DCohortDefiner(),
@@ -51,5 +52,6 @@ def create_patient_slices_with_labels_for_t2d(
 
 
 if __name__ == "__main__":
-    config_path = Path(__file__).parent / "fine_tune.cfg"
+    logging.basicConfig(level=logging.INFO, datefmt="%H:%M:%S")
+    config_path = Path(__file__).parent / "finetune_t2d-debug.cfg"
     train(config_path)

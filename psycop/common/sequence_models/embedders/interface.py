@@ -22,7 +22,7 @@ class EmbeddedSequence:
     src_key_padding_mask: torch.Tensor
 
 
-class Embedder(Protocol):
+class PatientSliceEmbedder(Protocol):
     """
     Interface for embedding modules
     """

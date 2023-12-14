@@ -7,14 +7,17 @@ import torch
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import Patient, PatientSlice
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
-from psycop.common.sequence_models.embedders.interface import Embedder
+from psycop.common.sequence_models.embedders.interface import PatientSliceEmbedder
 
 
 @pytest.mark.parametrize(
     "embedding_module",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
-def test_embeddings(patient_slices: Sequence[PatientSlice], embedding_module: Embedder):
+def test_embeddings(
+    patient_slices: Sequence[PatientSlice],
+    embedding_module: PatientSliceEmbedder,
+):
     """
     Test embedding interface
     """
@@ -92,7 +95,7 @@ def test_diagnosis_mapping(
     patient_events: list[tuple[Patient, TemporalEvent]] = [
         (p, e)
         for p in [patient]
-        for e in embedding_module.A_diagnoses_only(p.temporal_events)
+        for e in filter(embedding_module.is_A_diagnosis, p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
@@ -167,7 +170,7 @@ def test_reformat_and_filter(
     ]
 
     patient.add_events(temporal_events)
-    patient_slices_mapped = embedding_module.A_diagnoses_to_caliber(
+    patient_slices_mapped = embedding_module.reformat(
         [patient.as_slice()],
     )
     diagnosis_codes = [

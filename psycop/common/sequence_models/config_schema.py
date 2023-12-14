@@ -32,7 +32,7 @@ class TrainerConfigSchema(BaseModel):
     num_nodes: int = 1
     callbacks: list[Callback] = []
     precision: str = "32-true"
-    logger: WandbLogger
+    logger: Optional[WandbLogger] = None
     max_epochs: Optional[int] = None
     min_epochs: Optional[int] = None
     max_steps: int = 10
@@ -59,18 +59,36 @@ class TrainerConfigSchema(BaseModel):
 
 
 class TrainingConfigSchema(BaseModel):
+    class Config:
+        extra = "forbid"
+        allow_mutation = False
+        arbitrary_types_allowed = True
+
     batch_size: int
     num_workers_for_dataloader: int = 8
     trainer: TrainerConfigSchema
 
 
-class DatasetsConfigSchema(BaseModel):
+class PretrainingModelAndDataset(BaseModel):
     class Config:
+        extra = "forbid"
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    training: PatientSliceDataset | PatientSlicesWithLabels
-    validation: PatientSliceDataset | PatientSlicesWithLabels
+    model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
+    training_dataset: PatientSliceDataset
+    validation_dataset: PatientSliceDataset
+
+
+class ClassificationModelAndDataset(BaseModel):
+    class Config:
+        extra = "forbid"
+        allow_mutation = False
+        arbitrary_types_allowed = True
+
+    model: EncoderForClassification
+    training_dataset: PatientSlicesWithLabels
+    validation_dataset: PatientSlicesWithLabels
 
 
 class ResolvedConfigSchema(BaseModel):
@@ -79,6 +97,6 @@ class ResolvedConfigSchema(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    dataset: DatasetsConfigSchema
-    model: BEHRTForMaskedLM | EncoderForClassification
+    # Required because dataset and model are coupled through their input and outputs
+    model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
