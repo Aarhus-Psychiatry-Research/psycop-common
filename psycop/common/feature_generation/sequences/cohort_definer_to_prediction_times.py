@@ -36,6 +36,16 @@ class CohortToPredictionTimes:
         patient_timestamp_col_name: str,
         lookahead: dt.timedelta | None = None,
     ) -> dict[PATIENT_ID, list[dt.datetime]]:
+    """Maps a polars dataframe to a dictionary of {patient ids: timestamps}.
+
+    Args:
+        dataframe: Polars dataframe with patient ids and timestamps.
+        id_col_name: Name of the column with patient ids.
+        patient_timestamp_col_name: Name of the column with timestamps.
+        lookahead: If not None, only timestamps before the max timestamp minus the lookahead
+            will be included. E.g. for a lookahead of 2 years, this ensures we actually have 2
+            years of data to label the outcome.
+    """
         max_timestamp: dt.datetime = dataframe[patient_timestamp_col_name].max()  # type: ignore
         timestamp_dicts = dataframe.iter_rows(named=True)
 
