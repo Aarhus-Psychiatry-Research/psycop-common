@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.152.0 (2023-12-14)
+
+### Feature
+
+* Add support for mlflow experiment tracker ([#432](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/432)) ([`9922000`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9922000da1e96d3babec21ca008bf64302f7030c))
+* Add support for mlflow experiment tracker ([`7048cb0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7048cb0ed5068a7890cdc45acb13493d5fbdf275))
+* Add support for mlflow experiment tracker ([`db8db5b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/db8db5bba585e9352ca86b9f833dc217ed1a5986))
+
 ## v0.151.1 (2023-12-12)
 
 ### Fix
