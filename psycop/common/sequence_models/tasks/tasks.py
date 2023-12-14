@@ -1,9 +1,8 @@
 import logging
-from abc import ABC, abstractmethod
 from collections.abc import Iterator, Sequence
 from copy import copy
 from dataclasses import dataclass
-from typing import Literal, Protocol
+from typing import Literal
 
 import lightning.pytorch as pl
 import torch
@@ -15,7 +14,6 @@ from psycop.common.data_structures.patient import PatientSlice
 
 from ..aggregators import Aggregator
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
-from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 
 log = logging.getLogger(__name__)

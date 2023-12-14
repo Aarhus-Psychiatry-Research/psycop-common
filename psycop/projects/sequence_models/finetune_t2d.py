@@ -3,9 +3,6 @@ import logging
 from pathlib import Path
 from typing import Literal
 
-from psycop.common.data_structures.patient import Patient, PatientSlice
-from psycop.common.data_structures.prediction_time import PredictionTime
-from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
     CohortToPredictionTimes,
@@ -40,7 +37,7 @@ def create_patient_slices_with_labels_for_t2d(
     patients = PatientLoader.get_split(
         event_loaders=[DiagnosisLoader(min_n_visits=min_n_visits)],
         split=SplitName(split_name),
-        fraction=0.01, # TODO: REMOVE ME PLEASE
+        fraction=0.01,  # TODO: REMOVE ME PLEASE
     )
 
     prediction_times = CohortToPredictionTimes(

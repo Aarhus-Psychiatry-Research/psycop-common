@@ -2,19 +2,17 @@
 The config Schema for sequence models.
 """
 
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Generic, Optional, Protocol, TypeVar, Union, final
+from typing import Any, Optional, Union
 
-import lightning.pytorch as pl
 from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers.wandb import WandbLogger
 from pydantic import BaseModel
-from torch.utils.data import Dataset
 
-from psycop.common.sequence_models.tasks import (BEHRTForMaskedLM,
-                                                 EncoderForClassification)
+from psycop.common.sequence_models.tasks import (
+    BEHRTForMaskedLM,
+    EncoderForClassification,
+)
 
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 

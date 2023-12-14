@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from torch import nn
 
 from psycop.common.sequence_models.tasks.tasks import (
