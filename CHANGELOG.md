@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.153.0 (2023-12-14)
+
+### Feature
+
+* Add SplitDataset generic ([`d4b99ea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d4b99eae54d43deae41f54b07a7dfa637f5270b0))
+
 ## v0.152.0 (2023-12-14)
 
 ### Feature
