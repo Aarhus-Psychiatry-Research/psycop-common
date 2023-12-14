@@ -1,7 +1,8 @@
 """ Utils for text_models  """
 
-from typing import Any
+from typing import Union
 
+import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
@@ -9,7 +10,7 @@ from psycop.common.global_utils.pickle import read_pickle, write_to_pickle
 
 
 def save_text_model_to_dir(
-    model: Any,
+    model: Union[CountVectorizer, TfidfVectorizer],
     filename: str,
 ):
     """
@@ -20,8 +21,16 @@ def save_text_model_to_dir(
         filename (str): The filename to save the model as
 
     """
-    filepath = OVARTACI_SHARED_DIR / "text_models" / filename
-    write_to_pickle(model, filepath)
+    model_filepath = OVARTACI_SHARED_DIR / "text_models" / filename
+    write_to_pickle(model, model_filepath)
+
+    vocab_filepath = (
+        OVARTACI_SHARED_DIR / "text_models" / "vocabulary_lists" / f"vocab_{filename}"
+    )
+    vocab = model.vocabulary_
+    vocab = pd.DataFrame(list(vocab.items()), columns=["Word", "Index"])
+    vocab.sort_values(by="Index").reset_index(drop=True)
+    vocab.to_parquet(vocab_filepath, index=False)
 
 
 def load_text_model(
