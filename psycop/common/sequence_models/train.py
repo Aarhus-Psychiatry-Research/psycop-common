@@ -85,5 +85,7 @@ def train(config_path: Path | None = None) -> None:
     std_logger.info("Starting training")
     torch.set_float32_matmul_precision("medium")
     trainer.fit(
-        model=cfg.model, train_dataloaders=train_loader, val_dataloaders=val_loader
+        model=cfg.model,
+        train_dataloaders=train_loader,
+        val_dataloaders=val_loader,
     )
