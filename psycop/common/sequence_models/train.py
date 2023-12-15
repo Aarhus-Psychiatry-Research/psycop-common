@@ -13,7 +13,7 @@ from psycop.common.global_utils.config_utils import flatten_nested_dict
 
 from .config_utils import load_config, parse_config
 
-std_logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 os.environ["WANDB__SERVICE_WAIT"] = "300"  # to avoid issues with wandb service
 
 
@@ -54,7 +54,7 @@ def train(config_path: Path | None = None) -> None:
         training_cfg.logger = logger
 
         # update config
-        std_logger.info("Updating Config")
+        log.info("Updating Config")
         flat_config = flatten_nested_dict(config_dict)
         logger.log_hyperparams(flat_config)
 
@@ -64,15 +64,13 @@ def train(config_path: Path | None = None) -> None:
     logger = config.logger.get_logger()
     trainer_kwargs = training_cfg.trainer.to_dict()
 
-    if logger:
-
     # filter dataset
-    std_logger.info("Filtering Patients")
+    log.info("Filtering Patients")
     filter_fn = model.filter_and_reformat
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
 
-    std_logger.info("Creating dataloaders")
+    log.info("Creating dataloaders")
     train_loader = DataLoader(
         training_dataset,
         batch_size=training_cfg.batch_size,
@@ -90,9 +88,9 @@ def train(config_path: Path | None = None) -> None:
         persistent_workers=True,
     )
 
-    std_logger.info("Initalizing trainer")
+    log.info("Initalizing trainer")
     trainer = pl.Trainer(**trainer_kwargs)
 
-    std_logger.info("Starting training")
+    log.info("Starting training")
     torch.set_float32_matmul_precision("medium")
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
