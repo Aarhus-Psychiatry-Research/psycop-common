@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 from typing import Literal
 
+from torch import nn
+
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
     CohortToPredictionTimes,
@@ -12,6 +14,7 @@ from psycop.common.feature_generation.sequences.patient_loaders import (
     PatientLoader,
 )
 from psycop.common.sequence_models.dataset import PatientSlicesWithLabels
+from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.tasks import BEHRTForMaskedLM
 from psycop.common.sequence_models.train import train
@@ -20,11 +23,27 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
 )
 
 
-@Registry.datasets.register("model_from_checkpoint")
+@Registry.tasks.register("model_from_checkpoint")
 def load_model_from_checkpoint(
     checkpoint_path: Path,
 ) -> BEHRTForMaskedLM:
     return BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
+
+
+@Registry.tasks.register("embedder_from_checkpoint")
+def load_embedder_from_checkpoint(
+    checkpoint_path: Path,
+) -> BEHRTEmbedder:
+    model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
+    return model.embedder
+
+
+@Registry.tasks.register("encoder_from_checkpoint")
+def load_encoder_from_checkpoint(
+    checkpoint_path: Path,
+) -> nn.Module:
+    model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
+    return model.encoder
 
 
 @Registry.datasets.register("patient_slices_with_labels_for_t2d")
@@ -53,5 +72,5 @@ def create_patient_slices_with_labels_for_t2d(
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, datefmt="%H:%M:%S")
-    config_path = Path(__file__).parent / "finetune_t2d-debug.cfg"
+    config_path = Path(__file__).parent / "finetune_behrt_t2d_with_pretrain.cfg"
     train(config_path)
