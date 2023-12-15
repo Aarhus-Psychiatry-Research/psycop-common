@@ -21,7 +21,7 @@ from pathlib import Path
 
 from invoke import Context, Result, task
 
-from psycop.automation.environment import NOT_WINDOWS, on_ovartaci
+from psycop.automation.environment import NOT_WINDOWS, test_pytorch_cuda, on_ovartaci
 from psycop.automation.git import (
     add_and_commit,
     filetype_modified_since_main,
@@ -43,10 +43,8 @@ def install_requirements(c: Context):
             "conda install --force-reinstall pytorch=2.1.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
             pty=NOT_WINDOWS,
         )
+        test_pytorch_cuda(c)
 
-        # Test that cuda works
-    c.run(r"python -c \"import torch; t=torch.tensor(1); t.to(torch.device('cuda'))\"")
-    print(f"{msg_type.GOOD} Pytorch CUDA works!")
     print(f"{msg_type.GOOD} Newest version of all requirements installed!")
 
 
