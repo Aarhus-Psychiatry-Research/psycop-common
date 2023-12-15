@@ -4,6 +4,7 @@ The main training entrypoint for sequence models.
 import logging
 import os
 from pathlib import Path
+from typing import Any
 
 import lightning.pytorch as pl
 import torch
@@ -37,6 +38,20 @@ def populate_registry() -> None:
 populate_registry()
 
 
+def sanitise_dict_keys(data: dict[str, Any] | Any) -> dict[str, Any]:
+    """Sanitise keys for mlflow."""
+    if isinstance(data, dict):
+        sanitised = {}
+        for key, value in data.items():
+            sanitised_key = "".join(
+                c if c.isalnum() or c in ["_", "-", ".", " ", "/"] else "_" for c in key
+            )
+            sanitised[sanitised_key] = sanitise_dict_keys(value)
+        return sanitised
+
+    return data
+
+
 def train(config_path: Path | None = None) -> None:
     """
     Train a model based on the config
@@ -57,7 +72,8 @@ def train(config_path: Path | None = None) -> None:
         # update config
         log.info("Updating Config")
         flat_config = flatten_nested_dict(config_dict)
-        logger.log_hyperparams(flat_config)
+        sanitised_config = sanitise_dict_keys(flat_config)
+        logger.log_hyperparams(sanitised_config)
 
     # Load and filter dataset
     filter_fn = cfg.model_and_dataset.model.filter_and_reformat

@@ -21,13 +21,11 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
     def __init__(
         self,
         split_name: Literal["train", "val", "test"],
-        cohort_definer: CohortDefiner,
         event_loaders: Sequence[EventDfLoader],
         load_fraction: float = 1.0,
     ):
         self.split_name = split_name
         self.patient_loader = PatientLoader()
-        self.cohort_definer = cohort_definer
         self.event_loaders = event_loaders
         self.load_fraction = load_fraction
 

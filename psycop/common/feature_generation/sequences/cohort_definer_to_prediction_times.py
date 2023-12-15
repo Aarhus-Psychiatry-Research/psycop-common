@@ -8,14 +8,6 @@ import polars as pl
 from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
-from psycop.common.feature_generation.sequences.patient_loaders import (
-    DiagnosisLoader,
-    PatientLoader,
-)
-from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
-    T2DCohortDefiner,
-)
 
 PATIENT_ID = str | int
 
@@ -117,18 +109,3 @@ class CohortToPredictionTimes:
         )
 
         return tuple(itertools.chain.from_iterable(prediction_times))
-
-
-if __name__ == "__main__":
-    patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader(min_n_visits=5)],
-        split=SplitName.TRAIN,
-    )
-
-    prediction_times = CohortToPredictionTimes(
-        cohort_definer=T2DCohortDefiner(),
-        patients=patients,
-    ).create_prediction_times(
-        lookbehind=dt.timedelta(days=365),
-        lookahead=dt.timedelta(days=365),
-    )
