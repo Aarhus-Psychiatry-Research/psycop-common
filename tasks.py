@@ -35,7 +35,7 @@ from psycop.automation.logger import echo_header, msg_type
 def install_requirements(c: Context):
     requirements_files = Path().parent.glob("*requirements.txt")
     requirements_string = " -r ".join([str(file) for file in requirements_files])
-    c.run(f"pip install -r {requirements_string}")
+    c.run(f"pip install --upgrade -r {requirements_string}")
 
     if on_ovartaci():
         # Install pytorch with cuda from private repo
@@ -46,6 +46,8 @@ def install_requirements(c: Context):
 
         # Test that cuda works
     c.run(r"python -c \"import torch; t=torch.tensor(1); t.to(torch.device('cuda'))\"")
+    print(f"{msg_type.GOOD} Pytorch CUDA works!")
+    print(f"{msg_type.GOOD} Newest version of all requirements installed!")
 
 
 @task(aliases=("static_type_checks", "type_check"))
