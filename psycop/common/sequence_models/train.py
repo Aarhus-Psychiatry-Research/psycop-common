@@ -49,8 +49,10 @@ def train(config_path: Path | None = None) -> None:
 
     # Setup the logger and pass it to the TrainingConfig
     training_cfg = config.training
-    if config.logger is not None:
-        logger = config.logger.get_logger()
+
+    logger_factory = config.logger_factory
+    if logger_factory is not None:
+        logger = config.logger_factory.get_logger()  # type: ignore
         training_cfg.trainer.logger = logger
         training_cfg.trainer.Config.allow_mutation = False
 
@@ -62,7 +64,6 @@ def train(config_path: Path | None = None) -> None:
     training_dataset = config.model_and_dataset.training_dataset
     validation_dataset = config.model_and_dataset.validation_dataset
     model = config.model_and_dataset.model
-    logger = config.logger.get_logger()
     trainer_kwargs = training_cfg.trainer.to_dict()
 
     # filter dataset

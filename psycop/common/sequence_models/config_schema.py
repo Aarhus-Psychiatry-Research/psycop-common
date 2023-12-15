@@ -15,7 +15,7 @@ from psycop.common.sequence_models.tasks import (
 )
 
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
-from .logger import LoggerCreator
+from .logger import LoggerFactory
 
 
 class TrainerConfigSchema(BaseModel):
@@ -101,4 +101,4 @@ class ResolvedConfigSchema(BaseModel):
     # Required because dataset and model are coupled through their input and outputs
     model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
-    logger: LoggerCreator | None
+    logger_factory: LoggerFactory | None
