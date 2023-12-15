@@ -7,7 +7,6 @@ from typing import Any, Optional, Union
 
 from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers import Logger as plLogger
-from lightning.pytorch.loggers.wandb import WandbLogger
 from pydantic import BaseModel
 
 from psycop.common.sequence_models.tasks import (
