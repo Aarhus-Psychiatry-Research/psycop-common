@@ -14,6 +14,10 @@ from psycop.common.sequence_models.tasks import (
     EncoderForClassification,
 )
 
+from ..feature_generation.sequences.patient_slice_getter import (
+    LabelledPatientSliceCreator,
+    PatientSliceCreator,
+)
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 
 
@@ -76,8 +80,8 @@ class PretrainingModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
-    training_dataset: PatientSliceDataset
-    validation_dataset: PatientSliceDataset
+    training_dataset: PatientSliceCreator
+    validation_dataset: PatientSliceCreator
 
 
 class ClassificationModelAndDataset(BaseModel):
@@ -87,8 +91,8 @@ class ClassificationModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: EncoderForClassification
-    training_dataset: PatientSlicesWithLabels
-    validation_dataset: PatientSlicesWithLabels
+    training_dataset: LabelledPatientSliceCreator
+    validation_dataset: LabelledPatientSliceCreator
 
 
 class ResolvedConfigSchema(BaseModel):

@@ -48,8 +48,7 @@ def train(config_path: Path | None = None) -> None:
     config = parse_config(config_dict)
 
     training_cfg = config.training
-    training_dataset = config.model_and_dataset.training_dataset
-    validation_dataset = config.model_and_dataset.validation_dataset
+
     model = config.model_and_dataset.model
     logger = training_cfg.trainer.logger
     trainer_kwargs = training_cfg.trainer.to_dict()
@@ -62,7 +61,13 @@ def train(config_path: Path | None = None) -> None:
         logger.experiment.config.update(flat_config)
 
     # filter dataset
-    std_logger.info("Filtering Patients")
+    std_logger.info("Getting patient slices")
+    training_dataset = config.model_and_dataset.training_dataset.get_patient_slices()
+    validation_dataset = (
+        config.model_and_dataset.validation_dataset.get_patient_slices()
+    )
+
+    std_logger.info("Filtering patient slices")
     filter_fn = model.filter_and_reformat
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)

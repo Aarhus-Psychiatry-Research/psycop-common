@@ -1,0 +1,84 @@
+import datetime as dt
+from abc import ABC
+from collections.abc import Sequence
+from typing import Literal, Protocol, runtime_checkable
+
+from ....projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
+    T2DCohortDefiner,
+)
+from ...cohort_definition import CohortDefiner
+from ...data_structures.patient import Patient, PatientSlice
+from ...sequence_models.dataset import PatientSliceDataset, PatientSlicesWithLabels
+from ...sequence_models.registry import Registry
+from ..loaders.raw.load_ids import SplitName
+from .cohort_definer_to_prediction_times import CohortToPredictionTimes
+from .patient_loaders import EventDfLoader, PatientLoader
+
+
+class UnlabelledSliceCreator(Protocol):
+    def get_patient_slices(self) -> PatientSliceDataset:
+        ...
+
+
+@Registry.datasets.register("unlabelled_patient_slices")
+class PatientSliceCreator(UnlabelledSliceCreator):
+    def __init__(
+        self,
+        split_name: Literal["train", "val", "test"],
+        cohort_definer: CohortDefiner,
+        event_loaders: Sequence[EventDfLoader],
+        load_fraction: float = 1.0,
+    ):
+        self.split_name = split_name
+        self.patient_loader = PatientLoader()
+        self.cohort_definer = cohort_definer
+        self.event_loaders = event_loaders
+        self.load_fraction = load_fraction
+
+    def get_patient_slices(
+        self,
+    ) -> PatientSliceDataset:
+        patients = PatientLoader.get_split(
+            event_loaders=self.event_loaders,
+            split=SplitName(self.split_name),
+            fraction=self.load_fraction,
+        )
+
+        return PatientSliceDataset([patient.as_slice() for patient in patients])
+
+
+@Registry.datasets.register("labelled_patient_slices")
+class LabelledPatientSliceCreator:
+    def __init__(
+        self,
+        split_name: Literal["train", "val", "test"],
+        lookbehind_days: int,
+        lookahead_days: int,
+        cohort_definer: CohortDefiner,
+        event_loaders: Sequence[EventDfLoader],
+        load_fraction: float = 1.0,
+    ):
+        self.split_name = split_name
+        self.lookbehind_days = lookbehind_days
+        self.lookahead_days = lookahead_days
+        self.patient_loader = PatientLoader()
+        self.cohort_definer = cohort_definer
+        self.event_loaders = event_loaders
+        self.load_fraction = load_fraction
+
+    def get_patient_slices(
+        self,
+    ) -> PatientSlicesWithLabels:
+        prediction_times = CohortToPredictionTimes(
+            cohort_definer=self.cohort_definer,
+            patients=self.patient_loader.get_split(
+                event_loaders=self.event_loaders,
+                split=SplitName(self.split_name),
+                fraction=self.load_fraction,
+            ),
+        ).create_prediction_times(
+            lookbehind=dt.timedelta(days=self.lookbehind_days),
+            lookahead=dt.timedelta(days=self.lookahead_days),
+        )
+
+        return PatientSlicesWithLabels(prediction_times)
