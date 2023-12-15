@@ -37,6 +37,16 @@ def install_requirements(c: Context):
     requirements_string = " -r ".join([str(file) for file in requirements_files])
     c.run(f"pip install -r {requirements_string}")
 
+    if on_ovartaci():
+        # Install pytorch with cuda from private repo
+        c.run(
+            "conda install --force-reinstall pytorch=2.1.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
+            pty=NOT_WINDOWS,
+        )
+
+        # Test that cuda works
+    c.run(r"python -c \"import torch; t=torch.tensor(1); t.to(torch.device('cuda'))\"")
+
 
 @task(aliases=("static_type_checks", "type_check"))
 def types(c: Context):
