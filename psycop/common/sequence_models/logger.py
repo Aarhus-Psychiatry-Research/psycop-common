@@ -1,7 +1,7 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Optional, Protocol
+from typing import Optional, Protocol, runtime_checkable
 
 from lightning.pytorch.loggers import Logger as plLogger
 from lightning.pytorch.loggers.mlflow import MLFlowLogger as plMLFlowLogger
@@ -23,6 +23,7 @@ def handle_wandb_folder():
         )
 
 
+@runtime_checkable
 class Logger(Protocol):
     def __init__(
         self,
