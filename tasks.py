@@ -85,7 +85,7 @@ def test(
     pytest_arg_str = " ".join(pytest_args)
 
     command = f"pytest {pytest_arg_str}"
-    test_result: Result = c.run(
+    test_result: Result = c.run(  # type: ignore
         command,
         warn=True,
         pty=NOT_WINDOWS,
@@ -182,7 +182,7 @@ def create_pr(c: Context):
     Created a PR, does not run tests or similar
     """
     try:
-        pr_result: Result = c.run(
+        pr_result: Result = c.run(  # type: ignore
             "gh pr view --json url -q '.url'",
             pty=False,
             hide=True,

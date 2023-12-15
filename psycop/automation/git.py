@@ -9,7 +9,7 @@ from .logger import echo_header, msg_type
 
 
 def is_uncommitted_changes(c: Context) -> bool:
-    git_status_result: Result = c.run(
+    git_status_result: Result = c.run(  # type: ignore
         "git status --porcelain",
         pty=NOT_WINDOWS,
         hide=True,
@@ -74,7 +74,7 @@ def add_and_commit(c: Context, msg: Optional[str] = None):
 def branch_exists_on_remote(c: Context) -> bool:
     branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
 
-    branch_exists_result: Result = c.run(
+    branch_exists_result: Result = c.run(  # type: ignore
         f"git ls-remote --heads origin {branch_name}",
         hide=True,
     )
