@@ -1,7 +1,7 @@
 import datetime
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Union
+from typing import TypeVar, Union
 
 import polars as pl
 
@@ -15,6 +15,8 @@ from psycop.common.feature_generation.sequences.event_dataframes_to_patient impo
 
 from ...sequence_models.registry import Registry
 
+T = TypeVar("T")
+
 
 class EventDfLoader(ABC):
     @abstractmethod
@@ -22,6 +24,12 @@ class EventDfLoader(ABC):
         ...
 
 
+@Registry.utilities.register("list_creator")
+def list_creator(*args: T) -> list[T]:
+    return list(args)
+
+
+@Registry.event_loaders.register("diagnoses")
 class DiagnosisLoader(EventDfLoader):
     """Load all diagnoses for all patients."""
 

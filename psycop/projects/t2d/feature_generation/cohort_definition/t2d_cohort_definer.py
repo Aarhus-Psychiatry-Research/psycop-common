@@ -21,9 +21,12 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
     get_first_diabetes_indicator,
 )
 
+from .....common.sequence_models.registry import Registry
+
 msg = Printer(timestamp=True)
 
 
+@Registry.cohorts.register("t2d")
 class T2DCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:

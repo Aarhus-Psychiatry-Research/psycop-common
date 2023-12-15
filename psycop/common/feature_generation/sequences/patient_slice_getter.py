@@ -15,13 +15,13 @@ from .cohort_definer_to_prediction_times import CohortToPredictionTimes
 from .patient_loaders import EventDfLoader, PatientLoader
 
 
-class UnlabelledSliceCreator(Protocol):
+class UnlabelledSliceCreatorPR(Protocol):
     def get_patient_slices(self) -> PatientSliceDataset:
         ...
 
 
-@Registry.datasets.register("unlabelled_patient_slices")
-class PatientSliceCreator(UnlabelledSliceCreator):
+@Registry.datasets.register("unlabelled_slice_creator")
+class UnlabelledSliceCreator(UnlabelledSliceCreatorPR):
     def __init__(
         self,
         split_name: Literal["train", "val", "test"],
