@@ -21,7 +21,7 @@ from pathlib import Path
 
 from invoke import Context, Result, task
 
-from psycop.automation.environment import NOT_WINDOWS, on_ovartaci
+from psycop.automation.environment import NOT_WINDOWS, test_pytorch_cuda, on_ovartaci
 from psycop.automation.git import (
     add_and_commit,
     filetype_modified_since_main,
@@ -35,7 +35,17 @@ from psycop.automation.logger import echo_header, msg_type
 def install_requirements(c: Context):
     requirements_files = Path().parent.glob("*requirements.txt")
     requirements_string = " -r ".join([str(file) for file in requirements_files])
-    c.run(f"pip install -r {requirements_string}")
+    c.run(f"pip install --upgrade -r {requirements_string}")
+
+    if on_ovartaci():
+        # Install pytorch with cuda from private repo
+        c.run(
+            "conda install --force-reinstall pytorch=2.1.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
+            pty=NOT_WINDOWS,
+        )
+        test_pytorch_cuda(c)
+
+    print(f"{msg_type.GOOD} Newest version of all requirements installed!")
 
 
 @task(aliases=("static_type_checks", "type_check"))
