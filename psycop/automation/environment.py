@@ -1,6 +1,6 @@
 import platform
 
-from invoke import Context, task
+from invoke import Context
 
 NOT_WINDOWS = platform.system() != "Windows"
 
