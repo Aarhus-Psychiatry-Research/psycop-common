@@ -35,7 +35,7 @@ def create_wandb_logger(
 
     return WandbLogger(
         name=run_name,
-        save_dir=save_dir,
+        save_dir=f"{save_dir}/{experiment_name}/{run_name}",
         version=version,
         offline=offline,
         id=id,
@@ -64,7 +64,7 @@ def create_mlflow_logger(
         run_name=run_name,
         tracking_uri=tracking_uri,
         tags=tags,
-        save_dir=save_dir,
+        save_dir=f"{save_dir}/{experiment_name}/{run_name}",
         log_model=log_model_checkpoints_to_mlflow,
         artifact_location=artifact_location,
         run_id=run_id,
