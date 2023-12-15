@@ -225,7 +225,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
             diagnosis_code = diagnosis_code[:-1]
         return None
 
-    def reformat(
+    def filter_and_reformat_input(
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> list[PatientSlice]:
@@ -234,7 +234,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         2. Map ICD-10 to Caliber codes
         """
 
-        log.info("mapping diagnosis codes")
+        log.info("Reformatting diagnosis codes")
         # map diagnosis codes
         _patient_slices = []
         for p in tqdm(patient_slices):
@@ -317,7 +317,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
-        patient_slices = self.reformat(patient_slices)
+        patient_slices = self.filter_and_reformat_input(patient_slices)
 
         diagnosis_codes: list[str] = [
             str(e.value) for p in patient_slices for e in p.temporal_events

@@ -179,7 +179,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> Sequence[PatientSlice]:
-        reformatted_slices = self.embedder.reformat(patient_slices)
+        reformatted_slices = self.embedder.filter_and_reformat_input(patient_slices)
         slices_with_content = [
             patient_slice
             for patient_slice in reformatted_slices
@@ -345,5 +345,5 @@ class EncoderForClassification(pl.LightningModule):
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> Sequence[PatientSlice]:
-        reformatted_slices = self.embedder.reformat(patient_slices)
+        reformatted_slices = self.embedder.filter_and_reformat_input(patient_slices)
         return reformatted_slices

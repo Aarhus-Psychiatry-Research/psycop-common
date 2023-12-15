@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
@@ -11,7 +12,7 @@ from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.static_feature import StaticFeature
 from psycop.common.data_structures.temporal_event import TemporalEvent
 
-msg = Printer(timestamp=True)
+log = logging.getLogger(__name__)
 
 PatientDict = dict[str | int, list[TemporalEvent | StaticFeature]]
 
@@ -136,7 +137,7 @@ class EventDataFramesToPatientSlices:
 
         patient_dicts = []
         for i, collection in enumerate(patient_dfs_collections):
-            msg.info(f"Unpacking loader {i+1} of {len(patient_dfs_collections)}")
+            log.info(f"Unpacking loader {i+1} of {len(patient_dfs_collections)}")
 
             for patient_df in tqdm(collection):
                 patient_dicts.append(self._patient_df_to_patient_dict(patient_df))

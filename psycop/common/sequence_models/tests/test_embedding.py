@@ -170,7 +170,7 @@ def test_reformat_and_filter(
     ]
 
     patient.add_events(temporal_events)
-    patient_slices_mapped = embedding_module.reformat(
+    patient_slices_mapped = embedding_module.filter_and_reformat_input(
         [patient.as_slice()],
     )
     diagnosis_codes = [

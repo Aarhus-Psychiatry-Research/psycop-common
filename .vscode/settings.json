@@ -6,7 +6,7 @@
     "githubIssues.queries": [
         {
             "label": "This repo, assigned to me",
-            "query": "is:issue is:open assignee:${user} repo:${owner}/${repository} sort:updated-asc -label:waiting-for-external"
+            "query": "is:issue is:open assignee:${user} repo:${owner}/${repository} sort:updated-desc -label:waiting-for-external"
         },
         {
             "label": "This repo, unassigned",
