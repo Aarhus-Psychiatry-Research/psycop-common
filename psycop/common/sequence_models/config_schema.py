@@ -15,7 +15,7 @@ from psycop.common.sequence_models.tasks import (
 )
 
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
-from .logger import Logger
+from .logger import LoggerCreator
 
 
 class TrainerConfigSchema(BaseModel):
@@ -24,7 +24,7 @@ class TrainerConfigSchema(BaseModel):
     """
 
     class Config:
-        allow_mutation = False
+        allow_mutation = True
         arbitrary_types_allowed = True
 
     accelerator: str = "auto"
@@ -63,6 +63,7 @@ class TrainingConfigSchema(BaseModel):
     class Config:
         extra = "forbid"
         arbitrary_types_allowed = True
+        allow_mutations = False
 
     batch_size: int
     num_workers_for_dataloader: int = 8
@@ -100,4 +101,4 @@ class ResolvedConfigSchema(BaseModel):
     # Required because dataset and model are coupled through their input and outputs
     model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
-    logger: Logger | None
+    logger: LoggerCreator | None

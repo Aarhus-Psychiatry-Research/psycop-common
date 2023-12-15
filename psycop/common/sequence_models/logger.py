@@ -24,7 +24,7 @@ def handle_wandb_folder():
 
 
 @runtime_checkable
-class Logger(Protocol):
+class LoggerCreator(Protocol):
     def __init__(
         self,
         save_dir: Path | str,
@@ -41,7 +41,7 @@ class Logger(Protocol):
 
 
 @Registry.loggers.register("wandb")
-class WandbCreator(Logger):
+class WandbCreator(LoggerCreator):
     def __init__(
         self,
         save_dir: Path | str,
@@ -66,7 +66,7 @@ class WandbCreator(Logger):
 
 
 @Registry.loggers.register("mlflow")
-class MLFlowCreator(Logger):
+class MLFlowCreator(LoggerCreator):
     def __init__(
         self,
         save_dir: Path | str,

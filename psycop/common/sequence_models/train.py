@@ -51,7 +51,8 @@ def train(config_path: Path | None = None) -> None:
     training_cfg = config.training
     if config.logger is not None:
         logger = config.logger.get_logger()
-        training_cfg.logger = logger
+        training_cfg.trainer.logger = logger
+        training_cfg.trainer.Config.allow_mutation = False
 
         # update config
         log.info("Updating Config")
