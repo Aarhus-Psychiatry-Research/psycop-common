@@ -1,6 +1,6 @@
 import datetime as dt
 from collections.abc import Sequence
-from typing import Literal, Protocol
+from typing import Literal, Protocol, runtime_checkable
 
 from ...cohort_definition import CohortDefiner
 from ...sequence_models.dataset import PatientSliceDataset, PatientSlicesWithLabels
@@ -10,13 +10,14 @@ from .cohort_definer_to_prediction_times import CohortToPredictionTimes
 from .patient_loaders import EventDfLoader, PatientLoader
 
 
-class UnlabelledSliceCreatorPR(Protocol):
+@runtime_checkable
+class BaseUnlabelledSliceCreator(Protocol):
     def get_patient_slices(self) -> PatientSliceDataset:
         ...
 
 
 @Registry.datasets.register("unlabelled_slice_creator")
-class UnlabelledSliceCreator(UnlabelledSliceCreatorPR):
+class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
     def __init__(
         self,
         split_name: Literal["train", "val", "test"],
@@ -42,8 +43,14 @@ class UnlabelledSliceCreator(UnlabelledSliceCreatorPR):
         return PatientSliceDataset([patient.as_slice() for patient in patients])
 
 
+@runtime_checkable
+class BaseLabelledSliceCreator(Protocol):
+    def get_patient_slices(self) -> PatientSlicesWithLabels:
+        ...
+
+
 @Registry.datasets.register("labelled_patient_slices")
-class LabelledPatientSliceCreator:
+class LabelledPatientSliceCreator(BaseLabelledSliceCreator):
     def __init__(
         self,
         split_name: Literal["train", "val", "test"],

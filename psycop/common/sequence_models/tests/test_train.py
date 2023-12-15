@@ -6,7 +6,9 @@ from psycop.common.sequence_models.dataset import PatientSliceDataset
 from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.train import train
 
-from ...feature_generation.sequences.patient_slice_getter import UnlabelledSliceCreator
+from ...feature_generation.sequences.patient_slice_getter import (
+    BaseUnlabelledSliceCreator,
+)
 from .utils import create_patients
 
 
@@ -16,7 +18,10 @@ def config_path() -> Path:
 
 
 @Registry.datasets.register("test_dataset")
-class FakeSliceCreator(UnlabelledSliceCreator):
+class FakeSliceCreator(BaseUnlabelledSliceCreator):
+    def __init__(self):
+        pass
+
     def get_patient_slices(self) -> PatientSliceDataset:
         return PatientSliceDataset(
             patient_slices=[p.as_slice() for p in create_patients()],

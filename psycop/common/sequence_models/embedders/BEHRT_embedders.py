@@ -21,6 +21,10 @@ from psycop.common.sequence_models.dataset import (
     PatientSlicesWithLabels,
 )
 
+from ...feature_generation.sequences.patient_slice_getter import (
+    BaseLabelledSliceCreator,
+    BaseUnlabelledSliceCreator,
+)
 from ..registry import Registry
 from .interface import EmbeddedSequence, PatientSliceEmbedder
 
@@ -368,9 +372,7 @@ def create_behrt_embedder(
     d_model: int,
     dropout_prob: float,
     max_sequence_length: int,
-    patient_slices: Sequence[PatientSlice]
-    | PatientSliceDataset
-    | PatientSlicesWithLabels,
+    patient_slice_creator: BaseUnlabelledSliceCreator | BaseLabelledSliceCreator,
 ) -> BEHRTEmbedder:
     embedder = BEHRTEmbedder(
         d_model=d_model,
@@ -378,9 +380,8 @@ def create_behrt_embedder(
         max_sequence_length=max_sequence_length,
     )
 
-    if isinstance(patient_slices, (PatientSliceDataset, PatientSlicesWithLabels)):
-        patient_slices = patient_slices.patient_slices
-
     log.info("Fitting Embedding Module")
-    embedder.fit(patient_slices=patient_slices)
+    embedder.fit(
+        patient_slices=patient_slice_creator.get_patient_slices().patient_slices,
+    )
     return embedder
