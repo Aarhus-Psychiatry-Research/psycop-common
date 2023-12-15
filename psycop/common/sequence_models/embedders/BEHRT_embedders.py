@@ -16,10 +16,6 @@ from tqdm import tqdm
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
-from psycop.common.sequence_models.dataset import (
-    PatientSliceDataset,
-    PatientSlicesWithLabels,
-)
 
 from ...feature_generation.sequences.patient_slice_getter import (
     BaseLabelledSliceCreator,

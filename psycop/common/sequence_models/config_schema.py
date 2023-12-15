@@ -17,8 +17,6 @@ from psycop.common.sequence_models.tasks import (
 from ..feature_generation.sequences.patient_slice_getter import (
     BaseLabelledSliceCreator,
     BaseUnlabelledSliceCreator,
-    LabelledPatientSliceCreator,
-    UnlabelledSliceCreator,
 )
 from .logger import LoggerFactory
 
