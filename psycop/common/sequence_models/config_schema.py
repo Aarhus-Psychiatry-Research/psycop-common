@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 from lightning.pytorch.callbacks import Callback
-from lightning.pytorch.loggers.wandb import WandbLogger
+from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
 from psycop.common.sequence_models.tasks import (
@@ -19,6 +19,7 @@ from ..feature_generation.sequences.patient_slice_getter import (
     UnlabelledSliceCreator,
 )
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
+from .logger import LoggerFactory
 
 
 class TrainerConfigSchema(BaseModel):
@@ -27,7 +28,7 @@ class TrainerConfigSchema(BaseModel):
     """
 
     class Config:
-        allow_mutation = False
+        allow_mutation = True
         arbitrary_types_allowed = True
 
     accelerator: str = "auto"
@@ -36,7 +37,7 @@ class TrainerConfigSchema(BaseModel):
     num_nodes: int = 1
     callbacks: list[Callback] = []
     precision: str = "32-true"
-    logger: Optional[WandbLogger] = None
+    logger: Optional[plLogger] = None
     max_epochs: Optional[int] = None
     min_epochs: Optional[int] = None
     max_steps: int = 10
@@ -65,8 +66,8 @@ class TrainerConfigSchema(BaseModel):
 class TrainingConfigSchema(BaseModel):
     class Config:
         extra = "forbid"
-        allow_mutation = False
         arbitrary_types_allowed = True
+        allow_mutations = False
 
     batch_size: int
     num_workers_for_dataloader: int = 8
@@ -104,3 +105,4 @@ class ResolvedConfigSchema(BaseModel):
     # Required because dataset and model are coupled through their input and outputs
     model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
+    logger_factory: LoggerFactory | None

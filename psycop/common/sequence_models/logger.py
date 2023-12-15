@@ -1,10 +1,15 @@
+import logging
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Protocol, runtime_checkable
 
-from lightning.pytorch.loggers.wandb import WandbLogger
+from lightning.pytorch.loggers import Logger as plLogger
+from lightning.pytorch.loggers.mlflow import MLFlowLogger as plMLFlowLogger
+from lightning.pytorch.loggers.wandb import WandbLogger as plWandbLogger
 
 from .registry import Registry
+
+log = logging.getLogger(__name__)
 
 
 def handle_wandb_folder():
@@ -18,30 +23,67 @@ def handle_wandb_folder():
         )
 
 
-@Registry.loggers.register("wandb")
-def create_wandb_logger(
-    name: Optional[str] = None,
-    save_dir: Path | str = ".",
-    version: Optional[str] = None,
-    offline: bool = False,
-    dir: Optional[Path] = None,  # noqa: A002
-    id: Optional[str] = None,  # noqa: A002
-    anonymous: Optional[bool] = None,
-    project: Optional[str] = None,
-    prefix: str = "",
-    checkpoint_name: Optional[str] = None,
-) -> WandbLogger:
-    handle_wandb_folder()
+@runtime_checkable
+class LoggerFactory(Protocol):
+    def __init__(
+        self,
+        save_dir: Path | str,
+        experiment_name: str,
+        run_name: Optional[str] = None,
+        offline: bool = False,
+    ) -> None:
+        ...
 
-    return WandbLogger(
-        name=name,
-        save_dir=save_dir,
-        version=version,
-        offline=offline,
-        dir=dir,
-        id=id,
-        anonymous=anonymous,
-        project=project,
-        prefix=prefix,
-        checkpoint_name=checkpoint_name,
-    )
+    def get_logger(
+        self,
+    ) -> plLogger:
+        ...
+
+
+@Registry.loggers.register("wandb")
+class WandbCreator(LoggerFactory):
+    def __init__(
+        self,
+        save_dir: Path | str,
+        experiment_name: str,
+        offline: bool,
+        run_name: Optional[str] = None,
+    ) -> None:
+        handle_wandb_folder()
+
+        self.save_dir = save_dir
+        self.experiment_name = experiment_name
+        self.run_name = run_name
+        self.offline = offline
+
+    def get_logger(self) -> plLogger:
+        return plWandbLogger(
+            name=self.run_name,
+            save_dir=f"{self.save_dir}/{self.experiment_name}/{self.run_name}",
+            offline=self.offline,
+            project=self.experiment_name,
+        )
+
+
+@Registry.loggers.register("mlflow")
+class MLFlowCreator(LoggerFactory):
+    def __init__(
+        self,
+        save_dir: Path | str,
+        experiment_name: str,
+        offline: bool = False,
+        run_name: Optional[str] = None,
+    ) -> None:
+        self.save_dir = save_dir
+        self.experiment_name = experiment_name
+        self.run_name = run_name
+        if offline:
+            raise NotImplementedError("MLFlow does not support offline mode")
+
+    def get_logger(self) -> plLogger:
+        return plMLFlowLogger(
+            save_dir=f"{self.save_dir}/{self.experiment_name}/{self.run_name}",
+            experiment_name=self.experiment_name,
+            run_name=self.run_name,
+            tracking_uri="http://exrhel0371.it.rm.dk:5050",
+        )
