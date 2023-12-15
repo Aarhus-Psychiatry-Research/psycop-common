@@ -26,7 +26,7 @@ def populate_registry() -> None:
     """
     from .callbacks import create_learning_rate_monitor, create_model_checkpoint  # noqa
     from .embedders.BEHRT_embedders import create_behrt_embedder  # noqa
-    from .logger import create_wandb_logger  # noqa
+    from .logger import WandbCreator, MLFlowCreator  # noqa
     from .model_layers import create_encoder_layer, create_transformers_encoder  # noqa
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
@@ -47,19 +47,24 @@ def train(config_path: Path | None = None) -> None:
     config_dict = load_config(config_path)
     config = parse_config(config_dict)
 
+    # Setup the logger and pass it to the TrainingConfig
     training_cfg = config.training
+    if config.logger is not None:
+        logger = config.logger.get_logger()
+        training_cfg.logger = logger
+
+        # update config
+        std_logger.info("Updating Config")
+        flat_config = flatten_nested_dict(config_dict)
+        logger.log_hyperparams(flat_config)
+
     training_dataset = config.model_and_dataset.training_dataset
     validation_dataset = config.model_and_dataset.validation_dataset
     model = config.model_and_dataset.model
-    logger = training_cfg.trainer.logger
+    logger = config.logger.get_logger()
     trainer_kwargs = training_cfg.trainer.to_dict()
 
-    # update config
-    std_logger.info("Updating Config")
-    flat_config = flatten_nested_dict(config_dict)
-
     if logger:
-        logger.experiment.config.update(flat_config)
 
     # filter dataset
     std_logger.info("Filtering Patients")

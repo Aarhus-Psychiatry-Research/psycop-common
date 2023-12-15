@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 from lightning.pytorch.callbacks import Callback
+from lightning.pytorch.loggers import Logger as plLogger
 from lightning.pytorch.loggers.wandb import WandbLogger
 from pydantic import BaseModel
 
@@ -15,6 +16,7 @@ from psycop.common.sequence_models.tasks import (
 )
 
 from .dataset import PatientSliceDataset, PatientSlicesWithLabels
+from .logger import Logger
 
 
 class TrainerConfigSchema(BaseModel):
@@ -32,7 +34,7 @@ class TrainerConfigSchema(BaseModel):
     num_nodes: int = 1
     callbacks: list[Callback] = []
     precision: str = "32-true"
-    logger: Optional[WandbLogger] = None
+    logger: Optional[plLogger] = None
     max_epochs: Optional[int] = None
     min_epochs: Optional[int] = None
     max_steps: int = 10
@@ -61,7 +63,6 @@ class TrainerConfigSchema(BaseModel):
 class TrainingConfigSchema(BaseModel):
     class Config:
         extra = "forbid"
-        allow_mutation = False
         arbitrary_types_allowed = True
 
     batch_size: int
@@ -100,3 +101,4 @@ class ResolvedConfigSchema(BaseModel):
     # Required because dataset and model are coupled through their input and outputs
     model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
+    logger: Logger | None
