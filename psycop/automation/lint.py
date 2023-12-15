@@ -32,7 +32,7 @@ def pre_commit(c: Context, auto_fix: bool):
             if not ("fixed" in result.stdout or "reformatted" in result.stdout):
                 break
 
-        exit_if_error_in_stdout(result)
+        exit_if_error_in_stdout(result)  # type: ignore
         add_commit(c, msg="style: auto-fixes from pre-commit")
     else:
         if result.return_code != 0:

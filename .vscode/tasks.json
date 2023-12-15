@@ -24,7 +24,7 @@
         {
             "label": "Merge main",
             "type": "shell",
-            "command": "inv merge-main && git push",
+            "command": "inv merge-main",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
@@ -36,7 +36,7 @@
         {
             "label": "Lint",
             "type": "shell",
-            "command": "inv lint",
+            "command": "inv lint --auto-fix && git push",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",

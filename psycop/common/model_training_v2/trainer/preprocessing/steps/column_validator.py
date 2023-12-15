@@ -25,7 +25,7 @@ class ColumnExistsValidator(PresplitStep):
         self.column_names = args
 
     def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
-        df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df
+        df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
 
         errors: list[MissingColumnError] = [
             self._column_name_exists(column_name=column, df=df)
@@ -91,7 +91,7 @@ class ColumnPrefixExpectation(PresplitStep):
         )
 
     def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
-        df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df
+        df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
 
         errors = (
             Seq(self.column_expectations)
