@@ -1,13 +1,8 @@
 import datetime as dt
-from abc import ABC
 from collections.abc import Sequence
-from typing import Literal, Protocol, runtime_checkable
+from typing import Literal, Protocol
 
-from ....projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
-    T2DCohortDefiner,
-)
 from ...cohort_definition import CohortDefiner
-from ...data_structures.patient import Patient, PatientSlice
 from ...sequence_models.dataset import PatientSliceDataset, PatientSlicesWithLabels
 from ...sequence_models.registry import Registry
 from ..loaders.raw.load_ids import SplitName

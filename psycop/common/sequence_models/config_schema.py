@@ -18,7 +18,6 @@ from ..feature_generation.sequences.patient_slice_getter import (
     LabelledPatientSliceCreator,
     UnlabelledSliceCreator,
 )
-from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 from .logger import LoggerFactory
 
 

@@ -19,7 +19,7 @@ def config_path() -> Path:
 class FakeSliceCreator(UnlabelledSliceCreator):
     def get_patient_slices(self) -> PatientSliceDataset:
         return PatientSliceDataset(
-            patient_slices=[p.as_slice() for p in create_patients()]
+            patient_slices=[p.as_slice() for p in create_patients()],
         )
 
 
