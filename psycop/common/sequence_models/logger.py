@@ -21,41 +21,39 @@ def handle_wandb_folder():
 
 @Registry.loggers.register("wandb")
 def create_wandb_logger(
-    name: Optional[str] = None,
-    save_dir: Path | str = ".",
+    save_dir: Path | str,
+    experiment_name: str,
+    metric_prefix: str = "",
+    run_name: Optional[str] = None,
     version: Optional[str] = None,
     offline: bool = False,
-    dir: Optional[Path] = None,  # noqa: A002
     id: Optional[str] = None,  # noqa: A002
     anonymous: Optional[bool] = None,
-    project: Optional[str] = None,
-    prefix: str = "",
     checkpoint_name: Optional[str] = None,
 ) -> WandbLogger:
     handle_wandb_folder()
 
     return WandbLogger(
-        name=name,
+        name=run_name,
         save_dir=save_dir,
         version=version,
         offline=offline,
-        dir=dir,
         id=id,
         anonymous=anonymous,
-        project=project,
-        prefix=prefix,
+        project=experiment_name,
+        prefix=metric_prefix,
         checkpoint_name=checkpoint_name,
     )
 
 
 @Registry.loggers.register("mlflow")
 def create_mlflow_logger(
+    save_dir: str,
     experiment_name: str,
-    metric_prefix: str,
     run_name: Optional[str] = None,
+    metric_prefix: str = "",
     tracking_uri: Optional[str] = "http://exrhel0371.it.rm.dk:5050",
     tags: Optional[dict[str, Any]] = None,
-    save_dir: Optional[str] = None,
     log_model_checkpoints_to_mlflow: Literal[True, False, "all"] = False,
     artifact_location: Optional[str] = None,
     run_id: Optional[str] = None,
