@@ -1,7 +1,8 @@
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Literal, Optional
 
+from lightning.pytorch.loggers.mlflow import MLFlowLogger
 from lightning.pytorch.loggers.wandb import WandbLogger
 
 from .registry import Registry
@@ -44,4 +45,29 @@ def create_wandb_logger(
         project=project,
         prefix=prefix,
         checkpoint_name=checkpoint_name,
+    )
+
+
+@Registry.loggers.register("mlflow")
+def create_mlflow_logger(
+    experiment_name: str,
+    metric_prefix: str,
+    run_name: Optional[str] = None,
+    tracking_uri: Optional[str] = "http://exrhel0371.it.rm.dk:5050",
+    tags: Optional[dict[str, Any]] = None,
+    save_dir: Optional[str] = None,
+    log_model_checkpoints_to_mlflow: Literal[True, False, "all"] = False,
+    artifact_location: Optional[str] = None,
+    run_id: Optional[str] = None,
+) -> MLFlowLogger:
+    return MLFlowLogger(
+        experiment_name=experiment_name,
+        prefix=metric_prefix,
+        run_name=run_name,
+        tracking_uri=tracking_uri,
+        tags=tags,
+        save_dir=save_dir,
+        log_model=log_model_checkpoints_to_mlflow,
+        artifact_location=artifact_location,
+        run_id=run_id,
     )
