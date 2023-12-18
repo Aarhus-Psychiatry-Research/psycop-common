@@ -23,67 +23,36 @@ def handle_wandb_folder():
         )
 
 
-@runtime_checkable
-class LoggerFactory(Protocol):
-    def __init__(
-        self,
-        save_dir: Path | str,
-        experiment_name: str,
-        run_name: Optional[str] = None,
-        offline: bool = False,
-    ) -> None:
-        ...
-
-    def get_logger(
-        self,
-    ) -> plLogger:
-        ...
-
-
 @Registry.loggers.register("wandb")
-class WandbCreator(LoggerFactory):
-    def __init__(
-        self,
-        save_dir: Path | str,
-        experiment_name: str,
-        offline: bool,
-        run_name: Optional[str] = None,
-    ) -> None:
-        handle_wandb_folder()
+def create_wandb_logger(
+    save_dir: Path | str,
+    experiment_name: str,
+    offline: bool,
+    run_name: Optional[str] = None,
+) -> plLogger:
+    handle_wandb_folder()
 
-        self.save_dir = save_dir
-        self.experiment_name = experiment_name
-        self.run_name = run_name
-        self.offline = offline
-
-    def get_logger(self) -> plLogger:
-        return plWandbLogger(
-            name=self.run_name,
-            save_dir=f"{self.save_dir}/{self.experiment_name}/{self.run_name}",
-            offline=self.offline,
-            project=self.experiment_name,
-        )
+    return plWandbLogger(
+        name=run_name,
+        save_dir=f"{save_dir}/{experiment_name}/{run_name}",
+        offline=offline,
+        project=experiment_name,
+    )
 
 
 @Registry.loggers.register("mlflow")
-class MLFlowCreator(LoggerFactory):
-    def __init__(
-        self,
-        save_dir: Path | str,
-        experiment_name: str,
-        offline: bool = False,
-        run_name: Optional[str] = None,
-    ) -> None:
-        self.save_dir = save_dir
-        self.experiment_name = experiment_name
-        self.run_name = run_name
-        if offline:
-            raise NotImplementedError("MLFlow does not support offline mode")
+def create_mlflow_logger(
+    save_dir: Path | str,
+    experiment_name: str,
+    offline: bool = False,
+    run_name: Optional[str] = None,
+) -> plLogger:
+    if offline:
+        raise NotImplementedError("MLFlow does not support offline mode")
 
-    def get_logger(self) -> plLogger:
-        return plMLFlowLogger(
-            save_dir=f"{self.save_dir}/{self.experiment_name}/{self.run_name}",
-            experiment_name=self.experiment_name,
-            run_name=self.run_name,
-            tracking_uri="http://exrhel0371.it.rm.dk:5050",
-        )
+    return plMLFlowLogger(
+        save_dir=f"{save_dir}/{experiment_name}/{run_name}",
+        experiment_name=experiment_name,
+        run_name=run_name,
+        tracking_uri="http://exrhel0371.it.rm.dk:5050",
+    )
