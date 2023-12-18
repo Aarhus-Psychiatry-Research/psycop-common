@@ -67,6 +67,7 @@ def train(config_path: Path | None = None) -> None:
 
     log.info("Creating dataloaders")
     model = cfg.model_and_dataset.model
+
     train_loader = DataLoader(
         training_dataset,
         batch_size=cfg.training.batch_size,
