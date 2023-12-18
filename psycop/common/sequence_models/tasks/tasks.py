@@ -43,17 +43,17 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def __init__(
         self,
-        embedding_module: BEHRTEmbedder,
-        encoder_module: nn.Module,
-        optimizer_fn: OptimizerFn,
-        lr_scheduler_fn: LRSchedulerFn,
+        embedder: BEHRTEmbedder,
+        encoder: nn.Module,
+        optimizer: OptimizerFn,
+        lr_scheduler: LRSchedulerFn,
     ):
         super().__init__()
         self.save_hyperparameters()
-        self.embedder = embedding_module
-        self.encoder = encoder_module
-        self.optimizer_fn = optimizer_fn
-        self.lr_scheduler_fn = lr_scheduler_fn
+        self.embedder = embedder
+        self.encoder = encoder
+        self.optimizer_fn = optimizer
+        self.lr_scheduler_fn = lr_scheduler
 
         self.d_model = self.embedder.d_model
         self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
@@ -209,14 +209,14 @@ class EncoderForClassification(pl.LightningModule):
         encoder_module: nn.Module,
         aggregation_module: Aggregator,
         optimizer_fn: OptimizerFn,
-        lr_scheduler_fn: LRSchedulerFn,
+        lr_scheduler: LRSchedulerFn,
         num_classes: int = 2,
     ):
         super().__init__()
         self.embedder = embedding_module
         self.encoder = encoder_module
         self.optimizer_fn = optimizer_fn
-        self.lr_scheduler_fn = lr_scheduler_fn
+        self.lr_scheduler_fn = lr_scheduler
         self.aggregation_module = aggregation_module
 
         self.d_model: int = embedding_module.d_model

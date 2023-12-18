@@ -89,7 +89,7 @@ def test_encoder_for_clf(
         aggregation_module=aggregation_module,
         num_classes=2,
         optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -119,7 +119,7 @@ def test_encoder_for_clf_for_multiclass(
         aggregation_module=aggregation_module,
         num_classes=4,  # more than 2 classes
         optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -163,7 +163,7 @@ def test_pretrain_from_checkpoint(
         aggregation_module=aggregation_module,
         num_classes=2,
         optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(

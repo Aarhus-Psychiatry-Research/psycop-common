@@ -37,10 +37,10 @@ def test_behrt(patient_dataset: PatientSliceDataset):
     )
 
     behrt = BEHRTForMaskedLM(
-        embedding_module=emb,
-        encoder_module=encoder,
-        optimizer_fn=adam_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        embedder=emb,
+        encoder=encoder,
+        optimizer=adam_fn,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -98,10 +98,10 @@ def create_behrt(
 
     # this includes the loss and the MLM head
     module = BEHRTForMaskedLM(
-        embedding_module=emb,
-        encoder_module=encoder,
-        optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        embedder=emb,
+        encoder=encoder,
+        optimizer=optimizer_fn,
+        lr_scheduler=lr_scheduler_fn,
     )
     return module
 

@@ -28,10 +28,10 @@ def test_masking_fn(
     embedding_module.fit(patient_slices)
 
     task = BEHRTForMaskedLM(
-        embedding_module=embedding_module,
-        encoder_module=encoder,
-        optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        embedder=embedding_module,
+        encoder=encoder,
+        optimizer=optimizer_fn,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     inputs_ids = embedding_module.collate_patient_slices(patient_slices)
