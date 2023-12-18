@@ -32,7 +32,6 @@ def populate_registry() -> None:
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
     from .tasks import create_behrt, clf_encoder  # noqa
-    from .registry import list_creator
 
 
 populate_registry()

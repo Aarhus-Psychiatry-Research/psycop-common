@@ -1,7 +1,7 @@
 import datetime
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import TypeVar, Union
+from typing import Union
 
 import polars as pl
 
