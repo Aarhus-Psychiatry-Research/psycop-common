@@ -34,7 +34,7 @@ def create_wandb_logger(
 
     return plWandbLogger(
         name=run_name,
-        save_dir=f"{save_dir}/{experiment_name}/{run_name}",
+        save_dir=save_dir,
         offline=offline,
         project=experiment_name,
     )
@@ -51,7 +51,7 @@ def create_mlflow_logger(
         raise NotImplementedError("MLFlow does not support offline mode")
 
     return plMLFlowLogger(
-        save_dir=f"{save_dir}/{experiment_name}/{run_name}",
+        save_dir=save_dir,
         experiment_name=experiment_name,
         run_name=run_name,
         tracking_uri="http://exrhel0371.it.rm.dk:5050",
