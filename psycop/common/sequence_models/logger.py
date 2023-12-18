@@ -51,7 +51,7 @@ def create_mlflow_logger(
         raise NotImplementedError("MLFlow does not support offline mode")
 
     return plMLFlowLogger(
-        save_dir=save_dir,
+        save_dir=str(save_dir),
         experiment_name=experiment_name,
         run_name=run_name,
         tracking_uri="http://exrhel0371.it.rm.dk:5050",
