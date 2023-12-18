@@ -10,6 +10,7 @@ from psycop.common.feature_generation.loaders.raw.load_demographic import birthd
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
+from psycop.common.sequence_models.registry import Registry
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     NoIncidentDiabetes,
     T2DMinAgeFilter,
@@ -20,8 +21,6 @@ from psycop.projects.t2d.feature_generation.cohort_definition.eligible_predictio
 from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specification.combined import (
     get_first_diabetes_indicator,
 )
-
-from .....common.sequence_models.registry import Registry
 
 msg = Printer(timestamp=True)
 

@@ -15,18 +15,11 @@ from psycop.common.feature_generation.sequences.event_dataframes_to_patient impo
 
 from ...sequence_models.registry import Registry
 
-T = TypeVar("T")
-
 
 class EventDfLoader(ABC):
     @abstractmethod
     def load_events(self) -> pl.LazyFrame:
         ...
-
-
-@Registry.utilities.register("list_creator")
-def list_creator(*args: T) -> list[T]:
-    return list(args)
 
 
 @Registry.event_loaders.register("diagnoses")
