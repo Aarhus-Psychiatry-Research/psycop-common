@@ -31,7 +31,7 @@ def populate_registry() -> None:
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
-    from .tasks import create_behrt, clf_encoder  # noqa
+    from .tasks.tasks import BEHRTForMaskedLM, EncoderForClassification  # noqa
 
 
 populate_registry()
