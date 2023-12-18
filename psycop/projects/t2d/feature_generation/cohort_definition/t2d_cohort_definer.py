@@ -10,6 +10,7 @@ from psycop.common.feature_generation.loaders.raw.load_demographic import birthd
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
+from psycop.common.sequence_models.registry import Registry
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     NoIncidentDiabetes,
     T2DMinAgeFilter,
@@ -24,6 +25,7 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 msg = Printer(timestamp=True)
 
 
+@Registry.cohorts.register("t2d")
 class T2DCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:

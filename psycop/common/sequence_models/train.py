@@ -45,48 +45,48 @@ def train(config_path: Path | None = None) -> None:
         config_path: path to config file if none loads default
     """
     config_dict = load_config(config_path)
-    config = parse_config(config_dict)
+    cfg = parse_config(config_dict)
 
-    # Setup the logger and pass it to the TrainingConfig
-    training_cfg = config.training
-    if config.logger is not None:
-        for logger in config.logger:
+    if cfg.logger is not None:
+        for logger in cfg.logger:
             # update config
             log.info("Updating Config")
             flat_config = flatten_nested_dict(config_dict)
             logger.log_hyperparams(flat_config)
 
-    training_dataset = config.model_and_dataset.training_dataset
-    validation_dataset = config.model_and_dataset.validation_dataset
-    model = config.model_and_dataset.model
-    trainer_kwargs = training_cfg.trainer.to_dict()
+    # Load and filter dataset
+    filter_fn = cfg.model_and_dataset.model.filter_and_reformat
 
-    # filter dataset
-    log.info("Filtering Patients")
-    filter_fn = model.filter_and_reformat
+    log.info("Preparing train")
+    training_dataset = cfg.model_and_dataset.training_dataset.get_patient_slices()
     training_dataset.filter_patients(filter_fn)
+
+    log.info("Preparing validation")
+    validation_dataset = cfg.model_and_dataset.validation_dataset.get_patient_slices()
     validation_dataset.filter_patients(filter_fn)
 
     log.info("Creating dataloaders")
+    model = cfg.model_and_dataset.model
+
     train_loader = DataLoader(
         training_dataset,
-        batch_size=training_cfg.batch_size,
+        batch_size=cfg.training.batch_size,
         shuffle=True,
         collate_fn=model.collate_fn,
-        num_workers=training_cfg.num_workers_for_dataloader,
+        num_workers=cfg.training.num_workers_for_dataloader,
         persistent_workers=True,
     )
     val_loader = DataLoader(
         validation_dataset,
-        batch_size=training_cfg.batch_size,
+        batch_size=cfg.training.batch_size,
         shuffle=False,
         collate_fn=model.collate_fn,
-        num_workers=training_cfg.num_workers_for_dataloader,
+        num_workers=cfg.training.num_workers_for_dataloader,
         persistent_workers=True,
     )
 
     log.info("Initalizing trainer")
-    trainer = pl.Trainer(**trainer_kwargs)
+    trainer = pl.Trainer(**cfg.training.trainer.to_dict())
 
     log.info("Starting training")
     torch.set_float32_matmul_precision("medium")

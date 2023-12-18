@@ -13,6 +13,8 @@ from psycop.common.feature_generation.sequences.event_dataframes_to_patient impo
     EventDataFramesToPatientSlices,
 )
 
+from ...sequence_models.registry import Registry
+
 
 class EventDfLoader(ABC):
     @abstractmethod
@@ -20,6 +22,7 @@ class EventDfLoader(ABC):
         ...
 
 
+@Registry.event_loaders.register("diagnoses")
 class DiagnosisLoader(EventDfLoader):
     """Load all diagnoses for all patients."""
 
