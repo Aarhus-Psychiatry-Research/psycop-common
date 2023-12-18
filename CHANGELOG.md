@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v0.155.0 (2023-12-18)
+
+### Feature
+
+* Pretrain with `mlflow` ([#563](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/563)) ([`a0d21ba`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a0d21ba3063301007f1aa6ff3c3f117b0decace1))
+* Install invoke ([`e5377a7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e5377a75a363eccbca71500fe50ccd23d01d099f))
+* Finetune trainer from pretrained checkpoint ([#560](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/560)) ([`eec5816`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/eec58166572d75ec975a0234fcad1fc37f126dc9))
+* Pretraining with mlflow ([`7033842`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7033842f50b6b3e878d9f5c83706a5bc8b8338eb))
+* Create finetuning-trainer from pretrained checkpoint ([`62dbb8d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/62dbb8d96d37af5a6640fe83afa3fd4485d7a47d))
+
+### Fix
+
+* Type error ([`5952226`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5952226a15da7e9a6048f80e8c698375d6000fda))
+* Cfgs ([`f4ca86f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f4ca86fcd2e088e81575150a2c351cd01567d1f2))
+* Pytorch cuda test ([`4967566`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4967566f90e227507b398272e473554405a3b967))
+
 ## v0.154.0 (2023-12-14)
 
 ### Feature

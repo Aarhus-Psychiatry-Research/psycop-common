@@ -13,7 +13,7 @@ from psycop.common.global_utils.config_utils import flatten_nested_dict
 
 from .config_utils import load_config, parse_config
 
-std_logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 os.environ["WANDB__SERVICE_WAIT"] = "300"  # to avoid issues with wandb service
 
 
@@ -26,7 +26,7 @@ def populate_registry() -> None:
     """
     from .callbacks import create_learning_rate_monitor, create_model_checkpoint  # noqa
     from .embedders.BEHRT_embedders import create_behrt_embedder  # noqa
-    from .logger import create_wandb_logger  # noqa
+    from .logger import create_mlflow_logger, create_wandb_logger  # noqa
     from .model_layers import create_encoder_layer, create_transformers_encoder  # noqa
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
@@ -47,27 +47,27 @@ def train(config_path: Path | None = None) -> None:
     config_dict = load_config(config_path)
     config = parse_config(config_dict)
 
+    # Setup the logger and pass it to the TrainingConfig
     training_cfg = config.training
+    if config.logger is not None:
+        for logger in config.logger:
+            # update config
+            log.info("Updating Config")
+            flat_config = flatten_nested_dict(config_dict)
+            logger.log_hyperparams(flat_config)
+
     training_dataset = config.model_and_dataset.training_dataset
     validation_dataset = config.model_and_dataset.validation_dataset
     model = config.model_and_dataset.model
-    logger = training_cfg.trainer.logger
     trainer_kwargs = training_cfg.trainer.to_dict()
 
-    # update config
-    std_logger.info("Updating Config")
-    flat_config = flatten_nested_dict(config_dict)
-
-    if logger:
-        logger.experiment.config.update(flat_config)
-
     # filter dataset
-    std_logger.info("Filtering Patients")
+    log.info("Filtering Patients")
     filter_fn = model.filter_and_reformat
     training_dataset.filter_patients(filter_fn)
     validation_dataset.filter_patients(filter_fn)
 
-    std_logger.info("Creating dataloaders")
+    log.info("Creating dataloaders")
     train_loader = DataLoader(
         training_dataset,
         batch_size=training_cfg.batch_size,
@@ -85,9 +85,9 @@ def train(config_path: Path | None = None) -> None:
         persistent_workers=True,
     )
 
-    std_logger.info("Initalizing trainer")
+    log.info("Initalizing trainer")
     trainer = pl.Trainer(**trainer_kwargs)
 
-    std_logger.info("Starting training")
+    log.info("Starting training")
     torch.set_float32_matmul_precision("medium")
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
