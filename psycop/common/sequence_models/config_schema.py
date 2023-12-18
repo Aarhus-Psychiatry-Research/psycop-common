@@ -24,7 +24,7 @@ class TrainerConfigSchema(BaseModel):
     """
 
     class Config:
-        allow_mutation = True
+        allow_mutation = False
         arbitrary_types_allowed = True
 
     accelerator: str = "auto"
