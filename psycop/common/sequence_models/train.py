@@ -32,6 +32,7 @@ def populate_registry() -> None:
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
     from .tasks import create_behrt, clf_encoder  # noqa
+    from .registry import list_creator
 
 
 populate_registry()
@@ -50,10 +51,11 @@ def train(config_path: Path | None = None) -> None:
     # Setup the logger and pass it to the TrainingConfig
     training_cfg = config.training
     if config.logger is not None:
-        # update config
-        log.info("Updating Config")
-        flat_config = flatten_nested_dict(config_dict)
-        config.logger.log_hyperparams(flat_config)
+        for logger in config.logger:
+            # update config
+            log.info("Updating Config")
+            flat_config = flatten_nested_dict(config_dict)
+            logger.log_hyperparams(flat_config)
 
     training_dataset = config.model_and_dataset.training_dataset
     validation_dataset = config.model_and_dataset.validation_dataset

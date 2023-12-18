@@ -2,6 +2,7 @@
 The config Schema for sequence models.
 """
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -100,4 +101,4 @@ class ResolvedConfigSchema(BaseModel):
     # Required because dataset and model are coupled through their input and outputs
     model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
-    logger: plLogger | None = None
+    logger: Sequence[plLogger] | None = None
