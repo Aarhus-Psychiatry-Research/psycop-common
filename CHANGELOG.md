@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.156.0 (2023-12-18)
+
+### Feature
+
+* Convert `patient_slice_getters` to classes ([`d2771d4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d2771d4e7190fb8d8f887a2ce4d5a05c1d8302a3))
+* Convert `patient_slice_getters` to classes ([`ec5fe84`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ec5fe846c84c15abd926c5a913c969e16a41c0f6))
+
 ## v0.155.0 (2023-12-18)
 
 ### Feature

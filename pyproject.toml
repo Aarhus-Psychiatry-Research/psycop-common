@@ -9,7 +9,7 @@ authors = [
   { name = "Jakob G. Damgaard" },
   { name = "Erik Perfalk" },
 ]
-version = "0.155.0"
+version = "0.156.0"
 description = "PSYCOP"
 classifiers = [
   "Operating System :: POSIX :: Linux",
