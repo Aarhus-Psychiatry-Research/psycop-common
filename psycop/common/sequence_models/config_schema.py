@@ -2,6 +2,7 @@
 The config Schema for sequence models.
 """
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -19,6 +20,7 @@ from ..feature_generation.sequences.patient_slice_getter import (
     BaseUnlabelledSliceCreator,
 )
 from .logger import LoggerFactory
+from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 
 
 class TrainerConfigSchema(BaseModel):
@@ -27,7 +29,7 @@ class TrainerConfigSchema(BaseModel):
     """
 
     class Config:
-        allow_mutation = True
+        allow_mutation = False
         arbitrary_types_allowed = True
 
     accelerator: str = "auto"
@@ -65,8 +67,8 @@ class TrainerConfigSchema(BaseModel):
 class TrainingConfigSchema(BaseModel):
     class Config:
         extra = "forbid"
+        allow_mutation = False
         arbitrary_types_allowed = True
-        allow_mutations = False
 
     batch_size: int
     num_workers_for_dataloader: int = 8
@@ -104,4 +106,4 @@ class ResolvedConfigSchema(BaseModel):
     # Required because dataset and model are coupled through their input and outputs
     model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
-    logger_factory: LoggerFactory | None
+    logger: Sequence[plLogger] | None = None

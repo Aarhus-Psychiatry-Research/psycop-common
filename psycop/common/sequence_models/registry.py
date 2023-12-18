@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 import catalogue
 from confection import registry
 
@@ -17,3 +19,11 @@ class Registry(registry):
     callbacks = catalogue.create("psycop", "callbacks")
 
     utilities = catalogue.create("psycop", "utilities")
+
+
+T = TypeVar("T")
+
+
+@Registry.utilities.register("list_creator")
+def list_creator(*args: T) -> list[T]:
+    return list(args)
