@@ -62,8 +62,8 @@ class TrainerConfigSchema(BaseModel):
 class TrainingConfigSchema(BaseModel):
     class Config:
         extra = "forbid"
+        allow_mutation = False
         arbitrary_types_allowed = True
-        allow_mutations = False
 
     batch_size: int
     num_workers_for_dataloader: int = 8
