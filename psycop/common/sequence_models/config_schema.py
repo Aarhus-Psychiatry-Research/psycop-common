@@ -19,8 +19,6 @@ from ..feature_generation.sequences.patient_slice_getter import (
     BaseLabelledSliceCreator,
     BaseUnlabelledSliceCreator,
 )
-from .logger import LoggerFactory
-from .dataset import PatientSliceDataset, PatientSlicesWithLabels
 
 
 class TrainerConfigSchema(BaseModel):

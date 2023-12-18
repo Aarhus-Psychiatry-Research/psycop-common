@@ -47,9 +47,8 @@ def train(config_path: Path | None = None) -> None:
     config_dict = load_config(config_path)
     cfg = parse_config(config_dict)
 
-    training_cfg = config.training
-    if config.logger is not None:
-        for logger in config.logger:
+    if cfg.logger is not None:
+        for logger in cfg.logger:
             # update config
             log.info("Updating Config")
             flat_config = flatten_nested_dict(config_dict)
