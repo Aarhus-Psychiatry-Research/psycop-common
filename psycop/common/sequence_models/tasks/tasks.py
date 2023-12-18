@@ -205,21 +205,21 @@ class EncoderForClassification(pl.LightningModule):
 
     def __init__(
         self,
-        embedding_module: BEHRTEmbedder,
-        encoder_module: nn.Module,
+        embedder: BEHRTEmbedder,
+        encoder: nn.Module,
         aggregation_module: Aggregator,
         optimizer_fn: OptimizerFn,
         lr_scheduler: LRSchedulerFn,
         num_classes: int = 2,
     ):
         super().__init__()
-        self.embedder = embedding_module
-        self.encoder = encoder_module
+        self.embedder = embedder
+        self.encoder = encoder
         self.optimizer_fn = optimizer_fn
         self.lr_scheduler_fn = lr_scheduler
         self.aggregation_module = aggregation_module
 
-        self.d_model: int = embedding_module.d_model
+        self.d_model: int = embedder.d_model
 
         self.is_binary = num_classes == 2
         self.num_classes = num_classes

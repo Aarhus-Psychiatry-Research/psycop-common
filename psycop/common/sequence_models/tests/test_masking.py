@@ -10,12 +10,12 @@ from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 
 
 @pytest.mark.parametrize(
-    "embedding_module",
+    "embedder",
     [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_masking_fn(
     patient_slices: list,  # type: ignore
-    embedding_module: BEHRTEmbedder,
+    embedder: BEHRTEmbedder,
     optimizer_fn: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):  # type: ignore
@@ -25,16 +25,16 @@ def test_masking_fn(
     encoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6)
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
-    embedding_module.fit(patient_slices)
+    embedder.fit(patient_slices)
 
     task = BEHRTForMaskedLM(
-        embedder=embedding_module,
+        embedder=embedder,
         encoder=encoder,
         optimizer=optimizer_fn,
         lr_scheduler=lr_scheduler_fn,
     )
 
-    inputs_ids = embedding_module.collate_patient_slices(patient_slices)
+    inputs_ids = embedder.collate_patient_slices(patient_slices)
 
     masked_input_ids, masked_labels = task.masking_fn(inputs_ids)
 

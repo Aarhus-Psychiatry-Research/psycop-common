@@ -40,7 +40,7 @@ def patient_dataset_with_labels(
 
 
 @pytest.fixture()
-def embedding_module(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
+def embedder(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
     d_model = 32
     emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
     emb.fit(patient_slices, add_mask_token=True)
@@ -48,7 +48,7 @@ def embedding_module(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
 
 
 @pytest.fixture()
-def encoder_module() -> nn.Module:
+def encoder() -> nn.Module:
     d_model = 32
     encoder_layer = nn.TransformerEncoderLayer(
         d_model=d_model,
@@ -77,15 +77,15 @@ def arm_within_docker() -> bool:
 )
 def test_encoder_for_clf(
     patient_dataset_with_labels: PatientSlicesWithLabels,
-    embedding_module: BEHRTEmbedder,
-    encoder_module: nn.Module,
+    embedder: BEHRTEmbedder,
+    encoder: nn.Module,
     aggregation_module: Aggregator,
     optimizer_fn: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
     clf = EncoderForClassification(
-        embedding_module=embedding_module,
-        encoder_module=encoder_module,
+        embedder=embedder,
+        encoder=encoder,
         aggregation_module=aggregation_module,
         num_classes=2,
         optimizer_fn=optimizer_fn,
@@ -107,15 +107,15 @@ def test_encoder_for_clf(
 
 def test_encoder_for_clf_for_multiclass(
     patient_dataset_with_labels: PatientSlicesWithLabels,
-    embedding_module: BEHRTEmbedder,
-    encoder_module: nn.Module,
+    embedder: BEHRTEmbedder,
+    encoder: nn.Module,
     aggregation_module: Aggregator,
     optimizer_fn: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
     clf = EncoderForClassification(
-        embedding_module=embedding_module,
-        encoder_module=encoder_module,
+        embedder=embedder,
+        encoder=encoder,
         aggregation_module=aggregation_module,
         num_classes=4,  # more than 2 classes
         optimizer_fn=optimizer_fn,
@@ -158,8 +158,8 @@ def test_pretrain_from_checkpoint(
     loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
 
     clf = EncoderForClassification(
-        embedding_module=loaded_model.embedder,
-        encoder_module=loaded_model.encoder,
+        embedder=loaded_model.embedder,
+        encoder=loaded_model.encoder,
         aggregation_module=aggregation_module,
         num_classes=2,
         optimizer_fn=optimizer_fn,
