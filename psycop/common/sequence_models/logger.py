@@ -1,7 +1,7 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Optional, Protocol, runtime_checkable
+from typing import Optional
 
 from lightning.pytorch.loggers import Logger as plLogger
 from lightning.pytorch.loggers.mlflow import MLFlowLogger as plMLFlowLogger
