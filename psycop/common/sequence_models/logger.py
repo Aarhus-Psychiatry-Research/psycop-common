@@ -1,4 +1,3 @@
-import logging
 import sys
 from pathlib import Path
 from typing import Optional
@@ -8,8 +7,6 @@ from lightning.pytorch.loggers.mlflow import MLFlowLogger as plMLFlowLogger
 from lightning.pytorch.loggers.wandb import WandbLogger as plWandbLogger
 
 from .registry import Registry
-
-log = logging.getLogger(__name__)
 
 
 def handle_wandb_folder():
