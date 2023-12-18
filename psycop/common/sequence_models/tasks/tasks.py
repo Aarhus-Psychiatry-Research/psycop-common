@@ -15,6 +15,7 @@ from psycop.common.data_structures.patient import PatientSlice
 from ..aggregators import Aggregator
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
+from ..registry import Registry
 
 log = logging.getLogger(__name__)
 
@@ -36,6 +37,7 @@ class BatchWithLabels:
         return iter((self.inputs, self.labels))
 
 
+@Registry.tasks.register("behrt")
 class BEHRTForMaskedLM(pl.LightningModule):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
@@ -195,6 +197,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         return slices_with_content
 
 
+@Registry.tasks.register("clf_encoder")
 class EncoderForClassification(pl.LightningModule):
     """
     A BEHRT model for the classification task.
