@@ -90,7 +90,7 @@ def create_behrt(
         num_layers=num_layers,
     )
 
-    optimizer_fn = create_adamw(lr=0.03)
+    optimizer = create_adamw(lr=0.03)
     lr_scheduler_fn = create_linear_schedule_with_warmup(
         num_warmup_steps=2,
         num_training_steps=10,
@@ -100,7 +100,7 @@ def create_behrt(
     module = BEHRTForMaskedLM(
         embedder=emb,
         encoder=encoder,
-        optimizer=optimizer_fn,
+        optimizer=optimizer,
         lr_scheduler=lr_scheduler_fn,
     )
     return module

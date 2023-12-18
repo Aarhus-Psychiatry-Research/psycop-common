@@ -33,7 +33,7 @@ def patient_dataset(patient_slices: list[PatientSlice]) -> PatientSliceDataset:
 
 
 @pytest.fixture()
-def optimizer_fn() -> OptimizerFn:
+def optimizer() -> OptimizerFn:
     return create_adamw(lr=0.03)
 
 

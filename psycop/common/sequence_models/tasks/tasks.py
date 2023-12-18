@@ -52,7 +52,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.save_hyperparameters()
         self.embedder = embedder
         self.encoder = encoder
-        self.optimizer_fn = optimizer
+        self.optimizer = optimizer
         self.lr_scheduler_fn = lr_scheduler
 
         self.d_model = self.embedder.d_model
@@ -173,7 +173,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         list[torch.optim.Optimizer],
         list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
     ]:  # type: ignore
-        optimizer = self.optimizer_fn(self.parameters())
+        optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
 
@@ -208,14 +208,14 @@ class EncoderForClassification(pl.LightningModule):
         embedder: BEHRTEmbedder,
         encoder: nn.Module,
         aggregation_module: Aggregator,
-        optimizer_fn: OptimizerFn,
+        optimizer: OptimizerFn,
         lr_scheduler: LRSchedulerFn,
         num_classes: int = 2,
     ):
         super().__init__()
         self.embedder = embedder
         self.encoder = encoder
-        self.optimizer_fn = optimizer_fn
+        self.optimizer = optimizer
         self.lr_scheduler_fn = lr_scheduler
         self.aggregation_module = aggregation_module
 
@@ -340,7 +340,7 @@ class EncoderForClassification(pl.LightningModule):
         list[torch.optim.Optimizer],
         list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
     ]:  # type: ignore
-        optimizer = self.optimizer_fn(self.parameters())
+        optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
 

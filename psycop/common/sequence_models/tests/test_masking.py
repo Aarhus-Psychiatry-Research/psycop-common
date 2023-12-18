@@ -16,7 +16,7 @@ from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 def test_masking_fn(
     patient_slices: list,  # type: ignore
     embedder: BEHRTEmbedder,
-    optimizer_fn: OptimizerFn,
+    optimizer: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):  # type: ignore
     """
@@ -30,7 +30,7 @@ def test_masking_fn(
     task = BEHRTForMaskedLM(
         embedder=embedder,
         encoder=encoder,
-        optimizer=optimizer_fn,
+        optimizer=optimizer,
         lr_scheduler=lr_scheduler_fn,
     )
 
