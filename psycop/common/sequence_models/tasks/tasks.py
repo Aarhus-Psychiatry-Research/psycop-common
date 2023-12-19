@@ -59,6 +59,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.d_model = self.embedder.d_model
 
         if self.embedder.is_fitted:
+            # Otherwise, the mlm_head will be initialized in on_fit_start
             self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
 
     def training_step(  # type: ignore
