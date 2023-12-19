@@ -1,4 +1,5 @@
 import logging
+from collections import OrderedDict
 from collections.abc import Iterator, Sequence
 from copy import copy
 from dataclasses import dataclass
@@ -55,6 +56,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.optimizer = optimizer
         self.lr_scheduler_fn = lr_scheduler
 
+        self.loss = nn.CrossEntropyLoss(ignore_index=-1)
         self.d_model = self.embedder.d_model
 
     def training_step(  # type: ignore
@@ -136,6 +138,12 @@ class BEHRTForMaskedLM(pl.LightningModule):
         """
         Takes a dictionary of padded sequence ids and masks 15% of the tokens in the diagnosis sequence.
         """
+        if not self.embedder.is_fitted:
+            raise ValueError(
+                "The embedder must be fitted before masking, so it knows which token_id is that mask. Call embedder.fit() before masking.",
+            )
+
+        self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
         padded_sequence_ids = copy(padded_sequence_ids)
         padding_mask = padded_sequence_ids["is_padding"] == 1
         # Perform masking
@@ -163,14 +171,22 @@ class BEHRTForMaskedLM(pl.LightningModule):
         batch_with_labels = self.masking_fn(padded_sequence_ids)
         return batch_with_labels
 
+    def on_load_checkpoint(self, checkpoint: dict[str, torch.Tensor]) -> None:
+        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
+        state_dict = checkpoint["state_dict"]
+
+        mlm_head_state_dict = {
+            "weight": state_dict["mlm_head.weight"],  # type ignore
+            "bias": state_dict["mlm_head.bias"],  # type: ignore
+        }
+        self.mlm_head.load_state_dict(mlm_head_state_dict)
+
     def on_fit_start(self) -> None:
         """Pytorch lightning hook. Called at the beginning of every fit."""
         self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
-        self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
     def setup(self, stage: str | None = None) -> None:  # noqa: ARG002
         """Pytorch lightning hook. Called at the beginning of fit (train + validate), validate, test, or predict. This is a good hook when you need to build models dynamically or adjust something about them. This hook is called on every process when using DDP."""
-        self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
 
     def configure_optimizers(
         self,
