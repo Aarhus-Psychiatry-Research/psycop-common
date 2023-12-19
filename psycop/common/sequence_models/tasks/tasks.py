@@ -175,7 +175,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         state_dict = checkpoint["state_dict"]
 
         mlm_head_state_dict = {
-            "weight": state_dict["mlm_head.weight"],  # type ignore
+            "weight": state_dict["mlm_head.weight"],  # type: ignore
             "bias": state_dict["mlm_head.bias"],  # type: ignore
         }
         self.mlm_head.load_state_dict(mlm_head_state_dict)
