@@ -56,10 +56,6 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.lr_scheduler_fn = lr_scheduler
 
         self.d_model = self.embedder.d_model
-        self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
-
-        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
-        self.loss = nn.CrossEntropyLoss(ignore_index=-1)
 
     def training_step(  # type: ignore
         self,
@@ -166,6 +162,15 @@ class BEHRTForMaskedLM(pl.LightningModule):
         # Masking
         batch_with_labels = self.masking_fn(padded_sequence_ids)
         return batch_with_labels
+
+    def on_fit_start(self) -> None:
+        """Pytorch lightning hook. Called at the beginning of every fit."""
+        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
+        self.loss = nn.CrossEntropyLoss(ignore_index=-1)
+
+    def setup(self, stage: str | None = None) -> None:  # noqa: ARG002
+        """Pytorch lightning hook. Called at the beginning of fit (train + validate), validate, test, or predict. This is a good hook when you need to build models dynamically or adjust something about them. This hook is called on every process when using DDP."""
+        self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
 
     def configure_optimizers(
         self,

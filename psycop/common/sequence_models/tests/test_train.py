@@ -12,11 +12,6 @@ from ...feature_generation.sequences.patient_slice_getter import (
 from .utils import create_patients
 
 
-@pytest.fixture()
-def config_path() -> Path:
-    return Path(__file__).parent / "test_config.cfg"
-
-
 @Registry.datasets.register("test_dataset")
 class FakeSliceCreator(BaseUnlabelledSliceCreator):
     def __init__(self):
@@ -26,6 +21,11 @@ class FakeSliceCreator(BaseUnlabelledSliceCreator):
         return PatientSliceDataset(
             patient_slices=[p.as_slice() for p in create_patients()],
         )
+
+
+@pytest.fixture()
+def config_path() -> Path:
+    return Path(__file__).parent / "test_train.cfg"
 
 
 def test_train(
