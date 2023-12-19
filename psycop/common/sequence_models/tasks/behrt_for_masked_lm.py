@@ -60,8 +60,8 @@ class BEHRTForMaskedLM(BasePatientSlicePretrainer):
     def validation_step(
         self,
         batch: BatchWithLabels,
-        batch_idx: int,
-    ) -> torch.Tensor:  # noqa: ARG002
+        batch_idx: int,  # noqa: ARG002
+    ) -> torch.Tensor:
         output = self.forward(inputs=batch.inputs, labels=batch.labels)
         self.log("val_loss", output["loss"])
         return output["loss"]

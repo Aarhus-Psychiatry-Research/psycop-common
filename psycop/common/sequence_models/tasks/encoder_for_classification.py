@@ -65,8 +65,8 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
     def training_step(
         self,
         batch: BatchWithLabels,
-        batch_idx: int,
-    ) -> torch.Tensor:  # noqa: ARG002
+        batch_idx: int,  # noqa: ARG002
+    ) -> torch.Tensor:
         output = self.forward(batch.inputs, batch.labels)
         loss = output["loss"]
         self.log_step("Training", output)
@@ -75,8 +75,8 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
     def validation_step(
         self,
         batch: BatchWithLabels,
-        batch_idx: int,
-    ) -> torch.Tensor:  # noqa: ARG002
+        batch_idx: int,  # noqa: ARG002
+    ) -> torch.Tensor:
         output = self.forward(inputs=batch.inputs, labels=batch.labels)
         self.log_step("Validation", output)
         return output["loss"]
