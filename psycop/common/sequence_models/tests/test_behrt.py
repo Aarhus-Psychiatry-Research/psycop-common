@@ -52,7 +52,7 @@ def test_behrt(patient_dataset: PatientSliceDataset):
         collate_fn=behrt.collate_fn,
     )
 
-    trainer = pl.Trainer(max_epochs=1)
+    trainer = pl.Trainer(max_epochs=1, accelerator="cpu")
     trainer.fit(behrt, train_dataloaders=dataloader)
 
     for input_ids, masked_labels in dataloader:
