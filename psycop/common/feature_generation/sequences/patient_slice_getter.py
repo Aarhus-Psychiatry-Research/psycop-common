@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from typing import Literal, Protocol, runtime_checkable
 
 from ...cohort_definition import CohortDefiner
-from ...sequence_models.dataset import PatientSliceDataset, PatientSlicesWithLabels
+from ...sequence_models.dataset import PatientSliceDataset, PredictionTimeDataset
 from ...sequence_models.registry import Registry
 from ..loaders.raw.load_ids import SplitName
 from .cohort_definer_to_prediction_times import CohortToPredictionTimes
@@ -48,7 +48,7 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
 
 @runtime_checkable
 class BaseLabelledSliceCreator(Protocol):
-    def get_patient_slices(self) -> PatientSlicesWithLabels:
+    def get_patient_slices(self) -> PredictionTimeDataset:
         ...
 
 
@@ -73,7 +73,7 @@ class LabelledPatientSliceCreator(BaseLabelledSliceCreator):
 
     def get_patient_slices(
         self,
-    ) -> PatientSlicesWithLabels:
+    ) -> PredictionTimeDataset:
         prediction_times = CohortToPredictionTimes(
             cohort_definer=self.cohort_definer,
             patients=self.patient_loader.get_split(
@@ -86,4 +86,4 @@ class LabelledPatientSliceCreator(BaseLabelledSliceCreator):
             lookahead=dt.timedelta(days=self.lookahead_days),
         )
 
-        return PatientSlicesWithLabels(prediction_times)
+        return PredictionTimeDataset(prediction_times)

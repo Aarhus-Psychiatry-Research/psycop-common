@@ -1,8 +1,8 @@
 import logging
 from collections.abc import Sequence
 from copy import copy
+from typing import final
 
-import lightning.pytorch as pl
 import torch
 from torch import nn
 
@@ -12,12 +12,14 @@ from psycop.common.sequence_models.datatypes import BatchWithLabels
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
+from .base_pretraining_task import BasePatientSlicePretrainer, Metrics
 
 log = logging.getLogger(__name__)
 
 
 @Registry.tasks.register("behrt")
-class BEHRTForMaskedLM(pl.LightningModule):
+@final  # This is not an ABC, must not contain abstract methods
+class BEHRTForMaskedLM(BasePatientSlicePretrainer):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(
@@ -29,22 +31,22 @@ class BEHRTForMaskedLM(pl.LightningModule):
     ):
         super().__init__()
         self.save_hyperparameters()
-        self.embedder = embedder
-        self.encoder = encoder
+        self._embedder = embedder
+        self._encoder = encoder
         self.optimizer = optimizer
         self.lr_scheduler_fn = lr_scheduler
 
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
-        self.d_model = self.embedder.d_model
+        self.d_model = self._embedder.d_model
 
-        if self.embedder.is_fitted:
+        if self._embedder.is_fitted:
             # Otherwise, the mlm_head will be initialized in on_fit_start
             self._initialise_mlm_head()
 
     def _initialise_mlm_head(self):
-        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
+        self.mlm_head = nn.Linear(self.d_model, self._embedder.n_diagnosis_codes)
 
-    def training_step(  # type: ignore
+    def training_step(
         self,
         batch: BatchWithLabels,
         batch_idx: int,  # noqa: ARG002
@@ -55,18 +57,22 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.log("train_loss", loss)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
-        output = self.forward(inputs=batch.inputs, masked_lm_labels=batch.labels)
+    def validation_step(
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,  # noqa: ARG002
+    ) -> torch.Tensor:
+        output = self.forward(inputs=batch.inputs, labels=batch.labels)
         self.log("val_loss", output["loss"])
         return output["loss"]
 
-    def forward(  # type: ignore
+    def forward(
         self,
         inputs: dict[str, torch.Tensor],
-        masked_lm_labels: torch.Tensor,
-    ) -> dict[str, torch.Tensor]:
-        embedded_patients = self.embedder(inputs)
-        encoded_patients = self.encoder(
+        labels: torch.Tensor,
+    ) -> Metrics:
+        embedded_patients = self._embedder(inputs)
+        encoded_patients = self._encoder(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
         )
@@ -74,7 +80,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         logits = self.mlm_head(encoded_patients)
         masked_lm_loss = self.loss(
             logits.view(-1, logits.size(-1)),
-            masked_lm_labels.view(-1),
+            labels.view(-1),
         )  # (bs * seq_length, vocab_size), (bs * seq_length)
         return {"logits": logits, "loss": masked_lm_loss}
 
@@ -123,18 +129,18 @@ class BEHRTForMaskedLM(pl.LightningModule):
         """
         Takes a dictionary of padded sequence ids and masks 15% of the tokens in the diagnosis sequence.
         """
-        if not self.embedder.is_fitted:
+        if not self._embedder.is_fitted:
             raise ValueError(
                 "The embedder must know which token_id corresponds to the mask. Therefore, the embedder must be fitted before masking. Call embedder.fit() before masking.",
             )
 
-        self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
+        self.mask_token_id = self._embedder.vocab.diagnosis["MASK"]
         padded_sequence_ids = copy(padded_sequence_ids)
         padding_mask = padded_sequence_ids["is_padding"] == 1
         # Perform masking
         masked_sequence, masked_labels = self.mask(
             diagnosis=padded_sequence_ids["diagnosis"],
-            n_diagnoses_in_vocab=self.embedder.n_diagnosis_codes,
+            n_diagnoses_in_vocab=self._embedder.n_diagnosis_codes,
             mask_token_id=self.mask_token_id,
             padding_mask=padding_mask,
         )
@@ -144,12 +150,12 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def collate_fn(
         self,
-        patient_slices: list[PatientSlice],
+        patient_slices: Sequence[PatientSlice],
     ) -> BatchWithLabels:
         """
         Takes a list of PredictionTime and returns a dictionary of padded sequence ids.
         """
-        padded_sequence_ids = self.embedder.collate_patient_slices(
+        padded_sequence_ids = self._embedder.collate_patient_slices(
             patient_slices,
         )
         # Masking
@@ -165,7 +171,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
     ) -> tuple[
         list[torch.optim.Optimizer],
         list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
-    ]:  # type: ignore
+    ]:
         optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
@@ -174,7 +180,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> Sequence[PatientSlice]:
-        reformatted_slices = self.embedder.reformat(patient_slices)
+        reformatted_slices = self._embedder.reformat(patient_slices)
         slices_with_content = [
             patient_slice
             for patient_slice in reformatted_slices
@@ -188,3 +194,11 @@ class BEHRTForMaskedLM(pl.LightningModule):
             )
 
         return slices_with_content
+
+    @property
+    def embedder(self) -> BEHRTEmbedder:
+        return self._embedder
+
+    @property
+    def encoder(self) -> nn.Module:
+        return self._encoder

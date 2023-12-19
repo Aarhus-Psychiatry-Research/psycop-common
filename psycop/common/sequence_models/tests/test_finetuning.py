@@ -9,7 +9,7 @@ from psycop.common.data_structures.temporal_event import TemporalEvent
 from psycop.common.feature_generation.sequences.patient_slice_getter import (
     BaseLabelledSliceCreator,
 )
-from psycop.common.sequence_models.dataset import PatientSlicesWithLabels
+from psycop.common.sequence_models.dataset import PredictionTimeDataset
 from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.train import train
 
@@ -21,7 +21,7 @@ class FakeLabelledPatientSlices(BaseLabelledSliceCreator):
     def __init__(self):
         pass
 
-    def get_patient_slices(self) -> PatientSlicesWithLabels:
+    def get_patient_slices(self) -> PredictionTimeDataset:
         temporal_events = [
             TemporalEvent(
                 timestamp=dt.datetime.now(),
@@ -31,7 +31,7 @@ class FakeLabelledPatientSlices(BaseLabelledSliceCreator):
             ),
         ]
 
-        patient_slices = PatientSlicesWithLabels(
+        patient_slices = PredictionTimeDataset(
             prediction_times=[
                 PredictionTime(
                     prediction_timestamp=dt.datetime.now(),

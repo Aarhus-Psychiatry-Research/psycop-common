@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 import torch
 
@@ -22,15 +22,16 @@ class EmbeddedSequence:
     src_key_padding_mask: torch.Tensor
 
 
+@runtime_checkable
 class PatientSliceEmbedder(Protocol):
     """
     Interface for embedding modules
     """
 
-    def __init__(self, *args: Any) -> None:
-        ...
+    is_fitted: bool
+    d_model: int
 
-    def __call__(self, *args: Any) -> torch.Tensor:
+    def __init__(self, *args: Any) -> None:
         ...
 
     def forward(self, inputs: dict[str, torch.Tensor]) -> EmbeddedSequence:
@@ -46,4 +47,10 @@ class PatientSliceEmbedder(Protocol):
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> None:
+        ...
+
+    def reformat(
+        self,
+        patient_slices: Sequence[PatientSlice],
+    ) -> list[PatientSlice]:
         ...

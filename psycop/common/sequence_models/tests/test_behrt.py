@@ -2,7 +2,6 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import lightning.pytorch as pl
-import lightning.pytorch.loggers as pl_loggers
 from lightning.pytorch.callbacks import ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
@@ -14,6 +13,8 @@ from psycop.common.sequence_models.optimizers import (
     create_adamw,
     create_linear_schedule_with_warmup,
 )
+
+from .test_encoder_for_clf import TEST_CHECKPOINT_DIR
 
 
 def test_behrt(patient_dataset: PatientSliceDataset):
@@ -50,7 +51,7 @@ def test_behrt(patient_dataset: PatientSliceDataset):
         collate_fn=behrt.collate_fn,
     )
 
-    trainer = pl.Trainer(max_epochs=1)
+    trainer = pl.Trainer(max_epochs=1, accelerator="cpu")
     trainer.fit(behrt, train_dataloaders=dataloader)
 
     for input_ids, masked_labels in dataloader:
@@ -110,19 +111,12 @@ def create_behrt(
 
 
 def create_trainer(save_dir: Path) -> pl.Trainer:
-    wandb_logger = pl_loggers.WandbLogger(
-        name="test",
-        save_dir=save_dir,
-        offline=True,
-        project="test",
-    )
-
     callbacks = [
         ModelCheckpoint(
             dirpath=save_dir / "checkpoints",
             every_n_epochs=1,
             verbose=True,
-            save_top_k=5,
+            save_top_k=1,
             mode="min",
             monitor="val_loss",
         ),
@@ -130,7 +124,6 @@ def create_trainer(save_dir: Path) -> pl.Trainer:
     trainer = pl.Trainer(
         accelerator="cpu",
         val_check_interval=2,
-        logger=wandb_logger,
         max_steps=5,
         callbacks=callbacks,  # type: ignore
     )
@@ -145,6 +138,9 @@ def test_module_with_trainer(
     """
     Tests the general intended workflow of the Trainer class
     """
+    override_test_checkpoints = False
+    if override_test_checkpoints:
+        tmp_path = TEST_CHECKPOINT_DIR.parent
 
     n_patients = 10
     more_patients = list(patient_slices) * n_patients

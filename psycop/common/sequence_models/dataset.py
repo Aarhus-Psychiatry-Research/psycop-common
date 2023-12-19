@@ -28,18 +28,15 @@ class PatientSliceDataset(Dataset[PatientSlice]):
         self.patient_slices = filter_fn(self.patient_slices)
 
 
-class PatientSlicesWithLabels(Dataset[tuple[PatientSlice, int]]):
+class PredictionTimeDataset(Dataset[PredictionTime]):
     def __init__(self, prediction_times: Sequence[PredictionTime]) -> None:
         self.prediction_times = prediction_times
 
     def __len__(self) -> int:
         return len(self.prediction_times)
 
-    def __getitem__(self, idx: int) -> tuple[PatientSlice, int]:
-        pred_time = self.prediction_times[idx]
-        label = int(pred_time.outcome)
-
-        return (pred_time.patient_slice, label)
+    def __getitem__(self, idx: int) -> PredictionTime:
+        return self.prediction_times[idx]
 
     @property
     def patient_slices(self) -> Sequence[PatientSlice]:

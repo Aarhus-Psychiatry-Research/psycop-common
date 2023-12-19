@@ -10,17 +10,12 @@ from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
-from psycop.common.sequence_models.tasks import (
-    BEHRTForMaskedLM,
-)
-from psycop.common.sequence_models.tasks.encoder_for_classification import (
-    EncoderForClassification,
-)
-
 from ..feature_generation.sequences.patient_slice_getter import (
     BaseLabelledSliceCreator,
     BaseUnlabelledSliceCreator,
 )
+from .tasks.base_patientslice_classifier import BasePatientSliceClassifier
+from .tasks.base_pretraining_task import BasePatientSlicePretrainer
 
 
 class TrainerConfigSchema(BaseModel):
@@ -81,7 +76,7 @@ class PretrainingModelAndDataset(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    model: BEHRTForMaskedLM  # TODO: https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/529 abstract interfaces for models between pretraining and classification
+    model: BasePatientSlicePretrainer
     training_dataset: BaseUnlabelledSliceCreator
     validation_dataset: BaseUnlabelledSliceCreator
 
@@ -92,7 +87,7 @@ class ClassificationModelAndDataset(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    model: EncoderForClassification
+    model: BasePatientSliceClassifier
     training_dataset: BaseLabelledSliceCreator
     validation_dataset: BaseLabelledSliceCreator
 
