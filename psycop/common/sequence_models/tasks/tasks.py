@@ -60,7 +60,10 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
         if self.embedder.is_fitted:
             # Otherwise, the mlm_head will be initialized in on_fit_start
-            self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
+            self._initialise_mlm_head()
+
+    def _initialise_mlm_head(self):
+        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
 
     def training_step(  # type: ignore
         self,
@@ -176,7 +179,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def on_fit_start(self) -> None:
         """Pytorch lightning hook. Called at the beginning of every fit."""
-        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
+        self._initialise_mlm_head()
 
     def configure_optimizers(
         self,

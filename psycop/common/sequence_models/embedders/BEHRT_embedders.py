@@ -318,6 +318,9 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
+        if self.is_fitted:
+            raise RuntimeError("Model is already fitted")
+
         patient_slices = self.reformat(patient_slices)
 
         diagnosis_codes: list[str] = [
