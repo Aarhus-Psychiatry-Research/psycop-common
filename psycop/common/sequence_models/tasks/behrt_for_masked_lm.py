@@ -144,7 +144,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
 
     def collate_fn(
         self,
-        patient_slices: list[PatientSlice],
+        patient_slices: Sequence[PatientSlice],
     ) -> BatchWithLabels:
         """
         Takes a list of PredictionTime and returns a dictionary of padded sequence ids.

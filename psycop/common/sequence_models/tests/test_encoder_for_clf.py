@@ -12,7 +12,7 @@ from psycop.common.sequence_models import (
     Aggregator,
     BEHRTEmbedder,
     BEHRTForMaskedLM,
-    PatientSlicesWithLabels,
+    PredictionTimeDataset,
 )
 from psycop.common.sequence_models.aggregators import (
     AveragePooler,
@@ -27,7 +27,7 @@ from psycop.common.sequence_models.tasks.encoder_for_classification import (
 @pytest.fixture()
 def patient_dataset_with_labels(
     patient_slices: list[PatientSlice],
-) -> PatientSlicesWithLabels:
+) -> PredictionTimeDataset:
     prediction_times = []
     for i, patient_slice in enumerate(patient_slices):
         prediction_times.append(
@@ -38,7 +38,7 @@ def patient_dataset_with_labels(
             ),
         )
 
-    return PatientSlicesWithLabels(prediction_times=prediction_times)
+    return PredictionTimeDataset(prediction_times=prediction_times)
 
 
 @pytest.fixture()
@@ -78,7 +78,7 @@ def arm_within_docker() -> bool:
     reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
 )
 def test_encoder_for_clf(
-    patient_dataset_with_labels: PatientSlicesWithLabels,
+    patient_dataset_with_labels: PredictionTimeDataset,
     embedder: BEHRTEmbedder,
     encoder: nn.Module,
     aggregation_module: Aggregator,
@@ -108,7 +108,7 @@ def test_encoder_for_clf(
 
 
 def test_encoder_for_clf_for_multiclass(
-    patient_dataset_with_labels: PatientSlicesWithLabels,
+    patient_dataset_with_labels: PredictionTimeDataset,
     embedder: BEHRTEmbedder,
     encoder: nn.Module,
     aggregation_module: Aggregator,
@@ -142,7 +142,7 @@ def test_encoder_for_clf_for_multiclass(
     reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
 )
 def test_pretrain_from_checkpoint(
-    patient_dataset_with_labels: PatientSlicesWithLabels,
+    patient_dataset_with_labels: PredictionTimeDataset,
     aggregation_module: Aggregator,
     optimizer: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,

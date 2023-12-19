@@ -8,6 +8,7 @@ from torchmetrics import Metric
 from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 
 from ...data_structures.patient import PatientSlice
+from ...data_structures.prediction_time import PredictionTime
 from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
@@ -138,12 +139,14 @@ class EncoderForClassification(pl.LightningModule):
 
     def collate_fn(
         self,
-        patient_slices_with_labels: list[tuple[PatientSlice, int]],
+        prediction_times: Sequence[PredictionTime],
     ) -> BatchWithLabels:
         """
         Takes a list of patients and returns a dictionary of padded sequence ids.
         """
-        patient_slices, outcomes = list(zip(*patient_slices_with_labels))  # type: ignore
+        patient_slices, outcomes = list(
+            zip(*[(p.patient_slice, p.outcome) for p in prediction_times]),
+        )
         patient_slices: list[PatientSlice] = list(patient_slices)
         padded_sequence_ids = self.embedder.collate_patient_slices(
             patient_slices,
