@@ -145,11 +145,10 @@ class EncoderForClassification(pl.LightningModule):
         Takes a list of patients and returns a dictionary of padded sequence ids.
         """
         patient_slices, outcomes = list(
-            zip(*[(p.patient_slice, p.outcome) for p in prediction_times]),
+            zip(*[(p.patient_slice, int(p.outcome)) for p in prediction_times]),
         )
-        patient_slices: list[PatientSlice] = list(patient_slices)
         padded_sequence_ids = self.embedder.collate_patient_slices(
-            patient_slices,
+            list(patient_slices),
         )
 
         outcome_tensor = torch.tensor(outcomes)
