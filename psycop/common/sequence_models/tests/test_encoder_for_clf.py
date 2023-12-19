@@ -20,7 +20,7 @@ from psycop.common.sequence_models.aggregators import (
 )
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 from psycop.common.sequence_models.tasks.encoder_for_classification import (
-    EncoderForClassification,
+    PatientSliceClassifier,
 )
 
 
@@ -85,7 +85,7 @@ def test_encoder_for_clf(
     optimizer: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
-    clf = EncoderForClassification(
+    clf = PatientSliceClassifier(
         embedder=embedder,
         encoder=encoder,
         aggregator=aggregation_module,
@@ -115,7 +115,7 @@ def test_encoder_for_clf_for_multiclass(
     optimizer: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
-    clf = EncoderForClassification(
+    clf = PatientSliceClassifier(
         embedder=embedder,
         encoder=encoder,
         aggregator=aggregation_module,
@@ -159,7 +159,7 @@ def test_pretrain_from_checkpoint(
 
     loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
 
-    clf = EncoderForClassification(
+    clf = PatientSliceClassifier(
         embedder=loaded_model.embedder,
         encoder=loaded_model.encoder,
         aggregator=aggregation_module,

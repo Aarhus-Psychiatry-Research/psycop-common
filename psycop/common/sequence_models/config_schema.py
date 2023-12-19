@@ -14,7 +14,7 @@ from psycop.common.sequence_models.tasks import (
     BEHRTForMaskedLM,
 )
 from psycop.common.sequence_models.tasks.encoder_for_classification import (
-    EncoderForClassification,
+    PatientSliceClassifier,
 )
 
 from ..feature_generation.sequences.patient_slice_getter import (
@@ -92,7 +92,7 @@ class ClassificationModelAndDataset(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    model: EncoderForClassification
+    model: PatientSliceClassifier
     training_dataset: BaseLabelledSliceCreator
     validation_dataset: BaseLabelledSliceCreator
 

@@ -18,7 +18,7 @@ from ..embedders.interface import PatientSliceEmbedder
 Metrics = dict[str, torch.Tensor]
 
 
-class PatientSliceClassifier(ABC, pl.LightningModule):
+class BasePatientSliceClassifier(ABC, pl.LightningModule):
     @abstractmethod
     def collate_fn(
         self,

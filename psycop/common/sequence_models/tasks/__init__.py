@@ -1,4 +1,4 @@
-from .encoder_for_classification import EncoderForClassification
+from .encoder_for_classification import PatientSliceClassifier
 from .behrt_for_masked_lm import BEHRTForMaskedLM
 
 __all__ = [

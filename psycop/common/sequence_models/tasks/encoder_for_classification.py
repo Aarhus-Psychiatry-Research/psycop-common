@@ -15,12 +15,12 @@ from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
-from .base_task import Metrics, PatientSliceClassifier
+from .base_patientslice_classifier import BasePatientSliceClassifier, Metrics
 
 
-@Registry.tasks.register("clf_encoder")
+@Registry.tasks.register("patient_slice_classifier")
 @final  # This is not an ABC, must not contain abstract methods
-class EncoderForClassification(PatientSliceClassifier):
+class PatientSliceClassifier(BasePatientSliceClassifier):
     """
     A BEHRT model for the classification task.
     """
@@ -92,7 +92,7 @@ class EncoderForClassification(PatientSliceClassifier):
         labels: torch.Tensor,
     ) -> Metrics:
         embedded_patients = self.embedder.forward(inputs)
-        encoded_patients = self._encoder(
+        encoded_patients = self._encoder.forward(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
         )
