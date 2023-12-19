@@ -58,6 +58,9 @@ class BEHRTForMaskedLM(pl.LightningModule):
         self.loss = nn.CrossEntropyLoss(ignore_index=-1)
         self.d_model = self.embedder.d_model
 
+        if self.embedder.is_fitted:
+            self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
+
     def training_step(  # type: ignore
         self,
         batch: BatchWithLabels,
@@ -169,16 +172,6 @@ class BEHRTForMaskedLM(pl.LightningModule):
         # Masking
         batch_with_labels = self.masking_fn(padded_sequence_ids)
         return batch_with_labels
-
-    def on_load_checkpoint(self, checkpoint: dict[str, torch.Tensor]) -> None:
-        self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
-        state_dict = checkpoint["state_dict"]
-
-        mlm_head_state_dict = {
-            "weight": state_dict["mlm_head.weight"],  # type: ignore
-            "bias": state_dict["mlm_head.bias"],  # type: ignore
-        }
-        self.mlm_head.load_state_dict(mlm_head_state_dict)
 
     def on_fit_start(self) -> None:
         """Pytorch lightning hook. Called at the beginning of every fit."""
