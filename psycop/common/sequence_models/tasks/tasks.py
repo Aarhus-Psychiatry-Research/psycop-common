@@ -184,9 +184,6 @@ class BEHRTForMaskedLM(pl.LightningModule):
         """Pytorch lightning hook. Called at the beginning of every fit."""
         self.mlm_head = nn.Linear(self.d_model, self.embedder.n_diagnosis_codes)
 
-    def setup(self, stage: str | None = None) -> None:  # noqa: ARG002
-        """Pytorch lightning hook. Called at the beginning of fit (train + validate), validate, test, or predict. This is a good hook when you need to build models dynamically or adjust something about them. This hook is called on every process when using DDP."""
-
     def configure_optimizers(
         self,
     ) -> tuple[
