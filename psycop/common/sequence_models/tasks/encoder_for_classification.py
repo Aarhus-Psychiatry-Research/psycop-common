@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Literal
+from typing import Literal, final
 
 import lightning.pytorch as pl
 import torch
@@ -12,12 +12,15 @@ from ...data_structures.prediction_time import PredictionTime
 from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
+from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
+from .base_task import PatientSliceClassifier
 
 
 @Registry.tasks.register("clf_encoder")
-class EncoderForClassification(pl.LightningModule):
+@final  # This is not an ABC, must not contain abstract methods
+class EncoderForClassification(PatientSliceClassifier):
     """
     A BEHRT model for the classification task.
     """
@@ -26,17 +29,17 @@ class EncoderForClassification(pl.LightningModule):
         self,
         embedder: BEHRTEmbedder,
         encoder: nn.Module,
-        aggregation_module: Aggregator,
+        aggregator: Aggregator,
         optimizer: OptimizerFn,
         lr_scheduler: LRSchedulerFn,
         num_classes: int = 2,
     ):
         super().__init__()
-        self.embedder = embedder
-        self.encoder = encoder
+        self._embedder = embedder
+        self._encoder = encoder
         self.optimizer = optimizer
         self.lr_scheduler_fn = lr_scheduler
-        self.aggregation_module = aggregation_module
+        self._aggregator = aggregator
 
         self.d_model: int = embedder.d_model
 
@@ -61,13 +64,13 @@ class EncoderForClassification(pl.LightningModule):
             return {"AUROC": BinaryAUROC()}
         return {"AUROC (macro)": MulticlassAUROC(num_classes=num_classes)}
 
-    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore # noqa: ARG002
+    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # noqa: ARG002
         output = self.forward(batch.inputs, batch.labels)
         loss = output["loss"]
         self.log_step("Training", output)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore  # noqa: ARG002
+    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # noqa: ARG002
         output = self.forward(inputs=batch.inputs, labels=batch.labels)
         self.log_step("Validation", output)
         return output["loss"]
@@ -88,15 +91,15 @@ class EncoderForClassification(pl.LightningModule):
         inputs: dict[str, torch.Tensor],
         labels: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
-        embedded_patients = self.embedder(inputs)
-        encoded_patients = self.encoder(
+        embedded_patients = self.embedder.forward(inputs)
+        encoded_patients = self._encoder(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
         )
 
         # Aggregate the sequence
         is_padding = embedded_patients.src_key_padding_mask
-        aggregated_patients = self.aggregation_module(
+        aggregated_patients = self._aggregator(
             encoded_patients,
             attention_mask=~is_padding,
         )
@@ -159,7 +162,7 @@ class EncoderForClassification(pl.LightningModule):
     ) -> tuple[
         list[torch.optim.Optimizer],
         list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
-    ]:  # type: ignore
+    ]:
         optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
@@ -170,3 +173,15 @@ class EncoderForClassification(pl.LightningModule):
     ) -> Sequence[PatientSlice]:
         reformatted_slices = self.embedder.reformat(patient_slices)
         return reformatted_slices
+
+    @property
+    def embedder(self) -> PatientSliceEmbedder:
+        return self._embedder
+
+    @property
+    def aggregator(self) -> Aggregator:
+        return self._aggregator
+
+    @property
+    def encoder(self) -> nn.Module:
+        return self._encoder

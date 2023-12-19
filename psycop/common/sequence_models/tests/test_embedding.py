@@ -31,8 +31,7 @@ def test_embeddings(
     assert isinstance(inputs_ids["segment"], torch.Tensor)
     assert isinstance(inputs_ids["position"], torch.Tensor)
 
-    # forward
-    embedder(inputs_ids)
+    embedder.forward(inputs_ids)
 
 
 @pytest.mark.parametrize(

@@ -27,10 +27,9 @@ class PatientSliceEmbedder(Protocol):
     Interface for embedding modules
     """
 
-    def __init__(self, *args: Any) -> None:
-        ...
+    is_fitted: bool
 
-    def __call__(self, *args: Any) -> torch.Tensor:
+    def __init__(self, *args: Any) -> None:
         ...
 
     def forward(self, inputs: dict[str, torch.Tensor]) -> EmbeddedSequence:
@@ -46,4 +45,10 @@ class PatientSliceEmbedder(Protocol):
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> None:
+        ...
+
+    def reformat(
+        self,
+        patient_slices: Sequence[PatientSlice],
+    ) -> list[PatientSlice]:
         ...

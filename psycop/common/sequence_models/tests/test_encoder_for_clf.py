@@ -88,7 +88,7 @@ def test_encoder_for_clf(
     clf = EncoderForClassification(
         embedder=embedder,
         encoder=encoder,
-        aggregation_module=aggregation_module,
+        aggregator=aggregation_module,
         num_classes=2,
         optimizer=optimizer,
         lr_scheduler=lr_scheduler_fn,
@@ -118,7 +118,7 @@ def test_encoder_for_clf_for_multiclass(
     clf = EncoderForClassification(
         embedder=embedder,
         encoder=encoder,
-        aggregation_module=aggregation_module,
+        aggregator=aggregation_module,
         num_classes=4,  # more than 2 classes
         optimizer=optimizer,
         lr_scheduler=lr_scheduler_fn,
@@ -162,7 +162,7 @@ def test_pretrain_from_checkpoint(
     clf = EncoderForClassification(
         embedder=loaded_model.embedder,
         encoder=loaded_model.encoder,
-        aggregation_module=aggregation_module,
+        aggregator=aggregation_module,
         num_classes=2,
         optimizer=optimizer,
         lr_scheduler=lr_scheduler_fn,
