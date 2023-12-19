@@ -10,7 +10,6 @@ import torch
 from torch.utils.data import DataLoader
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
-from .tasks.encoder_for_classification import EncoderForClassification
 
 from .config_utils import load_config, parse_config
 
