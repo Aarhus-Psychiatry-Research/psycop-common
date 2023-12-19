@@ -63,7 +63,9 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
         return {"AUROC (macro)": MulticlassAUROC(num_classes=num_classes)}
 
     def training_step(
-        self, batch: BatchWithLabels, batch_idx: int
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,
     ) -> torch.Tensor:  # noqa: ARG002
         output = self.forward(batch.inputs, batch.labels)
         loss = output["loss"]
@@ -71,7 +73,9 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
         return loss
 
     def validation_step(
-        self, batch: BatchWithLabels, batch_idx: int
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,
     ) -> torch.Tensor:  # noqa: ARG002
         output = self.forward(inputs=batch.inputs, labels=batch.labels)
         self.log_step("Validation", output)
