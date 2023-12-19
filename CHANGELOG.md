@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.156.1 (2023-12-19)
+
+### Fix
+
+* Generate new checkpoint ([`558666e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/558666e2aee13ac7c9b6072efd87e411f52a8a47))
+
 ## v0.156.0 (2023-12-18)
 
 ### Feature

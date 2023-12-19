@@ -11,19 +11,19 @@ from psycop.common.sequence_models.embedders.interface import PatientSliceEmbedd
 
 
 @pytest.mark.parametrize(
-    "embedding_module",
+    "embedder",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_embeddings(
     patient_slices: Sequence[PatientSlice],
-    embedding_module: PatientSliceEmbedder,
+    embedder: PatientSliceEmbedder,
 ):
     """
     Test embedding interface
     """
-    embedding_module.fit(patient_slices)
+    embedder.fit(patient_slices)
 
-    inputs_ids = embedding_module.collate_patient_slices(patient_slices)
+    inputs_ids = embedder.collate_patient_slices(patient_slices)
 
     assert isinstance(inputs_ids, dict)
     assert isinstance(inputs_ids["diagnosis"], torch.Tensor)  # type: ignore
@@ -32,15 +32,15 @@ def test_embeddings(
     assert isinstance(inputs_ids["position"], torch.Tensor)
 
     # forward
-    embedding_module(inputs_ids)
+    embedder(inputs_ids)
 
 
 @pytest.mark.parametrize(
-    "embedding_module",
+    "embedder",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_diagnosis_mapping(
-    embedding_module: BEHRTEmbedder,
+    embedder: BEHRTEmbedder,
 ):
     """
     Test mapping of diagnosis from ICD10 to caliber
@@ -95,15 +95,15 @@ def test_diagnosis_mapping(
     patient_events: list[tuple[Patient, TemporalEvent]] = [
         (p, e)
         for p in [patient]
-        for e in filter(embedding_module.is_A_diagnosis, p.temporal_events)
+        for e in filter(embedder.is_A_diagnosis, p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
     # map diagnosis codes
     mapped_diagnosis_codes = [
-        embedding_module.map_icd10_to_caliber(d)
+        embedder.map_icd10_to_caliber(d)
         for d in diagnosis_codes
-        if embedding_module.map_icd10_to_caliber(d)
+        if embedder.map_icd10_to_caliber(d)
     ]
 
     assert mapped_diagnosis_codes == [
@@ -115,11 +115,11 @@ def test_diagnosis_mapping(
 
 
 @pytest.mark.parametrize(
-    "embedding_module",
+    "embedder",
     [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
 )
 def test_reformat_and_filter(
-    embedding_module: BEHRTEmbedder,
+    embedder: BEHRTEmbedder,
 ):
     """
     Test mapping of diagnosis from ICD10 to caliber
@@ -170,7 +170,7 @@ def test_reformat_and_filter(
     ]
 
     patient.add_events(temporal_events)
-    patient_slices_mapped = embedding_module.reformat(
+    patient_slices_mapped = embedder.reformat(
         [patient.as_slice()],
     )
     diagnosis_codes = [
