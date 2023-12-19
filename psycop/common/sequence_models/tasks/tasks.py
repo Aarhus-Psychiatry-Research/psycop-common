@@ -1,5 +1,4 @@
 import logging
-from collections import OrderedDict
 from collections.abc import Iterator, Sequence
 from copy import copy
 from dataclasses import dataclass
