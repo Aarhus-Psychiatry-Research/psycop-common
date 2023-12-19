@@ -50,6 +50,9 @@ def test_behrt(patient_dataset: PatientSliceDataset):
         collate_fn=behrt.collate_fn,
     )
 
+    trainer = pl.Trainer(max_epochs=1)
+    trainer.fit(behrt, train_dataloaders=dataloader)
+
     for input_ids, masked_labels in dataloader:
         output = behrt(input_ids, masked_labels)
         loss = output["loss"]
@@ -128,7 +131,7 @@ def create_trainer(save_dir: Path) -> pl.Trainer:
         accelerator="cpu",
         val_check_interval=2,
         logger=wandb_logger,
-        max_steps=20,
+        max_steps=5,
         callbacks=callbacks,  # type: ignore
     )
 

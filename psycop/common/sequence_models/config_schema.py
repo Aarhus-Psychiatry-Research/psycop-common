@@ -12,6 +12,8 @@ from pydantic import BaseModel
 
 from psycop.common.sequence_models.tasks import (
     BEHRTForMaskedLM,
+)
+from psycop.common.sequence_models.tasks.encoder_for_classification import (
     EncoderForClassification,
 )
 

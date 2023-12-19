@@ -36,6 +36,7 @@ class BEHRTVocab:
     position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
 
 
+@Registry.embedders.register("behrt_embedder")
 class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
     def __init__(
         self,
@@ -317,6 +318,9 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
+        if self.is_fitted:
+            raise RuntimeError("Model is already fitted")
+
         patient_slices = self.reformat(patient_slices)
 
         diagnosis_codes: list[str] = [
@@ -363,7 +367,6 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         self.is_fitted = True
 
 
-@Registry.embedders.register("behrt_embedder")
 def create_behrt_embedder(
     d_model: int,
     dropout_prob: float,

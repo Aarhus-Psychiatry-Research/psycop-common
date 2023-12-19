@@ -31,7 +31,7 @@ def populate_registry() -> None:
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
-    from .tasks.tasks import BEHRTForMaskedLM, EncoderForClassification  # noqa
+    from .tasks.behrt_for_masked_lm import BEHRTForMaskedLM  # noqa
 
 
 populate_registry()
@@ -50,7 +50,7 @@ def train(config_path: Path | None = None) -> None:
     if cfg.logger is not None:
         for logger in cfg.logger:
             # update config
-            log.info("Updating Config")
+            log.info("Logging config")
             flat_config = flatten_nested_dict(config_dict)
             logger.log_hyperparams(flat_config)
 
@@ -65,14 +65,19 @@ def train(config_path: Path | None = None) -> None:
     validation_dataset = cfg.model_and_dataset.validation_dataset.get_patient_slices()
     validation_dataset.filter_patients(filter_fn)
 
-    log.info("Creating dataloaders")
-    model = cfg.model_and_dataset.model
+    log.info("Fitting embedder")
+    embedder = cfg.model_and_dataset.model.embedder
+    if not embedder.is_fitted:
+        embedder.fit(training_dataset.patient_slices)
+    else:
+        log.info("Embedder already fitted, continuing")
 
+    log.info("Creating dataloaders")
     train_loader = DataLoader(
         training_dataset,
         batch_size=cfg.training.batch_size,
         shuffle=True,
-        collate_fn=model.collate_fn,
+        collate_fn=cfg.model_and_dataset.model.collate_fn,
         num_workers=cfg.training.num_workers_for_dataloader,
         persistent_workers=True,
     )
@@ -80,7 +85,7 @@ def train(config_path: Path | None = None) -> None:
         validation_dataset,
         batch_size=cfg.training.batch_size,
         shuffle=False,
-        collate_fn=model.collate_fn,
+        collate_fn=cfg.model_and_dataset.model.collate_fn,
         num_workers=cfg.training.num_workers_for_dataloader,
         persistent_workers=True,
     )
@@ -90,4 +95,8 @@ def train(config_path: Path | None = None) -> None:
 
     log.info("Starting training")
     torch.set_float32_matmul_precision("medium")
-    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+    trainer.fit(
+        model=cfg.model_and_dataset.model,
+        train_dataloaders=train_loader,
+        val_dataloaders=val_loader,
+    )
