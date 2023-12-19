@@ -19,12 +19,11 @@ from psycop.common.sequence_models.train import train
 
 @Registry.datasets.register("diagnosis_only_patient_slice_dataset")
 def create_patient_slice_dataset(
-    min_n_visits: int,
     split_name: str,
 ) -> PatientSliceDataset:
     train_patients = PatientLoader.get_split(
         event_loaders=[
-            DiagnosisLoader(min_n_visits=min_n_visits),
+            DiagnosisLoader(),
         ],
         split=SplitName(split_name),
     )

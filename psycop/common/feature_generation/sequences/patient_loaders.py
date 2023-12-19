@@ -26,9 +26,8 @@ class EventDfLoader(ABC):
 class DiagnosisLoader(EventDfLoader):
     """Load all diagnoses for all patients."""
 
-    def __init__(self, min_n_visits: Union[int, None]) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.min_n_visits = min_n_visits
 
     def load_events(self) -> pl.LazyFrame:
         """Load all a-diagnoses"""
@@ -75,9 +74,6 @@ class DiagnosisLoader(EventDfLoader):
             )  # Removes HCO "diagnosis metadata", which is of too poor quality.
         ).unique(maintain_order=True)
 
-        if self.min_n_visits:
-            df = keep_if_min_n_visits(df=df, n_visits=self.min_n_visits)
-
         return df.drop_nulls()  # Drop all rows with no diagnosis
 
 
@@ -103,6 +99,7 @@ class PatientLoader:
     def get_split(
         event_loaders: Sequence[EventDfLoader],
         split: SplitName,
+        min_n_events: int | None = None,
         fraction: float = 1.0,
     ) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
@@ -111,6 +108,12 @@ class PatientLoader:
         )
 
         events_from_train = split_ids.join(event_data, on="dw_ek_borger", how="left")
+
+        if min_n_events:
+            events_from_train = keep_if_min_n_visits(
+                events_from_train,
+                n_visits=min_n_events,
+            )
 
         events_after_2013 = events_from_train.filter(
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
@@ -126,6 +129,7 @@ class PatientLoader:
 
 if __name__ == "__main__":
     patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader(min_n_visits=5)],
+        event_loaders=[DiagnosisLoader()],
         split=SplitName.TRAIN,
+        min_n_events=5,
     )

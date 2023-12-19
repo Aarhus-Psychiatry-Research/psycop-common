@@ -23,6 +23,7 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
         split_name: Literal["train", "val", "test"],
         cohort_definer: CohortDefiner,
         event_loaders: Sequence[EventDfLoader],
+        min_n_events: int | None = None,
         load_fraction: float = 1.0,
     ):
         self.split_name = split_name
@@ -30,6 +31,7 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
         self.cohort_definer = cohort_definer
         self.event_loaders = event_loaders
         self.load_fraction = load_fraction
+        self.min_n_events = min_n_events
 
     def get_patient_slices(
         self,
@@ -37,6 +39,7 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
         patients = PatientLoader.get_split(
             event_loaders=self.event_loaders,
             split=SplitName(self.split_name),
+            min_n_events=self.min_n_events,
             fraction=self.load_fraction,
         )
 

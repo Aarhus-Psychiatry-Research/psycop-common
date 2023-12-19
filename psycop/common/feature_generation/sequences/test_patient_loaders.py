@@ -18,7 +18,7 @@ def test_diagnosis_preprocessing():
     """,
     )
 
-    formatted_df = DiagnosisLoader(min_n_visits=None).preprocess_diagnosis_columns(
+    formatted_df = DiagnosisLoader().preprocess_diagnosis_columns(
         df=df.lazy(),
     )
 
