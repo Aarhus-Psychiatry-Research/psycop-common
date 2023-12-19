@@ -29,7 +29,9 @@ def calibration_plot(run: ForcedAdmissionInpatientPipelineRun):
     plt.ylabel("Fraction of Positives")
     plt.title("Calibration Curve")
     plt.legend()
-    calibration_curve_path = run.paper_outputs.paths.figures / "calibration_curve.png"
+    calibration_curve_path = (
+        run.paper_outputs.paths.figures / "fa_inpatient_calibration_curve.png"
+    )
     plt.savefig(calibration_curve_path)
     plt.show()
 

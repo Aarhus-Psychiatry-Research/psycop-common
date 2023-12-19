@@ -13,7 +13,7 @@ MODEL_NAME = "no_washout_full_model_with_text_features"
 PROJECT_MODEL_DIR = Path(
     f"E:/shared_resources/forced_admissions_inpatient/models/{MODEL_NAME}/pipeline_eval",
 )
-MODEL_ALGORITHM = 1  # 0 fo logistic regression and 1 for best xgboost
+MODEL_ALGORITHM = 0  # 0 fo logistic regression and 1 for best xgboost
 
 DEV_GROUP_NAME = "unthickly-negating"
 DEVELOPMENT_GROUP = RunGroup(model_name=MODEL_NAME, group_name=DEV_GROUP_NAME)
