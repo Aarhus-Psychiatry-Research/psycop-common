@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v0.157.0 (2023-12-19)
+
+### Feature
+
+* Protocols ([`e4c3a47`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e4c3a47924f1670c9fa0e62008bd248418f03ab2))
+* Ready for pretraining ([`4631e79`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4631e7918e533460252786592769b2fbadabc9e7))
+
+### Fix
+
+* Type ignore ([`6685920`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6685920df1f86e7bac951d9e0bb8f54ba598dad6))
+
+### Documentation
+
+* Misc. ([`369e0d6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/369e0d698a1abf55f62525a54582b49dd7f4f2d7))
+* Add docs ([`3e69f21`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3e69f21a5466104b036620688dff6ce4ff72e424))
+
 ## v0.156.1 (2023-12-19)
 
 ### Fix
