@@ -15,6 +15,7 @@ from psycop.common.data_structures.patient import PatientSlice
 from ..aggregators import Aggregator
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
+from ..registry import Registry
 
 log = logging.getLogger(__name__)
 
@@ -36,22 +37,23 @@ class BatchWithLabels:
         return iter((self.inputs, self.labels))
 
 
+@Registry.tasks.register("behrt")
 class BEHRTForMaskedLM(pl.LightningModule):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(
         self,
-        embedding_module: BEHRTEmbedder,
-        encoder_module: nn.Module,
-        optimizer_fn: OptimizerFn,
-        lr_scheduler_fn: LRSchedulerFn,
+        embedder: BEHRTEmbedder,
+        encoder: nn.Module,
+        optimizer: OptimizerFn,
+        lr_scheduler: LRSchedulerFn,
     ):
         super().__init__()
         self.save_hyperparameters()
-        self.embedder = embedding_module
-        self.encoder = encoder_module
-        self.optimizer_fn = optimizer_fn
-        self.lr_scheduler_fn = lr_scheduler_fn
+        self.embedder = embedder
+        self.encoder = encoder
+        self.optimizer = optimizer
+        self.lr_scheduler_fn = lr_scheduler
 
         self.d_model = self.embedder.d_model
         self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
@@ -171,7 +173,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         list[torch.optim.Optimizer],
         list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
     ]:  # type: ignore
-        optimizer = self.optimizer_fn(self.parameters())
+        optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
 
@@ -195,6 +197,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         return slices_with_content
 
 
+@Registry.tasks.register("clf_encoder")
 class EncoderForClassification(pl.LightningModule):
     """
     A BEHRT model for the classification task.
@@ -202,21 +205,21 @@ class EncoderForClassification(pl.LightningModule):
 
     def __init__(
         self,
-        embedding_module: BEHRTEmbedder,
-        encoder_module: nn.Module,
+        embedder: BEHRTEmbedder,
+        encoder: nn.Module,
         aggregation_module: Aggregator,
-        optimizer_fn: OptimizerFn,
-        lr_scheduler_fn: LRSchedulerFn,
+        optimizer: OptimizerFn,
+        lr_scheduler: LRSchedulerFn,
         num_classes: int = 2,
     ):
         super().__init__()
-        self.embedder = embedding_module
-        self.encoder = encoder_module
-        self.optimizer_fn = optimizer_fn
-        self.lr_scheduler_fn = lr_scheduler_fn
+        self.embedder = embedder
+        self.encoder = encoder
+        self.optimizer = optimizer
+        self.lr_scheduler_fn = lr_scheduler
         self.aggregation_module = aggregation_module
 
-        self.d_model: int = embedding_module.d_model
+        self.d_model: int = embedder.d_model
 
         self.is_binary = num_classes == 2
         self.num_classes = num_classes
@@ -337,7 +340,7 @@ class EncoderForClassification(pl.LightningModule):
         list[torch.optim.Optimizer],
         list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
     ]:  # type: ignore
-        optimizer = self.optimizer_fn(self.parameters())
+        optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
 
