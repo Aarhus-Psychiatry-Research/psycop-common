@@ -10,6 +10,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
+from .tasks.encoder_for_classification import EncoderForClassification
 
 from .config_utils import load_config, parse_config
 
@@ -31,7 +32,7 @@ def populate_registry() -> None:
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
-    from .tasks.tasks import BEHRTForMaskedLM, EncoderForClassification  # noqa
+    from .tasks.behrt_for_masked_lm import BEHRTForMaskedLM  # noqa
 
 
 populate_registry()

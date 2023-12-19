@@ -1,6 +1,7 @@
-from .tasks import BEHRTForMaskedLM, EncoderForClassification
+from .encoder_for_classification import EncoderForClassification
+from .behrt_for_masked_lm import BEHRTForMaskedLM
 
 __all__ = [
     "BEHRTForMaskedLM",
-    "EncoderForClassification",
+    "encoder_for_classification",
 ]

@@ -12,7 +12,6 @@ from psycop.common.sequence_models import (
     Aggregator,
     BEHRTEmbedder,
     BEHRTForMaskedLM,
-    EncoderForClassification,
     PatientSlicesWithLabels,
 )
 from psycop.common.sequence_models.aggregators import (
@@ -20,6 +19,9 @@ from psycop.common.sequence_models.aggregators import (
     CLSAggregator,
 )
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
+from psycop.common.sequence_models.tasks.encoder_for_classification import (
+    EncoderForClassification,
+)
 
 
 @pytest.fixture()
