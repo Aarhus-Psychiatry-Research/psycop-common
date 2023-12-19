@@ -10,13 +10,6 @@ from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
-from psycop.common.sequence_models.tasks import (
-    BEHRTForMaskedLM,
-)
-from psycop.common.sequence_models.tasks.encoder_for_classification import (
-    PatientSliceClassifier,
-)
-
 from ..feature_generation.sequences.patient_slice_getter import (
     BaseLabelledSliceCreator,
     BaseUnlabelledSliceCreator,

@@ -62,12 +62,6 @@ def encoder() -> nn.Module:
     return encoder
 
 
-pytestmark = pytest.mark.parametrize(
-    "aggregation_module",
-    [CLSAggregator(), AveragePooler()],
-)
-
-
 def arm_within_docker() -> bool:
     """Check if we are running on ARM within docker. ARM on Mac is "arm64", and non-arm on Linux is "x86_64"""
     return "aarch64" in platform.machine()
@@ -76,6 +70,10 @@ def arm_within_docker() -> bool:
 @pytest.mark.skipif(
     arm_within_docker(),
     reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
+)
+@pytest.mark.parametrize(
+    "aggregation_module",
+    [CLSAggregator(), AveragePooler()],
 )
 def test_encoder_for_clf(
     patient_dataset_with_labels: PredictionTimeDataset,

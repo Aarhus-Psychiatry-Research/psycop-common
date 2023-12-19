@@ -3,7 +3,6 @@ from collections.abc import Sequence
 from copy import copy
 from typing import final
 
-import lightning.pytorch as pl
 import torch
 from torch import nn
 
@@ -11,7 +10,6 @@ from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.sequence_models.datatypes import BatchWithLabels
 
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
-from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
 from .base_pretraining_task import BasePatientSlicePretrainer, Metrics
@@ -59,7 +57,9 @@ class BEHRTForMaskedLM(BasePatientSlicePretrainer):
         self.log("train_loss", loss)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # noqa: ARG002
+    def validation_step(
+        self, batch: BatchWithLabels, batch_idx: int
+    ) -> torch.Tensor:  # noqa: ARG002
         output = self.forward(inputs=batch.inputs, labels=batch.labels)
         self.log("val_loss", output["loss"])
         return output["loss"]

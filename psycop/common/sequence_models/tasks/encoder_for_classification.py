@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from typing import Literal, final
 
-import lightning.pytorch as pl
 import torch
 from torch import nn
 from torchmetrics import Metric
@@ -11,7 +10,6 @@ from ...data_structures.patient import PatientSlice
 from ...data_structures.prediction_time import PredictionTime
 from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels
-from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
@@ -64,13 +62,17 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
             return {"AUROC": BinaryAUROC()}
         return {"AUROC (macro)": MulticlassAUROC(num_classes=num_classes)}
 
-    def training_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # noqa: ARG002
+    def training_step(
+        self, batch: BatchWithLabels, batch_idx: int
+    ) -> torch.Tensor:  # noqa: ARG002
         output = self.forward(batch.inputs, batch.labels)
         loss = output["loss"]
         self.log_step("Training", output)
         return loss
 
-    def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # noqa: ARG002
+    def validation_step(
+        self, batch: BatchWithLabels, batch_idx: int
+    ) -> torch.Tensor:  # noqa: ARG002
         output = self.forward(inputs=batch.inputs, labels=batch.labels)
         self.log_step("Validation", output)
         return output["loss"]

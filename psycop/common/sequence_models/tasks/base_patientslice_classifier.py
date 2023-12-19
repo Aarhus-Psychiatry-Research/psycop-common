@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Protocol
 
 import lightning.pytorch as pl
 import torch
@@ -9,7 +8,7 @@ from lightning.pytorch.utilities.types import (
 )
 from torch import nn
 
-from ...data_structures.patient import Patient, PatientSlice
+from ...data_structures.patient import PatientSlice
 from ...data_structures.prediction_time import PredictionTime
 from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels

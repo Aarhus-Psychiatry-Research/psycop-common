@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 import torch
 
@@ -22,6 +22,7 @@ class EmbeddedSequence:
     src_key_padding_mask: torch.Tensor
 
 
+@runtime_checkable
 class PatientSliceEmbedder(Protocol):
     """
     Interface for embedding modules
