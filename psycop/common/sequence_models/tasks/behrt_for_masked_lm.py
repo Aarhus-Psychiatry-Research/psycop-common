@@ -14,14 +14,14 @@ from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
-from .base_pretraining_task import BasePretrainingTask, Metrics
+from .base_pretraining_task import BasePatientSlicePretrainer, Metrics
 
 log = logging.getLogger(__name__)
 
 
 @Registry.tasks.register("behrt")
 @final  # This is not an ABC, must not contain abstract methods
-class BEHRTForMaskedLM(BasePretrainingTask):
+class BEHRTForMaskedLM(BasePatientSlicePretrainer):
     """An implementation of the BEHRT model for the masked language modeling task."""
 
     def __init__(
