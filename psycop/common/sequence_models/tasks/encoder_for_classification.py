@@ -27,7 +27,7 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
 
     def __init__(
         self,
-        embedder: BEHRTEmbedder,
+        embedder: PatientSliceEmbedder,
         encoder: nn.Module,
         aggregator: Aggregator,
         optimizer: OptimizerFn,

@@ -28,6 +28,7 @@ class PatientSliceEmbedder(Protocol):
     """
 
     is_fitted: bool
+    d_model: int
 
     def __init__(self, *args: Any) -> None:
         ...
