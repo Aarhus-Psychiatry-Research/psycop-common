@@ -15,7 +15,7 @@ from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
-from .base_task import PatientSliceClassifier
+from .base_task import Metrics, PatientSliceClassifier
 
 
 @Registry.tasks.register("clf_encoder")
@@ -86,11 +86,11 @@ class EncoderForClassification(PatientSliceClassifier):
         for metric_name, metric in output.items():
             self.log(f"{mode} {metric_name}", metric)
 
-    def forward(  # type: ignore
+    def forward(
         self,
         inputs: dict[str, torch.Tensor],
         labels: torch.Tensor,
-    ) -> dict[str, torch.Tensor]:
+    ) -> Metrics:
         embedded_patients = self.embedder.forward(inputs)
         encoded_patients = self._encoder(
             src=embedded_patients.src,
@@ -114,7 +114,7 @@ class EncoderForClassification(PatientSliceClassifier):
                 labels,
                 num_classes=self.num_classes,
             ).float()
-        loss = self.loss(logits, _labels)  # type: ignore
+        loss = self.loss(logits, _labels)
 
         metrics = self.calculate_metrics(logits, labels)
 

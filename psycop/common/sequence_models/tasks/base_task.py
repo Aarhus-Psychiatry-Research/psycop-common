@@ -15,6 +15,8 @@ from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels
 from ..embedders.interface import PatientSliceEmbedder
 
+Metrics = dict[str, torch.Tensor]
+
 
 class PatientSliceClassifier(ABC, pl.LightningModule):
     @abstractmethod
@@ -30,6 +32,14 @@ class PatientSliceClassifier(ABC, pl.LightningModule):
 
     @abstractmethod
     def validation_step(self, batch: BatchWithLabels, batch_idx: int) -> torch.Tensor:  # type: ignore
+        ...
+
+    @abstractmethod
+    def forward(  # type: ignore
+        self,
+        inputs: dict[str, torch.Tensor],
+        labels: torch.Tensor,
+    ) -> Metrics:
         ...
 
     @abstractmethod
