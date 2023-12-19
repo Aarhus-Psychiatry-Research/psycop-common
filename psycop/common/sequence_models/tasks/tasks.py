@@ -143,7 +143,7 @@ class BEHRTForMaskedLM(pl.LightningModule):
         """
         if not self.embedder.is_fitted:
             raise ValueError(
-                "The embedder must be fitted before masking, so it knows which token_id is that mask. Call embedder.fit() before masking.",
+                "The embedder must know which token_id corresponds to the mask. Therefore, the embedder must be fitted before masking. Call embedder.fit() before masking.",
             )
 
         self.mask_token_id = self.embedder.vocab.diagnosis["MASK"]
