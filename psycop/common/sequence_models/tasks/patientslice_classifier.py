@@ -90,7 +90,7 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
         """
         Logs the metrics for the given mode.
         """
-        logits = self.forward(batch.inputs, batch.labels)
+        logits = self.forward(batch.inputs)
         metrics = self.calculate_metrics(logits, batch.labels)
 
         loss = self._calculate_loss(batch.labels, logits)

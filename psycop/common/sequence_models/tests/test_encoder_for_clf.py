@@ -52,6 +52,16 @@ def arm_within_docker() -> bool:
     return "aarch64" in platform.machine()
 
 
+def _run_backward_pass(
+    dataloader: DataLoader[PatientSlice],
+    clf: PatientSliceClassifier,
+) -> None:
+    for input_ids, labels in dataloader:
+        logits = clf.forward(input_ids)
+        loss = clf._calculate_loss(labels=labels, logits=logits)  # type: ignore[privateImportUsage]
+        loss.backward()  # ensure that the backward pass works
+
+
 @pytest.mark.skipif(
     arm_within_docker(),
     reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
@@ -80,11 +90,7 @@ def test_encoder_for_clf(
         shuffle=True,
         collate_fn=clf.collate_fn,
     )
-
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
 
 
 @parametrise_aggregator
@@ -112,10 +118,7 @@ def test_encoder_for_clf_for_multiclass(
         collate_fn=clf.collate_fn,
     )
 
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
 
 
 TEST_CHECKPOINT_DIR = Path(__file__).parent / "test_checkpoints" / "checkpoints"
@@ -159,7 +162,4 @@ def test_pretrain_from_checkpoint(
         collate_fn=clf.collate_fn,
     )
 
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
