@@ -10,9 +10,11 @@ from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
-from ..feature_generation.sequences.patient_slice_getter import (
-    BasePredictionTimeCreator,
+from ..feature_generation.sequences.patient_slice_collater import (
     BaseUnlabelledSliceCreator,
+)
+from ..feature_generation.sequences.prediction_time_collater import (
+    BasePatientSliceCollater,
 )
 from .tasks.patientslice_classifier_base import BasePatientSliceClassifier
 from .tasks.pretrainer_base import BasePatientSlicePretrainer
@@ -88,8 +90,8 @@ class ClassificationModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: BasePatientSliceClassifier
-    training_dataset: BasePredictionTimeCreator
-    validation_dataset: BasePredictionTimeCreator
+    training_dataset: BasePatientSliceCollater
+    validation_dataset: BasePatientSliceCollater
 
 
 class ResolvedConfigSchema(BaseModel):

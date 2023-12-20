@@ -25,7 +25,7 @@ class PatientSliceColumnNames:
     source_subtype_col_name: str | None = "type"
 
 
-class EventDataFramesToPatientSlices:
+class PatientSliceFromEvents:
     """Unpacks a sequence of dataframes containing events into a list of patients."""
 
     def __init__(self, column_names: PatientSliceColumnNames | None = None) -> None:

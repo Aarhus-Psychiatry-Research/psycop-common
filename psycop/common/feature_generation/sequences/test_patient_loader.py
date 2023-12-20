@@ -1,8 +1,8 @@
 import polars as pl
 from polars.testing import assert_frame_equal
 
-from psycop.common.feature_generation.sequences.patient_loaders import (
-    DiagnosisLoader,
+from psycop.common.feature_generation.sequences.event_loader import DiagnosisLoader
+from psycop.common.feature_generation.sequences.patient_loader import (
     keep_if_min_n_visits,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df

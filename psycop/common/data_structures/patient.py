@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     import datetime as dt
     from collections.abc import Sequence
 
-    from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
+    from psycop.common.feature_generation.sequences.prediction_times_from_cohort import (
         PATIENT_ID,
     )
 

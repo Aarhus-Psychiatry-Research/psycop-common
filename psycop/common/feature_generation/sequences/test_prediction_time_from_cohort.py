@@ -4,8 +4,8 @@ import polars as pl
 
 from psycop.common.cohort_definition import CohortDefiner, FilteredPredictionTimeBundle
 from psycop.common.data_structures.test_patient import get_test_patient
-from psycop.common.feature_generation.sequences.cohort_definer_to_prediction_times import (
-    CohortToPredictionTimes,
+from psycop.common.feature_generation.sequences.prediction_times_from_cohort import (
+    PredictionTimesFromCohort,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -37,7 +37,7 @@ class FakeCohortDefiner(CohortDefiner):
 
 def test_polars_dataframe_to_dict():
     """Test that each prediction time is mapped to the correct patient."""
-    prediction_times = CohortToPredictionTimes(
+    prediction_times = PredictionTimesFromCohort(
         cohort_definer=FakeCohortDefiner(),
         patients=[
             get_test_patient(patient_id=1),

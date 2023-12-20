@@ -6,7 +6,7 @@ from psycop.common.sequence_models.dataset import PatientSliceDataset
 from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.train import train
 
-from ...feature_generation.sequences.patient_slice_getter import (
+from ...feature_generation.sequences.patient_slice_collater import (
     BaseUnlabelledSliceCreator,
 )
 from .utils import create_patients

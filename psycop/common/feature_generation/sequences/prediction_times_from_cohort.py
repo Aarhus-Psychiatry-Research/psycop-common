@@ -9,8 +9,8 @@ from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
-from psycop.common.feature_generation.sequences.patient_loaders import (
-    DiagnosisLoader,
+from psycop.common.feature_generation.sequences.event_loader import DiagnosisLoader
+from psycop.common.feature_generation.sequences.patient_loader import (
     PatientLoader,
 )
 from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
@@ -20,7 +20,7 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
 PATIENT_ID = str | int
 
 
-class CohortToPredictionTimes:
+class PredictionTimesFromCohort:
     def __init__(
         self,
         cohort_definer: CohortDefiner,
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         min_n_events=5,
     )
 
-    prediction_times = CohortToPredictionTimes(
+    prediction_times = PredictionTimesFromCohort(
         cohort_definer=T2DCohortDefiner(),
         patients=patients,
     ).create_prediction_times(

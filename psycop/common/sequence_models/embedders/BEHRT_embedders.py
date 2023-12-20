@@ -17,9 +17,11 @@ from tqdm import tqdm
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
 
-from ...feature_generation.sequences.patient_slice_getter import (
-    BasePredictionTimeCreator,
+from ...feature_generation.sequences.patient_slice_collater import (
     BaseUnlabelledSliceCreator,
+)
+from ...feature_generation.sequences.prediction_time_collater import (
+    BasePatientSliceCollater,
 )
 from ..registry import Registry
 from .interface import EmbeddedSequence, PatientSliceEmbedder
@@ -371,7 +373,7 @@ def create_behrt_embedder(
     d_model: int,
     dropout_prob: float,
     max_sequence_length: int,
-    patient_slice_creator: BaseUnlabelledSliceCreator | BasePredictionTimeCreator,
+    patient_slice_creator: BaseUnlabelledSliceCreator | BasePatientSliceCollater,
 ) -> BEHRTEmbedder:
     embedder = BEHRTEmbedder(
         d_model=d_model,
