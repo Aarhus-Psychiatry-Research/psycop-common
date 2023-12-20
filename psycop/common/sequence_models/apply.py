@@ -3,6 +3,7 @@ from pathlib import Path
 
 import lightning.pytorch as pl
 import polars
+import torch
 from torch.utils.data import DataLoader
 
 from psycop.common.feature_generation.sequences.patient_slice_collater import (
@@ -49,10 +50,15 @@ def apply(
     )
 
     trainer = pl.Trainer(**training_config.trainer.to_dict())
-    predictions = trainer.predict(model, dataloader)
+    batch_predictions = trainer.predict(model, dataloader)
+    predictions = torch.cat(batch_predictions, dim=0).squeeze(-1)  # type: ignore
 
-    df = polars.DataFrame(predictions)
+    df = polars.DataFrame(
+        {
+            "pred_time_uuid": [pt.pred_time_uuid for pt in dataset.prediction_times],
+            "pred_proba": predictions.numpy(),
+        },
+    )
     out_path = output_parquet_path.with_suffix(".parquet")
     df.write_parquet(out_path)
     log.info(f"Saved predictions to {out_path}")
-

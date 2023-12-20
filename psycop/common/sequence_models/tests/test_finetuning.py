@@ -37,15 +37,16 @@ class FakePredictionTimeCollater(BasePredictionTimeCollater):
                     prediction_timestamp=dt.datetime.now(),
                     patient_slice=PatientSlice(
                         patient=Patient(
-                            patient_id=1234,
+                            patient_id=i,
                             date_of_birth=dt.datetime.now(),
                             unsorted_temporal_events=temporal_events,
                         ),
                         temporal_events=temporal_events,
                     ),
                     outcome=True,
-                ),
-            ],
+                )
+                for i in range(4)
+            ]
         )
 
         return patient_slices

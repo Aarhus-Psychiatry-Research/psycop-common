@@ -16,3 +16,8 @@ class PredictionTime:
     prediction_timestamp: dt.datetime
     patient_slice: PatientSlice
     outcome: bool
+
+    @property
+    def pred_time_uuid(self) -> str:
+        prediction_time_string = self.prediction_timestamp.strftime("%Y-%m-%d-%H-%M-%S")
+        return f"{self.patient_slice.patient.patient_id}-{prediction_time_string}"

@@ -79,7 +79,7 @@ def test_apply(
 
     df = pl.read_parquet(output_parquet_path)
 
-    assert df["pred_proba"].dtype == pl.Float64
+    assert df["pred_proba"].dtype == pl.Float32
     assert df["pred_time_uuid"].dtype == pl.Utf8
     uuid = df["pred_time_uuid"].to_list()
     assert len(uuid) == len(set(uuid))

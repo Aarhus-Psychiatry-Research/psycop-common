@@ -14,7 +14,9 @@ from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels
 from ..embedders.interface import PatientSliceEmbedder
 
-Metrics = dict[str, torch.Tensor]
+Logits = torch.Tensor
+Loss = torch.Tensor
+PredictedProbabilities = torch.Tensor
 
 
 class BasePatientSliceClassifier(ABC, pl.LightningModule):
@@ -37,8 +39,7 @@ class BasePatientSliceClassifier(ABC, pl.LightningModule):
     def forward(  # type: ignore
         self,
         inputs: dict[str, torch.Tensor],
-        labels: torch.Tensor,
-    ) -> Metrics:
+    ) -> Logits:
         ...
 
     @abstractmethod
@@ -59,7 +60,7 @@ class BasePatientSliceClassifier(ABC, pl.LightningModule):
         batch: BatchWithLabels,
         batch_idx: int,
         dataloader_idx: int = 0,
-    ) -> torch.Tensor:
+    ) -> PredictedProbabilities:
         ...
 
     @property
