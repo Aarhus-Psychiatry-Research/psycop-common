@@ -21,7 +21,7 @@ class FakeLabelledPatientSlices(BasePredictionTimeCreator):
     def __init__(self):
         pass
 
-    def get_prediction_times(self) -> PredictionTimeDataset:
+    def get_dataset(self) -> PredictionTimeDataset:
         temporal_events = [
             TemporalEvent(
                 timestamp=dt.datetime.now(),

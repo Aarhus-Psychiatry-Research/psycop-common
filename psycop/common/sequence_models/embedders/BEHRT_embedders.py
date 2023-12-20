@@ -381,6 +381,6 @@ def create_behrt_embedder(
 
     log.info("Fitting Embedding Module")
     embedder.fit(
-        patient_slices=patient_slice_creator.get_prediction_times().patient_slices,
+        patient_slices=patient_slice_creator.get_dataset().patient_slices,
     )
     return embedder

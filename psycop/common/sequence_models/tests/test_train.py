@@ -17,7 +17,7 @@ class FakeSliceCreator(BaseUnlabelledSliceCreator):
     def __init__(self):
         pass
 
-    def get_patient_slices(self) -> PatientSliceDataset:
+    def get_dataset(self) -> PatientSliceDataset:
         return PatientSliceDataset(
             patient_slices=[p.as_slice() for p in create_patients()],
         )

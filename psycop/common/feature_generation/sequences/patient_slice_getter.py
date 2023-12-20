@@ -12,7 +12,7 @@ from .patient_loaders import EventDfLoader, PatientLoader
 
 @runtime_checkable
 class BaseUnlabelledSliceCreator(Protocol):
-    def get_patient_slices(self) -> PatientSliceDataset:
+    def get_dataset(self) -> PatientSliceDataset:
         ...
 
 
@@ -33,7 +33,7 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
         self.load_fraction = load_fraction
         self.min_n_events = min_n_events
 
-    def get_patient_slices(
+    def get_dataset(
         self,
     ) -> PatientSliceDataset:
         patients = PatientLoader.get_split(
@@ -48,7 +48,7 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
 
 @runtime_checkable
 class BasePredictionTimeCreator(Protocol):
-    def get_prediction_times(self) -> PredictionTimeDataset:
+    def get_dataset(self) -> PredictionTimeDataset:
         ...
 
 
@@ -71,7 +71,7 @@ class PredictionTimeCreator(BasePredictionTimeCreator):
         self.event_loaders = event_loaders
         self.load_fraction = load_fraction
 
-    def get_prediction_times(
+    def get_dataset(
         self,
     ) -> PredictionTimeDataset:
         prediction_times = CohortToPredictionTimes(
