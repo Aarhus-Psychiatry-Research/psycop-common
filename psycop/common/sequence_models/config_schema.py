@@ -13,9 +13,6 @@ from pydantic import BaseModel
 from ..feature_generation.sequences.patient_slice_collater import (
     BasePatientSliceCollater,
 )
-from ..feature_generation.sequences.prediction_time_collater import (
-    BasePatientSliceCollater,
-)
 from .tasks.patientslice_classifier_base import BasePatientSliceClassifier
 from .tasks.pretrainer_base import BasePatientSlicePretrainer
 

@@ -19,10 +19,6 @@ from .patientslice_classifier_base import BasePatientSliceClassifier, Metrics
 @Registry.tasks.register("patient_slice_classifier")
 @final  # This is not an ABC, must not contain abstract methods
 class PatientSliceClassifier(BasePatientSliceClassifier):
-    """
-    A BEHRT model for the classification task.
-    """
-
     def __init__(
         self,
         embedder: PatientSliceEmbedder,

@@ -20,9 +20,6 @@ from psycop.common.data_structures.patient import PatientSlice
 from ...feature_generation.sequences.patient_slice_collater import (
     BasePatientSliceCollater,
 )
-from ...feature_generation.sequences.prediction_time_collater import (
-    BasePatientSliceCollater,
-)
 from ..registry import Registry
 from .interface import EmbeddedSequence, PatientSliceEmbedder
 
