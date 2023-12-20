@@ -10,12 +10,14 @@ from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
-from psycop.common.feature_generation.sequences.prediction_time_collater import BasePredictionTimeCollater
+from psycop.common.feature_generation.sequences.prediction_time_collater import (
+    BasePredictionTimeCollater,
+)
 
 from ..feature_generation.sequences.patient_slice_collater import (
     BasePatientSliceCollater,
 )
-from .tasks.patientslice_classifier_base import BasePatientSliceClassifier
+from .tasks.patientslice_classifier_base import BasePredictionTimeClassifier
 from .tasks.pretrainer_base import BasePatientSlicePretrainer
 
 
@@ -88,7 +90,7 @@ class ClassificationModelAndDataset(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
 
-    model: BasePatientSliceClassifier
+    model: BasePredictionTimeClassifier
     training_dataset: BasePredictionTimeCollater
     validation_dataset: BasePredictionTimeCollater
 

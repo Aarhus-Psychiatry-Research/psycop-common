@@ -53,7 +53,7 @@ def arm_within_docker() -> bool:
 
 
 def _run_backward_pass(
-    dataloader: DataLoader[PatientSlice],
+    dataloader: DataLoader[PredictionTime],
     clf: PatientSliceClassifier,
 ) -> None:
     for input_ids, labels in dataloader:

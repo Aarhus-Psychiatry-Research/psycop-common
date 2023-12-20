@@ -19,14 +19,14 @@ from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
 from .patientslice_classifier_base import (
-    BasePatientSliceClassifier,
+    BasePredictionTimeClassifier,
     PredictedProbabilities,
 )
 
 
 @Registry.tasks.register("patient_slice_classifier")
 @final  # This is not an ABC, must not contain abstract methods
-class PatientSliceClassifier(BasePatientSliceClassifier):
+class PatientSliceClassifier(BasePredictionTimeClassifier):
     def __init__(
         self,
         embedder: PatientSliceEmbedder,

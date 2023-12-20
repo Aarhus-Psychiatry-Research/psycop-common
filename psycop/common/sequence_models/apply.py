@@ -2,28 +2,23 @@ import logging
 from pathlib import Path
 
 import lightning.pytorch as pl
-import polars
+import polars  # noqa: ICN001
 import torch
 from torch.utils.data import DataLoader
 
-from psycop.common.feature_generation.sequences.patient_slice_collater import (
-    BasePatientSliceCollater,
-)
 from psycop.common.feature_generation.sequences.prediction_time_collater import (
     BasePredictionTimeCollater,
 )
-from psycop.common.model_training import training
 from psycop.common.sequence_models.config_schema import TrainingConfigSchema
-from psycop.common.sequence_models.registry import Registry
 from psycop.common.sequence_models.tasks.patientslice_classifier_base import (
-    BasePatientSliceClassifier,
+    BasePredictionTimeClassifier,
 )
 
 log = logging.getLogger(__name__)
 
 
 def apply(
-    model: BasePatientSliceClassifier,
+    model: BasePredictionTimeClassifier,
     dataset_collater: BasePredictionTimeCollater,
     training_config: TrainingConfigSchema,
     output_parquet_path: Path,

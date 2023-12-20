@@ -2,14 +2,13 @@ from pathlib import Path
 
 import polars as pl
 import pytest
-from regex import F
 from torch import nn
 
 from psycop.common.feature_generation.sequences.prediction_time_collater import (
     BasePredictionTimeCollater,
 )
 from psycop.common.sequence_models import (
-    BasePatientSliceClassifier,
+    BasePredictionTimeClassifier,
     apply,
 )
 from psycop.common.sequence_models.aggregators import Aggregator
@@ -65,7 +64,7 @@ def training_config() -> TrainingConfigSchema:
 
 def test_apply(
     tmp_path: Path,
-    patient_slice_classifier: BasePatientSliceClassifier,
+    patient_slice_classifier: BasePredictionTimeClassifier,
     dataset_collater: BasePredictionTimeCollater,
     training_config: TrainingConfigSchema,
 ):

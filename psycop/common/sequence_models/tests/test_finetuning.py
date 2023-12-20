@@ -46,7 +46,7 @@ class FakePredictionTimeCollater(BasePredictionTimeCollater):
                     outcome=True,
                 )
                 for i in range(4)
-            ]
+            ],
         )
 
         return patient_slices

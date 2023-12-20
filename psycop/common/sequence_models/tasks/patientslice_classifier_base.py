@@ -19,7 +19,7 @@ Loss = torch.Tensor
 PredictedProbabilities = torch.Tensor
 
 
-class BasePatientSliceClassifier(ABC, pl.LightningModule):
+class BasePredictionTimeClassifier(ABC, pl.LightningModule):
     @abstractmethod
     def collate_fn(
         self,
