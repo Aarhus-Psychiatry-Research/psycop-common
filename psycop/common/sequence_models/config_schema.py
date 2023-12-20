@@ -10,12 +10,11 @@ from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
-from ..feature_generation.sequences.patient_slice_getter import (
-    BaseLabelledSliceCreator,
-    BaseUnlabelledSliceCreator,
+from ..feature_generation.sequences.patient_slice_collater import (
+    BasePatientSliceCollater,
 )
-from .tasks.base_patientslice_classifier import BasePatientSliceClassifier
-from .tasks.base_pretraining_task import BasePatientSlicePretrainer
+from .tasks.patientslice_classifier_base import BasePatientSliceClassifier
+from .tasks.pretrainer_base import BasePatientSlicePretrainer
 
 
 class TrainerConfigSchema(BaseModel):
@@ -77,8 +76,8 @@ class PretrainingModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: BasePatientSlicePretrainer
-    training_dataset: BaseUnlabelledSliceCreator
-    validation_dataset: BaseUnlabelledSliceCreator
+    training_dataset: BasePatientSliceCollater
+    validation_dataset: BasePatientSliceCollater
 
 
 class ClassificationModelAndDataset(BaseModel):
@@ -88,8 +87,8 @@ class ClassificationModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: BasePatientSliceClassifier
-    training_dataset: BaseLabelledSliceCreator
-    validation_dataset: BaseLabelledSliceCreator
+    training_dataset: BasePatientSliceCollater
+    validation_dataset: BasePatientSliceCollater
 
 
 class ResolvedConfigSchema(BaseModel):

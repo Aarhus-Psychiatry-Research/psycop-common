@@ -11,15 +11,15 @@ from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.sequence_models import (
     Aggregator,
     BEHRTEmbedder,
-    BEHRTForMaskedLM,
     PredictionTimeDataset,
+    PretrainerBEHRT,
 )
 from psycop.common.sequence_models.aggregators import (
     AveragePooler,
     CLSAggregator,
 )
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
-from psycop.common.sequence_models.tasks.encoder_for_classification import (
+from psycop.common.sequence_models.tasks.patientslice_classifier import (
     PatientSliceClassifier,
 )
 
@@ -162,7 +162,7 @@ def test_pretrain_from_checkpoint(
     """
     checkpoint_path = next(TEST_CHECKPOINT_DIR.glob("*.ckpt"))
 
-    loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
+    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_path)
 
     clf = PatientSliceClassifier(
         embedder=loaded_model.embedder,

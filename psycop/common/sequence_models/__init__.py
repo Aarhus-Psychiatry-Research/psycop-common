@@ -1,14 +1,14 @@
-from .tasks.encoder_for_classification import PatientSliceClassifier
+from .tasks.patientslice_classifier import PatientSliceClassifier
 from .aggregators import Aggregator, AveragePooler
 from .dataset import PatientSliceDataset, PredictionTimeDataset
 from .embedders.BEHRT_embedders import BEHRTEmbedder
 from .embedders.interface import PatientSliceEmbedder
 from .registry import Registry
-from .tasks import BEHRTForMaskedLM
+from .tasks import PretrainerBEHRT
 
 __all__ = [
     "BEHRTEmbedder",
-    "BEHRTForMaskedLM",
+    "PretrainerBEHRT",
     "PatientSliceEmbedder",
     "PatientSliceDataset",
     "PredictionTimeDataset",

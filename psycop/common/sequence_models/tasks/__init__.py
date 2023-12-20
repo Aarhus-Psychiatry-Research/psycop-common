@@ -1,7 +1,7 @@
-from .encoder_for_classification import PatientSliceClassifier
-from .behrt_for_masked_lm import BEHRTForMaskedLM
+from .patientslice_classifier import PatientSliceClassifier
+from .pretrainer_behrt import PretrainerBEHRT
 
 __all__ = [
-    "BEHRTForMaskedLM",
-    "encoder_for_classification",
+    "PretrainerBEHRT",
+    "patientslice_classifier",
 ]

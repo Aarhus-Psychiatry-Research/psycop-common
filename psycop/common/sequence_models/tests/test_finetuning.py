@@ -6,8 +6,8 @@ import pytest
 from psycop.common.data_structures.patient import Patient, PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.data_structures.temporal_event import TemporalEvent
-from psycop.common.feature_generation.sequences.patient_slice_getter import (
-    BaseLabelledSliceCreator,
+from psycop.common.feature_generation.sequences.prediction_time_collater import (
+    BasePatientSliceCollater,
 )
 from psycop.common.sequence_models.dataset import PredictionTimeDataset
 from psycop.common.sequence_models.registry import Registry
@@ -17,11 +17,11 @@ from .test_encoder_for_clf import arm_within_docker
 
 
 @Registry.datasets.register("fake_patient_slices_with_labels")
-class FakeLabelledPatientSlices(BaseLabelledSliceCreator):
+class FakeLabelledPatientSlices(BasePatientSliceCollater):
     def __init__(self):
         pass
 
-    def get_patient_slices(self) -> PredictionTimeDataset:
+    def get_dataset(self) -> PredictionTimeDataset:
         temporal_events = [
             TemporalEvent(
                 timestamp=dt.datetime.now(),

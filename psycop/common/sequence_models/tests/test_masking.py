@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch import nn
 
-from psycop.common.sequence_models import BEHRTForMaskedLM
+from psycop.common.sequence_models import PretrainerBEHRT
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 
@@ -27,7 +27,7 @@ def test_masking_fn(
 
     embedder.fit(patient_slices)
 
-    task = BEHRTForMaskedLM(
+    task = PretrainerBEHRT(
         embedder=embedder,
         encoder=encoder,
         optimizer=optimizer,
@@ -48,7 +48,7 @@ def test_masking_fn(
     assert (masked_labels[padding_mask] == -1).all()
 
 
-@pytest.mark.parametrize("masking_fn", [BEHRTForMaskedLM.mask])
+@pytest.mark.parametrize("masking_fn", [PretrainerBEHRT.mask])
 def test_masking_never_masks_0_elements_in_seq(masking_fn: Callable):  # type: ignore
     # If no element in the batch is masked we get an error since the MLM module expects
     # at least one element to be masked.
