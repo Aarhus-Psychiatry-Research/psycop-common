@@ -11,7 +11,7 @@ from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
 from ..feature_generation.sequences.patient_slice_collater import (
-    BaseUnlabelledSliceCreator,
+    BasePatientSliceCollater,
 )
 from ..feature_generation.sequences.prediction_time_collater import (
     BasePatientSliceCollater,
@@ -79,8 +79,8 @@ class PretrainingModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: BasePatientSlicePretrainer
-    training_dataset: BaseUnlabelledSliceCreator
-    validation_dataset: BaseUnlabelledSliceCreator
+    training_dataset: BasePatientSliceCollater
+    validation_dataset: BasePatientSliceCollater
 
 
 class ClassificationModelAndDataset(BaseModel):

@@ -10,13 +10,13 @@ from .patient_loader import PatientLoader
 
 
 @runtime_checkable
-class BaseUnlabelledSliceCreator(Protocol):
+class BasePatientSliceCollater(Protocol):
     def get_dataset(self) -> PatientSliceDataset:
         ...
 
 
 @Registry.datasets.register("unlabelled_slice_creator")
-class UnlabelledSliceCollater(BaseUnlabelledSliceCreator):
+class PatientSliceCollater(BasePatientSliceCollater):
     def __init__(
         self,
         split_name: Literal["train", "val", "test"],
