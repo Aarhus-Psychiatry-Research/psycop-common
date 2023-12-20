@@ -47,13 +47,13 @@ class UnlabelledSliceCreator(BaseUnlabelledSliceCreator):
 
 
 @runtime_checkable
-class BaseLabelledSliceCreator(Protocol):
-    def get_patient_slices(self) -> PredictionTimeDataset:
+class BasePredictionTimeCreator(Protocol):
+    def get_prediction_times(self) -> PredictionTimeDataset:
         ...
 
 
 @Registry.datasets.register("labelled_patient_slices")
-class LabelledPatientSliceCreator(BaseLabelledSliceCreator):
+class PredictionTimeCreator(BasePredictionTimeCreator):
     def __init__(
         self,
         split_name: Literal["train", "val", "test"],
@@ -71,7 +71,7 @@ class LabelledPatientSliceCreator(BaseLabelledSliceCreator):
         self.event_loaders = event_loaders
         self.load_fraction = load_fraction
 
-    def get_patient_slices(
+    def get_prediction_times(
         self,
     ) -> PredictionTimeDataset:
         prediction_times = CohortToPredictionTimes(

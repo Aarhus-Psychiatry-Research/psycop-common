@@ -31,7 +31,7 @@ def populate_registry() -> None:
     from .optimizers import create_adam  # noqa
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
-    from .tasks.behrt_for_masked_lm import BEHRTForMaskedLM  # noqa
+    from .tasks.pretrainer_behrt import PretrainerBEHRT  # noqa
 
 
 populate_registry()
@@ -58,11 +58,11 @@ def train(config_path: Path | None = None) -> None:
     filter_fn = cfg.model_and_dataset.model.filter_and_reformat
 
     log.info("Preparing train")
-    training_dataset = cfg.model_and_dataset.training_dataset.get_patient_slices()
+    training_dataset = cfg.model_and_dataset.training_dataset.get_prediction_times()
     training_dataset.filter_patients(filter_fn)
 
     log.info("Preparing validation")
-    validation_dataset = cfg.model_and_dataset.validation_dataset.get_patient_slices()
+    validation_dataset = cfg.model_and_dataset.validation_dataset.get_prediction_times()
     validation_dataset.filter_patients(filter_fn)
 
     log.info("Fitting embedder")

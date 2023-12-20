@@ -11,11 +11,11 @@ from lightning.pytorch.loggers import Logger as plLogger
 from pydantic import BaseModel
 
 from ..feature_generation.sequences.patient_slice_getter import (
-    BaseLabelledSliceCreator,
+    BasePredictionTimeCreator,
     BaseUnlabelledSliceCreator,
 )
-from .tasks.base_patientslice_classifier import BasePatientSliceClassifier
-from .tasks.base_pretraining_task import BasePatientSlicePretrainer
+from .tasks.patientslice_classifier_base import BasePatientSliceClassifier
+from .tasks.pretrainer_base import BasePatientSlicePretrainer
 
 
 class TrainerConfigSchema(BaseModel):
@@ -88,8 +88,8 @@ class ClassificationModelAndDataset(BaseModel):
         arbitrary_types_allowed = True
 
     model: BasePatientSliceClassifier
-    training_dataset: BaseLabelledSliceCreator
-    validation_dataset: BaseLabelledSliceCreator
+    training_dataset: BasePredictionTimeCreator
+    validation_dataset: BasePredictionTimeCreator
 
 
 class ResolvedConfigSchema(BaseModel):

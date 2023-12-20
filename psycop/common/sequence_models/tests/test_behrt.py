@@ -7,7 +7,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import PatientSlice
-from psycop.common.sequence_models import BEHRTForMaskedLM, PatientSliceDataset
+from psycop.common.sequence_models import PatientSliceDataset, PretrainerBEHRT
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.optimizers import (
     create_adamw,
@@ -37,7 +37,7 @@ def test_behrt(patient_dataset: PatientSliceDataset):
         num_training_steps=10,
     )
 
-    behrt = BEHRTForMaskedLM(
+    behrt = PretrainerBEHRT(
         embedder=emb,
         encoder=encoder,
         optimizer=adam_fn,
@@ -68,7 +68,7 @@ def create_behrt(
     n_heads: int = 8,
     dim_feedforward: int = 128,
     num_layers: int = 2,
-) -> BEHRTForMaskedLM:
+) -> PretrainerBEHRT:
     """
     Creates a model for testing
     """
@@ -101,7 +101,7 @@ def create_behrt(
     )
 
     # this includes the loss and the MLM head
-    module = BEHRTForMaskedLM(
+    module = PretrainerBEHRT(
         embedder=emb,
         encoder=encoder,
         optimizer=optimizer,
@@ -183,5 +183,5 @@ def test_module_with_trainer(
     # Checkpoint can be loaded
     # Note that load_from_checkpoint raises a FileNotFoundError if the checkpoint does not exist.
     # Hence, this would fail if we could not load the checkpoint.
-    loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_paths[0])
+    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_paths[0])
     trainer.fit(model=loaded_model, train_dataloaders=train_dataloader)

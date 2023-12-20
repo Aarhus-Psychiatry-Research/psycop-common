@@ -13,7 +13,7 @@ from ..datatypes import BatchWithLabels
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
-from .base_patientslice_classifier import BasePatientSliceClassifier, Metrics
+from .patientslice_classifier_base import BasePatientSliceClassifier, Metrics
 
 
 @Registry.tasks.register("patient_slice_classifier")
