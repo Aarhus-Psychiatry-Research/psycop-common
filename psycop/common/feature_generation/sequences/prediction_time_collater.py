@@ -12,13 +12,13 @@ from .prediction_times_from_cohort import PredictionTimesFromCohort
 
 
 @runtime_checkable
-class BasePatientSliceCollater(Protocol):
+class BasePredictionTimeCollater(Protocol):
     def get_dataset(self) -> PredictionTimeDataset:
         ...
 
 
 @Registry.datasets.register("labelled_patient_slices")
-class PredictionTimeCollater(BasePatientSliceCollater):
+class PredictionTimeCollater(BasePredictionTimeCollater):
     def __init__(
         self,
         split_name: Literal["train", "val", "test"],

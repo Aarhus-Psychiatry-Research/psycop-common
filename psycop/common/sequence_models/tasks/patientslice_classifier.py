@@ -6,6 +6,11 @@ from torch import nn
 from torchmetrics import Metric
 from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 
+from psycop.common.sequence_models.tasks.patientslice_classifier_base import (
+    Logits,
+    Loss,
+)
+
 from ...data_structures.patient import PatientSlice
 from ...data_structures.prediction_time import PredictionTime
 from ..aggregators import Aggregator
@@ -13,12 +18,15 @@ from ..datatypes import BatchWithLabels
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import Registry
-from .patientslice_classifier_base import BasePatientSliceClassifier, Metrics
+from .patientslice_classifier_base import (
+    BasePredictionTimeClassifier,
+    PredictedProbabilities,
+)
 
 
 @Registry.tasks.register("patient_slice_classifier")
 @final  # This is not an ABC, must not contain abstract methods
-class PatientSliceClassifier(BasePatientSliceClassifier):
+class PatientSliceClassifier(BasePredictionTimeClassifier):
     def __init__(
         self,
         embedder: PatientSliceEmbedder,
@@ -62,37 +70,41 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
         self,
         batch: BatchWithLabels,
         batch_idx: int,  # noqa: ARG002
-    ) -> torch.Tensor:
-        output = self.forward(batch.inputs, batch.labels)
-        loss = output["loss"]
-        self.log_step("Training", output)
+    ) -> Loss:
+        loss = self._step(batch=batch, mode="Training")
         return loss
 
     def validation_step(
         self,
         batch: BatchWithLabels,
         batch_idx: int,  # noqa: ARG002
-    ) -> torch.Tensor:
-        output = self.forward(inputs=batch.inputs, labels=batch.labels)
-        self.log_step("Validation", output)
-        return output["loss"]
+    ) -> Loss:
+        loss = self._step(batch=batch, mode="Validation")
+        return loss
 
-    def log_step(
+    def _step(
         self,
+        batch: BatchWithLabels,
         mode: Literal["Validation", "Training"],
-        output: dict[str, torch.Tensor],
-    ) -> None:
+    ) -> Loss:
         """
         Logs the metrics for the given mode.
         """
-        for metric_name, metric in output.items():
+        logits = self.forward(batch.inputs)
+        metrics = self.calculate_metrics(logits, batch.labels)
+
+        loss = self._calculate_loss(batch.labels, logits)
+        metrics["loss"] = loss
+
+        for metric_name, metric in metrics.items():
             self.log(f"{mode} {metric_name}", metric)
+
+        return loss
 
     def forward(
         self,
         inputs: dict[str, torch.Tensor],
-        labels: torch.Tensor,
-    ) -> Metrics:
+    ) -> Logits:
         embedded_patients = self.embedder.forward(inputs)
         encoded_patients = self._encoder.forward(
             src=embedded_patients.src,
@@ -107,7 +119,9 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
         )
 
         # Classification head
-        logits = self.classification_head(aggregated_patients)
+        return self.classification_head(aggregated_patients)
+
+    def _calculate_loss(self, labels: torch.Tensor, logits: Logits) -> Loss:
         if self.is_binary:
             _labels = labels.unsqueeze(-1).float()
         else:
@@ -116,11 +130,9 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
                 labels,
                 num_classes=self.num_classes,
             ).float()
+
         loss = self.loss(logits, _labels)
-
-        metrics = self.calculate_metrics(logits, labels)
-
-        return {"loss": loss, **metrics}
+        return loss
 
     def calculate_metrics(
         self,
@@ -132,15 +144,19 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
         """
         # Calculate the metrics
         metrics = {}
-        if self.is_binary:
-            probs = torch.sigmoid(logits)
-        else:
-            probs = torch.softmax(logits, dim=1)
+        probs = self._logits_to_probabilities(logits)
 
         for metric_name, metric in self.metric_fns.items():
             metrics[metric_name] = metric(probs, labels)
 
         return metrics
+
+    def _logits_to_probabilities(self, logits: Logits) -> PredictedProbabilities:
+        if self.is_binary:
+            probs = torch.sigmoid(logits)
+        else:
+            probs = torch.softmax(logits, dim=1)
+        return probs
 
     def collate_fn(
         self,
@@ -175,6 +191,15 @@ class PatientSliceClassifier(BasePatientSliceClassifier):
     ) -> Sequence[PatientSlice]:
         reformatted_slices = self.embedder.reformat(patient_slices)
         return reformatted_slices
+
+    def predict_step(
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,  # noqa: ARG002
+        dataloader_idx: int = 0,  # noqa: ARG002
+    ) -> PredictedProbabilities:
+        logits = self.forward(batch.inputs)
+        return self._logits_to_probabilities(logits)
 
     @property
     def embedder(self) -> PatientSliceEmbedder:

@@ -14,10 +14,12 @@ from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels
 from ..embedders.interface import PatientSliceEmbedder
 
-Metrics = dict[str, torch.Tensor]
+Logits = torch.Tensor
+Loss = torch.Tensor
+PredictedProbabilities = torch.Tensor
 
 
-class BasePatientSliceClassifier(ABC, pl.LightningModule):
+class BasePredictionTimeClassifier(ABC, pl.LightningModule):
     @abstractmethod
     def collate_fn(
         self,
@@ -37,8 +39,7 @@ class BasePatientSliceClassifier(ABC, pl.LightningModule):
     def forward(  # type: ignore
         self,
         inputs: dict[str, torch.Tensor],
-        labels: torch.Tensor,
-    ) -> Metrics:
+    ) -> Logits:
         ...
 
     @abstractmethod
@@ -51,6 +52,15 @@ class BasePatientSliceClassifier(ABC, pl.LightningModule):
     def configure_optimizers(
         self,
     ) -> OptimizerLRScheduler:
+        ...
+
+    @abstractmethod
+    def predict_step(  # type: ignore
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,
+        dataloader_idx: int = 0,
+    ) -> PredictedProbabilities:
         ...
 
     @property

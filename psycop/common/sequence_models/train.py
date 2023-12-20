@@ -81,6 +81,7 @@ def train(config_path: Path | None = None) -> None:
         num_workers=cfg.training.num_workers_for_dataloader,
         persistent_workers=True,
     )
+
     val_loader = DataLoader(
         validation_dataset,
         batch_size=cfg.training.batch_size,

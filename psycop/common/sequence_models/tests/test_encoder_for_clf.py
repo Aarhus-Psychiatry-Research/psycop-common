@@ -41,27 +41,6 @@ def patient_dataset_with_labels(
     return PredictionTimeDataset(prediction_times=prediction_times)
 
 
-@pytest.fixture()
-def embedder(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
-    d_model = 32
-    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patient_slices, add_mask_token=True)
-    return emb
-
-
-@pytest.fixture()
-def encoder() -> nn.Module:
-    d_model = 32
-    encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model,
-        nhead=int(d_model / 4),
-        dim_feedforward=d_model * 4,
-        batch_first=True,
-    )
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    return encoder
-
-
 parametrise_aggregator = pytest.mark.parametrize(
     "aggregator",
     [CLSAggregator(), AveragePooler()],
@@ -71,6 +50,16 @@ parametrise_aggregator = pytest.mark.parametrize(
 def arm_within_docker() -> bool:
     """Check if we are running on ARM within docker. ARM on Mac is "arm64", and non-arm on Linux is "x86_64"""
     return "aarch64" in platform.machine()
+
+
+def _run_backward_pass(
+    dataloader: DataLoader[PredictionTime],
+    clf: PatientSliceClassifier,
+) -> None:
+    for input_ids, labels in dataloader:
+        logits = clf.forward(input_ids)
+        loss = clf._calculate_loss(labels=labels, logits=logits)  # type: ignore[privateImportUsage]
+        loss.backward()  # ensure that the backward pass works
 
 
 @pytest.mark.skipif(
@@ -101,11 +90,7 @@ def test_encoder_for_clf(
         shuffle=True,
         collate_fn=clf.collate_fn,
     )
-
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
 
 
 @parametrise_aggregator
@@ -133,10 +118,7 @@ def test_encoder_for_clf_for_multiclass(
         collate_fn=clf.collate_fn,
     )
 
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
 
 
 TEST_CHECKPOINT_DIR = Path(__file__).parent / "test_checkpoints" / "checkpoints"
@@ -180,7 +162,4 @@ def test_pretrain_from_checkpoint(
         collate_fn=clf.collate_fn,
     )
 
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
