@@ -53,6 +53,15 @@ class BasePatientSliceClassifier(ABC, pl.LightningModule):
     ) -> OptimizerLRScheduler:
         ...
 
+    @abstractmethod
+    def predict_step(  # type: ignore
+        self,
+        batch: BatchWithLabels,
+        batch_idx: int,
+        dataloader_idx: int = 0,
+    ) -> torch.Tensor:
+        ...
+
     @property
     @abstractmethod
     def embedder(self) -> PatientSliceEmbedder:

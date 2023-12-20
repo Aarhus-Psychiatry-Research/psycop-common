@@ -1,7 +1,3 @@
-from .patientslice_classifier import PatientSliceClassifier
+from .patientslice_classifier import PatientSliceClassifier, BasePatientSliceClassifier
+from .pretrainer_base import BasePatientSlicePretrainer
 from .pretrainer_behrt import PretrainerBEHRT
-
-__all__ = [
-    "PretrainerBEHRT",
-    "patientslice_classifier",
-]

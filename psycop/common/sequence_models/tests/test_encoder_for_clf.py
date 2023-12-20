@@ -41,27 +41,6 @@ def patient_dataset_with_labels(
     return PredictionTimeDataset(prediction_times=prediction_times)
 
 
-@pytest.fixture()
-def embedder(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
-    d_model = 32
-    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patient_slices, add_mask_token=True)
-    return emb
-
-
-@pytest.fixture()
-def encoder() -> nn.Module:
-    d_model = 32
-    encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model,
-        nhead=int(d_model / 4),
-        dim_feedforward=d_model * 4,
-        batch_first=True,
-    )
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    return encoder
-
-
 parametrise_aggregator = pytest.mark.parametrize(
     "aggregator",
     [CLSAggregator(), AveragePooler()],
