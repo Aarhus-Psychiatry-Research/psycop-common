@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.158.0 (2023-12-20)
+
+### Feature
+
+* Finish apply ([`e850710`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e8507105eaceb310877deb49d9c24f24e6331c0b))
+
 ## v0.157.0 (2023-12-19)
 
 ### Feature
