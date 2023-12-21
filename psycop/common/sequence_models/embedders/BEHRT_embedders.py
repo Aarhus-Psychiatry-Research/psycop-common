@@ -12,7 +12,6 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
-from tqdm import tqdm
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
