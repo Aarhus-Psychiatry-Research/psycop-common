@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.159.0 (2023-12-21)
+
+### Feature
+
+* First pretrain ([`22e7eef`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/22e7eef7173ef46caf0673bec05b1bb8258fe667))
+
 ## v0.158.0 (2023-12-20)
 
 ### Feature
