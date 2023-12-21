@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 import polars as pl
 
@@ -7,6 +7,7 @@ from ...sequence_models.registry import Registry
 from ..loaders.raw.sql_load import sql_load
 
 
+@runtime_checkable
 class EventLoader(Protocol):
     @abstractmethod
     def load_events(self) -> pl.LazyFrame:
