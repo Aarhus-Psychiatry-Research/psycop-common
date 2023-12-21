@@ -17,7 +17,7 @@ class BasePredictionTimeCollater(Protocol):
         ...
 
 
-@Registry.datasets.register("labelled_patient_slices")
+@Registry.datasets.register("prediction_time_collater")
 class PredictionTimeCollater(BasePredictionTimeCollater):
     def __init__(
         self,

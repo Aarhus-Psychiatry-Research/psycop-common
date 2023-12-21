@@ -2,13 +2,17 @@
 Defines the dataset class for patient data
 """
 
+import logging
 from collections.abc import Sequence
 from typing import Callable
 
 from torch.utils.data import Dataset
+from tqdm import tqdm
 
 from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
+
+log = logging.getLogger(__name__)
 
 
 class PatientSliceDataset(Dataset[PatientSlice]):
@@ -47,7 +51,9 @@ class PredictionTimeDataset(Dataset[PredictionTime]):
         filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
     ) -> None:
         pred_times: list[PredictionTime] = []
-        for pred_time in self.prediction_times:
+
+        log.info("Filtering patients")
+        for pred_time in tqdm(self.prediction_times):
             filtered_slice = filter_fn([pred_time.patient_slice])
 
             if len(filtered_slice) != 1:

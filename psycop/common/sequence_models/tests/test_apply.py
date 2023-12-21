@@ -22,6 +22,7 @@ from psycop.common.sequence_models.tasks.patientslice_classifier import (
     PatientSliceClassifier,
 )
 
+from .test_encoder_for_clf import skip_if_arm_within_docker
 from .test_finetuning import FakePredictionTimeCollater
 
 
@@ -62,6 +63,7 @@ def training_config() -> TrainingConfigSchema:
     )
 
 
+@skip_if_arm_within_docker
 def test_apply(
     tmp_path: Path,
     patient_slice_classifier: BasePredictionTimeClassifier,

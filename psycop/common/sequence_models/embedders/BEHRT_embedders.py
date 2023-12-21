@@ -12,7 +12,6 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
-from tqdm import tqdm
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
@@ -233,11 +232,8 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         1. Filter input to only keep A-diagnoses.
         2. Map ICD-10 to Caliber codes
         """
-
-        log.info("mapping diagnosis codes")
-        # map diagnosis codes
         _patient_slices = []
-        for p in tqdm(patient_slices):
+        for p in patient_slices:
             filtered_events = filter(self.is_A_diagnosis, p.temporal_events)
             temporal_events = []
             for e in filtered_events:

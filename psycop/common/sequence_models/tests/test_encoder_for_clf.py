@@ -24,6 +24,17 @@ from psycop.common.sequence_models.tasks.patientslice_classifier import (
 )
 
 
+def arm_within_docker() -> bool:
+    """Check if we are running on ARM within docker. ARM on Mac is "arm64", and non-arm on Linux is "x86_64"""
+    return "aarch64" in platform.machine()
+
+
+skip_if_arm_within_docker = pytest.mark.skipif(
+    arm_within_docker(),
+    reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
+)
+
+
 @pytest.fixture()
 def patient_dataset_with_labels(
     patient_slices: list[PatientSlice],
@@ -47,11 +58,6 @@ parametrise_aggregator = pytest.mark.parametrize(
 )
 
 
-def arm_within_docker() -> bool:
-    """Check if we are running on ARM within docker. ARM on Mac is "arm64", and non-arm on Linux is "x86_64"""
-    return "aarch64" in platform.machine()
-
-
 def _run_backward_pass(
     dataloader: DataLoader[PredictionTime],
     clf: PatientSliceClassifier,
@@ -62,10 +68,7 @@ def _run_backward_pass(
         loss.backward()  # ensure that the backward pass works
 
 
-@pytest.mark.skipif(
-    arm_within_docker(),
-    reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
-)
+@skip_if_arm_within_docker
 @parametrise_aggregator
 def test_encoder_for_clf(
     patient_dataset_with_labels: PredictionTimeDataset,
@@ -124,10 +127,7 @@ def test_encoder_for_clf_for_multiclass(
 TEST_CHECKPOINT_DIR = Path(__file__).parent / "test_checkpoints" / "checkpoints"
 
 
-@pytest.mark.skipif(
-    arm_within_docker(),
-    reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
-)
+@skip_if_arm_within_docker
 @parametrise_aggregator
 def test_pretrain_from_checkpoint(
     patient_dataset_with_labels: PredictionTimeDataset,
