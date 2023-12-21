@@ -16,7 +16,7 @@ from psycop.projects.restraint.cohort_creation.utils.cohort_hyperparameters impo
 )
 
 df_cohort = sql_load(
-    "SELECT * FROM fct.[psycop_coercion_cohort_with_all_days_without_labels_feb2022]",
+    "SELECT * FROM fct.[psycop_coercion_cohort_with_all_days_without_labels_feb2022_v2]",
 )
 
 lookahead_days = 2

@@ -179,17 +179,46 @@ df_cohort = df_cohort[
 
 
 # remove coercion in somatics
-df_cohort = df_cohort[df_cohort["behandlingsomraade"] != "Somatikken"]
+# df_cohort = df_cohort[df_cohort["behandlingsomraade"] != "Somatikken"]
 
+df_coercion = sql_load(
+    "SELECT * FROM fct.[FOR_tvang_alt_hele_kohorten_inkl_2021_feb2022]",
+)
+
+df_coercion = df_coercion[df_coercion["behandlingsomraade"] == "Somatikken"]
+df_coercion = df_coercion[df_coercion["typetekst_sei"] == "Tvangsindlæggelse"]
+
+
+df_coercion = df_coercion[
+    ["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]
+]
+
+df_cohort["dato_start"] = [
+    row.replace(hour=0, minute=0, second=0) for row in df_cohort["datotid_start"]
+]
+
+df_cohort_ = pd.merge(
+    df_cohort,
+    df_coercion,
+    how="left",
+    left_on=["dw_ek_borger", "dato_start"],
+    right_on=["dw_ek_borger", "datotid_start_sei"],
+)
+
+df = df_cohort_[df_cohort_["datotid_start_sei_y"].isna()]
+
+
+# remove first day
+df = df[df.pred_adm_day_count != 1]
 
 # write csv with today's date
 today = date.today().strftime("%d%m%y")
-df_cohort.to_csv(f"cohort_{today}.csv")
+df.to_csv(f"cohort_{today}.csv")
 
 # Write to sql database
 write_df_to_sql(
-    df=df_cohort,
-    table_name="psycop_coercion_cohort_with_all_days_without_labels_feb2022",
+    df=df,
+    table_name="psycop_coercion_cohort_with_all_days_without_labels_feb2022_v2",
     if_exists="replace",
     rows_per_chunk=5000,
 )

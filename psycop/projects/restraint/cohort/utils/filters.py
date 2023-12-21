@@ -85,7 +85,22 @@ class RestraintShakCodeFilter(PredictionTimeFilter):
         )
 
 
-class RestraintTreatmentUnitFilter(PredictionTimeFilter):
+class RestraintForcedAdmissionFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
-        return df.filter(pl.col("behandlingsomraade") != "Somatikken")
+        return df.filter(
+            (pl.col("behandlingsomraade") == "Somatikken")
+            & (pl.col("typetekst_sei") == "Tvangsindlæggelse")
+        )
+
+
+class RestraintDoubleAdmissionFilter(PredictionTimeFilter):
+    @staticmethod
+    def apply(df: pl.DataFrame) -> pl.DataFrame:
+        return df.filter(pl.col("typetekst_sei").is_null())
+
+
+class RestraintExcludeFirstDayFilter(PredictionTimeFilter):
+    @staticmethod
+    def apply(df: pl.DataFrame) -> pl.DataFrame:
+        return df.filter(pl.col("pred_adm_day_count") != 1)
