@@ -129,7 +129,7 @@ class Patient:
         return prediction_sequences
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class PatientSlice:
     patient: Patient
     temporal_events: Sequence[TemporalEvent]

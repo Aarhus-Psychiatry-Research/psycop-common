@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     import datetime as dt
 
 
-@dataclass
+@dataclass(slots=True)
 class TemporalEvent:
     """
     Attributes:
