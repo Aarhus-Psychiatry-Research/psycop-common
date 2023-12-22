@@ -32,4 +32,5 @@ timeseriesflattener==1.8.0
 wandb==0.15.4
 wasabi==0.9.1
 xgboost==1.7.3
+connectorx==0.3.2
 
