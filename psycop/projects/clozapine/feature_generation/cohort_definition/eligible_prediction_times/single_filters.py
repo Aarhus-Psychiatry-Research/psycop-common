@@ -24,26 +24,27 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_spec
 
 
 class ClozapineMinDateFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         after_df = df.filter(pl.col("timestamp") > MIN_DATE)
         return after_df
 
 
 class ClozapineMinAgeFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        df = add_age(df)
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        df = add_age(df.collect()).lazy()
         after_df = df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
         return after_df
 
 
 class ClozapineSchizophrenia(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
-        schizophrenia_df = add_only_patients_with_schizophrenia().select(
-            pl.col("timestamp").alias("timestamp_schizophrenia"),
-            pl.col("dw_ek_borger"),
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        schizophrenia_df = (
+            add_only_patients_with_schizophrenia()
+            .lazy()
+            .select(
+                pl.col("timestamp").alias("timestamp_schizophrenia"),
+                pl.col("dw_ek_borger"),
+            )
         )
 
         prediction_times_with_schizophrenia_df = df.join(
@@ -80,11 +81,10 @@ class ClozapineSchizophrenia(PredictionTimeFilter):
 
 
 class ClozapineWashoutMoveFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_half_a_year_from_move = pl.from_pandas(
             PredictionTimeFilterer(
-                prediction_times_df=df.to_pandas(),
+                prediction_times_df=df.collect().to_pandas(),
                 entity_id_col_name="dw_ek_borger",
                 quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
                 quarantine_interval_days=182,
@@ -92,12 +92,11 @@ class ClozapineWashoutMoveFilter(PredictionTimeFilter):
             ).run_filter(),
         )
 
-        return not_within_half_a_year_from_move
+        return not_within_half_a_year_from_move.lazy()
 
 
 class ClozapinePrevalentFilter(PredictionTimeFilter):
-    @staticmethod
-    def apply(df: pl.DataFrame) -> pl.DataFrame:
+    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_clozapine_prescription = pl.from_pandas(
             get_first_clozapine_prescription(),
         ).select(
@@ -106,7 +105,7 @@ class ClozapinePrevalentFilter(PredictionTimeFilter):
         )
 
         prediction_times_with_outcome = df.join(
-            first_clozapine_prescription,
+            first_clozapine_prescription.lazy(),
             on="dw_ek_borger",
             how="inner",
         )

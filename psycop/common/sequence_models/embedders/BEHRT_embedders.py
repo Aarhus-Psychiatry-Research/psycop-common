@@ -12,14 +12,15 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
-from tqdm import tqdm
 
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
-from psycop.common.sequence_models.dataset import PatientSliceDataset
 
+from ...feature_generation.sequences.patient_slice_collater import (
+    BasePatientSliceCollater,
+)
 from ..registry import Registry
-from .interface import EmbeddedSequence, Embedder
+from .interface import EmbeddedSequence, PatientSliceEmbedder
 
 log = logging.getLogger(__name__)
 
@@ -33,19 +34,18 @@ class BEHRTVocab:
     position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
 
 
-class BEHRTEmbedder(nn.Module, Embedder):
+@Registry.embedders.register("behrt_embedder")
+class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
     def __init__(
         self,
         d_model: int,
         dropout_prob: float,
         max_sequence_length: int,
-        map_diagnosis_codes: bool = True,
     ):
         super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
 
-        self.map_diagnosis_codes = map_diagnosis_codes
         self.is_fitted: bool = False
 
         self.LayerNorm = nn.LayerNorm(d_model, eps=1e-12)
@@ -205,57 +205,38 @@ class BEHRTEmbedder(nn.Module, Embedder):
 
         return padded_sequences
 
-    def filter_events(self, events: Sequence[TemporalEvent]) -> list[TemporalEvent]:
-        filtered_events = []
-        for event in events:
-            if event.source_type == "diagnosis" and event.source_subtype == "A":
-                filtered_events.append(event)
-        return filtered_events
+    def is_A_diagnosis(self, event: TemporalEvent) -> bool:
+        return event.source_type == "diagnosis" and event.source_subtype == "A"
 
     def map_icd10_to_caliber(
         self,
         diagnosis_code: str,
     ) -> str | None:
-        # For each diagnosis code, attempt to map to caliber code
-        # If no mapping exists, remove one character from the end of the code and try again
+        """Map diagnoses-codes to Caliber.
+
+        To handle different levels of granularity, map to the most specific Caliber code available. E.g. for code E12, if both E1 and E12 exist in Caliber, map to E12. If only E1 exists, map to E1.
+
+        Caliber codes are documented here: https://www.sciencedirect.com/science/article/pii/S2589750019300123?via%3Dihub
+        """
         while len(diagnosis_code) > 2:  # only attempt codes with at least 3 characters
             if diagnosis_code in self.icd2caliber:
                 return self.icd2caliber[diagnosis_code]
             diagnosis_code = diagnosis_code[:-1]
         return None
 
-    # def filter_events(self, patient_slices: Sequence[PatientSlice]) -> list[PatientSlice]:
-
-    def filter_and_reformat_events(
+    def reformat(
         self,
         patient_slices: Sequence[PatientSlice],
     ) -> list[PatientSlice]:
         """
-        Fitler and reformats events.
-
-        Filtering: Filter out events that
-
-        Take patients and filter events to only include diagnosis codes. Then reformat the diagnosis codes by mapping them to caliber codes.
+        1. Filter input to only keep A-diagnoses.
+        2. Map ICD-10 to Caliber codes
         """
-        assert all(
-            e.source_type == "diagnosis"
-            for ps in patient_slices
-            for e in ps.temporal_events
-        ), "PatientSlice.temporal_events must only include diagnosis codes"
-
-        patient_events = [
-            PatientSlice(p.patient, self.filter_events(p.temporal_events))
-            for p in tqdm(patient_slices)
-        ]
-        if not self.map_diagnosis_codes:
-            return patient_events
-
-        # map diagnosis codes
         _patient_slices = []
-        n_filtered = 0
-        for p in tqdm(patient_events):
+        for p in patient_slices:
+            filtered_events = filter(self.is_A_diagnosis, p.temporal_events)
             temporal_events = []
-            for e in p.temporal_events:
+            for e in filtered_events:
                 value = self.map_icd10_to_caliber(e.value)  # type: ignore
                 if value is not None:
                     event = TemporalEvent(
@@ -266,14 +247,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
                     )
                     temporal_events.append(event)
 
-            if temporal_events:
-                _patient_slices.append(PatientSlice(p.patient, temporal_events))
-            else:
-                n_filtered += 1
-
-        log.warning(
-            f"Lost {n_filtered} patients ({round(n_filtered / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
-        )
+            _patient_slices.append(PatientSlice(p.patient, temporal_events))
 
         return _patient_slices
 
@@ -291,7 +265,7 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slice: PatientSlice,
     ) -> dict[str, torch.Tensor]:
         events = patient_slice.temporal_events
-        events = self.filter_events(events)
+        events = filter(self.is_A_diagnosis, events)
         event_inputs = [self.collate_event(event, patient_slice) for event in events]
 
         event_inputs = self.add_cls_token_to_sequence(event_inputs)
@@ -339,7 +313,10 @@ class BEHRTEmbedder(nn.Module, Embedder):
         patient_slices: Sequence[PatientSlice],
         add_mask_token: bool = True,
     ):
-        patient_slices = self.filter_and_reformat_events(patient_slices)
+        if self.is_fitted:
+            raise RuntimeError("Model is already fitted")
+
+        patient_slices = self.reformat(patient_slices)
 
         diagnosis_codes: list[str] = [
             str(e.value) for p in patient_slices for e in p.temporal_events
@@ -385,12 +362,11 @@ class BEHRTEmbedder(nn.Module, Embedder):
         self.is_fitted = True
 
 
-@Registry.embedders.register("behrt_embedder")
 def create_behrt_embedder(
     d_model: int,
     dropout_prob: float,
     max_sequence_length: int,
-    patient_slices: Sequence[PatientSlice] | PatientSliceDataset,
+    patient_slice_creator: BasePatientSliceCollater | BasePatientSliceCollater,
 ) -> BEHRTEmbedder:
     embedder = BEHRTEmbedder(
         d_model=d_model,
@@ -398,9 +374,8 @@ def create_behrt_embedder(
         max_sequence_length=max_sequence_length,
     )
 
-    if isinstance(patient_slices, PatientSliceDataset):
-        patient_slices = patient_slices.patient_slices
-
     log.info("Fitting Embedding Module")
-    embedder.fit(patient_slices=patient_slices)
+    embedder.fit(
+        patient_slices=patient_slice_creator.get_dataset().patient_slices,
+    )
     return embedder

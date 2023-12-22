@@ -9,7 +9,7 @@ preprocessing:
     drop_patient_if_exclusion_before_date: false
     drop_visits_after_exclusion_timestamp: false
     min_prediction_time_date: 2014-01-01
-    min_lookahead_days: 360
+    min_lookahead_days: 180
     lookbehind_combination: [10, 30, 180, 365]
     min_age: 18
   post_split:

@@ -18,7 +18,10 @@
 				"ms-python.vscode-pylance",
 				"ms-python.black-formatter",
 				"GitHub.vscode-pull-request-github",
-				"Graphite.gti-vscode"
+				"Graphite.gti-vscode",
+				"SeeLog.python-init-generator",
+				"bungcip.better-toml",
+				"Gerrnperl.outline-map"
 			]
 		}
 	},

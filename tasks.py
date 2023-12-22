@@ -21,10 +21,10 @@ from pathlib import Path
 
 from invoke import Context, Result, task
 
-from psycop.automation.environment import NOT_WINDOWS, on_ovartaci
+from psycop.automation.environment import NOT_WINDOWS, test_pytorch_cuda, on_ovartaci
 from psycop.automation.git import (
     add_and_commit,
-    filetype_modified_since_head,
+    filetype_modified_since_main,
     push_to_branch,
 )
 from psycop.automation.lint import pre_commit
@@ -35,10 +35,20 @@ from psycop.automation.logger import echo_header, msg_type
 def install_requirements(c: Context):
     requirements_files = Path().parent.glob("*requirements.txt")
     requirements_string = " -r ".join([str(file) for file in requirements_files])
-    c.run(f"pip install -r {requirements_string}")
+    c.run(f"pip install --upgrade -r {requirements_string}")
+
+    if on_ovartaci():
+        # Install pytorch with cuda from private repo
+        c.run(
+            "conda install --force-reinstall pytorch=2.1.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
+            pty=NOT_WINDOWS,
+        )
+        test_pytorch_cuda(c)
+
+    print(f"{msg_type.GOOD} Newest version of all requirements installed!")
 
 
-@task(aliases=("static_type_checks",))
+@task(aliases=("static_type_checks", "type_check"))
 def types(c: Context):
     if not on_ovartaci():
         echo_header(f"{msg_type.CLEAN} Running static type checks")
@@ -52,7 +62,7 @@ def types(c: Context):
 @task
 def qtypes(c: Context):
     """Run static type checks."""
-    if filetype_modified_since_head(c, ".py"):
+    if filetype_modified_since_main(c, r"\.py$"):
         types(c)
     else:
         print("🟢 No python files modified since main, skipping static type checks")
@@ -85,7 +95,7 @@ def test(
     pytest_arg_str = " ".join(pytest_args)
 
     command = f"pytest {pytest_arg_str}"
-    test_result: Result = c.run(
+    test_result: Result = c.run(  # type: ignore
         command,
         warn=True,
         pty=NOT_WINDOWS,
@@ -116,7 +126,7 @@ def test(
 def qtest(c: Context):
     """Quick tests, runs a subset of the tests using testmon"""
     # TODO: #390 Make more durable testmon implementation
-    if any(filetype_modified_since_head(c, suffix) for suffix in (".py", ".cfg")):
+    if any(filetype_modified_since_main(c, suffix) for suffix in (r"\.py$", r"\.cfg$")):
         test(
             c,
             pytest_args=[
@@ -157,8 +167,18 @@ def automerge(c: Context):
 
 
 @task(aliases=("vuln",))
-def vulnerability_scan(c: Context):
+def vulnerability_scan(c: Context, modified_files_only: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
+
+    if modified_files_only and not filetype_modified_since_main(
+        c,
+        r"requirements\.txt$",
+    ):
+        print(
+            "🟢 No requirements.txt files modified since main, skipping vulnerability scan",
+        )
+        return
+
     for requirements_file in requirements_files:
         c.run(
             f"snyk test --file={requirements_file} --package-manager=pip",
@@ -172,7 +192,7 @@ def create_pr(c: Context):
     Created a PR, does not run tests or similar
     """
     try:
-        pr_result: Result = c.run(
+        pr_result: Result = c.run(  # type: ignore
             "gh pr view --json url -q '.url'",
             pty=False,
             hide=True,

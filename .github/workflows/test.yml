@@ -1,0 +1,38 @@
+# This workflow will install Python dependencies, run pytests and run notebooks
+# then it will in python 3.9 (ubuntu-latest) create a badge with the coverage
+# and add it to the PR. This badge will be updated if the PR is updated.
+
+name: test
+on:
+  pull_request:
+  push:
+    branches: main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout (GitHub)
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create github hosts file
+        run: | # If this file is not created, the dev container fails because of non-existent mount
+          mkdir -p ~/.config/gh
+          touch ~/.config/gh/hosts.yml
+
+      - name: Pre-build dev container image
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ghcr.io/aarhus-psychiatry-research/psycop-common
+          push: filter
+          runCmd: |
+            inv test

@@ -1,0 +1,33 @@
+# We do not include static_type_checks as a pre-commit hook because pre-commit hooks
+# are installed in their own virtual environment, so static_type_checks cannot
+# use stubs from imports
+name: type_check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  type_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        id: setup_python
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          pip install invoke
+          inv install-requirements
+
+      - name: Run static type checker
+        id: pyright
+        run: |
+          inv static-type-checks

@@ -3,9 +3,9 @@ from typing import Optional
 
 import pandas as pd
 import polars as pl
-import shap
 from sklearn.pipeline import Pipeline
 
+import shap
 from psycop.common.global_utils.cache import mem
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 

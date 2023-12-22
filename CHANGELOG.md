@@ -2,6 +2,117 @@
 
 <!--next-version-placeholder-->
 
+## v0.159.0 (2023-12-21)
+
+### Feature
+
+* First pretrain ([`22e7eef`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/22e7eef7173ef46caf0673bec05b1bb8258fe667))
+
+## v0.158.0 (2023-12-20)
+
+### Feature
+
+* Finish apply ([`e850710`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e8507105eaceb310877deb49d9c24f24e6331c0b))
+
+## v0.157.0 (2023-12-19)
+
+### Feature
+
+* Protocols ([`e4c3a47`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e4c3a47924f1670c9fa0e62008bd248418f03ab2))
+* Ready for pretraining ([`4631e79`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4631e7918e533460252786592769b2fbadabc9e7))
+
+### Fix
+
+* Type ignore ([`6685920`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6685920df1f86e7bac951d9e0bb8f54ba598dad6))
+
+### Documentation
+
+* Misc. ([`369e0d6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/369e0d698a1abf55f62525a54582b49dd7f4f2d7))
+* Add docs ([`3e69f21`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3e69f21a5466104b036620688dff6ce4ff72e424))
+
+## v0.156.1 (2023-12-19)
+
+### Fix
+
+* Generate new checkpoint ([`558666e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/558666e2aee13ac7c9b6072efd87e411f52a8a47))
+
+## v0.156.0 (2023-12-18)
+
+### Feature
+
+* Convert `patient_slice_getters` to classes ([`d2771d4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d2771d4e7190fb8d8f887a2ce4d5a05c1d8302a3))
+* Convert `patient_slice_getters` to classes ([`ec5fe84`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ec5fe846c84c15abd926c5a913c969e16a41c0f6))
+
+## v0.155.0 (2023-12-18)
+
+### Feature
+
+* Pretrain with `mlflow` ([#563](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/563)) ([`a0d21ba`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a0d21ba3063301007f1aa6ff3c3f117b0decace1))
+* Install invoke ([`e5377a7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e5377a75a363eccbca71500fe50ccd23d01d099f))
+* Finetune trainer from pretrained checkpoint ([#560](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/560)) ([`eec5816`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/eec58166572d75ec975a0234fcad1fc37f126dc9))
+* Pretraining with mlflow ([`7033842`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7033842f50b6b3e878d9f5c83706a5bc8b8338eb))
+* Create finetuning-trainer from pretrained checkpoint ([`62dbb8d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/62dbb8d96d37af5a6640fe83afa3fd4485d7a47d))
+
+### Fix
+
+* Type error ([`5952226`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5952226a15da7e9a6048f80e8c698375d6000fda))
+* Cfgs ([`f4ca86f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f4ca86fcd2e088e81575150a2c351cd01567d1f2))
+* Pytorch cuda test ([`4967566`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4967566f90e227507b398272e473554405a3b967))
+
+## v0.154.0 (2023-12-14)
+
+### Feature
+
+* Filter based on insufficient lookahead ([#541](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/541)) ([`9624405`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/962440570fe742f2cdfe655170a37a5df1d6a031))
+* Filter based on insufficient lookahead ([`21e545a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/21e545a11e0230d3fcda1e287c04bae6df104003))
+* Filter based on insufficient lookahead ([`ab51a6e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ab51a6e9368cac5a1ac5b092bf086b73e7199f4d))
+
+### Documentation
+
+* Improvements ([`1562df8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1562df84b9d0ba5ac6d2164ba97442c2670ebf48))
+
+## v0.153.0 (2023-12-14)
+
+### Feature
+
+* Add SplitDataset generic ([`d4b99ea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d4b99eae54d43deae41f54b07a7dfa637f5270b0))
+
+## v0.152.0 (2023-12-14)
+
+### Feature
+
+* Add support for mlflow experiment tracker ([#432](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/432)) ([`9922000`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9922000da1e96d3babec21ca008bf64302f7030c))
+* Add support for mlflow experiment tracker ([`7048cb0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7048cb0ed5068a7890cdc45acb13493d5fbdf275))
+* Add support for mlflow experiment tracker ([`db8db5b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/db8db5bba585e9352ca86b9f833dc217ed1a5986))
+
+## v0.151.1 (2023-12-12)
+
+### Fix
+
+* Actually apply all filters ([`5aaa13c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5aaa13c9dbec35c6224db87c16ceb6de8d07db69))
+
+### Documentation
+
+* Minor rename and documentation ([`428d2ff`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/428d2ffe0dcb66f4cbb214c1bcafb9884df0069c))
+
+### Performance
+
+* Speed up cohort definers ([`3a7bfab`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3a7bfab4ce3aa947b772d924c950d6b14439e3d8))
+* Use lazyframes for filter prediction times ([`b9972b2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b9972b2e22de0438961512fcbd5d5aa0cef9e80a))
+* Speed up cohort definers ([`fac749a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fac749a6ec8cd45adb61a0186439f11cf674b7d0))
+
+## v0.151.0 (2023-12-11)
+
+### Feature
+
+* Add washout as an arg during feature gen ([`82ec387`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/82ec387bfa24a5e3e79218307974ab41f75a2099))
+
+## v0.150.3 (2023-12-05)
+
+### Fix
+
+* Overwrite log on new run ([`c60e5d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c60e5d520b84ac3f8a41df98509e607e6855e677))
+
 ## v0.150.2 (2023-12-04)
 
 ### Fix

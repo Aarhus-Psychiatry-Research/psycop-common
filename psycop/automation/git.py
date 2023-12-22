@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -8,7 +9,7 @@ from .logger import echo_header, msg_type
 
 
 def is_uncommitted_changes(c: Context) -> bool:
-    git_status_result: Result = c.run(
+    git_status_result: Result = c.run(  # type: ignore
         "git status --porcelain",
         pty=NOT_WINDOWS,
         hide=True,
@@ -18,13 +19,15 @@ def is_uncommitted_changes(c: Context) -> bool:
     return uncommitted_changes
 
 
-def filetype_modified_since_head(c: Context, file_suffix: str) -> bool:
+def filetype_modified_since_main(c: Context, regex_pattern: str) -> bool:
     files_modified_since_main = c.run(
-        "git diff --name-only origin/main",
+        "git diff --name-only origin/main HEAD",
         hide=True,
     ).stdout.splitlines()
 
-    if any(file.endswith(file_suffix) for file in files_modified_since_main):
+    if any(
+        re.compile(regex_pattern).search(file) for file in files_modified_since_main
+    ):
         return True
 
     return False
@@ -71,7 +74,7 @@ def add_and_commit(c: Context, msg: Optional[str] = None):
 def branch_exists_on_remote(c: Context) -> bool:
     branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
 
-    branch_exists_result: Result = c.run(
+    branch_exists_result: Result = c.run(  # type: ignore
         f"git ls-remote --heads origin {branch_name}",
         hide=True,
     )

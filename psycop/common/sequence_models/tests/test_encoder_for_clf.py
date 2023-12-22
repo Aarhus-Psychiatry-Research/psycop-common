@@ -9,23 +9,36 @@ from torch.utils.data import DataLoader
 from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.sequence_models import (
-    AggregationModule,
+    Aggregator,
     BEHRTEmbedder,
-    BEHRTForMaskedLM,
-    EncoderForClassification,
-    PatientSlicesWithLabels,
+    PredictionTimeDataset,
+    PretrainerBEHRT,
 )
 from psycop.common.sequence_models.aggregators import (
     AveragePooler,
-    CLSAggregationModule,
+    CLSAggregator,
 )
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
+from psycop.common.sequence_models.tasks.patientslice_classifier import (
+    PatientSliceClassifier,
+)
+
+
+def arm_within_docker() -> bool:
+    """Check if we are running on ARM within docker. ARM on Mac is "arm64", and non-arm on Linux is "x86_64"""
+    return "aarch64" in platform.machine()
+
+
+skip_if_arm_within_docker = pytest.mark.skipif(
+    arm_within_docker(),
+    reason="Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
+)
 
 
 @pytest.fixture()
 def patient_dataset_with_labels(
     patient_slices: list[PatientSlice],
-) -> PatientSlicesWithLabels:
+) -> PredictionTimeDataset:
     prediction_times = []
     for i, patient_slice in enumerate(patient_slices):
         prediction_times.append(
@@ -36,61 +49,42 @@ def patient_dataset_with_labels(
             ),
         )
 
-    return PatientSlicesWithLabels(prediction_times=prediction_times)
+    return PredictionTimeDataset(prediction_times=prediction_times)
 
 
-@pytest.fixture()
-def embedding_module(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
-    d_model = 32
-    emb = BEHRTEmbedder(d_model=d_model, dropout_prob=0.1, max_sequence_length=128)
-    emb.fit(patient_slices, add_mask_token=True)
-    return emb
-
-
-@pytest.fixture()
-def encoder_module() -> nn.Module:
-    d_model = 32
-    encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model,
-        nhead=int(d_model / 4),
-        dim_feedforward=d_model * 4,
-        batch_first=True,
-    )
-    encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-    return encoder
-
-
-pytestmark = pytest.mark.parametrize(
-    "aggregation_module",
-    [CLSAggregationModule(), AveragePooler()],
+parametrise_aggregator = pytest.mark.parametrize(
+    "aggregator",
+    [CLSAggregator(), AveragePooler()],
 )
 
 
-def skip_if_arm_within_docker() -> bool:
-    """Check if we are running on ARM within docker. ARM on Mac is "arm64", and non-arm on Linux is "x86_64"""
-    return "aarch64" in platform.machine()
+def _run_backward_pass(
+    dataloader: DataLoader[PredictionTime],
+    clf: PatientSliceClassifier,
+) -> None:
+    for input_ids, labels in dataloader:
+        logits = clf.forward(input_ids)
+        loss = clf._calculate_loss(labels=labels, logits=logits)  # type: ignore[privateImportUsage]
+        loss.backward()  # ensure that the backward pass works
 
 
+@skip_if_arm_within_docker
+@parametrise_aggregator
 def test_encoder_for_clf(
-    patient_dataset_with_labels: PatientSlicesWithLabels,
-    embedding_module: BEHRTEmbedder,
-    encoder_module: nn.Module,
-    aggregation_module: AggregationModule,
-    optimizer_fn: OptimizerFn,
+    patient_dataset_with_labels: PredictionTimeDataset,
+    embedder: BEHRTEmbedder,
+    encoder: nn.Module,
+    aggregator: Aggregator,
+    optimizer: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
-    if skip_if_arm_within_docker():
-        pytest.skip(
-            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
-        )
-
-    clf = EncoderForClassification(
-        embedding_module=embedding_module,
-        encoder_module=encoder_module,
-        aggregation_module=aggregation_module,
+    clf = PatientSliceClassifier(
+        embedder=embedder,
+        encoder=encoder,
+        aggregator=aggregator,
         num_classes=2,
-        optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        optimizer=optimizer,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -99,28 +93,25 @@ def test_encoder_for_clf(
         shuffle=True,
         collate_fn=clf.collate_fn,
     )
-
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
 
 
+@parametrise_aggregator
 def test_encoder_for_clf_for_multiclass(
-    patient_dataset_with_labels: PatientSlicesWithLabels,
-    embedding_module: BEHRTEmbedder,
-    encoder_module: nn.Module,
-    aggregation_module: AggregationModule,
-    optimizer_fn: OptimizerFn,
+    patient_dataset_with_labels: PredictionTimeDataset,
+    embedder: BEHRTEmbedder,
+    encoder: nn.Module,
+    aggregator: Aggregator,
+    optimizer: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
-    clf = EncoderForClassification(
-        embedding_module=embedding_module,
-        encoder_module=encoder_module,
-        aggregation_module=aggregation_module,
+    clf = PatientSliceClassifier(
+        embedder=embedder,
+        encoder=encoder,
+        aggregator=aggregator,
         num_classes=4,  # more than 2 classes
-        optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        optimizer=optimizer,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -130,42 +121,38 @@ def test_encoder_for_clf_for_multiclass(
         collate_fn=clf.collate_fn,
     )
 
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)
 
 
+TEST_CHECKPOINT_DIR = Path(__file__).parent / "test_checkpoints" / "checkpoints"
+
+
+@skip_if_arm_within_docker
+@parametrise_aggregator
 def test_pretrain_from_checkpoint(
-    patient_dataset_with_labels: PatientSlicesWithLabels,
-    aggregation_module: AggregationModule,
-    optimizer_fn: OptimizerFn,
+    patient_dataset_with_labels: PredictionTimeDataset,
+    aggregator: Aggregator,
+    optimizer: OptimizerFn,
     lr_scheduler_fn: LRSchedulerFn,
 ):
     """
     Check whether we can continue pre-training from an existing checkpoint.
 
     If this test fails it mean that we have lost backwards compatibility with previous checkpoints and you will
-    need to recreate a new checkpoint. To regenerate the checkpoint, you can simply run the use the checkpoint generated by
+    need to recreate a new checkpoint. To regenerate the checkpoint, you can use the checkpoint generated by
     test_behrt: test_module_with_trainer
     """
-    if skip_if_arm_within_docker():
-        pytest.skip(
-            "Skipping test on ARM within docker. Some tests fail, unknown reason, see https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/348",
-        )
+    checkpoint_path = next(TEST_CHECKPOINT_DIR.glob("*.ckpt"))
 
-    path = Path(__file__).parent / "test_checkpoints"
-    checkpoint_path = path / "epoch=4-step=14.ckpt"
+    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_path)
 
-    loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_path)
-
-    clf = EncoderForClassification(
-        embedding_module=loaded_model.embedding_module,
-        encoder_module=loaded_model.encoder_module,
-        aggregation_module=aggregation_module,
+    clf = PatientSliceClassifier(
+        embedder=loaded_model.embedder,
+        encoder=loaded_model.encoder,
+        aggregator=aggregator,
         num_classes=2,
-        optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+        optimizer=optimizer,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -175,7 +162,4 @@ def test_pretrain_from_checkpoint(
         collate_fn=clf.collate_fn,
     )
 
-    for input_ids, masked_labels in dataloader:
-        output = clf(input_ids, masked_labels)
-        loss = output["loss"]
-        loss.backward()  # ensure that the backward pass works
+    _run_backward_pass(dataloader=dataloader, clf=clf)

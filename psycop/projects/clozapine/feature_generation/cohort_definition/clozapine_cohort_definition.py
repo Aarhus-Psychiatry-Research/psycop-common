@@ -31,7 +31,7 @@ class ClozapineCohortDefiner(CohortDefiner):
         )
 
         result = filter_prediction_times(
-            prediction_times=unfiltered_prediction_times,
+            prediction_times=unfiltered_prediction_times.lazy(),
             filtering_steps=(
                 ClozapineSchizophrenia(),
                 ClozapineMinDateFilter(),

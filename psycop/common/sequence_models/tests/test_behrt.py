@@ -2,18 +2,19 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import lightning.pytorch as pl
-import lightning.pytorch.loggers as pl_loggers
 from lightning.pytorch.callbacks import ModelCheckpoint
 from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import PatientSlice
-from psycop.common.sequence_models import BEHRTForMaskedLM, PatientSliceDataset
+from psycop.common.sequence_models import PatientSliceDataset, PretrainerBEHRT
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.optimizers import (
     create_adamw,
     create_linear_schedule_with_warmup,
 )
+
+from .test_encoder_for_clf import TEST_CHECKPOINT_DIR
 
 
 def test_behrt(patient_dataset: PatientSliceDataset):
@@ -36,11 +37,11 @@ def test_behrt(patient_dataset: PatientSliceDataset):
         num_training_steps=10,
     )
 
-    behrt = BEHRTForMaskedLM(
-        embedding_module=emb,
-        encoder_module=encoder,
-        optimizer_fn=adam_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+    behrt = PretrainerBEHRT(
+        embedder=emb,
+        encoder=encoder,
+        optimizer=adam_fn,
+        lr_scheduler=lr_scheduler_fn,
     )
 
     dataloader = DataLoader(
@@ -49,6 +50,9 @@ def test_behrt(patient_dataset: PatientSliceDataset):
         shuffle=True,
         collate_fn=behrt.collate_fn,
     )
+
+    trainer = pl.Trainer(max_epochs=1, accelerator="cpu")
+    trainer.fit(behrt, train_dataloaders=dataloader)
 
     for input_ids, masked_labels in dataloader:
         output = behrt(input_ids, masked_labels)
@@ -64,7 +68,7 @@ def create_behrt(
     n_heads: int = 8,
     dim_feedforward: int = 128,
     num_layers: int = 2,
-) -> BEHRTForMaskedLM:
+) -> PretrainerBEHRT:
     """
     Creates a model for testing
     """
@@ -90,36 +94,29 @@ def create_behrt(
         num_layers=num_layers,
     )
 
-    optimizer_fn = create_adamw(lr=0.03)
+    optimizer = create_adamw(lr=0.03)
     lr_scheduler_fn = create_linear_schedule_with_warmup(
         num_warmup_steps=2,
         num_training_steps=10,
     )
 
     # this includes the loss and the MLM head
-    module = BEHRTForMaskedLM(
-        embedding_module=emb,
-        encoder_module=encoder,
-        optimizer_fn=optimizer_fn,
-        lr_scheduler_fn=lr_scheduler_fn,
+    module = PretrainerBEHRT(
+        embedder=emb,
+        encoder=encoder,
+        optimizer=optimizer,
+        lr_scheduler=lr_scheduler_fn,
     )
     return module
 
 
 def create_trainer(save_dir: Path) -> pl.Trainer:
-    wandb_logger = pl_loggers.WandbLogger(
-        name="test",
-        save_dir=save_dir,
-        offline=True,
-        project="test",
-    )
-
     callbacks = [
         ModelCheckpoint(
             dirpath=save_dir / "checkpoints",
             every_n_epochs=1,
             verbose=True,
-            save_top_k=5,
+            save_top_k=1,
             mode="min",
             monitor="val_loss",
         ),
@@ -127,8 +124,7 @@ def create_trainer(save_dir: Path) -> pl.Trainer:
     trainer = pl.Trainer(
         accelerator="cpu",
         val_check_interval=2,
-        logger=wandb_logger,
-        max_steps=20,
+        max_steps=5,
         callbacks=callbacks,  # type: ignore
     )
 
@@ -142,6 +138,9 @@ def test_module_with_trainer(
     """
     Tests the general intended workflow of the Trainer class
     """
+    override_test_checkpoints = False
+    if override_test_checkpoints:
+        tmp_path = TEST_CHECKPOINT_DIR.parent
 
     n_patients = 10
     more_patients = list(patient_slices) * n_patients
@@ -184,5 +183,5 @@ def test_module_with_trainer(
     # Checkpoint can be loaded
     # Note that load_from_checkpoint raises a FileNotFoundError if the checkpoint does not exist.
     # Hence, this would fail if we could not load the checkpoint.
-    loaded_model = BEHRTForMaskedLM.load_from_checkpoint(checkpoint_paths[0])
+    loaded_model = PretrainerBEHRT.load_from_checkpoint(checkpoint_paths[0])
     trainer.fit(model=loaded_model, train_dataloaders=train_dataloader)
