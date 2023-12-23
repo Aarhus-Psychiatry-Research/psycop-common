@@ -245,7 +245,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
                     value=mapped_value,
                 )
                 for e in filtered_events
-                if (mapped_value := self.map_icd10_to_caliber(e.value)) is not None
+                if (mapped_value := self.map_icd10_to_caliber(e.value)) is not None  # type: ignore
             ]
 
             _patient_slices.append(PatientSlice(p.patient, temporal_events))
