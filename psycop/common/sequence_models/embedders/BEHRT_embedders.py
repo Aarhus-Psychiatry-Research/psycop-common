@@ -7,6 +7,7 @@ import logging
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+from functools import lru_cache
 
 import numpy as np
 import torch
@@ -208,6 +209,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
     def is_A_diagnosis(self, event: TemporalEvent) -> bool:
         return event.source_type == "diagnosis" and event.source_subtype == "A"
 
+    @lru_cache
     def map_icd10_to_caliber(
         self,
         diagnosis_code: str,
@@ -233,19 +235,20 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         2. Map ICD-10 to Caliber codes
         """
         _patient_slices = []
+
         for p in patient_slices:
             filtered_events = filter(self.is_A_diagnosis, p.temporal_events)
-            temporal_events = []
-            for e in filtered_events:
-                value = self.map_icd10_to_caliber(e.value)  # type: ignore
-                if value is not None:
-                    event = TemporalEvent(
-                        timestamp=e.timestamp,
-                        source_type=e.source_type,
-                        source_subtype=e.source_subtype,
-                        value=value,
-                    )
-                    temporal_events.append(event)
+
+            temporal_events = [
+                TemporalEvent(
+                    timestamp=e.timestamp,
+                    source_type=e.source_type,
+                    source_subtype=e.source_subtype,
+                    value=mapped_value,
+                )
+                for e in filtered_events
+                if (mapped_value := self.map_icd10_to_caliber(e.value)) is not None
+            ]
 
             _patient_slices.append(PatientSlice(p.patient, temporal_events))
 
