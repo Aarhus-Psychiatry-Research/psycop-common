@@ -7,7 +7,6 @@ import logging
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from functools import lru_cache
 
 import numpy as np
 import torch
@@ -209,7 +208,6 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
     def is_A_diagnosis(self, event: TemporalEvent) -> bool:
         return event.source_type == "diagnosis" and event.source_subtype == "A"
 
-    @lru_cache
     def map_icd10_to_caliber(
         self,
         diagnosis_code: str,
