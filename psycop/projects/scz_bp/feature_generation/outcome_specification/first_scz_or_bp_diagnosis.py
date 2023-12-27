@@ -46,7 +46,7 @@ def get_first_scz_or_bp_diagnosis_with_time_from_first_contact() -> pl.DataFrame
     return first_scz_or_bp
 
 
-def get_scz_bp_patients_excluded_by_washin() -> pl.Series:
+def get_prevalent_scz_bp_patients() -> pl.Series:
     first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
 
     return first_scz_or_bp.filter(
@@ -80,4 +80,4 @@ def get_time_of_first_scz_or_bp_diagnosis_after_washin() -> pl.DataFrame:
 
 if __name__ == "__main__":
     df = get_first_scz_bp_diagnosis_after_washin()
-    excluded = get_scz_bp_patients_excluded_by_washin()
+    excluded = get_prevalent_scz_bp_patients()

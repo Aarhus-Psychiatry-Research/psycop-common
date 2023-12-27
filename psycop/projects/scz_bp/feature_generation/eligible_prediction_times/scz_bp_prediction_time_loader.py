@@ -12,13 +12,14 @@ from psycop.common.cohort_definition import (
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
-    SczBpExcludedByWashinFilter,
     SczBpMinDateFilter,
     SczBpPrevalentFilter,
+    SczBpPrevalentPatientsFilter,
+    SczBpTimeFromFirstVisitFilter,
     SczBpWashoutMoveFilter,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
-    get_first_scz_bp_diagnosis_after_washin,
+    get_first_scz_or_bp_diagnosis,
 )
 
 log = logging.getLogger(__name__)
@@ -64,15 +65,17 @@ class SczBpCohort(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
-        return get_first_scz_bp_diagnosis_after_washin()
+        return get_first_scz_or_bp_diagnosis().select(
+            "dw_ek_borger", "timestamp", "value"
+        )
 
     @staticmethod
     def _get_filtering_steps() -> Iterable[PredictionTimeFilter]:
         return (
             SczBpMinDateFilter(),
-            SczBpExcludedByWashinFilter(),
-            SczBpWashoutMoveFilter(),
+            SczBpTimeFromFirstVisitFilter(),
             SczBpPrevalentFilter(),
+            SczBpWashoutMoveFilter(),
         )
 
 
