@@ -41,6 +41,8 @@ if __name__ == "__main__":
         (pl.col("timestamp") - pl.col("first_lithium")).dt.days().alias("days_lithium_before_outcome")
     )
     pn.ggplot(df, pn.aes(x="days_lithium_before_outcome")) + pn.geom_histogram() + pn.annotate("text", x=-2000, y = 25, label=" <-- diagnose før lithium") + pn.annotate("text", x=2000, y = 25, label="lithium før diagnose -->")
+    pn.ggplot(df.filter((pl.col("days_lithium_before_outcome") > -100) & (pl.col("days_lithium_before_outcome") < 100 )), pn.aes(x="days_lithium_before_outcome")) + pn.geom_histogram(bins=20) 
+
 
     df["days_lithium_before_outcome"].describe()
     # negativ = diagnose før lithium, positiv = lithum før diagnose
