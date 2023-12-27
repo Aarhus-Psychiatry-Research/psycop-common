@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 import polars as pl
 from confection import Config
@@ -18,10 +19,19 @@ from confection import Config
 ## Confusion matrix at specified threshold
 # Plot feature importance
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
+from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
+    CrossValidatorTrainer,
+)
+from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
 
 cfg_path = OVARTACI_SHARED_DIR / "scz_bp" / "experiments" / "l1"
+populate_baseline_registry()
 
 
 def load_and_resolve_cfg(path: Path) -> BaselineSchema:
@@ -29,8 +39,65 @@ def load_and_resolve_cfg(path: Path) -> BaselineSchema:
     cfg_schema = BaselineSchema(**BaselineRegistry.resolve(cfg))
     return cfg_schema
 
+def prediction_time_uuid_to_prediction_time(prediction_time_uuid_series: pl.Series) -> pl.Series:
+    return prediction_time_uuid_series.str.split("-").list.slice(1).list.join("-").str.to_datetime()
+
+
+def scz_bp_df_to_eval_df(df: pl.DataFrame, y_hat_prop_col_name: str, y_col_name: str) -> EvalDataset:
+    return EvalDataset(
+        ids=df["dw_ek_borger"].to_pandas(),
+        pred_time_uuids=df["prediction_time_uuid"].to_pandas(),
+        pred_timestamps=df["timestamp"].to_pandas(),
+        outcome_timestamps=df["meta_time_of_diagnosis"].to_pandas(),
+        y=df[y_col_name].to_pandas(),
+        y_hat_probs = df[y_hat_prop_col_name].to_pandas(),
+        age=df["pred_age_in_years"].to_pandas(),
+        is_female=df["pred_sex_female_layer_1"].to_pandas(),
+        custom_columns={
+            "scz_or_bp" : df["meta_scz_or_bp_indicator"].to_pandas(),
+            "first_visit" : df["meta_first_visit"].to_pandas()
+        }
+    )
+
+
+def merge_pred_df_with_validation_df(pred_df: pl.DataFrame, validation_df: pl.DataFrame) -> pl.DataFrame:
+    validation_df = validation_df.select(pl.col("^meta.*$"), "timestamp", "prediction_time_uuid")
+    return pred_df.join(validation_df, how="left", on="prediction_time_uuid")
+
+
+
+class EvalConfigResolver():
+    def __init__(self, path_to_cfg: Path):
+        self.path = path_to_cfg
+        self.schema = load_and_resolve_cfg(path=path_to_cfg)
+
+        validation_df = self._load_validation_data_from_schema()
+        pred_df = self._read_pred_df()
+        self.outcome_col_name = pred_df.select(pl.col("^outc_.*$")).columns[0]
+
+        self.df = merge_pred_df_with_validation_df(pred_df=pred_df, validation_df=validation_df)
+        self.eval_df = scz_bp_df_to_eval_df(df=self.df, y_hat_prop_col_name=self.y_hat_prop_col_name, y_col_name=self.outcome_col_name)
+
+    def _load_validation_data_from_schema(self) -> pl.DataFrame:
+        match self.schema.trainer:
+            case CrossValidatorTrainer():
+                self.y_hat_prop_col_name = "oof_y_hat_prob"
+                return self.schema.trainer.training_data.collect()
+            case SplitTrainer():
+                self.y_hat_prop_col_name = "y_hat_prob"
+                return self.schema.trainer.validation_data.collect()
+            case _:
+                raise ValueError(f"Handler for {type(self.schema.trainer)} not implemented")
+
+    def _read_pred_df(self) -> pl.DataFrame:
+        return pl.read_parquet(self.schema.project_info.experiment_path / "eval_df.parquet")
+
+    
+
 
 if __name__ == "__main__":
-    cfg = load_and_resolve_cfg(path=cfg_path / "config.json")
+    run = EvalConfigResolver(path_to_cfg=cfg_path / "config.cfg")
 
-    pred_df = pl.read_parquet(cfg.project_info.experiment_path / "eval_df.parquet")
+    #cfg = load_and_resolve_cfg(path=cfg_path / "config.cfg")
+    pass
+
