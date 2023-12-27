@@ -5,7 +5,7 @@ from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_
     N_DAYS_WASHIN,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import (
-    add_time_from_first_visit,
+    add_time_from_first_contact_to_psychiatry,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.bp_diagnoses import (
     get_first_bp_diagnosis,
@@ -40,41 +40,41 @@ def get_first_scz_or_bp_diagnosis() -> pl.DataFrame:
     return first_scz_or_bp_indicator
 
 
-def get_first_scz_or_bp_diagnosis_with_time_from_first_visit() -> pl.DataFrame:
+def get_first_scz_or_bp_diagnosis_with_time_from_first_contact() -> pl.DataFrame:
     first_scz_or_bp = get_first_scz_or_bp_diagnosis()
-    first_scz_or_bp = add_time_from_first_visit(df=first_scz_or_bp)
+    first_scz_or_bp = add_time_from_first_contact_to_psychiatry(df=first_scz_or_bp)
     return first_scz_or_bp
 
 
 def get_scz_bp_patients_excluded_by_washin() -> pl.Series:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_visit()
+    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
 
     return first_scz_or_bp.filter(
-        pl.col("time_from_first_visit") < pl.duration(days=N_DAYS_WASHIN),
+        pl.col("time_from_first_contact") < pl.duration(days=N_DAYS_WASHIN),
     ).get_column("dw_ek_borger")
 
 
 def get_first_scz_bp_diagnosis_after_washin() -> pl.DataFrame:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_visit()
+    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
 
     return first_scz_or_bp.filter(
-        pl.col("time_from_first_visit") >= pl.duration(days=N_DAYS_WASHIN),
+        pl.col("time_from_first_contact") >= pl.duration(days=N_DAYS_WASHIN),
     ).select("dw_ek_borger", "timestamp", "value")
 
 
 def get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin() -> pl.DataFrame:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_visit()
+    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
 
     return first_scz_or_bp.filter(
-        pl.col("time_from_first_visit") >= pl.duration(days=N_DAYS_WASHIN),
+        pl.col("time_from_first_contact") >= pl.duration(days=N_DAYS_WASHIN),
     ).select("dw_ek_borger", "source")
 
 
 def get_time_of_first_scz_or_bp_diagnosis_after_washin() -> pl.DataFrame:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_visit()
+    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
 
     return first_scz_or_bp.filter(
-        pl.col("time_from_first_visit") >= pl.duration(days=N_DAYS_WASHIN),
+        pl.col("time_from_first_contact") >= pl.duration(days=N_DAYS_WASHIN),
     ).select("dw_ek_borger", "timestamp")
 
 
