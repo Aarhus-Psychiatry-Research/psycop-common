@@ -20,7 +20,6 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_fr
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
     get_first_scz_or_bp_diagnosis,
-    get_prevalent_scz_bp_patients,
 )
 
 
@@ -67,7 +66,6 @@ class SczBpWashoutMoveFilter(PredictionTimeFilter):
         return not_within_90_days_from_move.lazy()
 
 
-
 class SczBpPrevalentFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         """Filter prediction times occuring after a patient has received a diagnosis
@@ -99,12 +97,12 @@ class SczBpTimeFromFirstVisitFilter(PredictionTimeFilter):
 
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         df_with_time_from_first_contact = add_time_from_first_contact_to_psychiatry(
-            df=df.collect()
+            df=df.collect(),
         )
 
         return (
             df_with_time_from_first_contact.filter(
-                pl.col("time_from_first_contact") > pl.duration(days=N_DAYS_WASHIN)
+                pl.col("time_from_first_contact") > pl.duration(days=N_DAYS_WASHIN),
             )
             .select(pl.exclude(["first_contact", "time_from_first_contact"]))
             .lazy()

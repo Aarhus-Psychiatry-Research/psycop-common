@@ -20,7 +20,8 @@ if __name__ == "__main__":
             how="left",
             on="dw_ek_borger",
             suffix="_outcome",
-        ).filter(pl.col("age").is_not_null())
+        )
+        .filter(pl.col("age").is_not_null())
         .sort("timestamp")
         .groupby("dw_ek_borger")
         .first()

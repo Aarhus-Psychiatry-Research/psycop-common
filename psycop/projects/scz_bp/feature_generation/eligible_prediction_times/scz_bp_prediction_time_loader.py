@@ -65,7 +65,9 @@ class SczBpCohort(CohortDefiner):
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
         return get_first_scz_or_bp_diagnosis().select(
-            "dw_ek_borger", "timestamp", "value"
+            "dw_ek_borger",
+            "timestamp",
+            "value",
         )
 
     @staticmethod
@@ -89,5 +91,5 @@ if __name__ == "__main__":
 
     diag = get_first_scz_or_bp_diagnosis().select("dw_ek_borger", "source")
     pos = filtered_prediction_times.prediction_times.join(diag, on="dw_ek_borger")
-    
+
     pos.groupby("source").agg(pl.col("dw_ek_borger").unique().len())

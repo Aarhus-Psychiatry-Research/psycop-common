@@ -1,11 +1,6 @@
 """Script to get an overview of the age at outcome for non-prevalent cases"""
 
-# load time of first outcome after wash-in
-# load birthdays df
-# join
-# only keep patients in training data
-# calculate age at outcome
-# describe data
+# pyright: reportUnusedExpression=false
 
 import plotnine as pn
 import polars as pl
@@ -18,7 +13,6 @@ from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_
     N_DAYS_WASHIN,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
-    get_first_scz_bp_diagnosis_after_washin,
     get_first_scz_or_bp_diagnosis_with_time_from_first_contact,
 )
 
@@ -46,8 +40,8 @@ if __name__ == "__main__":
         .filter(pl.col("dw_ek_borger").is_in(train_val_ids.get_column("dw_ek_borger")))
         .with_columns(
             ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days() / 365).alias(
-                "age"
-            )
+                "age",
+            ),
         )
     )
 
