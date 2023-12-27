@@ -61,7 +61,12 @@ if __name__ == "__main__":
         + pn.facet_wrap("~source")
     )
 
-    pn.ggplot(age_df, pn.aes(x="age", color="source")) + pn.stat_ecdf() + pn.geom_vline(xintercept=18, linetype="dashed") + pn.labs(title="Cumulative density")
+    (
+        pn.ggplot(age_df, pn.aes(x="age", color="source"))
+        + pn.stat_ecdf()
+        + pn.geom_vline(xintercept=18, linetype="dashed")
+        + pn.labs(title="Cumulative density")
+    )
 
     age_df.groupby("source").count()
     age_df.filter(pl.col("age") < 18).groupby("source").count()

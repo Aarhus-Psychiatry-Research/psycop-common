@@ -14,7 +14,6 @@ from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
     SczBpMinDateFilter,
     SczBpPrevalentFilter,
-    SczBpPrevalentPatientsFilter,
     SczBpTimeFromFirstVisitFilter,
     SczBpWashoutMoveFilter,
 )
@@ -87,3 +86,8 @@ if __name__ == "__main__":
         )
 
     print(f"Remaining: {filtered_prediction_times.prediction_times.shape[0]}")
+
+    diag = get_first_scz_or_bp_diagnosis().select("dw_ek_borger", "source")
+    pos = filtered_prediction_times.prediction_times.join(diag, on="dw_ek_borger")
+    
+    pos.groupby("source").agg(pl.col("dw_ek_borger").unique().len())

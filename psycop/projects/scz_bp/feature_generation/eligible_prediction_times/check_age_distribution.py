@@ -20,17 +20,16 @@ if __name__ == "__main__":
             how="left",
             on="dw_ek_borger",
             suffix="_outcome",
-        )
+        ).filter(pl.col("age").is_not_null())
         .sort("timestamp")
         .groupby("dw_ek_borger")
         .first()
-        .filter(pl.col("age_outcome").is_not_null())
     )
 
     (
         pn.ggplot(
             first_eligible_outcome,
-            pn.aes(x="age_outcome"),
+            pn.aes(x="age"),
         )
         + pn.geom_histogram()
         + pn.labs(x="Age at diagnosis", y="Count")
@@ -50,7 +49,7 @@ if __name__ == "__main__":
     ).save("age_dist_cum.png")
 
     for max_age in [40, 50, 60]:
-        filtered_by_age = first_eligible_outcome.filter(pl.col("age_outcome") < max_age)
+        filtered_by_age = first_eligible_outcome.filter(pl.col("age") < max_age)
         print(f"Max age: {max_age}")
         print(f"\tN positive cases: {filtered_by_age.shape[0]}")
     print("No max age")
