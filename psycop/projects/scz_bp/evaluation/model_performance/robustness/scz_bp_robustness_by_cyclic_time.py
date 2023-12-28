@@ -3,14 +3,13 @@ import plotnine as pn
 from psycop.common.model_evaluation.binary.time.periodic_data import (
     roc_auc_by_periodic_time_df,
 )
-from psycop.projects.scz_bp.evaluation.pipeline_objects import PipelineRun
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
 
 
-def scz_bp_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
-    eval_ds = run.pipeline_outputs.get_eval_dataset()
+def scz_bp_auroc_by_day_of_week(eval_ds: EvalDataset) -> pn.ggplot:
 
     df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,  # type: ignore
@@ -27,8 +26,7 @@ def scz_bp_auroc_by_day_of_week(run: PipelineRun) -> pn.ggplot:
     )
 
 
-def scz_bp_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
-    eval_ds = run.pipeline_outputs.get_eval_dataset()
+def scz_bp_auroc_by_month_of_year(eval_ds: EvalDataset) -> pn.ggplot:
 
     df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,  # type: ignore
@@ -45,10 +43,3 @@ def scz_bp_auroc_by_month_of_year(run: PipelineRun) -> pn.ggplot:
     )
 
 
-if __name__ == "__main__":
-    from psycop.projects.scz_bp.evaluation.model_selection.performance_by_group_lookahead_model_type import (
-        DEVELOPMENT_PIPELINE_RUN,
-    )
-
-    scz_bp_auroc_by_day_of_week(run=DEVELOPMENT_PIPELINE_RUN)
-    scz_bp_auroc_by_month_of_year(run=DEVELOPMENT_PIPELINE_RUN)
