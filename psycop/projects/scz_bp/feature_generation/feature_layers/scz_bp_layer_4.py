@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from timeseriesflattener.aggregation_fns import count
+from timeseriesflattener.aggregation_fns import boolean
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
@@ -65,7 +65,7 @@ class SczBpLayer4(SczBpFeatureLayer):
                 ),
             ),
             lookbehind_days=lookbehind_days,
-            aggregation_fns=[count],
+            aggregation_fns=[boolean],
             fallback=[0],
         ).create_combinations()
 
