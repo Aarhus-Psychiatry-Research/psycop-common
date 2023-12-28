@@ -13,8 +13,8 @@ def generate_feature_importance_table(pipeline: Pipeline) -> pl.DataFrame:
     feature_importances = pipeline.named_steps["model"].feature_importances_
 
     split_df = load_and_filter_split_from_cfg(
-        data_cfg=pipeline_run.inputs.cfg.data,
-        pre_split_cfg=pipeline_run.inputs.cfg.preprocessing.pre_split,
+        data_cfg=pipeline_run.inputs.cfg.data,  # noqa: F821
+        pre_split_cfg=pipeline_run.inputs.cfg.preprocessing.pre_split,  # noqa: F821
         split="val",
     )
     feature_names = [c for c in split_df.columns if "pred_" in c]
@@ -43,7 +43,8 @@ def generate_feature_importance_table(pipeline: Pipeline) -> pl.DataFrame:
     pd_df = pd_df.set_index("index")
 
     with (
-        pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html"  # noqa: F821
+        pipeline_run.paper_outputs.paths.tables  # noqa: F821
+        / "feature_importance_by_gain.html"  # noqa: F821
     ).open("w") as html_file:
         html = pd_df.to_html()
         html_file.write(html)
