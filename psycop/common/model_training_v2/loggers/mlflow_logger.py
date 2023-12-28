@@ -5,10 +5,12 @@ from typing import Any
 import mlflow
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
+@BaselineRegistry.loggers.register("mlflow_logger")
 class MLFlowLogger(BaselineLogger):
     def __init__(
         self,
