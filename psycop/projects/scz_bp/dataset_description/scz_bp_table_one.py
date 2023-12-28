@@ -99,14 +99,16 @@ class SczBpTableOnePatients:
     @staticmethod
     def add_bipolar(df: pl.DataFrame) -> pl.DataFrame:
         bp_df = pl.from_pandas(get_first_bp_diagnosis()).select(
-            "dw_ek_borger", pl.col("value").alias("Incident BP")
+            "dw_ek_borger",
+            pl.col("value").alias("Incident BP"),
         )
         return df.join(bp_df, on="dw_ek_borger", how="left")
 
     @staticmethod
     def add_scz(df: pl.DataFrame) -> pl.DataFrame:
         scz_df = pl.from_pandas(get_first_scz_diagnosis()).select(
-            "dw_ek_borger", pl.col("value").alias("Incident SCZ")
+            "dw_ek_borger",
+            pl.col("value").alias("Incident SCZ"),
         )
         return df.join(scz_df, on="dw_ek_borger", how="left")
 
@@ -118,16 +120,15 @@ class SczBpTableOnePatients:
     @staticmethod
     def add_time_from_first_contact_to_bp_diagnosis(df: pl.DataFrame) -> pl.DataFrame:
         bp_df = pl.from_pandas(get_first_bp_diagnosis()).select(
-            "dw_ek_borger", "timestamp"
+            "dw_ek_borger",
+            "timestamp",
         )
         return (
             df.join(bp_df, on="dw_ek_borger", how="left")
             .with_columns(
-                (
-                    ((pl.col("timestamp") - pl.col("first_contact")).dt.days()).alias(
-                        "Days from first contact to BP diagnosis"
-                    )
-                )
+                ((pl.col("timestamp") - pl.col("first_contact")).dt.days()).alias(
+                    "Days from first contact to BP diagnosis",
+                ),
             )
             .select(pl.exclude("timestamp"))
         )
@@ -135,16 +136,15 @@ class SczBpTableOnePatients:
     @staticmethod
     def add_time_from_first_contact_to_scz_diagnosis(df: pl.DataFrame) -> pl.DataFrame:
         bp_df = pl.from_pandas(get_first_scz_diagnosis()).select(
-            "dw_ek_borger", "timestamp"
+            "dw_ek_borger",
+            "timestamp",
         )
         return (
             df.join(bp_df, on="dw_ek_borger", how="left")
             .with_columns(
-                (
-                    ((pl.col("timestamp") - pl.col("first_contact")).dt.days()).alias(
-                        "Days from first contact to SCZ diagnosis"
-                    )
-                )
+                ((pl.col("timestamp") - pl.col("first_contact")).dt.days()).alias(
+                    "Days from first contact to SCZ diagnosis",
+                ),
             )
             .select(pl.exclude("timestamp"))
         )
@@ -178,7 +178,7 @@ class SczBpTableOnePatients:
                 pl.when(pl.col("region").is_in(["øst", "vest"]))
                 .then("Train")
                 .otherwise("Test")
-                .alias("split")
+                .alias("split"),
             )
             .select("dw_ek_borger", "split")
         )

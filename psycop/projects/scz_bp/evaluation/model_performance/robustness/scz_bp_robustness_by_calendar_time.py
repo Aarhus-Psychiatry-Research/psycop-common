@@ -10,7 +10,6 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
 
 
 def scz_bp_auroc_by_quarter(eval_ds: EvalDataset) -> pn.ggplot:
-
     df = create_roc_auc_by_absolute_time_df(
         labels=eval_ds.y,  # type: ignore
         y_hat_probs=eval_ds.y_hat_probs,  # type: ignore
@@ -25,5 +24,3 @@ def scz_bp_auroc_by_quarter(eval_ds: EvalDataset) -> pn.ggplot:
         line_y_col_name="auroc",
         xlab="Quarter",
     )
-
-

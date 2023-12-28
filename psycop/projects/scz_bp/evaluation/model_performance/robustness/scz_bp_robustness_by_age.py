@@ -8,7 +8,6 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
 
 
 def scz_bp_auroc_by_age(eval_ds: EvalDataset) -> pn.ggplot:
-    
     df = get_auroc_by_input_df(
         eval_dataset=eval_ds,
         input_values=eval_ds.age,  # type: ignore
@@ -27,4 +26,3 @@ def scz_bp_auroc_by_age(eval_ds: EvalDataset) -> pn.ggplot:
     )
 
     return p
-

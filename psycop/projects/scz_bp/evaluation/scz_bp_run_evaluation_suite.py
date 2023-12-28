@@ -1,6 +1,6 @@
 from pathlib import Path
-from typing import Literal
 
+import plotnine as pn
 import polars as pl
 from confection import Config
 
@@ -29,7 +29,9 @@ from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
     CrossValidatorTrainer,
 )
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
-from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import scz_bp_plot_sensitivity_by_time_to_event
+from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import (
+    scz_bp_plot_sensitivity_by_time_to_event,
+)
 from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_by_age import (
     scz_bp_auroc_by_age,
 )
@@ -58,7 +60,7 @@ def load_and_resolve_cfg(path: Path) -> BaselineSchema:
 
 
 def prediction_time_uuid_to_prediction_time(
-    prediction_time_uuid_series: pl.Series
+    prediction_time_uuid_series: pl.Series,
 ) -> pl.Series:
     return (
         prediction_time_uuid_series.str.split("-")
@@ -69,7 +71,9 @@ def prediction_time_uuid_to_prediction_time(
 
 
 def scz_bp_df_to_eval_df(
-    df: pl.DataFrame, y_hat_prop_col_name: str, y_col_name: str
+    df: pl.DataFrame,
+    y_hat_prop_col_name: str,
+    y_col_name: str,
 ) -> EvalDataset:
     return EvalDataset(
         ids=df["dw_ek_borger"].to_pandas(),
@@ -88,10 +92,13 @@ def scz_bp_df_to_eval_df(
 
 
 def merge_pred_df_with_validation_df(
-    pred_df: pl.DataFrame, validation_df: pl.DataFrame
+    pred_df: pl.DataFrame,
+    validation_df: pl.DataFrame,
 ) -> pl.DataFrame:
     validation_df = validation_df.select(
-        pl.col("^meta.*$"), "timestamp", "prediction_time_uuid"
+        pl.col("^meta.*$"),
+        "timestamp",
+        "prediction_time_uuid",
     )
     return pred_df.join(validation_df, how="left", on="prediction_time_uuid")
 
@@ -106,7 +113,8 @@ class EvalConfigResolver:
         self.outcome_col_name = pred_df.select(pl.col("^outc_.*$")).columns[0]
 
         self.df = merge_pred_df_with_validation_df(
-            pred_df=pred_df, validation_df=validation_df
+            pred_df=pred_df,
+            validation_df=validation_df,
         )
         self.eval_ds = scz_bp_df_to_eval_df(
             df=self.df,
@@ -124,16 +132,16 @@ class EvalConfigResolver:
                 return self.schema.trainer.validation_data.collect()
             case _:
                 raise ValueError(
-                    f"Handler for {type(self.schema.trainer)} not implemented"
+                    f"Handler for {type(self.schema.trainer)} not implemented",
                 )
 
     def _read_pred_df(self) -> pl.DataFrame:
         return pl.read_parquet(
-            self.schema.project_info.experiment_path / "eval_df.parquet"
+            self.schema.project_info.experiment_path / "eval_df.parquet",
         )
 
 
-def full_eval(run: EvalConfigResolver) -> None:
+def full_eval(run: EvalConfigResolver) -> list[pn.ggplot]:
     eval_ds = run.eval_ds
 
     age = scz_bp_auroc_by_age(eval_ds=eval_ds)
@@ -145,7 +153,8 @@ def full_eval(run: EvalConfigResolver) -> None:
     quarter = scz_bp_auroc_by_quarter(eval_ds=eval_ds)
 
     sens_time_to_event = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds)
-    
+    return [age, sex, time_from_first_visit, dow, month, quarter, sens_time_to_event]
+
 
 if __name__ == "__main__":
     run = EvalConfigResolver(path_to_cfg=cfg_path / "config.cfg")

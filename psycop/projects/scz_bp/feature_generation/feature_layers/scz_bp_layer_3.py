@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import latest, boolean
+from timeseriesflattener.aggregation_fns import boolean, latest
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,

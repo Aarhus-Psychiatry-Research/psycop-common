@@ -1,13 +1,15 @@
 import pandas as pd
 import plotnine as pn
 import polars as pl
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import EvalConfigResolver
+from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
+    EvalConfigResolver,
+)
 from psycop.projects.t2d.paper_outputs.config import (
     T2D_PN_THEME,
 )
