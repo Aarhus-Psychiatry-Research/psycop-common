@@ -1,12 +1,8 @@
 from typing import Optional
 
-import numpy as np
 import pandas as pd
 from deepchecks.utils.type_inference import infer_categorical_features
 from numpy.typing import ArrayLike
-from pandas import Series
-from sklearn.compose import ColumnTransformer
-from sklearn.discriminant_analysis import StandardScaler
 from sklearn.preprocessing import StandardScaler
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -20,10 +16,16 @@ class InferNumericStandardScaler(StandardScaler):
     """
 
     def __init__(
-        self, *, copy: bool = True, with_mean: bool = True, with_std: bool = True
+        self,
+        *,
+        copy: bool = True,
+        with_mean: bool = True,
+        with_std: bool = True,
     ):
-        super(InferNumericStandardScaler, self).__init__(
-            copy=copy, with_mean=with_mean, with_std=with_std
+        super().__init__(
+            copy=copy,
+            with_mean=with_mean,
+            with_std=with_std,
         )
         self.numeric_cols: list[str] = []
 
@@ -40,7 +42,7 @@ class InferNumericStandardScaler(StandardScaler):
         X: pd.DataFrame,
         y: None = None,
         sample_weight: ArrayLike | None = None,
-    ):
+    ) -> "InferNumericStandardScaler":
         """Fit the StandardScaler to the inferred numeric columns.
         y is ignored. See https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler.fit
         for details"""
@@ -50,20 +52,21 @@ class InferNumericStandardScaler(StandardScaler):
         super().fit(X=X[self.numeric_cols], y=y, sample_weight=sample_weight)
         return self
 
-    def transform(self, X: pd.DataFrame, copy: Optional[bool] = None):  # type: ignore
+    def transform(self, X: pd.DataFrame, copy: Optional[bool] = None) -> pd.DataFrame:  # type: ignore
         X_transformed = X.copy()
 
         X_transformed[self.numeric_cols] = super().transform(
-            X[self.numeric_cols], copy=copy
+            X[self.numeric_cols],
+            copy=copy,
         )
         return X_transformed
 
-    def fit_transform(self, X: pd.DataFrame, y: None = None):  # type: ignore
+    def fit_transform(self, X: pd.DataFrame, y: None = None) -> pd.DataFrame:  # type: ignore
         return self.fit(X, y).transform(X)
 
 
 @BaselineRegistry.estimator_steps.register("numeric_z_score_standardisation")
-def z_score_standardisation(numeric_features_regex: str) -> ModelStep:
+def z_score_standardisation() -> ModelStep:
     return (
         "numeric_z_score_standardisation",
         InferNumericStandardScaler(),

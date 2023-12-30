@@ -32,7 +32,9 @@ def test_initialization():
 def test_prop_augmented(sample_data: tuple[pd.DataFrame, pd.Series]):  # type: ignore
     X, y = sample_data
     aug = SyntheticDataAugmentation(
-        "ddpm", prop_augmented=0.5, model_params={"n_iter": 1}
+        "ddpm",
+        prop_augmented=0.5,
+        model_params={"n_iter": 1},
     )
     X_res, y_res = aug.fit_resample(X, y)  # type: ignore
     assert len(X_res) == int(1.5 * len(X))  # check if 50% more samples are added
@@ -60,7 +62,9 @@ def test_synth_data_augmentation_in_pipeline(
 ):
     X, y = sample_data
     aug = SyntheticDataAugmentation(
-        "ddpm", prop_augmented=0.5, model_params={"n_iter": 1}
+        "ddpm",
+        prop_augmented=0.5,
+        model_params={"n_iter": 1},
     )
     pipe_with_aug = Pipeline([("aug", aug), ("clf", XGBClassifier())])
     pipe_with_aug.fit(X, y)

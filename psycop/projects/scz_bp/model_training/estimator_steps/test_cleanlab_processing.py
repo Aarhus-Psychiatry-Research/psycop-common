@@ -41,8 +41,8 @@ def test_keep_clean_data(clean_sample_data: tuple[pd.DataFrame, pd.Series]):  # 
     cleanlab = CleanlabProcessing()
     X_res, y_res = cleanlab.fit_resample(X, y)  # type: ignore
     # tolerate some false positives
-    assert len(X_res) <= len(X) * 1.02 and len(X_res) >= len(X) * 0.98
-    assert len(y_res) <= len(y) * 1.02 and len(y_res) >= len(y) * 0.98
+    assert len(X_res) <= len(X) * 1.02 and len(X_res) >= len(X) * 0.98  # noqa: PT018
+    assert len(y_res) <= len(y) * 1.02 and len(y_res) >= len(y) * 0.98  # noqa: PT018
 
 
 def test_remove_noisy_data(noisy_sample_data: tuple[pd.DataFrame, pd.Series]):  # type: ignore
@@ -63,7 +63,7 @@ def test_cleanlab_processing_in_pipeline(
     X_clean, y_clean = clean_sample_data
 
     pipe_with_cleanlab = Pipeline(
-        [("cleanlab_processing", CleanlabProcessing()), ("clf", XGBClassifier())]
+        [("cleanlab_processing", CleanlabProcessing()), ("clf", XGBClassifier())],
     )
     pipe_with_cleanlab.fit(X_noisy, y_noisy)
     with_cleanlab_score = pipe_with_cleanlab.score(X_clean, y_clean)
