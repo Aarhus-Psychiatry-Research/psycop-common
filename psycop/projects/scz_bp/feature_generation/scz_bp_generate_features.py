@@ -25,10 +25,10 @@ if __name__ == "__main__":
         project_info=get_scz_bp_project_info(),
         eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
         feature_specs=SczBpFeatureSpecifier().get_feature_specs(
-            max_layer=7,
+            max_layer=3,
             lookbehind_days=[730],
         ),
-        generate_in_chunks=True,
-        chunksize=10,
-        feature_set_name="layer7",
+        # generate_in_chunks=True,
+        # chunksize=10,
+        feature_set_name="layer3",
     )

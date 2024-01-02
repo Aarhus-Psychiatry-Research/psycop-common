@@ -29,6 +29,7 @@ from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
     CrossValidatorTrainer,
 )
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
+from psycop.projects.scz_bp.dataset_description.scz_bp_table_one import SczBpTableOne
 from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import (
     scz_bp_plot_sensitivity_by_time_to_event,
 )
@@ -154,6 +155,10 @@ def full_eval(run: EvalConfigResolver) -> list[pn.ggplot]:
 
     sens_time_to_event = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds)
     return [age, sex, time_from_first_visit, dow, month, quarter, sens_time_to_event]
+
+
+def table1(run: EvalConfigResolver) -> None:
+    table1_b = SczBpTableOne().make_tables()
 
 
 if __name__ == "__main__":
