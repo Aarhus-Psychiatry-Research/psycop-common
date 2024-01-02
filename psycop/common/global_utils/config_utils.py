@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Any
+from typing import Any, Iterable
 
 
 def flatten_nested_dict(
@@ -31,3 +31,14 @@ def flatten_nested_dict(
         else:
             items.append((new_key, v))
     return dict(items)
+
+
+def replace_symbols_in_dict_keys(
+    d: dict[str, Any], symbol2replacement: dict[str, str]
+):
+    new_dict = {}
+    for key, value in d.items():
+        for symbol, replacement in symbol2replacement.items():
+            key = key.replace(symbol, replacement)
+        new_dict[key] = value
+    return new_dict
