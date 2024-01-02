@@ -27,8 +27,6 @@ B) Patients
 """
 import re
 from functools import partial
-from pathlib import Path
-from typing import Any
 
 import pandas as pd
 import polars as pl
@@ -40,7 +38,6 @@ from psycop.common.feature_generation.loaders.raw.load_visits import admissions
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
 from psycop.common.model_training_v2.config.populate_registry import (
     populate_baseline_registry,
 )
@@ -49,9 +46,6 @@ from psycop.common.model_training_v2.trainer.data.data_filters.geographical_spli
 )
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
     ParquetVerticalConcatenator,
-)
-from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
-    SczBpCohort,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import (
     time_of_first_contact_to_psychiatry,
@@ -102,7 +96,9 @@ class SczBpTableOne:
                 categorical=True,
             ),
             RowSpecification(
-                source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True
+                source_col_name="pred_age_in_years",
+                readable_name="Age",
+                nonnormal=True,
             ),
             RowSpecification(
                 source_col_name="meta_bp_within_3_years_within_1095_days_maximum_fallback_0_dichotomous",
@@ -134,7 +130,7 @@ class SczBpTableOne:
                     for r in row_specifications
                     if r.source_col_name not in ["age_grouped"]
                 ]
-                + ["split"]
+                + ["split"],
             )
             .to_pandas()
         )
@@ -144,12 +140,14 @@ class SczBpTableOne:
         ).astype(str)
 
         return create_table(
-            row_specs=row_specifications, data=pd_pred_times, groupby_col_name="split"
+            row_specs=row_specifications,
+            data=pd_pred_times,
+            groupby_col_name="split",
         )
 
     @staticmethod
     def get_psychiatric_diagnosis_row_specs(
-        col_names: list[str]
+        col_names: list[str],
     ) -> list[RowSpecification]:
         pattern = re.compile(r"pred_f\d_disorders")
         columns = sorted(
@@ -231,22 +229,25 @@ class SczBpTableOne:
                 f"{data_dir}/train.parquet",
                 f"{data_dir}/val.parquet",
                 f"{data_dir}/test.parquet",
-            ]
+            ],
         ).load()
         preprocessing_pipeline = BaselineRegistry().resolve(
-            {"pipe": self.cfg["trainer"]["preprocessing_pipeline"]}
+            {"pipe": self.cfg["trainer"]["preprocessing_pipeline"]},
         )
 
         preprocessed_all_splits: pl.DataFrame = pl.from_pandas(
-            preprocessing_pipeline["pipe"].apply(all_splits)
+            preprocessing_pipeline["pipe"].apply(all_splits),
         )
 
         # check if all_splits and preprocessed.. are differnet
         all_splits = all_splits.select(
-            pl.col("^meta.*$"), "prediction_time_uuid"
+            pl.col("^meta.*$"),
+            "prediction_time_uuid",
         ).collect()
         preprocessed_all_splits = preprocessed_all_splits.join(
-            all_splits, on="prediction_time_uuid", how="left"
+            all_splits,
+            on="prediction_time_uuid",
+            how="left",
         )
 
         return preprocessed_all_splits
@@ -314,7 +315,8 @@ class SczBpTableOne:
 
     @staticmethod
     def add_n_prediction_times(
-        df: pl.DataFrame, pred_times: pl.DataFrame
+        df: pl.DataFrame,
+        pred_times: pl.DataFrame,
     ) -> pl.DataFrame:
         n_prediction_times_pr_id = (
             pred_times.groupby("dw_ek_borger")

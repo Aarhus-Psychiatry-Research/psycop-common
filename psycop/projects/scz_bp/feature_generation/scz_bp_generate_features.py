@@ -28,7 +28,7 @@ if __name__ == "__main__":
             max_layer=3,
             lookbehind_days=[730],
         ),
-        # generate_in_chunks=True,
-        # chunksize=10,
+        # generate_in_chunks=True,  # noqa: ERA001
+        # chunksize=10,  # noqa: ERA001
         feature_set_name="layer3",
     )
