@@ -57,5 +57,7 @@ if __name__ == "__main__":
     ) + pn.geom_histogram(bins=20)
 
     df["days_lithium_before_outcome"].describe()
+    df.filter((pl.col("days_lithium_before_outcome") < 0) & (pl.col("days_lithium_before_outcome") > -90))
+
     # negativ = diagnose før lithium, positiv = lithum før diagnose
     # negativ = diagnose før lithium, positiv = lithum før diagnose
