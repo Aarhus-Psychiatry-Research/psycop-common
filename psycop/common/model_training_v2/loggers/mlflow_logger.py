@@ -65,7 +65,7 @@ class MLFlowLogger(BaselineLogger):
     def log_config(self, config: dict[str, Any]):
         config = flatten_nested_dict(config)
         clean_config = replace_symbols_in_dict_keys(
-            d=config, symbol2replacement={"@": "", "*": "_"}
+            d=config,
+            symbol2replacement={"@": "", "*": "_"},
         )
         mlflow.log_params(clean_config)
-
