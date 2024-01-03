@@ -6,7 +6,10 @@ import polars as pl
 
 from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_ids
+from psycop.common.feature_generation.loaders.raw.load_ids import (
+    SplitName,
+    load_original_ids,
+)
 from psycop.common.feature_generation.sequences.event_loader import (
     DiagnosisLoader,
     EventLoader,
@@ -43,7 +46,9 @@ class PatientLoader:
     ) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         split_ids = (
-            pl.from_pandas(load_ids(split=split)).sample(fraction=fraction).lazy()
+            pl.from_pandas(load_original_ids(split=split))
+            .sample(fraction=fraction)
+            .lazy()
         )
 
         events_from_train = split_ids.join(event_data, on="dw_ek_borger", how="left")

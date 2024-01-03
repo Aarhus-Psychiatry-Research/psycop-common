@@ -3,7 +3,10 @@ from typing import Literal
 
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_ids
+from psycop.common.feature_generation.loaders.raw.load_ids import (
+    SplitName,
+    load_original_ids,
+)
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 
@@ -62,5 +65,5 @@ class IDDataFilter:
                         f"Splitname {split_name} is not allowed, try from ['train', 'test', 'val']",
                     )
         return pl.concat(
-            [pl.from_pandas(load_ids(split)) for split in split_names],
+            [pl.from_pandas(load_original_ids(split)) for split in split_names],
         ).get_column("dw_ek_borger")

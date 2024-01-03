@@ -13,7 +13,10 @@ from psycop.common.feature_generation.application_modules.project_setup import (
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_ids
+from psycop.common.feature_generation.loaders.raw.load_ids import (
+    SplitName,
+    load_original_ids,
+)
 from psycop.common.feature_generation.utils import write_df_to_file
 
 log = logging.getLogger(__name__)
@@ -76,7 +79,7 @@ def filter_by_split_ids(
 
 def get_split_id_df(split_name: SplitName) -> pd.DataFrame:
     """Get a dataframe with the splits ids."""
-    split_id_df = load_ids(
+    split_id_df = load_original_ids(
         split=split_name,
     )
 

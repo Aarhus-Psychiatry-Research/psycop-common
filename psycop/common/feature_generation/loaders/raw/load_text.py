@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from functools import partial
 from multiprocessing import Pool
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import pandas as pd
 
@@ -11,6 +11,7 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
     filter_by_split_ids,
     get_split_id_df,
 )
+from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
 
@@ -149,6 +150,7 @@ def load_text_sfis(
 def load_text_split(
     text_sfi_names: str | Iterable[str],
     split_name: Sequence[SplitName],
+    split_type: Literal["original", "geographical"] = "original",
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -171,7 +173,7 @@ def load_text_split(
     )
 
     split_id_df = pd.concat(
-        [get_split_id_df(split_name=split) for split in split_name],
+        [load_ids(split_type=split_type, split_name=split) for split in split_name],
     )
 
     text_split_df = filter_by_split_ids(
