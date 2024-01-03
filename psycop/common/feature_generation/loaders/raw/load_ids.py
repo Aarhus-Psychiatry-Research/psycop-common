@@ -71,7 +71,7 @@ def load_ids(
 
     Args:
         split_type: Which split to load IDs from. Takes either "original" or "geographical".
-        split: Which split to load IDs from. Takes either "train", "test" or "val".
+        split_name: Which split to load IDs from. Takes either "train", "test" or "val".
         n_rows: Number of rows to return. Defaults to None.
 
     Returns:
@@ -79,7 +79,6 @@ def load_ids(
     """
     if split_type == "original":
         return load_original_ids(split=split_name, n_rows=n_rows)
-    elif split_type == "geographical":
+    if split_type == "geographical":
         return load_region_ids(split=split_name, n_rows=n_rows)
-    else:
-        raise ValueError(f"split_type {split_type} is not allowed")
+    raise ValueError(f"split_type {split_type} is not allowed")

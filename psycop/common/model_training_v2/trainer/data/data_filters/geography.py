@@ -48,7 +48,9 @@ class RegionalFilter(BaselineDataFilter):
         if regional_move_df is None:
             self.filtered_regional_move_df = self._filter_regional_move_df_by_regions(
                 get_regional_split_df().select(
-                    "dw_ek_borger", "region", "first_regional_move_timestamp"
+                    "dw_ek_borger",
+                    "region",
+                    "first_regional_move_timestamp",
                 ),
             )
         else:

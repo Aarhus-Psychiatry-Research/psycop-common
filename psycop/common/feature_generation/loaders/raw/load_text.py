@@ -9,7 +9,6 @@ import pandas as pd
 
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     filter_by_split_ids,
-    get_split_id_df,
 )
 from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
@@ -159,6 +158,7 @@ def load_text_split(
     Args:
         text_sfi_names (Union[str, list[str]]): Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
         split_name (Literal["train", "val"], optional): Which splis to include. Defaults to Literal["train", "val"].
+        split_type (Literal["original", "geographical"], optional): Which split to load IDs from. Defaults to "original".
         include_sfi_name (bool, optional): Whether to include column with sfi name ("overskrift"). Defaults to False.
         n_rows (Optional[int, None], optional): Number of rows to load. Defaults to None.
 

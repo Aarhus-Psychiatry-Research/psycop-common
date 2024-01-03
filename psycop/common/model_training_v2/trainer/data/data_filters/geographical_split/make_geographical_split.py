@@ -132,11 +132,14 @@ def get_regional_split_df() -> pl.LazyFrame:
         .when(pl.col("region") == "vest")
         .then("val")
         .otherwise("test")
-        .alias("split")
+        .alias("split"),
     )
 
     return geographical_split_df.select(
-        "dw_ek_borger", "region", "first_regional_move_timestamp", "split"
+        "dw_ek_borger",
+        "region",
+        "first_regional_move_timestamp",
+        "split",
     ).lazy()
 
 
