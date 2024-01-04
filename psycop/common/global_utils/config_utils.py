@@ -31,3 +31,16 @@ def flatten_nested_dict(
         else:
             items.append((new_key, v))
     return dict(items)
+
+
+def replace_symbols_in_dict_keys(
+    d: dict[str, Any],
+    symbol2replacement: dict[str, str],
+) -> dict[str, Any]:
+    new_dict = {}
+    for key, value in d.items():
+        new_key = key
+        for symbol, replacement in symbol2replacement.items():
+            new_key = new_key.replace(symbol, replacement)
+        new_dict[new_key] = value
+    return new_dict

@@ -5,9 +5,7 @@ from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
 )
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-)
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     admissions,
@@ -53,7 +51,7 @@ class SczBpLayer2(SczBpFeatureLayer):
             named_dataframes=(
                 NamedDataframe(
                     df=admissions(shak_code=6600, shak_sql_operator="="),
-                    name=f"antidepressives_layer_{layer}",
+                    name=f"admissions_layer_{layer}",
                 ),
             ),
             lookbehind_days=lookbehind_days,

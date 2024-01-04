@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.160.1 (2024-01-02)
+
+### Fix
+
+* Replace disallowed symbols in config before logging to mlflow ([`a49faa2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a49faa2730499159294d807e1f864f22d52cd99c))
+
 ## v0.160.0 (2023-12-28)
 
 ### Feature
