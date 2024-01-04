@@ -1,3 +1,4 @@
+# type: ignore
 import polars as pl
 
 from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr import (

@@ -4,11 +4,16 @@ from typing import Any
 
 import mlflow
 
-from psycop.common.global_utils.config_utils import flatten_nested_dict
+from psycop.common.global_utils.config_utils import (
+    flatten_nested_dict,
+    replace_symbols_in_dict_keys,
+)
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
+@BaselineRegistry.loggers.register("mlflow_logger")
 class MLFlowLogger(BaselineLogger):
     def __init__(
         self,
@@ -16,8 +21,8 @@ class MLFlowLogger(BaselineLogger):
         tracking_uri: str = "http://exrhel0371.it.rm.dk:5050",
     ) -> None:
         mlflow.set_tracking_uri(tracking_uri)
-        mlflow.set_experiment(experiment_name=experiment_name)
-
+        self.mlflow_experiment = mlflow.set_experiment(experiment_name=experiment_name)
+        self.experiment_id = self.mlflow_experiment.experiment_id
         self._log_str = ""
 
     def _append_log_str(self, prefix: str, message: str):
@@ -30,7 +35,7 @@ class MLFlowLogger(BaselineLogger):
 
         self._append_log_str(prefix, message)
 
-        tmp_log_path = Path("tmp_log.txt")
+        tmp_log_path = Path(f"{self.experiment_id}-tmp_log.txt")
 
         # Write log temporarily to disk
         with tmp_log_path.open("w") as f:
@@ -59,5 +64,8 @@ class MLFlowLogger(BaselineLogger):
 
     def log_config(self, config: dict[str, Any]):
         config = flatten_nested_dict(config)
-        for k, v in config.items():
-            mlflow.log_param(key=k, value=v)
+        clean_config = replace_symbols_in_dict_keys(
+            d=config,
+            symbol2replacement={"@": "", "*": "_"},
+        )
+        mlflow.log_params(clean_config)
