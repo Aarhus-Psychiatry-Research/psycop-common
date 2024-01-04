@@ -9,15 +9,15 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import Ru
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-MODEL_NAME = "no_washout_full_model_with_text_features"
+MODEL_NAME = "full_model_with_text_features"
 PROJECT_MODEL_DIR = Path(
     f"E:/shared_resources/forced_admissions_inpatient/models/{MODEL_NAME}/pipeline_eval",
 )
-MODEL_ALGORITHM = 0  # 0 fo logistic regression and 1 for best xgboost
+MODEL_ALGORITHM = 1 # 0 fo logistic regression and 1 for best xgboost
 
-DEV_GROUP_NAME = "unthickly-negating"
+DEV_GROUP_NAME = "undertided-acetanilide"
 DEVELOPMENT_GROUP = RunGroup(model_name=MODEL_NAME, group_name=DEV_GROUP_NAME)
-BEST_POS_RATE = 0.05
+BEST_POS_RATE = 0.04
 
 
 ################

@@ -1,3 +1,4 @@
+
 import pandas as pd
 from wasabi import Printer
 
@@ -12,20 +13,11 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 
 msg = Printer(timestamp=True)
 
-
-def _get_prop_of_outcome_events_with_at_least_one_true_positve(
+def _get_num_of_unique_outcome_events(
     eval_dataset: EvalDataset,
     positive_rate: float,
-) -> float:
-    """Get proportion of outcomes with a prediction time that has at least one true positive prediction.
+) -> int:
 
-    Args:
-        eval_dataset (EvalDataset): EvalDataset object.
-        positive_rate (float, optional): Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
-
-    Returns:
-        float: Proportion of outcomes with at least one true positive.
-    """
     df = pd.DataFrame(
         {
             "id": eval_dataset.ids,
@@ -41,11 +33,9 @@ def _get_prop_of_outcome_events_with_at_least_one_true_positve(
         positive_rate=positive_rate,
     )
 
-    # Return number of outcome events with at least one true positives
-    return (
-        tp_df[["id", "outcome_timestamps"]].drop_duplicates().shape[0]
-        / df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates().shape[0]
-    )
+    num_unique = df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates().shape[0]
+
+    return num_unique
 
 
 def _get_number_of_outcome_events_with_at_least_one_true_positve(
@@ -109,7 +99,6 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "true_negatives": "TN",
             "false_positives": "FP",
             "false_negatives": "FN",
-            "prop of all events captured": "% of all FA captured",
         },
         axis=1,
     )
@@ -124,7 +113,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     for col in count_cols:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
-    renamed_df["Median days from first positive to FA"] = round(
+    renamed_df["Median days from first positive to outcome"] = round(
         df["median_warning_days"],
         1,
     )
@@ -137,7 +126,7 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
         run.paper_outputs.paths.tables
         / run.paper_outputs.artifact_names.performance_by_ppr
     )
-    positive_rates = [0.5, 0.2, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01]
+    positive_rates = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01]
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
@@ -145,16 +134,17 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
         positive_rates=positive_rates,
     )
 
-    # Calculate proportion/number of outcomes with a prediction time that has at least one true positive prediction
-    df["Proportion of detectable FAs detected ≥1"] = [
-        _get_prop_of_outcome_events_with_at_least_one_true_positve(
+    df["Total number of unique outcome events"] = [
+        _get_num_of_unique_outcome_events(
             eval_dataset=eval_dataset,
             positive_rate=pos_rate,
         )
         for pos_rate in positive_rates
     ]
 
-    df["Number of detectable FAs detected ≥1"] = [
+    df["Number of positive outcomes in test set (TP+FN)"] = df["true_positives"] + df["false_negatives"]
+
+    df["Number of unique outcome events detected ≥1"] = [
         _get_number_of_outcome_events_with_at_least_one_true_positve(
             eval_dataset=eval_dataset,
             positive_rate=pos_rate,
@@ -162,9 +152,14 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
         for pos_rate in positive_rates
     ]
 
-    df["Number of positive outcomes in test set (TP+FN)"] = df["TP"] + df["FN"]
+    df["Prop. of unique outcome events detected ≥1"] = round(df["Number of unique outcome events detected ≥1"] / df["Total number of unique outcome events"], 3)
+
+    df["Benefit/harm value"] = (df["true_positives"]*10) - df["false_positives"]
+
+    df["Benefit/harm value based on unique outcomes detected ≥1"] = (df["Number of unique outcome events detected ≥1"]*10) - df["false_positives"]
 
     df = clean_up_performance_by_ppr(df)
+
     df.to_excel(output_path, index=False)
 
 

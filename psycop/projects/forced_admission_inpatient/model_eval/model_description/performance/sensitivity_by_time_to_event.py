@@ -64,7 +64,7 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
             "The outcome timestamps must be provided in order to calculate the sensitivity by time to event.",
         )
 
-    for ppr in [0.01, 0.03, 0.05, 0.1, 0.2, 0.5]:
+    for ppr in [0.01, 0.03, 0.05, 0.075, 0.1, 0.2]:
         df = get_sensitivity_by_timedelta_df(
             y=eval_dataset.y,  # type: ignore
             y_hat=eval_dataset.get_predictions_for_positive_rate(

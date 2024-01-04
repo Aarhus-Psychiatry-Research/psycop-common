@@ -20,11 +20,11 @@ msg = Printer(timestamp=True)  # type: ignore
 
 
 def _get_test_run_name(pipeline_to_train: ForcedAdmissionInpatientPipelineRun) -> str:
-    return f"{pipeline_to_train.name}-eval-on-test-w-wash"  # add w wash if eval on cohort with washout
+    return f"{pipeline_to_train.name}-eval-on-test"  # add w wash if eval on cohort with washout
 
 
 def _get_test_group_name(pipeline_to_train: ForcedAdmissionInpatientPipelineRun) -> str:
-    return f"{pipeline_to_train.group.group_name!s}-eval-on-test-w-wash"  # add w wash if eval on cohort with washout
+    return f"{pipeline_to_train.group.group_name!s}-eval-on-test"  # add w wash if eval on cohort with washout
 
 
 def _get_test_group_path(
