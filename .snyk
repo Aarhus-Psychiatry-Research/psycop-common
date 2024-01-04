@@ -56,11 +56,11 @@ ignore:
         reason: Vulnerability if streaming datasets from a web server, allowing them to write to a directory outside of the current directory. Streaming datasets from the web with mlflow is not allowed, and writing to a directory is a relatively minor vulnerability. Exception approved via Slack huddle between Andreas and Martin on 2023-12-14.
         expires: 2024-01-13T08:03:24.834Z
         created: 2023-12-14T08:03:24.839Z
-  SNYK-PYTHON-MLFLOW-6134596
-    - '*':
-        reason: Vulnerability in running mlflow-server and mlflow-ui
-        which we do not use. Approved via email between Andreas and 
-        Lasse on 2024-01-04.
+  SNYK-PYTHON-MLFLOW-6134596:
+    - '*': 
+        reason: >-
+          Vulnerability in running mlflow-server and mlflow-ui
+          which we do not use. Exception approved via email between Andreas and Lasse on 2024-01-04.
         expires: 2024-03-01T08:00:00.000Z
         created: 2024-01-04T08:00:00.000Z          
 patch: {}
