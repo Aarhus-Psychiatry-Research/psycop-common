@@ -2,6 +2,23 @@
 
 <!--next-version-placeholder-->
 
+## v0.160.1 (2024-01-02)
+
+### Fix
+
+* Replace disallowed symbols in config before logging to mlflow ([`a49faa2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a49faa2730499159294d807e1f864f22d52cd99c))
+
+## v0.160.0 (2023-12-28)
+
+### Feature
+
+* Analysis of time from first contact to outcome ([`14380bd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/14380bd410746f049d45dfbe506a757d4d24933c))
+
+### Fix
+
+* Add mlflow logger to registry ([`ca1a13c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ca1a13cba50220495dec122fcab4042936d8d3cf))
+* First visit to first contact ([`3beda39`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3beda39dc8aa70546897beab39b0a20f02f89782))
+
 ## v0.159.0 (2023-12-21)
 
 ### Feature

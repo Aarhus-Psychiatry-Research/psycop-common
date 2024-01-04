@@ -42,9 +42,15 @@ from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_6 imp
 from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_7 import (
     SczBpLayer7,
 )
+from psycop.projects.scz_bp.feature_generation.outcome_specification.bp_diagnoses import (
+    get_first_bp_diagnosis,
+)
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
     get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin,
     get_time_of_first_scz_or_bp_diagnosis_after_washin,
+)
+from psycop.projects.scz_bp.feature_generation.outcome_specification.scz_diagnoses import (
+    get_first_scz_diagnosis,
 )
 
 if TYPE_CHECKING:
@@ -102,7 +108,24 @@ class SczBpFeatureSpecifier:
                 timeseries_df=get_time_of_first_visit_to_psychiatry().to_pandas(),
                 prefix="meta",
             ),
-            # TODO: add age -- filter during training instead of feature generation
+            OutcomeSpec(
+                feature_base_name="scz_within_3_years",
+                timeseries_df=get_first_scz_diagnosis(),
+                lookahead_days=1095,
+                aggregation_fn=maximum,
+                fallback=0,
+                incident=True,
+                prefix="meta",
+            ),
+            OutcomeSpec(
+                feature_base_name="bp_within_3_years",
+                timeseries_df=get_first_bp_diagnosis(),
+                lookahead_days=1095,
+                aggregation_fn=maximum,
+                fallback=0,
+                incident=True,
+                prefix="meta",
+            ),
         ]
 
     def get_feature_specs(
