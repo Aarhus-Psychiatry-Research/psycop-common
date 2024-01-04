@@ -1,4 +1,3 @@
-
 import pandas as pd
 from wasabi import Printer
 
@@ -13,9 +12,9 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 
 msg = Printer(timestamp=True)
 
+
 def _get_num_of_unique_outcome_events(
     eval_dataset: EvalDataset,
-    positive_rate: float,
 ) -> int:
 
     df = pd.DataFrame(
@@ -27,13 +26,9 @@ def _get_num_of_unique_outcome_events(
         },
     )
 
-    # Generate df with only true positives
-    tp_df = get_true_positives(
-        eval_dataset=eval_dataset,
-        positive_rate=positive_rate,
+    num_unique = (
+        df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates().shape[0]
     )
-
-    num_unique = df[df["y"] == 1][["id", "outcome_timestamps"]].drop_duplicates().shape[0]
 
     return num_unique
 
@@ -134,15 +129,13 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
         positive_rates=positive_rates,
     )
 
-    df["Total number of unique outcome events"] = [
-        _get_num_of_unique_outcome_events(
-            eval_dataset=eval_dataset,
-            positive_rate=pos_rate,
-        )
-        for pos_rate in positive_rates
-    ]
+    df["Total number of unique outcome events"] = _get_num_of_unique_outcome_events(
+        eval_dataset=eval_dataset,
+    )
 
-    df["Number of positive outcomes in test set (TP+FN)"] = df["true_positives"] + df["false_negatives"]
+    df["Number of positive outcomes in test set (TP+FN)"] = (
+        df["true_positives"] + df["false_negatives"]
+    )
 
     df["Number of unique outcome events detected ≥1"] = [
         _get_number_of_outcome_events_with_at_least_one_true_positve(
@@ -152,11 +145,17 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
         for pos_rate in positive_rates
     ]
 
-    df["Prop. of unique outcome events detected ≥1"] = round(df["Number of unique outcome events detected ≥1"] / df["Total number of unique outcome events"], 3)
+    df["Prop. of unique outcome events detected ≥1"] = round(
+        df["Number of unique outcome events detected ≥1"]
+        / df["Total number of unique outcome events"],
+        3,
+    )
 
-    df["Benefit/harm value"] = (df["true_positives"]*10) - df["false_positives"]
+    df["Benefit/harm value"] = (df["true_positives"] * 10) - df["false_positives"]
 
-    df["Benefit/harm value based on unique outcomes detected ≥1"] = (df["Number of unique outcome events detected ≥1"]*10) - df["false_positives"]
+    df["Benefit/harm value based on unique outcomes detected ≥1"] = (
+        df["Number of unique outcome events detected ≥1"] * 10
+    ) - df["false_positives"]
 
     df = clean_up_performance_by_ppr(df)
 
