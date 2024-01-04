@@ -60,7 +60,9 @@ ignore:
     - '*': 
         reason: >-
           Vulnerability in running mlflow-server and mlflow-ui
-          which we do not use. Exception approved via email between Andreas and Lasse on 2024-01-04.
+          which we do not use, and which requires access to the host
+          server. Exception approved via zoom call between Andreas
+          and Lasse on 2024-01-04.
         expires: 2024-03-01T08:00:00.000Z
         created: 2024-01-04T08:00:00.000Z          
 patch: {}
