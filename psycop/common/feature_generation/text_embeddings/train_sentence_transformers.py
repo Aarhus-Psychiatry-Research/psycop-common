@@ -1,12 +1,13 @@
 """Train sentence transformer model using SimCSE loss on our data."""
 from collections.abc import Sequence
 from time import time
-from typing import Literal
+from typing import Callable, Literal
 
+import pandas as pd
 from sentence_transformers import InputExample, SentenceTransformer, losses
 from torch.utils.data import DataLoader
 
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
+from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_stratified_by_outcome_split_ids, load_stratified_by_region_split_ids
 from psycop.common.feature_generation.loaders.raw.load_text import load_text_split
 from psycop.common.global_utils.paths import TEXT_EMBEDDING_MODELS_DIR
 
@@ -15,13 +16,13 @@ def get_train_text(
     n_rows: int | None,
     text_sfi_names: str | list[str],
     train_splits: Sequence[SplitName],
-    split_type: Literal["original", "geographical"] = "original",
+    split_ids_loader: Callable[[SplitName], pd.DataFrame] | None,
 ) -> list[str]:
     text_df = load_text_split(
         text_sfi_names=text_sfi_names,
         n_rows=n_rows,
         split_name=train_splits,
-        split_type=split_type,
+        split_ids_loader=split_ids_loader,
     )
     return text_df["value"].tolist()
 
@@ -72,7 +73,7 @@ def train_simcse_model_from_text(
     model_save_name: str,
     n_rows: int | None = None,
     train_splits: Sequence[SplitName] = [SplitName.TRAIN],
-    split_type: Literal["original", "geographical"] = "original",
+    split_ids_loader: Callable[[SplitName], pd.DataFrame] | None = None,
     debug: bool = False,
 ) -> None:
     if debug:
@@ -82,7 +83,7 @@ def train_simcse_model_from_text(
             n_rows=n_rows,
             text_sfi_names=text_sfi_names,
             train_splits=train_splits,
-            split_type=split_type,
+            split_ids_loader=split_ids_loader,
         )
     train_data = convert_list_of_texts_to_sentence_pairs(texts=train_text)
     dataloader = make_data_loader(train_data=train_data, batch_size=batch_size)
@@ -113,7 +114,11 @@ if __name__ == "__main__":
     EPOCHS = 2
     N_ROWS = None
     TRAIN_SPLITS = [SplitName.TRAIN]
-    SPLIT_TYPE = "geographical"
+    split_id_loaders = {
+        "region": load_stratified_by_region_split_ids,
+        "id_outcome": load_stratified_by_outcome_split_ids,
+    }
+    SPLIT_TYPE = "region"
     MODEL = "miniLM"
     # Exp 1: continue pretraining paraphrase-multilingual-MiniLM-L12-v2
     model_options = {
@@ -130,6 +135,6 @@ if __name__ == "__main__":
         model_save_name=f"{model_options[MODEL]}-finetuned-debug-{DEBUG!s}",
         n_rows=N_ROWS,
         train_splits=TRAIN_SPLITS,
-        split_type=SPLIT_TYPE,
+        split_ids_loader=split_id_loaders[SPLIT_TYPE],
         debug=DEBUG,
     )

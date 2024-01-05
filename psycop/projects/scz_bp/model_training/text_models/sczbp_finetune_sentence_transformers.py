@@ -2,7 +2,11 @@
 
 from sentence_transformers import SentenceTransformer
 
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
+from psycop.common.feature_generation.loaders.raw.load_ids import (
+    SplitName,
+    load_stratified_by_outcome_split_ids,
+    load_stratified_by_region_split_ids,
+)
 from psycop.common.feature_generation.text_embeddings.train_sentence_transformers import (
     train_simcse_model_from_text,
 )
@@ -27,11 +31,15 @@ if __name__ == "__main__":
         # ],
     }
 
-    BATCH_SIZE = 8
+    BATCH_SIZE = 12
     EPOCHS = 1
     N_ROWS = None
     TRAIN_SPLITS = [SplitName.TRAIN, SplitName.VALIDATION]
-    SPLIT_TYPE = "geographical"
+    split_id_loaders = {
+        "region": load_stratified_by_region_split_ids,
+        "id_outcome": load_stratified_by_outcome_split_ids,
+    }
+    SPLIT_TYPE = "region"
 
     for note_types_name, note_types in note_types_dict.items():
         model = SentenceTransformer("chcaa/dfm-encoder-large-v1")
@@ -41,9 +49,9 @@ if __name__ == "__main__":
             text_sfi_names=note_types,
             epochs=EPOCHS,
             batch_size=BATCH_SIZE,
-            model_save_name=f"dfm-encoder-large-v1-{note_types_name}-finetuned",
+            model_save_name=f"dfm-encoder-large-v1-{note_types_name}-finetuned-split-{SPLIT_TYPE}",
             n_rows=N_ROWS,
             train_splits=TRAIN_SPLITS,
-            split_type=SPLIT_TYPE,
+            split_ids_loader=split_id_loaders[SPLIT_TYPE],
             debug=DEBUG,
         )
