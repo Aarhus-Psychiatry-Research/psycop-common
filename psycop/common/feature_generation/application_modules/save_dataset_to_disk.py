@@ -15,7 +15,7 @@ from psycop.common.feature_generation.application_modules.wandb_utils import (
 )
 from psycop.common.feature_generation.loaders.raw.load_ids import (
     SplitName,
-    load_original_ids,
+    load_stratified_by_outcome_split_ids,
 )
 from psycop.common.feature_generation.utils import write_df_to_file
 
@@ -79,7 +79,7 @@ def filter_by_split_ids(
 
 def get_split_id_df(split_name: SplitName) -> pd.DataFrame:
     """Get a dataframe with the splits ids."""
-    split_id_df = load_original_ids(
+    split_id_df = load_stratified_by_outcome_split_ids(
         split=split_name,
     )
 

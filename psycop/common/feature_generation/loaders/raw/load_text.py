@@ -3,14 +3,14 @@ from __future__ import annotations
 
 from functools import partial
 from multiprocessing import Pool
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Callable, Literal
 
 import pandas as pd
 
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     filter_by_split_ids,
 )
-from psycop.common.feature_generation.loaders.raw.load_ids import load_ids
+from psycop.common.feature_generation.loaders.raw.load_ids import load_stratified_by_outcome_split_ids
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
 
@@ -149,22 +149,26 @@ def load_text_sfis(
 def load_text_split(
     text_sfi_names: str | Iterable[str],
     split_name: Sequence[SplitName],
-    split_type: Literal["original", "geographical"] = "original",
+    split_ids_loader: Callable[[SplitName], pd.DataFrame] | None = None,
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads specified text sfi and only keeps data from the specified split
 
     Args:
-        text_sfi_names (Union[str, list[str]]): Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
-        split_name (Literal["train", "val"], optional): Which splis to include. Defaults to Literal["train", "val"].
-        split_type (Literal["original", "geographical"], optional): Which split to load IDs from. Defaults to "original".
-        include_sfi_name (bool, optional): Whether to include column with sfi name ("overskrift"). Defaults to False.
-        n_rows (Optional[int, None], optional): Number of rows to load. Defaults to None.
+        text_sfi_names: Which sfi types to load. See `get_all_valid_text_sfi_names()` for valid sfi types.
+        split_name: Which splis to include. Defaults to Literal["train", "val"].
+        split_ids_loader: Which function to use for getting the patient level split ids.
+            If none, defaults to `load_stratified_by_outcome_split_ids`. See
+            load_ids.py for split types.
+        include_sfi_name: Whether to include column with sfi name ("overskrift"). Defaults to False.
+        n_rows: Number of rows to load. Defaults to None.
 
     Returns:
         pd.DataFrame: Chosen sfis from chosen splits
     """
+    if split_ids_loader is None:
+        split_ids_loader = load_stratified_by_outcome_split_ids
 
     text_df = load_text_sfis(
         text_sfi_names=text_sfi_names,
@@ -173,13 +177,13 @@ def load_text_split(
     )
 
     split_id_df = pd.concat(
-        [load_ids(split_type=split_type, split_name=split) for split in split_name],
+        [split_ids_loader(split) for split in split_name],
     )
 
     text_split_df = filter_by_split_ids(
         df_to_split=text_df,
         split_id_df=split_id_df,
-        split_name=split_name,  # type: ignore
+        split_name=[split.value for split in split_name],  # type: ignore
     )
 
     return text_split_df
