@@ -41,6 +41,7 @@ exclude = [
   "**/.*venv*",
   ".tox",
   "build",
+  # don't check files that import synthcity as it is not installed on the main environment
   "psycop/projects/scz_bp/model_training/estimator_steps/synth_data_augmentation.py",
   "psycop/projects/scz_bp/model_training/estimator_steps/test_synth_data_augmentation.py",
 ]
