@@ -3,14 +3,16 @@ from __future__ import annotations
 
 from functools import partial
 from multiprocessing import Pool
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Callable
 
 import pandas as pd
 
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     filter_by_split_ids,
 )
-from psycop.common.feature_generation.loaders.raw.load_ids import load_stratified_by_outcome_split_ids
+from psycop.common.feature_generation.loaders.raw.load_ids import (
+    load_stratified_by_outcome_split_ids,
+)
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
 

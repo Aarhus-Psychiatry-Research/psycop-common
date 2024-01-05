@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
@@ -23,7 +23,8 @@ class SplitName(Enum):
 
 
 def load_stratified_by_outcome_split_ids(
-    split: SplitName, n_rows: int | None = None
+    split: SplitName,
+    n_rows: int | None = None,
 ) -> pd.DataFrame:
     """Loads ids for a given split based on the original data split.
 
@@ -43,7 +44,10 @@ def load_stratified_by_outcome_split_ids(
     return df.reset_index(drop=True)
 
 
-def load_stratified_by_region_split_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFrame:
+def load_stratified_by_region_split_ids(
+    split: SplitName,
+    n_rows: int | None = None,
+) -> pd.DataFrame:
     """Loads ids for a given split using the region-based split.
 
     Args:
