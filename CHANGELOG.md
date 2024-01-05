@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.162.0 (2024-01-05)
+
+### Feature
+
+* Joint interface for loading different split ids ([`b6b2be2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b6b2be2652b83cb960b0ef2177307f7ad86a42f4))
+
 ## v0.161.0 (2024-01-04)
 
 ### Feature
