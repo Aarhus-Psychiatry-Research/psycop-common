@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
@@ -22,7 +22,10 @@ class SplitName(Enum):
     TEST = "test"
 
 
-def load_original_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFrame:
+def load_stratified_by_outcome_split_ids(
+    split: SplitName,
+    n_rows: int | None = None,
+) -> pd.DataFrame:
     """Loads ids for a given split based on the original data split.
 
     Args:
@@ -41,7 +44,10 @@ def load_original_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFra
     return df.reset_index(drop=True)
 
 
-def load_region_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFrame:
+def load_stratified_by_region_split_ids(
+    split: SplitName,
+    n_rows: int | None = None,
+) -> pd.DataFrame:
     """Loads ids for a given split using the region-based split.
 
     Args:
@@ -60,25 +66,3 @@ def load_region_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFrame
     if n_rows is not None:
         split_df = split_df.head(n_rows)
     return split_df.to_pandas()
-
-
-def load_ids(
-    split_type: Literal["original", "geographical"],
-    split_name: SplitName,
-    n_rows: int | None = None,
-) -> pd.DataFrame:
-    """Loads ids for a given split.
-
-    Args:
-        split_type: Which split to load IDs from. Takes either "original" or "geographical".
-        split_name: Which split to load IDs from. Takes either "train", "test" or "val".
-        n_rows: Number of rows to return. Defaults to None.
-
-    Returns:
-        pd.DataFrame: Only dw_ek_borger column with ids
-    """
-    if split_type == "original":
-        return load_original_ids(split=split_name, n_rows=n_rows)
-    if split_type == "geographical":
-        return load_region_ids(split=split_name, n_rows=n_rows)
-    raise ValueError(f"split_type {split_type} is not allowed")

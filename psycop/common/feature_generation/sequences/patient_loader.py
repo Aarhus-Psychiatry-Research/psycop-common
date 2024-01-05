@@ -8,7 +8,7 @@ from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_ids import (
     SplitName,
-    load_original_ids,
+    load_stratified_by_outcome_split_ids,
 )
 from psycop.common.feature_generation.sequences.event_loader import (
     DiagnosisLoader,
@@ -46,7 +46,7 @@ class PatientLoader:
     ) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         split_ids = (
-            pl.from_pandas(load_original_ids(split=split))
+            pl.from_pandas(load_stratified_by_outcome_split_ids(split=split))
             .sample(fraction=fraction)
             .lazy()
         )
