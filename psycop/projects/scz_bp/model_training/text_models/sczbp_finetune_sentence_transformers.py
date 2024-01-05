@@ -12,29 +12,29 @@ if __name__ == "__main__":
 
     note_types_dict = {
         "aktuelt_psykisk": ["Aktuelt psykisk"],
-        "all_relevant": [
-            "Observation af patient, Psykiatri",
-            "Samtale med behandlingssigte",
-            "Aktuelt psykisk",
-            "Aktuelt socialt, Psykiatri",
-            "Aftaler, Psykiatri",
-            "Aktuelt somatisk, Psykiatri",
-            "Objektivt psykisk",
-            "Kontaktårsag",
-            "Telefonnotat",
-            "Semistruktureret diagnostisk interview",
-            "Vurdering/konklusion",
-        ],
+        # "all_relevant": [
+        #     "Observation af patient, Psykiatri",
+        #     "Samtale med behandlingssigte",
+        #     "Aktuelt psykisk",
+        #     "Aktuelt socialt, Psykiatri",
+        #     "Aftaler, Psykiatri",
+        #     "Aktuelt somatisk, Psykiatri",
+        #     "Objektivt psykisk",
+        #     "Kontaktårsag",
+        #     "Telefonnotat",
+        #     "Semistruktureret diagnostisk interview",
+        #     "Vurdering/konklusion",
+        # ],
     }
 
-    BATCH_SIZE = 128
+    BATCH_SIZE = 8
     EPOCHS = 1
     N_ROWS = None
     TRAIN_SPLITS = [SplitName.TRAIN, SplitName.VALIDATION]
     SPLIT_TYPE = "geographical"
-    model = SentenceTransformer("chcaa/dfm-encoder-large-v1")
 
     for note_types_name, note_types in note_types_dict.items():
+        model = SentenceTransformer("chcaa/dfm-encoder-large-v1")
         print(f"Training model for {note_types_name}")
         train_simcse_model_from_text(
             model=model,
