@@ -48,7 +48,6 @@
             },
             "dependsOn": [
                 "Lint",
-                "Merge main"
             ]
         },
         {
@@ -63,7 +62,6 @@
             },
             "dependsOn": [
                 "Lint",
-                "Merge main"
             ]
         }
     ]

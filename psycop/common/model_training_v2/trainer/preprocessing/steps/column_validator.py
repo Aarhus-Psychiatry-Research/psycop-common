@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 import polars as pl
-from functionalpy import Seq
+from iterpy import Iter
 from polars import LazyFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -83,7 +83,7 @@ class ColumnPrefixExpectation(PresplitStep):
         *args: list[str | int],
     ):
         self.column_expectations = (
-            Seq(args)
+            Iter(args)
             .map(
                 lambda x: ColumnCountExpectation.from_list(x),
             )
@@ -94,7 +94,7 @@ class ColumnPrefixExpectation(PresplitStep):
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
 
         errors = (
-            Seq(self.column_expectations)
+            Iter(self.column_expectations)
             .map(
                 lambda expectation: self._column_count_as_expected(
                     expectation=expectation,
