@@ -2,12 +2,14 @@ import pandas as pd
 import plotnine as pn
 import polars as pl
 
+from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_CUSTOM_COLUMNS
-from psycop.projects.scz_bp.evaluation.pipeline_objects import PipelineRun
+from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
+    EvalConfigResolver,
+)
 from psycop.projects.t2d.paper_outputs.config import (
     T2D_PN_THEME,
 )
@@ -55,20 +57,21 @@ def reverse_x_axis_categories(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def scz_bp_get_sensitivity_by_time_to_event_df(
-    eval_dataset: EvalDataset,
+    eval_ds: EvalDataset,
 ) -> pd.DataFrame:
     dfs = []
 
-    if eval_dataset.outcome_timestamps is None:
+    if eval_ds.outcome_timestamps is None:
         raise ValueError(
             "The outcome timestamps must be provided in order to calculate the metric by time to event.",
         )
 
+    eval_dataset_polars = eval_ds.to_polars()
     for ppr in [0.01, 0.03, 0.05]:
-        eval_dataset_df = eval_dataset.to_polars().with_columns(
+        eval_dataset_df = eval_dataset_polars.with_columns(
             pl.Series(
                 name="y_hat",
-                values=eval_dataset.get_predictions_for_positive_rate(
+                values=eval_ds.get_predictions_for_positive_rate(
                     desired_positive_rate=ppr,
                 )[0],
             ),
@@ -76,7 +79,7 @@ def scz_bp_get_sensitivity_by_time_to_event_df(
         for diagnosis_subset in ["scz", "bp", "both"]:
             if diagnosis_subset != "both":
                 filtered_df = eval_dataset_df.filter(
-                    pl.col("meta_scz_or_bp_indicator") == diagnosis_subset,
+                    pl.col("scz_or_bp") == diagnosis_subset,
                 )
             else:
                 filtered_df = eval_dataset_df
@@ -100,8 +103,8 @@ def scz_bp_get_sensitivity_by_time_to_event_df(
     return pd.concat(dfs)
 
 
-def scz_bp_plot_sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
-    plot_df = scz_bp_get_sensitivity_by_time_to_event_df(eval_dataset=eval_dataset)
+def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset) -> pn.ggplot:
+    plot_df = scz_bp_get_sensitivity_by_time_to_event_df(eval_ds=eval_ds)
     plot_df = reverse_x_axis_categories(plot_df)
 
     p = _plot_metric_by_time_to_event(df=plot_df, metric="sensitivity") + pn.labs(
@@ -113,26 +116,9 @@ def scz_bp_plot_sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.gg
     return p
 
 
-def scz_bp_sensitivity_by_time_to_event(run: PipelineRun) -> pn.ggplot:
-    eval_ds = run.pipeline_outputs.get_eval_dataset(
-        custom_columns=SCZ_BP_CUSTOM_COLUMNS,
-    )
-    p = scz_bp_plot_sensitivity_by_time_to_event(eval_dataset=eval_ds)
-
-    p.save(
-        run.paper_outputs.paths.figures / "recall_by_time_to_event",
-        width=7,
-        height=7,
-    )
-
-    return p
-
-
 if __name__ == "__main__":
-    from psycop.projects.scz_bp.evaluation.model_selection.performance_by_group_lookahead_model_type import (
-        DEVELOPMENT_PIPELINE_RUN,
-    )
+    cfg_path = OVARTACI_SHARED_DIR / "scz_bp" / "experiments" / "l1"
 
-    # TODO make separately for scz/bp OR add as shapes
+    run = EvalConfigResolver(path_to_cfg=cfg_path / "config.cfg")
 
-    p = scz_bp_sensitivity_by_time_to_event(run=DEVELOPMENT_PIPELINE_RUN)
+    p = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=run.eval_ds)

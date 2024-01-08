@@ -2,6 +2,44 @@
 
 <!--next-version-placeholder-->
 
+## v0.162.0 (2024-01-05)
+
+### Feature
+
+* Joint interface for loading different split ids ([`b6b2be2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b6b2be2652b83cb960b0ef2177307f7ad86a42f4))
+
+## v0.161.0 (2024-01-04)
+
+### Feature
+
+* Add cleanlab processing step ([`498403b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/498403bfd9e5fd4b03d1541760087a9168911a5c))
+* Add missforest imputer ([`05100b3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/05100b37748efa536599c60cbcdcd3b7ad6fe5b4))
+* Synthetic data augmenter estimator step ([`8712caf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8712caf96418dedc3dafe32ca9df5cc77c8db6f7))
+* Simple imputer estimator step ([`1f72094`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1f7209436e75abdbf8ce9fff7a7fd469d8d5810b))
+* Standardscaler that infers numeric columns ([`4be5abc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4be5abc9a1ee7ac67279b51b7f6e32058648484b))
+* Imblearn pipeline and constructor ([`c81f98b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c81f98bb1ab3a6954a2ed61a405e3ddb53ca04bc))
+
+### Fix
+
+* Snyk syntax ([`751c764`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/751c7648c34f1966e6e062da582ec5b1ad0ffac1))
+
+## v0.160.1 (2024-01-02)
+
+### Fix
+
+* Replace disallowed symbols in config before logging to mlflow ([`a49faa2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a49faa2730499159294d807e1f864f22d52cd99c))
+
+## v0.160.0 (2023-12-28)
+
+### Feature
+
+* Analysis of time from first contact to outcome ([`14380bd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/14380bd410746f049d45dfbe506a757d4d24933c))
+
+### Fix
+
+* Add mlflow logger to registry ([`ca1a13c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ca1a13cba50220495dec122fcab4042936d8d3cf))
+* First visit to first contact ([`3beda39`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3beda39dc8aa70546897beab39b0a20f02f89782))
+
 ## v0.159.0 (2023-12-21)
 
 ### Feature

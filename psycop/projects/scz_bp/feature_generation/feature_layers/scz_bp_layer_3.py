@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import count, latest
+from timeseriesflattener.aggregation_fns import boolean, latest
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
@@ -49,7 +49,7 @@ class SczBpLayer3(SczBpFeatureLayer):
                 NamedDataframe(df=f9_disorders(), name="f9_disorders"),
             ),
             lookbehind_days=lookbehind_days,
-            aggregation_fns=[count],
+            aggregation_fns=[boolean],
             fallback=[0],
         ).create_combinations()
 

@@ -6,9 +6,14 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
+    get_regional_split_df,
+)
 
 if TYPE_CHECKING:
     import pandas as pd
+
+import polars as pl
 
 
 class SplitName(Enum):
@@ -17,11 +22,14 @@ class SplitName(Enum):
     TEST = "test"
 
 
-def load_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFrame:
-    """Loads ids for a given split.
+def load_stratified_by_outcome_split_ids(
+    split: SplitName,
+    n_rows: int | None = None,
+) -> pd.DataFrame:
+    """Loads ids for a given split based on the original data split.
 
     Args:
-        split (str): Which split to load IDs from. Takes either "train", "test" or "val". # noqa: DAR102
+        split: Which split to load IDs from. Takes either "train", "test" or "val".
         n_rows: Number of rows to return. Defaults to None.
 
     Returns:
@@ -34,3 +42,27 @@ def load_ids(split: SplitName, n_rows: int | None = None) -> pd.DataFrame:
     df = sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
     return df.reset_index(drop=True)
+
+
+def load_stratified_by_region_split_ids(
+    split: SplitName,
+    n_rows: int | None = None,
+) -> pd.DataFrame:
+    """Loads ids for a given split using the region-based split.
+
+    Args:
+        split: Which split to load IDs from. Takes either "train", "test" or "val".
+        n_rows: Number of rows to return. Defaults to None.
+
+    Returns:
+        pd.DataFrame: Only dw_ek_borger column with ids
+    """
+    split_df = (
+        get_regional_split_df()
+        .filter(pl.col("split") == split.value)
+        .select("dw_ek_borger")
+        .collect()
+    )
+    if n_rows is not None:
+        split_df = split_df.head(n_rows)
+    return split_df.to_pandas()

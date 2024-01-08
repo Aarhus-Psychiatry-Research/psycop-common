@@ -92,6 +92,9 @@ def add_shak_to_region_mapping(
 
 
 def get_regional_split_df() -> pl.LazyFrame:
+    """Return a dataframe with the region at which each patient first had
+    a contact. If a patient had contacts at multiple regions, the timestamp
+    of the first contact at a different region is also included."""
     shak_to_location_df = load_shak_to_location_mapping()
 
     visits = pl.from_pandas(physical_visits(shak_code=6600, return_shak_location=True))
@@ -122,10 +125,21 @@ def get_regional_split_df() -> pl.LazyFrame:
         first_visit_at_first_region,
         first_visit_at_second_region,
     )
+    # add indicator for which split each patient belongs to
+    geographical_split_df = geographical_split_df.with_columns(
+        pl.when(pl.col("region") == "øst")
+        .then("train")
+        .when(pl.col("region") == "vest")
+        .then("val")
+        .otherwise("test")
+        .alias("split"),
+    )
+
     return geographical_split_df.select(
         "dw_ek_borger",
         "region",
         "first_regional_move_timestamp",
+        "split",
     ).lazy()
 
 
