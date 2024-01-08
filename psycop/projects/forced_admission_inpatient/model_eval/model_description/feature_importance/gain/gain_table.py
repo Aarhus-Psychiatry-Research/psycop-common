@@ -47,13 +47,12 @@ def generate_feature_importance_table(
     feature_names = [c for c in split_df.columns if "pred_" in c]
 
     try:
-        if "feature_selection" in pipeline["preprocessing"]:  # type: ignore
-            feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
-                indices=True,
-            )
-            selected_feature_names = [feature_names[i] for i in feature_indices]
-        else:
-            selected_feature_names = feature_names
+        pipeline[0]['feature_selection'] # type: ignore
+        
+        feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
+            indices=True,
+    )
+        selected_feature_names = [feature_names[i] for i in feature_indices]
 
     except:
         selected_feature_names = feature_names
