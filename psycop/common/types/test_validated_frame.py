@@ -31,7 +31,7 @@ def test_col_name_validation():
 
 def test_type_validation():
     df = str_to_pl_df(
-        """test_col_name,
+        """test,
                       1,
 """,
     )
@@ -39,8 +39,8 @@ def test_type_validation():
     @dataclass(frozen=True)
     class FakeTypeValidatedFrame(ValidatedFrame[pl.DataFrame]):
         frame: pl.DataFrame
-        test_col_name: str = "test_col_name"
-        test_col_rules: Sequence[ValidatorRule] = [ColumnTypeRule(pl.Int64)]
+        test_col_name: str = "test"
+        test_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(pl.Utf8),)
 
     with pytest.raises(CombinedFrameValidationError, match=".*type.*"):
         FakeTypeValidatedFrame(frame=df)
