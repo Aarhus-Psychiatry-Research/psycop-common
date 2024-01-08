@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.164.0 (2024-01-08)
+
+### Feature
+
+* Validated frame ([`07b5f03`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/07b5f03c1b11b559c8dc4d12edac6fac0aac1585))
+
 ## v0.163.0 (2024-01-08)
 
 ### Feature
