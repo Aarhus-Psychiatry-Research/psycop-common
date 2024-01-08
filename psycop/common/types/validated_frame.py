@@ -1,8 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Generic, Protocol, TypeVar
+from typing import Generic, TypeVar
 
-import polars as pl
 from iterpy import Iter
 
 from psycop.common.types.validator_rules import (
@@ -11,9 +10,6 @@ from psycop.common.types.validator_rules import (
     ValidatorRule,
 )
 
-from ..model_training_v2.trainer.preprocessing.steps.column_validator import (
-    MissingColumnError,
-)
 from .polarsframe import PolarsFrameGeneric
 
 T = TypeVar("T")
