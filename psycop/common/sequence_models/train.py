@@ -9,8 +9,11 @@ import lightning.pytorch as pl
 import torch
 from torch.utils.data import DataLoader
 
-from psycop.common.global_utils.config_utils import flatten_nested_dict
+from psycop.common.global_utils.config_utils import (
+    flatten_nested_dict,
+)
 
+from ..model_training_v2.loggers.mlflow_logger import sanitise_dict_keys
 from .config_utils import load_config, parse_config
 
 log = logging.getLogger(__name__)
@@ -52,7 +55,7 @@ def train(config_path: Path | None = None) -> None:
             # update config
             log.info("Logging config")
             flat_config = flatten_nested_dict(config_dict)
-            logger.log_hyperparams(flat_config)
+            logger.log_hyperparams(sanitise_dict_keys(flat_config))
 
     # Load and filter dataset
     filter_fn = cfg.model_and_dataset.model.filter_and_reformat
