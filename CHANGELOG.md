@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.163.0 (2024-01-08)
+
+### Feature
+
+* Sanitise dict keys for mlflow ([`fc5eac9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fc5eac9458ebe09e744eb91504f0b1ed4b64ecac))
+* Remove unused extensions ([`a50d5e7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a50d5e7c540809d4a5317e0489218fc3e64457ab))
+* Disable graphite user pager ([`dea1c75`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dea1c75d4e12e4d0ee2428a4df7aef98b0e662c3))
+
 ## v0.162.0 (2024-01-05)
 
 ### Feature
