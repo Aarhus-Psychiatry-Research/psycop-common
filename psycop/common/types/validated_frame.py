@@ -1,6 +1,5 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from iterpy import Iter
 
@@ -11,6 +10,9 @@ from psycop.common.types.validator_rules import (
 )
 
 from .polarsframe import PolarsFrameGeneric
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 T = TypeVar("T")
 
