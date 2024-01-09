@@ -7,12 +7,7 @@ import polars as pl
 
 from psycop.common.data_structures.patient import Patient
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.common.feature_generation.loaders.raw.load_ids import (
-    SplitName,
-    load_stratified_by_outcome_split_ids,
-)
 from psycop.common.feature_generation.sequences.event_loader import (
-    DiagnosisLoader,
     EventLoader,
 )
 from psycop.common.feature_generation.sequences.patient_slice_from_events import (

@@ -8,7 +8,6 @@ import polars as pl
 from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.event_loader import DiagnosisLoader
 from psycop.common.feature_generation.sequences.patient_loader import (
     PatientLoader,
@@ -121,7 +120,9 @@ class PredictionTimesFromCohort:
 
 if __name__ == "__main__":
     patients = PatientLoader(
-        event_loaders=[DiagnosisLoader()], split_ids={"1"}, min_n_events=5,
+        event_loaders=[DiagnosisLoader()],
+        split_ids={"1"},
+        min_n_events=5,
     ).get_patients()
 
     prediction_times = PredictionTimesFromCohort(

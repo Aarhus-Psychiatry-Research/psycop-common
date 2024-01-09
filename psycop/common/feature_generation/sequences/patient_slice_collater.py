@@ -1,12 +1,8 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
-from ...cohort_definition import CohortDefiner
 from ...sequence_models.dataset import PatientSliceDataset
 from ...sequence_models.registry import Registry
-from ..loaders.raw.load_ids import SplitName
-from .event_loader import EventLoader
 from .patient_loader import PatientLoader
 
 

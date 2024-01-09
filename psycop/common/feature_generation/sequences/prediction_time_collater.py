@@ -1,13 +1,10 @@
 import datetime as dt
-from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from ...cohort_definition import CohortDefiner
 from ...sequence_models.dataset import PredictionTimeDataset
 from ...sequence_models.registry import Registry
-from ..loaders.raw.load_ids import SplitName
-from .event_loader import EventLoader
 from .patient_loader import PatientLoader
 from .prediction_times_from_cohort import PredictionTimesFromCohort
 
