@@ -2,7 +2,6 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import polars as pl
-from iterpy import Iter
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
