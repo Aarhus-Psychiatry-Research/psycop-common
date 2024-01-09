@@ -120,11 +120,9 @@ class PredictionTimesFromCohort:
 
 
 if __name__ == "__main__":
-    patients = PatientLoader.get_patients(
-        event_loaders=[DiagnosisLoader()],
-        split=SplitName.TRAIN,
-        min_n_events=5,
-    )
+    patients = PatientLoader(
+        event_loaders=[DiagnosisLoader()], split_ids={"1"}, min_n_events=5,
+    ).get_patients()
 
     prediction_times = PredictionTimesFromCohort(
         cohort_definer=T2DCohortDefiner(),
