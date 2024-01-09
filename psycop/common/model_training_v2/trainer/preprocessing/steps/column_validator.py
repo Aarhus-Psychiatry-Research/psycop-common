@@ -78,17 +78,19 @@ class ColumnCountExpectation:
 
 @BaselineRegistry.preprocessing.register("column_prefix_count_expectation")
 class ColumnPrefixExpectation(PresplitStep):
+    """Expect a certain number of columns with a given prefix.
+
+    Args:
+        List of elements, where the odd elements are the prefix, and the even elements are the expected count. E.g. ["pred_", 1, "other_", 2]. Would use tuples, but confection does not handle it well.
+    """
+
     def __init__(
         self,
         *args: list[str | int],
     ):
-        self.column_expectations = (
-            Iter(args)
-            .map(
-                lambda x: ColumnCountExpectation.from_list(x),
-            )
-            .to_list()
-        )
+        self.column_expectations = [
+            ColumnCountExpectation.from_list(arg) for arg in args
+        ]
 
     def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
