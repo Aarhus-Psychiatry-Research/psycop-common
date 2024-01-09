@@ -47,7 +47,7 @@ def test_type_validation():
         FakeTypeValidatedFrame(frame=df)
 
 
-def test_rules_without_columns_error():
+def test_rules_without_column_error():
     @dataclass(frozen=True)
     class FakeFrameWithRulesWithoutColumns(ValidatedFrame[pl.DataFrame]):
         frame: pl.DataFrame
