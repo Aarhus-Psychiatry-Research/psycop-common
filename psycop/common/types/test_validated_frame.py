@@ -54,7 +54,7 @@ def test_rules_without_columns_error():
 
     with pytest.raises(
         CombinedFrameValidationError,
-        match=".*missing from the frame.*",
+        match=".*was not present.*",
     ):
         FakeFrameWithRulesWithoutColumns(frame=pl.DataFrame())
 
