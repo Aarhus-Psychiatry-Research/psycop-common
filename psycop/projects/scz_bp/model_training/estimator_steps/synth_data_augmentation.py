@@ -6,8 +6,8 @@ from imblearn.base import BaseSampler
 from synthcity.plugins import Plugins
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
+from psycop.projects.scz_bp.model_training.scz_bp_registry import SczBpRegistry
 
 
 class SyntheticDataAugmentation(BaseSampler):
@@ -85,7 +85,7 @@ class SyntheticDataAugmentation(BaseSampler):
         return Xt.to_numpy(), yt.to_numpy()
 
 
-@BaselineRegistry.estimator_steps.register("synthetic_data_augmentation")
+@SczBpRegistry.estimator_steps.register("synthetic_data_augmentation")
 def synthetic_data_augmentation_step(
     model_name: str,
     model_params: dict[str, Any] | None,

@@ -3,8 +3,8 @@ from cleanlab.classification import CleanLearning
 from imblearn.base import BaseSampler
 from xgboost import XGBClassifier
 
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
+from psycop.projects.scz_bp.model_training.scz_bp_registry import SczBpRegistry
 
 
 class CleanlabProcessing(BaseSampler):
@@ -42,6 +42,6 @@ class CleanlabProcessing(BaseSampler):
         return X_copy, y_copy
 
 
-@BaselineRegistry.estimator_steps.register("cleanlab_processing")
+@SczBpRegistry.estimator_steps.register("cleanlab_processing")
 def cleanlab_processing_step() -> ModelStep:
     return ("synthetic_data_augmentation", CleanlabProcessing())
