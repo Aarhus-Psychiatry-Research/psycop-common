@@ -120,7 +120,7 @@ class PredictionTimesFromCohort:
 
 
 if __name__ == "__main__":
-    patients = PatientLoader.get_split(
+    patients = PatientLoader.get_patients(
         event_loaders=[DiagnosisLoader()],
         split=SplitName.TRAIN,
         min_n_events=5,

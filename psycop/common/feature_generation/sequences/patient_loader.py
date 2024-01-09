@@ -1,5 +1,6 @@
 import datetime
 from collections.abc import Sequence
+from dataclasses import dataclass
 from typing import Union
 
 import polars as pl
@@ -30,34 +31,30 @@ def keep_if_min_n_visits(
     return df
 
 
+@dataclass(frozen=True)
 class PatientLoader:
+    event_loaders: Sequence[EventLoader]
+    split_ids: set[str]
+    min_n_events: int | None = None
+    fraction: float = 1.0
+
     @staticmethod
     def load_date_of_birth_df() -> pl.DataFrame:
         df = pl.from_pandas(birthdays()).rename({"date_of_birth": "timestamp"})
 
         return df
 
-    @staticmethod
-    def get_split(
-        event_loaders: Sequence[EventLoader],
-        split: SplitName,
-        min_n_events: int | None = None,
-        fraction: float = 1.0,
-    ) -> Sequence[Patient]:
-        event_data = pl.concat([loader.load_events() for loader in event_loaders])
-        split_ids = (
-            load_stratified_by_outcome_split_ids(split=split)
-            .frame.collect()
-            .sample(fraction=fraction)
-            .lazy()
+    def get_patients(self) -> Sequence[Patient]:
+        event_data = pl.concat([loader.load_events() for loader in self.event_loaders])
+
+        events_from_train = event_data.filter(
+            pl.col("dw_ek_borger").is_in(self.split_ids),
         )
 
-        events_from_train = split_ids.join(event_data, on="dw_ek_borger", how="left")
-
-        if min_n_events:
+        if self.min_n_events:
             events_from_train = keep_if_min_n_visits(
                 events_from_train,
-                n_visits=min_n_events,
+                n_visits=self.min_n_events,
             )
 
         events_after_2013 = events_from_train.filter(
@@ -70,11 +67,3 @@ class PatientLoader:
         )
 
         return unpacked_patients
-
-
-if __name__ == "__main__":
-    patients = PatientLoader.get_split(
-        event_loaders=[DiagnosisLoader()],
-        split=SplitName.TRAIN,
-        min_n_events=5,
-    )

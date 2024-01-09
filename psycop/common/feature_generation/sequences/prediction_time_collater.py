@@ -41,7 +41,7 @@ class PredictionTimeCollater(BasePredictionTimeCollater):
     ) -> PredictionTimeDataset:
         prediction_times = PredictionTimesFromCohort(
             cohort_definer=self.cohort_definer,
-            patients=self.patient_loader.get_split(
+            patients=self.patient_loader.get_patients(
                 event_loaders=self.event_loaders,
                 split=SplitName(self.split_name),
                 fraction=self.load_fraction,
