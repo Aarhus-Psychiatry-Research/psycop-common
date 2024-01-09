@@ -68,12 +68,11 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
         rules_without_columns = (
             Iter(vars(self))
             .filter(lambda attr: "_col_rules" in attr)
-            .map(
-                lambda col_rule_attr: col_rule_attr.replace("_col_rules", ""),
-            )
+            .map(lambda rule_attr: rule_attr.replace("_rules", "_name"))
+            .map(lambda name_attr: getattr(self, name_attr))
             .filter(lambda col_name: col_name not in self.frame.columns)
             .map(
-                lambda col_name: f"- Attribute '{col_name}_col_rules' specifies rules, but column '{col_name}' is missing from the frame.",
+                lambda col_name: f"- Rules specified for '{col_name}', but it is missing from the frame.",
             )
             .to_list()
         )
