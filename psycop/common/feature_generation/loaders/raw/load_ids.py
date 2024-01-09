@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
+
+import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
@@ -16,9 +17,7 @@ from ....types.validated_frame import ValidatedFrame
 from ....types.validator_rules import ColumnExistsRule, ColumnTypeRule, ValidatorRule
 
 if TYPE_CHECKING:
-    import pandas as pd
-
-import polars as pl
+    from collections.abc import Sequence
 
 
 class SplitName(Enum):
