@@ -30,12 +30,10 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
         self.dataset_paths = [Path(arg) for arg in paths]
 
         if validate_on_init:
-            missing_paths = (
-                Iter(self.dataset_paths)
-                .map(self._check_path_exists)
-                .flatten()
-                .to_list()
-            )
+            missing_paths = [
+                self._check_path_exists(path) for path in self.dataset_paths
+            ]
+
             if missing_paths:
                 raise MissingPathError(
                     f"""The following paths are missing:
