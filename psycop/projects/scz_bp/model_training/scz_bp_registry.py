@@ -1,6 +1,3 @@
-
-
-
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 
 
