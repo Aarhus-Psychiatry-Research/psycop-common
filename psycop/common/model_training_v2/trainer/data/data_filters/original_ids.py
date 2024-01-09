@@ -64,9 +64,13 @@ class IDDataFilter:
                     raise ValueError(
                         f"Splitname {split_name} is not allowed, try from ['train', 'test', 'val']",
                     )
-        return pl.concat(
-            [
-                pl.from_pandas(load_stratified_by_outcome_split_ids(split))
-                for split in split_names
-            ],
-        ).get_column("dw_ek_borger")
+        return (
+            pl.concat(
+                [
+                    load_stratified_by_outcome_split_ids(split).frame
+                    for split in split_names
+                ],
+            )
+            .collect()
+            .get_column("dw_ek_borger")
+        )

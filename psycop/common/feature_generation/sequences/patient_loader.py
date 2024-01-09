@@ -46,7 +46,8 @@ class PatientLoader:
     ) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in event_loaders])
         split_ids = (
-            pl.from_pandas(load_stratified_by_outcome_split_ids(split=split))
+            load_stratified_by_outcome_split_ids(split=split)
+            .frame.collect()
             .sample(fraction=fraction)
             .lazy()
         )
