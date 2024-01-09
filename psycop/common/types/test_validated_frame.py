@@ -54,6 +54,17 @@ def test_rules_without_columns_error():
 
     with pytest.raises(
         CombinedFrameValidationError,
-        match=".*missing from the frame.*",
+        match=".*was not present.*",
     ):
         FakeFrameWithRulesWithoutColumns(frame=pl.DataFrame())
+
+
+def test_rules_for_non_attr_col_name():
+    @dataclass(frozen=True)
+    class RulesWithSeparateColName(ValidatedFrame[pl.DataFrame]):
+        frame: pl.DataFrame = pl.DataFrame({"non_attr_col_name": [1]})  # noqa: RUF009
+        test_col_name: str = "non_attr_col_name"
+        test_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(pl.Int64),)
+
+    # Should not raise an error, since column name is gotten from the value of the "test_col_name" attribute
+    RulesWithSeparateColName()
