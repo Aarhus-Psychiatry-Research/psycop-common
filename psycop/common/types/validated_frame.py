@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from iterpy import Iter
 
@@ -32,6 +32,12 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
     """
 
     frame: PolarsFrameGeneric
+
+    def _try_get_attr(self, attr: str) -> Any | None:
+        try:
+            return getattr(self, attr)
+        except AttributeError:
+            return None
 
     def _get_single_column_information(self, col_name_attr: str) -> ColumnInfo:
         try:
@@ -69,7 +75,7 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
             Iter(vars(self))
             .filter(lambda attr: "_col_rules" in attr)
             .map(lambda rule_attr: rule_attr.replace("_rules", "_name"))
-            .map(lambda name_attr: getattr(self, name_attr))
+            .map(lambda name_attr: self._try_get_attr(attr=name_attr))
             .filter(lambda col_name: col_name not in self.frame.columns)
             .map(
                 lambda col_name: f"- Rules specified for '{col_name}', but it is missing from the frame.",
