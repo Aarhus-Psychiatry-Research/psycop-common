@@ -31,7 +31,7 @@ if __name__ == "__main__":
         # ],
     }
 
-    BATCH_SIZE = 12
+    BATCH_SIZE = 8
     EPOCHS = 1
     N_ROWS = None
     TRAIN_SPLITS = [SplitName.TRAIN, SplitName.VALIDATION]
