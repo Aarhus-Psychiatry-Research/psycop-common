@@ -3,7 +3,6 @@
 from .load_coercion import *  # noqa
 from .load_demographic import *  # noqa
 from .load_diagnoses import *  # noqa
-from .load_ids import *  # noqa
 from .load_lab_results import *  # noqa
 from .load_medications import *  # noqa
 from .load_structured_sfi import *  # noqa
