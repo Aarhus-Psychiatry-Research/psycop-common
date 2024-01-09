@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.164.1 (2024-01-09)
+
+### Fix
+
+* Typo ([`7dd3ced`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7dd3ced368dd3f928aa7756c713ea9aa3b0c5c99))
+
 ## v0.164.0 (2024-01-08)
 
 ### Feature
