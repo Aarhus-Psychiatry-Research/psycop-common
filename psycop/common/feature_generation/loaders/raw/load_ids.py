@@ -30,10 +30,10 @@ class SplitName(Enum):
 class SplitFrame(ValidatedFrame[pl.LazyFrame]):
     split_name: str
     id_col_name: str = "dw_ek_borger"
-    id_col_rules: Sequence[ValidatorRule] = [
+    id_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
         ColumnTypeRule(expected_type=pl.Utf8),
-    ]
+    )
 
 
 def load_stratified_by_outcome_split_ids(
