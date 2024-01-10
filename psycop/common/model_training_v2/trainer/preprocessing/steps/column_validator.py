@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 
 import polars as pl
-from functionalpy import Seq
+from iterpy import Iter
 from polars import LazyFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PolarsFrame_T0,
     PresplitStep,
 )
 
@@ -24,7 +23,7 @@ class ColumnExistsValidator(PresplitStep):
     ):
         self.column_names = args
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
 
         errors: list[MissingColumnError] = [
@@ -83,18 +82,18 @@ class ColumnPrefixExpectation(PresplitStep):
         *args: list[str | int],
     ):
         self.column_expectations = (
-            Seq(args)
+            Iter(args)
             .map(
                 lambda x: ColumnCountExpectation.from_list(x),
             )
             .to_list()
         )
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
 
         errors = (
-            Seq(self.column_expectations)
+            Iter(self.column_expectations)
             .map(
                 lambda expectation: self._column_count_as_expected(
                     expectation=expectation,

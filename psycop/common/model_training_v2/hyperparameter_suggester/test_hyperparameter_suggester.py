@@ -5,7 +5,7 @@ import optuna
 from optuna.testing.storage import StorageSupplier
 
 from psycop.common.model_training_v2.config.config_utils import (
-    load_hyperparam_config,
+    resolve_and_fill_config,
 )
 from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_suggester import (
     SuggesterSpace,
@@ -75,8 +75,9 @@ class TestHyperparameterSuggester:
         assert suggestion == base_cfg
 
     def test_confection_integration(self):
-        cfg = load_hyperparam_config(
+        cfg = resolve_and_fill_config(
             Path(__file__).parent / "test_hyperparam_search.cfg",
+            fill_cfg_with_defaults=True,
         )
 
         suggestions = []

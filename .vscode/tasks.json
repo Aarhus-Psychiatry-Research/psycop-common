@@ -6,7 +6,7 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "git push && herb submit",
+            "command": "echo 'All done!'",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -27,7 +27,7 @@
         {
             "label": "Lint",
             "type": "shell",
-            "command": "inv lint --auto-fix && git push",
+            "command": "inv lint --auto-fix",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
@@ -48,7 +48,6 @@
             },
             "dependsOn": [
                 "Lint",
-                "Merge main"
             ]
         },
         {
@@ -63,7 +62,6 @@
             },
             "dependsOn": [
                 "Lint",
-                "Merge main"
             ]
         }
     ]

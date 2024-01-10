@@ -2,6 +2,63 @@
 
 <!--next-version-placeholder-->
 
+## v0.168.0 (2024-01-10)
+
+### Feature
+
+* Use SplitIDs to generate splits in  (issue #593) ([`590cce6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/590cce62497a11158e660635e704392c311ef2ab))
+
+### Fix
+
+* Typo ([`c3fabaf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c3fabafb5c00b871a8c1bcc3b5fd313ca9511eef))
+* Typo ([`4e74031`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4e740318b8de433249ce33650d3dbe87e87073f6))
+
+## v0.167.0 (2024-01-10)
+
+### Feature
+
+* Fill defaults from function signatures into .cfg (issue #426) ([#638](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/638)) ([`cae3021`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cae3021a70131235342ac485c50ef3c596f48c5f))
+* Fill defaults from function signatures into .cfg (issue #426) ([`a821915`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a821915b3b7325e9a5c1de722bf45bc80ca70046))
+* Fill defaults from function signatures into .cfg (issue #426) ([`f96b839`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f96b839d19c69315f946fc41dceb8e19d0374c56))
+
+## v0.166.0 (2024-01-10)
+
+### Feature
+
+* **#631:** Allow_extra-for-ValidatedFrame ([#641](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/641)) ([`ade4688`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ade4688ec44228e957a1a0d6df747fbc0e7bd5d5))
+
+## v0.165.0 (2024-01-10)
+
+### Feature
+
+* SplitLoaders should return SplitFrames (issue #628) ([#632](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/632)) ([`81983db`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/81983dbb0389d3764541ae4aa08e88d9288bc448))
+
+## v0.164.3 (2024-01-10)
+
+### Fix
+
+* RegionalFilter should not load at init ([`7fa1a34`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7fa1a34eef3f50cf006376538ed112486280a392))
+
+## v0.164.2 (2024-01-10)
+
+### Fix
+
+* Registry testing project-specific registered functions ([#637](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/637)) ([`fa09dfe`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fa09dfe178d5b7a08ae616912eabb4bdce1a735e))
+* Only check registered functions in common ([`a27bfd8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a27bfd8e23f989bdc1eef1c1ddecf278e5dea68b))
+* Move sczbp specific estimator steps to own registry ([`bb9981e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bb9981e68c0149b32a000da0f09d97127c15dac3))
+
+## v0.164.1 (2024-01-09)
+
+### Fix
+
+* Typo ([`7dd3ced`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7dd3ced368dd3f928aa7756c713ea9aa3b0c5c99))
+
+## v0.164.0 (2024-01-08)
+
+### Feature
+
+* Validated frame ([`07b5f03`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/07b5f03c1b11b559c8dc4d12edac6fac0aac1585))
+
 ## v0.163.0 (2024-01-08)
 
 ### Feature

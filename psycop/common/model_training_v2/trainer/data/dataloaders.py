@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import polars as pl
-from functionalpy import Seq
+from iterpy import Iter
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
@@ -31,7 +31,10 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
 
         if validate_on_init:
             missing_paths = (
-                Seq(self.dataset_paths).map(self._check_path_exists).flatten().to_list()
+                Iter(self.dataset_paths)
+                .map(self._check_path_exists)
+                .flatten()
+                .to_list()
             )
             if missing_paths:
                 raise MissingPathError(
