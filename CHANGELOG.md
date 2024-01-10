@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.166.0 (2024-01-10)
+
+### Feature
+
+* **#631:** Allow_extra-for-ValidatedFrame ([#641](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/641)) ([`ade4688`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ade4688ec44228e957a1a0d6df747fbc0e7bd5d5))
+
 ## v0.165.0 (2024-01-10)
 
 ### Feature
