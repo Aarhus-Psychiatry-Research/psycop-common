@@ -58,6 +58,7 @@ def load_stratified_by_outcome_split_ids(
     return SplitFrame(
         frame=pl.from_pandas(df.reset_index(drop=True)).lazy(),
         split_name=split.value,
+        allow_extra_columns=True,
     )
 
 
@@ -86,4 +87,5 @@ def load_stratified_by_region_split_ids(
     return SplitFrame(
         frame=split_df.lazy(),
         split_name=split.value,
+        allow_extra_columns=True,
     )

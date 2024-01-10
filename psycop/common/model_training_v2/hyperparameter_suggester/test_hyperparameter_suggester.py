@@ -77,6 +77,7 @@ class TestHyperparameterSuggester:
     def test_confection_integration(self):
         cfg = resolve_and_fill_config(
             Path(__file__).parent / "test_hyperparam_search.cfg",
+            fill_cfg_with_defaults=True,
         )
 
         suggestions = []

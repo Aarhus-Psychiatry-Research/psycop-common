@@ -12,13 +12,13 @@ from .validated_frame import (
 from .validator_rules import ColumnTypeRule, ValidatorRule
 
 
-@dataclass(frozen=True)
-class FakeColnameValidatedFrame(ValidatedFrame[pl.DataFrame]):
-    frame: pl.DataFrame
-    test_col_name: str = "col_name"
-
-
 def test_col_name_validation():
+    @dataclass(frozen=True)
+    class FakeColnameValidatedFrame(ValidatedFrame[pl.DataFrame]):
+        frame: pl.DataFrame
+        test_col_name: str = "col_name"
+        allow_extra_columns: bool = True
+
     df = str_to_pl_df(
         """test_col_name,
                       1,
@@ -41,6 +41,7 @@ def test_type_validation():
         frame: pl.DataFrame
         test_col_name: str = "test"
         test_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(pl.Utf8),)
+        allow_extra_columns: bool = True
 
     with pytest.raises(CombinedFrameValidationError, match=".*type.*"):
         FakeTypeValidatedFrame(frame=df)
@@ -51,6 +52,7 @@ def test_rules_without_columns_error():
     class FakeFrameWithRulesWithoutColumns(ValidatedFrame[pl.DataFrame]):
         frame: pl.DataFrame
         test_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(pl.Int64),)
+        allow_extra_columns: bool = True
 
     with pytest.raises(
         CombinedFrameValidationError,
@@ -65,6 +67,7 @@ def test_rules_for_non_attr_col_name():
         frame: pl.DataFrame = pl.DataFrame({"non_attr_col_name": [1]})  # noqa: RUF009
         test_col_name: str = "non_attr_col_name"
         test_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(pl.Int64),)
+        allow_extra_columns: bool = True
 
     # Should not raise an error, since column name is gotten from the value of the "test_col_name" attribute
     RulesWithSeparateColName()

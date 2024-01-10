@@ -36,5 +36,5 @@ def resolve_and_fill_config(
 
 def load_baseline_config(config_path: Path) -> BaselineSchema:
     """Loads the baseline config from disk and resolves it."""
-    resolved = resolve_and_fill_config(config_path)
+    resolved = resolve_and_fill_config(config_path, fill_cfg_with_defaults=True)
     return BaselineSchema(**resolved)
