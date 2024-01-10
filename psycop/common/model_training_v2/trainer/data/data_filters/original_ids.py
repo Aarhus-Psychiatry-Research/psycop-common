@@ -11,7 +11,7 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
-@BaselineRegistry.preprocessing.register("id_data_filter")
+@BaselineRegistry.data_filters.register("id_data_filter")
 class IDDataFilter(PresplitStep):
     def __init__(
         self,
