@@ -1,13 +1,9 @@
-from typing import Protocol, TypeVar, runtime_checkable
+from typing import Protocol, runtime_checkable
 
-from psycop.common.types.polarsframe import (
-    PolarsFrame,
-)
-
-PolarsFrame_T0 = TypeVar("PolarsFrame_T0", bound=PolarsFrame)
+import polars as pl
 
 
 @runtime_checkable
 class PresplitStep(Protocol):
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         ...

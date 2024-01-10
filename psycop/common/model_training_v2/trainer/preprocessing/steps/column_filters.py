@@ -8,7 +8,6 @@ from psycop.common.model_training_v2.loggers.base_logger import (
     BaselineLogger,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PolarsFrame_T0,
     PresplitStep,
 )
 
@@ -26,7 +25,7 @@ class LookbehindCombinationColFilter(PresplitStep):
         self.lookbehind_pattern = r"within_(\d+)_days"
         self.logger = logger
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         pred_cols_with_lookbehind = [
             col
             for col in input_df.columns
@@ -85,7 +84,7 @@ class TemporalColumnFilter(PresplitStep):
     def __init__(self):
         pass
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         temporal_columns = input_df.select(cs.temporal()).columns
         return input_df.drop(temporal_columns)
 
@@ -95,7 +94,7 @@ class RegexColumnBlacklist(PresplitStep):
     def __init__(self, *args: str):
         self.regex_blacklist = args
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         for blacklist in self.regex_blacklist:
             input_df = input_df.select(pl.exclude(f"^{blacklist}$"))
 
@@ -116,7 +115,7 @@ class FilterColumnsWithinSubset(PresplitStep):
             except re.error as e:
                 raise ValueError(f"Invalid regex rule: {rule}") from e
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         all_columns = input_df.columns
         subset_columns = [
             column for column in all_columns if re.match(self.subset_rule, column)
