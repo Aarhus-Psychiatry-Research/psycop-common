@@ -6,7 +6,6 @@ from polars import LazyFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PolarsFrame_T0,
     PresplitStep,
 )
 
@@ -24,7 +23,7 @@ class ColumnExistsValidator(PresplitStep):
     ):
         self.column_names = args
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
 
         errors: list[MissingColumnError] = [
@@ -90,7 +89,7 @@ class ColumnPrefixExpectation(PresplitStep):
             .to_list()
         )
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
 
         errors = (

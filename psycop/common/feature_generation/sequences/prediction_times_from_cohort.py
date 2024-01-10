@@ -2,13 +2,13 @@ import datetime as dt
 import itertools
 from collections import defaultdict
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 import polars as pl
 
 from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.event_loader import DiagnosisLoader
 from psycop.common.feature_generation.sequences.patient_loader import (
     PatientLoader,
@@ -20,14 +20,10 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
 PATIENT_ID = str | int
 
 
+@dataclass(frozen=True)
 class PredictionTimesFromCohort:
-    def __init__(
-        self,
-        cohort_definer: CohortDefiner,
-        patients: Sequence[Patient],
-    ):
-        self.cohort_definer = cohort_definer
-        self.patients = patients
+    cohort_definer: CohortDefiner
+    patients: Sequence[Patient]
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
@@ -120,11 +116,10 @@ class PredictionTimesFromCohort:
 
 
 if __name__ == "__main__":
-    patients = PatientLoader.get_split(
+    patients = PatientLoader(
         event_loaders=[DiagnosisLoader()],
-        split=SplitName.TRAIN,
         min_n_events=5,
-    )
+    ).get_patients()
 
     prediction_times = PredictionTimesFromCohort(
         cohort_definer=T2DCohortDefiner(),

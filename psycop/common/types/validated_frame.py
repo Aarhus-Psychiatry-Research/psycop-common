@@ -7,6 +7,7 @@ from iterpy import Iter
 from psycop.common.types.validator_rules import (
     ColumnExistsRule,
     ColumnInfo,
+    ColumnMissingError,
     FrameValidationError,
     ValidatorRule,
 )
@@ -30,6 +31,14 @@ class ColumnAttrMissingError(FrameValidationError):
 
 
 @dataclass(frozen=True)
+class ColumnMissingInFrameError(FrameValidationError):
+    col_name: str
+
+    def get_error_string(self) -> str:
+        return f"- Rules specified for '{self.col_name}', but it is missing from the frame."
+
+
+@dataclass(frozen=True)
 class ExtraColumnError(FrameValidationError):
     name: str
 
@@ -47,7 +56,7 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
     """
 
     frame: PolarsFrameGeneric
-    allow_extra_columns: bool = False
+    allow_extra_columns: bool
 
     def _try_get_attr(self, attr: str) -> Any | ColumnAttrMissingError:
         try:
@@ -77,7 +86,7 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
             .map(lambda col_name: self._get_single_column_information(col_name))
         )
 
-    def _get_missing_column_error_strings(self) -> Sequence[str]:
+    def _get_missing_column_errors(self) -> Sequence[FrameValidationError]:
         rules_with_missing_columns = (
             Iter(vars(self))
             .filter(lambda attr: "_col_rules" in attr)
@@ -85,34 +94,32 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
             .map(lambda name_attr: self._try_get_attr(attr=name_attr))
         )
 
-        missing_attrs = (
-            rules_with_missing_columns.filter(
-                lambda try_attr: isinstance(try_attr, ColumnAttrMissingError),
-            )
-            .map(lambda err: err.get_error_string())
-            .to_list()
-        )
+        column_rules_without_attr = [
+            try_attr
+            for try_attr in rules_with_missing_columns
+            if isinstance(try_attr, ColumnAttrMissingError)
+        ]
 
-        missing_in_frame = (
+        missing_in_frame: list[ColumnMissingError] = (
             rules_with_missing_columns.filter(
                 lambda try_attr: not isinstance(try_attr, ColumnAttrMissingError),
             )
             .filter(lambda col_name: col_name not in self.frame.columns)
             .map(
-                lambda col_name: f"- Rules specified for '{col_name}', but it is missing from the frame.",
+                lambda col_name: ColumnMissingInFrameError(col_name=col_name),  # type: ignore
             )
             .to_list()
         )
 
         return [
-            *missing_attrs,
+            *column_rules_without_attr,
             *missing_in_frame,
         ]
 
-    def _get_extra_column_error_strings(
+    def _get_extra_column_errors(
         self,
         column_infos: Iter[ColumnInfo],
-    ) -> Sequence[str]:
+    ) -> Sequence[ExtraColumnError]:
         dataclass_column_names = {ci.name for ci in column_infos}
         errors = (
             Iter(self.frame.columns)
@@ -120,26 +127,35 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
             .map(lambda column_name: ExtraColumnError(name=column_name))
             .to_list()
         )
-        return [error.get_error_string() for error in errors]
+        return errors
+
+    def _get_rule_errors(
+        self,
+        column_infos: Iter[ColumnInfo],
+    ) -> Sequence[FrameValidationError]:
+        return (
+            Iter([c_info.check_rules(self.frame) for c_info in column_infos])
+            .flatten()
+            .to_list()
+        )
 
     def __post_init__(self):
         column_infos = self._get_column_infos()
-        extra_columns_error_strings = self._get_extra_column_error_strings(column_infos)
-        validation_error_strings = (
+        extra_columns_error_strings = self._get_extra_column_errors(column_infos)
+        rule_errors = self._get_rule_errors(column_infos)
+        missing_column_error_strings = self._get_missing_column_errors()
+
+        error_strings = (
             Iter(
-                [c_info.check_rules(self.frame) for c_info in column_infos],
+                [
+                    *extra_columns_error_strings,
+                    *rule_errors,
+                    *missing_column_error_strings,
+                ],
             )
-            .flatten()
             .map(lambda error: error.get_error_string())
             .to_list()
         )
-        missing_column_error_strings = self._get_missing_column_error_strings()
-
-        error_strings = [
-            *extra_columns_error_strings,
-            *validation_error_strings,
-            *missing_column_error_strings,
-        ]
 
         if error_strings:
             validation_error_string = "\n".join(error_strings)
