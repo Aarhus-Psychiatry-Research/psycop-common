@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.167.0 (2024-01-10)
+
+### Feature
+
+* Fill defaults from function signatures into .cfg (issue #426) ([#638](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/638)) ([`cae3021`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cae3021a70131235342ac485c50ef3c596f48c5f))
+* Fill defaults from function signatures into .cfg (issue #426) ([`a821915`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a821915b3b7325e9a5c1de722bf45bc80ca70046))
+* Fill defaults from function signatures into .cfg (issue #426) ([`f96b839`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f96b839d19c69315f946fc41dceb8e19d0374c56))
+
 ## v0.166.0 (2024-01-10)
 
 ### Feature
