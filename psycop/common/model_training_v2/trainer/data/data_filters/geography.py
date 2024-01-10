@@ -43,18 +43,19 @@ class RegionalFilter(BaselineDataFilter):
     def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
         """Only include data from the first region a patient visits, to avoid
         target leakage."""
-        if self.regional_move_df is None:
-            filtered_regional_move_df = self._filter_regional_move_df_by_regions(
-                get_regional_split_df().select(
-                    "dw_ek_borger",
-                    "region",
-                    "first_regional_move_timestamp",
-                ),
+        regional_move_df = (
+            get_regional_split_df().select(
+                "dw_ek_borger",
+                "region",
+                "first_regional_move_timestamp",
             )
-        else:
-            filtered_regional_move_df = self._filter_regional_move_df_by_regions(
-                self.regional_move_df,
-            )
+            if self.regional_move_df is None
+            else self.regional_move_df
+        )
+
+        filtered_regional_move_df = self._filter_regional_move_df_by_regions(
+            regional_move_df,
+        )
 
         return (
             dataloader.load()
