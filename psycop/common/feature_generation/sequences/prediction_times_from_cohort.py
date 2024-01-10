@@ -136,7 +136,7 @@ if __name__ == "__main__":
     prediction_times = PredictionTimesFromCohort(
         cohort_definer=T2DCohortDefiner(),
         patients=patients,
-        split_filter=RegionalFilter(splits_to_keep=["vest"]),
+        split_filter=RegionalFilter(splits_to_keep=["train"]),
     ).create_prediction_times(
         lookbehind=dt.timedelta(days=365),
         lookahead=dt.timedelta(days=365),
