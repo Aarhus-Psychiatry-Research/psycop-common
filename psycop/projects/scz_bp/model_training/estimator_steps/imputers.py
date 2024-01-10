@@ -1,6 +1,7 @@
 from typing import Literal
 
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.experimental import enable_iterative_imputer  # noqa
 from sklearn.impute import IterativeImputer, SimpleImputer
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -22,6 +23,7 @@ def simple_imputation_step(
 @BaselineRegistry.estimator_steps.register("miss_forest_imputation")
 def miss_forest_imputation_step() -> ModelStep:
     """Naive implementation of missforest using sklearn's IterativeImputer"""
+
     return (
         "miss_forest_imputation",
         IterativeImputer(

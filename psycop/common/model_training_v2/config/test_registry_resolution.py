@@ -49,13 +49,19 @@ def test_registered_callables_should_have_valid_example_cfgs(
 ):
     populate_baseline_registry()
     registered_fns = get_registered_functions(source_registry)
+    # don't make example cfgs and tests for project-specific functions
+    registered_fns_in_common = [
+        registered_fn
+        for registered_fn in registered_fns
+        if "common" in registered_fn.module
+    ]
 
     generate_configs_from_registered_functions(
-        registered_fns=registered_fns,
+        registered_fns=registered_fns_in_common,
         example_cfg_dir=output_dir,
     )
 
-    for fn in registered_fns:
+    for fn in registered_fns_in_common:
         missing_example_cfgs: list[ValueError] = []
         if not fn.has_example_cfg(output_dir):
             missing_example_cfgs.append(
