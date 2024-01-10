@@ -1,10 +1,6 @@
-from typing import Protocol, TypeVar, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 import polars as pl
-
-from psycop.common.types.polarsframe import (
-    PolarsFrame,
-)
 
 
 @runtime_checkable
