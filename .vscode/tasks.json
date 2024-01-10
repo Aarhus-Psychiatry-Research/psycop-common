@@ -27,7 +27,7 @@
         {
             "label": "Lint",
             "type": "shell",
-            "command": "inv lint --auto-fix && git push",
+            "command": "inv lint --auto-fix",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
