@@ -46,7 +46,7 @@ def test_polars_dataframe_to_dict():
             get_test_patient(patient_id=2),
             get_test_patient(patient_id=3),
         ],
-        split_filter=FilterByEntityID(splits_to_keep=None, split_ids=[1, 2, 3]),
+        split_filter=FilterByEntityID(split_ids=[1, 2, 3]),
     ).create_prediction_times(
         lookbehind=dt.timedelta(days=1),
         lookahead=dt.timedelta(days=1),

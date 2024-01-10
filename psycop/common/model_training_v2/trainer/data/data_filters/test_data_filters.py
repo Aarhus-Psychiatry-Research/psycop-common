@@ -44,7 +44,6 @@ def test_id_filter():
     split_sequence = pl.Series("dw_ek_borger", [1])
     input_df = mock_data_for_id_filters()
     id_filter = FilterByEntityID(
-        splits_to_keep=None,
         split_ids=split_sequence,
     )
     filtered_df = id_filter.apply(input_df).collect()
