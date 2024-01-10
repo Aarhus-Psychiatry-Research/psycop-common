@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.168.0 (2024-01-10)
+
+### Feature
+
+* Use SplitIDs to generate splits in  (issue #593) ([`590cce6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/590cce62497a11158e660635e704392c311ef2ab))
+
+### Fix
+
+* Typo ([`c3fabaf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c3fabafb5c00b871a8c1bcc3b5fd313ca9511eef))
+* Typo ([`4e74031`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4e740318b8de433249ce33650d3dbe87e87073f6))
+
 ## v0.167.0 (2024-01-10)
 
 ### Feature
