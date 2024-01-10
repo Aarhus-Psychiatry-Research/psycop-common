@@ -3,12 +3,11 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 from imblearn.base import BaseSampler
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from synthcity.plugins import Plugins
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
-from psycop.projects.scz_bp.model_training.scz_bp_registry import SczBpRegistry
 
 
 class SyntheticDataAugmentation(BaseSampler):
