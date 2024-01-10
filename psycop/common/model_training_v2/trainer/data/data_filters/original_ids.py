@@ -24,6 +24,7 @@ class FilterByEntityID(PresplitStep):
         return input_df.filter(pl.col(self.id_col_name).is_in(self.split_ids))
 
 
+@BaselineRegistry.data_filters.register("outcomestratified_split_filter")
 @dataclass(frozen=True)
 class FilterByOutcomeStratifiedSplits(PresplitStep):
     """Filter the data to only include ids from the splits stratified by outcome, for the given split_to_keep."""
