@@ -4,7 +4,7 @@ from psycop.common.model_training_v2.trainer.data.data_filters.geography import 
     RegionalFilter,
 )
 from psycop.common.model_training_v2.trainer.data.data_filters.original_ids import (
-    IDDataFilter,
+    FilterByEntityID,
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
@@ -43,7 +43,7 @@ def test_regional_filter():
 def test_id_filter():
     split_sequence = pl.Series("dw_ek_borger", [1])
     input_df = mock_data_for_id_filters()
-    id_filter = IDDataFilter(
+    id_filter = FilterByEntityID(
         splits_to_keep=None,
         split_ids=split_sequence,
     )
