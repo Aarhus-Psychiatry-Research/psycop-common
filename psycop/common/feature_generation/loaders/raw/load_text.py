@@ -11,6 +11,7 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
     filter_by_split_ids,
 )
 from psycop.common.feature_generation.loaders.raw.load_ids import (
+    SplitFrame,
     load_stratified_by_outcome_split_ids,
 )
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
@@ -151,7 +152,10 @@ def load_text_sfis(
 def load_text_split(
     text_sfi_names: str | Iterable[str],
     split_name: Sequence[SplitName],
-    split_ids_loader: Callable[[SplitName], pd.DataFrame] | None = None,
+    split_ids_loader: Callable[
+        [SplitName],
+        SplitFrame,
+    ] = load_stratified_by_outcome_split_ids,
     include_sfi_name: bool = False,
     n_rows: int | None = None,
 ) -> pd.DataFrame:
@@ -169,9 +173,6 @@ def load_text_split(
     Returns:
         pd.DataFrame: Chosen sfis from chosen splits
     """
-    if split_ids_loader is None:
-        split_ids_loader = load_stratified_by_outcome_split_ids
-
     text_df = load_text_sfis(
         text_sfi_names=text_sfi_names,
         include_sfi_name=include_sfi_name,
@@ -179,7 +180,7 @@ def load_text_split(
     )
 
     split_id_df = pd.concat(
-        [split_ids_loader(split) for split in split_name],
+        [split_ids_loader(split).frame.collect().to_pandas() for split in split_name],
     )
 
     text_split_df = filter_by_split_ids(

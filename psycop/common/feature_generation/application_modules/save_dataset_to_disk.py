@@ -83,7 +83,7 @@ def get_split_id_df(split_name: SplitName) -> pd.DataFrame:
         split=split_name,
     )
 
-    return split_id_df
+    return split_id_df.frame.collect().to_pandas()
 
 
 @wandb_alert_on_exception
