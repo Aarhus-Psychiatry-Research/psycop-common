@@ -8,7 +8,6 @@ from psycop.common.feature_generation.loaders.raw.load_ids import (
     load_stratified_by_outcome_split_ids,
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
