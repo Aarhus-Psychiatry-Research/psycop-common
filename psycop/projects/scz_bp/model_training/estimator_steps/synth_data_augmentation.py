@@ -3,6 +3,7 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 from imblearn.base import BaseSampler
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from synthcity.plugins import Plugins
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
@@ -85,7 +86,7 @@ class SyntheticDataAugmentation(BaseSampler):
         return Xt.to_numpy(), yt.to_numpy()
 
 
-@SczBpRegistry.estimator_steps.register("synthetic_data_augmentation")
+@BaselineRegistry.estimator_steps.register("synthetic_data_augmentation")
 def synthetic_data_augmentation_step(
     model_name: str,
     model_params: dict[str, Any] | None,
