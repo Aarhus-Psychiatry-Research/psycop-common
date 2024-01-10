@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.164.2 (2024-01-10)
+
+### Fix
+
+* Registry testing project-specific registered functions ([#637](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/637)) ([`fa09dfe`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fa09dfe178d5b7a08ae616912eabb4bdce1a735e))
+* Only check registered functions in common ([`a27bfd8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a27bfd8e23f989bdc1eef1c1ddecf278e5dea68b))
+* Move sczbp specific estimator steps to own registry ([`bb9981e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bb9981e68c0149b32a000da0f09d97127c15dac3))
+
 ## v0.164.1 (2024-01-09)
 
 ### Fix
