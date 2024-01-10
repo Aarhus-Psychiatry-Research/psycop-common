@@ -13,7 +13,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import (
 )
 
 
-@BaselineRegistry.data_filters.register("regional_data_filter")
+@BaselineRegistry.preprocessing.register("regional_data_filter")
 @dataclass(frozen=True)
 class RegionalFilter(PresplitStep):
     """Filter data to only include ids from the desired regions. Removes
