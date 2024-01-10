@@ -5,18 +5,17 @@ from typing import Literal
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-from psycop.common.model_training_v2.trainer.data.data_filters.base_data_filter import (
-    BaselineDataFilter,
-)
 from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
     get_regional_split_df,
 )
+from psycop.common.model_training_v2.trainer.preprocessing.step import (
+    PresplitStep,
+)
 
 
-@BaselineRegistry.data_filters.register("regional_data_filter")
+@BaselineRegistry.preprocessing.register("regional_data_filter")
 @dataclass(frozen=True)
-class RegionalFilter(BaselineDataFilter):
+class RegionalFilter(PresplitStep):
     """Filter data to only include ids from the desired regions. Removes
     predictions times after the patient has moved to a different region to
     avoid target leakage. If regional_move_df is None, the standard regional
@@ -40,7 +39,7 @@ class RegionalFilter(BaselineDataFilter):
     region_col_name: str = "region"
     timestamp_cutoff_col_name: str = "first_regional_move_timestamp"
 
-    def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         """Only include data from the first region a patient visits, to avoid
         target leakage."""
         regional_move_df = (
@@ -58,8 +57,7 @@ class RegionalFilter(BaselineDataFilter):
         )
 
         return (
-            dataloader.load()
-            .join(filtered_regional_move_df, on=self.id_col_name, how="inner")
+            input_df.join(filtered_regional_move_df, on=self.id_col_name, how="inner")
             .filter(
                 pl.col(self.timestamp_col_name)
                 < pl.col(self.timestamp_cutoff_col_name),
