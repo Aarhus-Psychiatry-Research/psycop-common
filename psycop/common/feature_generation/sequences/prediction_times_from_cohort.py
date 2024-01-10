@@ -17,6 +17,8 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
+from ...model_training_v2.trainer.preprocessing.step import PresplitStep
+
 PATIENT_ID = str | int
 
 
@@ -24,6 +26,7 @@ PATIENT_ID = str | int
 class PredictionTimesFromCohort:
     cohort_definer: CohortDefiner
     patients: Sequence[Patient]
+    split_filter: PresplitStep
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
@@ -94,8 +97,16 @@ class PredictionTimesFromCohort:
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
         )
+
+        naive_prediction_times = (
+            self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times
+        ).lazy()
+        prediction_times_for_split = self.split_filter.apply(
+            naive_prediction_times,
+        ).collect()
+
         prediction_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
-            dataframe=self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times,
+            dataframe=prediction_times_for_split,
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
             lookahead=lookahead,
