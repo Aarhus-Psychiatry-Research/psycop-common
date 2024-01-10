@@ -32,16 +32,18 @@ class RegionalFilter(PresplitStep):
             be used for dropping rows after this time. Defaults to "first_regional_move_timestamp".
     """
 
-    regions_to_keep: Sequence[Literal["vest", "midt", "øst"]]
+    splits_to_keep: Sequence[Literal["train", "test", "val"]]
     id_col_name: str = "dw_ek_borger"
     timestamp_col_name: str = "timestamp"
-    regional_move_df: pl.LazyFrame | None = None
     region_col_name: str = "region"
+
+    regional_move_df: pl.LazyFrame | None = None
     timestamp_cutoff_col_name: str = "first_regional_move_timestamp"
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         """Only include data from the first region a patient visits, to avoid
         target leakage."""
+
         regional_move_df = (
             get_regional_split_df().select(
                 "dw_ek_borger",
@@ -68,6 +70,9 @@ class RegionalFilter(PresplitStep):
     def _filter_regional_move_df_by_regions(self, df: pl.LazyFrame) -> pl.LazyFrame:
         """Keep only the ids from the desired regions and rename dw_ek_borger
         to match the id_col_name of the incoming dataloader"""
+        splits2region = {"train": "øst", "val": "vest", "test": "midt"}
+        regions_to_keep = {splits2region[split] for split in self.splits_to_keep}
+
         return df.rename({"dw_ek_borger": self.id_col_name}).filter(
-            pl.col(self.region_col_name).is_in(self.regions_to_keep),
+            pl.col(self.region_col_name).is_in(regions_to_keep),
         )
