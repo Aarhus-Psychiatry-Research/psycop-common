@@ -47,6 +47,7 @@ class RegisteredCallable:
 
     def write_scaffolding_cfg(
         self,
+        placeholder_cfg: Config,
         example_top_dir: Path,
     ) -> Path:
         cfg_dir = self.get_cfg_dir(example_top_dir)
@@ -55,14 +56,10 @@ class RegisteredCallable:
         example_path = cfg_dir / f"{self.callable_name}_{current_datetime}.cfg"
 
         with example_path.open("w") as f:
-            arg_names = self._get_callable_arg_names()
-            f.write(
-                f"""
-[{self.callable_name}]
-@{self.registry_name} = "{self.callable_name}"
-"""
-                + "\n".join(f"{arg_name} = " for arg_name in arg_names),
-            )
+            self.container_registry.fill(
+                placeholder_cfg,
+                validate=False,
+            ).to_disk(example_path)
 
         return example_path
 
@@ -205,6 +202,7 @@ def generate_configs_from_registered_functions(
 
             # Create a scaffolding cfg at the location
             scaffolding_path = fn.write_scaffolding_cfg(
+                placeholder_cfg=placeholder_cfg,
                 example_top_dir=example_cfg_dir,
             )
 
