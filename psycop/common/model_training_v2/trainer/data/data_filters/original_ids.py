@@ -9,10 +9,11 @@ from psycop.common.feature_generation.loaders.raw.load_ids import (
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
-@BaselineRegistry.data_filters.register("id_data_filter")
-class IDDataFilter:
+@BaselineRegistry.preprocessing.register("id_data_filter")
+class IDDataFilter(PresplitStep):
     def __init__(
         self,
         splits_to_keep: Sequence[Literal["train", "val", "test"]] | None,
@@ -44,10 +45,10 @@ class IDDataFilter:
         else:
             self.split_ids = split_ids
 
-    def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         """Filter the dataloader to only include ids from the desired splits
         from the original datasplit"""
-        return dataloader.load().filter(pl.col(self.id_col_name).is_in(self.split_ids))
+        return input_df.filter(pl.col(self.id_col_name).is_in(self.split_ids))
 
     def _load_and_filter_original_ids_df_by_split(self) -> pl.Series:
         split_names: list[SplitName] = []
