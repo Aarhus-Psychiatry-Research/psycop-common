@@ -99,7 +99,7 @@ class PredictionTimesFromCohort:
             patient_timestamp_col_name="timestamp",
         )
         prediction_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
-            dataframe=self.cohort_definer.get_filtered_prediction_times_bundle().prediction_timesb
+            dataframe=self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times,
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
             lookahead=lookahead,
