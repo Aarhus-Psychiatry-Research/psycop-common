@@ -56,7 +56,7 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
     """
 
     frame: PolarsFrameGeneric
-    allow_extra_columns: bool = False
+    allow_extra_columns: bool
 
     def _try_get_attr(self, attr: str) -> Any | ColumnAttrMissingError:
         try:

@@ -1,5 +1,5 @@
 catalogue==2.0.7
-confection==0.1.3
+confection==0.1.5a0
 deepchecks==0.17.5
 dill==0.3.6
 fakeredis==2.20.0
