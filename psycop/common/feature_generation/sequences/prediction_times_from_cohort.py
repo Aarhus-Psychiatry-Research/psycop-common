@@ -17,6 +17,7 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
+from ...model_training_v2.trainer.data.data_filters.geography import RegionalFilter
 from ...model_training_v2.trainer.preprocessing.step import PresplitStep
 
 PATIENT_ID = str | int
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     prediction_times = PredictionTimesFromCohort(
         cohort_definer=T2DCohortDefiner(),
         patients=patients,
+        split_filter=RegionalFilter(),
     ).create_prediction_times(
         lookbehind=dt.timedelta(days=365),
         lookahead=dt.timedelta(days=365),
