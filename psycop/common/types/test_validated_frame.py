@@ -72,4 +72,4 @@ def test_rules_for_non_attr_col_name():
 
 def test_should_error_if_unspecified_column_and_not_allow_extra():
     with pytest.raises(CombinedFrameValidationError, match=".*was present.*"):
-        ValidatedFrame(frame=pl.DataFrame({"col": [1]}))
+        ValidatedFrame(frame=pl.DataFrame({"col": [1]}), allow_extra_columns=False)
