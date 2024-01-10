@@ -29,7 +29,6 @@ def keep_if_min_n_visits(
 @dataclass(frozen=True)
 class PatientLoader:
     event_loaders: Sequence[EventLoader]
-    split_ids: set[str]
     min_n_events: int | None = None
     fraction: float = 1.0
 
@@ -42,17 +41,13 @@ class PatientLoader:
     def get_patients(self) -> Sequence[Patient]:
         event_data = pl.concat([loader.load_events() for loader in self.event_loaders])
 
-        events_from_train = event_data.filter(
-            pl.col("dw_ek_borger").is_in(self.split_ids),
-        )
-
         if self.min_n_events:
-            events_from_train = keep_if_min_n_visits(
-                events_from_train,
+            event_data = keep_if_min_n_visits(
+                event_data,
                 n_visits=self.min_n_events,
             )
 
-        events_after_2013 = events_from_train.filter(
+        events_after_2013 = event_data.filter(
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
         )
 

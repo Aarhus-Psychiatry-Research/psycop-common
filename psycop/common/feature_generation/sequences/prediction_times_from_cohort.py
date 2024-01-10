@@ -2,6 +2,7 @@ import datetime as dt
 import itertools
 from collections import defaultdict
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 import polars as pl
 
@@ -19,14 +20,10 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
 PATIENT_ID = str | int
 
 
+@dataclass(frozen=True)
 class PredictionTimesFromCohort:
-    def __init__(
-        self,
-        cohort_definer: CohortDefiner,
-        patients: Sequence[Patient],
-    ):
-        self.cohort_definer = cohort_definer
-        self.patients = patients
+    cohort_definer: CohortDefiner
+    patients: Sequence[Patient]
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
@@ -121,7 +118,6 @@ class PredictionTimesFromCohort:
 if __name__ == "__main__":
     patients = PatientLoader(
         event_loaders=[DiagnosisLoader()],
-        split_ids={"1"},
         min_n_events=5,
     ).get_patients()
 
