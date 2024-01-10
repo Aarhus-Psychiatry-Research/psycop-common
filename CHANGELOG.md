@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.165.0 (2024-01-10)
+
+### Feature
+
+* SplitLoaders should return SplitFrames (issue #628) ([#632](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/632)) ([`81983db`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/81983dbb0389d3764541ae4aa08e88d9288bc448))
+
 ## v0.164.3 (2024-01-10)
 
 ### Fix
