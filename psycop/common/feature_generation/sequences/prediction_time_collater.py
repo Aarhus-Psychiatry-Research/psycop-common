@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from ...cohort_definition import CohortDefiner
+from ...model_training_v2.trainer.preprocessing.step import PresplitStep
 from ...sequence_models.dataset import PredictionTimeDataset
 from ...sequence_models.registry import Registry
 from .patient_loader import PatientLoader
@@ -20,6 +21,7 @@ class BasePredictionTimeCollater(Protocol):
 class PredictionTimeCollater(BasePredictionTimeCollater):
     patient_loader: PatientLoader
     cohort_definer: CohortDefiner
+    split_filter: PresplitStep
     lookbehind_days: int
     lookahead_days: int
 
@@ -29,6 +31,7 @@ class PredictionTimeCollater(BasePredictionTimeCollater):
         prediction_times = PredictionTimesFromCohort(
             cohort_definer=self.cohort_definer,
             patients=self.patient_loader.get_patients(),
+            split_filter=self.split_filter,
         ).create_prediction_times(
             lookbehind=dt.timedelta(days=self.lookbehind_days),
             lookahead=dt.timedelta(days=self.lookahead_days),
