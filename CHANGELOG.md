@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.164.3 (2024-01-10)
+
+### Fix
+
+* RegionalFilter should not load at init ([`7fa1a34`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7fa1a34eef3f50cf006376538ed112486280a392))
+
 ## v0.164.2 (2024-01-10)
 
 ### Fix
