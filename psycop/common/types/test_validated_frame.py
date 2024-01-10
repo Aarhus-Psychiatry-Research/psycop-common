@@ -68,3 +68,8 @@ def test_rules_for_non_attr_col_name():
 
     # Should not raise an error, since column name is gotten from the value of the "test_col_name" attribute
     RulesWithSeparateColName()
+
+
+def test_should_error_if_unspecified_column_and_not_allow_extra():
+    with pytest.raises(CombinedFrameValidationError, match=".*was present.*"):
+        ValidatedFrame(frame=pl.DataFrame({"col": [1]}), allow_extra_columns=False)

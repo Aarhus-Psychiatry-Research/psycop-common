@@ -30,6 +30,14 @@ class ColumnAttrMissingError(FrameValidationError):
 
 
 @dataclass(frozen=True)
+class ExtraColumnError(FrameValidationError):
+    name: str
+
+    def get_error_string(self) -> str:
+        return f"- Column '{self.name}' was not specified in the dataclass, but was present in the frame. If extra columns are expected, set 'allow_extra_columns' on the dataclass to True."
+
+
+@dataclass(frozen=True)
 class ValidatedFrame(Generic[PolarsFrameGeneric]):
     """Validates a PolarsFrameGeneric based on the rules specified in the dataclass.
 
@@ -39,6 +47,7 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
     """
 
     frame: PolarsFrameGeneric
+    allow_extra_columns: bool = False
 
     def _try_get_attr(self, attr: str) -> Any | ColumnAttrMissingError:
         try:
@@ -100,25 +109,40 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
             *missing_in_frame,
         ]
 
+    def _get_extra_column_error_strings(
+        self,
+        column_infos: Iter[ColumnInfo],
+    ) -> Sequence[str]:
+        dataclass_column_names = {ci.name for ci in column_infos}
+        errors = (
+            Iter(self.frame.columns)
+            .filter(lambda column_name: column_name not in dataclass_column_names)
+            .map(lambda column_name: ExtraColumnError(name=column_name))
+            .to_list()
+        )
+        return [error.get_error_string() for error in errors]
+
     def __post_init__(self):
+        column_infos = self._get_column_infos()
+        extra_columns_error_strings = self._get_extra_column_error_strings(column_infos)
         validation_error_strings = (
             Iter(
-                [c_info.check_rules(self.frame) for c_info in self._get_column_infos()],
+                [c_info.check_rules(self.frame) for c_info in column_infos],
             )
             .flatten()
             .map(lambda error: error.get_error_string())
             .to_list()
         )
-
         missing_column_error_strings = self._get_missing_column_error_strings()
 
-        if validation_error_strings or missing_column_error_strings:
-            validation_error_string = "\n".join(
-                [
-                    *validation_error_strings,
-                    *missing_column_error_strings,
-                ],
-            )
+        error_strings = [
+            *extra_columns_error_strings,
+            *validation_error_strings,
+            *missing_column_error_strings,
+        ]
+
+        if error_strings:
+            validation_error_string = "\n".join(error_strings)
             raise CombinedFrameValidationError(
                 f"Dataframe did not pass validation. Errors:\n{validation_error_string}",
             )
