@@ -7,10 +7,12 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/charliermarsh/ruff)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 ![python versions](https://img.shields.io/badge/Python=3.10-blue)
+[![Roadmap](https://img.shields.io/badge/Board-Roadmap-green)][roadmap]
 
 [dev container]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Aarhus-Psychiatry-Research/psycop-common
 [pypi status]: https://pypi.org/project/psycop-common/
 [black]: https://github.com/psf/black
+[roadmap]: https://github.com/orgs/Aarhus-Psychiatry-Research/projects/15/views/2
 
 
 
