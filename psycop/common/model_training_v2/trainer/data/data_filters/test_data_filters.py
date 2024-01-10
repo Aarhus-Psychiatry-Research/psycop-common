@@ -31,7 +31,7 @@ def test_regional_filter():
     ).lazy()
 
     regional_filter = RegionalFilter(
-        regions_to_keep=["vest"],
+        splits_to_keep=["vest"],
         regional_move_df=regional_move_df,
     )
 
