@@ -31,5 +31,5 @@ def get_best_eval_pipeline() -> ForcedAdmissionInpatientPipelineRun:
         ],
         splits_for_evaluation=[
             "val",
-        ],  # add with_wash if eval on cohort with washout
+        ],  # add with_washout if eval on cohort with washout
     )
