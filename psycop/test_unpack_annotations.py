@@ -13,7 +13,7 @@ class MyType:
 
 
 @dataclass(frozen=True)
-class UnpackTestExample:
+class UnpackExpectation:
     arg_name: str
     expected_annotation: str
 
@@ -31,14 +31,14 @@ def fn(
 @pytest.mark.parametrize(
     ("example"),
     [
-        UnpackTestExample("base_arg", "str"),
-        UnpackTestExample("contained_type", "Sequence[MyType]"),
-        UnpackTestExample("custom_type", "MyType"),
-        UnpackTestExample("new_union", "int | str"),
-        UnpackTestExample("new_optional", "str | None"),
+        UnpackExpectation("base_arg", "str"),
+        UnpackExpectation("contained_type", "Sequence[MyType]"),
+        UnpackExpectation("custom_type", "MyType"),
+        UnpackExpectation("new_union", "int | str"),
+        UnpackExpectation("new_optional", "str | None"),
     ],
 )
-def test_unpack_annotations(example: UnpackTestExample):
+def test_unpack_annotations(example: UnpackExpectation):
     fn_annotations = inspect.get_annotations(fn)
     assert (
         get_pretty_annotation_str(fn_annotations[example.arg_name])
