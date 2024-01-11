@@ -19,13 +19,14 @@ def get_wrapping_type(annotation: types.GenericAlias) -> TypeWrapper:
     return TypeWrapper(name=annotation.__name__, prefix="[", suffix="]")
 
 
-def get_pretty_type_str(annotation: types.GenericAlias) -> str:
+def get_pretty_type_str(annotation: types.GenericAlias | type) -> str:
     """Recursively unpacks an annotation to a string representation."""
     try:
         contained_type_strings = [
-            get_pretty_type_str(arg) for arg in annotation.__args__
+            get_pretty_type_str(arg)
+            for arg in annotation.__args__  # type: ignore
         ]
-        wrapping_type = get_wrapping_type(annotation)
+        wrapping_type = get_wrapping_type(annotation)  # type: ignore
         return wrapping_type.to_wrapped_annotation(
             " | ".join(contained_type_strings),
         )
