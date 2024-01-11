@@ -31,11 +31,11 @@ def fn(
 @pytest.mark.parametrize(
     ("example"),
     [
-        UnpackTestExample(arg_name="base_arg", annotation_str="str"),
-        UnpackTestExample(arg_name="contained_type", annotation_str="Sequence[MyType]"),
-        UnpackTestExample(arg_name="custom_type", annotation_str="MyType"),
-        UnpackTestExample(arg_name="new_union", annotation_str="int | str"),
-        UnpackTestExample(arg_name="new_optional", annotation_str="str | None"),
+        UnpackTestExample("base_arg", "str"),
+        UnpackTestExample("contained_type", "Sequence[MyType]"),
+        UnpackTestExample("custom_type", "MyType"),
+        UnpackTestExample("new_union", "int | str"),
+        UnpackTestExample("new_optional", "str | None"),
     ],
 )
 def test_unpack_annotations(example: UnpackTestExample):
