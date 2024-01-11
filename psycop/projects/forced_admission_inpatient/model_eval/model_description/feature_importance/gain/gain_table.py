@@ -76,7 +76,9 @@ def generate_feature_importance_table(
     pd_df = pd_df.set_index("index")
 
     # Map tfidf indices with actual ngrams from vocabulary
-    pd_df["Feature Name"][pd_df['Feature Name'].str.contains('tfidf')] = pd_df["Feature Name"][pd_df['Feature Name'].str.contains('tfidf')].str.replace(
+    pd_df["Feature Name"][pd_df["Feature Name"].str.contains("tfidf")] = pd_df[
+        "Feature Name"
+    ][pd_df["Feature Name"].str.contains("tfidf")].str.replace(
         r"\d+$",
         lambda x: vocab.loc[int(x.group())]["Word"],
     )
