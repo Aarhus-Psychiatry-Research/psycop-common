@@ -1,11 +1,10 @@
 import inspect
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Callable, Optional, Union
 
 import pytest
 
-from .test import get_pretty_annotation_str
+from .unpack_annotations import get_pretty_annotation_str
 
 
 @dataclass(frozen=True)
@@ -20,11 +19,11 @@ class UnpackTestExample:
 
 
 def fn(
-    base_arg: str,
-    contained_type: Sequence[MyType],
-    custom_type: MyType,
-    new_union: int | str,
-    new_optional: str | None,
+    base_arg: str,  # noqa: ARG001
+    contained_type: Sequence[MyType],  # noqa: ARG001
+    custom_type: MyType,  # noqa: ARG001
+    new_union: int | str,  # noqa: ARG001
+    new_optional: str | None,  # noqa: ARG001
 ):
     pass
 
