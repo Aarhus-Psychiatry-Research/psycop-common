@@ -2,6 +2,27 @@
 
 <!--next-version-placeholder-->
 
+## v0.169.0 (2024-01-11)
+
+### Feature
+
+* Update gain table to be more flexible ([`9e8cc4d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9e8cc4d2ed15c050e831fc53660761d7239c55b2))
+* Update perf by ppr ([`8d1084c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8d1084c8dbeddbce0b85d512754cd55a8255c04f))
+* Update perf by ppr table ([`5711773`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/571177364bc868a74cbf19ffeba6120923e58201))
+* Update performance table ([`16183d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/16183d5c974cc65f91d4ae774fd7bb317847fa4c))
+* Add calibration curve ([`f5719cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f5719cfd7caec7ea4af01e751df463410ae608d4))
+* Map vocab to tfidf indxs in gain table ([`279f404`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/279f4040b7dc8837cb8dde2ea468d7cf80a17042))
+* Save vocabs from text models ([`a084da1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a084da1bc1779c6e3fdd0689a437930e0f025963))
+
+### Fix
+
+* Comment instruction ([`3cbb09b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3cbb09b72e5d42f3c81f1b5ced2aaa3bdd2f18e2))
+* Add decimal on roc_auc plot ([`a54c283`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a54c2839b2a890344f24d6546d3c7e874e869048))
+* Tfidf matching in gain table ([`6a954c0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6a954c00fefe5d8f3185bd87ce37cb621f94e279))
+* Lint ([`cd63ad1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd63ad1a306f712d808889bac3a326a64a9251d5))
+* Gain table flexibility ([`ab70e4d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ab70e4d73dde2ce304bbed060ed6431d0f8ee711))
+* Add arg to aggr eval ([`db8f828`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/db8f828fa7eb3b7061b5b7dd71487e7779c71bbb))
+
 ## v0.168.0 (2024-01-10)
 
 ### Feature
