@@ -15,7 +15,7 @@ class MyType:
 @dataclass(frozen=True)
 class UnpackTestExample:
     arg_name: str
-    annotation_str: str
+    expected_annotation: str
 
 
 def fn(
@@ -42,5 +42,5 @@ def test_unpack_annotations(example: UnpackTestExample):
     fn_annotations = inspect.get_annotations(fn)
     assert (
         get_pretty_annotation_str(fn_annotations[example.arg_name])
-        == example.annotation_str
+        == example.expected_annotation
     )
