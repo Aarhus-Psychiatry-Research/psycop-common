@@ -5,6 +5,9 @@ from psycop.common.model_evaluation.markdown.md_objects import (
     MarkdownFigure,
     MarkdownTable,
 )
+from psycop.projects.forced_admission_inpatient.model_eval.model_description.feature_importance.gain.gain_table import (
+    generate_feature_importance_table,
+)
 from psycop.projects.forced_admission_inpatient.model_eval.model_description.performance.main_performance_figure import (
     fa_inpatient_create_main_performance_figure,
 )
@@ -83,6 +86,10 @@ def fa_inpatient_main_manuscript_eval(
     performance_by_lookahead_table(
         run=pipeline,
         lookaheads_for_performance_eval=[30, 90, 180, 360],
+    )
+    generate_feature_importance_table(
+        pipeline_run=pipeline,
+        vocab_filename="vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet",
     )
 
     return fa_inpatient_create_markdown_artifacts(pipeline=pipeline)

@@ -94,7 +94,7 @@ def plot_auc_roc(
 
     auroc_label = pn.annotate(
         "text",
-        label=f"AUROC (95% CI): {auc_mean:.2f} ({auc_ci[0]:.2f}-{auc_ci[1]:.2f})",
+        label=f"AUROC (95% CI): {auc_mean:.3f} ({auc_ci[0]:.3f}-{auc_ci[1]:.3f})",
         x=1,
         y=0,
         ha="right",

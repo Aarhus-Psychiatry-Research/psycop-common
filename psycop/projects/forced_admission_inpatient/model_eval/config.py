@@ -17,10 +17,8 @@ MODEL_ALGORITHM = 1  # 0 fo logistic regression and 1 for best xgboost
 
 DEV_GROUP_NAME = "undertided-acetanilide"
 DEVELOPMENT_GROUP = RunGroup(model_name=MODEL_NAME, group_name=DEV_GROUP_NAME)
-BEST_POS_RATE = 0.03
+BEST_POS_RATE = 0.04
 
-EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
-EVAL_GROUP = RunGroup(model_name=MODEL_NAME, group_name=EVAL_GROUP_NAME)
 
 ################
 # OUTPUT PATHS #
