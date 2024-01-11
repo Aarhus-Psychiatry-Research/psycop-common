@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from .unpack_annotations import get_pretty_annotation_str
+from .unpack_annotations import get_pretty_type_str
 
 
 @dataclass(frozen=True)
@@ -41,6 +41,6 @@ def fn(
 def test_unpack_annotations(example: UnpackExpectation):
     fn_annotations = inspect.get_annotations(fn)
     assert (
-        get_pretty_annotation_str(fn_annotations[example.arg_name])
+        get_pretty_type_str(fn_annotations[example.arg_name])
         == example.expected_annotation
     )
