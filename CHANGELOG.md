@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.170.2 (2024-01-12)
+
+### Fix
+
+* Tests ([`3234693`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3234693af9badc153a840b8beceeb06e6eb0c765))
+* New placeholder for id_data_filter ([`b9b97af`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b9b97aff4bd31c44335312d63bc4f96a47dfe0c2))
+
 ## v0.170.1 (2024-01-12)
 
 ### Fix
