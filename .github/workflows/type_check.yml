@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pip install invoke
+          pip install invoke questionary
           inv install-requirements
 
       - name: Run static type checker
