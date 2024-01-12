@@ -20,6 +20,7 @@ import multiprocessing  # noqa: I001
 from pathlib import Path
 
 from invoke import Context, Result, task
+import questionary
 
 from psycop.automation.environment import NOT_WINDOWS, test_pytorch_cuda, on_ovartaci
 from psycop.automation.git import (
@@ -212,6 +213,18 @@ def create_pr(c: Context):
             pty=NOT_WINDOWS,
         )
         print(f"{msg_type.GOOD} PR created")
+
+
+@task
+def prompt_to_submit_pr(c: Context):
+    """
+    Submit a PR to Graphite
+    """
+    if questionary.confirm("Submit PR to Graphite?").ask():
+        command = "herb submit"
+        if questionary.confirm("Automerge?").ask():
+            command += " --auto"
+        c.run(command)
 
 
 @task(aliases=("pr",))
