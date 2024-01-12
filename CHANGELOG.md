@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.170.1 (2024-01-12)
+
+### Fix
+
+* Literal type hint parsing. Fixes #667. ([`19dd234`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/19dd2344ed21d0496506b23fcca4775a37cb8006))
+
 ## v0.170.0 (2024-01-12)
 
 ### Feature
