@@ -151,15 +151,21 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
         3,
     )
 
-    df["Benefit/harm value"] = (df["true_positives"] * 10) - df["false_positives"]
+    # 20 times more saved by preventing IA than the resource used for intervnation. Intervention efficienct is 50%. Hence, 10:1 ratio
+    # Divided by no. positive outcomes 
+    df["Benefit/harm value"] = ((df["true_positives"] * 10) - df["false_positives"])/ df["Number of positive outcomes in test set (TP+FN)"] 
 
-    df["Benefit/harm value based on unique outcomes detected ≥1"] = (
+    # Divide by no. unique positive outcomes
+    df["Benefit/harm value based on unique outcomes detected ≥1"] = ((
         df["Number of unique outcome events detected ≥1"] * 10
-    ) - df["false_positives"]
+    ) - df["false_positives"]) / df["Number of unique outcome events detected ≥1"]
 
-    df = clean_up_performance_by_ppr(df)
+    clean_df = clean_up_performance_by_ppr(df.iloc[:, :-2])
 
-    df.to_excel(output_path, index=False)
+    clean_df["Benefit/harm value"] = df["Benefit/harm value"]
+    clean_df["Benefit/harm value based on unique outcomes detected ≥1"] = df["Benefit/harm value based on unique outcomes detected ≥1"]
+
+    clean_df.to_excel(output_path, index=False)
 
 
 if __name__ == "__main__":
