@@ -10,7 +10,7 @@ from psycop.common.model_training_v2.config.baseline_registry import (
 from psycop.common.model_training_v2.config.populate_registry import (
     populate_baseline_registry,
 )
-from psycop.common.model_training_v2.config.registries_testing_utils import (
+from psycop.common.model_training_v2.config.registry_resolution_test_utils import (
     generate_configs_from_registered_functions,
     get_example_cfgs,
     get_registered_functions,
