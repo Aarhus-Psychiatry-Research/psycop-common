@@ -22,7 +22,7 @@ ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 # Install snyk
 RUN npm install -g snyk
 
-# Install graphite (PR stacking)
+# Install graphite (PR stacking), experimental, can be deleted without notice
 RUN npm install -g @withgraphite/graphite-cli@stable
 
 # Install dev tools
