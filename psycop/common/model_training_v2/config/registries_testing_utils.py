@@ -20,6 +20,12 @@ populate_baseline_registry()
 STATIC_REGISTRY_CONFIG_DIR = Path(__file__).parent / "static_registry_configs"
 
 
+@dataclass(frozen=True)
+class AnnotatedArgument:
+    name: str
+    annotation: str
+
+
 def _convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
     for key, value in d.items():
         if isinstance(value, tuple):
@@ -47,6 +53,7 @@ class RegisteredCallable:
 
     def write_scaffolding_cfg(
         self,
+        placeholder_cfg: Config,
         example_top_dir: Path,
     ) -> Path:
         cfg_dir = self.get_cfg_dir(example_top_dir)
@@ -54,39 +61,59 @@ class RegisteredCallable:
         current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
         example_path = cfg_dir / f"{self.callable_name}_{current_datetime}.cfg"
 
-        with example_path.open("w") as f:
-            arg_names = self._get_callable_arg_names()
-            f.write(
-                f"""
-[{self.callable_name}]
-@{self.registry_name} = "{self.callable_name}"
-"""
-                + "\n".join(f"{arg_name} = " for arg_name in arg_names),
-            )
+        filled_config = self.container_registry.fill(
+            placeholder_cfg,
+            validate=False,
+        )
+
+        filled_config_arg_names = filled_config["placeholder"].keys()
+        missing_args = [
+            arg
+            for arg in self._get_callable_annotated_args()
+            if arg.name not in filled_config_arg_names
+        ]
+
+        for annotated_arg in missing_args:
+            filled_config["placeholder"][annotated_arg.name] = annotated_arg.annotation
+
+        filled_config.to_disk(example_path)
 
         return example_path
 
-    def _get_callable_arg_names(self) -> Sequence[str]:
+    def _get_callable_annotated_args(self) -> Sequence[AnnotatedArgument]:
         """Get the names of the arguments of the callable.
 
         If the callable is a class, get args of __init__, omitting self."""
-        if inspect.isfunction(self.callable_obj):
-            arg_names = inspect.getfullargspec(self.callable_obj).args
-        elif inspect.isclass(self.callable_obj):
-            arg_names = inspect.getfullargspec(self.callable_obj.__init__).args[1:]
-            # Slice from 1 to omit self
+        method_for_placeholder_cfg = (
+            self.callable_obj.__init__
+            if inspect.isclass(self.callable_obj)
+            else self.callable_obj
+        )
 
-            has_starargs = (
-                inspect.getfullargspec(self.callable_obj.__init__).varargs is not None
+        arg_names = inspect.getfullargspec(method_for_placeholder_cfg).args
+        annotated_arguments = [
+            AnnotatedArgument(
+                name=name,
+                annotation=str(
+                    inspect.signature(self.callable_obj).parameters[name]._annotation,  # type: ignore
+                ),
             )
-            if has_starargs:
-                arg_names = [*arg_names, f"\n[{self.callable_name}.*]\nplaceholder_*"]
-        else:
-            raise ValueError(
-                f"Expected {self.callable_name} to be a function or class",
-            )
+            for name in arg_names
+            if name != "self"
+        ]
 
-        return arg_names
+        has_starargs = (
+            inspect.getfullargspec(method_for_placeholder_cfg).varargs is not None
+        )
+        if has_starargs:
+            annotated_arguments += [
+                AnnotatedArgument(
+                    name=f"\n[{self.callable_name}.*]\nplaceholder_*",
+                    annotation="",
+                ),
+            ]
+
+        return annotated_arguments
 
     @property
     def callable_obj(self) -> Callable:  # type: ignore
@@ -205,6 +232,7 @@ def generate_configs_from_registered_functions(
 
             # Create a scaffolding cfg at the location
             scaffolding_path = fn.write_scaffolding_cfg(
+                placeholder_cfg=placeholder_cfg,
                 example_top_dir=example_cfg_dir,
             )
 

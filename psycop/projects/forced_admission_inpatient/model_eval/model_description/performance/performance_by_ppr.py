@@ -16,7 +16,6 @@ msg = Printer(timestamp=True)
 def _get_num_of_unique_outcome_events(
     eval_dataset: EvalDataset,
 ) -> int:
-
     df = pd.DataFrame(
         {
             "id": eval_dataset.ids,
