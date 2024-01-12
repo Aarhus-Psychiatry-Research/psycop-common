@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.170.3 (2024-01-12)
+
+### Fix
+
+* **#671:** Improve-error-when-cannot-parse-registered-config ([#672](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/672)) ([`4aa5cff`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4aa5cff3f03c042892a20a2d456f3e2b8b85f9b9))
+* **#671:** Improve-error-when-cannot-parse-registered-config ([`15ca60b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/15ca60bfe9d27e8b688c9cf655b4d2f1a65ce7ed))
+
 ## v0.170.2 (2024-01-12)
 
 ### Fix
