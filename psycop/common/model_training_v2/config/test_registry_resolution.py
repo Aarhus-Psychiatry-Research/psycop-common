@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from confection import Config
+from confection import Config, ConfigValidationError
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
@@ -35,6 +35,21 @@ class CfgError:
     cfg: Config
     location: Path
     error: Exception
+
+    def __str__(self) -> str:
+        return f"{self.location.name}: {self.parsed_error_string}"
+
+    @property
+    def parsed_error_string(self) -> str:
+        if isinstance(self.error, ConfigValidationError):
+            return (
+                str(self.error)
+                .replace("Config validation error\n", "")
+                .replace("\t", ". ")
+                .split("{")[0]
+                .strip()
+            )
+        return str(self.error)
 
 
 @pytest.mark.parametrize(
@@ -86,10 +101,8 @@ def test_registered_callables_should_have_valid_example_cfgs(
             )
 
     if cfgs_with_errors:
-        locations = "\n\t".join(
-            f"{e.location.name}: {e.error}" for e in cfgs_with_errors
-        )
+        locations = "\n\n".join(f"{error}" for error in cfgs_with_errors)
 
         raise Exception(
-            f"Failed to resolve {locations}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
+            f"Failed to resolve \n\n{locations}.\n\n{REGISTERED_FUNCTION_ERROR_MSG}",
         ) from cfgs_with_errors[0].error
