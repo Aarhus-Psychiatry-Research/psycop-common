@@ -27,8 +27,7 @@ def get_pretty_type_str(annotation: types.GenericAlias | type) -> str:
     """Recursively unpacks an annotation to a string representation."""
     try:
         contained_type_strings = [
-            get_pretty_type_str(arg)
-            for arg in annotation.__args__  # type: ignore
+            get_pretty_type_str(arg) for arg in annotation.__args__  # type: ignore
         ]
         wrapping_type = get_wrapping_type(annotation)  # type: ignore
         return wrapping_type.to_wrapped_annotation(contained_type_strings)
