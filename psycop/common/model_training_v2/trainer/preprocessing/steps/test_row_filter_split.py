@@ -1,13 +1,12 @@
 import polars as pl
-from ....config.baseline_registry import BaselineRegistry
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    FilterByEntityID,
     RegionalFilter,
 )
-from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    FilterByEntityID,
-)
 from psycop.common.test_utils.str_to_df import str_to_pl_df
+
+from ....config.baseline_registry import BaselineRegistry
 
 
 def mock_data_for_id_filters() -> pl.LazyFrame:
