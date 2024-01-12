@@ -2,7 +2,7 @@ from typing import Literal
 
 import pytest
 
-from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     AgeFilter,
     WindowFilter,
 )

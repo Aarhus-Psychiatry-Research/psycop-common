@@ -17,8 +17,10 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
-from ...model_training_v2.trainer.data.data_filters.geography import RegionalFilter
 from ...model_training_v2.trainer.preprocessing.step import PresplitStep
+from ...model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    RegionalFilter,
+)
 
 PATIENT_ID = str | int
 

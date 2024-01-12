@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split.make_geographical_split import (
     get_regional_split_df,
 )
 

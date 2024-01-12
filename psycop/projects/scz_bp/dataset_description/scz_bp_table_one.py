@@ -41,11 +41,11 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.config.populate_registry import (
     populate_baseline_registry,
 )
-from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
-    get_regional_split_df,
-)
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
     ParquetVerticalConcatenator,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split.make_geographical_split import (
+    get_regional_split_df,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import (
     time_of_first_contact_to_psychiatry,
