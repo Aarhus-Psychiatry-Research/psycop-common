@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.170.0 (2024-01-12)
+
+### Feature
+
+* Pretty-annotation-extraction-in-confection-placheholder-configs ([`2ab73a6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2ab73a68d514aae8e25cd9853c89dbbd9f7bd9ee))
+
+### Fix
+
+* Imports ([`f817aad`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f817aad2fe16c17c7d1a307a2ae4bfb2402ea719))
+
 ## v0.169.0 (2024-01-11)
 
 ### Feature
