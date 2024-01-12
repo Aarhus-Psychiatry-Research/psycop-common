@@ -1,6 +1,9 @@
 # ruff: noqa
 
 
+from ..trainer.preprocessing.steps.test_row_filter_split import mock_regional_move_df
+
+
 def populate_baseline_registry() -> None:
     """
     Populate the registry with all the registered functions
@@ -21,15 +24,15 @@ def populate_baseline_registry() -> None:
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
 
     # Data filters
-    from ..trainer.data.data_filters.geography import RegionalFilter
-    from ..trainer.data.data_filters.original_ids import FilterByEntityID
+    from ..trainer.preprocessing.steps.row_filter_split import RegionalFilter
+    from ..trainer.preprocessing.steps.row_filter_split import FilterByEntityID
 
     # Data
     from ..trainer.data.dataloaders import (
         FilteredDataLoader,
         ParquetVerticalConcatenator,
     )
-    from ..trainer.data.minimal_test_data import MinimalTestData
+    from ..trainer.data.test_dataloaders import MinimalTestData
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
@@ -72,9 +75,8 @@ def populate_baseline_registry() -> None:
         ParquetVerticalConcatenator,
         FilteredDataLoader,
     )
-    from ..trainer.data.minimal_test_data import MinimalTestData
-    from ..trainer.data.data_filters.minimal_data_filter_test_data import (
-        mock_regional_move_df,
+    from ..trainer.data.test_dataloaders import MinimalTestData
+    from ..trainer.preprocessing.steps.test_row_filter_split import (
         mock_split_id_sequence,
     )
     from ..trainer.task.binary_classification.binary_classification_task import (
@@ -82,4 +84,4 @@ def populate_baseline_registry() -> None:
     )
 
     # Data filters
-    from ..trainer.data.data_filters.geography import RegionalFilter
+    from ..trainer.preprocessing.steps.row_filter_split import RegionalFilter
