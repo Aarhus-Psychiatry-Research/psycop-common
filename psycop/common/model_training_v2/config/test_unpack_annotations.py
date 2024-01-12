@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Any, Literal
 
 import pytest
 
@@ -22,6 +23,7 @@ class UnpackExpectation:
     [
         UnpackExpectation(str, "str"),
         UnpackExpectation(Sequence[MyType], "Sequence[MyType]"),
+        UnpackExpectation(Literal[1, 2, 3], "Literal[1, 2, 3]"),  # type: ignore
         UnpackExpectation(MyType, "MyType"),
         UnpackExpectation(int | str, "int | str"),
         UnpackExpectation(str | None, "str | None"),
