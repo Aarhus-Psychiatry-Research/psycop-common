@@ -19,7 +19,6 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 def _load_vocabulary(
     vocab_filename: str,
 ) -> pd.DataFrame:
-
     vocab_filepath = (
         OVARTACI_SHARED_DIR / "text_models" / "vocabulary_lists" / vocab_filename
     )
