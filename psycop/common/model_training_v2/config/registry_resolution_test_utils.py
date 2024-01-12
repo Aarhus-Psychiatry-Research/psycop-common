@@ -1,4 +1,5 @@
 import inspect
+import types
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
@@ -15,6 +16,8 @@ from psycop.common.model_training_v2.config.populate_registry import (
     populate_baseline_registry,
 )
 
+from .unpack_annotations import get_pretty_type_str
+
 populate_baseline_registry()
 
 STATIC_REGISTRY_CONFIG_DIR = Path(__file__).parent / "static_registry_configs"
@@ -23,7 +26,11 @@ STATIC_REGISTRY_CONFIG_DIR = Path(__file__).parent / "static_registry_configs"
 @dataclass(frozen=True)
 class AnnotatedArgument:
     name: str
-    annotation: str
+    annotation: types.GenericAlias | type | None
+
+    @property
+    def annotation_str(self) -> str:
+        return get_pretty_type_str(self.annotation) if self.annotation else "Unknown"
 
 
 def _convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
@@ -41,6 +48,10 @@ class RegisteredCallable:
     registry_name: str
     container_registry: RegistryWithDict
     module: str
+
+    @property
+    def callable_obj(self) -> Callable:  # type: ignore
+        return self.container_registry.get(self.registry_name, self.callable_name)
 
     def to_dot_path(self) -> str:
         return f"{self.registry_name}.{self.callable_name}"
@@ -74,7 +85,9 @@ class RegisteredCallable:
         ]
 
         for annotated_arg in missing_args:
-            filled_config["placeholder"][annotated_arg.name] = annotated_arg.annotation
+            filled_config["placeholder"][
+                annotated_arg.name
+            ] = annotated_arg.annotation_str
 
         filled_config.to_disk(example_path)
 
@@ -90,16 +103,11 @@ class RegisteredCallable:
             else self.callable_obj
         )
 
-        arg_names = inspect.getfullargspec(method_for_placeholder_cfg).args
+        annotated_args = inspect.get_annotations(method_for_placeholder_cfg)
         annotated_arguments = [
-            AnnotatedArgument(
-                name=name,
-                annotation=str(
-                    inspect.signature(self.callable_obj).parameters[name]._annotation,  # type: ignore
-                ),
-            )
-            for name in arg_names
-            if name != "self"
+            AnnotatedArgument(name=arg_name, annotation=annotation)
+            for (arg_name, annotation) in annotated_args.items()
+            if arg_name not in ("self", "return", "cls")
         ]
 
         has_starargs = (
@@ -109,15 +117,11 @@ class RegisteredCallable:
             annotated_arguments += [
                 AnnotatedArgument(
                     name=f"\n[{self.callable_name}.*]\nplaceholder_*",
-                    annotation="",
+                    annotation=None,
                 ),
             ]
 
         return annotated_arguments
-
-    @property
-    def callable_obj(self) -> Callable:  # type: ignore
-        return self.container_registry.get(self.registry_name, self.callable_name)
 
 
 @dataclass(frozen=True)
