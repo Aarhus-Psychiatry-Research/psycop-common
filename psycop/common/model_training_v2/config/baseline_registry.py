@@ -11,7 +11,6 @@ class BaselineRegistry(RegistryWithDict):
     loggers = catalogue.create("psycop_baseline", "loggers")
     trainers = catalogue.create("psycop_baseline", "trainers")
     data = catalogue.create("psycop_baseline", "data")
-    data_filters = catalogue.create("psycop_baseline", "data_filters")
     tasks = catalogue.create("psycop_baseline", "tasks")
 
     preprocessing = catalogue.create(

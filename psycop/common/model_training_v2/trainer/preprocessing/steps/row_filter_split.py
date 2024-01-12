@@ -18,7 +18,7 @@ from .....feature_generation.loaders.raw.load_ids import (
 )
 
 
-@BaselineRegistry.data_filters.register("regional_data_filter")
+@BaselineRegistry.preprocessing.register("regional_data_filter")
 @dataclass(frozen=True)
 class RegionalFilter(PresplitStep):
     """Filter data to only include ids from the desired regions. Removes
@@ -83,7 +83,7 @@ class RegionalFilter(PresplitStep):
         )
 
 
-@BaselineRegistry.data_filters.register("id_data_filter")
+@BaselineRegistry.preprocessing.register("id_data_filter")
 @dataclass(frozen=True)
 class FilterByEntityID(PresplitStep):
     """Filter the data to only include ids in split_ids"""
@@ -95,7 +95,7 @@ class FilterByEntityID(PresplitStep):
         return input_df.filter(pl.col(self.id_col_name).is_in(self.split_ids))
 
 
-@BaselineRegistry.data_filters.register("outcomestratified_split_filter")
+@BaselineRegistry.preprocessing.register("outcomestratified_split_filter")
 @dataclass(frozen=True)
 class FilterByOutcomeStratifiedSplits(PresplitStep):
     """Filter the data to only include ids from the splits stratified by outcome, for the given split_to_keep."""
