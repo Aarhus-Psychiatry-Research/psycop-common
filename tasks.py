@@ -222,7 +222,7 @@ def prompt_to_submit_pr(c: Context):
     """
     if questionary.confirm("Submit PR to Graphite?").ask():
         command = "herb submit"
-        if questionary.confirm("Automerge?").ask():
+        if questionary.confirm("Automerge?", default=False).ask():
             command += " --automerge"
         c.run(command)
 
