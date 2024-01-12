@@ -3,17 +3,18 @@ from dataclasses import dataclass
 from typing import Literal
 
 import polars as pl
+
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.trainer.preprocessing.step import (
+    PresplitStep,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split.make_geographical_split import (
+    get_regional_split_df,
+)
+
 from .....feature_generation.loaders.raw.load_ids import (
     SplitName,
     load_stratified_by_outcome_split_ids,
-)
-
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
-    get_regional_split_df,
-)
-from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PresplitStep,
 )
 
 

@@ -14,7 +14,6 @@ def populate_baseline_registry() -> None:
     # Data
     from ..trainer.data.dataloaders import (
         ParquetVerticalConcatenator,
-        FilteredDataLoader,
     )
 
     # Estimator steps

@@ -2,7 +2,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split.make_geographical_split import (
     add_migration_date_by_patient,
     add_shak_to_region_mapping,
     get_first_visit_at_each_region_by_patient,
