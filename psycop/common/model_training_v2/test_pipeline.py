@@ -18,7 +18,7 @@ from psycop.common.model_training_v2.loggers.terminal_logger import (
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
     CrossValidatorTrainer,
 )
-from psycop.common.model_training_v2.trainer.data.minimal_test_data import (
+from psycop.common.model_training_v2.trainer.data.test_dataloaders import (
     MinimalTestData,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
