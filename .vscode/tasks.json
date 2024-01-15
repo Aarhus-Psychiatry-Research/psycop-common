@@ -49,7 +49,7 @@
         {
             "label": "Submit PR",
             "type": "shell",
-            "command": "herb submit",
+            "command": "herb submit && echo '⚠️ Any problems in the PR? Press Ctrl+C to cancel.'",
             "presentation": {
                 "group": "pr",
                 "reveal": "always",
