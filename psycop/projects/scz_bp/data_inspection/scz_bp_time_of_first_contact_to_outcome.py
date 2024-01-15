@@ -2,7 +2,7 @@
 import plotnine as pn
 import polars as pl
 
-from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split.make_geographical_split import (
     get_regional_split_df,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (

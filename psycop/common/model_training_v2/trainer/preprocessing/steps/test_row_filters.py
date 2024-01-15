@@ -2,7 +2,7 @@ from typing import Literal
 
 import pytest
 
-from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filters import (
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     AgeFilter,
     WindowFilter,
 )
@@ -25,9 +25,13 @@ def test_age_filter(min_age: int, max_age: int, n_remaining: int):
     2,
     3,
     """,
-    )
+    ).lazy()
 
-    result = AgeFilter(min_age=min_age, max_age=max_age, age_col_name="age").apply(df)
+    result = (
+        AgeFilter(min_age=min_age, max_age=max_age, age_col_name="age")
+        .apply(df)
+        .collect()
+    )
 
     assert len(result) == n_remaining
 
@@ -53,12 +57,16 @@ def test_window_filter(
     2021-01-03,
     2021-01-04,
     """,
-    )
+    ).lazy()
 
-    result = WindowFilter(
-        n_days=n_days,
-        direction=direction,
-        timestamp_col_name="timestamp",
-    ).apply(df)
+    result = (
+        WindowFilter(
+            n_days=n_days,
+            direction=direction,
+            timestamp_col_name="timestamp",
+        )
+        .apply(df)
+        .collect()
+    )
 
     assert len(result) == n_remaining

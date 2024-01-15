@@ -20,8 +20,7 @@
 				"GitHub.vscode-pull-request-github",
 				"Graphite.gti-vscode",
 				"SeeLog.python-init-generator",
-				"bungcip.better-toml",
-				"Gerrnperl.outline-map"
+				"tamasfe.even-better-toml"
 			]
 		}
 	},
@@ -31,7 +30,7 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
-	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt"
+	"postStartCommand": "pip install -r dev-requirements.txt -r requirements.txt -r gpu-requirements.txt -r test-requirements.txt && gt user pager --disable"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

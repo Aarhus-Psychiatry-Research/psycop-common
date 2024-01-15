@@ -176,7 +176,9 @@ class PaperOutputSettings:
         self.name = name
         self.pos_rate = pos_rate
         artifact_root = (
-            (EVAL_ROOT / f"{model_name}-eval" / name)
+            (
+                EVAL_ROOT / f"{model_name}" / name
+            )  # add w wash if eval on cohort with washout
             if artifact_root is None
             else artifact_root
         )

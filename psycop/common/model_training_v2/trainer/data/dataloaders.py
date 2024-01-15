@@ -2,13 +2,10 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import polars as pl
-from functionalpy import Seq
+from iterpy import Iter
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-from psycop.common.model_training_v2.trainer.data.data_filters.base_data_filter import (
-    BaselineDataFilter,
-)
 
 
 class MissingPathError(Exception):
@@ -31,7 +28,10 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
 
         if validate_on_init:
             missing_paths = (
-                Seq(self.dataset_paths).map(self._check_path_exists).flatten().to_list()
+                Iter(self.dataset_paths)
+                .map(self._check_path_exists)
+                .flatten()
+                .to_list()
             )
             if missing_paths:
                 raise MissingPathError(
@@ -51,16 +51,3 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
             how="vertical",
             items=[pl.scan_parquet(path) for path in self.dataset_paths],
         )
-
-
-@BaselineRegistry.data.register("filtered_dataloader")
-class FilteredDataLoader(BaselineDataLoader):
-    """Filter the rows from dataloader using a filter, such as by geographical region,
-    id split, or other filters."""
-
-    def __init__(self, dataloader: BaselineDataLoader, data_filter: BaselineDataFilter):
-        self.dataloader = dataloader
-        self.data_filter = data_filter
-
-    def load(self) -> pl.LazyFrame:
-        return self.data_filter.apply(self.dataloader)

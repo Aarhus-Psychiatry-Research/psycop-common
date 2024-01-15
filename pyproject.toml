@@ -9,7 +9,7 @@ authors = [
   { name = "Jakob G. Damgaard" },
   { name = "Erik Perfalk" },
 ]
-version = "0.160.1"
+version = "0.170.3"
 description = "PSYCOP"
 classifiers = [
   "Operating System :: POSIX :: Linux",
@@ -37,7 +37,14 @@ documentation = "https://Aarhus-Psychiatry-Research.github.io/psycop-common/"
 
 [tool.pyright]
 include = ["psycop"]
-exclude = ["**/.*venv*", ".tox", "build"]
+exclude = [
+  "**/.*venv*",
+  ".tox",
+  "build",
+  # don't check files that import synthcity as it is not installed on the main environment
+  "psycop/projects/scz_bp/model_training/estimator_steps/synth_data_augmentation.py",
+  "psycop/projects/scz_bp/model_training/estimator_steps/test_synth_data_augmentation.py",
+]
 pythonPlatform = "Darwin"
 typeCheckingMode = "strict"
 reportUnknownArgumentType = "none"
@@ -48,8 +55,8 @@ reportUnknownVariableType = "none"
 reportMissingTypeStubs = "none"
 reportUntypedFunctionDecorator = "none"
 reportIncompatibleVariableOverride = "none"
-reportUnusedVariable = "none"               # Fixed by ruff
-reportUnusedImport = "none"                 # Fixed by ruff
+reportUnusedVariable = "none" # Fixed by ruff
+reportUnusedImport = "none" # Fixed by ruff
 reportPrivateImportUsage = "none"
 
 [tool.ruff]
@@ -84,7 +91,17 @@ select = [
   "TCH",
   "W",
 ]
-ignore = ["ANN101", "ANN401", "B007", "E402", "E501", "F401", "F841", "RUF100", "RET504"]
+ignore = [
+  "ANN101",
+  "ANN401",
+  "B007",
+  "E402",
+  "E501",
+  "F401",
+  "F841",
+  "RUF100",
+  "RET504",
+]
 ignore-init-module-imports = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 unfixable = ["ERA"]

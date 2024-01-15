@@ -6,42 +6,33 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "git push && inv create-pr",
-            "group": "test",
+            "command": "inv prompt-to-submit-pr",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Static type check",
-                "Merge main"
+                "Static type check"
             ],
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false,
-            }
-        },
-        {
-            "label": "Merge main",
-            "type": "shell",
-            "command": "inv merge-main",
-            "presentation": {
-                "reveal": "always",
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false,
+                "showReuseMessage": false
             },
             "problemMatcher": []
         },
         {
             "label": "Lint",
             "type": "shell",
-            "command": "inv lint --auto-fix && git push",
+            "command": "inv lint --auto-fix",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false,
+                "showReuseMessage": false
             },
             "problemMatcher": []
         },
@@ -53,11 +44,10 @@
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false,
+                "showReuseMessage": false
             },
             "dependsOn": [
                 "Lint",
-                "Merge main"
             ]
         },
         {
@@ -68,11 +58,10 @@
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false,
+                "showReuseMessage": false
             },
             "dependsOn": [
                 "Lint",
-                "Merge main"
             ]
         }
     ]

@@ -13,6 +13,10 @@ from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
+def sanitise_dict_keys(d: dict[str, Any]) -> dict[str, Any]:
+    return replace_symbols_in_dict_keys(d=d, symbol2replacement={"@": "", "*": "_"})
+
+
 @BaselineRegistry.loggers.register("mlflow_logger")
 class MLFlowLogger(BaselineLogger):
     def __init__(
@@ -64,8 +68,4 @@ class MLFlowLogger(BaselineLogger):
 
     def log_config(self, config: dict[str, Any]):
         config = flatten_nested_dict(config)
-        clean_config = replace_symbols_in_dict_keys(
-            d=config,
-            symbol2replacement={"@": "", "*": "_"},
-        )
-        mlflow.log_params(clean_config)
+        mlflow.log_params(sanitise_dict_keys(config))

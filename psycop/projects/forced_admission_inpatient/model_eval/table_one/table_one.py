@@ -10,6 +10,9 @@ from psycop.projects.forced_admission_inpatient.feature_generation.modules.loade
 from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
     get_best_eval_pipeline,
 )
+from psycop.projects.forced_admission_inpatient.model_eval.table_one.table_one_lib import (
+    time_of_first_contact_to_psychiatry,
+)
 
 model_train_df = pl.concat(
     [
@@ -55,6 +58,13 @@ eligible_prediction_times = flattened_combined.join(
     how="inner",
 )
 
+eligible_prediction_times_with_first_contact = eligible_prediction_times.join(
+    time_of_first_contact_to_psychiatry().lazy(),
+    on="dw_ek_borger",
+    how="left",
+)
+
+
 # %%
 ####################
 # Grouped by visit #
@@ -84,7 +94,7 @@ visit_row_specs = [
         categorical=True,
         values_to_display=[1],
     ),
-    *get_psychiatric_diagnosis_row_specs(readable_col_names=model_train_df.columns),
+    *get_psychiatric_diagnosis_row_specs(readable_col_names=flattened_combined.columns),
 ]
 
 age_bins = [18, *list(range(19, 90, 10))]
@@ -121,6 +131,8 @@ visit_table_one = create_table(
 ######################
 # Grouped by patient #
 ######################
+
+
 patient_row_specs = [
     RowSpecification(
         source_col_name="pred_sex_female",
@@ -128,25 +140,48 @@ patient_row_specs = [
         categorical=True,
         values_to_display=[1],
     ),
+    RowSpecification(
+        source_col_name="days_from_first_contact_to_outcome",
+        readable_name="days_from_first_contact_to_outcome",
+        nonnormal=True,
+    ),
 ]
 
 patient_df = (
     (
-        eligible_prediction_times.groupby("dw_ek_borger")
+        eligible_prediction_times_with_first_contact.groupby("dw_ek_borger")
         .agg(
             pred_sex_female=pl.col("pred_sex_female").first(),
+            prediction_timestamp=pl.col("timestamp").min(),
+            outcome_timestamp=pl.col(
+                "timestamp_outcome__within_180_days_earliest_fallback_nan_dichotomous",
+            ).min(),
+            first_contact=pl.col("first_contact").first(),
             dataset=pl.col("dataset").first(),
         )
         .select(
             [
                 "pred_sex_female",
+                "outcome_timestamp",
+                "prediction_timestamp",
+                "first_contact",
                 "dataset",
             ],
+        )
+        .with_columns(
+            days_from_first_contact_to_outcome=(
+                pl.col("outcome_timestamp") - pl.col("first_contact")
+            ),
         )
     )
     .collect()
     .to_pandas()
 )
+
+patient_df["days_from_first_contact_to_outcome"] = (
+    patient_df["days_from_first_contact_to_outcome"]  # type: ignore
+    / pd.Timedelta(days=1)
+).astype(float)
 
 patient_table_one = create_table(
     row_specs=patient_row_specs,

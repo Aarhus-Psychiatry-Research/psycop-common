@@ -46,7 +46,7 @@ def create_outcome_values(
     # Z-score normalise and add noise
     _y = stats.zscore(_y) + noise
 
-    out = 1 / (1 + np.exp(_y))
+    out = 1 / (1 + np.exp(_y))  # type: ignore
     return out  # type: ignore
 
 

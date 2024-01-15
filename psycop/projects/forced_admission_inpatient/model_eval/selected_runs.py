@@ -26,5 +26,10 @@ def get_best_dev_pipeline() -> ForcedAdmissionInpatientPipelineRun:
 def get_best_eval_pipeline() -> ForcedAdmissionInpatientPipelineRun:
     return test_selected_model_pipeline(
         pipeline_to_test=get_best_dev_pipeline(),
-        splits_for_evaluation=["val"],
+        splits_for_training=[
+            "train",
+        ],
+        splits_for_evaluation=[
+            "val",
+        ],  # add with_washout if eval on cohort with washout
     )

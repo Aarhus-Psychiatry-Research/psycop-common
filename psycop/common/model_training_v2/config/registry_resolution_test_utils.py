@@ -1,4 +1,5 @@
 import inspect
+import types
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
@@ -15,9 +16,21 @@ from psycop.common.model_training_v2.config.populate_registry import (
     populate_baseline_registry,
 )
 
+from .unpack_annotations import get_pretty_type_str
+
 populate_baseline_registry()
 
 STATIC_REGISTRY_CONFIG_DIR = Path(__file__).parent / "static_registry_configs"
+
+
+@dataclass(frozen=True)
+class AnnotatedArgument:
+    name: str
+    annotation: types.GenericAlias | type | None
+
+    @property
+    def annotation_str(self) -> str:
+        return get_pretty_type_str(self.annotation) if self.annotation else "Unknown"
 
 
 def _convert_tuples_to_lists(d: dict[str, Any]) -> dict[str, Any]:
@@ -36,6 +49,10 @@ class RegisteredCallable:
     container_registry: RegistryWithDict
     module: str
 
+    @property
+    def callable_obj(self) -> Callable:  # type: ignore
+        return self.container_registry.get(self.registry_name, self.callable_name)
+
     def to_dot_path(self) -> str:
         return f"{self.registry_name}.{self.callable_name}"
 
@@ -47,6 +64,7 @@ class RegisteredCallable:
 
     def write_scaffolding_cfg(
         self,
+        placeholder_cfg: Config,
         example_top_dir: Path,
     ) -> Path:
         cfg_dir = self.get_cfg_dir(example_top_dir)
@@ -54,43 +72,56 @@ class RegisteredCallable:
         current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
         example_path = cfg_dir / f"{self.callable_name}_{current_datetime}.cfg"
 
-        with example_path.open("w") as f:
-            arg_names = self._get_callable_arg_names()
-            f.write(
-                f"""
-[{self.callable_name}]
-@{self.registry_name} = "{self.callable_name}"
-"""
-                + "\n".join(f"{arg_name} = " for arg_name in arg_names),
-            )
+        filled_config = self.container_registry.fill(
+            placeholder_cfg,
+            validate=False,
+        )
+
+        filled_config_arg_names = filled_config["placeholder"].keys()
+        missing_args = [
+            arg
+            for arg in self._get_callable_annotated_args()
+            if arg.name not in filled_config_arg_names
+        ]
+
+        for annotated_arg in missing_args:
+            filled_config["placeholder"][
+                annotated_arg.name
+            ] = annotated_arg.annotation_str
+
+        filled_config.to_disk(example_path)
 
         return example_path
 
-    def _get_callable_arg_names(self) -> Sequence[str]:
+    def _get_callable_annotated_args(self) -> Sequence[AnnotatedArgument]:
         """Get the names of the arguments of the callable.
 
         If the callable is a class, get args of __init__, omitting self."""
-        if inspect.isfunction(self.callable_obj):
-            arg_names = inspect.getfullargspec(self.callable_obj).args
-        elif inspect.isclass(self.callable_obj):
-            arg_names = inspect.getfullargspec(self.callable_obj.__init__).args[1:]
-            # Slice from 1 to omit self
+        method_for_placeholder_cfg = (
+            self.callable_obj.__init__
+            if inspect.isclass(self.callable_obj)
+            else self.callable_obj
+        )
 
-            has_starargs = (
-                inspect.getfullargspec(self.callable_obj.__init__).varargs is not None
-            )
-            if has_starargs:
-                arg_names = [*arg_names, f"\n[{self.callable_name}.*]\nplaceholder_*"]
-        else:
-            raise ValueError(
-                f"Expected {self.callable_name} to be a function or class",
-            )
+        annotated_args = inspect.get_annotations(method_for_placeholder_cfg)
+        annotated_arguments = [
+            AnnotatedArgument(name=arg_name, annotation=annotation)
+            for (arg_name, annotation) in annotated_args.items()
+            if arg_name not in ("self", "return", "cls")
+        ]
 
-        return arg_names
+        has_starargs = (
+            inspect.getfullargspec(method_for_placeholder_cfg).varargs is not None
+        )
+        if has_starargs:
+            annotated_arguments += [
+                AnnotatedArgument(
+                    name=f"\n[{self.callable_name}.*]\nplaceholder_*",
+                    annotation=None,
+                ),
+            ]
 
-    @property
-    def callable_obj(self) -> Callable:  # type: ignore
-        return self.container_registry.get(self.registry_name, self.callable_name)
+        return annotated_arguments
 
 
 @dataclass(frozen=True)
@@ -205,6 +236,7 @@ def generate_configs_from_registered_functions(
 
             # Create a scaffolding cfg at the location
             scaffolding_path = fn.write_scaffolding_cfg(
+                placeholder_cfg=placeholder_cfg,
                 example_top_dir=example_cfg_dir,
             )
 

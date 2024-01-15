@@ -2,13 +2,13 @@ import datetime as dt
 import itertools
 from collections import defaultdict
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 import polars as pl
 
 from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.sequences.event_loader import DiagnosisLoader
 from psycop.common.feature_generation.sequences.patient_loader import (
     PatientLoader,
@@ -17,17 +17,19 @@ from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer
     T2DCohortDefiner,
 )
 
+from ...model_training_v2.trainer.preprocessing.step import PresplitStep
+from ...model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    RegionalFilter,
+)
+
 PATIENT_ID = str | int
 
 
+@dataclass(frozen=True)
 class PredictionTimesFromCohort:
-    def __init__(
-        self,
-        cohort_definer: CohortDefiner,
-        patients: Sequence[Patient],
-    ):
-        self.cohort_definer = cohort_definer
-        self.patients = patients
+    cohort_definer: CohortDefiner
+    patients: Sequence[Patient]
+    split_filter: PresplitStep
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
@@ -98,8 +100,16 @@ class PredictionTimesFromCohort:
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
         )
+
+        naive_prediction_times = (
+            self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times
+        ).lazy()
+        prediction_times_for_split = self.split_filter.apply(
+            naive_prediction_times,
+        ).collect()
+
         prediction_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
-            dataframe=self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times,
+            dataframe=prediction_times_for_split,
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
             lookahead=lookahead,
@@ -120,15 +130,15 @@ class PredictionTimesFromCohort:
 
 
 if __name__ == "__main__":
-    patients = PatientLoader.get_split(
+    patients = PatientLoader(
         event_loaders=[DiagnosisLoader()],
-        split=SplitName.TRAIN,
         min_n_events=5,
-    )
+    ).get_patients()
 
     prediction_times = PredictionTimesFromCohort(
         cohort_definer=T2DCohortDefiner(),
         patients=patients,
+        split_filter=RegionalFilter(splits_to_keep=["train"]),
     ).create_prediction_times(
         lookbehind=dt.timedelta(days=365),
         lookahead=dt.timedelta(days=365),

@@ -1,7 +1,7 @@
 # @package _global_
 data:
   # General config
-  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\limited_features_set_demographics_diagnoses
+  dir: E:\shared_resources\forced_admissions_inpatient\flattened_datasets\full_feature_set_with_sentence_transformers_and_tfidf_750
   suffix: parquet
   splits_for_training: ["train"]
   splits_for_evaluation: null
@@ -12,7 +12,7 @@ data:
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: timestamp_outcome__within_180_days_earliest_fallback_nan
+    outcome_timestamp: timestamp_outcome__within_180_days_earliest_fallback_nan_dichotomous
     is_female: pred_sex_female
     id: dw_ek_borger
     age: pred_age_in_years

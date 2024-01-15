@@ -2,6 +2,143 @@
 
 <!--next-version-placeholder-->
 
+## v0.170.3 (2024-01-12)
+
+### Fix
+
+* **#671:** Improve-error-when-cannot-parse-registered-config ([#672](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/672)) ([`4aa5cff`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4aa5cff3f03c042892a20a2d456f3e2b8b85f9b9))
+* **#671:** Improve-error-when-cannot-parse-registered-config ([`15ca60b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/15ca60bfe9d27e8b688c9cf655b4d2f1a65ce7ed))
+
+## v0.170.2 (2024-01-12)
+
+### Fix
+
+* Tests ([`3234693`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3234693af9badc153a840b8beceeb06e6eb0c765))
+* New placeholder for id_data_filter ([`b9b97af`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b9b97aff4bd31c44335312d63bc4f96a47dfe0c2))
+
+## v0.170.1 (2024-01-12)
+
+### Fix
+
+* Literal type hint parsing. Fixes #667. ([`19dd234`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/19dd2344ed21d0496506b23fcca4775a37cb8006))
+
+## v0.170.0 (2024-01-12)
+
+### Feature
+
+* Pretty-annotation-extraction-in-confection-placheholder-configs ([`2ab73a6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2ab73a68d514aae8e25cd9853c89dbbd9f7bd9ee))
+
+### Fix
+
+* Imports ([`f817aad`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f817aad2fe16c17c7d1a307a2ae4bfb2402ea719))
+
+## v0.169.0 (2024-01-11)
+
+### Feature
+
+* Update gain table to be more flexible ([`9e8cc4d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9e8cc4d2ed15c050e831fc53660761d7239c55b2))
+* Update perf by ppr ([`8d1084c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8d1084c8dbeddbce0b85d512754cd55a8255c04f))
+* Update perf by ppr table ([`5711773`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/571177364bc868a74cbf19ffeba6120923e58201))
+* Update performance table ([`16183d5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/16183d5c974cc65f91d4ae774fd7bb317847fa4c))
+* Add calibration curve ([`f5719cf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f5719cfd7caec7ea4af01e751df463410ae608d4))
+* Map vocab to tfidf indxs in gain table ([`279f404`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/279f4040b7dc8837cb8dde2ea468d7cf80a17042))
+* Save vocabs from text models ([`a084da1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a084da1bc1779c6e3fdd0689a437930e0f025963))
+
+### Fix
+
+* Comment instruction ([`3cbb09b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3cbb09b72e5d42f3c81f1b5ced2aaa3bdd2f18e2))
+* Add decimal on roc_auc plot ([`a54c283`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a54c2839b2a890344f24d6546d3c7e874e869048))
+* Tfidf matching in gain table ([`6a954c0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6a954c00fefe5d8f3185bd87ce37cb621f94e279))
+* Lint ([`cd63ad1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd63ad1a306f712d808889bac3a326a64a9251d5))
+* Gain table flexibility ([`ab70e4d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ab70e4d73dde2ce304bbed060ed6431d0f8ee711))
+* Add arg to aggr eval ([`db8f828`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/db8f828fa7eb3b7061b5b7dd71487e7779c71bbb))
+
+## v0.168.0 (2024-01-10)
+
+### Feature
+
+* Use SplitIDs to generate splits in  (issue #593) ([`590cce6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/590cce62497a11158e660635e704392c311ef2ab))
+
+### Fix
+
+* Typo ([`c3fabaf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c3fabafb5c00b871a8c1bcc3b5fd313ca9511eef))
+* Typo ([`4e74031`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4e740318b8de433249ce33650d3dbe87e87073f6))
+
+## v0.167.0 (2024-01-10)
+
+### Feature
+
+* Fill defaults from function signatures into .cfg (issue #426) ([#638](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/638)) ([`cae3021`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cae3021a70131235342ac485c50ef3c596f48c5f))
+* Fill defaults from function signatures into .cfg (issue #426) ([`a821915`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a821915b3b7325e9a5c1de722bf45bc80ca70046))
+* Fill defaults from function signatures into .cfg (issue #426) ([`f96b839`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f96b839d19c69315f946fc41dceb8e19d0374c56))
+
+## v0.166.0 (2024-01-10)
+
+### Feature
+
+* **#631:** Allow_extra-for-ValidatedFrame ([#641](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/641)) ([`ade4688`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ade4688ec44228e957a1a0d6df747fbc0e7bd5d5))
+
+## v0.165.0 (2024-01-10)
+
+### Feature
+
+* SplitLoaders should return SplitFrames (issue #628) ([#632](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/632)) ([`81983db`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/81983dbb0389d3764541ae4aa08e88d9288bc448))
+
+## v0.164.3 (2024-01-10)
+
+### Fix
+
+* RegionalFilter should not load at init ([`7fa1a34`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7fa1a34eef3f50cf006376538ed112486280a392))
+
+## v0.164.2 (2024-01-10)
+
+### Fix
+
+* Registry testing project-specific registered functions ([#637](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/637)) ([`fa09dfe`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fa09dfe178d5b7a08ae616912eabb4bdce1a735e))
+* Only check registered functions in common ([`a27bfd8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a27bfd8e23f989bdc1eef1c1ddecf278e5dea68b))
+* Move sczbp specific estimator steps to own registry ([`bb9981e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bb9981e68c0149b32a000da0f09d97127c15dac3))
+
+## v0.164.1 (2024-01-09)
+
+### Fix
+
+* Typo ([`7dd3ced`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7dd3ced368dd3f928aa7756c713ea9aa3b0c5c99))
+
+## v0.164.0 (2024-01-08)
+
+### Feature
+
+* Validated frame ([`07b5f03`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/07b5f03c1b11b559c8dc4d12edac6fac0aac1585))
+
+## v0.163.0 (2024-01-08)
+
+### Feature
+
+* Sanitise dict keys for mlflow ([`fc5eac9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fc5eac9458ebe09e744eb91504f0b1ed4b64ecac))
+* Remove unused extensions ([`a50d5e7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a50d5e7c540809d4a5317e0489218fc3e64457ab))
+* Disable graphite user pager ([`dea1c75`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/dea1c75d4e12e4d0ee2428a4df7aef98b0e662c3))
+
+## v0.162.0 (2024-01-05)
+
+### Feature
+
+* Joint interface for loading different split ids ([`b6b2be2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b6b2be2652b83cb960b0ef2177307f7ad86a42f4))
+
+## v0.161.0 (2024-01-04)
+
+### Feature
+
+* Add cleanlab processing step ([`498403b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/498403bfd9e5fd4b03d1541760087a9168911a5c))
+* Add missforest imputer ([`05100b3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/05100b37748efa536599c60cbcdcd3b7ad6fe5b4))
+* Synthetic data augmenter estimator step ([`8712caf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8712caf96418dedc3dafe32ca9df5cc77c8db6f7))
+* Simple imputer estimator step ([`1f72094`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1f7209436e75abdbf8ce9fff7a7fd469d8d5810b))
+* Standardscaler that infers numeric columns ([`4be5abc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4be5abc9a1ee7ac67279b51b7f6e32058648484b))
+* Imblearn pipeline and constructor ([`c81f98b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c81f98bb1ab3a6954a2ed61a405e3ddb53ca04bc))
+
+### Fix
+
+* Snyk syntax ([`751c764`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/751c7648c34f1966e6e062da582ec5b1ad0ffac1))
+
 ## v0.160.1 (2024-01-02)
 
 ### Fix

@@ -5,7 +5,6 @@ import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PolarsFrame_T0,
     PresplitStep,
 )
 
@@ -17,7 +16,7 @@ class AgeFilter(PresplitStep):
         self.max_age = max_age
         self.age = pl.col(age_col_name)
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         return input_df.filter((self.age >= self.min_age) & (self.age <= self.max_age))
 
 
@@ -33,26 +32,15 @@ class WindowFilter(PresplitStep):
         self.direction = direction
         self.timestamp_col_name = timestamp_col_name
 
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         base_column = input_df.select(pl.col(self.timestamp_col_name))
 
         if self.direction == "ahead":
-            max_timestamp = (
-                base_column.max().collect().item()
-                if isinstance(base_column, pl.LazyFrame)
-                else base_column.max().item()
-            )
+            max_timestamp = base_column.max().collect().item()
             future_cutoff = max_timestamp - self.n_days
             input_df = input_df.filter(pl.col(self.timestamp_col_name) < future_cutoff)
         elif self.direction == "behind":
-            min_timestamp = (
-                base_column.min().collect().item()
-                if isinstance(
-                    base_column,
-                    pl.LazyFrame,
-                )
-                else base_column.min().item()
-            )
+            min_timestamp = base_column.min().collect().item()
             past_cutoff = min_timestamp + self.n_days
             input_df = input_df.filter(pl.col(self.timestamp_col_name) > past_cutoff)
 

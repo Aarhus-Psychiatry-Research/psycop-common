@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from confection import Config
+from confection import Config, ConfigValidationError
 
 from psycop.common.model_training_v2.config.baseline_registry import (
     BaselineRegistry,
@@ -10,7 +10,7 @@ from psycop.common.model_training_v2.config.baseline_registry import (
 from psycop.common.model_training_v2.config.populate_registry import (
     populate_baseline_registry,
 )
-from psycop.common.model_training_v2.config.registries_testing_utils import (
+from psycop.common.model_training_v2.config.registry_resolution_test_utils import (
     generate_configs_from_registered_functions,
     get_example_cfgs,
     get_registered_functions,
@@ -36,6 +36,21 @@ class CfgError:
     location: Path
     error: Exception
 
+    def __str__(self) -> str:
+        return f"{self.location.name}: {self.parsed_error_string}"
+
+    @property
+    def parsed_error_string(self) -> str:
+        if isinstance(self.error, ConfigValidationError):
+            return (
+                str(self.error)
+                .replace("Config validation error\n", "")
+                .replace("\t", ". ")
+                .split("{")[0]
+                .strip()
+            )
+        return str(self.error)
+
 
 @pytest.mark.parametrize(
     ("source_registry", "output_dir"),
@@ -49,13 +64,19 @@ def test_registered_callables_should_have_valid_example_cfgs(
 ):
     populate_baseline_registry()
     registered_fns = get_registered_functions(source_registry)
+    # don't make example cfgs and tests for project-specific functions
+    registered_fns_in_common = [
+        registered_fn
+        for registered_fn in registered_fns
+        if "common" in registered_fn.module
+    ]
 
     generate_configs_from_registered_functions(
-        registered_fns=registered_fns,
+        registered_fns=registered_fns_in_common,
         example_cfg_dir=output_dir,
     )
 
-    for fn in registered_fns:
+    for fn in registered_fns_in_common:
         missing_example_cfgs: list[ValueError] = []
         if not fn.has_example_cfg(output_dir):
             missing_example_cfgs.append(
@@ -80,10 +101,8 @@ def test_registered_callables_should_have_valid_example_cfgs(
             )
 
     if cfgs_with_errors:
-        locations = "\n\t".join(
-            f"{e.location.name}: {e.error}" for e in cfgs_with_errors
-        )
+        locations = "\n\n".join(f"{error}" for error in cfgs_with_errors)
 
         raise Exception(
-            f"Failed to resolve {locations}.\n{REGISTERED_FUNCTION_ERROR_MSG}",
+            f"Failed to resolve \n\n{locations}.\n\n{REGISTERED_FUNCTION_ERROR_MSG}",
         ) from cfgs_with_errors[0].error
