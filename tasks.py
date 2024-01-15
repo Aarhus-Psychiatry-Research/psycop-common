@@ -64,11 +64,13 @@ def types(c: Context):
 def qtypes(c: Context):
     """Run static type checks."""
     if filetype_modified_since_main(c, r"\.py$"):
-        if questionary.confirm(
-            "Run type-checking? (Look at the problems tab)",
+        if not questionary.confirm(
+            "Skip type-checking?",
             default=True,
         ).ask():
             types(c)
+        else:
+            print("🟢 Skipping static type checks")
     else:
         print("🟢 No python files modified since main, skipping static type checks")
 
@@ -220,11 +222,11 @@ def create_pr(c: Context):
 
 
 @task
-def prompt_to_submit_pr(c: Context):
+def prompt_to_submit_pr(c: Context, skip_submit_prompt: bool = True):
     """
     Submit a PR to Graphite
     """
-    if questionary.confirm("Submit PR to Graphite?").ask():
+    if skip_submit_prompt or questionary.confirm("Submit PR to Graphite?").ask():
         command = "herb submit"
         if questionary.confirm("Automerge?", default=False).ask():
             command += " --automerge"
