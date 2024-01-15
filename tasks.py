@@ -64,7 +64,11 @@ def types(c: Context):
 def qtypes(c: Context):
     """Run static type checks."""
     if filetype_modified_since_main(c, r"\.py$"):
-        types(c)
+        if questionary.confirm(
+            "Run type-checking? (Look at the problems tab)",
+            default=True,
+        ).ask():
+            types(c)
     else:
         print("🟢 No python files modified since main, skipping static type checks")
 
