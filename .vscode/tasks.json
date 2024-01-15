@@ -17,7 +17,7 @@
                 "Actions requiring input"
             ],
             "presentation": {
-                "reveal": "always",
+                "reveal": "never",
                 "group": "confirmation",
                 "clear": true,
                 "showReuseMessage": false
