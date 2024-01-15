@@ -3,10 +3,6 @@ from pathlib import Path
 
 import polars as pl
 
-from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    _get_regional_split_df,  # type: ignore
-)
-
 
 def load_shak_to_location_mapping() -> pl.DataFrame:
     """vest = herning, holstebro, gødstrup
@@ -91,7 +87,3 @@ def add_shak_to_region_mapping(
         .filter(~pl.col("shak_6").is_in(shak_codes_to_drop))
         .select("dw_ek_borger", "timestamp", "region")
     )
-
-
-if __name__ == "__main__":
-    _get_regional_split_df()
