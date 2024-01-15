@@ -65,8 +65,8 @@ def qtypes(c: Context):
     """Run static type checks."""
     if filetype_modified_since_main(c, r"\.py$"):
         if questionary.confirm(
-            "Run type-checking? (Look at the problems tab)",
-            default=True,
+            "Skip type-checking?",
+            default=False,
         ).ask():
             types(c)
         else:
