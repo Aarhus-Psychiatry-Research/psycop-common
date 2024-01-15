@@ -89,6 +89,8 @@ def test_filter_by_quarantine_period():
     Filtering after the outcome is done inside TimeseriesFlattener when the OutcomeSpec has incident = True.
     """
 
+    quarantine_days = 730
+
     class TestDataLoader(BaselineDataLoader):
         def load(self) -> pl.LazyFrame:
             return str_to_pl_df(
@@ -101,8 +103,8 @@ def test_filter_by_quarantine_period():
     prediction_time_df = str_to_pl_df(
         """entity_id,timestamp,
         1,2020-12-01 00:00:01, # keep: before quarantine date
-        1,2022-12-01 00:00:01, # drop: after quarantine date
-        1,2026-02-01 00:00:01, # keep: outside quarantine days
+        1,2022-12-01 00:00:01, # drop: within quarantine days from the first quarantine date
+        1,2026-02-01 00:00:01, # keep: outside quarantine days from the first quarantine date
         2,2023-02-01 00:00:01, # keep: no quarantine date for this id
         """,
         add_pred_time_uuid=True,
@@ -119,7 +121,7 @@ def test_filter_by_quarantine_period():
 
     result_df = QuarantineFilter(
         entity_id_col_name="entity_id",
-        quarantine_interval_days=730,
+        quarantine_interval_days=quarantine_days,
         quarantine_timestamps_loader=TestDataLoader(),
         timestamp_col_name="timestamp",
         pred_time_uuid_col_name="pred_time_uuid",
