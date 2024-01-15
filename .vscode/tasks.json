@@ -6,7 +6,7 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "inv prompt-to-submit-pr",
+            "command": "echo All done!",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -14,11 +14,11 @@
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Static type check"
+                "Actions requiring input"
             ],
             "presentation": {
-                "reveal": "always",
-                "group": "pr",
+                "reveal": "never",
+                "group": "confirmation",
                 "clear": true,
                 "showReuseMessage": false
             },
@@ -32,9 +32,8 @@
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "problemMatcher": []
+                "showReuseMessage": false,
+            }
         },
         {
             "label": "Test",
@@ -44,11 +43,21 @@
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "dependsOn": [
-                "Lint",
-            ]
+                "showReuseMessage": false,
+            }
+        },
+        {
+            "label": "Actions requiring input",
+            "type": "shell",
+            "command": "inv qtypes && inv prompt-to-submit-pr --skip-submit-prompt",
+            "presentation": {
+                "group": "pr",
+                "reveal": "always",
+                "revealProblems": "onProblem",
+                "focus": true,
+                "clear": true,
+                "showReuseMessage": false,
+            }
         },
         {
             "label": "Static type check",
@@ -58,11 +67,8 @@
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "dependsOn": [
-                "Lint",
-            ]
+                "showReuseMessage": false,
+            }
         }
     ]
 }
