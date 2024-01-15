@@ -174,6 +174,7 @@ def load_text_split(
     )
     # randomly sample instead of taking the first n_rows
     if n_rows is not None:
+        print(f"Downsampling to {n_rows}")
         text_split_df = text_split_df.sample(n=n_rows, replace=False)
 
     return text_split_df
