@@ -222,11 +222,11 @@ def create_pr(c: Context):
 
 
 @task
-def prompt_to_submit_pr(c: Context):
+def prompt_to_submit_pr(c: Context, skip_submit_prompt: bool = True):
     """
     Submit a PR to Graphite
     """
-    if questionary.confirm("Submit PR to Graphite?").ask():
+    if skip_submit_prompt or questionary.confirm("Submit PR to Graphite?").ask():
         command = "herb submit"
         if questionary.confirm("Automerge?", default=False).ask():
             command += " --automerge"

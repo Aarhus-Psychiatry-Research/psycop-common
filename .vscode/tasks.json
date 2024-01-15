@@ -49,7 +49,7 @@
         {
             "label": "Actions requiring input",
             "type": "shell",
-            "command": "inv qtypes && inv prompt-to-submit-pr",
+            "command": "inv qtypes && inv prompt-to-submit-pr --skip-submit-prompt",
             "presentation": {
                 "group": "pr",
                 "reveal": "always",
