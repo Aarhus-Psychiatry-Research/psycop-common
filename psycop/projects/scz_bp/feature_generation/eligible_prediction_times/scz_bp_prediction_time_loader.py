@@ -12,6 +12,8 @@ from psycop.common.cohort_definition import (
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import ambulatory_visits
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.single_filters import (
+    SczBpAddAge,
+    SczBpMinAgeFilter,
     SczBpMinDateFilter,
     SczBpPrevalentFilter,
     SczBpTimeFromFirstVisitFilter,
@@ -74,8 +76,10 @@ class SczBpCohort(CohortDefiner):
     def _get_filtering_steps() -> Iterable[PredictionTimeFilter]:
         return (
             SczBpMinDateFilter(),
-            SczBpTimeFromFirstVisitFilter(),
+            SczBpAddAge(),
+            SczBpMinAgeFilter(),
             SczBpPrevalentFilter(),
+            SczBpTimeFromFirstVisitFilter(),
             SczBpWashoutMoveFilter(),
         )
 
