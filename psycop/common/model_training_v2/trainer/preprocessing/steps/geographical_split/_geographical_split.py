@@ -3,7 +3,9 @@ from pathlib import Path
 
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    _get_regional_split_df,  # type: ignore
+)
 
 
 def load_shak_to_location_mapping() -> pl.DataFrame:
@@ -91,57 +93,5 @@ def add_shak_to_region_mapping(
     )
 
 
-def get_regional_split_df() -> pl.LazyFrame:
-    """Return a dataframe with the region at which each patient first had
-    a contact. If a patient had contacts at multiple regions, the timestamp
-    of the first contact at a different region is also included."""
-    shak_to_location_df = load_shak_to_location_mapping()
-
-    visits = pl.from_pandas(physical_visits(shak_code=6600, return_shak_location=True))
-
-    sorted_all_visits_df = add_shak_to_region_mapping(
-        visits=visits,
-        shak_to_location_df=shak_to_location_df,
-        shak_codes_to_drop=non_adult_psychiatry_shak(),
-    ).sort(["dw_ek_borger", "timestamp"])
-
-    # find timestamp of first visit at each different region
-    first_visit_at_each_region = get_first_visit_at_each_region_by_patient(
-        df=sorted_all_visits_df,
-    )
-
-    # get the first visit
-    first_visit_at_first_region = get_first_visit_by_patient(
-        df=first_visit_at_each_region,
-    )
-
-    # get the first visit at a different region
-    first_visit_at_second_region = get_first_visit_at_second_region_by_patient(
-        df=first_visit_at_each_region,
-    )
-
-    # add the migration date for each patient
-    geographical_split_df = add_migration_date_by_patient(
-        first_visit_at_first_region,
-        first_visit_at_second_region,
-    )
-    # add indicator for which split each patient belongs to
-    geographical_split_df = geographical_split_df.with_columns(
-        pl.when(pl.col("region") == "øst")
-        .then("train")
-        .when(pl.col("region") == "vest")
-        .then("val")
-        .otherwise("test")
-        .alias("split"),
-    )
-
-    return geographical_split_df.select(
-        "dw_ek_borger",
-        "region",
-        "first_regional_move_timestamp",
-        "split",
-    ).lazy()
-
-
 if __name__ == "__main__":
-    get_regional_split_df()
+    _get_regional_split_df()

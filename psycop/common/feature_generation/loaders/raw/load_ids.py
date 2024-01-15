@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 import polars as pl
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split.make_geographical_split import (
-    get_regional_split_df,
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    _get_regional_split_df,  # type: ignore
 )
 
 from ....types.validated_frame import ValidatedFrame
@@ -76,7 +76,7 @@ def load_stratified_by_region_split_ids(
         pd.DataFrame: Only dw_ek_borger column with ids
     """
     split_df = (
-        get_regional_split_df()
+        _get_regional_split_df()
         .filter(pl.col("split") == split.value)
         .select("dw_ek_borger")
         .collect()
