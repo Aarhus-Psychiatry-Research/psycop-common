@@ -66,7 +66,7 @@ def qtypes(c: Context):
     if filetype_modified_since_main(c, r"\.py$"):
         if not questionary.confirm(
             "Skip type-checking?",
-            default=False,
+            default=True,
         ).ask():
             types(c)
         else:
