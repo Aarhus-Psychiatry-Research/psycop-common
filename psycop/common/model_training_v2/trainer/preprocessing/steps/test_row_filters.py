@@ -1,5 +1,6 @@
 from typing import Literal
 
+import polars as pl
 import pytest
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
@@ -9,6 +10,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_othe
 )
 
 from .....test_utils.str_to_df import str_to_pl_df
+from ...base_dataloader import BaselineDataLoader
 
 
 @pytest.mark.parametrize(
@@ -86,12 +88,15 @@ def test_filter_by_quarantine_period():
     Note that this function only filters the prediction times within the quarantine period.
     Filtering after the outcome is done inside TimeseriesFlattener when the OutcomeSpec has incident = True.
     """
-    quarantine_df = str_to_pl_df(
-        """entity_id,timestamp,
-        1,2021-01-01 00:00:01,
-        1,2022-01-01 00:00:01,
-        """,
-    ).lazy()
+
+    class TestDataLoader(BaselineDataLoader):
+        def load(self) -> pl.LazyFrame:
+            return str_to_pl_df(
+                """entity_id,timestamp,
+                1,2021-01-01 00:00:01,
+                1,2022-01-01 00:00:01,
+                """,
+            ).lazy()
 
     prediction_time_df = str_to_pl_df(
         """entity_id,timestamp,
@@ -115,7 +120,7 @@ def test_filter_by_quarantine_period():
     result_df = QuarantineFilter(
         entity_id_col_name="entity_id",
         quarantine_interval_days=730,
-        quarantine_timestamps_df=quarantine_df,
+        quarantine_timestamps_loader=TestDataLoader(),
         timestamp_col_name="timestamp",
         pred_time_uuid_col_name="pred_time_uuid",
     ).apply(prediction_time_df)

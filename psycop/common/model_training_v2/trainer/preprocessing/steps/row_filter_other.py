@@ -9,6 +9,8 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import (
     PresplitStep,
 )
 
+from ...base_dataloader import BaselineDataLoader
+
 
 @BaselineRegistry.preprocessing.register("age_filter")
 class AgeFilter(PresplitStep):
@@ -54,14 +56,29 @@ class QuarantineFilter:
     entity_id_col_name: str
     pred_time_uuid_col_name: str
     timestamp_col_name: str
-    quarantine_timestamps_df: pl.LazyFrame
+    quarantine_timestamps_loader: BaselineDataLoader
     quarantine_interval_days: int
+    validate_on_init: bool = True
+
+    def __post_init__(self) -> None:
+        required_columns = [self.timestamp_col_name, self.entity_id_col_name]
+        if self.validate_on_init and not all(
+            col in self.quarantine_timestamps_loader.load().columns
+            for col in required_columns
+        ):
+            raise ValueError(
+                "The quarantine timestamps loader must load a dataframe with the columns 'timestamp' and "
+                f"'{self.entity_id_col_name}'",
+            )
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         # We need to check if ANY quarantine date hits each prediction time.
         # Create combinations
+
         df = input_df.join(
-            self.quarantine_timestamps_df.rename({"timestamp": "timestamp_quarantine"}),
+            self.quarantine_timestamps_loader.load().rename(
+                {self.timestamp_col_name: "timestamp_quarantine"},
+            ),
             on=self.entity_id_col_name,
             how="left",
         )
