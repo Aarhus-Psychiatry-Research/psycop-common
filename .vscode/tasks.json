@@ -14,7 +14,7 @@
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Actions requiring input"
+                "Submit PR"
             ],
             "presentation": {
                 "reveal": "never",
@@ -29,7 +29,6 @@
             "type": "shell",
             "command": "inv lint --auto-fix",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
@@ -40,19 +39,17 @@
             "type": "shell",
             "command": "inv qtest",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
             }
         },
         {
-            "label": "Actions requiring input",
+            "label": "Submit PR",
             "type": "shell",
-            "command": "inv qtypes && inv prompt-to-submit-pr --skip-submit-prompt",
+            "command": "echo '🚧️ Any problems in the PR? Press Ctrl+C to cancel.' && herb submit",
             "presentation": {
                 "group": "pr",
-                "reveal": "always",
                 "revealProblems": "onProblem",
                 "focus": true,
                 "clear": true,
@@ -64,7 +61,6 @@
             "type": "shell",
             "command": "inv qtypes",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
