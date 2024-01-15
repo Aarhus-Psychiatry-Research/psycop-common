@@ -23,7 +23,7 @@ def filetype_modified_since_main(c: Context, regex_pattern: str) -> bool:
     files_modified_since_main = c.run(
         "git diff --name-only origin/main HEAD",
         hide=True,
-    ).stdout.splitlines()
+    ).stdout.splitlines()  # type: ignore
 
     if any(
         re.compile(regex_pattern).search(file) for file in files_modified_since_main
@@ -59,7 +59,7 @@ def add_and_commit(c: Context, msg: Optional[str] = None):
             "git status --porcelain",
             pty=NOT_WINDOWS,
             hide=True,
-        ).stdout
+        ).stdout  # type: ignore
 
         echo_header(
             f"{msg_type.WARN} Uncommitted changes detected",
