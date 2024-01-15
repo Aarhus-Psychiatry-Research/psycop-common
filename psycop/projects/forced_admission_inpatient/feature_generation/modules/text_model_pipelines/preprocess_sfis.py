@@ -6,7 +6,7 @@ from psycop.common.feature_generation.text_models.preprocessing import (
 
 
 def main() -> str:
-    return text_preprocessing_pipeline()
+    return text_preprocessing_pipeline()  # type: ignore
 
 
 if __name__ == "__main__":

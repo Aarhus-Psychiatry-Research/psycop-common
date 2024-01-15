@@ -1,14 +1,15 @@
 """Finetune Sentence Transformers model on different sets of notes."""
 
+from typing import Literal
+
 from sentence_transformers import SentenceTransformer
 
-from psycop.common.feature_generation.loaders.raw.load_ids import (
-    SplitName,
-    load_stratified_by_outcome_split_ids,
-    load_stratified_by_region_split_ids,
-)
 from psycop.common.feature_generation.text_embeddings.train_sentence_transformers import (
     train_simcse_model_from_text,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    FilterByOutcomeStratifiedSplits,
+    RegionalFilter,
 )
 
 if __name__ == "__main__":
@@ -33,11 +34,11 @@ if __name__ == "__main__":
 
     BATCH_SIZE = 8
     EPOCHS = 1
-    N_ROWS = None
-    TRAIN_SPLITS = [SplitName.TRAIN, SplitName.VALIDATION]
+    N_ROWS = 100_000
+    TRAIN_SPLITS: list[Literal["train", "val", "test"]] = ["train", "val"]
     split_id_loaders = {
-        "region": load_stratified_by_region_split_ids,
-        "id_outcome": load_stratified_by_outcome_split_ids,
+        "region": RegionalFilter(splits_to_keep=TRAIN_SPLITS),
+        "id_outcome": FilterByOutcomeStratifiedSplits(splits_to_keep=TRAIN_SPLITS),
     }
     SPLIT_TYPE = "region"
 
@@ -51,7 +52,6 @@ if __name__ == "__main__":
             batch_size=BATCH_SIZE,
             model_save_name=f"dfm-encoder-large-v1-{note_types_name}-finetuned-split-{SPLIT_TYPE}",
             n_rows=N_ROWS,
-            train_splits=TRAIN_SPLITS,
-            split_ids_loader=split_id_loaders[SPLIT_TYPE],
+            split_ids_presplit_step=split_id_loaders[SPLIT_TYPE],
             debug=DEBUG,
         )

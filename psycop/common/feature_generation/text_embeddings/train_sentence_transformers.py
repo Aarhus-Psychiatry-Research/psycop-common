@@ -1,28 +1,29 @@
 """Train sentence transformer model using SimCSE loss on our data."""
-from collections.abc import Sequence
 from time import time
-from typing import Callable, Literal
+from typing import Literal
 
-import pandas as pd
 from sentence_transformers import InputExample, SentenceTransformer, losses
 from torch.utils.data import DataLoader
 
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName, load_stratified_by_outcome_split_ids, load_stratified_by_region_split_ids
 from psycop.common.feature_generation.loaders.raw.load_text import load_text_split
 from psycop.common.global_utils.paths import TEXT_EMBEDDING_MODELS_DIR
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    FilterByOutcomeStratifiedSplits,
+    RegionalFilter,
+)
 
 
 def get_train_text(
     n_rows: int | None,
     text_sfi_names: str | list[str],
-    train_splits: Sequence[SplitName],
-    split_ids_loader: Callable[[SplitName], pd.DataFrame] | None,
+    split_ids_presplit_step: PresplitStep,
 ) -> list[str]:
     text_df = load_text_split(
         text_sfi_names=text_sfi_names,
         n_rows=n_rows,
-        split_name=train_splits,
-        split_ids_loader=split_ids_loader,
+        include_sfi_name=False,
+        split_ids_presplit_step=split_ids_presplit_step,
     )
     return text_df["value"].tolist()
 
@@ -71,9 +72,8 @@ def train_simcse_model_from_text(
     epochs: int,
     batch_size: int,
     model_save_name: str,
+    split_ids_presplit_step: PresplitStep,
     n_rows: int | None = None,
-    train_splits: Sequence[SplitName] = [SplitName.TRAIN],
-    split_ids_loader: Callable[[SplitName], pd.DataFrame] | None = None,
     debug: bool = False,
 ) -> None:
     if debug:
@@ -82,8 +82,7 @@ def train_simcse_model_from_text(
         train_text = get_train_text(
             n_rows=n_rows,
             text_sfi_names=text_sfi_names,
-            train_splits=train_splits,
-            split_ids_loader=split_ids_loader,
+            split_ids_presplit_step=split_ids_presplit_step,
         )
     train_data = convert_list_of_texts_to_sentence_pairs(texts=train_text)
     dataloader = make_data_loader(train_data=train_data, batch_size=batch_size)
@@ -113,10 +112,10 @@ if __name__ == "__main__":
     BATCH_SIZE = 128
     EPOCHS = 2
     N_ROWS = None
-    TRAIN_SPLITS = [SplitName.TRAIN]
+    TRAIN_SPLITS: list[Literal["train", "val", "test"]] = ["train", "val"]
     split_id_loaders = {
-        "region": load_stratified_by_region_split_ids,
-        "id_outcome": load_stratified_by_outcome_split_ids,
+        "region": RegionalFilter(splits_to_keep=TRAIN_SPLITS),
+        "id_outcome": FilterByOutcomeStratifiedSplits(splits_to_keep=TRAIN_SPLITS),
     }
     SPLIT_TYPE = "region"
     MODEL = "miniLM"
@@ -134,7 +133,6 @@ if __name__ == "__main__":
         batch_size=BATCH_SIZE,
         model_save_name=f"{model_options[MODEL]}-finetuned-debug-{DEBUG!s}",
         n_rows=N_ROWS,
-        train_splits=TRAIN_SPLITS,
-        split_ids_loader=split_id_loaders[SPLIT_TYPE],
+        split_ids_presplit_step=split_id_loaders[SPLIT_TYPE],
         debug=DEBUG,
     )
