@@ -84,7 +84,9 @@ class WashoutFilter:
         )
 
         # Get only the rows that were hit by the quarantine date
-        df_hit_by_quarantine = df.unique(subset=[self.pred_time_uuid_col_name]).select(  # noqa: E712
+        df_hit_by_quarantine = df.unique(
+            subset=[self.pred_time_uuid_col_name],
+        ).select(  # noqa: E712
             ["pred_time_uuid", "hit_by_quarantine"],
         )
 
@@ -95,7 +97,9 @@ class WashoutFilter:
             how="left",
             suffix=("_hit_by_quarantine"),
             validate="1:1",
-        ).filter(pl.col("hit_by_quarantine") == False)  # noqa: E712
+        ).filter(
+            pl.col("hit_by_quarantine") == False,  # noqa: E712,
+        )
 
         # Drop the columns we added
         df = df.drop(

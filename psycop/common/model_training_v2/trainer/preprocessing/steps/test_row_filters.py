@@ -1,6 +1,5 @@
 from typing import Literal
 
-import polars as pl
 import pytest
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
