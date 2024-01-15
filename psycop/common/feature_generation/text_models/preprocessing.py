@@ -1,17 +1,16 @@
 import re
-from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.load_ids import SplitName
 from psycop.common.feature_generation.loaders.raw.load_text import (
     get_valid_text_sfi_names,
     load_text_split,
 )
 from psycop.common.feature_generation.text_models.utils import stop_words
 from psycop.common.feature_generation.utils import write_df_to_file
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
 def text_preprocessing(
@@ -52,14 +51,14 @@ def text_preprocessing(
 
 
 def text_preprocessing_pipeline(
-    split_names: Sequence[SplitName] = [SplitName.TEST, SplitName.VALIDATION],
+    split_ids_presplit_step: PresplitStep,
     n_rows: Optional[int] = None,
     save_path: str = "E:/shared_resources/preprocessed_text",
 ) -> str:
     """Pipeline for preprocessing all sfis from given splits. Filtering of which sfis to include in features happens in the loader.
 
     Args:
-        split_names (Sequence[Literal["train", "val"]], optional): Which splits to include. Defaults to ["train", "val"].
+        split_ids_presplit_step: A PresplitStep (e.g. RegionalFilter or FilterByOutcomeStratifiedSplits) that filters rows by split ids
         n_rows (Optional[int], optional): How many rows to load. Defaults to None, which loads all rows.
         save_path (str, optional): Where to save preprocessed text. Defaults to "E:/shared_resources/preprocessed_text".
 
@@ -70,7 +69,7 @@ def text_preprocessing_pipeline(
     # Load text from splits
     df = load_text_split(
         text_sfi_names=get_valid_text_sfi_names(),
-        split_name=split_names,
+        split_ids_presplit_step=split_ids_presplit_step,
         include_sfi_name=True,
         n_rows=n_rows,
     )
@@ -79,7 +78,7 @@ def text_preprocessing_pipeline(
     df = text_preprocessing(df)
 
     # save to parquet
-    split_names = "_".join(split_names)  # type: ignore
+    split_names = "_".join(split_ids_presplit_step.splits_to_keep)  # type: ignore
 
     write_df_to_file(
         df=df,
