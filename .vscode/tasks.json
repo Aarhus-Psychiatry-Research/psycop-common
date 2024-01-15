@@ -62,7 +62,7 @@
                 "showReuseMessage": false,
                 "close": true,
             },
-        }
+        },
         {
             "label": "Static type check",
             "type": "shell",
