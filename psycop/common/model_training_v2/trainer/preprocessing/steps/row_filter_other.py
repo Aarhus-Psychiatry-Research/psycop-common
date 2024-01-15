@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import timedelta
 from typing import Literal
 
@@ -7,6 +8,8 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.trainer.preprocessing.step import (
     PresplitStep,
 )
+
+from ...base_dataloader import BaselineDataLoader
 
 
 @BaselineRegistry.preprocessing.register("age_filter")
@@ -45,3 +48,57 @@ class WindowFilter(PresplitStep):
             input_df = input_df.filter(pl.col(self.timestamp_col_name) > past_cutoff)
 
         return input_df
+
+
+@BaselineRegistry.preprocessing.register("quarantine_filter")
+@dataclass(frozen=True)
+class QuarantineFilter:
+    entity_id_col_name: str
+    pred_time_uuid_col_name: str
+    timestamp_col_name: str
+    quarantine_timestamps_loader: BaselineDataLoader
+    quarantine_interval_days: int
+    validate_on_init: bool = True
+
+    def __post_init__(self) -> None:
+        required_columns = [self.timestamp_col_name, self.entity_id_col_name]
+        if self.validate_on_init and not all(
+            col in self.quarantine_timestamps_loader.load().columns
+            for col in required_columns
+        ):
+            raise ValueError(
+                "The quarantine timestamps loader must load a dataframe with the columns 'timestamp' and "
+                f"'{self.entity_id_col_name}'",
+            )
+
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
+        # We need to check if ANY quarantine date hits each prediction time.
+        # Create combinations
+
+        df_with_quarantine_timestamps = input_df.join(
+            self.quarantine_timestamps_loader.load().rename(
+                {self.timestamp_col_name: "timestamp_quarantine"},
+            ),
+            on=self.entity_id_col_name,
+            how="left",
+        )
+
+        time_since_quarantine = df_with_quarantine_timestamps.with_columns(
+            (pl.col(self.timestamp_col_name) - pl.col("timestamp_quarantine"))
+            .dt.days()
+            .alias("days_since_quarantine"),
+        )
+
+        # Check if the quarantine date hits the prediction time
+        hit_by_quarantine = time_since_quarantine.filter(
+            (pl.col("days_since_quarantine") < self.quarantine_interval_days)
+            & (pl.col("days_since_quarantine") > 0),
+        ).select(self.pred_time_uuid_col_name)
+
+        # Use these rows to filter the prediction times, ensuring that all columns are kept
+        df = input_df.join(
+            hit_by_quarantine,
+            on=self.pred_time_uuid_col_name,
+            how="anti",
+        )
+        return df
