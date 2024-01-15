@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.170.5 (2024-01-15)
+
+### Documentation
+
+* Update ([`fd53ac7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fd53ac761db1a153570d14b5fe3e6df566f4f678))
+
+### Performance
+
+* Decrease joins ([`cd5fb9d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd5fb9ddf7743c6ec950250f377a1080d589511e))
+
 ## v0.170.4 (2024-01-15)
 
 ### Fix
