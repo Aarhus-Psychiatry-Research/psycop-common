@@ -75,7 +75,7 @@ class QuarantineFilter:
         # We need to check if ANY quarantine date hits each prediction time.
         # Create combinations
 
-        df = input_df.join(
+        df_with_quarantine_timestamps = input_df.join(
             self.quarantine_timestamps_loader.load().rename(
                 {self.timestamp_col_name: "timestamp_quarantine"},
             ),
@@ -83,45 +83,22 @@ class QuarantineFilter:
             how="left",
         )
 
-        df = df.with_columns(
+        time_since_quarantine = df_with_quarantine_timestamps.with_columns(
             (pl.col(self.timestamp_col_name) - pl.col("timestamp_quarantine"))
             .dt.days()
             .alias("days_since_quarantine"),
         )
 
         # Check if the quarantine date hits the prediction time
-        df = df.with_columns(
-            pl.when(
-                (pl.col("days_since_quarantine") < self.quarantine_interval_days)
-                & (pl.col("days_since_quarantine") > 0),
-            )
-            .then(True)
-            .otherwise(False)
-            .alias("hit_by_quarantine"),
-        )
+        hit_by_quarantine = time_since_quarantine.filter(
+            (pl.col("days_since_quarantine") < self.quarantine_interval_days)
+            & (pl.col("days_since_quarantine") > 0),
+        ).select(self.pred_time_uuid_col_name)
 
-        # Get only the rows that were hit by the quarantine date
-        df_hit_by_quarantine = df.unique(
-            subset=[self.pred_time_uuid_col_name],
-        ).select(  # noqa: E712
-            ["pred_time_uuid", "hit_by_quarantine"],
-        )
-
-        # Use these rows to filter the prediction times
+        # Use these rows to filter the prediction times, ensuring that all columns are kept
         df = input_df.join(
-            df_hit_by_quarantine,
+            hit_by_quarantine,
             on=self.pred_time_uuid_col_name,
-            how="left",
-            suffix=("_hit_by_quarantine"),
-            validate="1:1",
-        ).filter(
-            pl.col("hit_by_quarantine") == False,  # noqa: E712,
-        )
-
-        # Drop the columns we added
-        df = df.drop(
-            columns=[
-                "hit_by_quarantine",
-            ],
+            how="anti",
         )
         return df

@@ -117,15 +117,19 @@ def test_filter_by_quarantine_period():
         2,2023-02-01 00:00:01,
         """,
         add_pred_time_uuid=True,
-    ).lazy()
+    )
 
-    result_df = QuarantineFilter(
-        entity_id_col_name="entity_id",
-        quarantine_interval_days=quarantine_days,
-        quarantine_timestamps_loader=TestDataLoader(),
-        timestamp_col_name="timestamp",
-        pred_time_uuid_col_name="pred_time_uuid",
-    ).apply(prediction_time_df)
+    result_df = (
+        QuarantineFilter(
+            entity_id_col_name="entity_id",
+            quarantine_interval_days=quarantine_days,
+            quarantine_timestamps_loader=TestDataLoader(),
+            timestamp_col_name="timestamp",
+            pred_time_uuid_col_name="pred_time_uuid",
+        )
+        .apply(prediction_time_df)
+        .collect()
+    )
 
     # Check that the result is as expected using pandas.testing.assert_frame_equal
     from polars.testing import assert_frame_equal
