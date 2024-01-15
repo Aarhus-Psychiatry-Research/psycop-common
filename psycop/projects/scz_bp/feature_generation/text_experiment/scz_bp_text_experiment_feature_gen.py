@@ -1,4 +1,4 @@
-from typing import Literal, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
@@ -23,7 +23,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         embedded_text_df: pd.DataFrame,
         name_prefix: str,
         lookbehind_days: list[float],
-    ):
+    ) -> Sequence[AnySpec]:
         embedded_text_df = df_with_multiple_values_to_named_dataframes(
             df=embedded_text_df,
             entity_id_col_name="dw_ek_borger",
@@ -69,7 +69,8 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         )
 
     def get_feature_specs(  # type: ignore[override]
-        self, lookbehind_days: list[float]
+        self,
+        lookbehind_days: list[float],
     ) -> list[AnySpec]:
         feature_specs: list[Sequence[AnySpec]] = [
             self._get_metadata_specs(),
@@ -90,7 +91,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
                         note_type=note_type,
                         model_name=model_name,
                         lookbehind_days=lookbehind_days,
-                    )
+                    ),
                 )
 
             for max_features in tfidf_max_features:
@@ -99,7 +100,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
                         note_type=note_type,
                         max_features=max_features,
                         lookbehind_days=lookbehind_days,
-                    )
+                    ),
                 )
         # flatten the sequence of lists
         features = [feature for sublist in feature_specs for feature in sublist]
