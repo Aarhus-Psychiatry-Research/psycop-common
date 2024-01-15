@@ -14,13 +14,13 @@
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Actions requiring input",
+                "Actions requiring input"
             ],
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false,
+                "showReuseMessage": false
             },
             "problemMatcher": []
         },
@@ -33,9 +33,7 @@
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
-                "close": true,
-            },
-            "problemMatcher": []
+            }
         },
         {
             "label": "Test",
@@ -46,8 +44,7 @@
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
-                "close": true,
-            },
+            }
         },
         {
             "label": "Actions requiring input",
@@ -60,8 +57,7 @@
                 "focus": true,
                 "clear": true,
                 "showReuseMessage": false,
-                "close": true,
-            },
+            }
         },
         {
             "label": "Static type check",
@@ -72,8 +68,7 @@
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
-                "close": true,
-            },
+            }
         }
     ]
 }
