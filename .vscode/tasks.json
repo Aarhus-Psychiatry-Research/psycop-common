@@ -18,7 +18,7 @@
             ],
             "presentation": {
                 "reveal": "always",
-                "group": "pr",
+                "group": "confirmation",
                 "clear": true,
                 "showReuseMessage": false
             },
