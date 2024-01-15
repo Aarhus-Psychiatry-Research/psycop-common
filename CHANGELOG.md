@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.170.4 (2024-01-15)
+
+### Fix
+
+* Circular import ([`5ae8d43`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5ae8d43ecda4ff8e01cdf855edd02a940aa0c591))
+
 ## v0.170.3 (2024-01-12)
 
 ### Fix

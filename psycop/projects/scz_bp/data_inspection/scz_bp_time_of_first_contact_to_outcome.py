@@ -2,8 +2,8 @@
 import plotnine as pn
 import polars as pl
 
-from psycop.common.model_training_v2.trainer.preprocessing.steps.geographical_split.make_geographical_split import (
-    get_regional_split_df,
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    _get_regional_split_df,  # type: ignore
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
     get_first_scz_or_bp_diagnosis_with_time_from_first_contact,
@@ -24,7 +24,7 @@ def print_summary_stats(df: pl.DataFrame) -> None:
 if __name__ == "__main__":
     df = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
     train_val_ids = (
-        get_regional_split_df()
+        _get_regional_split_df()
         .filter(pl.col("region").is_in(["øst", "vest"]))
         .collect()
     )
