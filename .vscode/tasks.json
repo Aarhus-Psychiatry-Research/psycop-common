@@ -6,7 +6,7 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "inv prompt-to-submit-pr",
+            "command": "inv qtypes && prompt-to-submit-pr",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -40,20 +40,6 @@
             "label": "Test",
             "type": "shell",
             "command": "inv qtest",
-            "presentation": {
-                "reveal": "always",
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false
-            },
-            "dependsOn": [
-                "Lint",
-            ]
-        },
-        {
-            "label": "Static type check",
-            "type": "shell",
-            "command": "inv qtypes",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
