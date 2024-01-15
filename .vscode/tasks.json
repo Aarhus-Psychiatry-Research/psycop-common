@@ -14,13 +14,13 @@
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Static type check"
+                "Actions requiring input",
             ],
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
+                "showReuseMessage": false,
             },
             "problemMatcher": []
         },
@@ -32,7 +32,8 @@
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
+                "showReuseMessage": false,
+                "close": true,
             },
             "problemMatcher": []
         },
@@ -44,25 +45,35 @@
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
+                "showReuseMessage": false,
+                "close": true,
             },
-            "dependsOn": [
-                "Lint",
-            ]
         },
+        {
+            "label": "Actions requiring input",
+            "type": "shell",
+            "command": "inv qtypes && inv prompt-to-submit-pr",
+            "presentation": {
+                "group": "pr",
+                "reveal": "always",
+                "revealProblems": "onProblem",
+                "focus": true,
+                "clear": true,
+                "showReuseMessage": false,
+                "close": true,
+            },
+        }
         {
             "label": "Static type check",
             "type": "shell",
-            "command": "inv qtypes && inv prompt-to-submit-pr",
+            "command": "inv qtypes",
             "presentation": {
                 "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
+                "showReuseMessage": false,
+                "close": true,
             },
-            "dependsOn": [
-                "Lint",
-            ]
         }
     ]
 }
