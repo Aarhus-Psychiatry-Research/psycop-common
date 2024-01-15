@@ -69,6 +69,8 @@ def qtypes(c: Context):
             default=True,
         ).ask():
             types(c)
+        else:
+            print("🟢 Skipping static type checks")
     else:
         print("🟢 No python files modified since main, skipping static type checks")
 
