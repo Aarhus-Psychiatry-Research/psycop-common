@@ -48,9 +48,9 @@ class WindowFilter(PresplitStep):
         return input_df
 
 
-@BaselineRegistry.preprocessing.register("washout_filter")
+@BaselineRegistry.preprocessing.register("quarantine_filter")
 @dataclass(frozen=True)
-class WashoutFilter:
+class QuarantineFilter:
     entity_id_col_name: str
     pred_time_uuid_col_name: str
     timestamp_col_name: str

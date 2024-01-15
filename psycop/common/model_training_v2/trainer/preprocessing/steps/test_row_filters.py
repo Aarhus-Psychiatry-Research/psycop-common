@@ -4,7 +4,7 @@ import pytest
 
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     AgeFilter,
-    WashoutFilter,
+    QuarantineFilter,
     WindowFilter,
 )
 
@@ -112,7 +112,7 @@ def test_filter_by_quarantine_period():
         add_pred_time_uuid=True,
     ).lazy()
 
-    result_df = WashoutFilter(
+    result_df = QuarantineFilter(
         entity_id_col_name="entity_id",
         quarantine_interval_days=730,
         quarantine_timestamps_df=quarantine_df,
