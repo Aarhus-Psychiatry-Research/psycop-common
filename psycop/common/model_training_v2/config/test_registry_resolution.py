@@ -37,7 +37,7 @@ class CfgError:
     error: Exception
 
     def __str__(self) -> str:
-        return f"{self.location.name}: {self.parsed_error_string}"
+        return f"{self.location.name}\n{self.parsed_error_string}"
 
     @property
     def parsed_error_string(self) -> str:

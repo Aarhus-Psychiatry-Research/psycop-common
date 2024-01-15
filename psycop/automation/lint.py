@@ -21,7 +21,7 @@ def pre_commit(c: Context, auto_fix: bool):
     pre_commit_cmd = "pre-commit run --all-files"
     result = c.run(pre_commit_cmd, pty=NOT_WINDOWS, warn=True)
 
-    if ("fixed" in result.stdout or "reformatted" in result.stdout) and auto_fix:
+    if ("fixed" in result.stdout or "reformatted" in result.stdout) and auto_fix:  # type: ignore
         for _ in range(2):
             # Run 3 times to ensure ruff/black interaction is resolved
             # E.g. ruff adding a trailing comma can make black reformat
@@ -29,12 +29,12 @@ def pre_commit(c: Context, auto_fix: bool):
             print(f"{msg_type.DOING} Fixed errors, re-running pre-commit checks\n\n")
             result = c.run(pre_commit_cmd, pty=NOT_WINDOWS, warn=True)
 
-            if not ("fixed" in result.stdout or "reformatted" in result.stdout):
+            if not ("fixed" in result.stdout or "reformatted" in result.stdout):  # type: ignore
                 break
 
         exit_if_error_in_stdout(result)  # type: ignore
         add_commit(c, msg="style: auto-fixes from pre-commit")
     else:
-        if result.return_code != 0:
+        if result.return_code != 0:  # type: ignore
             print(f"{msg_type.FAIL} Pre-commit checks failed")
             exit(1)

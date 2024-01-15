@@ -6,7 +6,7 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "inv prompt-to-submit-pr",
+            "command": "echo All done!",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -14,11 +14,11 @@
             "dependsOn": [
                 "Lint",
                 "Test",
-                "Static type check"
+                "Submit PR"
             ],
             "presentation": {
-                "reveal": "always",
-                "group": "pr",
+                "reveal": "never",
+                "group": "confirmation",
                 "clear": true,
                 "showReuseMessage": false
             },
@@ -29,40 +29,42 @@
             "type": "shell",
             "command": "inv lint --auto-fix",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "problemMatcher": []
+                "showReuseMessage": false,
+            }
         },
         {
             "label": "Test",
             "type": "shell",
             "command": "inv qtest",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "dependsOn": [
-                "Lint",
-            ]
+                "showReuseMessage": false,
+            }
+        },
+        {
+            "label": "Submit PR",
+            "type": "shell",
+            "command": "echo '🚧️ Any problems in the PR? Press Ctrl+C to cancel.' && herb submit",
+            "presentation": {
+                "group": "pr",
+                "revealProblems": "onProblem",
+                "focus": true,
+                "clear": true,
+                "showReuseMessage": false,
+            }
         },
         {
             "label": "Static type check",
             "type": "shell",
             "command": "inv qtypes",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "dependsOn": [
-                "Lint",
-            ]
+                "showReuseMessage": false,
+            }
         }
     ]
 }

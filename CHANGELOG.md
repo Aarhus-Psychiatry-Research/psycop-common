@@ -2,6 +2,33 @@
 
 <!--next-version-placeholder-->
 
+## v0.171.0 (2024-01-15)
+
+### Feature
+
+* Add feature gen specs for text experiment ([`b4791b8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b4791b86998f9ba1275fb34b5e1835c603140c3e))
+* Add script for embedding text ([`82713e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/82713e54b398ca243915fa043b641099879f3880))
+
+### Fix
+
+* Correct splitting of text data for sentence transformers ([`7040115`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7040115d4456c20c4110e841c31cef95bb65b6b0))
+
+## v0.170.5 (2024-01-15)
+
+### Documentation
+
+* Update ([`fd53ac7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fd53ac761db1a153570d14b5fe3e6df566f4f678))
+
+### Performance
+
+* Decrease joins ([`cd5fb9d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd5fb9ddf7743c6ec950250f377a1080d589511e))
+
+## v0.170.4 (2024-01-15)
+
+### Fix
+
+* Circular import ([`5ae8d43`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5ae8d43ecda4ff8e01cdf855edd02a940aa0c591))
+
 ## v0.170.3 (2024-01-12)
 
 ### Fix
