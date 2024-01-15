@@ -101,6 +101,7 @@ ignore = [
   "F841",
   "RUF100",
   "RET504",
+  "TCH001",
 ]
 ignore-init-module-imports = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
