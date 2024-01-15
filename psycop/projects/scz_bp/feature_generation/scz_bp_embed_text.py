@@ -14,7 +14,9 @@ from psycop.common.global_utils.paths import (
 
 
 def embed_text_to_df(
-    model: SentenceTransformer, text: list[str], batch_size: int = 256
+    model: SentenceTransformer,
+    text: list[str],
+    batch_size: int = 256,
 ) -> pl.DataFrame:
     t0 = time()
     print("Start embedding")
@@ -30,7 +32,7 @@ mock_df = pl.DataFrame(
         "dw_ek_borger": ["1", "2", "3"],
         "value": ["hej med dig", "min fine ven", "goddag"],
         "timestamp": ["2021-01-01", "2021-01-02", "2021-01-03"],
-    }
+    },
 )
 
 
@@ -60,7 +62,7 @@ if __name__ == "__main__":
     for note_name_key, note_types in note_types_dict.items():
         print(f"Embedding {note_name_key}")
         notes = pl.from_pandas(
-            load_text_sfis(text_sfi_names=note_types, include_sfi_name=False)
+            load_text_sfis(text_sfi_names=note_types, include_sfi_name=False),
         )
         notes_metadata = notes.drop(columns=["value"])
 
@@ -76,7 +78,7 @@ if __name__ == "__main__":
                 / f"text_embeddings_{note_name_key}_{model_name}.parquet",
             )
         # embed using local finetuned models
-        print(f"Embedding using finetuned model")
+        print("Embedding using finetuned model")
         finetuned_model_name = (
             TEXT_EMBEDDING_MODELS_DIR
             / f"dfm-encoder-large-v1-{note_name_key}-finetuned-split-region-n_rows_100000"
