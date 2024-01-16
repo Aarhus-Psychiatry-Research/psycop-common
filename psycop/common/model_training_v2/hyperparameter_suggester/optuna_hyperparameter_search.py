@@ -46,9 +46,8 @@ class OptunaHyperParameterOptimization:
 
     @staticmethod
     def _resolve_only_suggestors(cfg: dict[str, Any]) -> dict[str, Any]:
-        """Resolves only suggestors in a nested config. Suggestors are identified
-        by the presence of the @suggestors key. They need to be resolved at the level
-        where they are defined, i.e. where @suggesters is a value in the dict."""
+        """Resolves only suggesters in a nested config. Suggesters are identified
+        by the presence of the @suggestors key. """
         cfg_copy = copy.deepcopy(cfg)
 
         for key, value in cfg_copy.items():
