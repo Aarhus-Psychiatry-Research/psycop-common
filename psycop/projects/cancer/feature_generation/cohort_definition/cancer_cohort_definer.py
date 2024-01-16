@@ -4,10 +4,12 @@ from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
     filter_prediction_times,
+    OutcomeTimestampFrame
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
 )
+
 from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     CancerMinAgeFilter,
     CancerMinDateFilter,
@@ -41,8 +43,8 @@ class CancerCohortDefiner(CohortDefiner):
         )
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return pl.from_pandas(get_first_cancer_diagnosis())
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(frame=pl.from_pandas(get_first_cancer_diagnosis()))
 
 
 if __name__ == "__main__":

@@ -94,7 +94,7 @@ def main(
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
             project_info=project_info,
-            eligible_prediction_times=ClozapineCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
+            eligible_prediction_times=ClozapineCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
         )

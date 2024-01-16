@@ -100,7 +100,7 @@ def main(
             project_info=project_info,
             eligible_prediction_times=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
                 washout_on_prior_forced_admissions=washout_on_prior_forced_admissions,
-            ).prediction_times.to_pandas(),
+            ).prediction_times.frame.to_pandas(),
             feature_specs=feature_specs,  # type: ignore
             chunksize=chunksize,
         )
@@ -110,7 +110,7 @@ def main(
             feature_specs=feature_specs,  # type: ignore
             prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
                 washout_on_prior_forced_admissions=washout_on_prior_forced_admissions,
-            ).prediction_times.to_pandas(),
+            ).prediction_times.frame.to_pandas(),
             drop_pred_times_with_insufficient_look_distance=False,
             project_info=project_info,
         )

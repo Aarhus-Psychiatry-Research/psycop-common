@@ -1,11 +1,60 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 import polars as pl
 from wasabi import Printer
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
+from psycop.common.types.validated_frame import ValidatedFrame
+from psycop.common.types.validator_rules import (
+    ColumnExistsRule,
+    ColumnTypeRule,
+    ValidatorRule,
+)
+
+
+@dataclass(frozen=True)
+class PredictionTimeFrame(ValidatedFrame[pl.DataFrame]):
+    """ValidatedFrame with extra validation for prediction times"""
+
+    frame: pl.DataFrame
+
+    entity_id_col_name: str = "dw_ek_borger"
+    entity_id_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Int64),
+    )
+
+    timestamp_col_name: str = "timestamp"
+    timestamp_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Datetime),
+    )
+
+    allow_extra_columns: bool = True
+
+
+@dataclass(frozen=True)
+class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
+    """ValidatedFrame with extra validation for prediction times"""
+
+    frame: pl.DataFrame
+
+    entity_id_col_name: str = "dw_ek_borger"
+    entity_id_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Int64),
+    )
+
+    timestamp_col_name: str = "timestamp"
+    timestamp_col_rules: Sequence[ValidatorRule] = (
+        ColumnExistsRule(),
+        ColumnTypeRule(expected_type=pl.Datetime),
+    )
+
+    allow_extra_columns: bool = True
 
 
 @runtime_checkable
@@ -34,7 +83,7 @@ class StepDelta(PSYCOPBaseModel):
 
 
 class FilteredPredictionTimeBundle(PSYCOPBaseModel):
-    prediction_times: pl.DataFrame
+    prediction_times: PredictionTimeFrame
     filter_steps: list[StepDelta]
 
 
@@ -46,7 +95,7 @@ class CohortDefiner(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
         ...
 
 
@@ -96,6 +145,6 @@ def filter_prediction_times(
         prediction_times = prediction_times.drop("date_of_birth")
 
     return FilteredPredictionTimeBundle(
-        prediction_times=prediction_times.collect(),
+        prediction_times=PredictionTimeFrame(frame=prediction_times.collect()),
         filter_steps=stepdeltas,
     )

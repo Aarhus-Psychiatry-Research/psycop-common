@@ -38,7 +38,7 @@ pred_times_to_keep = (
 
 
 # %%
-pred_times_to_keep_with_uuid = pred_times_to_keep.lazy().with_columns(
+pred_times_to_keep_with_uuid = pred_times_to_keep.frame.lazy().with_columns(
     pred_time_uuid=pl.col("dw_ek_borger").cast(pl.Utf8)
     + "-"
     + pl.col("timestamp").dt.strftime(format="%Y-%m-%d-%H-%M-%S"),

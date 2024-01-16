@@ -15,6 +15,6 @@ from psycop.projects.t2d.t2d_config import (
 if __name__ == "__main__":
     init_wandb_and_generate_feature_set(
         project_info=get_t2d_project_info(),
-        eligible_prediction_times=T2DCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
+        eligible_prediction_times=T2DCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
         feature_specs=get_t2d_feature_specifications(),
     )

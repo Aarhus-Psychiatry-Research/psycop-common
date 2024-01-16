@@ -32,7 +32,7 @@ class SplitFrame(ValidatedFrame[pl.LazyFrame]):
     id_col_name: str = "dw_ek_borger"
     id_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
-        ColumnTypeRule(expected_type=pl.Utf8),
+        ColumnTypeRule(expected_type=pl.Int64),
     )
 
 

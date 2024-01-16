@@ -4,6 +4,7 @@ from wasabi import Printer
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
@@ -52,8 +53,8 @@ class T2DCohortDefiner(CohortDefiner):
         )
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return pl.from_pandas(get_first_diabetes_indicator())
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(frame=pl.from_pandas(get_first_diabetes_indicator()))
 
 
 if __name__ == "__main__":

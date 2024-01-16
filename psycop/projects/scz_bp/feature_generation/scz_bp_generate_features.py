@@ -23,7 +23,7 @@ def get_scz_bp_project_info() -> ProjectInfo:
 if __name__ == "__main__":
     init_wandb_and_generate_feature_set(
         project_info=get_scz_bp_project_info(),
-        eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
+        eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
         feature_specs=SczBpFeatureSpecifier().get_feature_specs(
             max_layer=3,
             lookbehind_days=[730],

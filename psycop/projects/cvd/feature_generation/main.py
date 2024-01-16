@@ -24,7 +24,7 @@ def get_cvd_project_info() -> ProjectInfo:
 if __name__ == "__main__":
     project_info = get_cvd_project_info()
     eligible_prediction_times = (
-        CVDCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()
+        CVDCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas()
     )
     feature_specs = CVDFeatureSpecifier().get_feature_specs(layer=3)
 

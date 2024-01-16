@@ -158,7 +158,7 @@ class FeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=ClozapineCohortDefiner.get_outcome_timestamps().to_pandas(),
+                    df=ClozapineCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
                     name="first_clozapine_prescription",
                 ),
             ],
@@ -176,7 +176,7 @@ class FeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=ClozapineCohortDefiner.get_outcome_timestamps().to_pandas(),
+                    df=ClozapineCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
                     name="first_clozapine_prescription",
                 ),
             ],

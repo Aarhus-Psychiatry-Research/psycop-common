@@ -2,7 +2,12 @@ import datetime as dt
 
 import polars as pl
 
-from psycop.common.cohort_definition import CohortDefiner, FilteredPredictionTimeBundle
+from psycop.common.cohort_definition import (
+    CohortDefiner,
+    FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
+    PredictionTimeFrame,
+)
 from psycop.common.data_structures.test_patient import get_test_patient
 from psycop.common.feature_generation.sequences.prediction_times_from_cohort import (
     PredictionTimesFromCohort,
@@ -23,18 +28,18 @@ class FakeCohortDefiner(CohortDefiner):
     """,
         )
         return FilteredPredictionTimeBundle(
-            prediction_times=df,
+            prediction_times=PredictionTimeFrame(df),
             filter_steps=[],
         )
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
         df = str_to_pl_df(
             """dw_ek_borger,timestamp
     1,2021-01-02
     """,
         )
-        return df
+        return OutcomeTimestampFrame(frame=df)
 
 
 def test_polars_dataframe_to_dict():

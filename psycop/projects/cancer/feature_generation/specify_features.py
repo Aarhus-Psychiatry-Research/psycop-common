@@ -122,7 +122,7 @@ class FeatureSpecifier:
             return [
                 OutcomeSpec(
                     feature_base_name="first_cancer_diagnosis",
-                    timeseries_df=CancerCohortDefiner.get_outcome_timestamps().to_pandas(),
+                    timeseries_df=CancerCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
                     lookahead_days=365,
                     aggregation_fn=maximum,
                     fallback=0,
@@ -134,7 +134,7 @@ class FeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=CancerCohortDefiner.get_outcome_timestamps().to_pandas(),
+                    df=CancerCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
                     name="first_cancer_diagnosis",
                 ),
             ],

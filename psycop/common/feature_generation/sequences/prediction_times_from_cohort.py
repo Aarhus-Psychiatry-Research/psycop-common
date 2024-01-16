@@ -94,13 +94,13 @@ class PredictionTimesFromCohort:
         lookahead: dt.timedelta,
     ) -> tuple[PredictionTime, ...]:
         outcome_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
-            dataframe=self.cohort_definer.get_outcome_timestamps(),
+            dataframe=self.cohort_definer.get_outcome_timestamps().frame,
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
         )
 
         naive_prediction_times = (
-            self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times
+            self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times.frame
         ).lazy()
         prediction_times_for_split = self.split_filter.apply(
             naive_prediction_times,

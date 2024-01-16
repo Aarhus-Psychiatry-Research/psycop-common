@@ -63,7 +63,7 @@ class CVDFeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=CVDCohortDefiner.get_outcome_timestamps().to_pandas(),
+                    df=CVDCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
                     name="score2_cvd",
                 ),
             ],

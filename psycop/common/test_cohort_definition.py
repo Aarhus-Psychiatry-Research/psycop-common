@@ -36,4 +36,4 @@ def test_filter_prediction_times():
         entity_id_col_name="entity_id",
     )
 
-    assert len(filtered.prediction_times) == 1
+    assert len(filtered.prediction_times.frame) == 1

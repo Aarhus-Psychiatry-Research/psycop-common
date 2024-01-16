@@ -15,7 +15,7 @@ from psycop.projects.cancer.model_training.train_models_in_parallel import (
 if __name__ == "__main__":
     feature_set_path = init_wandb_and_generate_feature_set(
         project_info=get_cancer_project_info(),
-        eligible_prediction_times=CancerCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
+        eligible_prediction_times=CancerCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
         feature_specs=get_cancer_feature_specifications(),
         generate_in_chunks=True,
         chunksize=10,
