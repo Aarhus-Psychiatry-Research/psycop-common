@@ -52,7 +52,9 @@ class ForcedAdmissionsInpatientCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(frame=pl.from_pandas(forced_admissions_onset_timestamps()))
+        return OutcomeTimestampFrame(
+            frame=pl.from_pandas(forced_admissions_onset_timestamps()),
+        )
 
 
 if __name__ == "__main__":

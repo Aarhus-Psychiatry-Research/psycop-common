@@ -47,11 +47,13 @@ class ClozapineCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(frame=(
-            pl.from_pandas(get_first_clozapine_prescription())
-            .with_columns(value=pl.lit(1))
-            .select(["dw_ek_borger", "timestamp", "value"])
-        ))
+        return OutcomeTimestampFrame(
+            frame=(
+                pl.from_pandas(get_first_clozapine_prescription())
+                .with_columns(value=pl.lit(1))
+                .select(["dw_ek_borger", "timestamp", "value"])
+            ),
+        )
 
 
 if __name__ == "__main__":

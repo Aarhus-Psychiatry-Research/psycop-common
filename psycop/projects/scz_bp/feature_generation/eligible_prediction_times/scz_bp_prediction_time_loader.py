@@ -65,11 +65,13 @@ class SczBpCohort(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(frame=get_first_scz_or_bp_diagnosis().select(
-            "dw_ek_borger",
-            "timestamp",
-            "value",
-        ))
+        return OutcomeTimestampFrame(
+            frame=get_first_scz_or_bp_diagnosis().select(
+                "dw_ek_borger",
+                "timestamp",
+                "value",
+            ),
+        )
 
     @staticmethod
     def _get_filtering_steps() -> Iterable[PredictionTimeFilter]:

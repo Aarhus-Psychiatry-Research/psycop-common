@@ -54,7 +54,9 @@ class T2DCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(frame=pl.from_pandas(get_first_diabetes_indicator()))
+        return OutcomeTimestampFrame(
+            frame=pl.from_pandas(get_first_diabetes_indicator()),
+        )
 
 
 if __name__ == "__main__":
