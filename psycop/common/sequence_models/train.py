@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 os.environ["WANDB__SERVICE_WAIT"] = "300"  # to avoid issues with wandb service
 
 
-def populate_registry() -> None:
+def populate_sequence_model_registry() -> None:
     """
     Populate the registry with all the registered functions
 
@@ -35,9 +35,10 @@ def populate_registry() -> None:
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
     from .tasks.pretrainer_behrt import PretrainerBEHRT  # noqa
+    from ..feature_generation.sequences.patient_loader import PatientLoader  # noqa
 
 
-populate_registry()
+populate_sequence_model_registry()
 
 
 def train(config_path: Path | None = None) -> None:

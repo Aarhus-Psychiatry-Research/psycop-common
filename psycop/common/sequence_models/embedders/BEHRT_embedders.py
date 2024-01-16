@@ -366,7 +366,7 @@ def create_behrt_embedder(
     d_model: int,
     dropout_prob: float,
     max_sequence_length: int,
-    patient_slice_creator: BasePatientSliceCollater | BasePatientSliceCollater,
+    patient_slice_creator: BasePatientSliceCollater,
 ) -> BEHRTEmbedder:
     embedder = BEHRTEmbedder(
         d_model=d_model,
