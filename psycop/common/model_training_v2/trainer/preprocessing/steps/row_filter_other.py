@@ -54,11 +54,11 @@ class WindowFilter(PresplitStep):
 @dataclass(frozen=True)
 class QuarantineFilter:
     entity_id_col_name: str
-    pred_time_uuid_col_name: str
     timestamp_col_name: str
     quarantine_timestamps_loader: BaselineDataLoader
     quarantine_interval_days: int
     validate_on_init: bool = True
+    _tmp_pred_time_uuid_col_name = "_tmp_pred_time_uuid"
 
     def __post_init__(self) -> None:
         required_columns = [self.timestamp_col_name, self.entity_id_col_name]
@@ -71,12 +71,38 @@ class QuarantineFilter:
                 f"'{self.entity_id_col_name}'",
             )
 
+    def _generate_pred_time_uuid_column(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
+        input_df = input_df.with_columns(
+            pl.concat_str(
+                [
+                    pl.col(self.entity_id_col_name).cast(pl.Utf8),
+                    pl.lit("-"),
+                    pl.col(self.timestamp_col_name).dt.strftime(
+                        "%Y-%m-%d-%H-%M-%S",
+                    ),
+                ],
+            ).alias(self._tmp_pred_time_uuid_col_name),
+        )
+
+        return input_df
+
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         # We need to check if ANY quarantine date hits each prediction time.
         # Create combinations
 
+        added_pred_time_uuid_col = False
+        quarantine_timestamps_df = self.quarantine_timestamps_loader.load()
+
+        if self._tmp_pred_time_uuid_col_name not in input_df.columns:
+            input_df = self._generate_pred_time_uuid_column(input_df)
+            added_pred_time_uuid_col = True
+        if self._tmp_pred_time_uuid_col_name not in quarantine_timestamps_df.columns:
+            quarantine_timestamps_df = self._generate_pred_time_uuid_column(
+                quarantine_timestamps_df,
+            )
+
         df_with_quarantine_timestamps = input_df.join(
-            self.quarantine_timestamps_loader.load().rename(
+            quarantine_timestamps_df.rename(
                 {self.timestamp_col_name: "timestamp_quarantine"},
             ),
             on=self.entity_id_col_name,
@@ -93,12 +119,16 @@ class QuarantineFilter:
         hit_by_quarantine = time_since_quarantine.filter(
             (pl.col("days_since_quarantine") < self.quarantine_interval_days)
             & (pl.col("days_since_quarantine") > 0),
-        ).select(self.pred_time_uuid_col_name)
+        ).select(self._tmp_pred_time_uuid_col_name)
 
         # Use these rows to filter the prediction times, ensuring that all columns are kept
         df = input_df.join(
             hit_by_quarantine,
-            on=self.pred_time_uuid_col_name,
+            on=self._tmp_pred_time_uuid_col_name,
             how="anti",
         )
+
+        if added_pred_time_uuid_col:
+            df = df.drop(self._tmp_pred_time_uuid_col_name)
+
         return df
