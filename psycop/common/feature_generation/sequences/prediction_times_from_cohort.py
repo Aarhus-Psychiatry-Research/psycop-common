@@ -29,7 +29,6 @@ PATIENT_ID = str | int
 class PredictionTimesFromCohort:
     cohort_definer: CohortDefiner
     patients: Sequence[Patient]
-    split_filter: PresplitStep
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
@@ -104,12 +103,9 @@ class PredictionTimesFromCohort:
         naive_prediction_times = (
             self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times
         ).lazy()
-        prediction_times_for_split = self.split_filter.apply(
-            naive_prediction_times,
-        ).collect()
 
         prediction_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
-            dataframe=prediction_times_for_split,
+            dataframe=naive_prediction_times.collect(),
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
             lookahead=lookahead,
@@ -133,12 +129,12 @@ if __name__ == "__main__":
     patients = PatientLoader(
         event_loaders=[DiagnosisLoader()],
         min_n_events=5,
+        split_filter=RegionalFilter(splits_to_keep=["train"]),
     ).get_patients()
 
     prediction_times = PredictionTimesFromCohort(
         cohort_definer=T2DCohortDefiner(),
         patients=patients,
-        split_filter=RegionalFilter(splits_to_keep=["train"]),
     ).create_prediction_times(
         lookbehind=dt.timedelta(days=365),
         lookahead=dt.timedelta(days=365),

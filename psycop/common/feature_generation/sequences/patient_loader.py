@@ -14,6 +14,7 @@ from psycop.common.feature_generation.sequences.patient_slice_from_events import
     PatientSliceFromEvents,
 )
 
+from ...model_training_v2.trainer.preprocessing.step import PresplitStep
 from ...sequence_models.registry import Registry
 
 
@@ -32,6 +33,7 @@ def keep_if_min_n_visits(
 @dataclass(frozen=True)
 class PatientLoader:
     event_loaders: Sequence[EventLoader]
+    split_filter: PresplitStep
     min_n_events: int | None = None
     fraction: float = 1.0
 
@@ -50,7 +52,9 @@ class PatientLoader:
                 n_visits=self.min_n_events,
             )
 
-        events_after_2013 = event_data.filter(
+        rows_in_split = self.split_filter.apply(event_data)
+
+        events_after_2013 = rows_in_split.filter(
             pl.col("timestamp") > datetime.datetime(2013, 1, 1),
         )
 
