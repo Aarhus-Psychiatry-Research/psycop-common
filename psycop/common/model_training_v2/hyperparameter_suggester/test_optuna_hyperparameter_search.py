@@ -1,8 +1,8 @@
+# pyright: ignore[reportPrivateUsage]
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import pytest
 from confection import Config
 from optuna import Trial
 
@@ -31,7 +31,7 @@ class MockLogisticRegression(Suggester):
                 "l1_ratio": 0.5,
                 "solver": "saga",
                 "penalty": "elasticnet",
-            }
+            },
         }
 
 
@@ -39,7 +39,9 @@ def test_validate_configspace_no_suggesters():
     cfg = {"param1": 1, "param2": {"nested_param": 2}}
 
     assert (
-        OptunaHyperParameterOptimization()._check_if_suggester_in_configspace(cfg)  # pyright: ignore[reportPrivateUsage]
+        OptunaHyperParameterOptimization()._check_if_suggester_in_configspace(
+            cfg,
+        )
         is None
     )
 
@@ -56,7 +58,7 @@ def test_validate_configspace_with_suggester():
         },
     }
     assert (
-        OptunaHyperParameterOptimization()._check_if_suggester_in_configspace(cfg) == 1  # pyright: ignore[reportPrivateUsage]
+        OptunaHyperParameterOptimization()._check_if_suggester_in_configspace(cfg) == 1
     )
 
 
@@ -74,10 +76,10 @@ def test_resolve_only_suggesters():
                 "max_age": 100,
                 "min_age": 0,
             },
-        }
+        },
     )
-    resolved_suggesters = OptunaHyperParameterOptimization()._resolve_only_suggestors(  # pyright: ignore[reportPrivateUsage]
-        cfg
+    resolved_suggesters = OptunaHyperParameterOptimization()._resolve_only_suggestors(
+        cfg,
     )
     assert isinstance(resolved_suggesters["mock_suggester"], MockLogisticRegression)
     assert isinstance(resolved_suggesters["age_filter"], dict)

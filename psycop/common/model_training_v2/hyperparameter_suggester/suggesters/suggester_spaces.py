@@ -8,7 +8,6 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
-from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 
 FloatSpaceT = Mapping[str, float | bool]
 # Used when specifying mappings in the confection .cfg, which is then immediately cast to a FloatSpace
