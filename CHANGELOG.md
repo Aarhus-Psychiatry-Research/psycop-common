@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.171.1 (2024-01-16)
+
+### Fix
+
+* Correct types for id col in splitframe ([`df7750a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/df7750a0584b25b3c10979ec7369515878ce8f7d))
+* Type ignore invoke 🥷 ([`8516981`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/851698150ee497cfdcc02a4753f4e3b45c87c8ef))
+
 ## v0.171.0 (2024-01-15)
 
 ### Feature
