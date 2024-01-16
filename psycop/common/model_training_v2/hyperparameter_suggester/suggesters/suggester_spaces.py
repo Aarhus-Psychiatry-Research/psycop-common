@@ -45,7 +45,7 @@ class CategoricalSpace:
         return trial.suggest_categorical(name=name, choices=self.choices)
 
 
-@BaselineRegistry.estimator_steps.register("mock_suggester")
+@BaselineRegistry.suggesters.register("mock_suggester")
 class MockSuggester(Suggester):
     """Suggester used only for tests. Ensures tests only break if the interface breaks, not because of implementation details in e.g. LogisticRegression."""
 

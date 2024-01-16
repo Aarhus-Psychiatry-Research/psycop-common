@@ -39,6 +39,6 @@ def suggester_tester(suggester: Suggester) -> TestSuggestion:
         result = suggester.suggest_hyperparameters(trial=trial)
 
         populate_baseline_registry()
-        cfg = BaselineRegistry.resolve(result)
+        cfg = BaselineRegistry.resolve({"test_key": result})
 
     return TestSuggestion(pre_resolution=result, resolved=cfg)

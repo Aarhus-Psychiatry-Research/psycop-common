@@ -52,6 +52,9 @@ def populate_baseline_registry() -> None:
 
     # Suggesters
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
+    from ..trainer.task.estimator_steps.logistic_regression import (
+        LogisticRegressionSuggester,
+    )
 
     # Tasks
     from ..trainer.task.pipeline_constructor import pipeline_constructor
@@ -74,3 +77,6 @@ def populate_baseline_registry() -> None:
         mock_split_id_sequence,
     )
     from ..trainer.data.test_dataloaders import MinimalTestData
+    from ..hyperparameter_suggester.test_optuna_hyperparameter_search import (
+        MockLogisticRegression,
+    )

@@ -1,8 +1,8 @@
-# pyright: ignore[reportPrivateUsage]
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import pytest
 from confection import Config
 from optuna import Trial
 
@@ -25,25 +25,21 @@ class MockLogisticRegression(Suggester):
 
     def suggest_hyperparameters(self, trial: Trial) -> dict[str, Any]:
         return {
-            "logistic_regression": {
-                "@estimator_steps": "logistic_regression",
-                "C": trial.suggest_float("C", low=0.1, high=self.c_high, log=False),
-                "l1_ratio": 0.5,
-                "solver": "saga",
-                "penalty": "elasticnet",
-            },
+            "@estimator_steps": "logistic_regression",
+            "C": trial.suggest_float("C", low=0.1, high=self.c_high, log=False),
+            "l1_ratio": 0.5,
+            "solver": "saga",
+            "penalty": "elasticnet",
         }
 
 
 def test_validate_configspace_no_suggesters():
     cfg = {"param1": 1, "param2": {"nested_param": 2}}
 
-    assert (
-        OptunaHyperParameterOptimization()._check_if_suggester_in_configspace(
+    with pytest.raises(ValueError):
+        OptunaHyperParameterOptimization()._validate_configspace(  # pyright: ignore[reportPrivateUsage]
             cfg,
         )
-        is None
-    )
 
 
 def test_validate_configspace_with_suggester():
@@ -58,7 +54,10 @@ def test_validate_configspace_with_suggester():
         },
     }
     assert (
-        OptunaHyperParameterOptimization()._check_if_suggester_in_configspace(cfg) == 1
+        OptunaHyperParameterOptimization()._validate_configspace(  # type: ignore
+            cfg,
+        )
+        is None
     )
 
 
@@ -78,7 +77,7 @@ def test_resolve_only_suggesters():
             },
         },
     )
-    resolved_suggesters = OptunaHyperParameterOptimization()._resolve_only_suggestors(
+    resolved_suggesters = OptunaHyperParameterOptimization()._resolve_only_suggestors(  # pyright: ignore[reportPrivateUsage]
         cfg,
     )
     assert isinstance(resolved_suggesters["mock_suggester"], MockLogisticRegression)
