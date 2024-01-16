@@ -14,6 +14,8 @@ from psycop.common.feature_generation.sequences.patient_slice_from_events import
     PatientSliceFromEvents,
 )
 
+from ...sequence_models.registry import Registry
+
 
 def keep_if_min_n_visits(
     df: pl.LazyFrame,
@@ -26,6 +28,7 @@ def keep_if_min_n_visits(
     return df
 
 
+@Registry.datasets.register("patient_loader")
 @dataclass(frozen=True)
 class PatientLoader:
     event_loaders: Sequence[EventLoader]
