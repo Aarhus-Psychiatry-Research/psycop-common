@@ -7,8 +7,8 @@ from pathlib import Path
 
 from confection import Config
 
-from psycop.common.sequence_models import Registry
 from psycop.common.sequence_models.config_schema import ResolvedConfigSchema
+from psycop.common.sequence_models.registry import Registry
 
 default_config_path = Path(__file__).parent / "default_config.cfg"
 

@@ -7,13 +7,14 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import PatientSlice
-from psycop.common.sequence_models import PatientSliceDataset, PretrainerBEHRT
+from psycop.common.sequence_models.dataset import PatientSliceDataset
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.optimizers import (
     create_adamw,
     create_linear_schedule_with_warmup,
 )
 
+from ..tasks.pretrainer_behrt import PretrainerBEHRT
 from .test_encoder_for_clf import TEST_CHECKPOINT_DIR
 
 
