@@ -36,7 +36,7 @@ class MockLogisticRegression(Suggester):
 def test_validate_configspace_no_suggesters():
     cfg = {"param1": 1, "param2": {"nested_param": 2}}
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="*No suggesters*"):
         OptunaHyperParameterOptimization()._validate_configspace(  # pyright: ignore[reportPrivateUsage]
             cfg,
         )
