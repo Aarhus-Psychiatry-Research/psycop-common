@@ -11,7 +11,7 @@ from psycop.common.model_training_v2.config.populate_registry import (
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
-from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logistic_regression_suggester import (
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
     FloatSpace,
 )
 
