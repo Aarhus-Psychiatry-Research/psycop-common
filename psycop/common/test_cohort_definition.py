@@ -33,7 +33,7 @@ def test_filter_prediction_times():
             RemoveYear(dt.strptime("2018", "%Y")),
             RemoveYear(dt.strptime("2019", "%Y")),
         ],
-        entity_id_col_name="entity_id",
+        entity_id_col_name="dw_ek_borger",
     )
 
     assert len(filtered.prediction_times.frame) == 1

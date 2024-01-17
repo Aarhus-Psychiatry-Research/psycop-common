@@ -23,13 +23,11 @@ class PredictionTimeFrame(ValidatedFrame[pl.DataFrame]):
 
     entity_id_col_name: str = "dw_ek_borger"
     entity_id_col_rules: Sequence[ValidatorRule] = (
-        ColumnExistsRule(),
         ColumnTypeRule(expected_type=pl.Int64),
     )
 
     timestamp_col_name: str = "timestamp"
     timestamp_col_rules: Sequence[ValidatorRule] = (
-        ColumnExistsRule(),
         ColumnTypeRule(expected_type=pl.Datetime),
     )
 
@@ -44,13 +42,11 @@ class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
 
     entity_id_col_name: str = "dw_ek_borger"
     entity_id_col_rules: Sequence[ValidatorRule] = (
-        ColumnExistsRule(),
         ColumnTypeRule(expected_type=pl.Int64),
     )
 
     timestamp_col_name: str = "timestamp"
     timestamp_col_rules: Sequence[ValidatorRule] = (
-        ColumnExistsRule(),
         ColumnTypeRule(expected_type=pl.Datetime),
     )
 
