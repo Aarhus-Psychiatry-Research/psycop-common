@@ -4,7 +4,6 @@ from psycop.common.cohort_definition import PredictionTimeFilter
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     MoveIntoRMBaselineLoader,
-    load_move_into_rm_for_exclusion,
 )
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
