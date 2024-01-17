@@ -1,4 +1,5 @@
 import copy
+import re
 from pathlib import Path
 from typing import Any, Literal
 
@@ -19,7 +20,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
 
 class OptunaHyperParameterOptimization:
     @staticmethod
-    def _validate_configspace(cfg: dict[str, Any]) -> None:
+    def _validate_suggester_in_configspace(cfg: dict[str, Any]) -> None:
         has_suggester = (
             OptunaHyperParameterOptimization._check_if_suggester_in_configspace(cfg=cfg)
         )
@@ -45,14 +46,26 @@ class OptunaHyperParameterOptimization:
         return False
 
     @staticmethod
+    def _check_if_any_key_matches_regex(
+        regex_string: str,
+        dictionary: dict[str, Any],
+    ) -> bool:
+        """Check if any of the keys in the dictionary match the regex."""
+        return any(re.match(regex_string, key) for key in dictionary)
+
+    @staticmethod
     def _resolve_only_suggestors(cfg: dict[str, Any]) -> dict[str, Any]:
         """Resolves only suggesters in a nested config. Suggesters are identified
-        by the presence of the @suggestors key."""
+        by being registered in with 'suggester' in the registry name"""
         cfg_copy = copy.deepcopy(cfg)
 
         for key, value in cfg_copy.items():
             if isinstance(value, dict):
-                if "@suggesters" in value:
+                # check if match regex for suggester)
+                if OptunaHyperParameterOptimization._check_if_any_key_matches_regex(
+                    regex_string="^@.*suggester.*",
+                    dictionary=value,
+                ):
                     cfg_copy[key] = BaselineRegistry.resolve({key: value})[key]
                 else:
                     cfg_copy[
@@ -85,14 +98,14 @@ class OptunaHyperParameterOptimization:
         cfg_file: Path,
         n_trials: int,
         n_jobs: int,
-        direction: Literal["maximize", "minimize"] = "maximize",
+        direction: Literal["maximize", "minimize"],
     ) -> Study:
         cfg = Config().from_disk(cfg_file)
 
         cfg_with_resolved_suggesters = (
             OptunaHyperParameterOptimization()._resolve_only_suggestors(cfg=cfg)
         )
-        OptunaHyperParameterOptimization._validate_configspace(
+        OptunaHyperParameterOptimization._validate_suggester_in_configspace(
             cfg=cfg_with_resolved_suggesters,
         )
 
