@@ -9,9 +9,6 @@ from ......common.model_training_v2.trainer.preprocessing.steps.row_filter_other
 msg = Printer(timestamp=True)
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )

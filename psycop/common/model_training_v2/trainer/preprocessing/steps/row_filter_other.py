@@ -109,8 +109,8 @@ class QuarantineFilter:
             how="left",
         ).with_columns(
             pred_time_uuid=pl.col(self.timestamp_col_name).dt.strftime(
-                "%Y-%m-%d-%H-%M-%S"
-            )
+                "%Y-%m-%d-%H-%M-%S",
+            ),
         )
 
         time_since_quarantine = df_with_quarantine_timestamps.with_columns(
