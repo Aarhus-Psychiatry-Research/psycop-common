@@ -19,7 +19,7 @@ from psycop.common.data_structures.patient import PatientSlice
 from ...feature_generation.sequences.patient_slice_collater import (
     BasePatientSliceCollater,
 )
-from ..registry import Registry
+from ..registry import SequenceRegistry
 from .interface import EmbeddedSequence, PatientSliceEmbedder
 
 log = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class BEHRTVocab:
     position: dict[str, int] = field(default_factory=lambda: {"PAD": 0})
 
 
-@Registry.embedders.register("behrt_embedder")
+@SequenceRegistry.embedders.register("behrt_embedder")
 class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
     def __init__(
         self,

@@ -8,7 +8,7 @@ from pathlib import Path
 from confection import Config
 
 from psycop.common.sequence_models.config_schema import ResolvedConfigSchema
-from psycop.common.sequence_models.registry import Registry
+from psycop.common.sequence_models.registry import SequenceRegistry
 
 default_config_path = Path(__file__).parent / "default_config.cfg"
 
@@ -21,5 +21,5 @@ def load_config(config_path: Path | None = None) -> Config:
 
 
 def parse_config(config: Config) -> ResolvedConfigSchema:
-    cfg = Registry.resolve(config)
+    cfg = SequenceRegistry.resolve(config)
     return ResolvedConfigSchema(**cfg)

@@ -12,7 +12,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
     RegionalFilter,
 )
 from psycop.common.sequence_models.dataset import PredictionTimeDataset
-from psycop.common.sequence_models.registry import Registry
+from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
     T2DCohortDefiner,
 )
@@ -24,7 +24,7 @@ class BasePredictionTimeCollater(Protocol):
         ...
 
 
-@Registry.datasets.register("prediction_time_collater")
+@SequenceRegistry.datasets.register("prediction_time_collater")
 @dataclass(frozen=True)
 class PredictionTimeCollater(BasePredictionTimeCollater):
     patient_loader: PatientLoader

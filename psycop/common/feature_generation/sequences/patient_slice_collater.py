@@ -7,7 +7,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
     RegionalFilter,
 )
 from psycop.common.sequence_models.dataset import PatientSliceDataset
-from psycop.common.sequence_models.registry import Registry
+from psycop.common.sequence_models.registry import SequenceRegistry
 
 
 @runtime_checkable
@@ -16,7 +16,7 @@ class BasePatientSliceCollater(Protocol):
         ...
 
 
-@Registry.datasets.register("unlabelled_slice_creator")
+@SequenceRegistry.datasets.register("unlabelled_slice_creator")
 @dataclass(frozen=True)
 class PatientSliceCollater(BasePatientSliceCollater):
     patient_loader: PatientLoader

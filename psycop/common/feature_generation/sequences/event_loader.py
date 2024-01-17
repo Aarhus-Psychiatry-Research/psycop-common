@@ -3,7 +3,7 @@ from typing import Protocol, runtime_checkable
 
 import polars as pl
 
-from ...sequence_models.registry import Registry
+from ...sequence_models.registry import SequenceRegistry
 from ..loaders.raw.sql_load import sql_load
 
 
@@ -14,7 +14,7 @@ class EventLoader(Protocol):
         ...
 
 
-@Registry.event_loaders.register("diagnoses")
+@SequenceRegistry.event_loaders.register("diagnoses")
 class DiagnosisLoader(EventLoader):
     """Load all diagnoses for all patients."""
 
