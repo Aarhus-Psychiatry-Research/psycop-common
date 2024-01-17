@@ -3,12 +3,12 @@ from __future__ import annotations
 
 import pandas as pd
 import polars as pl
+from wasabi import Printer
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
-    msg,
-)
+
+msg = Printer(timestamp=True)
 
 
 def load_moves(n_rows: int | None = None) -> pd.DataFrame:
