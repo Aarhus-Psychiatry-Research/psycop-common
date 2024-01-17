@@ -1,9 +1,6 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     MoveIntoRMBaselineLoader,

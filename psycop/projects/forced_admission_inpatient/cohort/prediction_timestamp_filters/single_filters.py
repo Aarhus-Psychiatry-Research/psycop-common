@@ -1,11 +1,13 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
 from psycop.common.feature_generation.loaders.raw.load_moves import (
+    MoveIntoRMBaselineLoader,
     load_move_into_rm_for_exclusion,
+)
+from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
+    QuarantineFilter,
 )
 from psycop.projects.forced_admission_inpatient.cohort.add_age import add_age
 from psycop.projects.forced_admission_inpatient.cohort.extract_admissions_and_visits.get_forced_admissions import (
@@ -33,28 +35,28 @@ class ForcedAdmissionsInpatientMinAgeFilter(PredictionTimeFilter):
 
 class ForcedAdmissionsInpatientWashoutMove(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        not_within_x_years_from_move = pl.from_pandas(
-            PredictionTimeFilterer(
-                prediction_times_df=df.collect().to_pandas(),
-                entity_id_col_name="dw_ek_borger",
-                quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
-                quarantine_interval_days=365,
-                timestamp_col_name="timestamp",
-            ).run_filter(),
-        )
-        return not_within_x_years_from_move.lazy()
+        not_within_a_year_from_move = QuarantineFilter(
+            entity_id_col_name="dw_ek_borger",
+            quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
+            quarantine_interval_days=365,
+            timestamp_col_name="timestamp",
+        ).apply(df)
+
+        return not_within_a_year_from_move
+
+
+class ForcedAdmissionsEndTimestampsLoader(BaselineDataLoader):
+    def load(self) -> pl.LazyFrame:
+        return pl.from_pandas(forced_admissions_end_timestamps()).lazy()
 
 
 class ForcedAdmissionsInpatientWashoutPriorForcedAdmission(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        not_within_x_years_from_forced_admission = pl.from_pandas(
-            PredictionTimeFilterer(
-                prediction_times_df=df.collect().to_pandas(),
-                entity_id_col_name="dw_ek_borger",
-                quarantine_timestamps_df=forced_admissions_end_timestamps(),
-                quarantine_interval_days=730,
-                timestamp_col_name="timestamp",
-            ).run_filter(),
-        )
+        not_within_two_years_from_forced_admission = QuarantineFilter(
+            entity_id_col_name="dw_ek_borger",
+            quarantine_timestamps_loader=ForcedAdmissionsEndTimestampsLoader(),
+            quarantine_interval_days=730,
+            timestamp_col_name="timestamp",
+        ).apply(df)
 
-        return not_within_x_years_from_forced_admission.lazy()
+        return not_within_two_years_from_forced_admission

@@ -1,11 +1,11 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
 from psycop.common.feature_generation.loaders.raw.load_moves import (
-    load_move_into_rm_for_exclusion,
+    MoveIntoRMBaselineLoader,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
+    QuarantineFilter,
 )
 from psycop.projects.cancer.feature_generation.cohort_definition.eligible_prediction_times.add_age import (
     add_age,
@@ -33,17 +33,14 @@ class CancerMinAgeFilter(PredictionTimeFilter):
 
 class CancerWashoutMoveFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        not_within_half_a_year_from_move = pl.from_pandas(
-            PredictionTimeFilterer(
-                prediction_times_df=df.collect().to_pandas(),
-                entity_id_col_name="dw_ek_borger",
-                quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
-                quarantine_interval_days=182,
-                timestamp_col_name="timestamp",
-            ).run_filter(),
-        )
+        not_within_half_a_year_from_move = QuarantineFilter(
+            entity_id_col_name="dw_ek_borger",
+            quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
+            quarantine_interval_days=182,
+            timestamp_col_name="timestamp",
+        ).apply(df)
 
-        return not_within_half_a_year_from_move.lazy()
+        return not_within_half_a_year_from_move
 
 
 class CancerPrevalentFilter(PredictionTimeFilter):
