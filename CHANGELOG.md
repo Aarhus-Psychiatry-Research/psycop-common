@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.177.0 (2024-01-17)
+
+### Feature
+
+* Cohortdefiners return validatedframes ([#711](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/711)) ([`978e84d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/978e84d97c5a31677736e394893f8cd3957e540b))
+
+### Fix
+
+* Runtime_checkable ([`6048d8a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6048d8aae211b08d06529963459fa2f97146afa4))
+
 ## v0.176.0 (2024-01-17)
 
 ### Feature
