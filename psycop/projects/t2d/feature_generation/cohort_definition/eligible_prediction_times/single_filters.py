@@ -111,7 +111,6 @@ class T2DWashoutMove(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         msg.info("Applying filter")
         not_within_two_years_from_move = QuarantineFilter(
-            pred_time_uuid_col_name="pred_time_uuid",
             entity_id_col_name="dw_ek_borger",
             quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
             quarantine_interval_days=730,
