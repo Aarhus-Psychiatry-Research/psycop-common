@@ -9,7 +9,6 @@ from wasabi import Printer
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.types.validated_frame import ValidatedFrame
 from psycop.common.types.validator_rules import (
-    ColumnExistsRule,
     ColumnTypeRule,
     ValidatorRule,
 )
