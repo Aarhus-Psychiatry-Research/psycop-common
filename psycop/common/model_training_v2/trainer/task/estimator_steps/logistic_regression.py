@@ -51,7 +51,7 @@ def logistic_regression_step(
     )
 
 
-@BaselineRegistry.suggesters.register("logistic_regression_suggester")
+@BaselineRegistry.estimator_steps_suggesters.register("logistic_regression_suggester")
 class LogisticRegressionSuggester(Suggester):
     def __init__(
         self,

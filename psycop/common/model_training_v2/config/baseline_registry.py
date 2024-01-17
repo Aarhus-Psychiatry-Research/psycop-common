@@ -25,6 +25,10 @@ class BaselineRegistry(RegistryWithDict):
         "psycop_baseline",
         "estimator_steps",
     )
+    estimator_steps_suggesters = catalogue.create(
+        "psycop_baseline",
+        "estimator_steps_suggesters",
+    )
 
     metrics = catalogue.create("psycop", "metrics")
 

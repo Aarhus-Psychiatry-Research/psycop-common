@@ -7,6 +7,9 @@ from confection import Config
 from optuna import Trial
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import (
     OptunaHyperParameterOptimization,
 )
@@ -18,7 +21,7 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
 )
 
 
-@BaselineRegistry.suggesters.register("mock_log_reg_suggester")
+@BaselineRegistry.estimator_steps_suggesters.register("mock_log_reg_suggester")
 @dataclass
 class MockLogisticRegression(Suggester):
     c_high: float = 1
@@ -37,7 +40,7 @@ def test_validate_configspace_no_suggesters():
     cfg = {"param1": 1, "param2": {"nested_param": 2}}
 
     with pytest.raises(ValueError, match="No suggesters.*"):
-        OptunaHyperParameterOptimization()._validate_configspace(  # pyright: ignore[reportPrivateUsage]
+        OptunaHyperParameterOptimization()._validate_suggester_in_configspace(  # pyright: ignore[reportPrivateUsage]
             cfg,
         )
 
@@ -53,11 +56,8 @@ def test_validate_configspace_with_suggester():
             ),
         },
     }
-    assert (
-        OptunaHyperParameterOptimization()._validate_configspace(  # type: ignore
-            cfg,
-        )
-        is None
+    OptunaHyperParameterOptimization()._validate_suggester_in_configspace(  # type: ignore
+        cfg,
     )
 
 
@@ -66,7 +66,7 @@ def test_resolve_only_suggesters():
         {
             "param1": 1,
             "mock_suggester": {
-                "@suggesters": "mock_log_reg_suggester",
+                "@estimator_steps_suggesters": "mock_log_reg_suggester",
                 "c_high": 1,
             },
             "age_filter": {
@@ -85,9 +85,11 @@ def test_resolve_only_suggesters():
 
 
 def test_hyperparameter_optimization_from_file():
+    populate_baseline_registry()
     study = OptunaHyperParameterOptimization().conduct_hyperparameter_optimization_from_file(
         (Path(__file__).parent / "test_optuna_hyperparameter_search.cfg"),
         n_trials=2,
         n_jobs=1,
+        direction="maximize",
     )
     assert len(study.trials) == 2
