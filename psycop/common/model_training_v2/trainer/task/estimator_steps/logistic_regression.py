@@ -8,7 +8,7 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
-from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.logistic_regression_suggester import (
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
     CategoricalSpace,
     FloatSpace,
     FloatSpaceT,
@@ -51,7 +51,7 @@ def logistic_regression_step(
     )
 
 
-@BaselineRegistry.estimator_steps.register("logistic_regression_suggester")
+@BaselineRegistry.estimator_steps_suggesters.register("logistic_regression_suggester")
 class LogisticRegressionSuggester(Suggester):
     def __init__(
         self,
@@ -71,11 +71,9 @@ class LogisticRegressionSuggester(Suggester):
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         return {
-            "logistic_regression": {
-                "@estimator_steps": "logistic_regression",
-                "C": self.C.suggest(trial, "C"),
-                "l1_ratio": self.l1_ratio.suggest(trial, "l1_ratio"),
-                "solver": self.solver.suggest(trial, "solver"),
-                "penalty": self.penalties.suggest(trial, "penalty"),
-            },
+            "@estimator_steps": "logistic_regression",
+            "C": self.C.suggest(trial, "C"),
+            "l1_ratio": self.l1_ratio.suggest(trial, "l1_ratio"),
+            "solver": self.solver.suggest(trial, "solver"),
+            "penalty": self.penalties.suggest(trial, "penalty"),
         }
