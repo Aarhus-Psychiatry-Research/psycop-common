@@ -1,12 +1,14 @@
 import polars as pl
 from wasabi import Printer
 
+from ......common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from ......common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
+    QuarantineFilter,
+)
+
 msg = Printer(timestamp=True)
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
 from psycop.common.feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
@@ -99,24 +101,21 @@ class NoIncidentDiabetes(PredictionTimeFilter):
         return not_after_incident_diabetes.drop(["timestamp_result", "value"])
 
 
+class MoveIntoRMBaselineLoader(BaselineDataLoader):
+    def load(self) -> pl.LazyFrame:
+        msg.info("Loading move dates for exclusion")
+        return pl.from_pandas(load_move_into_rm_for_exclusion()).lazy()
+
+
 class T2DWashoutMove(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        msg.info("Collecting in T2DWashoutMove")
-        prediction_times = df.collect().to_pandas()
-
-        msg.info("Loading move dates for exclusion")
-        move_into_rm = load_move_into_rm_for_exclusion()
-
         msg.info("Applying filter")
-        not_within_two_years_from_move = pl.from_pandas(
-            PredictionTimeFilterer(
-                prediction_times_df=prediction_times,
-                entity_id_col_name="dw_ek_borger",
-                quarantine_timestamps_df=move_into_rm,
-                quarantine_interval_days=730,
-                timestamp_col_name="timestamp",
-            ).run_filter(),
-        ).lazy()
+        not_within_two_years_from_move = QuarantineFilter(
+            entity_id_col_name="dw_ek_borger",
+            quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
+            quarantine_interval_days=730,
+            timestamp_col_name="timestamp",
+        ).apply(df)
 
         msg.info("Returning")
         return not_within_two_years_from_move
