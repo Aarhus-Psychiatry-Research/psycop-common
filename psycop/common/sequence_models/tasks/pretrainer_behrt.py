@@ -75,7 +75,7 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
     ) -> Metrics:
         embedded_patients = self._embedder(
             inputs,
-        )  # Perhaps need to set tensor.to_device here
+        )
         encoded_patients = self._encoder(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
