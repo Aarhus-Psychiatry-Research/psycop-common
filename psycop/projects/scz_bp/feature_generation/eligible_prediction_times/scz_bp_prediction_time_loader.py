@@ -7,6 +7,7 @@ from wasabi import msg
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
     PredictionTimeFilter,
     filter_prediction_times,
 )
@@ -63,11 +64,13 @@ class SczBpCohort(CohortDefiner):
         return filtered_prediction_time_bundle
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return get_first_scz_or_bp_diagnosis().select(
-            "dw_ek_borger",
-            "timestamp",
-            "value",
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(
+            frame=get_first_scz_or_bp_diagnosis().select(
+                "dw_ek_borger",
+                "timestamp",
+                "value",
+            ),
         )
 
     @staticmethod
@@ -87,9 +90,9 @@ if __name__ == "__main__":
             f"{stepdelta.step_name} dropped {stepdelta.n_dropped_prediction_times}, remaining: {stepdelta.n_prediction_times_after}",
         )
 
-    print(f"Remaining: {filtered_prediction_times.prediction_times.shape[0]}")
+    print(f"Remaining: {filtered_prediction_times.prediction_times.frame.shape[0]}")
 
     diag = get_first_scz_or_bp_diagnosis().select("dw_ek_borger", "source")
-    pos = filtered_prediction_times.prediction_times.join(diag, on="dw_ek_borger")
+    pos = filtered_prediction_times.prediction_times.frame.join(diag, on="dw_ek_borger")
 
     pos.groupby("source").agg(pl.col("dw_ek_borger").unique().len())

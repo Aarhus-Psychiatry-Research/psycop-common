@@ -3,6 +3,7 @@ import polars as pl
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
@@ -45,11 +46,13 @@ class ClozapineCohortDefiner(CohortDefiner):
         return result
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return (
-            pl.from_pandas(get_first_clozapine_prescription())
-            .with_columns(value=pl.lit(1))
-            .select(["dw_ek_borger", "timestamp", "value"])
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(
+            frame=(
+                pl.from_pandas(get_first_clozapine_prescription())
+                .with_columns(value=pl.lit(1))
+                .select(["dw_ek_borger", "timestamp", "value"])
+            ),
         )
 
 

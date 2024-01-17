@@ -79,7 +79,7 @@ class SczBpFeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=SczBpCohort.get_outcome_timestamps().to_pandas(),
+                    df=SczBpCohort.get_outcome_timestamps().frame.to_pandas(),
                     name="first_scz_or_bp",
                 ),
             ],

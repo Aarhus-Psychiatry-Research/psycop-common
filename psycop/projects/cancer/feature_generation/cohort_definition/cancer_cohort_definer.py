@@ -3,6 +3,7 @@ import polars as pl
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
@@ -41,8 +42,8 @@ class CancerCohortDefiner(CohortDefiner):
         )
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return pl.from_pandas(get_first_cancer_diagnosis())
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(frame=pl.from_pandas(get_first_cancer_diagnosis()))
 
 
 if __name__ == "__main__":
