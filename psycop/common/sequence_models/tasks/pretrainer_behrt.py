@@ -46,6 +46,7 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
 
     def _initialise_mlm_head(self):
         self.mlm_head = nn.Linear(self.d_model, self._embedder.n_diagnosis_codes)
+        self.mlm_head.to(self.device)
 
     def training_step(
         self,
@@ -72,7 +73,9 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
         inputs: dict[str, torch.Tensor],
         labels: torch.Tensor,
     ) -> Metrics:
-        embedded_patients = self._embedder(inputs)
+        embedded_patients = self._embedder(
+            inputs,
+        )  # Perhaps need to set tensor.to_device here
         encoded_patients = self._encoder(
             src=embedded_patients.src,
             src_key_padding_mask=embedded_patients.src_key_padding_mask,
@@ -160,7 +163,13 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
             patient_slices,
         )
         # Masking
+
+        # Move to CUDA
         batch_with_labels = self.masking_fn(padded_sequence_ids)
+        for key, tensor in batch_with_labels.inputs.items():
+            batch_with_labels.inputs[key] = tensor.to(self.device)
+        batch_with_labels.labels = batch_with_labels.labels.to(self.device)
+
         return batch_with_labels
 
     def on_fit_start(self) -> None:
