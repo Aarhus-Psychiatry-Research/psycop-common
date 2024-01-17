@@ -9,6 +9,7 @@ class SequenceRegistry(registry):
     layers = catalogue.create("psycop", "layers")
     embedders = catalogue.create("psycop", "embedders")
 
+    preprocessing = catalogue.create("psycop", "preprocessing")
     datasets = catalogue.create("psycop", "datasets")
     cohorts = catalogue.create("psycop", "cohorts")
     event_loaders = catalogue.create("psycop", "event_loaders")
