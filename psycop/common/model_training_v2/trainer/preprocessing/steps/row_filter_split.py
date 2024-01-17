@@ -14,7 +14,7 @@ from .....feature_generation.loaders.raw.load_ids import (
     load_stratified_by_outcome_split_ids,
 )
 from .....feature_generation.loaders.raw.load_visits import physical_visits
-from .....sequence_models.registry import Registry, SequenceRegistry
+from .....sequence_models.registry import SequenceRegistry
 from .geographical_split._geographical_split import (
     add_migration_date_by_patient,
     add_shak_to_region_mapping,
