@@ -4,8 +4,10 @@ import pytest
 from torch import nn
 
 from psycop.common.data_structures.patient import Patient, PatientSlice
-from psycop.common.sequence_models import BEHRTEmbedder, PatientSliceDataset
 from psycop.common.sequence_models.aggregators import Aggregator, CLSAggregator
+from psycop.common.sequence_models.embedders.BEHRT_embedders import (
+    BEHRTEmbedder,
+)
 from psycop.common.sequence_models.optimizers import (
     LRSchedulerFn,
     OptimizerFn,
@@ -13,6 +15,7 @@ from psycop.common.sequence_models.optimizers import (
     create_linear_schedule_with_warmup,
 )
 
+from ..dataset import PatientSliceDataset
 from .utils import create_patients
 
 

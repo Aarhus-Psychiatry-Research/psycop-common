@@ -2,6 +2,35 @@
 
 <!--next-version-placeholder-->
 
+## v0.174.0 (2024-01-17)
+
+### Feature
+
+* Test on Ovartaci ([`57364ce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/57364ce8ac546560098e4f2413e7433840029908))
+
+### Fix
+
+* Circular imports on Ovartaci ([#714](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/714)) ([`a7d7334`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a7d73348273f498ecf8479c35168ef45575c4906))
+
+## v0.173.0 (2024-01-17)
+
+### Feature
+
+* **#702:** Allow filtering when generating patient slices ([`5970ec0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5970ec090ea5e4a5e867dab89b7794f5f74be97f))
+
+## v0.172.0 (2024-01-17)
+
+### Feature
+
+* **#709:** Support temporary uuid in quarantine filter ([`1d3058a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1d3058a5f4b1c6d3cd9974747b5bdbd8bca060e2))
+
+## v0.171.1 (2024-01-16)
+
+### Fix
+
+* Correct types for id col in splitframe ([`df7750a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/df7750a0584b25b3c10979ec7369515878ce8f7d))
+* Type ignore invoke 🥷 ([`8516981`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/851698150ee497cfdcc02a4753f4e3b45c87c8ef))
+
 ## v0.171.0 (2024-01-15)
 
 ### Feature
