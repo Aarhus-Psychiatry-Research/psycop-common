@@ -10,13 +10,13 @@ from psycop.common.feature_generation.sequences.prediction_time_collater import 
     BasePredictionTimeCollater,
 )
 from psycop.common.sequence_models.dataset import PredictionTimeDataset
-from psycop.common.sequence_models.registry import Registry
+from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.common.sequence_models.train import train
 
 from .test_encoder_for_clf import arm_within_docker
 
 
-@Registry.datasets.register("fake_patient_slices_with_labels")
+@SequenceRegistry.datasets.register("fake_patient_slices_with_labels")
 class FakePredictionTimeCollater(BasePredictionTimeCollater):
     def __init__(self):
         pass

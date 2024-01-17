@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from psycop.common.sequence_models.dataset import PatientSliceDataset
-from psycop.common.sequence_models.registry import Registry
+from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.common.sequence_models.train import train
 
 from ...feature_generation.sequences.patient_slice_collater import (
@@ -12,7 +12,7 @@ from ...feature_generation.sequences.patient_slice_collater import (
 from .utils import create_patients
 
 
-@Registry.datasets.register("test_dataset")
+@SequenceRegistry.datasets.register("test_dataset")
 class FakeSliceCreator(BasePatientSliceCollater):
     def __init__(self):
         pass

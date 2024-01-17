@@ -7,15 +7,15 @@ from typing import Literal
 
 from lightning.pytorch.callbacks import Callback, LearningRateMonitor, ModelCheckpoint
 
-from .registry import Registry
+from .registry import SequenceRegistry
 
 
-@Registry.callbacks.register("callback_list")
+@SequenceRegistry.callbacks.register("callback_list")
 def create_callback_list(*args: Callback) -> list[Callback]:
     return list(args)
 
 
-@Registry.callbacks.register("model_checkpoint")
+@SequenceRegistry.callbacks.register("model_checkpoint")
 def create_model_checkpoint(
     save_dir: Path,
     every_n_epochs: int = 1,
@@ -33,7 +33,7 @@ def create_model_checkpoint(
     )
 
 
-@Registry.callbacks.register("learning_rate_monitor")
+@SequenceRegistry.callbacks.register("learning_rate_monitor")
 def create_learning_rate_monitor(
     logging_interval: str = "epoch",
 ) -> LearningRateMonitor:

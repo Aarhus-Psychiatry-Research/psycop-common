@@ -11,14 +11,14 @@ from psycop.common.sequence_models.datatypes import BatchWithLabels
 
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
-from ..registry import Registry
+from ..registry import SequenceRegistry
 from .pretrainer_base import BasePatientSlicePretrainer, Metrics
 
 log = logging.getLogger(__name__)
 
 
 # TODO: Align filename
-@Registry.tasks.register("behrt")
+@SequenceRegistry.tasks.register("behrt")
 @final  # This is not an ABC, must not contain abstract methods
 class PretrainerBEHRT(BasePatientSlicePretrainer):
     """An implementation of the BEHRT model for the masked language modeling task."""

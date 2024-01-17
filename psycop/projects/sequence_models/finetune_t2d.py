@@ -4,19 +4,19 @@ from pathlib import Path
 from torch import nn
 
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
-from psycop.common.sequence_models.registry import Registry
+from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.common.sequence_models.tasks import PretrainerBEHRT
 from psycop.common.sequence_models.train import train
 
 
-@Registry.tasks.register("model_from_checkpoint")
+@SequenceRegistry.tasks.register("model_from_checkpoint")
 def load_model_from_checkpoint(
     checkpoint_path: Path,
 ) -> PretrainerBEHRT:
     return PretrainerBEHRT.load_from_checkpoint(checkpoint_path)
 
 
-@Registry.tasks.register("embedder_from_checkpoint")
+@SequenceRegistry.tasks.register("embedder_from_checkpoint")
 def load_embedder_from_checkpoint(
     checkpoint_path: Path,
 ) -> BEHRTEmbedder:
@@ -24,7 +24,7 @@ def load_embedder_from_checkpoint(
     return model.embedder
 
 
-@Registry.tasks.register("encoder_from_checkpoint")
+@SequenceRegistry.tasks.register("encoder_from_checkpoint")
 def load_encoder_from_checkpoint(
     checkpoint_path: Path,
 ) -> nn.Module:
