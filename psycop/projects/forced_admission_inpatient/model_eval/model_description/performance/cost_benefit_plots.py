@@ -68,6 +68,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame,
                              per_true_positive: bool,
     ) -> pn.ggplot:
 
+    legend_order = sorted(list(df['savings_recources_ratio'].unique()), key=lambda s: int(s.split(":")[0]), reverse=True)
 
     p = (
         pn.ggplot(
@@ -82,7 +83,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame,
         + pn.labs(x="Predicted Positive Rate", y="Benefit/Harm")
         + FA_PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
-        + pn.scale_color_brewer(type="qual", palette=2)
+        + pn.scale_color_manual(values=["blue", "green", "orange", "purple"], labels=legend_order)
         + pn.labs(color="TP Profit/FP Cost ratio")
         + pn.theme(
             panel_grid_major=pn.element_blank(),
