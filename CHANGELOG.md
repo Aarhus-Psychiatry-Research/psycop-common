@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.175.0 (2024-01-17)
+
+### Feature
+
+* Match suggester regex in hparam tuning ([`be443f4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/be443f42a5c6293581264eae1ba468eb7d3393d1))
+* Hyperparameter tuning with optuna ([`679dffb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/679dffba8d2defcf6a641df3db9d667ca4c2f037))
+* **#699:** Optuna-hparam-optimization ([`7773099`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/77730991b4a20bbaa1f503c0b6b707777254b836))
+
 ## v0.174.0 (2024-01-17)
 
 ### Feature
