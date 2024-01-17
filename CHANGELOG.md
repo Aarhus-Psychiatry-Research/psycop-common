@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.174.0 (2024-01-17)
+
+### Feature
+
+* Test on Ovartaci ([`57364ce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/57364ce8ac546560098e4f2413e7433840029908))
+
+### Fix
+
+* Circular imports on Ovartaci ([#714](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/714)) ([`a7d7334`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a7d73348273f498ecf8479c35168ef45575c4906))
+
 ## v0.173.0 (2024-01-17)
 
 ### Feature
