@@ -1,9 +1,9 @@
 from torch import nn
 
-from .registry import Registry
+from .registry import SequenceRegistry
 
 
-@Registry.layers.register("transformer_encoder_layer")
+@SequenceRegistry.layers.register("transformer_encoder_layer")
 def create_encoder_layer(
     d_model: int,
     nhead: int,
@@ -21,6 +21,6 @@ def create_encoder_layer(
     )
 
 
-@Registry.layers.register("transformer_encoder")
+@SequenceRegistry.layers.register("transformer_encoder")
 def create_transformers_encoder(num_layers: int, encoder_layer: nn.Module) -> nn.Module:
     return nn.TransformerEncoder(encoder_layer, num_layers=num_layers)

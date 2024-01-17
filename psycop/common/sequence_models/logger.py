@@ -6,7 +6,7 @@ from lightning.pytorch.loggers import Logger as plLogger
 from lightning.pytorch.loggers.mlflow import MLFlowLogger as plMLFlowLogger
 from lightning.pytorch.loggers.wandb import WandbLogger as plWandbLogger
 
-from .registry import Registry
+from .registry import SequenceRegistry
 
 
 def handle_wandb_folder():
@@ -20,7 +20,7 @@ def handle_wandb_folder():
         )
 
 
-@Registry.loggers.register("wandb")
+@SequenceRegistry.loggers.register("wandb")
 def create_wandb_logger(
     save_dir: Path | str,
     experiment_name: str,
@@ -37,7 +37,7 @@ def create_wandb_logger(
     )
 
 
-@Registry.loggers.register("mlflow")
+@SequenceRegistry.loggers.register("mlflow")
 def create_mlflow_logger(
     save_dir: Path | str,
     experiment_name: str,

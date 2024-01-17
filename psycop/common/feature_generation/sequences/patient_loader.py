@@ -15,7 +15,7 @@ from psycop.common.feature_generation.sequences.patient_slice_from_events import
 )
 
 from ...model_training_v2.trainer.preprocessing.step import PresplitStep
-from ...sequence_models.registry import Registry
+from ...sequence_models.registry import SequenceRegistry
 
 
 def keep_if_min_n_visits(
@@ -29,7 +29,7 @@ def keep_if_min_n_visits(
     return df
 
 
-@Registry.datasets.register("patient_loader")
+@SequenceRegistry.datasets.register("patient_loader")
 @dataclass(frozen=True)
 class PatientLoader:
     event_loaders: Sequence[EventLoader]

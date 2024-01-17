@@ -17,14 +17,14 @@ from ..aggregators import Aggregator
 from ..datatypes import BatchWithLabels
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
-from ..registry import Registry
+from ..registry import SequenceRegistry
 from .patientslice_classifier_base import (
     BasePredictionTimeClassifier,
     PredictedProbabilities,
 )
 
 
-@Registry.tasks.register("patient_slice_classifier")
+@SequenceRegistry.tasks.register("patient_slice_classifier")
 @final  # This is not an ABC, must not contain abstract methods
 class PatientSliceClassifier(BasePredictionTimeClassifier):
     def __init__(

@@ -4,7 +4,7 @@ import catalogue
 from confection import registry
 
 
-class Registry(registry):
+class SequenceRegistry(registry):
     tasks = catalogue.create("psycop", "encoders")
     layers = catalogue.create("psycop", "layers")
     embedders = catalogue.create("psycop", "embedders")
@@ -24,6 +24,6 @@ class Registry(registry):
 T = TypeVar("T")
 
 
-@Registry.utilities.register("list_creator")
+@SequenceRegistry.utilities.register("list_creator")
 def list_creator(*args: T) -> list[T]:
     return list(args)
