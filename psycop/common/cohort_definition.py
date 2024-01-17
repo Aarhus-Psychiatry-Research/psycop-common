@@ -82,7 +82,8 @@ class StepDelta(PSYCOPBaseModel):
         return self.n_ids_before - self.n_ids_after
 
 
-class FilteredPredictionTimeBundle(PSYCOPBaseModel):
+@dataclass(frozen=True)
+class FilteredPredictionTimeBundle:
     prediction_times: PredictionTimeFrame
     filter_steps: list[StepDelta]
 
