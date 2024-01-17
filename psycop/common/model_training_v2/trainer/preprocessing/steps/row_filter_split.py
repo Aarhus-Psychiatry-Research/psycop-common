@@ -14,7 +14,7 @@ from .....feature_generation.loaders.raw.load_ids import (
     load_stratified_by_outcome_split_ids,
 )
 from .....feature_generation.loaders.raw.load_visits import physical_visits
-from .....sequence_models.registry import Registry
+from .....sequence_models.registry import Registry, SequenceRegistry
 from .geographical_split._geographical_split import (
     add_migration_date_by_patient,
     add_shak_to_region_mapping,
@@ -81,7 +81,7 @@ def _get_regional_split_df() -> pl.LazyFrame:
 
 
 @BaselineRegistry.preprocessing.register("regional_data_filter")
-@Registry.preprocessing.register("regional_data_filter")
+@SequenceRegistry.preprocessing.register("regional_data_filter")
 @dataclass(frozen=True)
 class RegionalFilter(PresplitStep):
     """Filter data to only include ids from the desired regions. Removes
