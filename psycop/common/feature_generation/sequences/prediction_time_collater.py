@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from ...cohort_definition import CohortDefiner
-from ...model_training_v2.trainer.preprocessing.step import PresplitStep
 from ...sequence_models.dataset import PredictionTimeDataset
 from ...sequence_models.registry import Registry
 from .patient_loader import PatientLoader

@@ -9,10 +9,6 @@ from psycop.common.feature_generation.sequences.prediction_times_from_cohort imp
 )
 from psycop.common.test_utils.str_to_df import str_to_pl_df
 
-from ...model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    FilterByEntityID,
-)
-
 
 class FakeCohortDefiner(CohortDefiner):
     @staticmethod
