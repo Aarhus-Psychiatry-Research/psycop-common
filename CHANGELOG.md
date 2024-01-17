@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.173.0 (2024-01-17)
+
+### Feature
+
+* **#702:** Allow filtering when generating patient slices ([`5970ec0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5970ec090ea5e4a5e867dab89b7794f5f74be97f))
+
 ## v0.172.0 (2024-01-17)
 
 ### Feature
