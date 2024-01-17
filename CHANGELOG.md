@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.172.0 (2024-01-17)
+
+### Feature
+
+* **#709:** Support temporary uuid in quarantine filter ([`1d3058a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1d3058a5f4b1c6d3cd9974747b5bdbd8bca060e2))
+
 ## v0.171.1 (2024-01-16)
 
 ### Fix
