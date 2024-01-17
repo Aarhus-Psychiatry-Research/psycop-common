@@ -107,7 +107,6 @@ def test_filter_by_quarantine_period():
         1,2026-02-01 00:00:01, # keep: outside quarantine days from the first quarantine date
         2,2023-02-01 00:00:01, # keep: no quarantine date for this id
         """,
-        add_pred_time_uuid=True,
     ).lazy()
 
     expected_df = str_to_pl_df(
@@ -116,7 +115,6 @@ def test_filter_by_quarantine_period():
         1,2026-02-01 00:00:01,
         2,2023-02-01 00:00:01,
         """,
-        add_pred_time_uuid=True,
     )
 
     result_df = (
@@ -125,7 +123,6 @@ def test_filter_by_quarantine_period():
             quarantine_interval_days=quarantine_days,
             quarantine_timestamps_loader=TestDataLoader(),
             timestamp_col_name="timestamp",
-            pred_time_uuid_col_name="pred_time_uuid",
         )
         .apply(prediction_time_df)
         .collect()
