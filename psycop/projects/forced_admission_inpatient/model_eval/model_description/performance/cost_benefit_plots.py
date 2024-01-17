@@ -83,8 +83,8 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame,
         + pn.labs(x="Predicted Positive Rate", y="Benefit/Harm")
         + FA_PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
-        + pn.scale_color_manual(values=["blue", "green", "orange", "purple"], labels=legend_order)
-        + pn.labs(color="TP Profit/FP Cost ratio")
+        + pn.scale_color_manual(values=["green", "blue", "purple", "orange"], labels=legend_order)
+        + pn.labs(color="Profit/Cost ratio")
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
@@ -181,6 +181,6 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
 
-    fa_cost_benefit_by_savings_recources_ratio_and_ppr(run=get_best_eval_pipeline(), per_true_positive=True, savings_from_prevented_outcome=[40,20,10,6], cost_of_intervention=1, efficiency_of_intervention=0.5)
+    #fa_cost_benefit_by_savings_recources_ratio_and_ppr(run=get_best_eval_pipeline(), per_true_positive=True, savings_from_prevented_outcome=[40,20,10,6], cost_of_intervention=1, efficiency_of_intervention=0.5)
     fa_cost_benefit_by_savings_recources_ratio_and_ppr(run=get_best_eval_pipeline(), per_true_positive=False, savings_from_prevented_outcome=[40,20,10,6], cost_of_intervention=1, efficiency_of_intervention=0.5)
     
