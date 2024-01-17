@@ -28,6 +28,9 @@ def populate_sequence_model_registry() -> None:
     and easier to debug for people who are not familiar with python setup hooks.
     """
     from .callbacks import create_learning_rate_monitor, create_model_checkpoint  # noqa
+    from ..model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+        RegionalFilter,  # noqa
+    )
     from .embedders.BEHRT_embedders import create_behrt_embedder  # noqa
     from .logger import create_mlflow_logger, create_wandb_logger  # noqa
     from .model_layers import create_encoder_layer, create_transformers_encoder  # noqa
