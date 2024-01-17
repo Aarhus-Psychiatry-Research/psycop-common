@@ -54,7 +54,10 @@ class OptunaHyperParameterOptimization:
         return any(re.match(regex_string, key) for key in dictionary)
 
     @staticmethod
-    def _resolve_only_suggestors(cfg: dict[str, Any]) -> dict[str, Any]:
+    def _resolve_only_registries_matching_regex(
+        cfg: dict[str, Any],
+        regex_string: str,
+    ) -> dict[str, Any]:
         """Resolves only suggesters in a nested config. Suggesters are identified
         by being registered in with 'suggester' in the registry name"""
         cfg_copy = copy.deepcopy(cfg)
@@ -63,15 +66,16 @@ class OptunaHyperParameterOptimization:
             if isinstance(value, dict):
                 # check if match regex for suggester)
                 if OptunaHyperParameterOptimization._check_if_any_key_matches_regex(
-                    regex_string="^@.*suggester.*",
+                    regex_string=regex_string,
                     dictionary=value,
                 ):
                     cfg_copy[key] = BaselineRegistry.resolve({key: value})[key]
                 else:
                     cfg_copy[
                         key
-                    ] = OptunaHyperParameterOptimization()._resolve_only_suggestors(
-                        value,
+                    ] = OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(
+                        cfg=value,
+                        regex_string=regex_string,
                     )
         return cfg_copy
 
@@ -103,7 +107,10 @@ class OptunaHyperParameterOptimization:
         cfg = Config().from_disk(cfg_file)
 
         cfg_with_resolved_suggesters = (
-            OptunaHyperParameterOptimization()._resolve_only_suggestors(cfg=cfg)
+            OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(
+                cfg=cfg,
+                regex_string="^@.*suggesters$",
+            )
         )
         OptunaHyperParameterOptimization._validate_suggester_in_configspace(
             cfg=cfg_with_resolved_suggesters,

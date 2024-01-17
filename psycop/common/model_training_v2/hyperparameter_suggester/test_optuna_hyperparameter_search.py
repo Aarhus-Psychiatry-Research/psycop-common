@@ -77,8 +77,9 @@ def test_resolve_only_suggesters():
             },
         },
     )
-    resolved_suggesters = OptunaHyperParameterOptimization()._resolve_only_suggestors(  # pyright: ignore[reportPrivateUsage]
+    resolved_suggesters = OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(  # pyright: ignore[reportPrivateUsage]
         cfg,
+        regex_string="^@.*suggesters$",
     )
     assert isinstance(resolved_suggesters["mock_suggester"], MockLogisticRegression)
     assert isinstance(resolved_suggesters["age_filter"], dict)
