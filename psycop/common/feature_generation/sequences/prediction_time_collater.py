@@ -38,3 +38,20 @@ class PredictionTimeCollater(BasePredictionTimeCollater):
         )
 
         return PredictionTimeDataset(prediction_times)
+<<<<<<< Updated upstream
+=======
+
+
+if __name__ == "__main__":
+    prediction_times = PredictionTimeCollater(
+        PatientLoader(
+            event_loaders=[DiagnosisLoader()],
+            split_filter=RegionalFilter(splits_to_keep=["val"]),
+            fraction=0.05,
+        ),
+        cohort_definer=T2DCohortDefiner(),
+        lookahead_days=730,
+        lookbehind_days=730,
+    ).get_dataset()
+    pass
+>>>>>>> Stashed changes

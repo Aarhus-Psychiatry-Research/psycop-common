@@ -21,3 +21,17 @@ class PatientSliceCollater(BasePatientSliceCollater):
         return PatientSliceDataset(
             [patient.as_slice() for patient in self.patient_loader.get_patients()],
         )
+<<<<<<< Updated upstream
+=======
+
+
+if __name__ == "__main__":
+    patient_slices = PatientSliceCollater(
+        patient_loader=PatientLoader(
+            event_loaders=[DiagnosisLoader()],
+            split_filter=RegionalFilter(splits_to_keep=["train"]),
+            fraction=0.05,
+        ),
+    ).get_dataset()
+    pass
+>>>>>>> Stashed changes
