@@ -22,7 +22,6 @@ class TrainingResult:
     df: pl.DataFrame
 
 
-@runtime_checkable
 class BaselineTrainer(ABC):
     logger: BaselineLogger
     task: BaselineTask
