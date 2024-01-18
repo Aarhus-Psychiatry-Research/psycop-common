@@ -68,8 +68,8 @@ class MLFlowLogger(BaselineLogger):
         mlflow.log_metric(key=metric.name, value=metric.value)
 
     def log_config(self, config: dict[str, Any]):
-        config = flatten_nested_dict(config)
-        mlflow.log_params(sanitise_dict_keys(config))
+        flattened_config = flatten_nested_dict(config)
+        mlflow.log_params(sanitise_dict_keys(flattened_config))
         self._log_text_as_artifact(
             confection.Config(config).to_str(),
             remote_path="config.cfg",
