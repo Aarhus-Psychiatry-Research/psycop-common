@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import confection
 import mlflow
 
 from psycop.common.global_utils.config_utils import (
@@ -33,23 +34,23 @@ class MLFlowLogger(BaselineLogger):
         timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._log_str += f"\n[{timestamp_str}] {prefix}: {message}"
 
+    def _log_text_as_artifact(self, text: str, remote_path: str):
+        """Log text as an artifact.
+
+        This is a workaround for MLFlow not supporting logging text directly.
+        Note that multiple logs to the same remote_path will overwrite each other."""
+        tmp_path = Path(
+            f"{self.experiment_id}-tmp-{datetime.now().strftime('%H-%M-%S')}.txt",
+        )
+        tmp_path.write_text(text)
+        mlflow.log_artifact(local_path=tmp_path.__str__(), artifact_path=remote_path)
+        tmp_path.unlink()
+
     def _log(self, prefix: str, message: str):
         """MLFLow supports logging metrics, parameters, datasets and artifacts. Since a log message is neither,
         the workaround is to create a log file, and then log that as an artifact."""
-
         self._append_log_str(prefix, message)
-
-        tmp_log_path = Path(f"{self.experiment_id}-tmp_log.txt")
-
-        # Write log temporarily to disk
-        with tmp_log_path.open("w") as f:
-            f.write(self._log_str)
-
-        # Overwrites any previously saved artifacts
-        mlflow.log_artifact(local_path=tmp_log_path.__str__(), artifact_path="log.txt")
-
-        # Delete the log on disk
-        tmp_log_path.unlink()
+        self._log_text_as_artifact(text=self._log_str, remote_path="log.txt")
 
     def info(self, message: str) -> None:
         self._log(prefix="INFO", message=message)
@@ -69,3 +70,7 @@ class MLFlowLogger(BaselineLogger):
     def log_config(self, config: dict[str, Any]):
         config = flatten_nested_dict(config)
         mlflow.log_params(sanitise_dict_keys(config))
+        self._log_text_as_artifact(
+            confection.Config(config).to_str(),
+            remote_path="config.cfg",
+        )
