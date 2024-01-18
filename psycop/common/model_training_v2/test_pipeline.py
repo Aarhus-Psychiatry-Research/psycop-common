@@ -61,7 +61,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
             task=BinaryClassificationTask(
-                task_pipe=BinaryClassificationPipeline(
+                pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
                 ),
             ),
@@ -98,7 +98,7 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
                 AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"),
             ),
             task=BinaryClassificationTask(
-                task_pipe=BinaryClassificationPipeline(
+                pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()]),
                 ),
             ),

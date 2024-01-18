@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pandas as pd
 import polars as pl
 
@@ -20,12 +22,9 @@ def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
 
 
 @BaselineRegistry.tasks.register("binary_classification")
+@dataclass(frozen=True)
 class BinaryClassificationTask(BaselineTask):
-    def __init__(
-        self,
-        task_pipe: BinaryClassificationPipeline,
-    ):
-        self.pipe = task_pipe
+    pipe: BinaryClassificationPipeline
 
     def train(
         self,
