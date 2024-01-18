@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 @runtime_checkable
 class BaselineTask(Protocol):
-    pipe: BasePipeline
+    task_pipe: BasePipeline
 
     def train(self, x: pd.DataFrame, y: pd.DataFrame, y_col_name: str) -> None:
         """Train the model"""
