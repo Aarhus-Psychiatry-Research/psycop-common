@@ -1,3 +1,4 @@
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -39,12 +40,12 @@ class MLFlowLogger(BaselineLogger):
 
         This is a workaround for MLFlow not supporting logging text directly.
         Note that multiple logs to the same remote_path will overwrite each other."""
-        tmp_path = Path(
-            f"{self.experiment_id}-tmp-{datetime.now().strftime('%H-%M-%S')}.txt",
-        )
-        tmp_path.write_text(text)
-        mlflow.log_artifact(local_path=tmp_path.__str__(), artifact_path=remote_path)
-        tmp_path.unlink()
+        with tempfile.NamedTemporaryFile() as tmp_path:
+            tmp_path.write_text(text)
+            mlflow.log_artifact(
+                local_path=tmp_path.__str__(),
+                artifact_path=remote_path,
+            )
 
     def _log(self, prefix: str, message: str):
         """MLFLow supports logging metrics, parameters, datasets and artifacts. Since a log message is neither,
