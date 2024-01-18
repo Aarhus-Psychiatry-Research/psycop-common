@@ -120,6 +120,9 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
         self,
         column_infos: Iter[ColumnInfo],
     ) -> Sequence[ExtraColumnError]:
+        if self.allow_extra_columns:
+            return []
+
         dataclass_column_names = {ci.name for ci in column_infos}
         errors = (
             Iter(self.frame.columns)
