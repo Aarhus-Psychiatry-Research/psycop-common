@@ -20,7 +20,6 @@ import multiprocessing  # noqa: I001
 from pathlib import Path
 
 from invoke import Context, Result, task
-import questionary
 
 from psycop.automation.environment import NOT_WINDOWS, test_pytorch_cuda, on_ovartaci
 from psycop.automation.git import (
@@ -64,13 +63,7 @@ def types(c: Context):
 def qtypes(c: Context):
     """Run static type checks."""
     if filetype_modified_since_main(c, r"\.py$"):
-        if not questionary.confirm(
-            "Skip type-checking?",
-            default=True,
-        ).ask():
-            types(c)
-        else:
-            print("🟢 Skipping static type checks")
+        types(c)
     else:
         print("🟢 No python files modified since main, skipping static type checks")
 
@@ -219,18 +212,6 @@ def create_pr(c: Context):
             pty=NOT_WINDOWS,
         )
         print(f"{msg_type.GOOD} PR created")
-
-
-@task
-def prompt_to_submit_pr(c: Context, skip_submit_prompt: bool = True):
-    """
-    Submit a PR to Graphite
-    """
-    if skip_submit_prompt or questionary.confirm("Submit PR to Graphite?").ask():
-        command = "herb submit"
-        if questionary.confirm("Automerge?", default=False).ask():
-            command += " --automerge"
-        c.run(command)
 
 
 @task(aliases=("pr",))
