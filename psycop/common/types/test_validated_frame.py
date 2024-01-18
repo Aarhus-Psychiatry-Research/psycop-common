@@ -76,3 +76,18 @@ def test_rules_for_non_attr_col_name():
 def test_should_error_if_unspecified_column_and_not_allow_extra():
     with pytest.raises(CombinedFrameValidationError, match=".*was present.*"):
         ValidatedFrame(frame=pl.DataFrame({"col": [1]}), allow_extra_columns=False)
+
+
+def test_allow_unspecified_column_if_allow_extra_():
+    @dataclass(frozen=True)
+    class FakeExtraColValidatedFrame(ValidatedFrame[pl.DataFrame]):
+        frame: pl.DataFrame
+        test_col_name: str = "test_col_name"
+        allow_extra_columns: bool = True
+
+    df = str_to_pl_df(
+        """test_col_name, extra_col,
+                      1, 1,
+""",
+    )
+    FakeExtraColValidatedFrame(df)
