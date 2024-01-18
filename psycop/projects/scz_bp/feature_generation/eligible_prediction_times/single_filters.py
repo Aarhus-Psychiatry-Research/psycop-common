@@ -1,12 +1,12 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.feature_generation.loaders.raw.load_moves import (
-    load_move_into_rm_for_exclusion,
+    MoveIntoRMBaselineLoader,
+)
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
+    QuarantineFilter,
 )
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_eligible_config import (
     AGE_COL_NAME,
@@ -54,16 +54,14 @@ class SczBpAddAge(PredictionTimeFilter):
 
 class SczBpWashoutMoveFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        not_within_90_days_from_move = pl.from_pandas(
-            PredictionTimeFilterer(
-                prediction_times_df=df.collect().to_pandas(),
-                entity_id_col_name="dw_ek_borger",
-                quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
-                quarantine_interval_days=N_DAYS_WASHIN,
-                timestamp_col_name="timestamp",
-            ).run_filter(),
-        )
-        return not_within_90_days_from_move.lazy()
+        not_within_90_days_from_move = QuarantineFilter(
+            entity_id_col_name="dw_ek_borger",
+            quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
+            quarantine_interval_days=N_DAYS_WASHIN,
+            timestamp_col_name="timestamp",
+        ).apply(df)
+
+        return not_within_90_days_from_move
 
 
 class SczBpPrevalentFilter(PredictionTimeFilter):

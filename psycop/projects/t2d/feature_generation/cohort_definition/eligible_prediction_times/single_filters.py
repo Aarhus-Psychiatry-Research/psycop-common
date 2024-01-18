@@ -1,7 +1,10 @@
 import polars as pl
 from wasabi import Printer
 
-from ......common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+from psycop.common.feature_generation.loaders.raw.load_moves import (
+    MoveIntoRMBaselineLoader,
+)
+
 from ......common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
@@ -9,9 +12,6 @@ from ......common.model_training_v2.trainer.preprocessing.steps.row_filter_other
 msg = Printer(timestamp=True)
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    load_move_into_rm_for_exclusion,
-)
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
     MIN_AGE,
@@ -99,12 +99,6 @@ class NoIncidentDiabetes(PredictionTimeFilter):
         )
 
         return not_after_incident_diabetes.drop(["timestamp_result", "value"])
-
-
-class MoveIntoRMBaselineLoader(BaselineDataLoader):
-    def load(self) -> pl.LazyFrame:
-        msg.info("Loading move dates for exclusion")
-        return pl.from_pandas(load_move_into_rm_for_exclusion()).lazy()
 
 
 class T2DWashoutMove(PredictionTimeFilter):

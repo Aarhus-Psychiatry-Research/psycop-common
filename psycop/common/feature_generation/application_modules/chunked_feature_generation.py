@@ -22,8 +22,6 @@ class ChunkedFeatureGenerator:
         eligible_prediction_times: pd.DataFrame,
         feature_specs: list[AnySpec],
         chunksize: int = 400,
-        quarantine_df: pd.DataFrame | None = None,
-        quarantine_days: int | None = None,
     ) -> pd.DataFrame:
         """Generate features in chunks to avoid memory issues"""
 
@@ -39,8 +37,6 @@ class ChunkedFeatureGenerator:
                 prediction_times_df=eligible_prediction_times,
                 drop_pred_times_with_insufficient_look_distance=False,
                 project_info=project_info,
-                quarantine_df=quarantine_df,
-                quarantine_days=quarantine_days,
             )
             save_chunk_to_disk(project_info, flattened_df_chunk, i)
 
