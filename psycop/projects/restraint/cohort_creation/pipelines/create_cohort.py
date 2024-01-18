@@ -101,6 +101,11 @@ df_cohort_with_coercion = df_cohort[
     & (df_cohort["datotid_start_sei"] < df_cohort["datotid_slut"])
 ]
 
+## REMOVE SOMATIC COERCION HERE?!
+df_cohort_with_coercion = df_cohort_with_coercion[
+    df_cohort_with_coercion["behandlingsomraade"] != "Somatikken"
+]
+
 # keep first time of coercion for each admission
 # group by admission
 df_admissions = df_cohort_with_coercion.groupby(["dw_ek_borger", "datotid_start"])

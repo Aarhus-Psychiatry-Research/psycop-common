@@ -40,7 +40,7 @@ def main():
 
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
+        min_set_for_debug=True,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
     flattened_df = create_flattened_dataset(
@@ -67,6 +67,8 @@ def main():
 if __name__ == "__main__":
     project_info = RESTRAINT_PROJECT_INFO
 
+    main()  # move back to bottom!
+
     init_root_logger(project_info=project_info)
 
     log.info(f"Stdout level is {logging.getLevelName(log.level)}")
@@ -90,5 +92,3 @@ if __name__ == "__main__":
         },
         mode="offline",
     )
-
-    main()

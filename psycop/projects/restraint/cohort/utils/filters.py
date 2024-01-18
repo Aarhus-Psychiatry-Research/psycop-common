@@ -104,3 +104,9 @@ class RestraintExcludeFirstDayFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(pl.col("pred_adm_day_count") != 1)
+
+
+class RestraintTreatmentUnitFilter(PredictionTimeFilter):
+    @staticmethod
+    def apply(df: pl.DataFrame) -> pl.DataFrame:
+        return df.filter(pl.col("behandlingsomraade") == "Psykiatrien")

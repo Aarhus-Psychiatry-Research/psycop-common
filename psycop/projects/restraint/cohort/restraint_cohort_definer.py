@@ -15,6 +15,7 @@ from psycop.projects.restraint.cohort.utils.filters import (
     RestraintMinAgeFilter,
     RestraintMinDateFilter,
     RestraintShakCodeFilter,
+    RestraintTreatmentUnitFilter,
     RestraintWashoutFilter,
     RestraintWithinAdmissionsFilter,
 )
@@ -40,7 +41,7 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=unfiltered_prediction_times,
             filtering_steps=[
                 RestraintAdmissionTypeFilter(),
-                RestraintMinDateFilter(),
+                RestraintMinDateFilter(), # move
                 RestraintMinAgeFilter(),
             ],
             entity_id_col_name="dw_ek_borger",
@@ -113,29 +114,31 @@ class RestraintCohortDefiner(CohortDefiner):
             ["dw_ek_borger", "datotid_start_sei", "typetekst_sei", "behandlingsomraade"]
         )
 
-        test = filtered_cohort.with_columns(
+        filtered_cohort = filtered_cohort.with_columns(
             pl.col("datotid_start")
             .dt.strftime("%Y-%m-%d 00:00:00")
             .str.strptime(pl.Datetime("ns"))  # type: ignore
             .alias("dato_start")
         ).select(["dw_ek_borger", "datotid_start", "datotid_slut", "dato_start"])
 
-        testy = test.join(
+        forced_admissions_cohort = filtered_cohort.join(
             forced_admissions,
             how="left",
             left_on=["dw_ek_borger", "dato_start"],
             right_on=["dw_ek_borger", "datotid_start_sei"],
         )
 
-        testy_ = filter_prediction_times(
-            prediction_times=testy,
+        filtered_forced_admissions_cohort = filter_prediction_times(
+            prediction_times=forced_admissions_cohort,
             filtering_steps=[
                 RestraintDoubleAdmissionFilter(),
             ],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times
+        ).prediction_times.select(
+            ["dw_ek_borger", "datotid_start", "datotid_slut", "pred_time"]
+        )
 
-        exploded_cohort = explode_admissions(testy_)
+        exploded_cohort = explode_admissions(filtered_forced_admissions_cohort)
 
         return filter_prediction_times(
             prediction_times=exploded_cohort,
@@ -145,22 +148,55 @@ class RestraintCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> pl.DataFrame:
-        unfiltered_cohort = pl.DataFrame(load_coercion_timestamps())
+        unfiltered_prediction_times = pl.from_pandas(
+            load_admissions_discharge_timestamps()
+        )
+
+        filtered_prediction_times = filter_prediction_times(
+            prediction_times=unfiltered_prediction_times,
+            filtering_steps=[RestraintAdmissionTypeFilter()],
+            entity_id_col_name="dw_ek_borger",
+        ).prediction_times
+
+        filtered_prediction_times = preprocess_readmissions(
+            df=filtered_prediction_times
+        ).select(["dw_ek_borger", "datotid_start", "datotid_slut"])
+
+        unfiltered_coercion_timestamps = pl.DataFrame(load_coercion_timestamps())
+
+        filtered_coercion_timestamps = filter_prediction_times(
+            prediction_times=unfiltered_coercion_timestamps,
+            filtering_steps=[
+                RestraintCoercionTypeFilter(),
+                RestraintTreatmentUnitFilter(),
+            ],
+            entity_id_col_name="dw_ek_borger",
+        ).prediction_times.select(
+            ["dw_ek_borger", "datotid_start_sei", "typetekst_sei"]
+        )
+
+        unfiltered_cohort = filtered_prediction_times.join(
+            filtered_coercion_timestamps,
+            how="left",
+            on="dw_ek_borger",
+        )
 
         filtered_cohort = filter_prediction_times(
             prediction_times=unfiltered_cohort,
-            filtering_steps=[RestraintWithinAdmissionsFilter()],
+            filtering_steps=[
+                RestraintWithinAdmissionsFilter(),
+            ],
             entity_id_col_name="dw_ek_borger",
-        )
+        ).prediction_times
 
-        outcome_df = select_outcomes(filtered_cohort.prediction_times)
+        outcome_df = select_outcomes(filtered_cohort)
 
         # keep adm_id
         return outcome_df
 
 
 if __name__ == "__main__":
-    bundle = RestraintCohortDefiner.get_filtered_prediction_times_bundle()
+    # bundle = RestraintCohortDefiner.get_filtered_prediction_times_bundle()
 
     outcome_timestamps = RestraintCohortDefiner.get_outcome_timestamps()
 

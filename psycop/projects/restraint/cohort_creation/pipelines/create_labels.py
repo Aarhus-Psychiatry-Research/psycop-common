@@ -24,7 +24,7 @@ lookahead_days = 2
 
 # First coercion to pred_time
 df_cohort["diff_first_coercion"] = pd.to_datetime(
-    df_cohort["datotid_start_sei"],
+    df_cohort["datotid_start_sei_x"],
 ) - pd.to_datetime(df_cohort["pred_time"])
 
 # First mechanical restraint to pred_time
@@ -60,18 +60,23 @@ df_cohort = (
         columns={
             "datotid_start": "timestamp_admission",
             "datotid_slut": "timestamp_discharge",
-            "datotid_start_sei": "timestamp_outcome",
+            "datotid_start_sei_x": "timestamp_outcome",
             "pred_time": "timestamp",
         },
     )
     .drop(
         columns=(
             [
-                "behandlingsomraade",
+                "behandlingsomraade_x",
                 "first_mechanical_restraint",
                 "first_forced_medication",
                 "first_manual_restraint",
                 "include_pred_time",
+                "shakkode_ansvarlig",
+                "dato_start",
+                "datotid_start_sei_y",
+                "typetekst_sei",
+                "behandlingsomraade_y",
                 "diff_first_coercion",
                 "diff_first_mechanical_restraint",
                 "diff_first_forced_medication",
@@ -101,7 +106,7 @@ df_cohort.to_csv(
 # Write to sql database
 write_df_to_sql(
     df=df_cohort,
-    table_name=f"psycop_coercion_within_{lookahead_days}_days_feb2022",
+    table_name=f"psycop_coercion_within_{lookahead_days}_days_feb2022_v2",
     if_exists="replace",
     rows_per_chunk=5000,
 )
