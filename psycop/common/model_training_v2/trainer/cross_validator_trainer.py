@@ -14,7 +14,9 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
-from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
+from psycop.common.model_training_v2.trainer.task.base_metric import (
+    BaselineMetric,
+)
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
@@ -99,7 +101,8 @@ class CrossValidatorTrainer(BaselineTrainer):
             y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
             name_prefix="all_oof",
         )
-        self.logger.log_metric(main_metric)
+        self._log_main_metric(main_metric)
+        self._log_sklearn_pipe()
 
         return TrainingResult(
             metric=main_metric,
