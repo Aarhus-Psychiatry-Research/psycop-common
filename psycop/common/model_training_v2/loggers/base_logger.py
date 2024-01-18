@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 from confection import Config
@@ -25,4 +26,7 @@ class BaselineLogger(Protocol):
         ...
 
     def log_config(self, config: Config) -> None:
+        ...
+
+    def log_artifact(self, local_path: Path) -> None:
         ...

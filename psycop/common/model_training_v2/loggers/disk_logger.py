@@ -1,4 +1,5 @@
 import logging
+import shutil
 from pathlib import Path
 
 from confection import Config
@@ -55,3 +56,6 @@ class DiskLogger(BaselineLogger):
 
         logger.info("Disk logger initialized")
         return logger
+
+    def log_artifact(self, local_path: Path) -> None:
+        shutil.copy(local_path, (self.experiment_path / local_path.name))

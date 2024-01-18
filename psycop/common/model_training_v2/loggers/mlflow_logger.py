@@ -1,5 +1,6 @@
 import tempfile
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 import confection
@@ -74,3 +75,6 @@ class MLFlowLogger(BaselineLogger):
             confection.Config(config).to_str(),
             remote_path="config.cfg",
         )
+
+    def log_artifact(self, local_path: Path) -> None:
+        mlflow.log_artifact(local_path=local_path.__str__())
