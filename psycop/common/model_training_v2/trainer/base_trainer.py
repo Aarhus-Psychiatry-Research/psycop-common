@@ -19,3 +19,9 @@ class TrainingResult:
 class BaselineTrainer(Protocol):
     def train(self) -> TrainingResult:
         ...
+
+    def _log_sklearn_pipe(self) -> None:
+        ...
+
+    def _log_main_metric(self, main_metric: CalculatedMetric) -> None:
+        ...

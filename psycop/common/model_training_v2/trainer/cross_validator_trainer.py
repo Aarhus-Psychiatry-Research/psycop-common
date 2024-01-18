@@ -1,4 +1,6 @@
+import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 
 import pandas as pd
 import polars as pl
@@ -14,7 +16,10 @@ from psycop.common.model_training_v2.trainer.base_trainer import (
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
     PreprocessingPipeline,
 )
-from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
+from psycop.common.model_training_v2.trainer.task.base_metric import (
+    BaselineMetric,
+    CalculatedMetric,
+)
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
@@ -30,6 +35,14 @@ class CrossValidatorTrainer(BaselineTrainer):
     logger: BaselineLogger
     n_splits: int = 5
     group_col_name: str = "dw_ek_borger"
+
+    def _log_sklearn_pipe(self) -> None:
+        with tempfile.NamedTemporaryFile(prefix="sklearn_pipe", suffix=".pkl") as f:
+            self.
+            self.logger.log_artifact(Path(f))
+
+    def _log_main_metric(self, main_metric: CalculatedMetric) -> None:
+        self.logger.log_metric(main_metric)
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
@@ -99,7 +112,7 @@ class CrossValidatorTrainer(BaselineTrainer):
             y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
             name_prefix="all_oof",
         )
-        self.logger.log_metric(main_metric)
+        self._log_main_metric(main_metric)
 
         return TrainingResult(
             metric=main_metric,
