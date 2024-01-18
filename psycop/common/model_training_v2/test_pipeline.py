@@ -43,6 +43,9 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps import (
     logistic_regression_step,
 )
 
+from .loggers.disk_logger import DiskLogger
+from .loggers.multi_logger import MultiLogger
+
 
 def test_v2_train_model_pipeline(tmpdir: Path):
     logger = TerminalLogger()
@@ -89,7 +92,7 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
     logger = TerminalLogger()
     schema = BaselineSchema(
         project_info=ProjectInfo(experiment_path=tmpdir),
-        logger=logger,
+        logger=MultiLogger(TerminalLogger(), DiskLogger(tmpdir.__str__())),
         trainer=CrossValidatorTrainer(
             uuid_col_name="pred_time_uuid",
             training_data=MinimalTestData(),
@@ -109,3 +112,4 @@ def test_v2_crossval_model_pipeline(tmpdir: Path):
     )
 
     assert train_baseline_model_from_schema(schema) == 0.6666666666666667
+    assert len(list(tmpdir.glob("*.pkl"))) == 1  # Check that pipeline is being logged
