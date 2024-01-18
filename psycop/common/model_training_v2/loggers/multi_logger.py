@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Callable
 
 from confection import Config
@@ -18,7 +19,8 @@ class MultiLogger(BaselineLogger):
 
     def _run_on_loggers(self, func: Callable[[BaselineLogger], None]):
         """Run a function on all loggers."""
-        [func(logger) for logger in self.loggers]
+        for logger in self.loggers:
+            func(logger)
 
     def info(self, message: str):
         self._run_on_loggers(lambda logger: logger.info(message))
@@ -37,3 +39,6 @@ class MultiLogger(BaselineLogger):
 
     def log_config(self, config: Config):
         self._run_on_loggers(lambda logger: logger.log_config(config=config))
+
+    def log_artifact(self, local_path: Path):
+        self._run_on_loggers(lambda logger: logger.log_artifact(local_path=local_path))

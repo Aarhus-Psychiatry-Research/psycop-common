@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import wasabi
 from confection import Config
 
@@ -32,3 +34,9 @@ class TerminalLogger(BaselineLogger):
         config = flatten_nested_dict(config)  # type: ignore # Config is a subclass of dict so false positive
         cfg_str = "\n".join([f"{k}: {v}" for k, v in config.items()])
         self._l.info(cfg_str)
+
+    def log_artifact(self, local_path: Path) -> None:
+        self.good(
+            f"""Logging artifact at {local_path}.
+    NOTE: TerminalLogger does not log the artifact anywhere, but if you have other loggers defined, their methods have been called as well.""",
+        )
