@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.179.0 (2024-01-18)
+
+### Feature
+
+* Use namedtemporaryfile ([`19fcf49`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/19fcf49d6360769797a6506322a4e8483e823f8c))
+
 ## v0.178.0 (2024-01-18)
 
 ### Feature
