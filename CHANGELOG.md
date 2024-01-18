@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.178.0 (2024-01-18)
+
+### Feature
+
+* Working pretraining ([#718](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/718)) ([`a240c79`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a240c79611184ee96628e557b9cc42c49d5f20ac))
+
 ## v0.177.1 (2024-01-18)
 
 ### Fix
