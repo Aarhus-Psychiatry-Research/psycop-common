@@ -1,7 +1,4 @@
-import pickle
-import tempfile
 from dataclasses import dataclass
-from pathlib import Path
 
 import pandas as pd
 import polars as pl
@@ -19,7 +16,6 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import (
 )
 from psycop.common.model_training_v2.trainer.task.base_metric import (
     BaselineMetric,
-    CalculatedMetric,
 )
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
