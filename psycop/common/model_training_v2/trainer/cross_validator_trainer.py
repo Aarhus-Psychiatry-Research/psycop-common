@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pandas as pd
 import polars as pl
 from sklearn.model_selection import StratifiedGroupKFold
@@ -17,32 +19,21 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
 @BaselineRegistry.trainers.register("crossval_trainer")
+@dataclass(frozen=True)
 class CrossValidatorTrainer(BaselineTrainer):
-    def __init__(
-        self,
-        uuid_col_name: str,
-        training_data: BaselineDataLoader,
-        outcome_col_name: str,
-        preprocessing_pipeline: PreprocessingPipeline,
-        task: BaselineTask,
-        metric: BaselineMetric,
-        logger: BaselineLogger,
-        n_splits: int = 5,
-        group_col_name: str = "dw_ek_borger",
-    ):
-        self.uuid_col_name = uuid_col_name
-        self.training_data = training_data.load()
-        self.outcome_col_name = outcome_col_name
-        self.preprocessing_pipeline = preprocessing_pipeline
-        self.task = task
-        self.metric = metric
-        self.n_splits = n_splits
-        self.group_col_name = group_col_name
-        self.logger = logger
+    uuid_col_name: str
+    training_data: BaselineDataLoader
+    outcome_col_name: str
+    preprocessing_pipeline: PreprocessingPipeline
+    task: BaselineTask
+    metric: BaselineMetric
+    logger: BaselineLogger
+    n_splits: int = 5
+    group_col_name: str = "dw_ek_borger"
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
-            data=self.training_data,
+            data=self.training_data.load(),
         )
 
         X = training_data_preprocessed.drop(

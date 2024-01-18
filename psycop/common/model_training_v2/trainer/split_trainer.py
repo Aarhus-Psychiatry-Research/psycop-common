@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 import pandas as pd
 import polars as pl
@@ -26,33 +27,22 @@ from psycop.common.model_training_v2.trainer.task.base_task import (
 
 
 @BaselineRegistry.trainers.register("split_trainer")
+@dataclass(frozen=True)
 class SplitTrainer(BaselineTrainer):
-    def __init__(
-        self,
-        uuid_col_name: str,
-        training_data: BaselineDataLoader,
-        training_outcome_col_name: str,
-        validation_data: BaselineDataLoader,
-        validation_outcome_col_name: str,
-        preprocessing_pipeline: PreprocessingPipeline,
-        task: BaselineTask,
-        metric: BaselineMetric,
-        logger: BaselineLogger,
-    ):
-        self.uuid_col_name = uuid_col_name
-        self.training_data = training_data.load()
-        self.training_outcome_col_name = training_outcome_col_name
-        self.validation_data = validation_data.load()
-        self.validation_outcome_col_name = validation_outcome_col_name
-        self.preprocessing_pipeline = preprocessing_pipeline
-        self.task = task
-        self.metric = metric
-        self.logger = logger
+    uuid_col_name: str
+    training_data: BaselineDataLoader
+    training_outcome_col_name: str
+    validation_data: BaselineDataLoader
+    validation_outcome_col_name: str
+    preprocessing_pipeline: PreprocessingPipeline
+    task: BaselineTask
+    metric: BaselineMetric
+    logger: BaselineLogger
 
-        # When using sklearn pipelines, the outcome column must retain its name
-        # throughout the pipeline.
-        # To accomplish this, we rename the two outcomes to a shared name.
-        self.shared_outcome_col_name = "outcome"
+    # When using sklearn pipelines, the outcome column must retain its name
+    # throughout the pipeline.
+    # To accomplish this, we rename the two outcomes to a shared name.
+    _shared_outcome_col_name = "outcome"
 
     @property
     def outcome_columns(self) -> Sequence[str]:
@@ -64,10 +54,10 @@ class SplitTrainer(BaselineTrainer):
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
-            data=self.training_data,
+            data=self.training_data.load(),
         )
         validation_data_preprocessed = self.preprocessing_pipeline.apply(
-            data=self.validation_data,
+            data=self.validation_data.load(),
         )
 
         x = training_data_preprocessed.drop(self.non_predictor_columns, axis=1)

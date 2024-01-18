@@ -126,10 +126,10 @@ class EvalConfigResolver:
         match self.schema.trainer:
             case CrossValidatorTrainer():
                 self.y_hat_prop_col_name = "oof_y_hat_prob"
-                return self.schema.trainer.training_data.collect()
+                return self.schema.trainer.training_data.load().collect()
             case SplitTrainer():
                 self.y_hat_prop_col_name = "y_hat_prob"
-                return self.schema.trainer.validation_data.collect()
+                return self.schema.trainer.validation_data.load().collect()
             case _:
                 raise ValueError(
                     f"Handler for {type(self.schema.trainer)} not implemented",
