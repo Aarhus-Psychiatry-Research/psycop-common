@@ -47,7 +47,7 @@
         {
             "label": "Submit PR",
             "type": "shell",
-            "command": "echo '🚧️ Any problems in the PR? Press Ctrl+C to cancel.' && herb submit",
+            "command": "echo '🚧️ Any problems in the PR? Press Ctrl+C to cancel.' && herb sync",
             "presentation": {
                 "group": "pr",
                 "revealProblems": "onProblem",
