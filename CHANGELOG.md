@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.177.1 (2024-01-18)
+
+### Fix
+
+* **#717:** Remove-PredictionTimeFilterer ([#719](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/719)) ([`a6e3a2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a6e3a2ddbc0352f83708132c01769db79f46f919))
+* Remove `PredictionTimeFilterer` ([`bd3e3f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bd3e3f094b459ae114efe757077ea1a76b8d7955))
+* **#717:** Remove-PredictionTimeFilterer ([`0bcf8bd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0bcf8bd707a249bd4fa0a3f4ada0d84892f57c4e))
+
 ## v0.177.0 (2024-01-17)
 
 ### Feature
