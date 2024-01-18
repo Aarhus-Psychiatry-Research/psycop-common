@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pandas as pd
 import polars as pl
 from sklearn.model_selection import StratifiedGroupKFold
@@ -17,6 +19,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
 @BaselineRegistry.trainers.register("crossval_trainer")
+@dataclass(frozen=True)
 class CrossValidatorTrainer(BaselineTrainer):
     uuid_col_name: str
     training_data: BaselineDataLoader
