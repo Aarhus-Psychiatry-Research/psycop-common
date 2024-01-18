@@ -24,7 +24,7 @@ def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
 @BaselineRegistry.tasks.register("binary_classification")
 @dataclass(frozen=True)
 class BinaryClassificationTask(BaselineTask):
-    pipe: BinaryClassificationPipeline
+    task_pipe: BinaryClassificationPipeline
 
     def train(
         self,
@@ -35,7 +35,7 @@ class BinaryClassificationTask(BaselineTask):
         assert len(y.columns) == 1
         y_series = y[y_col_name]
 
-        self.pipe.fit(x=x, y=y_series)
+        self.task_pipe.fit(x=x, y=y_series)
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
-        return self.pipe.predict_proba(x)
+        return self.task_pipe.predict_proba(x)

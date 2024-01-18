@@ -38,7 +38,7 @@ def test_binary_classification(
     main_metric_expected: float,
 ):
     binary_classification_problem = BinaryClassificationTask(
-        pipe=pipe,
+        task_pipe=pipe,
     )
     binary_classification_problem.train(x=x, y=y, y_col_name="y")
 
