@@ -1,3 +1,4 @@
+import pickle
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,8 +39,8 @@ class CrossValidatorTrainer(BaselineTrainer):
 
     def _log_sklearn_pipe(self) -> None:
         with tempfile.NamedTemporaryFile(prefix="sklearn_pipe", suffix=".pkl") as f:
-            self.
-            self.logger.log_artifact(Path(f))
+            pickle.dump(self.task.pipe, f)
+            self.logger.log_artifact(Path(f.name))
 
     def _log_main_metric(self, main_metric: CalculatedMetric) -> None:
         self.logger.log_metric(main_metric)
