@@ -37,14 +37,6 @@ class CrossValidatorTrainer(BaselineTrainer):
     n_splits: int = 5
     group_col_name: str = "dw_ek_borger"
 
-    def _log_sklearn_pipe(self) -> None:
-        with tempfile.NamedTemporaryFile(prefix="sklearn_pipe", suffix=".pkl") as f:
-            pickle.dump(self.task.pipe, f)
-            self.logger.log_artifact(Path(f.name))
-
-    def _log_main_metric(self, main_metric: CalculatedMetric) -> None:
-        self.logger.log_metric(main_metric)
-
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
             data=self.training_data.load(),
@@ -114,6 +106,7 @@ class CrossValidatorTrainer(BaselineTrainer):
             name_prefix="all_oof",
         )
         self._log_main_metric(main_metric)
+        self._log_sklearn_pipe()
 
         return TrainingResult(
             metric=main_metric,
