@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.180.0 (2024-01-22)
+
+### Feature
+
+* **#700:** Pretrain and finetune a sequential model for T2D ([`470b0bc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/470b0bc6b4d65dcd5b7e1447253a5846661066cd))
+
 ## v0.179.0 (2024-01-18)
 
 ### Feature
