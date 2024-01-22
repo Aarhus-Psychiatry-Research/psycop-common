@@ -39,6 +39,11 @@ def populate_sequence_model_registry() -> None:
     from .optimizers import create_linear_schedule_with_warmup  # noqa
     from .tasks.pretrainer_behrt import PretrainerBEHRT  # noqa
     from ..feature_generation.sequences.patient_loader import PatientLoader  # noqa
+    from ...projects.sequence_models.finetune_t2d import (
+        load_embedder_from_checkpoint,  # noqa
+        load_encoder_from_checkpoint,  # noqa
+        load_model_from_checkpoint,  # noqa
+    )
 
 
 populate_sequence_model_registry()
