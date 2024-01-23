@@ -23,7 +23,10 @@ def sanitise_dict_keys(d: dict[str, Any]) -> dict[str, Any]:
 @BaselineRegistry.loggers.register("mlflow_logger")
 class MLFlowLogger(BaselineLogger):
     def __init__(
-        self, experiment_name: str, tracking_uri: str = "http://exrhel0371.it.rm.dk:5050"
+        self,
+        experiment_name: str,
+        tracking_uri: str = "http://exrhel0371.it.rm.dk:5050",
+        start_on_init: bool = True,
     ) -> None:
         mlflow.set_tracking_uri(tracking_uri)
 
