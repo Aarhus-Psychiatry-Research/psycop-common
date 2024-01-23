@@ -28,4 +28,4 @@ if __name__ == "__main__":
 
         cfg_schema = BaselineSchema(**BaselineRegistry.resolve(cfg_copy))
         result = cfg_schema.trainer.train()
-        print(f"AUC: {result.metric.value}")
+        print(f"{blacklist_name}. AUC: {result.metric.value}")
