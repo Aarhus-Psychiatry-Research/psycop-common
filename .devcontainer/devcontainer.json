@@ -16,7 +16,6 @@
 				"charliermarsh.ruff",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"ms-python.black-formatter",
 				"GitHub.vscode-pull-request-github",
 				"Graphite.gti-vscode",
 				"SeeLog.python-init-generator",
