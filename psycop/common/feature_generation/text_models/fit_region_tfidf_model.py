@@ -50,7 +50,7 @@ if __name__ == "__main__":
         print(f"Fitting TF-IDF models on {note_name_key}")
         # filter columns
         sub_df = all_preprocessed_text.filter(
-            pl.col("overskrift").is_in(note_types)
+            pl.col("overskrift").is_in(note_types),
         ).collect()
         print(sub_df.shape)
         for max_features in n_features:
