@@ -11,9 +11,7 @@ from psycop.common.feature_generation.text_models.text_model_paths import (
     PREPROCESSED_TEXT_DIR,
     TEXT_MODEL_DIR,
 )
-from psycop.common.feature_generation.text_models.utils import (
-    save_text_model_to_shared_dir,
-)
+from psycop.common.feature_generation.text_models.utils import save_text_model_to_shared_dir
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)

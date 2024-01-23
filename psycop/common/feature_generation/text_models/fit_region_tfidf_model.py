@@ -5,12 +5,8 @@ from psycop.common.feature_generation.text_models.text_model_paths import (
     PREPROCESSED_TEXT_DIR,
     TEXT_MODEL_DIR,
 )
-from psycop.common.feature_generation.text_models.text_model_pipeline import (
-    create_model_filename,
-)
-from psycop.common.feature_generation.text_models.utils import (
-    save_text_model_to_shared_dir,
-)
+from psycop.common.feature_generation.text_models.text_model_pipeline import create_model_filename
+from psycop.common.feature_generation.text_models.utils import save_text_model_to_shared_dir
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     RegionalFilter,
 )
@@ -37,7 +33,7 @@ if __name__ == "__main__":
     }
 
     all_preprocessed_text = pl.scan_parquet(
-        PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet",
+        PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet"
     )
     region_split_filter = RegionalFilter(splits_to_keep=["train", "val"])
     all_preprocessed_text = region_split_filter.apply(all_preprocessed_text)
@@ -49,9 +45,7 @@ if __name__ == "__main__":
     for note_name_key, note_types in note_types_dict.items():
         print(f"Fitting TF-IDF models on {note_name_key}")
         # filter columns
-        sub_df = all_preprocessed_text.filter(
-            pl.col("overskrift").is_in(note_types),
-        ).collect()
+        sub_df = all_preprocessed_text.filter(pl.col("overskrift").is_in(note_types)).collect()
         print(sub_df.shape)
         for max_features in n_features:
             print(f"Fitting model with {max_features} features")

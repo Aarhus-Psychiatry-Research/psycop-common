@@ -29,9 +29,7 @@ def save_text_model_to_dir(model: Union[CountVectorizer, TfidfVectorizer], filen
     vocab.to_parquet(vocab_filepath, index=False)
 
 
-def load_text_model(
-    filename: str,
-) -> TfidfVectorizer:
+def load_text_model(filename: str) -> TfidfVectorizer:
     """
     Loads a text model from a pickle file
 

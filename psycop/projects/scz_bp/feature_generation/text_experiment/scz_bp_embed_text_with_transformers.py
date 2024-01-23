@@ -5,16 +5,11 @@ import polars as pl
 from sentence_transformers import SentenceTransformer
 
 from psycop.common.feature_generation.loaders.raw.load_text import load_text_sfis
-from psycop.common.global_utils.paths import (
-    TEXT_EMBEDDING_MODELS_DIR,
-    TEXT_EMBEDDINGS_DIR,
-)
+from psycop.common.global_utils.paths import TEXT_EMBEDDING_MODELS_DIR, TEXT_EMBEDDINGS_DIR
 
 
 def embed_text_to_df(
-    model: SentenceTransformer,
-    text: list[str],
-    batch_size: int = 512,
+    model: SentenceTransformer, text: list[str], batch_size: int = 512
 ) -> pl.DataFrame:
     t0 = time()
     print("Start embedding")
@@ -42,7 +37,7 @@ if __name__ == "__main__":
     }
 
     models = {
-        "dfm-encoder-large": "chcaa/dfm-encoder-large-v1",
+        "dfm-encoder-large": "chcaa/dfm-encoder-large-v1"
         # "e5-large": "intfloat/multilingual-e5-large",
     }
 
@@ -54,8 +49,7 @@ if __name__ == "__main__":
         for model_name, model_str in models.items():
             print(f"Embedding using {model_name}")
             save_path = (
-                TEXT_EMBEDDINGS_DIR
-                / f"text_embeddings_{note_name_key}_{model_name}.parquet"
+                TEXT_EMBEDDINGS_DIR / f"text_embeddings_{note_name_key}_{model_name}.parquet"
             )
             if save_path.exists():
                 print(f"Already embedded {note_name_key} with {model_str}. Skipping...")
