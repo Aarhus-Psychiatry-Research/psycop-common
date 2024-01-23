@@ -20,8 +20,4 @@ nb = {"model": GaussianNB, "static_hyperparameters": {}}
 
 # See https://github.com/Aarhus-Psychiatry-Research/psycop-t2d/pull/194 for thoughts on root cause
 
-MODELS = {
-    "logistic-regression": logistic,
-    "xgboost": xgboost,
-    "naive-bayes": nb,
-}
+MODELS = {"logistic-regression": logistic, "xgboost": xgboost, "naive-bayes": nb}

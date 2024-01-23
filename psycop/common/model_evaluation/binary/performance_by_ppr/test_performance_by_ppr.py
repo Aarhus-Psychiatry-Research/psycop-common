@@ -9,12 +9,9 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
-def test_get_percentage_of_events_captured_from_eval_dataset(
-    subsampled_eval_dataset: EvalDataset,
-):
+def test_get_percentage_of_events_captured_from_eval_dataset(subsampled_eval_dataset: EvalDataset):
     get_prop_of_events_captured_from_eval_dataset(
-        eval_dataset=subsampled_eval_dataset,
-        positive_rate=0.02,
+        eval_dataset=subsampled_eval_dataset, positive_rate=0.02
     )
 
 
@@ -26,7 +23,7 @@ def test_get_percentage_of_events_captured():
         3,1,1, # Captured
         3,1,1, # Not relevant: ID is 3
         4,0,0, # Not relevant: y is 0
-        """,
+        """
     )
 
     prop_of_events_captured = get_percentage_of_events_captured(df=input_df)

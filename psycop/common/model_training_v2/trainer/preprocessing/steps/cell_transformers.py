@@ -2,9 +2,7 @@ import polars as pl
 from polars import Boolean
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PresplitStep,
-)
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
 @BaselineRegistry.preprocessing.register("bool_to_int")

@@ -1,9 +1,7 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    MoveIntoRMBaselineLoader,
-)
+from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,

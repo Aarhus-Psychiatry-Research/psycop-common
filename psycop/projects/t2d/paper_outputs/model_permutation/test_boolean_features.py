@@ -12,13 +12,10 @@ def test_convert_predictors_to_boolean():
 1,2,1,1,1
 2,4,2,2,2
 3,6,3,3,3
-NaN,NaN,NaN,NaN,NaN""",
+NaN,NaN,NaN,NaN,NaN"""
     ).lazy()
 
-    boolean_df = convert_predictors_to_boolean(
-        df=input_df,
-        predictor_prefix="pred_",
-    ).collect()
+    boolean_df = convert_predictors_to_boolean(df=input_df, predictor_prefix="pred_").collect()
 
     for expected_outcome_col in (
         "eval_test1",

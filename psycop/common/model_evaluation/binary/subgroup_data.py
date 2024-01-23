@@ -3,9 +3,7 @@ from typing import Optional
 
 import pandas as pd
 
-from psycop.common.model_evaluation.binary.utils import (
-    auroc_by_group,
-)
+from psycop.common.model_evaluation.binary.utils import auroc_by_group
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
@@ -33,11 +31,7 @@ def get_auroc_by_input_df(
         pd.DataFrame: Dataframe ready for plotting
     """
     df = pd.DataFrame(
-        {
-            "y": eval_dataset.y,
-            "y_hat_probs": eval_dataset.y_hat_probs,
-            input_name: input_values,
-        },
+        {"y": eval_dataset.y, "y_hat_probs": eval_dataset.y_hat_probs, input_name: input_values}
     )
 
     if bin_continuous_input:

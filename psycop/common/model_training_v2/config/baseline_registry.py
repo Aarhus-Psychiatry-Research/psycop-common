@@ -13,22 +13,10 @@ class BaselineRegistry(RegistryWithDict):
     data = catalogue.create("psycop_baseline", "data")
     tasks = catalogue.create("psycop_baseline", "tasks")
 
-    preprocessing = catalogue.create(
-        "psycop_baseline",
-        "preprocessing",
-    )
-    task_pipelines = catalogue.create(
-        "psycop_baseline",
-        "task_pipelines",
-    )
-    estimator_steps = catalogue.create(
-        "psycop_baseline",
-        "estimator_steps",
-    )
-    estimator_steps_suggesters = catalogue.create(
-        "psycop_baseline",
-        "estimator_steps_suggesters",
-    )
+    preprocessing = catalogue.create("psycop_baseline", "preprocessing")
+    task_pipelines = catalogue.create("psycop_baseline", "task_pipelines")
+    estimator_steps = catalogue.create("psycop_baseline", "estimator_steps")
+    estimator_steps_suggesters = catalogue.create("psycop_baseline", "estimator_steps_suggesters")
 
     metrics = catalogue.create("psycop", "metrics")
 

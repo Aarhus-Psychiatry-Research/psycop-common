@@ -5,9 +5,7 @@ import optuna
 from optuna.testing.storage import StorageSupplier
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )

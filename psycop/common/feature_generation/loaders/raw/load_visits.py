@@ -39,9 +39,11 @@ def physical_visits(
     where_separator: Union[str, None] = "AND",
     n_rows: Union[int, None] = None,
     return_value_as_visit_length_days: Union[bool, None] = False,
-    visit_types: Sequence[
-        Literal["admissions", "ambulatory_visits", "emergency_visits"]
-    ] = ("admissions", "ambulatory_visits", "emergency_visits"),
+    visit_types: Sequence[Literal["admissions", "ambulatory_visits", "emergency_visits"]] = (
+        "admissions",
+        "ambulatory_visits",
+        "emergency_visits",
+    ),
     return_shak_location: bool = False,
 ) -> pd.DataFrame:
     """Load pshysical visits to both somatic and psychiatry.
@@ -98,9 +100,7 @@ def physical_visits(
     allowed_visit_types = ["admissions", "ambulatory_visits", "emergency_visits"]
 
     if any(types not in allowed_visit_types for types in visit_types):
-        raise ValueError(
-            f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.",
-        )
+        raise ValueError(f"Invalid visit type. Allowed types of visits are {allowed_visit_types}.")
 
     english_to_lpr3_visit_type = {
         "admissions": "'Indlæggelse'",
@@ -137,7 +137,7 @@ def physical_visits(
                 schema.end_datetime_col_name: "timestamp_end",
                 schema.start_datetime_col_name: "timestamp_start",
                 schema.location_col_name: "shak_location",
-            },
+            }
         )
 
         dfs.append(df)
@@ -148,12 +148,9 @@ def physical_visits(
     # Round timestamps to whole seconds before dropping duplicates
     output_timestamp_col_name = f"timestamp_{timestamp_for_output}"
 
-    output_df[output_timestamp_col_name] = output_df[
-        output_timestamp_col_name
-    ].dt.round("1s")
+    output_df[output_timestamp_col_name] = output_df[output_timestamp_col_name].dt.round("1s")
     output_df = output_df.drop_duplicates(
-        subset=[output_timestamp_col_name, "dw_ek_borger"],
-        keep="first",
+        subset=[output_timestamp_col_name, "dw_ek_borger"], keep="first"
     )
     output_df = output_df.dropna(subset=[output_timestamp_col_name])  # type: ignore
 
@@ -177,13 +174,11 @@ def physical_visits(
 
 @data_loaders.register("physical_visits")
 def physical_visits_loader(
-    n_rows: Union[int, None] = None,
-    return_value_as_visit_length_days: Union[bool, None] = False,
+    n_rows: Union[int, None] = None, return_value_as_visit_length_days: Union[bool, None] = False
 ) -> pd.DataFrame:
     """Load physical visits to all units."""
     return physical_visits(
-        n_rows=n_rows,
-        return_value_as_visit_length_days=return_value_as_visit_length_days,
+        n_rows=n_rows, return_value_as_visit_length_days=return_value_as_visit_length_days
     )
 
 
@@ -211,8 +206,7 @@ def physical_visits_to_psychiatry(
 
 @data_loaders.register("physical_visits_to_somatic")
 def physical_visits_to_somatic(
-    n_rows: Union[int, None] = None,
-    return_value_as_visit_length_days: Union[bool, None] = False,
+    n_rows: Union[int, None] = None, return_value_as_visit_length_days: Union[bool, None] = False
 ) -> pd.DataFrame:
     """Load physical visits to somatic."""
     return physical_visits(
@@ -306,7 +300,7 @@ def get_time_of_first_visit_to_psychiatry() -> pl.DataFrame:
                 timestamps_only=False,
                 return_value_as_visit_length_days=False,
                 timestamp_for_output="start",
-            ),
+            )
         )
         .groupby("dw_ek_borger")
         .agg(pl.col("timestamp").min())

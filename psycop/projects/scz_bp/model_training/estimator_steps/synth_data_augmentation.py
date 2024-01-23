@@ -51,8 +51,7 @@ class SyntheticDataAugmentation(BaseSampler):
         y_copy = pd.Series(y.copy(), name=outcome_col_name)
 
         data_loader = GenericDataLoader(
-            data=pd.concat([X_copy, y_copy], axis=1),
-            target_column=outcome_col_name,
+            data=pd.concat([X_copy, y_copy], axis=1), target_column=outcome_col_name
         )
 
         model = Plugins().get(self.model_name, **self.model_params)
@@ -68,13 +67,10 @@ class SyntheticDataAugmentation(BaseSampler):
             case _:
                 raise ValueError(
                     f"Invalid sampling strategy: {self.sampling_strategy}"
-                    + "Must be one of ['minority', 'all']",
+                    + "Must be one of ['minority', 'all']"
                 )
 
-        generated_data = model.generate(
-            count=n_samples_to_generate,
-            cond=cond,
-        ).dataframe()
+        generated_data = model.generate(count=n_samples_to_generate, cond=cond).dataframe()
 
         X_gen = generated_data.drop(columns=outcome_col_name)
         X_gen.columns = X_copy.columns

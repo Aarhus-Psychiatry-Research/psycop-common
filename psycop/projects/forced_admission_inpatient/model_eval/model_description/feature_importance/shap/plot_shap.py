@@ -17,16 +17,14 @@ def plot_shap_for_feature(df: pl.DataFrame, feature_name: str) -> pn.ggplot:
     feature_is_categorical = df["feature_value"].n_unique() < 10
 
     if not feature_is_binary:
-        df = df.filter(
-            pl.col("feature_value") < pl.col("feature_value").quantile(0.995),
-        )
+        df = df.filter(pl.col("feature_value") < pl.col("feature_value").quantile(0.995))
 
     if feature_is_binary:
         df = df.with_columns(
             pl.when(pl.col("feature_value") == 1.0)
             .then(pl.lit("True"))
             .otherwise(pl.lit("False"))
-            .keep_name(),
+            .keep_name()
         )
 
     if feature_is_categorical:
@@ -58,9 +56,7 @@ def plot_top_i_shap(shap_long_df: pl.DataFrame, i: int) -> dict[str, pn.ggplot]:
 
 
 def save_plots_for_top_i_shap_by_mean_abs(
-    shap_long_df: pl.DataFrame,
-    i: int,
-    save_dir: Path,
+    shap_long_df: pl.DataFrame, i: int, save_dir: Path
 ) -> Path:
     plots = plot_top_i_shap(i=i, shap_long_df=shap_long_df)
 

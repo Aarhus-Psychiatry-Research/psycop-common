@@ -4,22 +4,13 @@ import polars as pl
 import polars.selectors as cs
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.loggers.base_logger import (
-    BaselineLogger,
-)
-from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PresplitStep,
-)
+from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
 @BaselineRegistry.preprocessing.register("lookbehind_combination_col_filter")
 class LookbehindCombinationColFilter(PresplitStep):
-    def __init__(
-        self,
-        lookbehinds: set[int],
-        pred_col_prefix: str,
-        logger: BaselineLogger,
-    ):
+    def __init__(self, lookbehinds: set[int], pred_col_prefix: str, logger: BaselineLogger):
         self.lookbehinds = lookbehinds
         self.pred_col_prefix = pred_col_prefix
         self.lookbehind_pattern = r"within_(\d+)_days"
@@ -38,21 +29,17 @@ class LookbehindCombinationColFilter(PresplitStep):
         }
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
-        if not self.lookbehinds.issubset(
-            lookbehinds_in_dataset,
-        ):
+        if not self.lookbehinds.issubset(lookbehinds_in_dataset):
             self.logger.warn(
-                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {self.lookbehinds - lookbehinds_in_dataset}",
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {self.lookbehinds - lookbehinds_in_dataset}"
             )
 
-            lookbehinds_to_keep = self.lookbehinds.intersection(
-                lookbehinds_in_dataset,
-            )
+            lookbehinds_to_keep = self.lookbehinds.intersection(lookbehinds_in_dataset)
 
             if not lookbehinds_to_keep:
                 self.logger.fail("No predictors left after dropping lookbehinds.")
                 raise ValueError(
-                    "Endng training because no predictors left after dropping lookbehinds.",
+                    "Endng training because no predictors left after dropping lookbehinds."
                 )
 
             self.logger.warn(f"Training on {lookbehinds_to_keep}.")
@@ -60,16 +47,13 @@ class LookbehindCombinationColFilter(PresplitStep):
             lookbehinds_to_keep = self.lookbehinds
 
         cols_to_drop = self._cols_with_lookbehind_not_in_lookbehinds(
-            pred_cols_with_lookbehind,
-            lookbehinds_to_keep,
+            pred_cols_with_lookbehind, lookbehinds_to_keep
         )
 
         return input_df.drop(columns=cols_to_drop)
 
     def _cols_with_lookbehind_not_in_lookbehinds(
-        self,
-        pred_cols_with_lookbehind: list[str],
-        lookbehinds_to_keep: set[int],
+        self, pred_cols_with_lookbehind: list[str], lookbehinds_to_keep: set[int]
     ) -> list[str]:
         """Identify columns that have a lookbehind that is not in lookbehinds_to_keep."""
         return [
@@ -117,13 +101,9 @@ class FilterColumnsWithinSubset(PresplitStep):
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         all_columns = input_df.columns
-        subset_columns = [
-            column for column in all_columns if re.match(self.subset_rule, column)
-        ]
+        subset_columns = [column for column in all_columns if re.match(self.subset_rule, column)]
         columns_to_drop = [
-            column
-            for column in subset_columns
-            if not re.match(self.keep_matching, column)
+            column for column in subset_columns if not re.match(self.keep_matching, column)
         ]
 
         return input_df.drop(columns_to_drop)

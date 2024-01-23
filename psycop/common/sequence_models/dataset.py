@@ -26,8 +26,7 @@ class PatientSliceDataset(Dataset[PatientSlice]):
         return self.patient_slices[idx]
 
     def filter_patients(
-        self,
-        filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
+        self, filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]]
     ) -> None:
         self.patient_slices = filter_fn(self.patient_slices)
 
@@ -47,8 +46,7 @@ class PredictionTimeDataset(Dataset[PredictionTime]):
         return [pred_time.patient_slice for pred_time in self.prediction_times]
 
     def filter_patients(
-        self,
-        filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]],
+        self, filter_fn: Callable[[Sequence[PatientSlice]], Sequence[PatientSlice]]
     ) -> None:
         pred_times: list[PredictionTime] = []
 
@@ -58,8 +56,7 @@ class PredictionTimeDataset(Dataset[PredictionTime]):
 
             if len(filtered_slice) != 1:
                 raise ValueError(
-                    f"Filtering resulted in {len(filtered_slice)} patient slices. "
-                    "Expected 1.",
+                    f"Filtering resulted in {len(filtered_slice)} patient slices. " "Expected 1."
                 )
 
             new_pred_time = PredictionTime(

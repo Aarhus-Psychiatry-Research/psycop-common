@@ -10,19 +10,14 @@ import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.forced_admission_inpatient.model_eval.config import (
     DEV_GROUP_NAME,
     DEVELOPMENT_GROUP,
     PROJECT_MODEL_DIR,
 )
 
-model_name = DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[
-    0,
-    2,
-]
+model_name = DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[0, 2]
 
 PRETRAINED_CFG_PATH = PROJECT_MODEL_DIR / DEV_GROUP_NAME / model_name / "cfg.json"
 
@@ -47,10 +42,7 @@ def _get_cfg_from_json_file(path: Path) -> FullConfigSchema:
 
 
 def plot_timestamp_distribution(
-    df: pd.DataFrame,
-    timestamp_column: str,
-    split_name: str,
-    output_dir: Optional[Path],
+    df: pd.DataFrame, timestamp_column: str, split_name: str, output_dir: Optional[Path]
 ):
     # Convert the column to a pandas datetime object if it's not already
     if not pd.api.types.is_datetime64_any_dtype(df[timestamp_column]):
@@ -82,10 +74,7 @@ def plot_timestamp_distribution(
         plt.savefig(output_dir / f"{split_name}_timestamp_distribution.png")
 
 
-def _generate_general_descriptive_stats(
-    df: pd.DataFrame,
-    split_name: str,
-) -> pd.DataFrame:
+def _generate_general_descriptive_stats(df: pd.DataFrame, split_name: str) -> pd.DataFrame:
     """Generate descriptive stats table."""
 
     unique_patients = df["dw_ek_borger"].nunique()
@@ -97,9 +86,7 @@ def _generate_general_descriptive_stats(
     pred_cols = _get_pred_cols_df(df)
     na_ratios = pred_cols.isna().sum().sum() / (pred_cols.shape[0] * pred_cols.shape[1])
 
-    outcomes = df[
-        "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
-    ].sum()
+    outcomes = df["outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"].sum()
     outcome_rate = outcomes / df.shape[0]
 
     unique_patients_with_outcomes = df[
@@ -107,12 +94,11 @@ def _generate_general_descriptive_stats(
     ]["dw_ek_borger"].nunique()
 
     print(
-        df[
-            df["outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"]
-            == 1
-        ]["dw_ek_borger"]
+        df[df["outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"] == 1][
+            "dw_ek_borger"
+        ]
         .value_counts()
-        .head(10),
+        .head(10)
     )
 
     stats = pd.DataFrame(
@@ -127,7 +113,7 @@ def _generate_general_descriptive_stats(
             "outcomes": [outcomes],
             "unique_patients_with_outcomes": [unique_patients_with_outcomes],
             "na_ratios": [na_ratios],
-        },
+        }
     )
 
     return stats
@@ -141,9 +127,7 @@ def _get_pred_cols_df(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _calc_feature_corr_with_outcome(
-    train_df: pd.DataFrame,
-    val_df: pd.DataFrame,
-    only_tfidf: bool = False,
+    train_df: pd.DataFrame, val_df: pd.DataFrame, only_tfidf: bool = False
 ) -> pd.DataFrame:
     """
     Calculate the Pearson correlation coefficients between numeric feature columns$
@@ -152,23 +136,15 @@ def _calc_feature_corr_with_outcome(
     print("Calculating correlations!")
 
     if only_tfidf:
-        pred_cols = [
-            col for col in train_df.columns if col.startswith("pred_pred_tfidf")
-        ]  # type: ignore
+        pred_cols = [col for col in train_df.columns if col.startswith("pred_pred_tfidf")]  # type: ignore
 
         train_correlations = train_df[
-            [
-                *pred_cols,
-                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
-            ]
+            [*pred_cols, "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"]
         ].corr()[
             "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
         val_correlations = val_df[
-            [
-                *pred_cols,
-                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
-            ]
+            [*pred_cols, "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"]
         ].corr()[
             "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
@@ -177,18 +153,12 @@ def _calc_feature_corr_with_outcome(
         pred_cols = [col for col in train_df.columns if col.startswith("pred_")]  # type: ignore
 
         train_correlations = train_df[
-            [
-                *pred_cols,
-                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
-            ]
+            [*pred_cols, "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"]
         ].corr()[
             "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
         val_correlations = val_df[
-            [
-                *pred_cols,
-                "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
-            ]
+            [*pred_cols, "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"]
         ].corr()[
             "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous"
         ]  # Pearsonns corr coeff
@@ -199,9 +169,8 @@ def _calc_feature_corr_with_outcome(
             "feature": pred_cols,
             "train_split_correlations": train_correlations[pred_cols],  # type: ignore
             "val_split_correlations": val_correlations[pred_cols],  # type: ignore
-            "correlation_diffs": train_correlations[pred_cols]
-            - val_correlations[pred_cols],  # type: ignore
-        },
+            "correlation_diffs": train_correlations[pred_cols] - val_correlations[pred_cols],  # type: ignore
+        }
     ).reset_index(drop=True)
 
     return result_df
@@ -216,11 +185,7 @@ def _plot_corr_diffs(
     corr_array = df["correlation_diffs"].values.reshape(shape[0], shape[1])  # type: ignore
 
     # Create a green to red colormap
-    cmap = LinearSegmentedColormap.from_list(
-        "GreenToRed",
-        ["#FF0000", "#00FF00"],
-        N=256,
-    )
+    cmap = LinearSegmentedColormap.from_list("GreenToRed", ["#FF0000", "#00FF00"], N=256)
 
     # Create a heatmap of the decimal values
     plt.figure(figsize=(8, 8))
@@ -241,15 +206,10 @@ def _plot_corr_diffs(
         plt.savefig(output_dir / f"{feature_split}_correlation_differences.png")
 
 
-def main(
-    cfg: FullConfigSchema,
-    synth_data: bool = False,
-    save: bool = True,
-) -> pd.DataFrame:
+def main(cfg: FullConfigSchema, synth_data: bool = False, save: bool = True) -> pd.DataFrame:
     """Main."""
     output_dir = (
-        Path("E:\\shared_resources\\forced_admissions_inpatient")
-        / "data_split_comparisons"
+        Path("E:\\shared_resources\\forced_admissions_inpatient") / "data_split_comparisons"
     )
 
     cfg = _get_cfg_from_json_file(path=PRETRAINED_CFG_PATH)
@@ -267,7 +227,7 @@ def main(
             columns={
                 "citizen_ids": "dw_ek_borger",
                 "outc_t2d_within_30_days_maximum_fallback_0_dichotomous": "outc_forced_admissions_within_180_days_maximum_fallback_0_dichotomous",
-            },
+            }
         )
 
         train_df = df.sample(frac=0.8, random_state=42)
@@ -275,15 +235,11 @@ def main(
 
     else:
         train_df = load_and_filter_split_from_cfg(
-            data_cfg=cfg.data,
-            pre_split_cfg=cfg.preprocessing.pre_split,
-            split="train",
+            data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split, split="train"
         )
 
         val_df = load_and_filter_split_from_cfg(
-            data_cfg=cfg.data,
-            pre_split_cfg=cfg.preprocessing.pre_split,
-            split="val",
+            data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split, split="val"
         )
 
     train_stats = _generate_general_descriptive_stats(train_df, split_name="train")
@@ -303,29 +259,17 @@ def main(
     other_features = corrs[~corrs["feature"].str.startswith("pred_pred_tfidf")]
 
     _plot_corr_diffs(
-        tfidf_features,
-        (25, 30),
-        output_dir=output_dir,
-        feature_split="tfidf_features",
+        tfidf_features, (25, 30), output_dir=output_dir, feature_split="tfidf_features"
     )
     _plot_corr_diffs(
-        other_features,
-        (49, 22),
-        output_dir=output_dir,
-        feature_split="other_features",
+        other_features, (49, 22), output_dir=output_dir, feature_split="other_features"
     )
 
     plot_timestamp_distribution(
-        train_df,
-        timestamp_column="timestamp",
-        split_name="train",
-        output_dir=output_dir,
+        train_df, timestamp_column="timestamp", split_name="train", output_dir=output_dir
     )
     plot_timestamp_distribution(
-        val_df,
-        timestamp_column="timestamp",
-        split_name="val",
-        output_dir=output_dir,
+        val_df, timestamp_column="timestamp", split_name="val", output_dir=output_dir
     )
 
     return stats

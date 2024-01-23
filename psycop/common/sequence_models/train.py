@@ -9,9 +9,7 @@ import lightning.pytorch as pl
 import torch
 from torch.utils.data import DataLoader
 
-from psycop.common.global_utils.config_utils import (
-    flatten_nested_dict,
-)
+from psycop.common.global_utils.config_utils import flatten_nested_dict
 
 from ..model_training_v2.loggers.mlflow_logger import sanitise_dict_keys
 from .config_utils import load_config, parse_config

@@ -28,7 +28,7 @@ class FakePredictionTimeCollater(BasePredictionTimeCollater):
                 source_type="diagnosis",
                 source_subtype="fake_subtype",
                 value="fake_value",
-            ),
+            )
         ]
 
         patient_slices = PredictionTimeDataset(
@@ -46,7 +46,7 @@ class FakePredictionTimeCollater(BasePredictionTimeCollater):
                     outcome=True,
                 )
                 for i in range(4)
-            ],
+            ]
         )
 
         return patient_slices

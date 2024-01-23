@@ -2,9 +2,7 @@ import pandas as pd
 import polars as pl
 
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
     get_best_eval_pipeline,
 )
@@ -16,19 +14,14 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 )
 
 
-def _load_vocabulary(
-    vocab_filename: str,
-) -> pd.DataFrame:
-    vocab_filepath = (
-        OVARTACI_SHARED_DIR / "text_models" / "vocabulary_lists" / vocab_filename
-    )
+def _load_vocabulary(vocab_filename: str) -> pd.DataFrame:
+    vocab_filepath = OVARTACI_SHARED_DIR / "text_models" / "vocabulary_lists" / vocab_filename
 
     return pd.read_parquet(vocab_filepath)
 
 
 def generate_feature_importance_table(
-    pipeline_run: ForcedAdmissionInpatientPipelineRun,
-    vocab_filename: str,
+    pipeline_run: ForcedAdmissionInpatientPipelineRun, vocab_filename: str
 ) -> pl.DataFrame:
     pipeline = pipeline_run.pipeline_outputs.pipe
 
@@ -49,7 +42,7 @@ def generate_feature_importance_table(
         pipeline[0]["feature_selection"]  # type: ignore
 
         feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
-            indices=True,
+            indices=True
         )
         selected_feature_names = [feature_names[i] for i in feature_indices]
 
@@ -58,7 +51,7 @@ def generate_feature_importance_table(
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
-        {"Feature Name": selected_feature_names, "Gain": feature_importances},
+        {"Feature Name": selected_feature_names, "Gain": feature_importances}
     )
 
     # Sort the table by gain in descending order
@@ -75,16 +68,13 @@ def generate_feature_importance_table(
     pd_df = pd_df.set_index("index")
 
     # Map tfidf indices with actual ngrams from vocabulary
-    pd_df["Feature Name"][pd_df["Feature Name"].str.contains("tfidf")] = pd_df[
-        "Feature Name"
-    ][pd_df["Feature Name"].str.contains("tfidf")].str.replace(
-        r"\d+$",
-        lambda x: vocab.loc[int(x.group())]["Word"],
-    )
+    pd_df["Feature Name"][pd_df["Feature Name"].str.contains("tfidf")] = pd_df["Feature Name"][
+        pd_df["Feature Name"].str.contains("tfidf")
+    ].str.replace(r"\d+$", lambda x: vocab.loc[int(x.group())]["Word"])
 
-    with (
-        pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html"
-    ).open("w") as html_file:
+    with (pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html").open(
+        "w"
+    ) as html_file:
         html = pd_df.to_html()
         html_file.write(html)
 

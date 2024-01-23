@@ -7,8 +7,7 @@ from pandas import DataFrame
 
 
 def convert_cols_with_matching_colnames_to_datetime(
-    df: pd.DataFrame,
-    colname_substr: str,
+    df: pd.DataFrame, colname_substr: str
 ) -> pd.DataFrame:
     """Convert columns that contain colname_substr in their name to datetimes.
 
@@ -20,11 +19,8 @@ def convert_cols_with_matching_colnames_to_datetime(
         pd.DataFrame: The converted dataframe.
     """
     df.loc[:, df.columns.str.contains(colname_substr)] = df.loc[
-        :,
-        df.columns.str.contains(colname_substr),
-    ].apply(
-        pd.to_datetime,
-    )
+        :, df.columns.str.contains(colname_substr)
+    ].apply(pd.to_datetime)
     return df
 
 

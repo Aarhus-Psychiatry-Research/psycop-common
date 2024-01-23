@@ -5,10 +5,7 @@ import polars as pl
 import pytest
 
 from ..test_utils.str_to_df import str_to_pl_df
-from .validated_frame import (
-    CombinedFrameValidationError,
-    ValidatedFrame,
-)
+from .validated_frame import CombinedFrameValidationError, ValidatedFrame
 from .validator_rules import ColumnTypeRule, ValidatorRule
 
 
@@ -22,7 +19,7 @@ def test_col_name_validation():
     df = str_to_pl_df(
         """test_col_name,
                       1,
-""",
+"""
     )
 
     with pytest.raises(CombinedFrameValidationError, match=".*missing.*"):
@@ -33,7 +30,7 @@ def test_type_validation():
     df = str_to_pl_df(
         """test,
                       1,
-""",
+"""
     )
 
     @dataclass(frozen=True)
@@ -54,10 +51,7 @@ def test_rules_without_columns_error():
         test_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(pl.Int64),)
         allow_extra_columns: bool = True
 
-    with pytest.raises(
-        CombinedFrameValidationError,
-        match=".*was not present.*",
-    ):
+    with pytest.raises(CombinedFrameValidationError, match=".*was not present.*"):
         FakeFrameWithRulesWithoutColumns(frame=pl.DataFrame())
 
 
@@ -88,6 +82,6 @@ def test_allow_unspecified_column_if_allow_extra_():
     df = str_to_pl_df(
         """test_col_name, extra_col,
                       1, 1,
-""",
+"""
     )
     FakeExtraColValidatedFrame(df)

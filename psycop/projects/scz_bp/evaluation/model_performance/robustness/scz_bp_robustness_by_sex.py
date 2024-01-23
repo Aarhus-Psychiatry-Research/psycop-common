@@ -19,9 +19,4 @@ def scz_bp_auroc_by_sex(eval_ds: EvalDataset) -> pn.ggplot:
     int_to_sex = {0: "Male", 1: "Female"}
     df["Sex"] = df["is_female"].map(int_to_sex).astype("category")
 
-    return t2d_plot_robustness(
-        df,
-        x_column="Sex",
-        line_y_col_name="auroc",
-        xlab="Sex",
-    )
+    return t2d_plot_robustness(df, x_column="Sex", line_y_col_name="auroc", xlab="Sex")

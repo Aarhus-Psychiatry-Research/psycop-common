@@ -21,11 +21,10 @@ class FakeCohortDefiner(CohortDefiner):
     1,2021-01-01
     2,2022-01-01
     3,2023-01-01
-    """,
+    """
         )
         return FilteredPredictionTimeBundle(
-            prediction_times=PredictionTimeFrame(df),
-            filter_steps=[],
+            prediction_times=PredictionTimeFrame(df), filter_steps=[]
         )
 
     @staticmethod
@@ -33,7 +32,7 @@ class FakeCohortDefiner(CohortDefiner):
         df = str_to_pl_df(
             """dw_ek_borger,timestamp
     1,2021-01-02
-    """,
+    """
         )
         return OutcomeTimestampFrame(frame=df)
 
@@ -47,16 +46,13 @@ def test_polars_dataframe_to_dict():
             get_test_patient(patient_id=2),
             get_test_patient(patient_id=3),
         ],
-    ).create_prediction_times(
-        lookbehind=dt.timedelta(days=1),
-        lookahead=dt.timedelta(days=1),
-    )
+    ).create_prediction_times(lookbehind=dt.timedelta(days=1), lookahead=dt.timedelta(days=1))
 
     assert (
         len(prediction_times) == 2
     )  # Third patient is filtered out because of insufficient lookahead
     patient_1 = list(  # noqa: RUF015
-        filter(lambda x: x.patient_slice.patient.patient_id == 1, prediction_times),
+        filter(lambda x: x.patient_slice.patient.patient_id == 1, prediction_times)
     )[0]
     assert patient_1.prediction_timestamp == dt.datetime(2021, 1, 1)
     # The rest of the prediction time creation logic is tested in the patient object tests

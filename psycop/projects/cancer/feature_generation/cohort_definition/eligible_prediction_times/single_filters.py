@@ -1,9 +1,7 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    MoveIntoRMBaselineLoader,
-)
+from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
@@ -46,22 +44,15 @@ class CancerWashoutMoveFilter(PredictionTimeFilter):
 class CancerPrevalentFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_cancer_diagnosis = pl.from_pandas(get_first_cancer_diagnosis()).select(
-            pl.col("timestamp").alias("timestamp_outcome"),
-            pl.col("dw_ek_borger"),
+            pl.col("timestamp").alias("timestamp_outcome"), pl.col("dw_ek_borger")
         )
 
         prediction_times_with_outcome = df.join(
-            first_cancer_diagnosis.lazy(),
-            on="dw_ek_borger",
-            how="inner",
+            first_cancer_diagnosis.lazy(), on="dw_ek_borger", how="inner"
         )
 
         prevalent_prediction_times = prediction_times_with_outcome.filter(
-            pl.col("timestamp") > pl.col("timestamp_outcome"),
+            pl.col("timestamp") > pl.col("timestamp_outcome")
         )
 
-        return df.join(
-            prevalent_prediction_times,
-            on=["dw_ek_borger", "timestamp"],
-            how="anti",
-        )
+        return df.join(prevalent_prediction_times, on=["dw_ek_borger", "timestamp"], how="anti")

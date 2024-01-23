@@ -16,18 +16,15 @@ def test_drop_records_if_datediff_days_smaller_than():
     2021-01-01, 2021-01-31,
     2021-01-30, 2021-01-01,
     2021-01-01, 2021-01-01,
-    """,
+    """
     )
 
     test_df = test_df.append(
-        pd.DataFrame({"timestamp_2": pd.NaT, "timestamp_1": "2021-01-01"}, index=[1]),
+        pd.DataFrame({"timestamp_2": pd.NaT, "timestamp_1": "2021-01-01"}, index=[1])
     )  # type: ignore
 
     test_df = drop_records_if_datediff_days_smaller_than(
-        df=test_df,
-        t2_col_name="timestamp_2",
-        t1_col_name="timestamp_1",
-        threshold_days=1,
+        df=test_df, t2_col_name="timestamp_2", t1_col_name="timestamp_1", threshold_days=1
     )
 
     differences = (
@@ -55,10 +52,7 @@ def test_bin_contiuous_data():
     one_to_five = pd.Series([1, 2, 3, 4, 5])
 
     # One bin, more than 5
-    bins, samples_in_bins = bin_continuous_data(
-        series=one_to_five,
-        bins=[0, 5],
-    )
+    bins, samples_in_bins = bin_continuous_data(series=one_to_five, bins=[0, 5])
     # Check that all values equal 1+
     assert bins.unique() == "1+"
     assert samples_in_bins.unique() == 5

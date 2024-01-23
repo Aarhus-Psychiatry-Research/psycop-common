@@ -81,17 +81,12 @@ def text_model_pipeline(
     model_path = TEXT_MODEL_DIR / filename
 
     if model_path.exists():
-        log.warning(
-            f"Text model with the chosen params already exists in dir: {model_path}.",
-        )
+        log.warning(f"Text model with the chosen params already exists in dir: {model_path}.")
         return model_path
 
-    filter_list = (
-        [[("overskrift", "=", f"{sfi}")] for sfi in sfi_type] if sfi_type else None
-    )
+    filter_list = [[("overskrift", "=", f"{sfi}")] for sfi in sfi_type] if sfi_type else None
     corpus = pd.read_parquet(
-        path=PREPROCESSED_TEXT_DIR / f"{corpus_name}.parquet",
-        filters=filter_list,
+        path=PREPROCESSED_TEXT_DIR / f"{corpus_name}.parquet", filters=filter_list
     )
 
     # fit model

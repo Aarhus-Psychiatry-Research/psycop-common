@@ -8,10 +8,7 @@ from wasabi import Printer
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.types.validated_frame import ValidatedFrame
-from psycop.common.types.validator_rules import (
-    ColumnTypeRule,
-    ValidatorRule,
-)
+from psycop.common.types.validator_rules import ColumnTypeRule, ValidatorRule
 
 
 @dataclass(frozen=True)
@@ -21,14 +18,10 @@ class PredictionTimeFrame(ValidatedFrame[pl.DataFrame]):
     frame: pl.DataFrame
 
     entity_id_col_name: str = "dw_ek_borger"
-    entity_id_col_rules: Sequence[ValidatorRule] = (
-        ColumnTypeRule(expected_type=pl.Int64),
-    )
+    entity_id_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Int64),)
 
     timestamp_col_name: str = "timestamp"
-    timestamp_col_rules: Sequence[ValidatorRule] = (
-        ColumnTypeRule(expected_type=pl.Datetime),
-    )
+    timestamp_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Datetime),)
 
     allow_extra_columns: bool = True
 
@@ -40,14 +33,10 @@ class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
     frame: pl.DataFrame
 
     entity_id_col_name: str = "dw_ek_borger"
-    entity_id_col_rules: Sequence[ValidatorRule] = (
-        ColumnTypeRule(expected_type=pl.Int64),
-    )
+    entity_id_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Int64),)
 
     timestamp_col_name: str = "timestamp"
-    timestamp_col_rules: Sequence[ValidatorRule] = (
-        ColumnTypeRule(expected_type=pl.Datetime),
-    )
+    timestamp_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Datetime),)
 
     allow_extra_columns: bool = True
 
@@ -125,14 +114,10 @@ def filter_prediction_times(
                     step_name=filter_step.__class__.__name__,
                     n_prediction_times_before=prefilter_prediction_times.shape[0],  # type: ignore
                     n_prediction_times_after=prediction_times.collect().shape[0],
-                    n_ids_before=prefilter_prediction_times[  # type: ignore
-                        entity_id_col_name
-                    ].n_unique(),
-                    n_ids_after=prediction_times.collect()[
-                        entity_id_col_name
-                    ].n_unique(),
+                    n_ids_before=prefilter_prediction_times[entity_id_col_name].n_unique(),  # type: ignore
+                    n_ids_after=prediction_times.collect()[entity_id_col_name].n_unique(),
                     step_index=i,
-                ),
+                )
             )
         # For much faster speeds, we can apply the filter step to the lazy frame.
         # This means we won't get the counts before and after. If you want those, be sure to pass in a DataFrame.

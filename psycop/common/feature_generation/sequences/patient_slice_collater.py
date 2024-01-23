@@ -23,7 +23,7 @@ class PatientSliceCollater(BasePatientSliceCollater):
 
     def get_dataset(self) -> PatientSliceDataset:
         return PatientSliceDataset(
-            [patient.as_slice() for patient in self.patient_loader.get_patients()],
+            [patient.as_slice() for patient in self.patient_loader.get_patients()]
         )
 
 
@@ -33,5 +33,5 @@ if __name__ == "__main__":
             event_loaders=[DiagnosisLoader()],
             split_filter=RegionalFilter(splits_to_keep=["train"]),
             fraction=0.05,
-        ),
+        )
     ).get_dataset()

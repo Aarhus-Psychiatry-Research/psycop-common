@@ -5,9 +5,7 @@ from typing import Literal
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PresplitStep,
-)
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 from ...base_dataloader import BaselineDataLoader
 
@@ -25,12 +23,7 @@ class AgeFilter(PresplitStep):
 
 @BaselineRegistry.preprocessing.register("window_filter")
 class WindowFilter(PresplitStep):
-    def __init__(
-        self,
-        n_days: int,
-        direction: Literal["ahead", "behind"],
-        timestamp_col_name: str,
-    ):
+    def __init__(self, n_days: int, direction: Literal["ahead", "behind"], timestamp_col_name: str):
         self.n_days = timedelta(n_days)
         self.direction = direction
         self.timestamp_col_name = timestamp_col_name
@@ -63,12 +56,11 @@ class QuarantineFilter:
     def __post_init__(self) -> None:
         required_columns = [self.timestamp_col_name, self.entity_id_col_name]
         if self.validate_on_init and not all(
-            col in self.quarantine_timestamps_loader.load().columns
-            for col in required_columns
+            col in self.quarantine_timestamps_loader.load().columns for col in required_columns
         ):
             raise ValueError(
                 "The quarantine timestamps loader must load a dataframe with the columns 'timestamp' and "
-                f"'{self.entity_id_col_name}'",
+                f"'{self.entity_id_col_name}'"
             )
 
     def _generate_pred_time_uuid_column(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
@@ -77,11 +69,9 @@ class QuarantineFilter:
                 [
                     pl.col(self.entity_id_col_name).cast(pl.Utf8),
                     pl.lit("-"),
-                    pl.col(self.timestamp_col_name).dt.strftime(
-                        "%Y-%m-%d-%H-%M-%S",
-                    ),
-                ],
-            ).alias(self._tmp_pred_time_uuid_col_name),
+                    pl.col(self.timestamp_col_name).dt.strftime("%Y-%m-%d-%H-%M-%S"),
+                ]
+            ).alias(self._tmp_pred_time_uuid_col_name)
         )
 
         return input_df
@@ -98,39 +88,31 @@ class QuarantineFilter:
             added_pred_time_uuid_col = True
         if self._tmp_pred_time_uuid_col_name not in quarantine_timestamps_df.columns:
             quarantine_timestamps_df = self._generate_pred_time_uuid_column(
-                quarantine_timestamps_df,
+                quarantine_timestamps_df
             )
 
         df_with_quarantine_timestamps = input_df.join(
-            quarantine_timestamps_df.rename(
-                {self.timestamp_col_name: "timestamp_quarantine"},
-            ),
+            quarantine_timestamps_df.rename({self.timestamp_col_name: "timestamp_quarantine"}),
             on=self.entity_id_col_name,
             how="left",
         ).with_columns(
-            pred_time_uuid=pl.col(self.timestamp_col_name).dt.strftime(
-                "%Y-%m-%d-%H-%M-%S",
-            ),
+            pred_time_uuid=pl.col(self.timestamp_col_name).dt.strftime("%Y-%m-%d-%H-%M-%S")
         )
 
         time_since_quarantine = df_with_quarantine_timestamps.with_columns(
             (pl.col(self.timestamp_col_name) - pl.col("timestamp_quarantine"))
             .dt.days()
-            .alias("days_since_quarantine"),
+            .alias("days_since_quarantine")
         )
 
         # Check if the quarantine date hits the prediction time
         hit_by_quarantine = time_since_quarantine.filter(
             (pl.col("days_since_quarantine") < self.quarantine_interval_days)
-            & (pl.col("days_since_quarantine") > 0),
+            & (pl.col("days_since_quarantine") > 0)
         ).select(self._tmp_pred_time_uuid_col_name)
 
         # Use these rows to filter the prediction times, ensuring that all columns are kept
-        df = input_df.join(
-            hit_by_quarantine,
-            on=self._tmp_pred_time_uuid_col_name,
-            how="anti",
-        )
+        df = input_df.join(hit_by_quarantine, on=self._tmp_pred_time_uuid_col_name, how="anti")
 
         if added_pred_time_uuid_col:
             df = df.drop(self._tmp_pred_time_uuid_col_name)

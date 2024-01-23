@@ -3,9 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-FEATURE_SET_DIR = Path(
-    "E:/shared_resources/forced_admissions_inpatient/flattened_datasets",
-)
+FEATURE_SET_DIR = Path("E:/shared_resources/forced_admissions_inpatient/flattened_datasets")
 
 
 def subset_feature_df(feature_set_path: str):
@@ -17,16 +15,10 @@ def subset_feature_df(feature_set_path: str):
         full_df = pd.read_parquet(FULL_PATH / f"{split}.parquet")
 
         # Get column subsets
-        sent_trans_cols = [
-            col for col in full_df.columns if col.startswith("pred_pred_sent")
-        ]  # type: ignore
-        tfidf_cols = [
-            col for col in full_df.columns if col.startswith("pred_pred_tfidf")
-        ]  # type: ignore
+        sent_trans_cols = [col for col in full_df.columns if col.startswith("pred_pred_sent")]  # type: ignore
+        tfidf_cols = [col for col in full_df.columns if col.startswith("pred_pred_tfidf")]  # type: ignore
         all_pred_cols = [col for col in full_df.columns if col.startswith("pred_")]  # type: ignore
-        non_text_pred_cols = list(
-            set(all_pred_cols) - set(tfidf_cols) - set(sent_trans_cols),
-        )
+        non_text_pred_cols = list(set(all_pred_cols) - set(tfidf_cols) - set(sent_trans_cols))
         non_text_pred_cols.remove("pred_age_in_years")
         non_text_pred_cols.remove("pred_sex_female")
 
@@ -51,28 +43,20 @@ def subset_feature_df(feature_set_path: str):
         # Structured + tfidf
         structured_and_tfidf_df = full_df.copy().drop(columns=sent_trans_cols)
 
-        structured_and_tfidf_path = (
-            FULL_PATH.parent / "structured_and_tfidf_750_feature_set"
-        )
+        structured_and_tfidf_path = FULL_PATH.parent / "structured_and_tfidf_750_feature_set"
 
         Path.mkdir(structured_and_tfidf_path, exist_ok=True)
 
-        structured_and_tfidf_df.to_parquet(
-            structured_and_tfidf_path / f"{split}.parquet",
-        )
+        structured_and_tfidf_df.to_parquet(structured_and_tfidf_path / f"{split}.parquet")
 
         # Structured + sentence embeddings
         structured_and_sent_trans_df = full_df.copy().drop(columns=tfidf_cols)
 
-        structured_and_sent_trans_path = (
-            FULL_PATH.parent / "structured_and_sent_trans_feature_set"
-        )
+        structured_and_sent_trans_path = FULL_PATH.parent / "structured_and_sent_trans_feature_set"
 
         Path.mkdir(structured_and_sent_trans_path, exist_ok=True)
 
-        structured_and_sent_trans_df.to_parquet(
-            structured_and_sent_trans_path / f"{split}.parquet",
-        )
+        structured_and_sent_trans_df.to_parquet(structured_and_sent_trans_path / f"{split}.parquet")
 
         # Only structured
         structured_df = full_df.copy().drop(columns=tfidf_cols + sent_trans_cols)
@@ -86,6 +70,6 @@ def subset_feature_df(feature_set_path: str):
 
 if __name__ == "__main__":
     subset_feature_df(
-        "no_washout_feature_sets/full_feature_set_with_sentence_transformers_and_tfidf_750_no_washout",
+        "no_washout_feature_sets/full_feature_set_with_sentence_transformers_and_tfidf_750_no_washout"
     )
     subset_feature_df("full_feature_set_with_sentence_transformers_and_tfidf_750")

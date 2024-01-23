@@ -47,15 +47,11 @@ def sfi_loader(
     # Drop rows with duplicate dw_ek_borger and datotid_resultat_udfoert
     # Data contained rows with scores reported at the same time for the same patient but with different values
     df = df.drop_duplicates(  # type: ignore
-        subset=["datotid_resultat_udfoert", "dw_ek_borger"],
-        keep="first",
+        subset=["datotid_resultat_udfoert", "dw_ek_borger"], keep="first"
     )
 
     df = df.rename(  # type: ignore
-        columns={
-            "datotid_resultat_udfoert": "timestamp",
-            value_col: "value",
-        },
+        columns={"datotid_resultat_udfoert": "timestamp", value_col: "value"}
     )
 
     return df.reset_index(drop=True)
@@ -72,9 +68,7 @@ def broeset_violence_checklist(n_rows: int | None = None) -> pd.DataFrame:
 
 
 @data_loaders.register("broeset_violence_checklist_physical_threats")
-def broeset_violence_checklist_physical_threats(
-    n_rows: int | None = None,
-) -> pd.DataFrame:
+def broeset_violence_checklist_physical_threats(n_rows: int | None = None) -> pd.DataFrame:
     df = sfi_loader(
         aktivitetstypenavn="Brøset Violence Checkliste (BVC)",
         elementledetekst="Fysiske trusler",
@@ -83,12 +77,7 @@ def broeset_violence_checklist_physical_threats(
     )
 
     df["value"] = df["value"].replace(
-        to_replace=[
-            "010BroesetNulPoint",
-            "020BroesetEtPoint",
-        ],
-        value=[0, 1],
-        regex=False,
+        to_replace=["010BroesetNulPoint", "020BroesetEtPoint"], value=[0, 1], regex=False
     )
 
     return df
@@ -243,20 +232,14 @@ def unsupervised_temporary_leave(n_rows: int | None = None) -> pd.DataFrame:
 
 def smoking_continuous() -> pd.DataFrame:
     """Gets smoking as a continuous variable. The unit is 'pack-years', i.e. number of years smoked times packs smoked per day."""
-    df = pl.from_pandas(
-        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]"),
-    )
+    df = pl.from_pandas(sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]"))
 
     df_pl_subset = df.select(
-        [
-            "dw_ek_borger",
-            "datotid_senest_aendret_i_sfien",
-            "numelementvaerdi",
-        ],
+        ["dw_ek_borger", "datotid_senest_aendret_i_sfien", "numelementvaerdi"]
     ).filter(pl.col("numelementvaerdi").is_not_null())
 
     return df_pl_subset.rename(
-        {"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"},
+        {"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"}
     ).to_pandas()
 
 
@@ -274,24 +257,18 @@ def smoking_categorical(mapping: dict[str, int] | None = None) -> pd.DataFrame:
             "Aldrig røget": 1,
         }
 
-    df = pl.from_pandas(
-        sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]"),
-    )
+    df = pl.from_pandas(sql_load(query="SELECT * FROM [fct].[FOR_Rygning_SFI_inkl_2021_feb2022]"))
 
     df_pl_subset = df.select(
-        [
-            "dw_ek_borger",
-            "datotid_senest_aendret_i_sfien",
-            "rygning_samlet",
-        ],
+        ["dw_ek_borger", "datotid_senest_aendret_i_sfien", "rygning_samlet"]
     ).filter(pl.col("rygning_samlet").is_not_null())
 
     mapped = df_pl_subset.with_columns(
-        pl.col("rygning_samlet").apply(lambda x: mapping.get(x), return_dtype=pl.Int16),  # type: ignore
+        pl.col("rygning_samlet").apply(lambda x: mapping.get(x), return_dtype=pl.Int16)  # type: ignore
     )
 
     return mapped.rename(
-        {"rygning_samlet": "value", "datotid_senest_aendret_i_sfien": "timestamp"},
+        {"rygning_samlet": "value", "datotid_senest_aendret_i_sfien": "timestamp"}
     ).to_pandas()
 
 
@@ -300,22 +277,15 @@ def _get_blood_pressure_pulse(
 ) -> pl.LazyFrame:
     df = (
         pl.from_pandas(
-            sql_load(
-                query="SELECT * FROM [fct].[FOR_SFI_Blodtyk_Puls_psyk_somatik_inkl_2021]",
-            ),
+            sql_load(query="SELECT * FROM [fct].[FOR_SFI_Blodtyk_Puls_psyk_somatik_inkl_2021]")
         )
         .lazy()
-        .rename(
-            {
-                "datotid_senest_aendret_i_sfien": "timestamp",
-                "numelementvaerdi": "value",
-            },
-        )
+        .rename({"datotid_senest_aendret_i_sfien": "timestamp", "numelementvaerdi": "value"})
     )
 
     df.select(["dw_ek_borger", "timestamp", "value", "elementledetekst"])
     return df.filter(pl.col("elementledetekst") == pl.lit(subtype)).select(
-        ["dw_ek_borger", "timestamp", "value"],
+        ["dw_ek_borger", "timestamp", "value"]
     )
 
 

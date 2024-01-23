@@ -52,7 +52,7 @@ def apply(
         {
             "pred_time_uuid": [pt.pred_time_uuid for pt in dataset.prediction_times],
             "pred_proba": predictions.numpy(),
-        },
+        }
     )
     out_path = output_parquet_path.with_suffix(".parquet")
     df.write_parquet(out_path)

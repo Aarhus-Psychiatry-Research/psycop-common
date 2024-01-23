@@ -17,7 +17,7 @@ def test_get_confusion_matrix_cells_from_df():
         1,1,
         1,1,
         1,1
-        """,
+        """
     )
 
     cells = get_confusion_matrix_cells_from_df(long_df)
@@ -27,12 +27,8 @@ def test_get_confusion_matrix_cells_from_df():
     assert cells.false_positives == 3
     assert cells.true_positives == 4
 
-    assert cells.ppv == cells.true_positives / (
-        cells.true_positives + cells.false_positives
-    )
-    assert cells.npv == cells.true_negatives / (
-        cells.true_negatives + cells.false_negatives
-    )
+    assert cells.ppv == cells.true_positives / (cells.true_positives + cells.false_positives)
+    assert cells.npv == cells.true_negatives / (cells.true_negatives + cells.false_negatives)
     assert cells.specificity == cells.true_negatives / (
         cells.true_negatives + cells.false_positives
     )

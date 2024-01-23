@@ -16,7 +16,7 @@ if __name__ == "__main__":
     DEBUG = False
 
     note_types_dict = {
-        "aktuelt_psykisk": ["Aktuelt psykisk"],
+        "aktuelt_psykisk": ["Aktuelt psykisk"]
         # "all_relevant": [
         #     "Observation af patient, Psykiatri",
         #     "Samtale med behandlingssigte",

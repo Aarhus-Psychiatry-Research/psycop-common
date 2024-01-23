@@ -7,9 +7,7 @@ from timeseriesflattener.feature_specs.single_specs import AnySpec
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     save_chunk_to_disk,
 )
@@ -26,7 +24,7 @@ class ChunkedFeatureGenerator:
         """Generate features in chunks to avoid memory issues"""
 
         ChunkedFeatureGenerator.remove_files_from_dir(  # Ensures that all saved chunks from previous crashed run are removed
-            project_info.flattened_dataset_dir,
+            project_info.flattened_dataset_dir
         )
 
         print(f"Generating features in chunks of {chunksize}")
@@ -42,23 +40,17 @@ class ChunkedFeatureGenerator:
 
         print("Feature generation done. Merging feature sets...")
         df = ChunkedFeatureGenerator.merge_feature_sets_from_dirs(
-            project_info.flattened_dataset_dir,
+            project_info.flattened_dataset_dir
         )
 
-        ChunkedFeatureGenerator.remove_files_from_dir(
-            project_info.flattened_dataset_dir,
-        )
+        ChunkedFeatureGenerator.remove_files_from_dir(project_info.flattened_dataset_dir)
 
         return df.to_pandas()
 
     @staticmethod
-    def merge_feature_sets_from_dirs(
-        feature_dir: Path,
-    ) -> pl.DataFrame:
+    def merge_feature_sets_from_dirs(feature_dir: Path) -> pl.DataFrame:
         """Merge all feature sets from source_dirs into target_dir"""
-        dfs = ChunkedFeatureGenerator._read_chunk_dfs_from_dir(
-            feature_dir=feature_dir,
-        )
+        dfs = ChunkedFeatureGenerator._read_chunk_dfs_from_dir(feature_dir=feature_dir)
         df = ChunkedFeatureGenerator.merge_feature_dfs(dfs)
 
         return df
@@ -69,8 +61,7 @@ class ChunkedFeatureGenerator:
         # dataframes are sorted so can safely concat
         # need to remove duplicate columns
         dfs = ChunkedFeatureGenerator._remove_shared_cols_from_all_but_one_df(
-            dfs=dfs,
-            shared_cols=shared_cols,
+            dfs=dfs, shared_cols=shared_cols
         )
         df = pl.concat(dfs, how="horizontal")
 
@@ -78,26 +69,18 @@ class ChunkedFeatureGenerator:
 
     @staticmethod
     def _remove_shared_cols_from_all_but_one_df(
-        dfs: list[pl.DataFrame],
-        shared_cols: list[str],
+        dfs: list[pl.DataFrame], shared_cols: list[str]
     ) -> list[pl.DataFrame]:
-        return [
-            df.select(pl.exclude(shared_cols)) if i != 0 else df
-            for i, df in enumerate(dfs)
-        ]
+        return [df.select(pl.exclude(shared_cols)) if i != 0 else df for i, df in enumerate(dfs)]
 
     @staticmethod
-    def _read_chunk_dfs_from_dir(
-        feature_dir: Path,
-    ) -> list[pl.DataFrame]:
+    def _read_chunk_dfs_from_dir(feature_dir: Path) -> list[pl.DataFrame]:
         df_dirs = feature_dir.glob("flattened_dataset_chunk_*.parquet")
 
         return [pl.read_parquet(chunk_dir) for chunk_dir in df_dirs]  # type: ignore
 
     @staticmethod
-    def _find_shared_cols(
-        dfs: list[pl.DataFrame],
-    ) -> list[str]:
+    def _find_shared_cols(dfs: list[pl.DataFrame]) -> list[str]:
         """Find columns that are present in all dataframes in dfs. Only checks the
         first two dataframes in dfs"""
         if len(dfs) < 2:
@@ -107,9 +90,7 @@ class ChunkedFeatureGenerator:
         return list(cols)
 
     @staticmethod
-    def remove_files_from_dir(
-        feature_dir: Path,
-    ):
+    def remove_files_from_dir(feature_dir: Path):
         df_dirs = feature_dir.glob("flattened_dataset_chunk_*.parquet")
 
         for file in df_dirs:

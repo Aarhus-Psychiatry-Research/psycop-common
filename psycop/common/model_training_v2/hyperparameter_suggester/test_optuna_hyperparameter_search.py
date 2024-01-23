@@ -7,9 +7,7 @@ from confection import Config
 from optuna import Trial
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparameter_search import (
     OptunaHyperParameterOptimization,
 )
@@ -41,7 +39,7 @@ def test_validate_configspace_no_suggesters():
 
     with pytest.raises(ValueError, match="No suggesters.*"):
         OptunaHyperParameterOptimization()._validate_suggester_in_configspace(  # pyright: ignore[reportPrivateUsage]
-            cfg,
+            cfg
         )
 
 
@@ -53,11 +51,11 @@ def test_validate_configspace_with_suggester():
                 C={"low": 0.1, "high": 1, "logarithmic": False},
                 l1_ratio={"low": 0.1, "high": 1, "logarithmic": False},
                 solvers=("saga", "lbfgs"),
-            ),
+            )
         },
     }
     OptunaHyperParameterOptimization()._validate_suggester_in_configspace(  # type: ignore
-        cfg,
+        cfg
     )
 
 
@@ -75,11 +73,12 @@ def test_resolve_only_suggesters():
                 "max_age": 100,
                 "min_age": 0,
             },
-        },
+        }
     )
-    resolved_suggesters = OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(  # pyright: ignore[reportPrivateUsage]
-        cfg,
-        regex_string="^@.*suggesters$",
+    resolved_suggesters = (
+        OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(  # pyright: ignore[reportPrivateUsage]
+            cfg, regex_string="^@.*suggesters$"
+        )
     )
     assert isinstance(resolved_suggesters["mock_suggester"], MockLogisticRegression)
     assert isinstance(resolved_suggesters["age_filter"], dict)

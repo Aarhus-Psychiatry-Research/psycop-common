@@ -20,10 +20,7 @@ def load_file_from_pkl(file_path: Path) -> Any:
         return pickle.load(f)
 
 
-def df_to_eval_dataset(
-    df: pd.DataFrame,
-    custom_columns: Optional[Sequence[str]],
-) -> EvalDataset:
+def df_to_eval_dataset(df: pd.DataFrame, custom_columns: Optional[Sequence[str]]) -> EvalDataset:
     """Convert dataframe to EvalDataset."""
     return EvalDataset(
         ids=df["ids"],
@@ -34,9 +31,7 @@ def df_to_eval_dataset(
         age=df["age"],
         is_female=df["is_female"],
         pred_time_uuids=df["pred_time_uuids"],
-        custom_columns={col: df[col] for col in custom_columns}
-        if custom_columns
-        else None,
+        custom_columns={col: df[col] for col in custom_columns} if custom_columns else None,
     )
 
 
@@ -48,7 +43,7 @@ class RunGroup:
     @property
     def group_dir(self) -> Path:
         return Path(
-            f"E:/shared_resources/forced_admissions_inpatient/models/{self.model_name}/pipeline_eval/{self.group_name}",
+            f"E:/shared_resources/forced_admissions_inpatient/models/{self.model_name}/pipeline_eval/{self.group_name}"
         )
 
     @property
@@ -123,10 +118,7 @@ class PipelineOutputs:
     group: RunGroup
     dir_path: Path
 
-    def get_eval_dataset(
-        self,
-        custom_columns: Optional[Sequence[str]] = None,
-    ) -> EvalDataset:
+    def get_eval_dataset(self, custom_columns: Optional[Sequence[str]] = None) -> EvalDataset:
         df = pd.read_parquet(self.dir_path / "evaluation_dataset.parquet")
 
         eval_dataset = df_to_eval_dataset(df, custom_columns=custom_columns)
@@ -176,19 +168,14 @@ class PaperOutputSettings:
         self.name = name
         self.pos_rate = pos_rate
         artifact_root = (
-            (
-                EVAL_ROOT / f"{model_name}" / name
-            )  # add w wash if eval on cohort with washout
+            (EVAL_ROOT / f"{model_name}" / name)  # add w wash if eval on cohort with washout
             if artifact_root is None
             else artifact_root
         )
-        self.artifact_path = (
-            artifact_root / f"{lookahead_days}_{model_type}_{self.name}"
-        )
+        self.artifact_path = artifact_root / f"{lookahead_days}_{model_type}_{self.name}"
         self.artifact_names = ForcedAdmissionInpatientArtifactNames()
         self.paths = PaperOutputPaths(
-            self.artifact_path,
-            create_output_paths_on_init=create_output_paths_on_init,
+            self.artifact_path, create_output_paths_on_init=create_output_paths_on_init
         )
 
 
@@ -208,9 +195,7 @@ class ForcedAdmissionInpatientPipelineRun:
 
         self.inputs = PipelineInputs(group=group, eval_dir=pipeline_output_dir)
         self.pipeline_outputs = PipelineOutputs(
-            group=group,
-            dir_path=pipeline_output_dir,
-            name=self.name,
+            group=group, dir_path=pipeline_output_dir, name=self.name
         )
         self.paper_outputs = PaperOutputSettings(
             model_name=self.model_name,

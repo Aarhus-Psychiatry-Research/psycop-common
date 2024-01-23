@@ -19,14 +19,10 @@ class SuggesterSpace:
         return f"{suggester_name}_{uuid.uuid4()}"
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
-        suggester_dict = {
-            self._suggester_uuid(s.__class__.__name__): s for s in self.suggesters
-        }
+        suggester_dict = {self._suggester_uuid(s.__class__.__name__): s for s in self.suggesters}
 
         suggester_names = list(suggester_dict.keys())
-        optuna_key = ".".join(
-            suggester_names,
-        )
+        optuna_key = ".".join(suggester_names)
         # We want the optuna key to be unique for each space, so it knows to optimise them individually
 
         suggester_name: str = trial.suggest_categorical(optuna_key, suggester_names)  # type: ignore
@@ -36,10 +32,7 @@ class SuggesterSpace:
         return suggester.suggest_hyperparameters(trial=trial)
 
 
-def suggest_hyperparams_from_cfg(
-    base_cfg: dict[str, Any],
-    trial: optuna.Trial,
-) -> dict[str, Any]:
+def suggest_hyperparams_from_cfg(base_cfg: dict[str, Any], trial: optuna.Trial) -> dict[str, Any]:
     """Suggest hyperparameters in a config.
 
 

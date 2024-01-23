@@ -28,9 +28,7 @@ def generate_temp_filename() -> str:
 @BaselineRegistry.loggers.register("mlflow_logger")
 class MLFlowLogger(BaselineLogger):
     def __init__(
-        self,
-        experiment_name: str,
-        tracking_uri: str = "http://exrhel0371.it.rm.dk:5050",
+        self, experiment_name: str, tracking_uri: str = "http://exrhel0371.it.rm.dk:5050"
     ) -> None:
         mlflow.set_tracking_uri(tracking_uri)
         self.mlflow_experiment = mlflow.set_experiment(experiment_name=experiment_name)
@@ -46,7 +44,6 @@ class MLFlowLogger(BaselineLogger):
 
         This is a workaround for MLFlow not supporting logging text directly.
         Note that multiple logs to the same remote_path will overwrite each other."""
-
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_file = Path(tmp_dir) / (generate_temp_filename() + ".txt")
             tmp_file.write_text(text)
@@ -79,10 +76,7 @@ class MLFlowLogger(BaselineLogger):
     def log_config(self, config: dict[str, Any]):
         flattened_config = flatten_nested_dict(config)
         mlflow.log_params(sanitise_dict_keys(flattened_config))
-        self._log_text_as_artifact(
-            confection.Config(config).to_str(),
-            remote_path="config.cfg",
-        )
+        self._log_text_as_artifact(confection.Config(config).to_str(), remote_path="config.cfg")
 
     def log_artifact(self, local_path: Path) -> None:
         mlflow.log_artifact(local_path=local_path.__str__())

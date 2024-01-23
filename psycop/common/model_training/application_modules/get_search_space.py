@@ -24,20 +24,12 @@ class TrainerSpec(PSYCOPBaseModel):
 class SearchSpaceInferrer:
     """Infer the search space for the model training pipeline."""
 
-    def __init__(
-        self,
-        cfg: FullConfigSchema,
-        train_df: pd.DataFrame,
-        model_names: list[str],
-    ):
+    def __init__(self, cfg: FullConfigSchema, train_df: pd.DataFrame, model_names: list[str]):
         self.cfg = cfg
         self.train_df = train_df
         self.model_names = model_names
 
-    def _get_impossible_lookaheads(
-        self,
-        potential_lookaheads: list[int],
-    ) -> list[int]:
+    def _get_impossible_lookaheads(self, potential_lookaheads: list[int]) -> list[int]:
         """Some look_ahead and look_behind distances will result in 0 valid
         prediction times.
 
@@ -49,9 +41,7 @@ class SearchSpaceInferrer:
         """
         max_interval_days = (
             max(self.train_df[self.cfg.data.col_name.pred_timestamp])
-            - min(
-                self.train_df[self.cfg.data.col_name.pred_timestamp],
-            )
+            - min(self.train_df[self.cfg.data.col_name.pred_timestamp])
         ).days
 
         msg = Printer(timestamp=True)
@@ -61,7 +51,7 @@ class SearchSpaceInferrer:
 
         if lookaheads_without_rows:
             msg.info(
-                f"Not fitting model to {lookaheads_without_rows}, since no rows satisfy the criteria.",
+                f"Not fitting model to {lookaheads_without_rows}, since no rows satisfy the criteria."
             )
 
         return lookaheads_without_rows
@@ -78,9 +68,7 @@ class SearchSpaceInferrer:
         Will mean that no rows satisfy the criteria.
         """
         outcome_col_names = infer_outcome_col_name(
-            df=self.train_df,
-            allow_multiple=True,
-            prefix=self.cfg.data.outc_prefix,
+            df=self.train_df, allow_multiple=True, prefix=self.cfg.data.outc_prefix
         )
 
         potential_lookaheads: list[int] = [
@@ -88,14 +76,13 @@ class SearchSpaceInferrer:
         ]
 
         impossible_lookaheads = self._get_impossible_lookaheads(
-            potential_lookaheads=potential_lookaheads,
+            potential_lookaheads=potential_lookaheads
         )
 
         return list(set(potential_lookaheads) - set(impossible_lookaheads))
 
     def _combine_lookaheads_and_model_names_to_trainer_specs(
-        self,
-        possible_lookahead_days: list[int],
+        self, possible_lookahead_days: list[int]
     ) -> list[TrainerSpec]:
         """Generate trainer specs for all combinations of lookaheads and model
         names."""
@@ -105,7 +92,7 @@ class SearchSpaceInferrer:
 
         if self.model_names:
             msg.warn(
-                "model_names was specified in train_models_for_each_cell_in_grid, overriding self.cfg.model.name",
+                "model_names was specified in train_models_for_each_cell_in_grid, overriding self.cfg.model.name"
             )
 
         model_name_queue = self.model_names if self.model_names else self.cfg.model.name
@@ -122,5 +109,5 @@ class SearchSpaceInferrer:
     def get_trainer_specs(self) -> list[TrainerSpec]:
         """Get all possible combinations of lookaheads and models."""
         return self._combine_lookaheads_and_model_names_to_trainer_specs(
-            possible_lookahead_days=self._get_possible_lookaheads(),
+            possible_lookahead_days=self._get_possible_lookaheads()
         )

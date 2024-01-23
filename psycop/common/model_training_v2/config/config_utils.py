@@ -4,20 +4,13 @@ from typing import Any
 from confection import Config
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.baseline_schema import (
-    BaselineSchema,
-)
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
+from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 populate_baseline_registry()
 
 
-def resolve_and_fill_config(
-    config_path: Path,
-    fill_cfg_with_defaults: bool,
-) -> dict[str, Any]:
+def resolve_and_fill_config(config_path: Path, fill_cfg_with_defaults: bool) -> dict[str, Any]:
     cfg = Config().from_disk(config_path)
 
     # Fill with defaults

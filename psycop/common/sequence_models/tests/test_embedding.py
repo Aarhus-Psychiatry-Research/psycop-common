@@ -11,13 +11,9 @@ from psycop.common.sequence_models.embedders.interface import PatientSliceEmbedd
 
 
 @pytest.mark.parametrize(
-    "embedder",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+    "embedder", [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)]
 )
-def test_embeddings(
-    patient_slices: Sequence[PatientSlice],
-    embedder: PatientSliceEmbedder,
-):
+def test_embeddings(patient_slices: Sequence[PatientSlice], embedder: PatientSliceEmbedder):
     """
     Test embedding interface
     """
@@ -35,21 +31,15 @@ def test_embeddings(
 
 
 @pytest.mark.parametrize(
-    "embedder",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+    "embedder", [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)]
 )
-def test_diagnosis_mapping(
-    embedder: BEHRTEmbedder,
-):
+def test_diagnosis_mapping(embedder: BEHRTEmbedder):
     """
     Test mapping of diagnosis from ICD10 to caliber
     """
     # Check that diagnosis codes that are not in the mapping are excluded
     # (this patient has no diagnosis codes in the mapping)
-    patient = Patient(
-        patient_id=11,
-        date_of_birth=dt.datetime(year=1990, month=1, day=1),
-    )
+    patient = Patient(patient_id=11, date_of_birth=dt.datetime(year=1990, month=1, day=1))
 
     # Add temporal events to check that diagnosis codes are mapped correctly
     temporal_events = [
@@ -92,9 +82,7 @@ def test_diagnosis_mapping(
     patient.add_events(temporal_events)
 
     patient_events: list[tuple[Patient, TemporalEvent]] = [
-        (p, e)
-        for p in [patient]
-        for e in filter(embedder.is_A_diagnosis, p.temporal_events)
+        (p, e) for p in [patient] for e in filter(embedder.is_A_diagnosis, p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
@@ -114,21 +102,15 @@ def test_diagnosis_mapping(
 
 
 @pytest.mark.parametrize(
-    "embedder",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+    "embedder", [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)]
 )
-def test_reformat_and_filter(
-    embedder: BEHRTEmbedder,
-):
+def test_reformat_and_filter(embedder: BEHRTEmbedder):
     """
     Test mapping of diagnosis from ICD10 to caliber
     """
     # Check that diagnosis codes that are not in the mapping are excluded
     # (this patient has no diagnosis codes in the mapping)
-    patient = Patient(
-        patient_id=11,
-        date_of_birth=dt.datetime(year=1990, month=1, day=1),
-    )
+    patient = Patient(patient_id=11, date_of_birth=dt.datetime(year=1990, month=1, day=1))
 
     # Add temporal events to check that diagnosis codes are mapped correctly
     temporal_events = [
@@ -169,12 +151,8 @@ def test_reformat_and_filter(
     ]
 
     patient.add_events(temporal_events)
-    patient_slices_mapped = embedder.reformat(
-        [patient.as_slice()],
-    )
-    diagnosis_codes = [
-        e.value for ps in patient_slices_mapped for e in ps.temporal_events
-    ]
+    patient_slices_mapped = embedder.reformat([patient.as_slice()])
+    diagnosis_codes = [e.value for ps in patient_slices_mapped for e in ps.temporal_events]
 
     assert diagnosis_codes == [
         "Bacterial Diseases (excl TB)",

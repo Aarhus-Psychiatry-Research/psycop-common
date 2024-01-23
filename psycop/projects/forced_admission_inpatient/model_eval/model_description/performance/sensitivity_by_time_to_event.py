@@ -61,15 +61,13 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset) -> pn.ggplot:
 
     if eval_dataset.outcome_timestamps is None:
         raise ValueError(
-            "The outcome timestamps must be provided in order to calculate the sensitivity by time to event.",
+            "The outcome timestamps must be provided in order to calculate the sensitivity by time to event."
         )
 
     for ppr in [0.01, 0.03, 0.05, 0.075, 0.1, 0.2]:
         df = get_sensitivity_by_timedelta_df(
             y=eval_dataset.y,  # type: ignore
-            y_hat=eval_dataset.get_predictions_for_positive_rate(
-                desired_positive_rate=ppr,
-            )[0],
+            y_hat=eval_dataset.get_predictions_for_positive_rate(desired_positive_rate=ppr)[0],
             time_one=eval_dataset.pred_timestamps,
             time_two=eval_dataset.outcome_timestamps,
             direction="t2-t1",
@@ -98,8 +96,7 @@ def fa_inpatient_sensitivity_by_time_to_event(
     p = sensitivity_by_time_to_event(eval_dataset=eval_ds)
 
     p.save(
-        pipeline_run.paper_outputs.paths.figures
-        / "fa_inpatient_sens_by_time_to_event.png",
+        pipeline_run.paper_outputs.paths.figures / "fa_inpatient_sens_by_time_to_event.png",
         width=7,
         height=7,
     )

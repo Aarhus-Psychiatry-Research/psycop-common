@@ -12,12 +12,7 @@ from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 def simple_imputation_step(
     strategy: Literal["mean", "median", "most_frequent", "constant"] = "mean",
 ) -> ModelStep:
-    return (
-        "simple_imputation",
-        SimpleImputer(
-            strategy=strategy,
-        ),
-    )
+    return ("simple_imputation", SimpleImputer(strategy=strategy))
 
 
 @BaselineRegistry.estimator_steps.register("miss_forest_imputation")
@@ -26,8 +21,5 @@ def miss_forest_imputation_step() -> ModelStep:
 
     return (
         "miss_forest_imputation",
-        IterativeImputer(
-            estimator=RandomForestRegressor(),
-            random_state=0,
-        ),
+        IterativeImputer(estimator=RandomForestRegressor(), random_state=0),
     )

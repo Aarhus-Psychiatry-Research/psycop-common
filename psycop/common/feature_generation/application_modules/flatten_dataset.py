@@ -22,9 +22,7 @@ if TYPE_CHECKING:
     import pandas as pd
     from timeseriesflattener.feature_specs.single_specs import AnySpec
 
-    from psycop.common.feature_generation.application_modules.project_setup import (
-        ProjectInfo,
-    )
+    from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 
 log = logging.getLogger(__name__)
 
@@ -79,10 +77,7 @@ def create_flattened_dataset(
 
     flattened_dataset = TimeseriesFlattener(
         prediction_times_df=prediction_times_df,
-        n_workers=min(
-            len(feature_specs),
-            psutil.cpu_count(logical=True),
-        ),
+        n_workers=min(len(feature_specs), psutil.cpu_count(logical=True)),
         cache=None,
         drop_pred_times_with_insufficient_look_distance=drop_pred_times_with_insufficient_look_distance,
         predictor_col_name_prefix=project_info.prefix.predictor,
@@ -93,8 +88,7 @@ def create_flattened_dataset(
 
     if add_birthdays:
         flattened_dataset.add_age(
-            date_of_birth_df=birthdays(),
-            date_of_birth_col_name="date_of_birth",
+            date_of_birth_df=birthdays(), date_of_birth_col_name="date_of_birth"
         )
 
     flattened_dataset.add_spec(spec=feature_specs)

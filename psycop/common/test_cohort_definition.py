@@ -13,7 +13,7 @@ def test_filter_prediction_times():
         1,          2020-01-01,
         1,          2019-01-01, # Filtered because of timestamp in filter 1
         1,          2018-01-01, # Filtered because of timestamp in filter 2
-        """,
+        """
     ).lazy()
 
     class RemoveYear(PredictionTimeFilter):
@@ -22,9 +22,7 @@ def test_filter_prediction_times():
 
         def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
             """Remove all prediction times within the year of the timestamp"""
-            return df.filter(
-                pl.col("timestamp").dt.year() != self.year_timestamp.year,
-            )
+            return df.filter(pl.col("timestamp").dt.year() != self.year_timestamp.year)
 
     filtered = filter_prediction_times(
         prediction_times=prediction_times,
