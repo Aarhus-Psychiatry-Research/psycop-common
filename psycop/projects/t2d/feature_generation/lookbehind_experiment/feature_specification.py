@@ -54,7 +54,7 @@ class T2DLookbehindExperimentFeatureSpecifier:
                 lookbehind_days=730,
                 aggregation_fn=maximum,
                 fallback=np.nan,
-            )
+            ),
         ]
         hba1c_yearly_interval = PredictorGroupSpec(
             named_dataframes=[
