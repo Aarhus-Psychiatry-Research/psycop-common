@@ -24,17 +24,12 @@ def get_predictors(df: pd.DataFrame, include_id: bool) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Dataframe with only predictor columns
     """
-    pred_regex = (
-        "^pred|^timestamp" if not include_id else "^pred|^timestamp|dw_ek_borger"
-    )
+    pred_regex = "^pred|^timestamp" if not include_id else "^pred|^timestamp|dw_ek_borger"
     return df.filter(regex=pred_regex)
 
 
 def load_split(
-    feature_set_dir: Path,
-    file_suffix: str,
-    split: str,
-    nrows: int | None = None,
+    feature_set_dir: Path, file_suffix: str, split: str, nrows: int | None = None
 ) -> pd.DataFrame:
     """Loads a given data split as a dataframe from a directory.
 
@@ -53,11 +48,7 @@ def load_split(
 
 
 def load_split_predictors(
-    feature_set_dir: Path,
-    file_suffix: str,
-    split: str,
-    include_id: bool,
-    nrows: int | None = None,
+    feature_set_dir: Path, file_suffix: str, split: str, include_id: bool, nrows: int | None = None
 ) -> pd.DataFrame:
     """Loads predictors from a given data split as a dataframe from a
     directory.
@@ -75,10 +66,7 @@ def load_split_predictors(
 
     return get_predictors(
         load_split(
-            feature_set_dir=feature_set_dir,
-            file_suffix=file_suffix,
-            split=split,
-            nrows=nrows,
+            feature_set_dir=feature_set_dir, file_suffix=file_suffix, split=split, nrows=nrows
         ),
         include_id,
     )
@@ -99,10 +87,7 @@ def get_outcomes(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_split_outcomes(
-    feature_set_dir: Path,
-    file_suffix: str,
-    split: str,
-    nrows: int | None = None,
+    feature_set_dir: Path, file_suffix: str, split: str, nrows: int | None = None
 ) -> pd.DataFrame:
     """Loads outcomes from a given data split as a dataframe from a directory.
 
@@ -117,9 +102,6 @@ def load_split_outcomes(
     """
     return get_outcomes(
         load_split(
-            feature_set_dir=feature_set_dir,
-            split=split,
-            nrows=nrows,
-            file_suffix=file_suffix,
-        ),
+            feature_set_dir=feature_set_dir, split=split, nrows=nrows, file_suffix=file_suffix
+        )
     )

@@ -8,11 +8,7 @@ from .registry import SequenceRegistry
 
 class Aggregator(nn.Module):
     @abstractmethod
-    def forward(
-        self,
-        last_hidden: torch.Tensor,
-        attention_mask: torch.Tensor,
-    ) -> torch.Tensor:
+    def forward(self, last_hidden: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         pass
 
 
@@ -43,11 +39,7 @@ class AveragePooler(Aggregator):
     def __init__(self):
         super().__init__()
 
-    def forward(
-        self,
-        last_hidden: torch.Tensor,
-        attention_mask: torch.Tensor,
-    ) -> torch.Tensor:
+    def forward(self, last_hidden: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         return (last_hidden * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(
-            -1,
+            -1
         ).unsqueeze(-1)

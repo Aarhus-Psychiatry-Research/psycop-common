@@ -19,9 +19,7 @@ mem = Memory(location=".", verbose=0)  # noqa: F811
 
 
 def generate_shap_df_for_predictor_col(
-    colname: str,
-    X: pd.DataFrame,
-    shap_values: list[float],
+    colname: str, X: pd.DataFrame, shap_values: list[float]
 ) -> pd.DataFrame:
     colname_index = X.columns.get_loc(colname)
 
@@ -31,7 +29,7 @@ def generate_shap_df_for_predictor_col(
             "feature_value": X[colname],
             "pred_time_index": list(range(len(X))),
             "shap_value": shap_values[:, colname_index],  # type: ignore
-        },
+        }
     )
 
     return df
@@ -43,13 +41,7 @@ def get_long_shap_df(X: pd.DataFrame, shap_values: list[float]) -> pd.DataFrame:
     dfs = []
 
     for c in predictor_cols:
-        dfs.append(
-            generate_shap_df_for_predictor_col(
-                colname=c,
-                X=X,
-                shap_values=shap_values,
-            ),
-        )
+        dfs.append(generate_shap_df_for_predictor_col(colname=c, X=X, shap_values=shap_values))
 
     return pd.concat(dfs, axis=0)
 
@@ -71,9 +63,7 @@ class ShapBundle:
 
 
 def generate_shap_values_from_pipe(
-    features: pl.LazyFrame,
-    outcome: pl.LazyFrame,
-    pipeline: Pipeline,
+    features: pl.LazyFrame, outcome: pl.LazyFrame, pipeline: Pipeline
 ) -> list[float]:
     numerical_predictors = []
 
@@ -114,9 +104,7 @@ def get_shap_bundle_for_best_run(
         flattened_ds = flattened_ds.sample(n=n_rows, with_replacement=True)
 
     cfg = run.cfg
-    predictor_cols = [
-        c for c in flattened_ds.columns if c.startswith(cfg.data.pred_prefix)
-    ]
+    predictor_cols = [c for c in flattened_ds.columns if c.startswith(cfg.data.pred_prefix)]
     outcome_cols = [
         c
         for c in flattened_ds.columns
@@ -132,59 +120,39 @@ def get_shap_bundle_for_best_run(
         pipeline=pipe,  # type: ignore
     )
 
-    return ShapBundle(
-        shap_values=shap_values,
-        X=flattened_ds.select(predictor_cols).to_pandas(),
-    )
+    return ShapBundle(shap_values=shap_values, X=flattened_ds.select(predictor_cols).to_pandas())
 
 
-def get_top_i_features_by_mean_abs_shap(
-    shap_long_df: pl.DataFrame,
-    i: int,
-) -> pl.DataFrame:
+def get_top_i_features_by_mean_abs_shap(shap_long_df: pl.DataFrame, i: int) -> pl.DataFrame:
     feature_shap_agg = shap_long_df.groupby("feature_name").agg(
-        shap_mean=pl.col("shap_value").abs().mean(),
+        shap_mean=pl.col("shap_value").abs().mean()
     )
 
     feature_shap_agg_with_ranks = feature_shap_agg.with_columns(
-        shap_mean_rank=pl.col("shap_mean")
-        .rank(method="average", descending=True)
-        .cast(pl.Int32),
+        shap_mean_rank=pl.col("shap_mean").rank(method="average", descending=True).cast(pl.Int32)
     )
 
-    selected_features = feature_shap_agg_with_ranks.filter(
-        i >= pl.col("shap_mean_rank"),
-    )
+    selected_features = feature_shap_agg_with_ranks.filter(i >= pl.col("shap_mean_rank"))
 
-    return selected_features.join(shap_long_df, on="feature_name", how="left").drop(
-        "shap_mean",
-    )
+    return selected_features.join(shap_long_df, on="feature_name", how="left").drop("shap_mean")
 
 
 if __name__ == "__main__":
-    shap_bundle = get_shap_bundle_for_best_run(
-        run=BEST_DEV_RUN,
-        n_rows=1_000,
-        cache_ver=0.1,
-    )
+    shap_bundle = get_shap_bundle_for_best_run(run=BEST_DEV_RUN, n_rows=1_000, cache_ver=0.1)
 
     long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore
 
 
 @mem.cache
 def generate_shap_values(
-    features: pd.DataFrame,
-    outcome: pd.DataFrame,
-    pipeline: Pipeline,
+    features: pd.DataFrame, outcome: pd.DataFrame, pipeline: Pipeline
 ) -> bytes:
     for feature in features.columns:
         if len(features[feature].unique()) > 100:
             features[feature] = features[feature].round(1)
 
     # rename features
-    features.columns = [
-        feature_name_to_readable(col, warning=False) for col in features.columns
-    ]
+    features.columns = [feature_name_to_readable(col, warning=False) for col in features.columns]
 
     model = pipeline["model"]  # type: ignore
     explainer = shap.TreeExplainer(model)  # type: ignore

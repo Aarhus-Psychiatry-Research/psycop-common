@@ -1,10 +1,5 @@
-from psycop.projects.t2d.paper_outputs.config import (
-    BEST_POS_RATE,
-    DEVELOPMENT_GROUP,
-)
-from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
-    test_pipeline,
-)
+from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_GROUP
+from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import test_pipeline
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
@@ -19,7 +14,7 @@ def get_best_dev_pipeline() -> T2DPipelineRun:
                 "seed": "42",
                 "gpu": "true",
                 "name": "nonviolentstigmaria",
-            },
+            }
         },
         remove_cfg_keys={"name", "project_path", "seed", "gpu", "wandb"},
     )

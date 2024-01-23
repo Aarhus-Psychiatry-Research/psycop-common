@@ -16,11 +16,11 @@
 				"charliermarsh.ruff",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"ms-python.black-formatter",
 				"GitHub.vscode-pull-request-github",
 				"Graphite.gti-vscode",
 				"SeeLog.python-init-generator",
-				"tamasfe.even-better-toml"
+				"tamasfe.even-better-toml",
+				"MichaelCurrin.auto-commit-msg"
 			]
 		}
 	},

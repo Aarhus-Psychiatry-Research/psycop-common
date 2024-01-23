@@ -41,7 +41,7 @@ def sql_load(
     """
     driver = "SQL Server"
     params = urllib.parse.quote(
-        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes",
+        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes"
     )
 
     if n_rows:
@@ -49,10 +49,7 @@ def sql_load(
 
     engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
-    conn = engine.connect().execution_options(
-        stream_results=True,
-        fast_executemany=True,
-    )
+    conn = engine.connect().execution_options(stream_results=True, fast_executemany=True)
     df = pd.read_sql(text(query), conn)  # type: ignore
 
     if format_timestamp_cols_to_datetime:

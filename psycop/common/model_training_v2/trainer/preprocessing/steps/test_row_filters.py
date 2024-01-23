@@ -14,13 +14,7 @@ from ...base_dataloader import BaselineDataLoader
 
 
 @pytest.mark.parametrize(
-    ("min_age", "max_age", "n_remaining"),
-    [
-        (1, 3, 3),
-        (2, 3, 2),
-        (1, 2, 2),
-        (4, 4, 0),
-    ],
+    ("min_age", "max_age", "n_remaining"), [(1, 3, 3), (2, 3, 2), (1, 2, 2), (4, 4, 0)]
 )
 def test_age_filter(min_age: int, max_age: int, n_remaining: int):
     df = str_to_pl_df(
@@ -28,47 +22,30 @@ def test_age_filter(min_age: int, max_age: int, n_remaining: int):
     1,
     2,
     3,
-    """,
+    """
     ).lazy()
 
-    result = (
-        AgeFilter(min_age=min_age, max_age=max_age, age_col_name="age")
-        .apply(df)
-        .collect()
-    )
+    result = AgeFilter(min_age=min_age, max_age=max_age, age_col_name="age").apply(df).collect()
 
     assert len(result) == n_remaining
 
 
 @pytest.mark.parametrize(
     ("n_days", "direction", "n_remaining"),
-    [
-        (1, "ahead", 2),
-        (2, "ahead", 1),
-        (1, "behind", 2),
-        (4, "behind", 0),
-    ],
+    [(1, "ahead", 2), (2, "ahead", 1), (1, "behind", 2), (4, "behind", 0)],
 )
-def test_window_filter(
-    n_days: int,
-    direction: Literal["ahead", "behind"],
-    n_remaining: int,
-):
+def test_window_filter(n_days: int, direction: Literal["ahead", "behind"], n_remaining: int):
     df = str_to_pl_df(
         """timestamp,
     2021-01-01,
     2021-01-02,
     2021-01-03,
     2021-01-04,
-    """,
+    """
     ).lazy()
 
     result = (
-        WindowFilter(
-            n_days=n_days,
-            direction=direction,
-            timestamp_col_name="timestamp",
-        )
+        WindowFilter(n_days=n_days, direction=direction, timestamp_col_name="timestamp")
         .apply(df)
         .collect()
     )
@@ -97,7 +74,7 @@ def test_filter_by_quarantine_period():
                 """entity_id,timestamp,
                 1,2021-01-01 00:00:01,
                 1,2022-01-01 00:00:01,
-                """,
+                """
             ).lazy()
 
     prediction_time_df = str_to_pl_df(
@@ -106,7 +83,7 @@ def test_filter_by_quarantine_period():
         1,2022-12-01 00:00:01, # drop: within quarantine days from the first quarantine date
         1,2026-02-01 00:00:01, # keep: outside quarantine days from the first quarantine date
         2,2023-02-01 00:00:01, # keep: no quarantine date for this id
-        """,
+        """
     ).lazy()
 
     expected_df = str_to_pl_df(
@@ -114,7 +91,7 @@ def test_filter_by_quarantine_period():
         1,2020-12-01 00:00:01,
         1,2026-02-01 00:00:01,
         2,2023-02-01 00:00:01,
-        """,
+        """
     )
 
     result_df = (
@@ -131,7 +108,4 @@ def test_filter_by_quarantine_period():
     # Check that the result is as expected using pandas.testing.assert_frame_equal
     from polars.testing import assert_frame_equal
 
-    assert_frame_equal(
-        result_df,
-        expected_df,
-    )
+    assert_frame_equal(result_df, expected_df)

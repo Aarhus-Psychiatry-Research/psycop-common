@@ -7,13 +7,9 @@ import wandb
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
 from psycop.common.model_training.application_modules.wandb_handler import WandbHandler
-from psycop.common.model_training.config_schemas.conf_utils import (
-    validate_classification_objective,
-)
+from psycop.common.model_training.config_schemas.conf_utils import validate_classification_objective
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.common.model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
@@ -43,8 +39,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
 
 @wandb_alert_on_exception_return_terrible_auc
 def post_wandb_setup_train_model(
-    cfg: FullConfigSchema,
-    override_output_dir: Optional[Path] = None,
+    cfg: FullConfigSchema, override_output_dir: Optional[Path] = None
 ) -> float:
     """Train a single model and evaluate it."""
     eval_dir_path = get_eval_dir(cfg)
@@ -52,9 +47,7 @@ def post_wandb_setup_train_model(
     train_datasets = pd.concat(
         [
             load_and_filter_split_from_cfg(
-                data_cfg=cfg.data,
-                pre_split_cfg=cfg.preprocessing.pre_split,
-                split=split,
+                data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split, split=split
             )
             for split in cfg.data.splits_for_training
         ],
@@ -103,10 +96,7 @@ def post_wandb_setup_train_model(
     return roc_auc
 
 
-def train_model(
-    cfg: FullConfigSchema,
-    override_output_dir: Optional[Path] = None,
-) -> float:
+def train_model(cfg: FullConfigSchema, override_output_dir: Optional[Path] = None) -> float:
     """Main function for training a single model."""
     WandbHandler(cfg=cfg).setup_wandb()
 

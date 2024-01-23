@@ -7,9 +7,7 @@ from pathlib import Path
 
 import polars as pl
 
-from psycop.common.model_training_v2.trainer.task.base_metric import (
-    CalculatedMetric,
-)
+from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 from ..loggers.base_logger import BaselineLogger
 from .task.base_task import BaselineTask

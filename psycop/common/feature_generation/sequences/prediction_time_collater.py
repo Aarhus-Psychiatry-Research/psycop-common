@@ -32,12 +32,9 @@ class PredictionTimeCollater(BasePredictionTimeCollater):
     lookbehind_days: int
     lookahead_days: int
 
-    def get_dataset(
-        self,
-    ) -> PredictionTimeDataset:
+    def get_dataset(self) -> PredictionTimeDataset:
         prediction_times = PredictionTimesFromCohort(
-            cohort_definer=self.cohort_definer,
-            patients=self.patient_loader.get_patients(),
+            cohort_definer=self.cohort_definer, patients=self.patient_loader.get_patients()
         ).create_prediction_times(
             lookbehind=dt.timedelta(days=self.lookbehind_days),
             lookahead=dt.timedelta(days=self.lookahead_days),

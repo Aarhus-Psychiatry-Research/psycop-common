@@ -10,9 +10,7 @@ from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 class CleanlabProcessing(BaseSampler):
     """Apply data-centric processing using cleanlab to remove "bad" data points."""
 
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         self.sampling_strategy = "all"  # imblearn internal
         self._sampling_type = "ensemble"  # imblearn internal
         self.n_label_issues = 0

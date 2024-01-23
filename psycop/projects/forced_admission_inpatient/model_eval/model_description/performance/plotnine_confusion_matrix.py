@@ -1,9 +1,7 @@
 import pandas as pd
 import plotnine as pn
 
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-)
+from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
 
@@ -19,7 +17,7 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.
 " ",-,"NPV:\n{round(matrix.npv*100,1)}%",
 -," ","Spec:\n{round(matrix.specificity*100, 1)}%",
 +," ","Sens:\n{round(matrix.sensitivity*100, 1)}%",
-""",
+"""
     )
 
     """Create a confusion matrix and return a plotnine object."""

@@ -18,8 +18,5 @@ def on_ovartaci() -> bool:
 
 def test_pytorch_cuda(c: Context):
     python_command = "import torch; t=torch.tensor(1); t.to(torch.device('cuda'))"
-    c.run(
-        f'python -c "{python_command}"',
-        pty=NOT_WINDOWS,
-    )
+    c.run(f'python -c "{python_command}"', pty=NOT_WINDOWS)
     print("Pytorch CUDA works!")

@@ -2,13 +2,8 @@ from collections.abc import Sequence
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import boolean, latest
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-)
+from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f0_disorders,
@@ -55,10 +50,7 @@ class SczBpLayer3(SczBpFeatureLayer):
 
         hamilton_spec = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(
-                    df=hamilton_d17(),
-                    name=f"hamilton_d17_layer_{layer}",
-                ),
+                NamedDataframe(df=hamilton_d17(), name=f"hamilton_d17_layer_{layer}"),
             ),
             lookbehind_days=lookbehind_days,
             aggregation_fns=[latest],

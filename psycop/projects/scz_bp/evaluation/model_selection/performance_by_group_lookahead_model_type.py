@@ -28,15 +28,11 @@ def get_performance_for_group(run_group: RunGroup, pos_rate: float) -> pl.DataFr
 def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
     return_dict = {
         "model_name": run.inputs.cfg.model.name,
-        "lookahead_days": float(
-            run.inputs.cfg.preprocessing.pre_split.min_lookahead_days,
-        ),
+        "lookahead_days": float(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days),
         "run_name": run.name,
         "group_name": run.group.name,
         "auroc": run.pipeline_outputs.get_auroc(),
-        "median": get_median_days_from_first_positive_to_diagnosis_for_run(
-            run=run,
-        ),
+        "median": get_median_days_from_first_positive_to_diagnosis_for_run(run=run),
     }
 
     return pl.DataFrame(return_dict)
@@ -44,9 +40,7 @@ def get_performance_for_run(run: PipelineRun) -> pl.DataFrame:
 
 def get_median_days_from_first_positive_to_diagnosis_for_run(run: PipelineRun) -> float:
     return days_from_first_positive_to_diagnosis(
-        eval_dataset=run.pipeline_outputs.get_eval_dataset(
-            custom_columns=SCZ_BP_CUSTOM_COLUMNS,
-        ),
+        eval_dataset=run.pipeline_outputs.get_eval_dataset(custom_columns=SCZ_BP_CUSTOM_COLUMNS),
         positive_rate=run.paper_outputs.pos_rate,
         aggregation_method="median",
     )
@@ -76,7 +70,7 @@ def get_publication_ready_performance_for_group(run_group: RunGroup) -> pl.DataF
         pl.col("model_name"),
         pl.col("group_name"),
         pl.lit(
-            f"Median years from first positive to event at {BEST_POS_RATE} predicted positive rate",
+            f"Median years from first positive to event at {BEST_POS_RATE} predicted positive rate"
         ).alias("measure"),
         (pl.all().exclude("group_name", "model_name") / 365.25).round(1),
     )
@@ -90,15 +84,11 @@ run_group = DEVELOPMENT_GROUP
 
 best_runs_in_group = get_performance_for_group(DEVELOPMENT_GROUP, pos_rate=0.03)
 run_with_max_auc = (
-    best_runs_in_group.filter(pl.col("auroc") == pl.col("auroc").max())
-    .select("run_name")
-    .item()
+    best_runs_in_group.filter(pl.col("auroc") == pl.col("auroc").max()).select("run_name").item()
 )
 
 DEVELOPMENT_PIPELINE_RUN = PipelineRun(
-    group=DEVELOPMENT_GROUP,
-    name=run_with_max_auc,
-    pos_rate=0.03,
+    group=DEVELOPMENT_GROUP, name=run_with_max_auc, pos_rate=0.03
 )
 
 if __name__ == "__main__":

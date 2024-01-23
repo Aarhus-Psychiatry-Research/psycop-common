@@ -52,9 +52,7 @@ def _configure_linear_schedule_with_warmup(
 
 @SequenceRegistry.lr_schedulers.register("linear_schedule_with_warmup")
 def create_linear_schedule_with_warmup(
-    num_warmup_steps: int,
-    num_training_steps: int,
-    last_epoch: int = -1,
+    num_warmup_steps: int, num_training_steps: int, last_epoch: int = -1
 ) -> LRSchedulerFn:
     return partial(
         _configure_linear_schedule_with_warmup,

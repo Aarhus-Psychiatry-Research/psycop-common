@@ -12,12 +12,7 @@ from psycop.projects.scz_bp.model_training.estimator_steps.cleanlab_processing i
 
 def sample_data() -> tuple[pd.DataFrame, pd.Series]:  # type: ignore
     X, y = make_classification(
-        n_classes=2,
-        weights=(0.9, 0.1),
-        flip_y=0,
-        n_features=5,
-        n_samples=100,
-        random_state=42,
+        n_classes=2, weights=(0.9, 0.1), flip_y=0, n_features=5, n_samples=100, random_state=42
     )
     return pd.DataFrame(X), pd.Series(y, name="target")
 
@@ -63,7 +58,7 @@ def test_cleanlab_processing_in_pipeline(
     X_clean, y_clean = clean_sample_data
 
     pipe_with_cleanlab = Pipeline(
-        [("cleanlab_processing", CleanlabProcessing()), ("clf", XGBClassifier())],
+        [("cleanlab_processing", CleanlabProcessing()), ("clf", XGBClassifier())]
     )
     pipe_with_cleanlab.fit(X_noisy, y_noisy)
     with_cleanlab_score = pipe_with_cleanlab.score(X_clean, y_clean)

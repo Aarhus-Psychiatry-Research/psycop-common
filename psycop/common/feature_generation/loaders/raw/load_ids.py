@@ -33,10 +33,7 @@ class SplitFrame(ValidatedFrame[pl.LazyFrame]):
     )
 
 
-def load_stratified_by_outcome_split_ids(
-    split: SplitName,
-    n_rows: int | None = None,
-) -> SplitFrame:
+def load_stratified_by_outcome_split_ids(split: SplitName, n_rows: int | None = None) -> SplitFrame:
     """Loads ids for a given split based on the original data split.
 
     Args:

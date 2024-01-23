@@ -15,13 +15,7 @@ def create_patchwork_grid(
     n_in_row: int,
     add_subpanels_letters: bool = True,
     panel_letter_size: Literal[
-        "xx-small",
-        "x-small",
-        "small",
-        "medium",
-        "large",
-        "x-large",
-        "xx-large",
+        "xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large"
     ] = "x-large",
 ) -> pw.Bricks:
     """Create a grid from a sequence of ggplot objects."""
@@ -60,9 +54,7 @@ def create_patchwork_grid(
 
 
 def print_a4_ratio(
-    plots: Sequence[pn.ggplot],
-    single_plot_dimensions: tuple[float, float],
-    n_in_row: int,
+    plots: Sequence[pn.ggplot], single_plot_dimensions: tuple[float, float], n_in_row: int
 ):
     """Print conversion factor to A4 for a given grid of plots."""
     n_rows = ceil(len(plots) / n_in_row)
@@ -74,5 +66,5 @@ def print_a4_ratio(
     msg.info(f"height/width ratio is {round(total_height/total_width,1)}")
     msg.info(f"Vertical A4 ratio is {round(a4_ratio,1)}")
     msg.info(
-        f"You could decrease single_plot_height to {round(new_plot_height_for_a4,1)} for the patchwork to fit A4",
+        f"You could decrease single_plot_height to {round(new_plot_height_for_a4,1)} for the patchwork to fit A4"
     )

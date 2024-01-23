@@ -12,14 +12,10 @@ def populate_baseline_registry() -> None:
     and easier to debug for people who are not familiar with python setup hooks.
     """
     # Data
-    from ..trainer.data.dataloaders import (
-        ParquetVerticalConcatenator,
-    )
+    from ..trainer.data.dataloaders import ParquetVerticalConcatenator
 
     # Estimator steps
-    from ..trainer.task.estimator_steps.logistic_regression import (
-        logistic_regression_step,
-    )
+    from ..trainer.task.estimator_steps.logistic_regression import logistic_regression_step
     from ..trainer.task.estimator_steps.xgboost import xgboost_classifier_step
 
     # Preprocessing
@@ -52,9 +48,7 @@ def populate_baseline_registry() -> None:
 
     # Suggesters
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
-    from ..trainer.task.estimator_steps.logistic_regression import (
-        LogisticRegressionSuggester,
-    )
+    from ..trainer.task.estimator_steps.logistic_regression import LogisticRegressionSuggester
 
     # Tasks
     from ..trainer.task.pipeline_constructor import pipeline_constructor
@@ -64,19 +58,13 @@ def populate_baseline_registry() -> None:
     from ..trainer.task.binary_classification.binary_classification_pipeline import (
         BinaryClassificationPipeline,
     )
-    from ..trainer.task.binary_classification.binary_metrics.binary_auroc import (
-        BinaryAUROC,
-    )
+    from ..trainer.task.binary_classification.binary_metrics.binary_auroc import BinaryAUROC
 
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
     from ..trainer.split_trainer import SplitTrainer
 
     # Test data
-    from ..trainer.preprocessing.steps.test_row_filter_split import (
-        mock_split_id_sequence,
-    )
+    from ..trainer.preprocessing.steps.test_row_filter_split import mock_split_id_sequence
     from ..trainer.data.test_dataloaders import MinimalTestData
-    from ..hyperparameter_suggester.test_optuna_hyperparameter_search import (
-        MockLogisticRegression,
-    )
+    from ..hyperparameter_suggester.test_optuna_hyperparameter_search import MockLogisticRegression

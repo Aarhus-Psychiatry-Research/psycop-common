@@ -64,9 +64,5 @@ def snooze_dataframe(
         f_preds.extend(filtered_predictions)
 
     return pd.DataFrame(
-        {
-            time_column_name: f_dates,
-            prediction_column_name: f_preds,
-            id_column_name: ids,
-        },
+        {time_column_name: f_dates, prediction_column_name: f_preds, id_column_name: ids}
     )

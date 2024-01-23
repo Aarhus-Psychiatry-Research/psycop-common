@@ -24,9 +24,7 @@ def get_most_likely_str_from_edit_distance(
         str: String from candidate_strs that is most similar to input_str by edit distance.
     """
     # Compute the Levenshtein distance between the input string and each candidate string.
-    distances = [
-        Levenshtein.distance(input_str, candidate) for candidate in candidate_strs
-    ]
+    distances = [Levenshtein.distance(input_str, candidate) for candidate in candidate_strs]
 
     # Sort the candidate strings by their Levenshtein distance from the input string.
     sorted_candidates = [
@@ -39,10 +37,7 @@ def get_most_likely_str_from_edit_distance(
     return sorted_candidates[:n_str_to_return]
 
 
-def check_columns_exist_in_dataset(
-    col_name_schema: ColumnNamesSchema,
-    df: pd.DataFrame,
-):
+def check_columns_exist_in_dataset(col_name_schema: ColumnNamesSchema, df: pd.DataFrame):
     """Check that all columns in the config exist in the dataset."""
     # Iterate over attributes in the config
     error_strs = []
@@ -71,9 +66,7 @@ def check_columns_exist_in_dataset(
         # Check that the column exists in the dataset
         if item not in df:
             most_likely_alternatives = get_most_likely_str_from_edit_distance(
-                candidate_strs=list(df.columns),
-                input_str=item,
-                n_str_to_return=3,
+                candidate_strs=list(df.columns), input_str=item, n_str_to_return=3
             )
 
             error_str = f"Column '{item}' in config but not in dataset.\n"

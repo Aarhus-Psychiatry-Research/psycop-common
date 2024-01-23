@@ -1,10 +1,5 @@
 """Create preprocessing pipeline based on config."""
-from sklearn.feature_selection import (
-    SelectPercentile,
-    chi2,
-    f_classif,
-    mutual_info_classif,
-)
+from sklearn.feature_selection import SelectPercentile, chi2, f_classif, mutual_info_classif
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -28,7 +23,7 @@ def get_feature_selection_steps(cfg: FullConfigSchema) -> list:  # type: ignore
                             "percentile"
                         ],
                     ),
-                ),
+                )
             )
         elif cfg.preprocessing.post_split.feature_selection.name == "chi2":
             new_steps.append(
@@ -40,11 +35,9 @@ def get_feature_selection_steps(cfg: FullConfigSchema) -> list:  # type: ignore
                             "percentile"
                         ],
                     ),
-                ),
+                )
             )
-        elif (
-            cfg.preprocessing.post_split.feature_selection.name == "mutual_info_classif"
-        ):
+        elif cfg.preprocessing.post_split.feature_selection.name == "mutual_info_classif":
             new_steps.append(
                 (
                     "feature_selection",
@@ -54,11 +47,11 @@ def get_feature_selection_steps(cfg: FullConfigSchema) -> list:  # type: ignore
                             "percentile"
                         ],
                     ),
-                ),
+                )
             )
         else:
             raise ValueError(
-                f"Unknown feature selection method {cfg.preprocessing.post_split.feature_selection.name}",
+                f"Unknown feature selection method {cfg.preprocessing.post_split.feature_selection.name}"
             )
 
     return new_steps
@@ -70,28 +63,17 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema) -> Pipeline:
 
     steps = []
     # Imputation
-    if (
-        cfg.model.require_imputation
-        and not cfg.preprocessing.post_split.imputation_method
-    ):
+    if cfg.model.require_imputation and not cfg.preprocessing.post_split.imputation_method:
         msg.warn(
-            f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file. Overriding to 'mean'.",
+            f"{cfg.model.name} requires imputation, but no imputation method was specified in the config file. Overriding to 'mean'."
         )
 
-        steps.append(
-            (
-                "Imputation",
-                SimpleImputer(strategy="mean"),
-            ),
-        )
+        steps.append(("Imputation", SimpleImputer(strategy="mean")))
         # Not a great solution, but preferable to the script breaking and stopping a hyperparameter search.
 
     if cfg.preprocessing.post_split.imputation_method:
         steps.append(
-            (
-                "Imputation",
-                SimpleImputer(strategy=cfg.preprocessing.post_split.imputation_method),
-            ),
+            ("Imputation", SimpleImputer(strategy=cfg.preprocessing.post_split.imputation_method))
         )
 
     # Feature selection
@@ -108,12 +90,10 @@ def create_preprocessing_pipeline(cfg: FullConfigSchema) -> Pipeline:
             "z-score-normalization",
             "z-score-normalisation",
         }:
-            steps.append(
-                ("z-score-normalization", StandardScaler()),
-            )
+            steps.append(("z-score-normalization", StandardScaler()))
         else:
             raise ValueError(
-                f"{cfg.preprocessing.post_split.scaling} is not implemented. See above",
+                f"{cfg.preprocessing.post_split.scaling} is not implemented. See above"
             )
 
     return Pipeline(steps)

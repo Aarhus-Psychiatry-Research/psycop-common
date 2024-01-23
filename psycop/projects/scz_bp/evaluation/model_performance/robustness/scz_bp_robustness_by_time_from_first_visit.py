@@ -1,9 +1,7 @@
 import plotnine as pn
 import polars as pl
 
-from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    get_auroc_by_timedelta_df,
-)
+from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
@@ -18,7 +16,7 @@ def scz_bp_auroc_by_time_from_first_contact(eval_ds: EvalDataset) -> pn.ggplot:
             "y_hat_probs": eval_ds.y_hat_probs,
             "pred_timestamp": eval_ds.pred_timestamps,
             "first_visit": eval_ds.custom_columns["first_visit"],  # type: ignore
-        },
+        }
     )
 
     plot_df = get_auroc_by_timedelta_df(
@@ -28,11 +26,7 @@ def scz_bp_auroc_by_time_from_first_contact(eval_ds: EvalDataset) -> pn.ggplot:
         time_two=df["pred_timestamp"],
         direction="t2-t1",
         bin_unit="M",
-        bins=range(
-            0,
-            60,
-            6,
-        ),
+        bins=range(0, 60, 6),
     )
 
     return t2d_plot_robustness(

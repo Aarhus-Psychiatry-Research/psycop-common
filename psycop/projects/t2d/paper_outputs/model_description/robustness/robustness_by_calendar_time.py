@@ -21,12 +21,7 @@ def t2d_auroc_by_quarter(run: T2DPipelineRun) -> pn.ggplot:
         confidence_interval=True,
     )
 
-    return t2d_plot_robustness(
-        df,
-        x_column="time_bin",
-        line_y_col_name="auroc",
-        xlab="Quarter",
-    )
+    return t2d_plot_robustness(df, x_column="time_bin", line_y_col_name="auroc", xlab="Quarter")
 
 
 if __name__ == "__main__":

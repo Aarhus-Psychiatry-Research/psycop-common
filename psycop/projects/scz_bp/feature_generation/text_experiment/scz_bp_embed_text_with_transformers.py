@@ -20,9 +20,7 @@ def embed_text_to_df(
     print("Start embedding")
     embeddings = model.encode(text, batch_size=batch_size, show_progress_bar=True)
     print(f"Embedding time: {time() - t0:.2f} seconds")
-    return pl.DataFrame(embeddings).select(
-        pl.all().map_alias(lambda c: c.replace("column", "emb")),
-    )
+    return pl.DataFrame(embeddings).select(pl.all().map_alias(lambda c: c.replace("column", "emb")))
 
 
 if __name__ == "__main__":
@@ -50,9 +48,7 @@ if __name__ == "__main__":
 
     for note_name_key, note_types in note_types_dict.items():
         print(f"Embedding {note_name_key}")
-        notes = pl.from_pandas(
-            load_text_sfis(text_sfi_names=note_types, include_sfi_name=False),
-        )
+        notes = pl.from_pandas(load_text_sfis(text_sfi_names=note_types, include_sfi_name=False))
         notes_metadata = notes.drop(columns=["value"])
 
         for model_name, model_str in models.items():

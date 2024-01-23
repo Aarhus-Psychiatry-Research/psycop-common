@@ -36,9 +36,7 @@ def print_df_dimensions_diff(  # noqa: ANN201
             n_in_dim_before_func = df.shape[dim_int]
 
             if print_when_no_diff:
-                log.info(
-                    f"{func.__name__}: {n_in_dim_before_func} {dim} before function",
-                )
+                log.info(f"{func.__name__}: {n_in_dim_before_func} {dim} before function")
 
             result = func(*args, **kwargs)
 
@@ -46,10 +44,7 @@ def print_df_dimensions_diff(  # noqa: ANN201
 
             if diff != 0:
                 percent_diff = round(
-                    (n_in_dim_before_func - result.shape[dim_int])
-                    / n_in_dim_before_func
-                    * 100,
-                    2,
+                    (n_in_dim_before_func - result.shape[dim_int]) / n_in_dim_before_func * 100, 2
                 )
 
                 log.info(f"{func.__name__}: Dropped {diff} ({percent_diff}%) {dim}")

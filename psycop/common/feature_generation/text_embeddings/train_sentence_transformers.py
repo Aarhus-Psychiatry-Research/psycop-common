@@ -15,9 +15,7 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
 
 
 def get_train_text(
-    n_rows: int | None,
-    text_sfi_names: str | list[str],
-    split_ids_presplit_step: PresplitStep,
+    n_rows: int | None, text_sfi_names: str | list[str], split_ids_presplit_step: PresplitStep
 ) -> list[str]:
     text_df = load_text_split(
         text_sfi_names=text_sfi_names,
@@ -56,11 +54,7 @@ def train_simcse_model(
     # use SimCSE loss for unsupervised training
     train_loss = losses.MultipleNegativesRankingLoss(model)
     t0 = time()
-    model.fit(
-        train_objectives=[(dataloader, train_loss)],
-        epochs=epochs,
-        show_progress_bar=True,
-    )
+    model.fit(train_objectives=[(dataloader, train_loss)], epochs=epochs, show_progress_bar=True)
     model.save(str(save_dir))
     print(f"Model saved to {save_dir}")
     print(f"Time taken: {time() - t0}")
@@ -87,10 +81,7 @@ def train_simcse_model_from_text(
     train_data = convert_list_of_texts_to_sentence_pairs(texts=train_text)
     dataloader = make_data_loader(train_data=train_data, batch_size=batch_size)
     train_simcse_model(
-        dataloader=dataloader,
-        model=model,
-        epochs=epochs,
-        model_name=model_save_name,
+        dataloader=dataloader, model=model, epochs=epochs, model_name=model_save_name
     )
 
 

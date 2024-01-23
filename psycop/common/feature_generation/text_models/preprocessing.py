@@ -13,10 +13,7 @@ from psycop.common.feature_generation.utils import write_df_to_file
 from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
-def text_preprocessing(
-    df: pd.DataFrame,
-    text_column_name: str = "value",
-) -> pd.DataFrame:
+def text_preprocessing(df: pd.DataFrame, text_column_name: str = "value") -> pd.DataFrame:
     """Preprocess texts by lower casing, removing stopwords and symbols.
 
     Args:
@@ -27,18 +24,14 @@ def text_preprocessing(
         pd.DataFrame: df with preprocessed text
     """
     # Define regex for stop words with empty string in beginning and end
-    regex_stop_words_surrounded_by_empty_strings = [
-        rf"\b{stop_word}\b" for stop_word in stop_words
-    ]
+    regex_stop_words_surrounded_by_empty_strings = [rf"\b{stop_word}\b" for stop_word in stop_words]
     regex_stop_words = "|".join(regex_stop_words_surrounded_by_empty_strings)
 
     # Define regex that removes symbols (by keeping everything else)
     regex_symbol_removal = r"[^ÆØÅæøåA-Za-z0-9 ]+"
 
     # combine
-    regex_symbol_removal_and_stop_words = re.compile(
-        f"{regex_stop_words}|{regex_symbol_removal}",
-    )
+    regex_symbol_removal_and_stop_words = re.compile(f"{regex_stop_words}|{regex_symbol_removal}")
 
     # lower case and remove stop words and symbols
     df[text_column_name] = (
@@ -81,10 +74,7 @@ def text_preprocessing_pipeline(
     split_names = "_".join(split_ids_presplit_step.splits_to_keep)  # type: ignore
 
     write_df_to_file(
-        df=df,
-        file_path=Path(
-            f"{save_path}/psycop_{split_names}_all_sfis_preprocessed.parquet",
-        ),
+        df=df, file_path=Path(f"{save_path}/psycop_{split_names}_all_sfis_preprocessed.parquet")
     )
 
     return f"Text preprocessed and saved as {save_path}/psycop_{split_names}_all_sfis_preprocessed.parquet"

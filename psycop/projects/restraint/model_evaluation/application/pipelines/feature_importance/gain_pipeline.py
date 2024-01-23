@@ -13,9 +13,7 @@ from psycop.projects.restraint.model_evaluation.config import (
     TEXT_FIGURES_PATH,
     TEXT_TABLES_PATH,
 )
-from psycop.projects.restraint.model_evaluation.data.load_true_data import (
-    load_file_from_pkl,
-)
+from psycop.projects.restraint.model_evaluation.data.load_true_data import load_file_from_pkl
 from psycop.projects.restraint.model_evaluation.figures.feature_importance.gain_plot import (
     plot_gain,
 )
@@ -35,17 +33,10 @@ def gain_pipeline(model: Literal["baseline", "text"], top_n: int = 20):
     else:
         raise ValueError(f"model is {model}, but must be 'baseline' or 'text'")
 
-    pipe = load_file_from_pkl(
-        wandb_group=run.group.name,
-        wandb_run=run.name,
-        file_name="pipe.pkl",
-    )
+    pipe = load_file_from_pkl(wandb_group=run.group.name, wandb_run=run.name, file_name="pipe.pkl")
 
     feature_importance_dict = dict(
-        zip(
-            pipe.named_steps.model.feature_names,
-            pipe.named_steps.model.feature_importances_,
-        ),  # type: ignore
+        zip(pipe.named_steps.model.feature_names, pipe.named_steps.model.feature_importances_)  # type: ignore
     )
 
     # create and save gain plot
@@ -58,8 +49,7 @@ def gain_pipeline(model: Literal["baseline", "text"], top_n: int = 20):
 
     # create and save gain table
     gain_df = generate_feature_importances_table(
-        feature_importance_dict=feature_importance_dict,
-        output_format="df",
+        feature_importance_dict=feature_importance_dict, output_format="df"
     )
     gain_df.to_csv(path_or_buf=t_path / "gain_table.csv")  # type: ignore
 

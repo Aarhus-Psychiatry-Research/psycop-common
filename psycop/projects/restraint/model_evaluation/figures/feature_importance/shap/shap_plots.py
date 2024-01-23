@@ -24,25 +24,21 @@ from psycop.projects.restraint.model_evaluation.utils.feature_name_to_readable i
 
 
 def plot_shap_for_feature(
-    df: pl.DataFrame,
-    feature_name: str,
-    model: Literal["baseline", "text"] = "baseline",
+    df: pl.DataFrame, feature_name: str, model: Literal["baseline", "text"] = "baseline"
 ) -> pn.ggplot:
     # < 4 since a binary can have 0, 1 and null
     feature_is_binary = df["feature_value"].n_unique() < 4
     feature_is_categorical = df["feature_value"].n_unique() < 10
 
     if not feature_is_binary:
-        df = df.filter(
-            pl.col("feature_value") < pl.col("feature_value").quantile(0.995),
-        )
+        df = df.filter(pl.col("feature_value") < pl.col("feature_value").quantile(0.995))
 
     if feature_is_binary:
         df = df.with_columns(
             pl.when(pl.col("feature_value") == 1.0)
             .then(pl.lit("True"))
             .otherwise(pl.lit("False"))
-            .keep_name(),
+            .keep_name()
         )
 
     if feature_is_categorical:
@@ -51,13 +47,7 @@ def plot_shap_for_feature(
     p = (
         pn.ggplot(df, pn.aes(x="feature_value", y="shap_value"))
         + pn.geom_hline(yintercept=0, size=0.3, colour="grey")
-        + pn.geom_point(
-            alpha=0.05,
-            shape="o",
-            position="jitter",
-            size=2,
-            colour=COLOURS["blue"],
-        )
+        + pn.geom_point(alpha=0.05, shape="o", position="jitter", size=2, colour=COLOURS["blue"])
         + pn.xlab(f"{feature_name}")
         + pn.ylab("SHAP")
         + pn.ggtitle(f"{model.capitalize()} model")
@@ -68,18 +58,14 @@ def plot_shap_for_feature(
 
 
 def plot_top_i_shap(
-    shap_long_df: pl.DataFrame,
-    i: int,
-    model: Literal["baseline", "text"] = "baseline",
+    shap_long_df: pl.DataFrame, i: int, model: Literal["baseline", "text"] = "baseline"
 ) -> dict[str, pn.ggplot]:
     df = get_top_i_features_by_mean_abs_shap(shap_long_df=shap_long_df, i=i)
 
     plots = {}
 
     for feature_rank in range(1, i + 1):
-        feature_df = df.filter(
-            pl.col("shap_mean_rank") == feature_rank,
-        )
+        feature_df = df.filter(pl.col("shap_mean_rank") == feature_rank)
         feature_name = feature_name_to_readable(feature_df["feature_name"][0])
         p = plot_shap_for_feature(df=feature_df, feature_name=feature_name, model=model)
         plots[str(feature_rank)] = p
@@ -103,9 +89,7 @@ def save_plots_for_top_i_shap_by_mean_abs(
 
 
 def plot_shap_summary(
-    shap_values: bytes,
-    model: Literal["baseline", "text"],
-    max_display: int = 20,
+    shap_values: bytes, model: Literal["baseline", "text"], max_display: int = 20
 ) -> None:
     """Plot summary/beeswarm plot of SHAP values
 
@@ -119,8 +103,7 @@ def plot_shap_summary(
 
     # Generate colormap
     cmap = LinearSegmentedColormap.from_list(
-        "",
-        [COLOURS["blue"], COLOURS["purple"], COLOURS["red"]],
+        "", [COLOURS["blue"], COLOURS["purple"], COLOURS["red"]]
     )
 
     # Change font to Times New Roman
@@ -128,11 +111,7 @@ def plot_shap_summary(
     rcParams["font.serif"] = "Times New Roman"
 
     shap.summary_plot(
-        shap_values,
-        show=False,
-        plot_size=(12, 5),
-        max_display=max_display,
-        cmap=cmap,
+        shap_values, show=False, plot_size=(12, 5), max_display=max_display, cmap=cmap
     )
     if model == "baseline":
         output_path = FIGURES_PATH / "shap" / "shap_summary.png"

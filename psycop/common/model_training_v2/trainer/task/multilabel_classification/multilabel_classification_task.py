@@ -2,9 +2,7 @@ from collections.abc import Sequence
 
 import pandas as pd
 
-from psycop.common.model_training_v2.trainer.task.base_task import (
-    BaselineTask,
-)
+from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 from psycop.common.model_training_v2.trainer.task.multilabel_classification.multilabel_classification_pipeline import (
     MultilabelClassificationPipeline,
 )
@@ -24,12 +22,7 @@ class MultilabelClassificationTask(BaselineTask):
         self.metrics = main_metric
         self.supplementary_metrics = supplementary_metrics
 
-    def train(
-        self,
-        x: pd.DataFrame,
-        y: pd.DataFrame,
-        y_col_name: str,
-    ):
+    def train(self, x: pd.DataFrame, y: pd.DataFrame, y_col_name: str):
         ...
 
     def predict_proba(self, x: pd.DataFrame) -> pd.Series[float]:

@@ -3,16 +3,8 @@ import logging
 from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import (
-    AggregationFunType,
-    latest,
-    maximum,
-    mean,
-    minimum,
-)
-from timeseriesflattener.df_transforms import (
-    df_with_multiple_values_to_named_dataframes,
-)
+from timeseriesflattener.aggregation_fns import AggregationFunType, latest, maximum, mean, minimum
+from timeseriesflattener.df_transforms import df_with_multiple_values_to_named_dataframes
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
@@ -26,9 +18,7 @@ from timeseriesflattener.feature_specs.single_specs import (
     StaticSpec,
 )
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f0_disorders,
@@ -41,9 +31,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f7_disorders,
     f8_disorders,
 )
-from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
-    EmbeddedTextLoader,
-)
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     alat,
     crp,
@@ -96,11 +84,7 @@ class SpecSet(BaseModel):  # type: ignore
 class FeatureSpecifier:
     """Feature specification class."""
 
-    def __init__(
-        self,
-        project_info: ProjectInfo,
-        min_set_for_debug: bool = False,
-    ) -> None:
+    def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False) -> None:
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
 
@@ -111,7 +95,7 @@ class FeatureSpecifier:
                 timeseries_df=sex_female(),
                 feature_base_name="sex_female",
                 prefix=self.project_info.prefix.predictor,
-            ),
+            )
         ]
 
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
@@ -128,7 +112,7 @@ class FeatureSpecifier:
                     fallback=0,
                     incident=True,
                     prefix=self.project_info.prefix.outcome,
-                ),
+                )
             ]
 
         return OutcomeGroupSpec(
@@ -136,7 +120,7 @@ class FeatureSpecifier:
                 NamedDataframe(
                     df=CancerCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
                     name="first_cancer_diagnosis",
-                ),
+                )
             ],
             lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
             aggregation_fns=[maximum],
@@ -146,9 +130,7 @@ class FeatureSpecifier:
         ).create_combinations()
 
     def _get_medication_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get medication specs."""
         log.info("-------- Generating medication specs --------")
@@ -195,9 +177,7 @@ class FeatureSpecifier:
         return psychiatric_medications + lifestyle_medications
 
     def _get_diagnoses_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
         log.info("-------- Generating diagnoses specs --------")
@@ -222,9 +202,7 @@ class FeatureSpecifier:
         return psychiatric_diagnoses
 
     def _get_lab_result_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
         log.info("-------- Generating lab result specs --------")
@@ -251,9 +229,7 @@ class FeatureSpecifier:
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating text specs --------")
-        embedded_text_filename = (
-            "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
-        )
+        embedded_text_filename = "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
@@ -302,26 +278,17 @@ class FeatureSpecifier:
                     aggregation_fn=maximum,
                     fallback=np.nan,
                     prefix=self.project_info.prefix.predictor,
-                ),
+                )
             ]
 
         resolve_multiple = [maximum, minimum, mean, latest]
         interval_days: list[float] = [30, 180, 365, 730, 1095, 1460, 1825]
 
-        lab_results = self._get_lab_result_specs(
-            resolve_multiple,
-            interval_days,
-        )
+        lab_results = self._get_lab_result_specs(resolve_multiple, interval_days)
 
-        diagnoses = self._get_diagnoses_specs(
-            resolve_multiple,
-            interval_days,
-        )
+        diagnoses = self._get_diagnoses_specs(resolve_multiple, interval_days)
 
-        medications = self._get_medication_specs(
-            resolve_multiple,
-            interval_days,
-        )
+        medications = self._get_medication_specs(resolve_multiple, interval_days)
 
         demographics = PredictorGroupSpec(
             named_dataframes=[
@@ -335,10 +302,7 @@ class FeatureSpecifier:
             prefix=self.project_info.prefix.predictor,
         ).create_combinations()
 
-        text = self._get_text_specs(
-            resolve_multiple=[mean],
-            interval_days=[30, 60, 365],
-        )
+        text = self._get_text_specs(resolve_multiple=[mean], interval_days=[30, 60, 365])
 
         return lab_results + medications + diagnoses + demographics + text
 
@@ -346,9 +310,7 @@ class FeatureSpecifier:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            log.warning(
-                "--- !!! Using the minimum set of features for debugging !!! ---",
-            )
+            log.warning("--- !!! Using the minimum set of features for debugging !!! ---")
             return self._get_temporal_predictor_specs() + self._get_outcome_specs()  # type: ignore
 
         return (

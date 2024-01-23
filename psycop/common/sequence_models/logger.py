@@ -15,26 +15,17 @@ def handle_wandb_folder():
     """
     if sys.platform == "win32":
         (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
+            exist_ok=True, parents=True
         )
 
 
 @SequenceRegistry.loggers.register("wandb")
 def create_wandb_logger(
-    save_dir: Path | str,
-    experiment_name: str,
-    offline: bool,
-    run_name: Optional[str] = None,
+    save_dir: Path | str, experiment_name: str, offline: bool, run_name: Optional[str] = None
 ) -> plLogger:
     handle_wandb_folder()
 
-    return plWandbLogger(
-        name=run_name,
-        save_dir=save_dir,
-        offline=offline,
-        project=experiment_name,
-    )
+    return plWandbLogger(name=run_name, save_dir=save_dir, offline=offline, project=experiment_name)
 
 
 @SequenceRegistry.loggers.register("mlflow")

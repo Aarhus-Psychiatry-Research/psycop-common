@@ -4,22 +4,14 @@
 import pandas as pd
 import pytest
 
-from psycop.common.model_training.config_schemas.conf_utils import (
-    validate_classification_objective,
-)
+from psycop.common.model_training.config_schemas.conf_utils import validate_classification_objective
 from psycop.common.model_training.config_schemas.data import ColumnNamesSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.col_name_checker import (
-    check_columns_exist_in_dataset,
-)
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_train_from_cfg,
-)
+from psycop.common.model_training.data_loader.col_name_checker import check_columns_exist_in_dataset
+from psycop.common.model_training.data_loader.utils import load_and_filter_train_from_cfg
 
 
-def test_load_lookbehind_exceeds_lookbehind_threshold(
-    muteable_test_config: FullConfigSchema,
-):
+def test_load_lookbehind_exceeds_lookbehind_threshold(muteable_test_config: FullConfigSchema):
     """Test that columns are dropped if their lookbehind are larger than the
     lookbehind threshold."""
     cfg = muteable_test_config
@@ -33,9 +25,7 @@ def test_load_lookbehind_exceeds_lookbehind_threshold(
     assert n_cols_before_filtering - n_cols_after_filtering == 2
 
 
-def test_load_lookbehind_not_in_lookbehind_combination(
-    muteable_test_config: FullConfigSchema,
-):
+def test_load_lookbehind_not_in_lookbehind_combination(muteable_test_config: FullConfigSchema):
     """Test that columns are dropped if their lookbehind is not in the
     specified lookbehind combination list."""
     cfg = muteable_test_config
@@ -72,7 +62,7 @@ def test_check_columns_exist_in_dataset():
             "is_female": [13, 14, 15],
             "exclusion_timestamp": [16, 17, 18],
             "custom1": [19, 20, 21],
-        },
+        }
     )
 
     with pytest.raises(ValueError, match="custom2"):
@@ -84,17 +74,11 @@ def test_validate_classification_objective(muteable_test_config: FullConfigSchem
 
     if cfg.preprocessing.pre_split.classification_objective == "binary":
         with pytest.raises(
-            ValueError,
-            match="Only one outcome column can be used for binary classification tasks.",
+            ValueError, match="Only one outcome column can be used for binary classification tasks."
         ):
-            validate_classification_objective(
-                cfg=cfg,
-                col_names=["outc_event1", "outc_event2"],
-            )
+            validate_classification_objective(cfg=cfg, col_names=["outc_event1", "outc_event2"])
 
-        assert (
-            validate_classification_objective(cfg=cfg, col_names="outc_event1") is None
-        )
+        assert validate_classification_objective(cfg=cfg, col_names="outc_event1") is None
 
     elif cfg.preprocessing.pre_split.classification_objective == "multilabel":
         with pytest.raises(
@@ -104,9 +88,6 @@ def test_validate_classification_objective(muteable_test_config: FullConfigSchem
             validate_classification_objective(cfg=cfg, col_names="outc_event1")
 
         assert (
-            validate_classification_objective(
-                cfg=cfg,
-                col_names=["outc_event1", "outc_event2"],
-            )
+            validate_classification_objective(cfg=cfg, col_names=["outc_event1", "outc_event2"])
             is None
         )
