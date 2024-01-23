@@ -11,9 +11,7 @@ from psycop.common.model_training.config_schemas.data import DataSchema
 
 msg = Printer(timestamp=True)
 
-from psycop.common.model_training.data_loader.col_name_checker import (
-    check_columns_exist_in_dataset,
-)
+from psycop.common.model_training.data_loader.col_name_checker import check_columns_exist_in_dataset
 
 log = logging.getLogger(__name__)
 
@@ -44,8 +42,7 @@ class DataLoader:
 
     @staticmethod
     def _check_dataframes_can_be_concatenated(
-        datasets: list[pd.DataFrame],
-        uuid_column: str,
+        datasets: list[pd.DataFrame], uuid_column: str
     ) -> bool:
         """Check if pred_time_uuid columns are sorted so they can be concatenated
         instead of joined."""
@@ -53,10 +50,7 @@ class DataLoader:
         return all(base_uuid.equals(df[uuid_column]) for df in datasets[1:])
 
     @staticmethod
-    def _check_dataframes_can_be_joined(
-        datasets: list[pd.DataFrame],
-        uuid_column: str,
-    ) -> bool:
+    def _check_dataframes_can_be_joined(datasets: list[pd.DataFrame], uuid_column: str) -> bool:
         """Check if pred_time_uuid columns contain the same elements so they can
         be joined without introducing new rows"""
         base_uuid = datasets[0][uuid_column]
@@ -67,8 +61,7 @@ class DataLoader:
 
     @staticmethod
     def _remove_id_columns(
-        datasets: list[pd.DataFrame],
-        id_columns: Sequence[str],
+        datasets: list[pd.DataFrame], id_columns: Sequence[str]
     ) -> list[pd.DataFrame]:
         """Remove id columns from all but the first dataset"""
         return [
@@ -76,17 +69,14 @@ class DataLoader:
             for i, dataset in enumerate(datasets)
         ]
 
-    def _check_and_merge_feature_sets(
-        self,
-        datasets: list[pd.DataFrame],
-    ) -> pd.DataFrame:
+    def _check_and_merge_feature_sets(self, datasets: list[pd.DataFrame]) -> pd.DataFrame:
         """Check if datasets can be concatenated or need to be joined."""
         n_rows_per_dataset = [dataset.shape[0] for dataset in datasets]
         all_datasets_have_same_length = len(set(n_rows_per_dataset)) == 1
         if not all_datasets_have_same_length:
             raise ValueError(
                 """The datasets have a different amount of rows.
-                Ensure that they have been created with the same prediction times.""",
+                Ensure that they have been created with the same prediction times."""
             )
         shared_id_columns = [
             self.data_cfg.col_name.id,
@@ -94,41 +84,31 @@ class DataLoader:
             self.data_cfg.col_name.pred_timestamp,
         ]
         if DataLoader._check_dataframes_can_be_concatenated(
-            datasets=datasets,
-            uuid_column=self.data_cfg.col_name.pred_time_uuid,
+            datasets=datasets, uuid_column=self.data_cfg.col_name.pred_time_uuid
         ):
             log.debug("Concatenating multiple feature sets.")
 
             datasets = DataLoader._remove_id_columns(
-                datasets=datasets,
-                id_columns=shared_id_columns,
+                datasets=datasets, id_columns=shared_id_columns
             )
             return pd.concat(datasets, axis=1)
 
         if DataLoader._check_dataframes_can_be_joined(
-            datasets=datasets,
-            uuid_column=self.data_cfg.col_name.pred_time_uuid,
+            datasets=datasets, uuid_column=self.data_cfg.col_name.pred_time_uuid
         ):
             log.debug("Joining multiple feature sets.")
             merged_df = datasets[0]
             for df in datasets[1:]:
                 merged_df = pd.merge(
-                    merged_df,
-                    df,
-                    on=shared_id_columns,
-                    how="outer",
-                    validate="1:1",
+                    merged_df, df, on=shared_id_columns, how="outer", validate="1:1"
                 )
             return merged_df
         raise ValueError(
-            "The datasets have different uuids. Ensure that they have been created with the same prediction times.",
+            "The datasets have different uuids. Ensure that they have been created with the same prediction times."
         )
 
     def _load_dataset_file(
-        self,
-        split_name: str,
-        dataset_dir: Path,
-        nrows: Optional[int] = None,
+        self, split_name: str, dataset_dir: Path, nrows: Optional[int] = None
     ) -> pd.DataFrame:
         """Load dataset from directory. Finds any file with the matching file
         suffix with the split name in its filename.
@@ -152,9 +132,7 @@ class DataLoader:
 
         if "parquet" in self.file_suffix:
             if nrows:
-                raise ValueError(
-                    "nrows is not supported for parquet files. Please use csv files.",
-                )
+                raise ValueError("nrows is not supported for parquet files. Please use csv files.")
 
             df: pd.DataFrame = pd.read_parquet(path)
         elif "csv" in self.file_suffix:
@@ -168,9 +146,7 @@ class DataLoader:
         return df
 
     def load_dataset_from_dir(
-        self,
-        split_names: Union[list[str], tuple[str], str],
-        nrows: Optional[int] = None,
+        self, split_names: Union[list[str], tuple[str], str], nrows: Optional[int] = None
     ) -> pd.DataFrame:
         """Load dataset. Can load multiple splits at once, e.g. concatenate
         train and val for crossvalidation.
@@ -189,9 +165,7 @@ class DataLoader:
 
         feature_sets = [
             self._load_dataset_from_dir(
-                split_names=split_names,
-                nrows=nrows,
-                dataset_dir=Path(dataset_dir),
+                split_names=split_names, nrows=nrows, dataset_dir=Path(dataset_dir)
             )
             for dataset_dir in dataset_dirs
         ]
@@ -199,9 +173,7 @@ class DataLoader:
         if len(feature_sets) == 1:
             return feature_sets[0]
         # else, concatenate/join them
-        merged_datasets = self._check_and_merge_feature_sets(
-            datasets=feature_sets,
-        )
+        merged_datasets = self._check_and_merge_feature_sets(datasets=feature_sets)
         return merged_datasets
 
     def _load_dataset_from_dir(
@@ -214,23 +186,17 @@ class DataLoader:
             case str():
                 # just return the single split
                 return self._load_dataset_file(
-                    split_name=split_names,
-                    nrows=nrows,
-                    dataset_dir=dataset_dir,
+                    split_name=split_names, nrows=nrows, dataset_dir=dataset_dir
                 )
 
             case list() | tuple():
                 # Concat splits if multiple are given
                 if nrows is not None:
-                    nrows = int(
-                        nrows / len(split_names),
-                    )
+                    nrows = int(nrows / len(split_names))
                 return pd.concat(
                     [
                         self._load_dataset_file(
-                            split_name=split,
-                            nrows=nrows,
-                            dataset_dir=dataset_dir,
+                            split_name=split, nrows=nrows, dataset_dir=dataset_dir
                         )
                         for split in split_names
                     ],

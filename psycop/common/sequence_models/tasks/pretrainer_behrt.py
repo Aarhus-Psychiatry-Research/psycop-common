@@ -68,23 +68,15 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
         self.log("val_loss", output["loss"])
         return output["loss"]
 
-    def forward(
-        self,
-        inputs: dict[str, torch.Tensor],
-        labels: torch.Tensor,
-    ) -> Metrics:
-        embedded_patients = self._embedder(
-            inputs,
-        )
+    def forward(self, inputs: dict[str, torch.Tensor], labels: torch.Tensor) -> Metrics:
+        embedded_patients = self._embedder(inputs)
         encoded_patients = self._encoder(
-            src=embedded_patients.src,
-            src_key_padding_mask=embedded_patients.src_key_padding_mask,
+            src=embedded_patients.src, src_key_padding_mask=embedded_patients.src_key_padding_mask
         )
 
         logits = self.mlm_head(encoded_patients)
         masked_lm_loss = self.loss(
-            logits.view(-1, logits.size(-1)),
-            labels.view(-1),
+            logits.view(-1, logits.size(-1)), labels.view(-1)
         )  # (bs * seq_length, vocab_size), (bs * seq_length)
         return {"logits": logits, "loss": masked_lm_loss}
 
@@ -126,16 +118,13 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
         # -> rest 10% of the time, keep the original word
         return diagnosis, masked_labels
 
-    def masking_fn(
-        self,
-        padded_sequence_ids: dict[str, torch.Tensor],
-    ) -> BatchWithLabels:
+    def masking_fn(self, padded_sequence_ids: dict[str, torch.Tensor]) -> BatchWithLabels:
         """
         Takes a dictionary of padded sequence ids and masks 15% of the tokens in the diagnosis sequence.
         """
         if not self._embedder.is_fitted:
             raise ValueError(
-                "The embedder must know which token_id corresponds to the mask. Therefore, the embedder must be fitted before masking. Call embedder.fit() before masking.",
+                "The embedder must know which token_id corresponds to the mask. Therefore, the embedder must be fitted before masking. Call embedder.fit() before masking."
             )
 
         self.mask_token_id = self._embedder.vocab.diagnosis["MASK"]
@@ -152,16 +141,11 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
         padded_sequence_ids["diagnosis"] = masked_sequence
         return BatchWithLabels(padded_sequence_ids, masked_labels)
 
-    def collate_fn(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> BatchWithLabels:
+    def collate_fn(self, patient_slices: Sequence[PatientSlice]) -> BatchWithLabels:
         """
         Takes a list of PredictionTime and returns a dictionary of padded sequence ids.
         """
-        padded_sequence_ids = self._embedder.collate_patient_slices(
-            patient_slices,
-        )
+        padded_sequence_ids = self._embedder.collate_patient_slices(patient_slices)
         # Masking
 
         # Move to CUDA
@@ -179,28 +163,22 @@ class PretrainerBEHRT(BasePatientSlicePretrainer):
     def configure_optimizers(
         self,
     ) -> tuple[
-        list[torch.optim.Optimizer],
-        list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
+        list[torch.optim.Optimizer], list[torch.optim.lr_scheduler._LRScheduler]  # type: ignore
     ]:
         optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
 
-    def filter_and_reformat(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> Sequence[PatientSlice]:
+    def filter_and_reformat(self, patient_slices: Sequence[PatientSlice]) -> Sequence[PatientSlice]:
         reformatted_slices = self._embedder.reformat(patient_slices)
         slices_with_content = [
-            patient_slice
-            for patient_slice in reformatted_slices
-            if patient_slice.temporal_events
+            patient_slice for patient_slice in reformatted_slices if patient_slice.temporal_events
         ]
 
         if len(reformatted_slices) != len(slices_with_content):
             n_filtered = len(reformatted_slices) - len(slices_with_content)
             log.warning(
-                f"Lost {n_filtered} patients ({round(n_filtered / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes.",
+                f"Lost {n_filtered} patients ({round(n_filtered / len(patient_slices) * 100, 2)}%) after filtering and mapping diagnosis codes."
             )
 
         return slices_with_content

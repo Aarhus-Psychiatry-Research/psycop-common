@@ -52,13 +52,13 @@ def load(
 
     if load_prescribed and any([administration_method, administration_route]):
         raise TypeError(
-            "load() got an unexpected combination of arguments. When load_prescribed=True, administration_method and administration_route must be NoneType objects.",
+            "load() got an unexpected combination of arguments. When load_prescribed=True, administration_method and administration_route must be NoneType objects."
         )
 
     if load_prescribed:
         log.warning(
             "Beware, there are missing prescriptions until september 2016. "
-            "Hereafter, data is complete. See the wiki (OBS: Medication) for more details.",
+            "Hereafter, data is complete. See the wiki (OBS: Medication) for more details."
         )
 
     df = pd.DataFrame()
@@ -104,22 +104,15 @@ def load(
     if output_col_name is None:
         output_col_name = "_".join(atc_code) if isinstance(atc_code, list) else atc_code
 
-    df = df.rename(
-        columns={
-            output_col_name: "value",
-        },
-    )
+    df = df.rename(columns={output_col_name: "value"})
 
     return df.reset_index(drop=True).drop_duplicates(  # type: ignore
-        subset=["dw_ek_borger", "timestamp", "value"],
-        keep="first",
+        subset=["dw_ek_borger", "timestamp", "value"], keep="first"
     )
 
 
 def concat_medications(
-    output_col_name: str,
-    atc_code_prefixes: list[str],
-    n_rows: int | None = None,
+    output_col_name: str, atc_code_prefixes: list[str], n_rows: int | None = None
 ) -> pd.DataFrame:
     """Aggregate multiple blood_sample_ids (typically NPU-codes) into one
     column.
@@ -133,20 +126,13 @@ def concat_medications(
         pd.DataFrame
     """
     dfs = [
-        load(
-            atc_code=f"{id}",
-            output_col_name=output_col_name,
-            n_rows=n_rows,
-        )
+        load(atc_code=f"{id}", output_col_name=output_col_name, n_rows=n_rows)
         for id in atc_code_prefixes  # noqa
     ]
 
     return (
         pd.concat(dfs, axis=0)
-        .drop_duplicates(
-            subset=["dw_ek_borger", "timestamp", "value"],
-            keep="first",
-        )
+        .drop_duplicates(subset=["dw_ek_borger", "timestamp", "value"], keep="first")
         .reset_index(drop=True)  # type: ignore
     )
 
@@ -187,15 +173,7 @@ def first_gen_antipsychotics(
     administration_method: str | None = None,
 ) -> pd.DataFrame:
     return load(
-        atc_code=[
-            "N05AF01",
-            "N05AG02",
-            "N05AD01",
-            "N05AF05",
-            "N05AD03",
-            "N05AD05",
-            "N05AF03",
-        ],
+        atc_code=["N05AF01", "N05AG02", "N05AD01", "N05AF05", "N05AD03", "N05AD05", "N05AF03"],
         load_prescribed=load_prescribed,
         load_administered=load_administered,
         wildcard_code=False,
@@ -252,13 +230,7 @@ def top_10_weight_gaining_antipsychotics(
     2019. Only 5 of them are marketed in Denmark.
     """
     return load(
-        atc_code=[
-            "N05AH03",
-            "N05AE03",
-            "N05AH04",
-            "N05AX13",
-            "N05AX08",
-        ],
+        atc_code=["N05AH03", "N05AE03", "N05AH04", "N05AX13", "N05AX08"],
         load_prescribed=load_prescribed,
         load_administered=load_administered,
         wildcard_code=False,
@@ -277,12 +249,7 @@ def sedative_antipsychotics(
     administration_method: str | None = None,
 ) -> pd.DataFrame:
     return load(
-        atc_code=[
-            "N05AH03",
-            "N05AD01",
-            "N05AF05",
-            "N05AH04",
-        ],
+        atc_code=["N05AH03", "N05AD01", "N05AF05", "N05AH04"],
         load_prescribed=load_prescribed,
         load_administered=load_administered,
         wildcard_code=False,
@@ -308,12 +275,7 @@ def non_sedative_antipsychotics(
         n_rows=n_rows,
         administration_route=administration_route,
         administration_method=administration_method,
-        exclude_atc_codes=[
-            "N05AH03",
-            "N05AD01",
-            "N05AF05",
-            "N05AH04",
-        ],
+        exclude_atc_codes=["N05AH03", "N05AD01", "N05AF05", "N05AH04"],
     )
 
 
@@ -748,12 +710,7 @@ def mood_stabilisers(
     administration_method: str | None = None,
 ) -> pd.DataFrame:
     return load(
-        atc_code=[
-            "N03AX09",
-            "N03AG01",
-            "N03AF01",
-            "N03AX12",
-        ],
+        atc_code=["N03AX09", "N03AG01", "N03AF01", "N03AX12"],
         load_prescribed=load_prescribed,
         load_administered=load_administered,
         wildcard_code=False,
@@ -772,11 +729,7 @@ def nervous_system_stimulants(
     administration_method: str | None = None,
 ) -> pd.DataFrame:
     return load(
-        atc_code=[
-            "N06BA04",
-            "N06BA09",
-            "C02AC02",
-        ],
+        atc_code=["N06BA04", "N06BA09", "C02AC02"],
         load_prescribed=load_prescribed,
         load_administered=load_administered,
         wildcard_code=False,

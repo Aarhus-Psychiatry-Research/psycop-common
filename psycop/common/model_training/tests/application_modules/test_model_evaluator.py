@@ -2,16 +2,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
-)
+from psycop.common.model_training.application_modules.train_model.main import train_model
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 
-def test_saving_results_to_parquet(
-    muteable_test_config: FullConfigSchema,
-    tmp_path: Path,
-):
+def test_saving_results_to_parquet(muteable_test_config: FullConfigSchema, tmp_path: Path):
     """Test that model performance is saved to a parquet file for querying."""
     cfg = muteable_test_config
 

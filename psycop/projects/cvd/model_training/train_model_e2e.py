@@ -2,13 +2,8 @@ import logging
 
 import pandas as pd
 
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
-)
-from psycop.common.model_training.config_schemas.data import (
-    ColumnNamesSchema,
-    DataSchema,
-)
+from psycop.common.model_training.application_modules.train_model.main import train_model
+from psycop.common.model_training.config_schemas.data import ColumnNamesSchema, DataSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.config_schemas.model import ModelConfSchema
 from psycop.common.model_training.config_schemas.preprocessing import (
@@ -17,13 +12,8 @@ from psycop.common.model_training.config_schemas.preprocessing import (
     PreprocessingConfigSchema,
     PreSplitPreprocessingConfigSchema,
 )
-from psycop.common.model_training.config_schemas.project import (
-    ProjectSchema,
-    WandbSchema,
-)
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.config_schemas.project import ProjectSchema, WandbSchema
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.cvd.feature_generation.main import get_cvd_project_info
 
 log = logging.getLogger(__name__)
@@ -36,7 +26,7 @@ def load_datasets(cfg: FullConfigSchema) -> pd.DataFrame:
                 data_cfg=cfg.data,
                 pre_split_cfg=cfg.preprocessing.pre_split,
                 split=cfg.data.splits_for_training[0],
-            ),
+            )
         ],
         ignore_index=True,
     )
@@ -49,11 +39,7 @@ if __name__ == "__main__":
 
     cfg = FullConfigSchema(
         project=ProjectSchema(
-            wandb=WandbSchema(
-                group="days",
-                mode="offline",
-                entity="test_entity",
-            ),
+            wandb=WandbSchema(group="days", mode="offline", entity="test_entity"),
             project_path=project_info.project_path,
             name=project_info.project_name,
             seed=42,
@@ -82,16 +68,10 @@ if __name__ == "__main__":
                 drop_rows_after_outcome=False,
             ),
             post_split=PostSplitPreprocessingConfigSchema(
-                imputation_method="mean",
-                scaling=None,
-                feature_selection=FeatureSelectionSchema(),
+                imputation_method="mean", scaling=None, feature_selection=FeatureSelectionSchema()
             ),
         ),
-        model=ModelConfSchema(
-            name="xgboost",
-            require_imputation=True,
-            args={"max_depth": 2},
-        ),
+        model=ModelConfSchema(name="xgboost", require_imputation=True, args={"max_depth": 2}),
         n_crossval_splits=10,
     )
 

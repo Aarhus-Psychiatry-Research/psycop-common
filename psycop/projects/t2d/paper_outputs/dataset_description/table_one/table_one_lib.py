@@ -16,17 +16,11 @@ class RowSpecification:
     nonnormal: bool = False
 
 
-def get_psychiatric_diagnosis_row_specs(
-    readable_col_names: list[str],
-) -> list[RowSpecification]:
+def get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[RowSpecification]:
     # Get diagnosis columns
     pattern = re.compile(r"pred_f\d_disorders")
     columns = sorted(
-        [
-            c
-            for c in readable_col_names
-            if pattern.search(c) and "max" in c and "1095" in c
-        ],
+        [c for c in readable_col_names if pattern.search(c) and "max" in c and "1095" in c]
     )
 
     readable_col_names = []
@@ -45,7 +39,7 @@ def get_psychiatric_diagnosis_row_specs(
                 categorical=True,
                 nonnormal=False,
                 values_to_display=[1],
-            ),
+            )
         )
 
     return specs
@@ -64,9 +58,7 @@ def create_table(
     readable_col_names = {r.source_col_name: r.readable_name for r in row_specs}
 
     limit_columns = {
-        r.source_col_name: r.values_to_display[0]
-        for r in row_specs
-        if r.values_to_display
+        r.source_col_name: r.values_to_display[0] for r in row_specs if r.values_to_display
     }
     order_columns = {
         r.source_col_name: r.values_to_display for r in row_specs if r.values_to_display

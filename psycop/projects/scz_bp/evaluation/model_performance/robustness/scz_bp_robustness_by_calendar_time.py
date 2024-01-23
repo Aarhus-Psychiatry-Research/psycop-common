@@ -18,9 +18,4 @@ def scz_bp_auroc_by_quarter(eval_ds: EvalDataset) -> pn.ggplot:
         confidence_interval=True,
     )
 
-    return t2d_plot_robustness(
-        df,
-        x_column="time_bin",
-        line_y_col_name="auroc",
-        xlab="Quarter",
-    )
+    return t2d_plot_robustness(df, x_column="time_bin", line_y_col_name="auroc", xlab="Quarter")

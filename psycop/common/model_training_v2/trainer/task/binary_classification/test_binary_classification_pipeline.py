@@ -17,7 +17,7 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
             Pipeline([logistic_regression_step()]),
             pd.DataFrame({"x": [1, 2, 3, 4]}),
             pd.Series([0, 0, 1, 1]),
-        ),
+        )
     ],
 )
 def test_binary_classification_pipeline(

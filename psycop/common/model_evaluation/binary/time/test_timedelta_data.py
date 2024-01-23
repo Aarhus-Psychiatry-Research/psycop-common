@@ -9,7 +9,7 @@ def test_get_timedelta_series():
     input_df = str_to_df(
         """t1_timestamp,t2_timestamp,
     2020-01-01,2020-01-02,
-    2020-01-01,2020-01-03,""",
+    2020-01-01,2020-01-03,"""
     )
 
     t2_minus_t1_days = get_timedelta_series(
@@ -40,7 +40,7 @@ def test_sensitivity_by_timedelta():
     2020-01-01,2020-01-02,1,1,
     2020-01-01,2020-01-02,0,0,
     2020-01-01,2020-01-02,0,0,
-    2020-01-01,2020-01-02,0,0,""",
+    2020-01-01,2020-01-02,0,0,"""
     )
 
     sensitivity_df = get_sensitivity_by_timedelta_df(

@@ -11,10 +11,7 @@ log = logging.getLogger(__name__)
 
 
 def str_to_sql_match_logic(
-    code_to_match: str,
-    code_sql_col_name: str,
-    load_diagnoses: bool,
-    match_with_wildcard: bool,
+    code_to_match: str, code_sql_col_name: str, load_diagnoses: bool, match_with_wildcard: bool
 ) -> str:
     """Generate SQL match logic from a single string.
 
@@ -61,9 +58,7 @@ def list_to_sql_logic(
             base_query = f"lower({code_sql_col_name}) LIKE '{code_str.lower()}"
 
         if match_with_wildcard:
-            match_col_sql_strings.append(
-                f"{base_query}%'",
-            )
+            match_col_sql_strings.append(f"{base_query}%'")
         else:
             # If the string is at the end of diagnosegruppestreng, it doesn't end with a hashtag
             match_col_sql_strings.append(f"{base_query}'")
@@ -71,7 +66,7 @@ def list_to_sql_logic(
             if load_diagnoses:
                 # If the string is at the beginning of diagnosegruppestreng, it doesn't start with a hashtag
                 match_col_sql_strings.append(
-                    f"lower({code_sql_col_name}) LIKE '{code_str.lower()}#%'",
+                    f"lower({code_sql_col_name}) LIKE '{code_str.lower()}#%'"
                 )
 
     return " OR ".join(match_col_sql_strings)
@@ -163,7 +158,9 @@ def load_from_codes(
     )
 
     if shak_code is not None:
-        sql += f" AND left({shak_location_col}, {len(str(shak_code))}) {shak_sql_operator} {shak_code}"
+        sql += (
+            f" AND left({shak_location_col}, {len(str(shak_code))}) {shak_sql_operator} {shak_code}"
+        )
 
     if administration_method:
         allowed_administration_methods = (
@@ -179,7 +176,7 @@ def load_from_codes(
         if administration_method not in allowed_administration_methods:
             log.warning(
                 "Value for administration method does not exist, returning 0 rows. "
-                + f"Allowed values are {allowed_administration_methods}.",
+                + f"Allowed values are {allowed_administration_methods}."
             )
         sql += f" AND type_kodetekst = '{administration_method}'"
 
@@ -264,7 +261,7 @@ def load_from_codes(
         if administration_route not in allowed_administration_routes:
             log.warning(
                 "Value for administration route does not exist, returning 0 rows. "
-                + f"Allowed values are {allowed_administration_routes}.",
+                + f"Allowed values are {allowed_administration_routes}."
             )
         sql += f" AND admvej_kodetekst = '{administration_route}'"
 
@@ -288,11 +285,7 @@ def load_from_codes(
     if not keep_code_col:
         df = df.drop([f"{code_col_name}"], axis="columns")
 
-    return df.rename(
-        columns={
-            source_timestamp_col_name: "timestamp",
-        },
-    )
+    return df.rename(columns={source_timestamp_col_name: "timestamp"})
 
 
 def unpack_intervals(
@@ -324,9 +317,7 @@ def unpack_intervals(
     # create a date range column between start date and end date for each visit/admission/coercion instance
     df["date_range"] = df.apply(
         lambda x: pd.date_range(
-            start=x[f"{starttime_col}"],
-            end=x[f"{endtime_col}"],
-            freq=unpack_freq,
+            start=x[f"{starttime_col}"], end=x[f"{endtime_col}"], freq=unpack_freq
         ),
         axis=1,
     )
@@ -336,7 +327,7 @@ def unpack_intervals(
 
     # concat df with start and end time rows
     df = pd.concat([df, df_end_rows], ignore_index=True).sort_values(
-        [f"{entity_id}", f"{starttime_col}", "date_range"],
+        [f"{entity_id}", f"{starttime_col}", "date_range"]
     )
 
     # drop duplicates (when start and/or end time = 00:00:00)
@@ -349,8 +340,6 @@ def unpack_intervals(
     df["value"] = 1
 
     # only keep relevant columns and rename date_range to timestamp
-    df = df[[f"{entity_id}", "date_range", "value"]].rename(
-        columns={"date_range": "timestamp"},
-    )
+    df = df[[f"{entity_id}", "date_range", "value"]].rename(columns={"date_range": "timestamp"})
 
     return df

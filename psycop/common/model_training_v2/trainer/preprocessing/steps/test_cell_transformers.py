@@ -12,7 +12,7 @@ def test_bool_to_int():
             "int_col": [1, 2, 3],
             "str_col": ["a", "b", "c"],
             "datetime_col": pd.to_datetime(["2020-01-01", "2020-01-02", "2020-01-03"]),
-        },
+        }
     )
 
     transformed = BoolToInt().apply(pl.from_pandas(df).lazy()).collect()

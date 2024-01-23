@@ -20,21 +20,13 @@ POS_RATE = 0.05
 # Best model on structured features
 DEV_GROUP_NAME = "coercion"
 DEVELOPMENT_GROUP = RunGroup(name=DEV_GROUP_NAME)
-BEST_DEV_RUN = Run(
-    group=DEVELOPMENT_GROUP,
-    name="baveniteunvisor",
-    pos_rate=POS_RATE,
-)
+BEST_DEV_RUN = Run(group=DEVELOPMENT_GROUP, name="baveniteunvisor", pos_rate=POS_RATE)
 
 
 # Best model on structured features + text features
 TEXT_DEV_GROUP_NAME = "seigneurial-normalacy"
 TEXT_DEVELOPMENT_GROUP = RunGroup(name=TEXT_DEV_GROUP_NAME)
-TEXT_BEST_DEV_RUN = Run(
-    group=TEXT_DEVELOPMENT_GROUP,
-    name="coucheporringer",
-    pos_rate=POS_RATE,
-)
+TEXT_BEST_DEV_RUN = Run(group=TEXT_DEVELOPMENT_GROUP, name="coucheporringer", pos_rate=POS_RATE)
 
 TEXT_EVAL_GROUP_NAME = f"{TEXT_DEV_GROUP_NAME}-eval-on-test"
 TEXT_EVAL_GROUP = RunGroup(name=TEXT_EVAL_GROUP_NAME)
@@ -47,10 +39,7 @@ TEXT_EVAL_RUN = Run(
 
 # output paths
 GENERAL_ARTIFACT_PATH = (
-    EVALUATION_ROOT
-    / "outputs_for_publishing"
-    / f"{DEV_GROUP_NAME}"
-    / f"{BEST_DEV_RUN.name}"
+    EVALUATION_ROOT / "outputs_for_publishing" / f"{DEV_GROUP_NAME}" / f"{BEST_DEV_RUN.name}"
 )
 FIGURES_PATH = GENERAL_ARTIFACT_PATH / "figures"
 TABLES_PATH = GENERAL_ARTIFACT_PATH / "tables"
@@ -58,10 +47,7 @@ ESTIMATES_PATH = GENERAL_ARTIFACT_PATH / "estimates"
 ROBUSTNESS_PATH = FIGURES_PATH / "robustness"
 
 TEXT_GENERAL_ARTIFACT_PATH = (
-    EVALUATION_ROOT
-    / "outputs_for_publishing"
-    / f"{TEXT_EVAL_GROUP.name}"
-    / f"{TEXT_EVAL_RUN.name}"
+    EVALUATION_ROOT / "outputs_for_publishing" / f"{TEXT_EVAL_GROUP.name}" / f"{TEXT_EVAL_RUN.name}"
 )
 TEXT_FIGURES_PATH = TEXT_GENERAL_ARTIFACT_PATH / "figures"
 TEXT_TABLES_PATH = TEXT_GENERAL_ARTIFACT_PATH / "tables"
@@ -109,7 +95,4 @@ COLOURS = {
     "purple": "#684D82",
 }
 
-MODEL_NAME = {
-    "drepaniumextrapolar": "Baseline Model",
-    "finchautocrator": "Text-Enhanced Model",
-}
+MODEL_NAME = {"drepaniumextrapolar": "Baseline Model", "finchautocrator": "Text-Enhanced Model"}

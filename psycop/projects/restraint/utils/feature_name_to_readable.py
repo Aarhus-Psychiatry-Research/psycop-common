@@ -7,9 +7,7 @@ def parse_static_feature(full_string: str) -> str:
 
     feature_capitalised = feature_name[0].upper() + feature_name[1:]
 
-    manual_overrides = {
-        "Age_in_years": "Age (years)",
-    }
+    manual_overrides = {"Age_in_years": "Age (years)"}
 
     if feature_capitalised in manual_overrides:
         feature_capitalised = manual_overrides[feature_capitalised]

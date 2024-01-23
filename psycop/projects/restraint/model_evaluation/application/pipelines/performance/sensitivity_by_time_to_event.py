@@ -18,20 +18,11 @@ from psycop.projects.restraint.model_evaluation.config import (
 from psycop.projects.restraint.utils.best_runs import Run
 
 
-def _plot_sensitivity_by_time_to_event(
-    df: pd.DataFrame,
-    path: Path,
-    title: str,
-) -> pn.ggplot:
+def _plot_sensitivity_by_time_to_event(df: pd.DataFrame, path: Path, title: str) -> pn.ggplot:
     p = (
         pn.ggplot(
             df,
-            pn.aes(
-                x="unit_from_event_binned",
-                y="sensitivity",
-                ymin="ci_lower",
-                ymax="ci_upper",
-            ),
+            pn.aes(x="unit_from_event_binned", y="sensitivity", ymin="ci_lower", ymax="ci_upper"),
         )
         + pn.geom_bar(
             pn.aes(y="proportion_in_bin"),
@@ -39,11 +30,7 @@ def _plot_sensitivity_by_time_to_event(
             position="identity",
             fill=COLOURS["blue"],
         )
-        + pn.geom_text(
-            pn.aes(y="proportion_in_bin", label="n_in_bin"),
-            va="bottom",
-            size=11,
-        )
+        + pn.geom_text(pn.aes(y="proportion_in_bin", label="n_in_bin"), va="bottom", size=11)
         + pn.scale_x_discrete(reverse=True)
         + pn.geom_point()
         + pn.geom_linerange(size=0.5)
@@ -59,17 +46,11 @@ def _plot_sensitivity_by_time_to_event(
         + pn.geom_path(group=1, size=0.5)
     )
 
-    p.save(
-        path / "sensitivity_by_time_to_event.png",
-    )
+    p.save(path / "sensitivity_by_time_to_event.png")
     return p
 
 
-def plot_sensitivity_by_time_to_event(
-    df: pd.DataFrame,
-    path: Path,
-    title: str,
-) -> pn.ggplot:
+def plot_sensitivity_by_time_to_event(df: pd.DataFrame, path: Path, title: str) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -93,16 +74,14 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
             "y_hat_probs": eval_ds.y_hat_probs,
             "pred_timestamps": eval_ds.pred_timestamps,
             "outcome_timestamps": eval_ds.outcome_timestamps,
-        },
+        }
     )
 
     df = df[df.outcome_timestamps.notna()]
 
     df = get_sensitivity_by_timedelta_df(
         y=eval_ds.y,  # type: ignore
-        y_hat=eval_ds.get_predictions_for_positive_rate(
-            desired_positive_rate=run.pos_rate,
-        )[0],
+        y_hat=eval_ds.get_predictions_for_positive_rate(desired_positive_rate=run.pos_rate)[0],
         time_one=eval_ds.pred_timestamps,
         time_two=eval_ds.outcome_timestamps,  # type: ignore
         direction="t2-t1",
@@ -113,9 +92,7 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
     )
 
     plot_sensitivity_by_time_to_event(
-        df,
-        path,
-        f"{MODEL_NAME[run.name]} Performance by Time to Outcome",
+        df, path, f"{MODEL_NAME[run.name]} Performance by Time to Outcome"
     )
 
 

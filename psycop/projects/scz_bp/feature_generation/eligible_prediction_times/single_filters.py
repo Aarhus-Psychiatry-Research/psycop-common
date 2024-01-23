@@ -2,9 +2,7 @@ import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    MoveIntoRMBaselineLoader,
-)
+from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
@@ -44,9 +42,7 @@ class SczBpAddAge(PredictionTimeFilter):
 
         df = df.join(birthday_df, on="dw_ek_borger", how="inner")
         df = df.with_columns(
-            ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(
-                AGE_COL_NAME,
-            ),
+            ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(AGE_COL_NAME)
         )
         df = df.with_columns((pl.col(AGE_COL_NAME) / 365.25).alias(AGE_COL_NAME))
         return df
@@ -69,38 +65,29 @@ class SczBpPrevalentFilter(PredictionTimeFilter):
         """Filter prediction times occuring after a patient has received a diagnosis
         of bp or scz"""
         time_of_first_scz_bp_diagnosis = get_first_scz_or_bp_diagnosis().select(
-            pl.col("timestamp").alias("timestamp_outcome"),
-            pl.col("dw_ek_borger"),
+            pl.col("timestamp").alias("timestamp_outcome"), pl.col("dw_ek_borger")
         )
 
         prediction_times_with_outcome = df.join(
-            time_of_first_scz_bp_diagnosis.lazy(),
-            on="dw_ek_borger",
-            how="inner",
+            time_of_first_scz_bp_diagnosis.lazy(), on="dw_ek_borger", how="inner"
         )
 
         prevalent_prediction_times = prediction_times_with_outcome.filter(
-            pl.col("timestamp") > pl.col("timestamp_outcome"),
+            pl.col("timestamp") > pl.col("timestamp_outcome")
         )
 
-        return df.join(
-            prevalent_prediction_times,
-            on=["dw_ek_borger", "timestamp"],
-            how="anti",
-        )
+        return df.join(prevalent_prediction_times, on=["dw_ek_borger", "timestamp"], how="anti")
 
 
 class SczBpTimeFromFirstVisitFilter(PredictionTimeFilter):
     """Remove prediction times within 90 days of first psychiatric contact"""
 
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        df_with_time_from_first_contact = add_time_from_first_contact_to_psychiatry(
-            df=df.collect(),
-        )
+        df_with_time_from_first_contact = add_time_from_first_contact_to_psychiatry(df=df.collect())
 
         return (
             df_with_time_from_first_contact.filter(
-                pl.col("time_from_first_contact") > pl.duration(days=N_DAYS_WASHIN),
+                pl.col("time_from_first_contact") > pl.duration(days=N_DAYS_WASHIN)
             )
             .select(pl.exclude(["first_contact", "time_from_first_contact"]))
             .lazy()

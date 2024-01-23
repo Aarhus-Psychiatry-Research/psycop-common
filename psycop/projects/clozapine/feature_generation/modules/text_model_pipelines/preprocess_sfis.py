@@ -1,8 +1,6 @@
 """Preprocess sfis"""
 
-from psycop.common.feature_generation.text_models.preprocessing import (
-    text_preprocessing_pipeline,
-)
+from psycop.common.feature_generation.text_models.preprocessing import text_preprocessing_pipeline
 
 
 def main() -> str:

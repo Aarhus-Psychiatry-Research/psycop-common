@@ -8,9 +8,7 @@ from psycop.projects.cancer.cancer_config import (
 from psycop.projects.cancer.feature_generation.cohort_definition.cancer_cohort_definer import (
     CancerCohortDefiner,
 )
-from psycop.projects.cancer.model_training.train_models_in_parallel import (
-    train_models_in_parallel,
-)
+from psycop.projects.cancer.model_training.train_models_in_parallel import train_models_in_parallel
 
 if __name__ == "__main__":
     feature_set_path = init_wandb_and_generate_feature_set(

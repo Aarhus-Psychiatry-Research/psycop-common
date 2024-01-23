@@ -11,8 +11,7 @@ if TYPE_CHECKING:
 
 
 def check_for_duplicates(
-    df: pd.DataFrame,
-    subset_duplicates_columns: Sequence[str] | str,
+    df: pd.DataFrame, subset_duplicates_columns: Sequence[str] | str
 ) -> tuple[pd.DataFrame | None, list[str]]:
     """Check for duplicates in the dataframe.
 
@@ -38,9 +37,7 @@ def check_for_duplicates(
 
 
 def get_column_dtype_failures(
-    df: pd.DataFrame,
-    expected_val_dtypes: Sequence[str],
-    col: str,
+    df: pd.DataFrame, expected_val_dtypes: Sequence[str], col: str
 ) -> str | None:
     """Check that the column is of the correct dtype.
 
@@ -64,11 +61,7 @@ def get_column_dtype_failures(
     return None
 
 
-def get_na_prop_failures(
-    df: pd.DataFrame,
-    allowed_nan_value_prop: float,
-    col: str,
-) -> str | None:
+def get_na_prop_failures(df: pd.DataFrame, allowed_nan_value_prop: float, col: str) -> str | None:
     """Check if column has too many missing values.
 
     Args:
@@ -118,16 +111,12 @@ def check_required_columns(
 
         # Check that columns are correctly formatted
         dtype_failures = get_column_dtype_failures(
-            df=df,
-            expected_val_dtypes=expected_val_dtypes,
-            col=col,
+            df=df, expected_val_dtypes=expected_val_dtypes, col=col
         )
 
         # Check for NaN in cols
         na_prop_failures = get_na_prop_failures(
-            df=df,
-            col=col,
-            allowed_nan_value_prop=allowed_nan_value_prop,
+            df=df, col=col, allowed_nan_value_prop=allowed_nan_value_prop
         )
 
         for f_type in dtype_failures, na_prop_failures:
@@ -178,13 +167,8 @@ def check_raw_df(
         subset_duplicates_columns = list(df.columns)
 
     # Raise error if string other than 'All' is passed to subset_duplicates_columns
-    if (
-        isinstance(subset_duplicates_columns, str)
-        and subset_duplicates_columns != "all"
-    ):
-        raise ValueError(
-            "subset_duplicates_columns must be a list of column names or 'All'",
-        )
+    if isinstance(subset_duplicates_columns, str) and subset_duplicates_columns != "all":
+        raise ValueError("subset_duplicates_columns must be a list of column names or 'All'")
 
     if expected_val_dtypes is None:
         expected_val_dtypes = ["float64", "int64"]
@@ -203,8 +187,7 @@ def check_raw_df(
 
     # Check for duplicates
     duplicates, duplicate_sources = check_for_duplicates(
-        df=df,
-        subset_duplicates_columns=subset_duplicates_columns,
+        df=df, subset_duplicates_columns=subset_duplicates_columns
     )
 
     source_failures += duplicate_sources

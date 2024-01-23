@@ -15,18 +15,14 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 )
 
 
-def fa_inpatient_confusion_matrix_plot(
-    run: ForcedAdmissionInpatientPipelineRun,
-) -> pn.ggplot:
+def fa_inpatient_confusion_matrix_plot(run: ForcedAdmissionInpatientPipelineRun) -> pn.ggplot:
     eval_ds = run.pipeline_outputs.get_eval_dataset()
 
     df = pd.DataFrame(
         {
             "true": eval_ds.y,
-            "pred": eval_ds.get_predictions_for_positive_rate(
-                run.paper_outputs.pos_rate,
-            )[0],
-        },
+            "pred": eval_ds.get_predictions_for_positive_rate(run.paper_outputs.pos_rate)[0],
+        }
     )
     confusion_matrix = get_confusion_matrix_cells_from_df(df=df)
 

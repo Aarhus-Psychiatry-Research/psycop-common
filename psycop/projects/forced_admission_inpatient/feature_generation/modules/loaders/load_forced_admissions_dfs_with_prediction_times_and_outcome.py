@@ -12,15 +12,13 @@ def forced_admissions_inpatient(timestamps_only: bool = True) -> pd.DataFrame:
     )
 
     msg.good(
-        "Finished loading data frame for forced admissions with prediction times and outcome for all inpatient admissions",
+        "Finished loading data frame for forced admissions with prediction times and outcome for all inpatient admissions"
     )
 
     return df.reset_index(drop=True)
 
 
-def forced_admissions_outpatient(
-    timestamps_only: bool = True,
-) -> pd.DataFrame:
+def forced_admissions_outpatient(timestamps_only: bool = True) -> pd.DataFrame:
     df = process_forced_pred_dfs(
         visit_type="outpatient",
         prediction_times_col_name="datotid_predict",
@@ -28,16 +26,14 @@ def forced_admissions_outpatient(
     )
 
     msg.good(
-        "Finished loading data frame for forced admissions with prediction times and outcome for all outpatient visits",
+        "Finished loading data frame for forced admissions with prediction times and outcome for all outpatient visits"
     )
 
     return df.reset_index(drop=True)
 
 
 def process_forced_pred_dfs(
-    visit_type: str,
-    prediction_times_col_name: str,
-    timestamps_only: bool = True,
+    visit_type: str, prediction_times_col_name: str, timestamps_only: bool = True
 ) -> pd.DataFrame:
     df = sql_load(
         f"SELECT * FROM [fct].[psycop_fa_outcome_all_disorders_forced_admission_{visit_type}_730.5d_0f_2014_2021]",
@@ -66,7 +62,7 @@ def process_forced_pred_dfs(
             "outc_timestamp_91_days": "timestamp_outcome_91_days",
             "outc_timestamp_182_days": "timestamp_outcome_182_days",
             "outc_timestamp_365_days": "timestamp_outcome_365_days",
-        },
+        }
     )
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df["timestamp_outcome_91_days"] = pd.to_datetime(df["timestamp_outcome_91_days"])

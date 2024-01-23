@@ -9,16 +9,8 @@ if __name__ == "__main__":
     # Get project root directory
 
     column_specs = {
-        "dw_ek_borger": {
-            "column_type": "uniform_int",
-            "min": 0,
-            "max": 10_000,
-        },
-        "timestamp": {
-            "column_type": "datetime_uniform",
-            "min": -5 * 365,
-            "max": 0 * 365,
-        },
+        "dw_ek_borger": {"column_type": "uniform_int", "min": 0, "max": 10_000},
+        "timestamp": {"column_type": "datetime_uniform", "min": -5 * 365, "max": 0 * 365},
     }
 
     df = generate_data_columns(
@@ -27,6 +19,5 @@ if __name__ == "__main__":
     )
 
     df.to_csv(
-        PSYCOP_PKG_ROOT / "tests" / "test_data" / "raw" / "synth_prediction_times.csv",
-        index=False,
+        PSYCOP_PKG_ROOT / "tests" / "test_data" / "raw" / "synth_prediction_times.csv", index=False
     )

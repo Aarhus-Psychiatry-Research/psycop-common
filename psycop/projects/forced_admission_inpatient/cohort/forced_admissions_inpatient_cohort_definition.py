@@ -25,9 +25,7 @@ class ForcedAdmissionsInpatientCohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle(
         washout_on_prior_forced_admissions: bool = True,
     ) -> FilteredPredictionTimeBundle:
-        unfiltered_prediction_times = pl.from_pandas(
-            admissions_discharge_timestamps(),
-        ).lazy()
+        unfiltered_prediction_times = pl.from_pandas(admissions_discharge_timestamps()).lazy()
 
         if washout_on_prior_forced_admissions:
             return filter_prediction_times(
@@ -52,20 +50,14 @@ class ForcedAdmissionsInpatientCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(
-            frame=pl.from_pandas(forced_admissions_onset_timestamps()),
-        )
+        return OutcomeTimestampFrame(frame=pl.from_pandas(forced_admissions_onset_timestamps()))
 
 
 if __name__ == "__main__":
-    bundle = (
-        ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle()
-    )
+    bundle = ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle()
 
-    bundle_no_washout = (
-        ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
-            washout_on_prior_forced_admissions=False,
-        )
+    bundle_no_washout = ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
+        washout_on_prior_forced_admissions=False
     )
 
     df = bundle.prediction_times.frame.to_pandas()

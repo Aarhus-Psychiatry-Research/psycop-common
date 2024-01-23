@@ -2,9 +2,7 @@ import numpy as np
 import pandas as pd
 
 from psycop.common.feature_generation.text_models.fit_text_models import fit_text_model
-from psycop.common.feature_generation.text_models.preprocessing import (
-    text_preprocessing,
-)
+from psycop.common.feature_generation.text_models.preprocessing import text_preprocessing
 
 
 def test_fit_bow_model():
@@ -18,7 +16,7 @@ def test_fit_bow_model():
                 "pt fortæller om smerte i fod",
                 "der er ingen der har spist morgenmad",
             ],
-        },
+        }
     )
 
     df = text_preprocessing(df, text_column_name="text")
@@ -41,7 +39,7 @@ def test_fit_tfidf_model():
                 "pt fortæller om smerte i fod",
                 "der er ingen der har spist morgenmad",
             ],
-        },
+        }
     )
 
     df = text_preprocessing(df, text_column_name="text")

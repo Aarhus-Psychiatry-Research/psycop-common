@@ -15,7 +15,7 @@ def load_shak_to_location_mapping() -> pl.DataFrame:
     øst = horsens, aarhus, risskov, randers"""
     # shak mapping from https://sor-filer.sundhedsdata.dk/sor_produktion/data/shak/shakcomplete/shakcomplete.txt
     return pl.read_csv(Path(__file__).parent / "shak_mapping.csv").with_columns(
-        pl.col("shak_6").cast(str),
+        pl.col("shak_6").cast(str)
     )
 
 
@@ -33,9 +33,7 @@ if __name__ == "__main__":
 
     df = (
         pl.from_pandas(visits)
-        .with_columns(
-            pl.col("shak_location").str.slice(offset=0, length=6).alias("shak_6"),
-        )
+        .with_columns(pl.col("shak_location").str.slice(offset=0, length=6).alias("shak_6"))
         .join(shak_to_location_df, on="shak_6", how="left")
     ).filter(~pl.col("shak_6").is_in(shak_codes_to_drop()))
 
@@ -53,8 +51,7 @@ if __name__ == "__main__":
     )
 
     n_locations_and_visits_by_patient.groupby("n_unique_locations").agg(
-        pl.col("n_visits").count().alias("n_patients"),
-        pl.col("n_visits").sum().alias("n_visits"),
+        pl.col("n_visits").count().alias("n_patients"), pl.col("n_visits").sum().alias("n_visits")
     ).sort("n_unique_locations")
 
     df.groupby("grouping").agg(

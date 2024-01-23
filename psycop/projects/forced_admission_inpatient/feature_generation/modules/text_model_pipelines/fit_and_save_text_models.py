@@ -1,8 +1,6 @@
 """Pipeline for fitting and saving BoW and TF-IDF models on a preprocessed corpus"""
 
-from psycop.common.feature_generation.text_models.text_model_pipeline import (
-    text_model_pipeline,
-)
+from psycop.common.feature_generation.text_models.text_model_pipeline import text_model_pipeline
 
 if __name__ == "__main__":
     text_model_pipeline(

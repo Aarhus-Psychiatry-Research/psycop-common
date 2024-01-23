@@ -4,9 +4,7 @@ import numpy as np
 import pandas as pd
 import plotnine as pn
 
-from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
-    bootstrap_roc,
-)
+from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.projects.restraint.model_evaluation.config import (
     BEST_DEV_RUN,
     FIGURES_PATH,
@@ -23,9 +21,7 @@ def bootstrap_results(
     y_hat_probs: pd.Series,  # type: ignore
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:  # type: ignore
     tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_roc(
-        n_bootstraps=1000,
-        y=y,
-        y_hat_probs=y_hat_probs,
+        n_bootstraps=1000, y=y, y_hat_probs=y_hat_probs
     )
 
     return tprs_bootstrapped, aucs_bootstrapped, base_fpr
@@ -55,12 +51,7 @@ def plot_auc_roc(
     auc_ci = [auc_mean - 1.96 * auc_se, auc_mean + 1.96 * auc_se]
 
     df = pd.DataFrame(
-        {
-            "fpr": base_fpr,
-            "tpr": mean_tprs,
-            "tpr_lower": tprs_lower,
-            "tpr_upper": tprs_upper,
-        },
+        {"fpr": base_fpr, "tpr": mean_tprs, "tpr_lower": tprs_lower, "tpr_upper": tprs_upper}
     )
 
     auroc_label = pn.annotate(
@@ -94,15 +85,11 @@ def plot_auc_roc(
 def roc_auc_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
-    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(
-        eval_ds.y_hat_probs,
-        pd.DataFrame,
-    ):
+    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(eval_ds.y_hat_probs, pd.DataFrame):
         raise TypeError
 
     tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_results(
-        y=eval_ds.y,
-        y_hat_probs=eval_ds.y_hat_probs,
+        y=eval_ds.y, y_hat_probs=eval_ds.y_hat_probs
     )
 
     # Calculate confidence interval for AUC

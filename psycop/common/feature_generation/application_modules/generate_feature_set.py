@@ -13,9 +13,7 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
-from psycop.common.feature_generation.application_modules.loggers import (
-    init_root_logger,
-)
+from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
     init_wandb,
@@ -52,7 +50,7 @@ def generate_feature_set(
     if Path.exists(feature_set_dir):
         while True:
             response = input(
-                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): ",
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
             )
 
             if response.lower() not in ["yes", "y", "no", "n"]:
@@ -66,10 +64,7 @@ def generate_feature_set(
 
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
-            project_info,
-            eligible_prediction_times,
-            feature_specs,
-            chunksize,
+            project_info, eligible_prediction_times, feature_specs, chunksize
         )
 
     else:
@@ -81,9 +76,7 @@ def generate_feature_set(
         )
 
     split_and_save_dataset_to_disk(
-        flattened_df=flattened_df,
-        project_info=project_info,
-        feature_set_dir=feature_set_dir,
+        flattened_df=flattened_df, project_info=project_info, feature_set_dir=feature_set_dir
     )
 
     save_flattened_dataset_description_to_disk(
@@ -123,13 +116,11 @@ def init_logger_and_wandb(project_info: ProjectInfo):
     init_root_logger(project_info=project_info)
 
     log.info(  # pylint: disable=logging-fstring-interpolation
-        f"Stdout level is {logging.getLevelName(log.level)}",
+        f"Stdout level is {logging.getLevelName(log.level)}"
     )
     log.debug("Debugging is still captured in the log file")
 
     # Use wandb to keep track of your dataset generations
     # Makes it easier to find paths on wandb, as well as
     # allows monitoring and automatic slack alert on failure
-    init_wandb(
-        project_info=project_info,
-    )  # allows monitoring and automatic slack alert on failure
+    init_wandb(project_info=project_info)  # allows monitoring and automatic slack alert on failure

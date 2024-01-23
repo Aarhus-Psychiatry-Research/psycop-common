@@ -1,9 +1,7 @@
 from collections.abc import Sequence
 from typing import Protocol
 
-from psycop.common.model_training_v2.trainer.task.model_step import (
-    ModelStep,
-)
+from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 from psycop.common.types.polarsframe import PolarsFrame
 
 from ..base_pipeline import BasePipeline

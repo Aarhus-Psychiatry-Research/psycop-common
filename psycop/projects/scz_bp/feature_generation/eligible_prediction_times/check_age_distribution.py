@@ -16,10 +16,7 @@ if __name__ == "__main__":
 
     first_eligible_outcome = (
         pred_times.frame.join(
-            outcome_with_age.collect(),
-            how="left",
-            on="dw_ek_borger",
-            suffix="_outcome",
+            outcome_with_age.collect(), how="left", on="dw_ek_borger", suffix="_outcome"
         )
         .filter(pl.col("age").is_not_null())
         .sort("timestamp")
@@ -28,10 +25,7 @@ if __name__ == "__main__":
     )
 
     (
-        pn.ggplot(
-            first_eligible_outcome,
-            pn.aes(x="age"),
-        )
+        pn.ggplot(first_eligible_outcome, pn.aes(x="age"))
         + pn.geom_histogram()
         + pn.labs(x="Age at diagnosis", y="Count")
         + pn.geom_vline(pn.aes(xintercept=40))
@@ -39,10 +33,7 @@ if __name__ == "__main__":
     ).save("age_dist.png")
 
     (
-        pn.ggplot(
-            first_eligible_outcome,
-            pn.aes(x="age_outcome"),
-        )
+        pn.ggplot(first_eligible_outcome, pn.aes(x="age_outcome"))
         + pn.stat_ecdf()
         + pn.labs(x="Age at diagnosis", y="Cumulative proportion")
         + pn.geom_vline(pn.aes(xintercept=40))

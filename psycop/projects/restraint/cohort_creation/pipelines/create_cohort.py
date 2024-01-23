@@ -20,10 +20,10 @@ from psycop.projects.restraint.cohort_creation.utils.utils import (
 
 # load data
 df_adm = sql_load(
-    "SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]",
+    "SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]"
 )  # only includes admissions in psychiatry (shak code starts with 6600)
 df_coercion = sql_load(
-    "SELECT * FROM fct.[FOR_tvang_alt_hele_kohorten_inkl_2021_feb2022]",
+    "SELECT * FROM fct.[FOR_tvang_alt_hele_kohorten_inkl_2021_feb2022]"
 )  # includes coercion in both psychiatry and somatic
 
 
@@ -85,10 +85,7 @@ df_excluded_admissions = df_excluded_admissions.drop_duplicates(keep="first")
 
 # outer join of admissions and excluded admissions with and indicator column ("_merge") denoting whether and observation occurs in both datasets
 df_cohort = df_cohort.merge(
-    df_excluded_admissions,
-    how="outer",
-    on=["dw_ek_borger", "datotid_start"],
-    indicator=True,
+    df_excluded_admissions, how="outer", on=["dw_ek_borger", "datotid_start"], indicator=True
 )
 
 # exclude rows that are in both datasets (i.e., exclude admissions in "df_excluded_admissions")
@@ -108,27 +105,21 @@ df_admissions_list = [df_admissions.get_group(key) for key in df_admissions.grou
 
 
 df_cohort_with_coercion = pd.concat(
-    [first_coercion_within_admission(admission) for admission in df_admissions_list],
+    [first_coercion_within_admission(admission) for admission in df_admissions_list]
 )
 
 # remove irrelevant columns from df_cohort, drop duplicates
-df_cohort = df_cohort[
-    ["dw_ek_borger", "datotid_start", "datotid_slut"]
-].drop_duplicates()
+df_cohort = df_cohort[["dw_ek_borger", "datotid_start", "datotid_slut"]].drop_duplicates()
 
 
 # merge with df_cohort_coercion
 df_cohort = df_cohort.merge(
-    df_cohort_with_coercion,
-    how="left",
-    on=["dw_ek_borger", "datotid_start", "datotid_slut"],
+    df_cohort_with_coercion, how="left", on=["dw_ek_borger", "datotid_start", "datotid_slut"]
 )
 
 
 # we exclude admissions with na discharge day and discharge day > 2021-11-22 due to legal restrictions
-df_cohort = df_cohort[
-    (df_cohort.datotid_slut.notna()) & (df_cohort.datotid_slut <= "2021-11-22")
-]
+df_cohort = df_cohort[(df_cohort.datotid_slut.notna()) & (df_cohort.datotid_slut <= "2021-11-22")]
 
 
 # for each admission, we want to make a prediction every day
@@ -140,16 +131,13 @@ df_cohort = pd.concat([unpack_adm_days(idx, row) for idx, row in df_cohort.iterr
 
 # Create include_pred_time_column (pred times were coercion hasn't happened yet or no coercion in the admission)
 df_cohort["include_pred_time"] = np.where(
-    (df_cohort.pred_time < df_cohort.datotid_start_sei)
-    | (df_cohort.datotid_start_sei.isna()),
-    1,
-    0,
+    (df_cohort.pred_time < df_cohort.datotid_start_sei) | (df_cohort.datotid_start_sei.isna()), 1, 0
 )
 
 
 # load admission data again
 df_adm = sql_load(
-    "SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]",
+    "SELECT * FROM fct.[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]"
 )  # only includes admissions in psychiatry (shak code starts with 6600)
 
 # only keep admission contacts
@@ -165,16 +153,11 @@ df_adm = df_adm[df_adm["datotid_start"] >= "2015-01-01"]
 df_adm = df_adm[["dw_ek_borger", "datotid_start", "shakkode_ansvarlig"]]
 
 # left join df_adm on df_cohort
-df_cohort = df_cohort.merge(
-    df_adm,
-    how="left",
-    on=["dw_ek_borger", "datotid_start"],
-)
+df_cohort = df_cohort.merge(df_adm, how="left", on=["dw_ek_borger", "datotid_start"])
 
 # remove admissions in the department of forensic psychiatry (shak code 6600021 and 6600310)
 df_cohort = df_cohort[
-    (df_cohort["shakkode_ansvarlig"] != "6600310")
-    & (df_cohort["shakkode_ansvarlig"] != "6600021")
+    (df_cohort["shakkode_ansvarlig"] != "6600310") & (df_cohort["shakkode_ansvarlig"] != "6600021")
 ]
 
 

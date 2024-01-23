@@ -15,9 +15,7 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     ogtt,
     unscheduled_p_glc,
 )
-from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    get_timedelta_series,
-)
+from psycop.common.model_evaluation.binary.time.timedelta_data import get_timedelta_series
 from psycop.common.model_training.preprocessing.pre_split.processors.row_filter import (
     PreSplitRowFilter,
 )
@@ -37,12 +35,7 @@ def get_eligible_prediction_times_for_pipeline(run: T2DPipelineRun) -> pd.DataFr
     )
 
     flattened_dataset = (
-        pl.concat(
-            [
-                run.inputs.get_flattened_split_as_lazyframe(split=split)
-                for split in ("test",)
-            ],
-        )
+        pl.concat([run.inputs.get_flattened_split_as_lazyframe(split=split) for split in ("test",)])
         .select(columns_to_keep)
         .collect()
     )
@@ -52,8 +45,7 @@ def get_eligible_prediction_times_for_pipeline(run: T2DPipelineRun) -> pd.DataFr
     cfg.preprocessing.pre_split.lookbehind_combination = [365]
 
     eligible_for_pipeline = PreSplitRowFilter(
-        data_cfg=cfg.data,
-        pre_split_cfg=cfg.preprocessing.pre_split,
+        data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split
     ).run_filter(dataset=flattened_dataset.to_pandas())
 
     return eligible_for_pipeline
@@ -78,11 +70,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
         pass
 
     def get_dataset(self, run: T2DPipelineRun) -> pl.DataFrame:
-        prediction_times_eligible_for_pipeline = (
-            get_eligible_prediction_times_for_pipeline(
-                run=run,
-            )
-        )
+        prediction_times_eligible_for_pipeline = get_eligible_prediction_times_for_pipeline(run=run)
 
         flattener = TimeseriesFlattener(
             prediction_times_df=prediction_times_eligible_for_pipeline[
@@ -102,12 +90,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
         hba1c_timestamps = hba1c()
         hba1c_timestamps["value"] = hba1c_timestamps["timestamp"]
 
-        any_lab_result_dfs = [
-            hba1c_timestamps,
-            unscheduled_p_glc(),
-            fasting_p_glc(),
-            ogtt(),
-        ]
+        any_lab_result_dfs = [hba1c_timestamps, unscheduled_p_glc(), fasting_p_glc(), ogtt()]
         any_lab_result_timestamps = pd.concat(any_lab_result_dfs)
         any_lab_result_timestamps["value"] = any_lab_result_timestamps["timestamp"]
 
@@ -139,23 +122,14 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             {
                 "prediction_time_uuid": eval_ds.pred_time_uuids,
                 "y": eval_ds.y,
-                "y_hat": eval_ds.get_predictions_for_positive_rate(
-                    run.paper_outputs.pos_rate,
-                )[0],
-            },
+                "y_hat": eval_ds.get_predictions_for_positive_rate(run.paper_outputs.pos_rate)[0],
+            }
         )
 
-        plot_df = results_df.merge(
-            flattened,
-            how="left",
-            on="prediction_time_uuid",
-            validate="1:1",
-        )
+        plot_df = results_df.merge(flattened, how="left", on="prediction_time_uuid", validate="1:1")
 
         for feature_name in ("t2d_lab_result", "hba1c"):
-            flattened_col_name = (
-                f"outc_{feature_name}_within_1825_days_latest_fallback_nan"
-            )
+            flattened_col_name = f"outc_{feature_name}_within_1825_days_latest_fallback_nan"
             plot_df_col_name = f"years_until_last_{feature_name}"
 
             plot_df[plot_df_col_name] = get_timedelta_series(
@@ -179,7 +153,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
                     "y_hat",
                     "years_until_last_t2d_lab_result",
                     "years_until_last_hba1c",
-                ],
+                ]
             )
             .with_columns(
                 prediction=pl.when((pl.col("y") == 0) & (pl.col("y_hat") == 1))
@@ -189,13 +163,13 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
                 .when((pl.col("y") == 1) & (pl.col("y_hat") == 1))
                 .then("True positive")
                 .when((pl.col("y") == 1) & (pl.col("y_hat") == 0))
-                .then("False negative"),
+                .then("False negative")
             )
             .rename(
                 {
                     "years_until_last_t2d_lab_result": "HbA1c, OGTT, fasting p-Glc or unscheduled p-Glc",
                     "years_until_last_hba1c": "HbA1c",
-                },
+                }
             )
             .melt(
                 id_vars=["prediction_time_uuid", "prediction"],
@@ -209,12 +183,7 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             + pn.scale_color_brewer(type="qual", palette=2)
             + pn.facet_wrap("prediction", nrow=2)
             + pn.coord_cartesian(
-                xlim=(
-                    0,
-                    int(
-                        run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365,
-                    ),
-                ),
+                xlim=(0, int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365))
             )
             + pn.ylab("Last measurement in lookahead window")
             + pn.xlab("Years since prediction time")

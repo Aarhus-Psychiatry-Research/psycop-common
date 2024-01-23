@@ -13,7 +13,7 @@ def pre_commit(c: Context, auto_fix: bool):
     # heterogenous files under a "style: linting" commit
     if auto_fix and is_uncommitted_changes(c):
         print(
-            f"{msg_type.WARN} Your git working directory is not clean. Stash or commit before running pre-commit.",
+            f"{msg_type.WARN} Your git working directory is not clean. Stash or commit before running pre-commit."
         )
         exit(1)
 

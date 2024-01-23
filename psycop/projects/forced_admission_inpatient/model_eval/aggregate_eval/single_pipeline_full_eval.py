@@ -74,19 +74,14 @@ def fa_inpatient_main_manuscript_eval(
     pipeline: ForcedAdmissionInpatientPipelineRun,
 ) -> list[MarkdownArtifact]:
     msg.divider(
-        f"Evaluating {pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {pipeline.model_type} - {pipeline.name}",
+        f"Evaluating {pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {pipeline.model_type} - {pipeline.name}"
     )
-    msg.info(
-        f"Generating main manuscript eval to {pipeline.paper_outputs.artifact_path}",
-    )
+    msg.info(f"Generating main manuscript eval to {pipeline.paper_outputs.artifact_path}")
 
     fa_inpatient_output_performance_by_ppr(run=pipeline)
     fa_inpatient_create_main_performance_figure(run=pipeline)
     fa_inpatient_create_main_robustness_figure(run=pipeline)
-    performance_by_lookahead_table(
-        run=pipeline,
-        lookaheads_for_performance_eval=[30, 90, 180, 360],
-    )
+    performance_by_lookahead_table(run=pipeline, lookaheads_for_performance_eval=[30, 90, 180, 360])
     generate_feature_importance_table(
         pipeline_run=pipeline,
         vocab_filename="vocab_tfidf_psycop_train_all_sfis_preprocessed_sfi_type_all_sfis_ngram_range_12_max_df_09_min_df_2_max_features_750.parquet",

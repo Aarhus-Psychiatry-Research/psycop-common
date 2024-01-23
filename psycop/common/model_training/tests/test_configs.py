@@ -26,9 +26,7 @@ def get_test_config_file_names() -> list[str]:
 def test_test_configs(config_file_name: str):
     """Test that all configs load correctly."""
     with initialize(version_base=None, config_path=CONFIG_DIR_PATH_TEST_REL):
-        cfg = compose(
-            config_name=config_file_name,
-        )
+        cfg = compose(config_name=config_file_name)
 
     cfg = convert_omegaconf_to_pydantic_object(conf=cfg)
 

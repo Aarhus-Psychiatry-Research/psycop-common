@@ -11,9 +11,7 @@ if TYPE_CHECKING:
     import datetime as dt
     from collections.abc import Sequence
 
-    from psycop.common.feature_generation.sequences.prediction_times_from_cohort import (
-        PATIENT_ID,
-    )
+    from psycop.common.feature_generation.sequences.prediction_times_from_cohort import PATIENT_ID
 
 
 @dataclass(frozen=True)
@@ -40,9 +38,7 @@ class Patient:
 
     @staticmethod
     def _filter_events_within_time_interval(
-        events: Sequence[TemporalEvent],
-        start: dt.datetime,
-        end: dt.datetime,
+        events: Sequence[TemporalEvent], start: dt.datetime, end: dt.datetime
     ) -> Sequence[TemporalEvent]:
         # This could be much faster if we assume that the events are already sorted.
         # Then we could implement binary search, which is O(log n) instead of O(n).
@@ -72,23 +68,17 @@ class Patient:
         return self.slice(time_interval=None)
 
     def slice(  # noqa: A003
-        self,
-        time_interval: TimeInterval | None,
+        self, time_interval: TimeInterval | None
     ) -> PatientSlice:
         """Creates a patient slice, i.e. a subset of the patient's data within a specific time interval."""
         if time_interval is not None:
             filtered_events = self._filter_events_within_time_interval(
-                events=self.temporal_events,
-                start=time_interval.start,
-                end=time_interval.end,
+                events=self.temporal_events, start=time_interval.start, end=time_interval.end
             )
         else:
             filtered_events = self.temporal_events
 
-        return PatientSlice(
-            patient=self,
-            temporal_events=filtered_events,
-        )
+        return PatientSlice(patient=self, temporal_events=filtered_events)
 
     def to_prediction_times(
         self,
@@ -104,12 +94,9 @@ class Patient:
         for prediction_timestamp in prediction_timestamps:
             # 1. Filter the predictor events to those that are relevant to the prediction time. (Keep all static, drop all temporal that are outside the lookbehind window.)
             time_interval = TimeInterval(
-                start=prediction_timestamp - lookbehind,
-                end=prediction_timestamp,
+                start=prediction_timestamp - lookbehind, end=prediction_timestamp
             )
-            patient_slice = self.slice(
-                time_interval=time_interval,
-            )
+            patient_slice = self.slice(time_interval=time_interval)
 
             outcome_within_lookahead = (
                 outcome_timestamp <= (prediction_timestamp + lookahead)
@@ -123,7 +110,7 @@ class Patient:
                     patient_slice=patient_slice,
                     prediction_timestamp=prediction_timestamp,
                     outcome=outcome_within_lookahead,
-                ),
+                )
             )
 
         return prediction_sequences

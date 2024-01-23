@@ -78,21 +78,14 @@ def _load_text_sfis_for_year(
         sql += ", overskrift"
 
     sql += (
-        f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]"
-        + f" WHERE overskrift IN {text_sfi_names}"
+        f" FROM [fct].[{view}_{year}_inkl_2021_feb2022]" + f" WHERE overskrift IN {text_sfi_names}"
     )
 
-    return sql_load(
-        sql,
-        database="USR_PS_FORSK",
-        n_rows=n_rows,
-    )
+    return sql_load(sql, database="USR_PS_FORSK", n_rows=n_rows)
 
 
 def load_text_sfis(
-    text_sfi_names: str | Iterable[str],
-    include_sfi_name: bool = False,
-    n_rows: int | None = None,
+    text_sfi_names: str | Iterable[str], include_sfi_name: bool = False, n_rows: int | None = None
 ) -> pd.DataFrame:
     """Loads all clinical notes that match the specified note from all years.
 
@@ -114,8 +107,7 @@ def load_text_sfis(
     # check for invalid note types
     if not set(text_sfi_names).issubset(get_valid_text_sfi_names()):
         raise ValueError(
-            "Invalid note type. Valid note types are: "
-            + str(get_valid_text_sfi_names()),
+            "Invalid note type. Valid note types are: " + str(get_valid_text_sfi_names())
         )
 
     # convert text_sfi_names to sql query
@@ -137,10 +129,7 @@ def load_text_sfis(
         dfs = p.map(text_sfi_year_loader, [str(y) for y in years])
 
     df = pd.concat(dfs)
-    df = df.rename(
-        {"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"},
-        axis=1,
-    )
+    df = df.rename({"datotid_senest_aendret_i_sfien": "timestamp", "fritekst": "value"}, axis=1)
     return df
 
 
@@ -162,15 +151,11 @@ def load_text_split(
         pd.DataFrame: Chosen sfis from chosen splits
     """
     text_df = load_text_sfis(
-        text_sfi_names=text_sfi_names,
-        include_sfi_name=include_sfi_name,
-        n_rows=None,
+        text_sfi_names=text_sfi_names, include_sfi_name=include_sfi_name, n_rows=None
     )
 
     text_split_df = (
-        split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy())
-        .collect()
-        .to_pandas()
+        split_ids_presplit_step.apply(pl.from_pandas(text_df).lazy()).collect().to_pandas()
     )
     # randomly sample instead of taking the first n_rows
     if n_rows is not None:
@@ -180,10 +165,7 @@ def load_text_split(
 
 
 @data_loaders.register("all_notes")
-def load_all_notes(
-    n_rows: int | None = None,
-    include_sfi_name: bool = False,
-) -> pd.DataFrame:
+def load_all_notes(n_rows: int | None = None, include_sfi_name: bool = False) -> pd.DataFrame:
     """Returns all notes from all years.
 
     Args:
@@ -194,16 +176,12 @@ def load_all_notes(
         pd.DataFrame: (Featurized) notes
     """
     return load_text_sfis(
-        text_sfi_names=get_valid_text_sfi_names(),
-        n_rows=n_rows,
-        include_sfi_name=include_sfi_name,
+        text_sfi_names=get_valid_text_sfi_names(), n_rows=n_rows, include_sfi_name=include_sfi_name
     )
 
 
 @data_loaders.register("aktuelt_psykisk")
-def load_aktuel_psykisk(
-    n_rows: int | None = None,
-) -> pd.DataFrame:
+def load_aktuel_psykisk(n_rows: int | None = None) -> pd.DataFrame:
     """Returns 'Aktuelt psykisk' notes from all years.
 
     Args:
@@ -212,16 +190,12 @@ def load_aktuel_psykisk(
     Returns:
         pd.DataFrame: (Featurized) notes
     """
-    return load_text_sfis(
-        text_sfi_names="Aktuelt psykisk",
-        n_rows=n_rows,
-    )
+    return load_text_sfis(text_sfi_names="Aktuelt psykisk", n_rows=n_rows)
 
 
 @data_loaders.register("load_text_sfis")
 def load_arbitrary_notes(
-    text_sfi_names: str | list[str],
-    n_rows: int | None = None,
+    text_sfi_names: str | list[str], n_rows: int | None = None
 ) -> pd.DataFrame:
     """Returns one or multiple note types from all years.
 
@@ -233,10 +207,7 @@ def load_arbitrary_notes(
     Returns:
         pd.DataFrame: (Featurized) notes
     """
-    return load_text_sfis(
-        text_sfi_names,
-        n_rows=n_rows,
-    )
+    return load_text_sfis(text_sfi_names, n_rows=n_rows)
 
 
 @data_loaders.register("preprocessed_sfis")
@@ -260,14 +231,13 @@ def load_preprocessed_sfis(
     # if not text_sfi_names, include all sfis
     if not text_sfi_names:
         corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet",
+            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet"
         )
     # if text_sfi_names, include only chosen sfis
     else:
         filter_list = [[("overskrift", "=", f"{sfi}")] for sfi in text_sfi_names]
         corpus = pd.read_parquet(
-            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet",
-            filters=filter_list,
+            path=f"E:/shared_resources/preprocessed_text/{corpus_name}.parquet", filters=filter_list
         )
 
     return corpus

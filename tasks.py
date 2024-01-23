@@ -22,11 +22,7 @@ from pathlib import Path
 from invoke import Context, Result, task
 
 from psycop.automation.environment import NOT_WINDOWS, test_pytorch_cuda, on_ovartaci
-from psycop.automation.git import (
-    add_and_commit,
-    filetype_modified_since_main,
-    push_to_branch,
-)
+from psycop.automation.git import add_and_commit, filetype_modified_since_main, push_to_branch
 from psycop.automation.lint import pre_commit
 from psycop.automation.logger import echo_header, msg_type
 
@@ -54,9 +50,7 @@ def types(c: Context):
         echo_header(f"{msg_type.CLEAN} Running static type checks")
         c.run("pyright psycop/", pty=NOT_WINDOWS)
     else:
-        print(
-            f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks",
-        )
+        print(f"{msg_type.FAIL}: Cannot install pyright on Ovartaci, skipping static type checks")
 
 
 @task
@@ -96,9 +90,7 @@ def test(
 
     command = f"pytest {pytest_arg_str}"
     test_result: Result = c.run(  # type: ignore
-        command,
-        warn=True,
-        pty=NOT_WINDOWS,
+        command, warn=True, pty=NOT_WINDOWS
     )
 
     # If "failed" in the pytest results
@@ -170,20 +162,12 @@ def automerge(c: Context):
 def vulnerability_scan(c: Context, modified_files_only: bool = False):
     requirements_files = Path().parent.glob("*requirements.txt")
 
-    if modified_files_only and not filetype_modified_since_main(
-        c,
-        r"requirements\.txt$",
-    ):
-        print(
-            "🟢 No requirements.txt files modified since main, skipping vulnerability scan",
-        )
+    if modified_files_only and not filetype_modified_since_main(c, r"requirements\.txt$"):
+        print("🟢 No requirements.txt files modified since main, skipping vulnerability scan")
         return
 
     for requirements_file in requirements_files:
-        c.run(
-            f"snyk test --file={requirements_file} --package-manager=pip",
-            pty=NOT_WINDOWS,
-        )
+        c.run(f"snyk test --file={requirements_file} --package-manager=pip", pty=NOT_WINDOWS)
 
 
 @task
@@ -193,16 +177,11 @@ def create_pr(c: Context):
     """
     try:
         pr_result: Result = c.run(  # type: ignore
-            "gh pr view --json url -q '.url'",
-            pty=False,
-            hide=True,
+            "gh pr view --json url -q '.url'", pty=False, hide=True
         )
         print(f"{msg_type.GOOD} PR already exists at: {pr_result.stdout}")
     except Exception:
-        branch_title = c.run(
-            "git rev-parse --abbrev-ref HEAD",
-            hide=True,
-        ).stdout.strip()
+        branch_title = c.run("git rev-parse --abbrev-ref HEAD", hide=True).stdout.strip()
         preprocessed_pr_title = branch_title.split("-")[1:]
         preprocessed_pr_title[0] = f"{preprocessed_pr_title[0]}:"
         pr_title = " ".join(preprocessed_pr_title)
@@ -215,10 +194,7 @@ def create_pr(c: Context):
 
 
 @task(aliases=("pr",))
-def check_and_submit_pull_request(
-    c: Context,
-    auto_fix: bool = True,
-):
+def check_and_submit_pull_request(c: Context, auto_fix: bool = True):
     """Run all checks and update the PR."""
     add_and_commit(c)
     try:
@@ -233,10 +209,7 @@ def check_and_submit_pull_request(
 
 
 @task(aliases=("qpr",))
-def quick_check_and_submit_pull_request(
-    c: Context,
-    auto_fix: bool = True,
-):
+def quick_check_and_submit_pull_request(c: Context, auto_fix: bool = True):
     """Run all checks and update the PR, using heuristics for more speed."""
     add_and_commit(c)
     try:

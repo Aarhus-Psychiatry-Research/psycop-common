@@ -5,16 +5,10 @@ wandb.
 from pathlib import Path
 from typing import Optional
 
-from psycop.common.global_utils.wandb.wandb_try_except_decorator import (
-    wandb_alert_on_exception,
-)
-from psycop.common.model_training.application_modules.get_search_space import (
-    SearchSpaceInferrer,
-)
+from psycop.common.global_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
+from psycop.common.model_training.application_modules.get_search_space import SearchSpaceInferrer
 from psycop.common.model_training.application_modules.process_manager_setup import setup
-from psycop.common.model_training.application_modules.trainer_spawner import (
-    spawn_trainers,
-)
+from psycop.common.model_training.application_modules.trainer_spawner import spawn_trainers
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 
@@ -36,9 +30,7 @@ def main(
     train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="val")
 
     trainer_specs = SearchSpaceInferrer(
-        cfg=cfg,
-        train_df=train_df,
-        model_names=["xgboost", "logistic-regression"],
+        cfg=cfg, train_df=train_df, model_names=["xgboost", "logistic-regression"]
     ).get_trainer_specs()
 
     spawn_trainers(
@@ -47,7 +39,7 @@ def main(
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
         train_single_model_file_path=Path(
-            "psycop/projects/t2d/model_training/train_model_from_application_module.py",
+            "psycop/projects/t2d/model_training/train_model_from_application_module.py"
         ),
     )
 

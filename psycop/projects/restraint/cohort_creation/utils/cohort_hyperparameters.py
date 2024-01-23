@@ -45,10 +45,7 @@ def cut_off_prediction_days(df: pd.DataFrame, cut_off: pd.Timedelta) -> pd.DataF
     return df_cohort_exclude_days_after_cut_off
 
 
-def create_binary_labels_with_lookahead(
-    df: pd.DataFrame,
-    lookahead_days: int,
-) -> pd.DataFrame:
+def create_binary_labels_with_lookahead(df: pd.DataFrame, lookahead_days: int) -> pd.DataFrame:
     """Depending on the lookahead window, create label columns indicating
     - outcome_coercion_bool_within_{lookahead_days}_days (int): 0 or 1, depending on whether a coercion instance happened within the lookahead window.
 
@@ -72,8 +69,7 @@ def create_binary_labels_with_lookahead(
 
 
 def create_binary_and_categorical_labels_with_lookahead(
-    df: pd.DataFrame,
-    lookahead_days: int,
+    df: pd.DataFrame, lookahead_days: int
 ) -> pd.DataFrame:
     """Depending on the lookahead window, create label columns indicating;
     - outcome_coercion_bool_within_{lookahead_days}_days (int): 0 or 1, depending on whether a coercion instance happened within the lookahead window.
@@ -105,10 +101,7 @@ def create_binary_and_categorical_labels_with_lookahead(
     # Mechanical restraint bool
     df[f"outcome_mechanical_restraint_bool_within_{lookahead_days}_days"] = 0
     df.loc[
-        (
-            df["diff_first_mechanical_restraint"]
-            < pd.Timedelta(f"{lookahead_days} days")
-        ),
+        (df["diff_first_mechanical_restraint"] < pd.Timedelta(f"{lookahead_days} days")),
         f"outcome_mechanical_restraint_bool_within_{lookahead_days}_days",
     ] = 1
 
@@ -130,10 +123,7 @@ def create_binary_and_categorical_labels_with_lookahead(
     # Mechanical restraint (3)
     df.loc[
         (df[f"outcome_coercion_bool_within_{lookahead_days}_days"] == 1)
-        & (
-            df["diff_first_mechanical_restraint"]
-            < pd.Timedelta(f"{lookahead_days} days")
-        ),
+        & (df["diff_first_mechanical_restraint"] < pd.Timedelta(f"{lookahead_days} days")),
         f"outcome_coercion_type_within_{lookahead_days}_days",
     ] = 3
 

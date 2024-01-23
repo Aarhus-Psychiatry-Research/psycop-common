@@ -18,14 +18,11 @@ if TYPE_CHECKING:
     import pandas as pd
 
 
-def test_generate_performance_by_threshold_table(
-    subsampled_eval_dataset: EvalDataset,
-):
+def test_generate_performance_by_threshold_table(subsampled_eval_dataset: EvalDataset):
     positive_rates = [0.3, 0.2, 0.1]
 
     output_table: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
-        eval_dataset=subsampled_eval_dataset,
-        positive_rates=positive_rates,
+        eval_dataset=subsampled_eval_dataset, positive_rates=positive_rates
     )
     assert output_table["true_prevalence"].std() == 0
     assert output_table["positive_rate"].is_monotonic_decreasing
@@ -48,15 +45,11 @@ def test_generate_performance_by_threshold_table(
 
 def test_time_from_flag_to_diag(synth_eval_dataset: EvalDataset):
     warning_days_half = days_from_first_positive_to_diagnosis(
-        eval_dataset=synth_eval_dataset,
-        positive_rate=0.5,
-        aggregation_method="sum",
+        eval_dataset=synth_eval_dataset, positive_rate=0.5, aggregation_method="sum"
     )
 
     warning_days_two_thirds = days_from_first_positive_to_diagnosis(
-        eval_dataset=synth_eval_dataset,
-        positive_rate=0.75,
-        aggregation_method="sum",
+        eval_dataset=synth_eval_dataset, positive_rate=0.75, aggregation_method="sum"
     )
 
     assert warning_days_half < warning_days_two_thirds
@@ -69,12 +62,9 @@ def test_time_from_flag_to_diag_from_df():
         1,1,1,2020-01-02,2020-01-03, # Ignored: Same patient but smaller distance
         2,1,1,2020-01-02,2020-01-03, # 1 day
         2,1,0,2020-01-02,NaN, # Ignored: Not true positive
-        """,
+        """
     )
 
-    output = get_days_from_first_positive_to_diagnosis_from_df(
-        df=df,
-        aggregation_method="sum",
-    )
+    output = get_days_from_first_positive_to_diagnosis_from_df(df=df, aggregation_method="sum")
 
     assert output == 3

@@ -10,22 +10,15 @@ from psycop.projects.t2d.paper_outputs.aggregate_eval.single_pipeline_full_eval 
     t2d_main_manuscript_eval,
 )
 from psycop.projects.t2d.paper_outputs.config import BEST_POS_RATE, DEVELOPMENT_GROUP
-from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import (
-    test_pipeline,
-)
+from psycop.projects.t2d.paper_outputs.run_pipeline_on_train import test_pipeline
 from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
-from psycop.projects.t2d.utils.pipeline_objects import (
-    EVAL_ROOT,
-    RunGroup,
-    T2DPipelineRun,
-)
+from psycop.projects.t2d.utils.pipeline_objects import EVAL_ROOT, RunGroup, T2DPipelineRun
 
 msg = Printer(timestamp=True)
 
 
 def get_best_runs_from_model_type(
-    dev_run_group: RunGroup,
-    model_type: str,
+    dev_run_group: RunGroup, model_type: str
 ) -> tuple[T2DPipelineRun]:
     """Get PipelineRun objects for the best runs of a given model type"""
     performance_df = pl.from_pandas(dev_run_group.all_runs_performance_df)
@@ -56,8 +49,7 @@ def get_best_runs_from_model_type(
 
 
 def get_test_artifacts_for_pipeline(
-    recreate_artifacts: bool,
-    dev_pipeline: T2DPipelineRun,
+    recreate_artifacts: bool, dev_pipeline: T2DPipelineRun
 ) -> list[MarkdownArtifact]:
     """Get the standard set of artifacts for a given pipeline"""
     pipeline = test_pipeline(pipeline_to_test=dev_pipeline)
@@ -65,9 +57,7 @@ def get_test_artifacts_for_pipeline(
     if recreate_artifacts:
         current_run_artifacts = t2d_main_manuscript_eval(pipeline=pipeline)
     else:
-        msg.warn(
-            f"recreate_artifacts set to {recreate_artifacts}: Not recreating artifacts",
-        )
+        msg.warn(f"recreate_artifacts set to {recreate_artifacts}: Not recreating artifacts")
         current_run_artifacts = t2d_create_markdown_artifacts(pipeline=pipeline)
 
     run_md = create_supplementary_from_markdown_artifacts(
@@ -85,24 +75,19 @@ def get_test_artifacts_for_pipeline(
     return current_run_artifacts
 
 
-def full_eval_for_supplementary(
-    dev_run_group: RunGroup,
-    recreate_artifacts: bool = True,
-) -> None:
+def full_eval_for_supplementary(dev_run_group: RunGroup, recreate_artifacts: bool = True) -> None:
     """Run full evaluation for the supplementary material."""
     best_model_type = "xgboost"
 
     best_runs_from_model_type = get_best_runs_from_model_type(
-        dev_run_group=dev_run_group,
-        model_type=best_model_type,
+        dev_run_group=dev_run_group, model_type=best_model_type
     )
 
     artifacts = []
 
     for run in best_runs_from_model_type:
         run_artifacts = get_test_artifacts_for_pipeline(
-            recreate_artifacts=recreate_artifacts,
-            dev_pipeline=run,
+            recreate_artifacts=recreate_artifacts, dev_pipeline=run
         )
 
         # Do not add the main pipeline's eval to supplementary
@@ -110,9 +95,7 @@ def full_eval_for_supplementary(
             artifacts += run_artifacts
 
     combined_supplementary_md = create_supplementary_from_markdown_artifacts(
-        artifacts=artifacts,
-        first_table_index=4,
-        first_figure_index=3,
+        artifacts=artifacts, first_table_index=4, first_figure_index=3
     )
 
     with (EVAL_ROOT / f"supplementary_combined_{dev_run_group.name}.md").open("w") as f:
@@ -120,7 +103,4 @@ def full_eval_for_supplementary(
 
 
 if __name__ == "__main__":
-    full_eval_for_supplementary(
-        dev_run_group=DEVELOPMENT_GROUP,
-        recreate_artifacts=True,
-    )
+    full_eval_for_supplementary(dev_run_group=DEVELOPMENT_GROUP, recreate_artifacts=True)

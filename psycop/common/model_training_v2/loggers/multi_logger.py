@@ -5,9 +5,7 @@ from confection import Config
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
-from psycop.common.model_training_v2.trainer.task.base_metric import (
-    CalculatedMetric,
-)
+from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
 @BaselineRegistry.loggers.register("multi_logger")

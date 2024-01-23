@@ -19,7 +19,7 @@ def time_of_first_contact_to_psychiatry() -> pl.DataFrame:
                 f"SELECT dw_ek_borger, datotid_start FROM [fct].[{view}]",
                 format_timestamp_cols_to_datetime=True,  # type: ignore
                 n_rows=None,  # type: ignore
-            ),
+            )
         )
         .groupby("dw_ek_borger")
         .agg(pl.col("datotid_start").min().alias("first_contact"))
@@ -36,17 +36,11 @@ class RowSpecification:
     nonnormal: bool = False
 
 
-def get_psychiatric_diagnosis_row_specs(
-    readable_col_names: list[str],
-) -> list[RowSpecification]:
+def get_psychiatric_diagnosis_row_specs(readable_col_names: list[str]) -> list[RowSpecification]:
     # Get diagnosis columns
     pattern = re.compile(r"pred_f\d_disorders")
     columns = sorted(
-        [
-            c
-            for c in readable_col_names
-            if pattern.search(c) and "boolean" in c and "365" in c
-        ],
+        [c for c in readable_col_names if pattern.search(c) and "boolean" in c and "365" in c]
     )
 
     readable_col_names = []
@@ -65,7 +59,7 @@ def get_psychiatric_diagnosis_row_specs(
                 categorical=True,
                 nonnormal=False,
                 values_to_display=[1],
-            ),
+            )
         )
 
     return specs
@@ -84,9 +78,7 @@ def create_table(
     readable_col_names = {r.source_col_name: r.readable_name for r in row_specs}
 
     limit_columns = {
-        r.source_col_name: r.values_to_display[0]
-        for r in row_specs
-        if r.values_to_display
+        r.source_col_name: r.values_to_display[0] for r in row_specs if r.values_to_display
     }
     order_columns = {
         r.source_col_name: r.values_to_display for r in row_specs if r.values_to_display

@@ -2,17 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from psycop.common.model_training.config_schemas.data import (
-    ColumnNamesSchema,
-    DataSchema,
-)
+from psycop.common.model_training.config_schemas.data import ColumnNamesSchema, DataSchema
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 
 
 def test_load_dataset_from_dir(
-    tmpdir: str,
-    base_feature_df: pd.DataFrame,
-    feature_df_different_split: pd.DataFrame,
+    tmpdir: str, base_feature_df: pd.DataFrame, feature_df_different_split: pd.DataFrame
 ):
     tmpdir_path = Path(tmpdir)
     train_data = base_feature_df
@@ -37,6 +32,4 @@ def test_load_dataset_from_dir(
     # Assert that datasets were loaded correctly
     assert train_dataset.equals(train_data)
     assert eval_dataset.equals(eval_data)
-    assert both_datasets.equals(
-        pd.concat([train_data, eval_data]).reset_index(drop=True),
-    )
+    assert both_datasets.equals(pd.concat([train_data, eval_data]).reset_index(drop=True))

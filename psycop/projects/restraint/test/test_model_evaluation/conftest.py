@@ -17,7 +17,7 @@ feature_2,3,2,0.6
 feature_3,1,0,0.3
 feature_3,2,1,0.6
 feature_3,3,2,0.9
-""",
+"""
     )
 
     return pl.from_pandas(pd_df)

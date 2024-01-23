@@ -33,19 +33,14 @@ def roc_auc_by_sex(run: Run, path: Path):
         .sex.value_counts()  # type: ignore
     )
 
-    binned_df["proportion_in_bin"] = (
-        binned_df["n_in_bin"] / sum(binned_df.n_in_bin) * 1.7
-    )
+    binned_df["proportion_in_bin"] = binned_df["n_in_bin"] / sum(binned_df.n_in_bin) * 1.7
 
     binned_df = binned_df.merge(patients, left_on="is_female", right_on=patients.index)
     binned_df["is_female"] = binned_df["is_female"].replace({0: "Male", 1: "Female"})
     binned_df["n_in_bin"] = binned_df["n_in_bin"].astype(int)
 
     (
-        pn.ggplot(
-            binned_df,
-            pn.aes("is_female", "auroc"),
-        )
+        pn.ggplot(binned_df, pn.aes("is_female", "auroc"))
         + pn.geom_bar(
             pn.aes(x="is_female", y="proportion_in_bin"),
             stat="identity",
@@ -53,24 +48,12 @@ def roc_auc_by_sex(run: Run, path: Path):
             fill=COLOURS["blue"],
         )
         + pn.geom_path(group=1, size=0.5)
-        + pn.geom_text(
-            pn.aes(y="proportion_in_bin", label="n_in_bin"),
-            va="bottom",
-            size=11,
-        )
-        + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-        )
-        + pn.labs(
-            x="Sex",
-            y="AUROC",
-            title=f"{MODEL_NAME[run.name]} Performance by Sex",
-        )
+        + pn.geom_text(pn.aes(y="proportion_in_bin", label="n_in_bin"), va="bottom", size=11)
+        + pn.geom_pointrange(pn.aes(ymin="ci_lower", ymax="ci_upper"))
+        + pn.labs(x="Sex", y="AUROC", title=f"{MODEL_NAME[run.name]} Performance by Sex")
         + pn.coord_cartesian(ylim=(0.75, 0.95))
         + PN_THEME
-    ).save(
-        path / "auc_by_sex.png",
-    )
+    ).save(path / "auc_by_sex.png")
 
 
 if __name__ == "__main__":

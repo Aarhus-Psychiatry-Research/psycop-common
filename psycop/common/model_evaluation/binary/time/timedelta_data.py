@@ -5,14 +5,8 @@ import numpy as np
 import pandas as pd
 import polars as pl
 
-from psycop.common.model_evaluation.binary.utils import (
-    auroc_by_group,
-    sensitivity_by_group,
-)
-from psycop.common.model_evaluation.utils import (
-    bin_continuous_data,
-    round_floats_to_edge,
-)
+from psycop.common.model_evaluation.binary.utils import auroc_by_group, sensitivity_by_group
+from psycop.common.model_evaluation.utils import bin_continuous_data, round_floats_to_edge
 
 TIMEDELTA_STRINGS = Literal["h", "D", "M", "Q", "Y"]
 
@@ -26,19 +20,11 @@ def get_timedelta_series(
 ) -> pd.Series:  # type: ignore
     """Calculate the time difference between two timestamps."""
     if direction == "t1-t2":
-        df["unit_from_event"] = (df[t1_col_name] - df[t2_col_name]) / np.timedelta64(
-            1,
-            bin_unit,
-        )  # type: ignore
+        df["unit_from_event"] = (df[t1_col_name] - df[t2_col_name]) / np.timedelta64(1, bin_unit)  # type: ignore
     elif direction == "t2-t1":
-        df["unit_from_event"] = (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(
-            1,
-            bin_unit,
-        )  # type: ignore
+        df["unit_from_event"] = (df[t2_col_name] - df[t1_col_name]) / np.timedelta64(1, bin_unit)  # type: ignore
     else:
-        raise ValueError(
-            f"Direction should be one of ['t1-t2', 't2-t1'], not {direction}",
-        )
+        raise ValueError(f"Direction should be one of ['t1-t2', 't2-t1'], not {direction}")
 
     return df["unit_from_event"]
 
@@ -74,12 +60,7 @@ def get_timedelta_df(
     """
 
     df = pd.DataFrame(
-        {
-            "y": y,
-            "output": output,
-            "t1_timestamp": time_one,
-            "t2_timestamp": time_two,
-        },
+        {"y": y, "output": output, "t1_timestamp": time_one, "t2_timestamp": time_two}
     )
     # Drop rows with no events if specified
     if drop_na_events:
@@ -98,15 +79,10 @@ def get_timedelta_df(
     if bin_continuous_input:
         # Convert df["unit_from_event"] to int if possible
         df["unit_from_event_binned"], df["n_in_bin"] = bin_continuous_data(
-            df["unit_from_event"],
-            bins=bins,
-            min_n_in_bin=min_n_in_bin,
+            df["unit_from_event"], bins=bins, min_n_in_bin=min_n_in_bin
         )
     else:
-        df["unit_from_event_binned"] = round_floats_to_edge(
-            df["unit_from_event"],
-            bins=bins,
-        )
+        df["unit_from_event_binned"] = round_floats_to_edge(df["unit_from_event"], bins=bins)
 
     return df
 
@@ -218,15 +194,11 @@ def get_sensitivity_by_timedelta_df(
     ).rename(columns={"output": "y_hat"})
 
     return sensitivity_by_group(
-        df=df,
-        groupby_col_name="unit_from_event_binned",
-        confidence_interval=confidence_interval,
+        df=df, groupby_col_name="unit_from_event_binned", confidence_interval=confidence_interval
     )
 
 
-def get_time_from_first_positive_to_diagnosis_df(
-    input_df: pd.DataFrame,
-) -> pd.DataFrame:
+def get_time_from_first_positive_to_diagnosis_df(input_df: pd.DataFrame) -> pd.DataFrame:
     """input_df must contain columns:
         y: 1 or 0
         pred: 1 or 0
@@ -238,13 +210,11 @@ def get_time_from_first_positive_to_diagnosis_df(
         days_from_pred_to_event: Days from first positive prediction to event
     """
     df = pl.from_pandas(input_df).with_columns(
-        (pl.col("outcome_timestamps") - pl.col("pred_timestamps")).alias(
-            "time_from_pred_to_event",
-        ),
+        (pl.col("outcome_timestamps") - pl.col("pred_timestamps")).alias("time_from_pred_to_event")
     )
 
     ever_positives = df.filter(
-        pl.col("time_from_pred_to_event").is_not_null() & pl.col("pred") == 1,
+        pl.col("time_from_pred_to_event").is_not_null() & pl.col("pred") == 1
     )
 
     plot_df = (
@@ -253,11 +223,9 @@ def get_time_from_first_positive_to_diagnosis_df(
         .head(1)
         .with_columns(
             (pl.col("time_from_pred_to_event").dt.days() / 365.25).alias(
-                "years_from_pred_to_event",
+                "years_from_pred_to_event"
             ),
-            (pl.col("time_from_pred_to_event").dt.days()).alias(
-                "days_from_pred_to_event",
-            ),
+            (pl.col("time_from_pred_to_event").dt.days()).alias("days_from_pred_to_event"),
         )
     ).to_pandas()
 

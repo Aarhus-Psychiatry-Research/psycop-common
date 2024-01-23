@@ -40,9 +40,7 @@ class ProjectInfo(BaseModel):
         return self.project_path / "flattened_datasets"
 
 
-def init_wandb(
-    project_info: ProjectInfo,
-) -> None:
+def init_wandb(project_info: ProjectInfo) -> None:
     """Initialise wandb logging. Allows to use wandb to track progress, send
     Slack notifications if failing, and track logs.
 
@@ -50,22 +48,14 @@ def init_wandb(
         project_info (ProjectInfo): Project info.
     """
 
-    feature_settings = {
-        "feature_set_path": project_info.flattened_dataset_dir,
-    }
+    feature_settings = {"feature_set_path": project_info.flattened_dataset_dir}
 
     # on Overtaci, the wandb tmp directory is not automatically created,
     # so we create it here.
     # create debug-cli.one folders in /tmp and project dir
     if sys.platform == "win32":
-        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
-        )
-        (PSYCOP_PKG_ROOT / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
-        )
+        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
+        (PSYCOP_PKG_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
 
     wandb.init(
         project=f"{project_info.project_name}-feature-generation",

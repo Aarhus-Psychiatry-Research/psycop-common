@@ -4,8 +4,7 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
 def get_prop_of_events_captured_from_eval_dataset(
-    eval_dataset: EvalDataset,
-    positive_rate: float,
+    eval_dataset: EvalDataset, positive_rate: float
 ) -> float:
     df = pd.DataFrame(
         {
@@ -13,7 +12,7 @@ def get_prop_of_events_captured_from_eval_dataset(
             "pred": eval_dataset.get_predictions_for_positive_rate(positive_rate)[0],
             "id": eval_dataset.ids,
             "age": eval_dataset.age,
-        },
+        }
     )
 
     return get_percentage_of_events_captured(df=df)
@@ -28,8 +27,6 @@ def get_percentage_of_events_captured(df: pd.DataFrame) -> float:
         df.groupby("id").filter(lambda x: x["y"].sum() > 0).groupby("id").head(1)  # type: ignore
     )
 
-    df_events_captured = df_patients_with_events.groupby("id").filter(
-        lambda x: x["pred"].sum() > 0,
-    )
+    df_events_captured = df_patients_with_events.groupby("id").filter(lambda x: x["pred"].sum() > 0)
 
     return len(df_events_captured) / len(df_patients_with_events)

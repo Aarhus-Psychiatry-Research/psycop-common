@@ -16,11 +16,7 @@ from psycop.common.model_training.utils.utils import get_percent_lost
 class PreSplitRowFilter:
     """Row filter for pre-split data."""
 
-    def __init__(
-        self,
-        pre_split_cfg: PreSplitPreprocessingConfigSchema,
-        data_cfg: DataSchema,
-    ):
+    def __init__(self, pre_split_cfg: PreSplitPreprocessingConfigSchema, data_cfg: DataSchema):
         self.pre_split_cfg = pre_split_cfg
         self.data_cfg = data_cfg
 
@@ -52,9 +48,7 @@ class PreSplitRowFilter:
 
         if direction == "ahead":
             max_datetime = dataset[self.data_cfg.col_name.pred_timestamp].max() - n_days
-            before_max_dt = (
-                dataset[self.data_cfg.col_name.pred_timestamp] < max_datetime
-            )
+            before_max_dt = dataset[self.data_cfg.col_name.pred_timestamp] < max_datetime
             dataset = dataset[before_max_dt]
         elif direction == "behind":
             min_datetime = dataset[self.data_cfg.col_name.pred_timestamp].min() + n_days
@@ -63,27 +57,23 @@ class PreSplitRowFilter:
 
         n_rows_after_modification = dataset.shape[0]
         percent_dropped = get_percent_lost(
-            n_before=n_rows_before_modification,
-            n_after=n_rows_after_modification,
+            n_before=n_rows_before_modification, n_after=n_rows_after_modification
         )
 
         if n_rows_before_modification - n_rows_after_modification != 0:
             msg.info(
-                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because the end of the dataset was within {n_days} of their prediction time when looking {direction} from their prediction time",
+                f"Dropped {n_rows_before_modification - n_rows_after_modification} ({percent_dropped}%) rows because the end of the dataset was within {n_days} of their prediction time when looking {direction} from their prediction time"
             )
 
         return dataset
 
     @print_df_dimensions_diff
-    def _drop_patient_if_excluded_by_date(
-        self,
-        dataset: pd.DataFrame,
-    ) -> pd.DataFrame:
+    def _drop_patient_if_excluded_by_date(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop patients that have an exclusion event within the washin
         period."""
         if self.data_cfg.col_name.exclusion_timestamp is None:
             raise ValueError(
-                "Exclusion timestamp column not specified in config. Cannot drop patients based on exclusion date.",
+                "Exclusion timestamp column not specified in config. Cannot drop patients based on exclusion date."
             )
 
         outcome_before_date = (
@@ -91,9 +81,7 @@ class PreSplitRowFilter:
             < self.pre_split_cfg.drop_patient_if_exclusion_before_date
         )
 
-        patients_to_drop = set(
-            dataset[self.data_cfg.col_name.id][outcome_before_date].unique(),
-        )
+        patients_to_drop = set(dataset[self.data_cfg.col_name.id][outcome_before_date].unique())
 
         dataset = dataset[~dataset[self.data_cfg.col_name.id].isin(patients_to_drop)]
 
@@ -103,20 +91,15 @@ class PreSplitRowFilter:
     def _keep_only_if_older_than_min_age(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Keep only rows that are older than the minimum age specified in the
         config."""
-        return dataset[
-            dataset[self.data_cfg.col_name.age] >= self.pre_split_cfg.min_age
-        ]
+        return dataset[dataset[self.data_cfg.col_name.age] >= self.pre_split_cfg.min_age]
 
     @print_df_dimensions_diff
-    def _drop_visit_after_exclusion_timestamp(
-        self,
-        dataset: pd.DataFrame,
-    ) -> pd.DataFrame:
+    def _drop_visit_after_exclusion_timestamp(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop all rows where exclusion timestamp is before the prediction
         time."""
         if self.data_cfg.col_name.exclusion_timestamp is None:
             raise ValueError(
-                "Exclusion timestamp column not specified in config. Cannot drop patients based on exclusion date.",
+                "Exclusion timestamp column not specified in config. Cannot drop patients based on exclusion date."
             )
 
         rows_to_drop = (
@@ -157,22 +140,20 @@ class PreSplitRowFilter:
                 raise ValueError(f"Direction {direction} not supported.")
 
             dataset = self._drop_rows_if_datasets_ends_within_days(
-                n_days=n_days,
-                dataset=dataset,
-                direction=direction,
+                n_days=n_days, dataset=dataset, direction=direction
             )
 
         if self.pre_split_cfg.drop_patient_if_exclusion_before_date:
             if self.data_cfg.col_name.exclusion_timestamp is None:
                 raise ValueError(
-                    "Can't drop patients if exclusion timestamp is not specified in config.",
+                    "Can't drop patients if exclusion timestamp is not specified in config."
                 )
             dataset = self._drop_patient_if_excluded_by_date(dataset)
 
         if self.pre_split_cfg.drop_visits_after_exclusion_timestamp:
             if self.data_cfg.col_name.exclusion_timestamp is None:
                 raise ValueError(
-                    "Can't drop visits if exclusion timestamp is not specified in config.",
+                    "Can't drop visits if exclusion timestamp is not specified in config."
                 )
             dataset = self._drop_visit_after_exclusion_timestamp(dataset)
 
@@ -182,7 +163,7 @@ class PreSplitRowFilter:
         if self.pre_split_cfg.drop_rows_after_outcome:
             if not self.data_cfg.col_name.outcome_timestamp:
                 raise ValueError(
-                    "Can't drop rows after outcome if outcome timestamp is not specified in config.",
+                    "Can't drop rows after outcome if outcome timestamp is not specified in config."
                 )
             dataset = self._drop_rows_after_event_time(dataset=dataset)
 
