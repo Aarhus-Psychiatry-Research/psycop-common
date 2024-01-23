@@ -16,18 +16,15 @@ class PreprocessingPipeline(Protocol):
     steps: Sequence[PresplitStep]
     logger: BaselineLogger | None
 
-    def __init__(self, steps: Sequence[PresplitStep], logger: BaselineLogger):
-        ...
-
     def apply(self, data: pl.LazyFrame) -> pd.DataFrame:
         ...
 
 
 @BaselineRegistry.preprocessing.register("baseline_preprocessing_pipeline")
-@dataclass(frozen=True)
 class BaselinePreprocessingPipeline(PreprocessingPipeline):
-    steps: Sequence[PresplitStep]
-    logger: BaselineLogger | None
+    def __init__(self, *args: PresplitStep, logger: BaselineLogger | None = None) -> None:
+        self.steps = list(args)
+        self.logger = logger
 
     def apply(self, data: pl.LazyFrame) -> pd.DataFrame:
         if self.logger:
