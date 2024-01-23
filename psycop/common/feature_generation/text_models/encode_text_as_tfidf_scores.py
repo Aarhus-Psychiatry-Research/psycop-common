@@ -1,5 +1,6 @@
 """Apply tfidf model to text data and save to disk"""
 from time import time
+from typing import Iterable
 
 import pandas as pd
 import polars as pl
@@ -10,7 +11,7 @@ from psycop.common.feature_generation.text_models.utils import load_text_model
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 
 
-def encode_tfidf_values_to_df(model: TfidfVectorizer, text: list[str]) -> pl.DataFrame:
+def encode_tfidf_values_to_df(model: TfidfVectorizer, text: Iterable[str]) -> pl.DataFrame:
     t0 = time()
     print("Start encoding")
     tfidf = model.transform(text)

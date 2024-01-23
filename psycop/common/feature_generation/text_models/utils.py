@@ -9,7 +9,7 @@ from psycop.common.feature_generation.text_models.text_model_paths import TEXT_M
 from psycop.common.global_utils.pickle import read_pickle, write_to_pickle
 
 
-def save_text_model_to_dir(model: Union[CountVectorizer, TfidfVectorizer], filename: str):
+def save_text_model_to_shared_dir(model: Union[CountVectorizer, TfidfVectorizer], filename: str):
     """
     Saves the model to a pickle file
 
