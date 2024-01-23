@@ -11,7 +11,9 @@ from psycop.common.feature_generation.text_models.text_model_paths import (
     PREPROCESSED_TEXT_DIR,
     TEXT_MODEL_DIR,
 )
-from psycop.common.feature_generation.text_models.utils import save_text_model_to_dir
+from psycop.common.feature_generation.text_models.utils import (
+    save_text_model_to_shared_dir,
+)
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -51,7 +53,7 @@ def text_model_pipeline(
     ngram_range: tuple[int, int] = (1, 1),
     max_df: float = 1.0,
     min_df: int = 1,
-    max_features: Optional[int] = 100,
+    max_features: int = 100,
 ) -> Path:
     """Pipeline for fitting and saving a bag-of-words or tfidf model
 
@@ -105,7 +107,7 @@ def text_model_pipeline(
     )
 
     # save model to dir
-    save_text_model_to_dir(model=vec, filename=filename)
+    save_text_model_to_shared_dir(model=vec, filename=filename)
 
     print(f"Text model fitted and saved as {model_path}")
     return model_path
