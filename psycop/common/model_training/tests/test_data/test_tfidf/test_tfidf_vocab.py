@@ -4,18 +4,7 @@ from pathlib import Path
 
 import dill as pkl
 
-_test_tf_idf_vocab = [
-    "a",
-    "and",
-    "for",
-    "in",
-    "of",
-    "or",
-    "patient",
-    "that",
-    "to",
-    "was",
-]
+_test_tf_idf_vocab = ["a", "and", "for", "in", "of", "or", "patient", "that", "to", "was"]
 TEST_TFIDF_VOCAB = ["tfidf-" + word for word in _test_tf_idf_vocab]
 
 if __name__ == "__main__":

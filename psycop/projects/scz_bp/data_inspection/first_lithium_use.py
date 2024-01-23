@@ -17,12 +17,7 @@ def get_bp_patients_in_training_data() -> pl.DataFrame:
 
 def get_first_administration_of_lithium() -> pl.DataFrame:
     return (
-        pl.from_pandas(
-            lithium(
-                load_prescribed=False,
-                load_administered=True,
-            ),
-        )
+        pl.from_pandas(lithium(load_prescribed=False, load_administered=True))
         .groupby("dw_ek_borger")
         .agg(pl.col("timestamp").min().alias("first_lithium"))
     )
@@ -40,7 +35,7 @@ if __name__ == "__main__":
     df = df.filter(pl.col("first_lithium").is_not_null()).with_columns(
         (pl.col("timestamp") - pl.col("first_lithium"))
         .dt.days()
-        .alias("days_lithium_before_outcome"),
+        .alias("days_lithium_before_outcome")
     )
     (
         pn.ggplot(df, pn.aes(x="days_lithium_before_outcome"))
@@ -51,7 +46,7 @@ if __name__ == "__main__":
     pn.ggplot(
         df.filter(
             (pl.col("days_lithium_before_outcome") > -100)
-            & (pl.col("days_lithium_before_outcome") < 100),
+            & (pl.col("days_lithium_before_outcome") < 100)
         ),
         pn.aes(x="days_lithium_before_outcome"),
     ) + pn.geom_histogram(bins=20)

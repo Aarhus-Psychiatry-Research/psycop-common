@@ -14,9 +14,7 @@ from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
     smoking_continuous,
     systolic_blood_pressure,
 )
-from psycop.projects.cvd.feature_generation.feature_layeres.base import (
-    FeatureLayer,
-)
+from psycop.projects.cvd.feature_generation.feature_layeres.base import FeatureLayer
 
 
 class CVDLayer1(FeatureLayer):
@@ -32,8 +30,7 @@ class CVDLayer1(FeatureLayer):
         systolic_blood_pressure_spec = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=systolic_blood_pressure(),
-                    name=f"systolic_blood_pressure_layer_{layer}",
+                    df=systolic_blood_pressure(), name=f"systolic_blood_pressure_layer_{layer}"
                 ),
             ),
             aggregation_fns=[mean],
@@ -43,10 +40,7 @@ class CVDLayer1(FeatureLayer):
 
         smoking_continuous_spec = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(
-                    df=smoking_continuous(),
-                    name=f"smoking_continuous_layer_{layer}",
-                ),
+                NamedDataframe(df=smoking_continuous(), name=f"smoking_continuous_layer_{layer}"),
             ),
             aggregation_fns=[mean],
             fallback=[0],
@@ -55,10 +49,7 @@ class CVDLayer1(FeatureLayer):
 
         smoking_categorical_spec = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(
-                    df=smoking_categorical(),
-                    name=f"smoking_categorical_layer_{layer}",
-                ),
+                NamedDataframe(df=smoking_categorical(), name=f"smoking_categorical_layer_{layer}"),
             ),
             aggregation_fns=[mean],
             fallback=[0],

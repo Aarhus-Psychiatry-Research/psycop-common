@@ -16,9 +16,4 @@ def test_auroc_by_age(synth_eval_dataset: EvalDataset):
 
     df["proportion_of_n"] = df["n_in_bin"] / df["n_in_bin"].sum()
 
-    t2d_plot_robustness(
-        df,
-        x_column="age_binned",
-        line_y_col_name="auroc",
-        xlab="Age",
-    )
+    t2d_plot_robustness(df, x_column="age_binned", line_y_col_name="auroc", xlab="Age")

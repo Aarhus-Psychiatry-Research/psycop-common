@@ -16,9 +16,7 @@ from torch.nn.utils.rnn import pad_sequence
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import PatientSlice
 
-from ...feature_generation.sequences.patient_slice_collater import (
-    BasePatientSliceCollater,
-)
+from ...feature_generation.sequences.patient_slice_collater import BasePatientSliceCollater
 from ..registry import SequenceRegistry
 from .interface import EmbeddedSequence, PatientSliceEmbedder
 
@@ -36,12 +34,7 @@ class BEHRTVocab:
 
 @SequenceRegistry.embedders.register("behrt_embedder")
 class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
-    def __init__(
-        self,
-        d_model: int,
-        dropout_prob: float,
-        max_sequence_length: int,
-    ):
+    def __init__(self, d_model: int, dropout_prob: float, max_sequence_length: int):
         super().__init__()
         self.d_model = d_model
         self.max_sequence_length = max_sequence_length
@@ -55,17 +48,14 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
     @staticmethod
     def load_icd_to_caliber_mapping() -> dict[str, str]:
         with open(  # noqa: PTH123
-            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json",
+            "psycop/common/sequence_models/embedders/diagnosis_code_mapping.json"
         ) as fp:
             mapping = json.load(fp)
 
         return mapping
 
     def initialize_embeddings_layers(
-        self,
-        n_diagnosis_codes: int,
-        n_age_bins: int,
-        max_position_embeddings: int,
+        self, n_diagnosis_codes: int, n_age_bins: int, max_position_embeddings: int
     ) -> None:
         self.n_diagnosis_codes = n_diagnosis_codes
         self.n_age_bins = n_age_bins
@@ -76,19 +66,12 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         self.age_embeddings = nn.Embedding(n_age_bins, self.d_model)
         self.segment_embeddings = nn.Embedding(self.n_segments, self.d_model)
         self.position_embeddings = nn.Embedding(
-            max_position_embeddings,
-            self.d_model,
+            max_position_embeddings, self.d_model
         ).from_pretrained(
-            embeddings=self._init_position_embeddings(
-                max_position_embeddings,
-                self.d_model,
-            ),
+            embeddings=self._init_position_embeddings(max_position_embeddings, self.d_model)
         )
 
-    def forward(
-        self,
-        inputs: dict[str, torch.Tensor],
-    ) -> EmbeddedSequence:
+    def forward(self, inputs: dict[str, torch.Tensor]) -> EmbeddedSequence:
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before use")
 
@@ -100,9 +83,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         assert (
             len(diagnosis_ids.shape) == 2
         ), "diagnosis_ids must be (batch / patients, sequence length)"
-        assert (
-            len(age_ids.shape) == 2
-        ), "age_ids must be (batch / patients, sequence length)"
+        assert len(age_ids.shape) == 2, "age_ids must be (batch / patients, sequence length)"
         assert (
             len(segment_ids.shape) == 2
         ), "segment_ids must be (batch / patients, sequence length)"
@@ -120,11 +101,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         embeddings = self.dropout(embeddings)
         return EmbeddedSequence(embeddings, inputs["is_padding"] == 1)
 
-    def _init_position_embeddings(
-        self,
-        max_position_embeddings: int,
-        d_model: int,
-    ) -> torch.Tensor:
+    def _init_position_embeddings(self, max_position_embeddings: int, d_model: int) -> torch.Tensor:
         def even_code(pos, idx):  # type: ignore # noqa: ANN001, ANN202
             return np.sin(pos / (10000 ** (2 * idx / d_model)))
 
@@ -147,8 +124,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         return torch.tensor(lookup_table)
 
     def collate_patient_slices(
-        self,
-        patient_slices: Sequence[PatientSlice],
+        self, patient_slices: Sequence[PatientSlice]
     ) -> dict[str, torch.Tensor]:
         """
         Handles padding and indexing by converting each to an index tensor
@@ -172,10 +148,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
             e_input["segment"] = torch.tensor(int(is_even))
         return events
 
-    def pad_sequences(
-        self,
-        sequences: list[dict[str, torch.Tensor]],
-    ) -> dict[str, torch.Tensor]:
+    def pad_sequences(self, sequences: list[dict[str, torch.Tensor]]) -> dict[str, torch.Tensor]:
         max_seq_len = max([len(p["age"]) for p in sequences])
         assert max_seq_len <= self.max_sequence_length
 
@@ -198,9 +171,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
             pad_idx = vocab["PAD"]
 
             padded_sequences[key] = pad_sequence(
-                [p[key] for p in sequences],
-                batch_first=True,
-                padding_value=pad_idx,
+                [p[key] for p in sequences], batch_first=True, padding_value=pad_idx
             )
 
         return padded_sequences
@@ -208,10 +179,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
     def is_A_diagnosis(self, event: TemporalEvent) -> bool:
         return event.source_type == "diagnosis" and event.source_subtype == "A"
 
-    def map_icd10_to_caliber(
-        self,
-        diagnosis_code: str,
-    ) -> str | None:
+    def map_icd10_to_caliber(self, diagnosis_code: str) -> str | None:
         """Map diagnoses-codes to Caliber.
 
         To handle different levels of granularity, map to the most specific Caliber code available. E.g. for code E12, if both E1 and E12 exist in Caliber, map to E12. If only E1 exists, map to E1.
@@ -224,10 +192,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
             diagnosis_code = diagnosis_code[:-1]
         return None
 
-    def reformat(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> list[PatientSlice]:
+    def reformat(self, patient_slices: Sequence[PatientSlice]) -> list[PatientSlice]:
         """
         1. Filter input to only keep A-diagnoses.
         2. Map ICD-10 to Caliber codes
@@ -260,10 +225,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         }
         return [cls_token, *events]
 
-    def collate_patient_slice(
-        self,
-        patient_slice: PatientSlice,
-    ) -> dict[str, torch.Tensor]:
+    def collate_patient_slice(self, patient_slice: PatientSlice) -> dict[str, torch.Tensor]:
         events = patient_slice.temporal_events
         events = filter(self.is_A_diagnosis, events)
         event_inputs = [self.collate_event(event, patient_slice) for event in events]
@@ -289,9 +251,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
         return int(age.days // 365.25)
 
     def collate_event(
-        self,
-        event: TemporalEvent,
-        patient_slice: PatientSlice,
+        self, event: TemporalEvent, patient_slice: PatientSlice
     ) -> dict[str, torch.Tensor]:
         age = self.get_patient_age(event, patient_slice.patient.date_of_birth)
         diagnosis: str = event.value  # type: ignore
@@ -308,11 +268,7 @@ class BEHRTEmbedder(nn.Module, PatientSliceEmbedder):
             "is_padding": torch.tensor(0),
         }
 
-    def fit(
-        self,
-        patient_slices: Sequence[PatientSlice],
-        add_mask_token: bool = True,
-    ):
+    def fit(self, patient_slices: Sequence[PatientSlice], add_mask_token: bool = True):
         if self.is_fitted:
             raise RuntimeError("Model is already fitted")
 
@@ -369,13 +325,9 @@ def create_behrt_embedder(
     patient_slice_creator: BasePatientSliceCollater,
 ) -> BEHRTEmbedder:
     embedder = BEHRTEmbedder(
-        d_model=d_model,
-        dropout_prob=dropout_prob,
-        max_sequence_length=max_sequence_length,
+        d_model=d_model, dropout_prob=dropout_prob, max_sequence_length=max_sequence_length
     )
 
     log.info("Fitting Embedding Module")
-    embedder.fit(
-        patient_slices=patient_slice_creator.get_dataset().patient_slices,
-    )
+    embedder.fit(patient_slices=patient_slice_creator.get_dataset().patient_slices)
     return embedder

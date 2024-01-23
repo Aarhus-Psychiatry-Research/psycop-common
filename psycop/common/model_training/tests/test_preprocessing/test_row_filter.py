@@ -1,14 +1,10 @@
 """Test custom preprocessing steps."""
 from psycop.common.model_training.config_schemas.debug import DebugConfSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_train_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_train_from_cfg
 
 
-def test_drop_datetime_predictor_columns(
-    muteable_test_config: FullConfigSchema,
-):
+def test_drop_datetime_predictor_columns(muteable_test_config: FullConfigSchema):
     """Test that columns are dropped if their lookbehind is not in the
     specified lookbehind combination list."""
     cfg = muteable_test_config
@@ -24,9 +20,7 @@ def test_drop_datetime_predictor_columns(
     assert len([x for x in train_df.columns if "timestamp" in x]) == 0
 
 
-def test_drop_rows_with_insufficient_lookahead(
-    muteable_test_config: FullConfigSchema,
-):
+def test_drop_rows_with_insufficient_lookahead(muteable_test_config: FullConfigSchema):
     """Test that rows are dropped if they can't look sufficiently far into the
     correct direction."""
     cfg = muteable_test_config
@@ -50,9 +44,7 @@ def test_drop_rows_with_insufficient_lookahead(
     )  # Subtract 5 to account for randomness in test dataset generation
 
 
-def test_drop_rows_with_insufficient_lookbehind(
-    muteable_test_config: FullConfigSchema,
-):
+def test_drop_rows_with_insufficient_lookbehind(muteable_test_config: FullConfigSchema):
     """Test that rows are dropped if they can't look sufficiently far into the
     correct direction."""
     cfg = muteable_test_config
@@ -70,5 +62,5 @@ def test_drop_rows_with_insufficient_lookbehind(
 
     # Get difference between max_timestamp and max_timestamp_with_lookahead in days
     assert (min_timestamp_with_lookahead - min_timestamp_sans_lookahead).days >= max(
-        cfg.preprocessing.pre_split.lookbehind_combination,
+        cfg.preprocessing.pre_split.lookbehind_combination
     ) - min_lookbehind - 1

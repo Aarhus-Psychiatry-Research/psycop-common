@@ -24,11 +24,7 @@ def test_vertical_concatenator(tmpdir: Path):
         df.write_parquet(p)
 
     concatenated = (
-        ParquetVerticalConcatenator(
-            paths=[str(p) for p in parquet_paths],
-        )
-        .load()
-        .collect()
+        ParquetVerticalConcatenator(paths=[str(p) for p in parquet_paths]).load().collect()
     )
 
     assert len(concatenated) == len(df) * n_paths
@@ -36,7 +32,7 @@ def test_vertical_concatenator(tmpdir: Path):
 
     with pytest.raises(MissingPathError):
         ParquetVerticalConcatenator(
-            paths=[str(p) for p in parquet_paths] + ["non_existent_path"],
+            paths=[str(p) for p in parquet_paths] + ["non_existent_path"]
         ).load()
 
 
@@ -54,7 +50,7 @@ class MinimalTestData(BaselineDataLoader):
                 4,              4, 0,      0,          0,              99
                 5,             5,  0,      0,          0,              99
                 6,              6, 0,      0,          0,              99
-                                        """,
+                                        """
         ).lazy()
 
         return data

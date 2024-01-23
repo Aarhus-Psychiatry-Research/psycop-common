@@ -12,8 +12,7 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 
 
 def convert_omegaconf_to_pydantic_object(
-    conf: DictConfig,
-    allow_mutation: bool = False,
+    conf: DictConfig, allow_mutation: bool = False
 ) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
@@ -37,12 +36,11 @@ def load_cfg_as_omegaconf(
     with initialize(version_base=None, config_path=config_dir_path_rel):
         if overrides:
             cfg = compose(  # type: ignore
-                config_name=config_file_name,
-                overrides=overrides,
+                config_name=config_file_name, overrides=overrides
             )
         else:
             cfg = compose(  # type: ignore
-                config_name=config_file_name,
+                config_name=config_file_name
             )
 
         # Override the type so we can get autocomplete and renaming
@@ -73,45 +71,33 @@ def load_app_cfg_as_pydantic(
 
 
 def load_test_cfg_as_pydantic(
-    config_file_name: str,
-    overrides: Optional[list[str]] = None,
-    allow_mutation: bool = False,
+    config_file_name: str, overrides: Optional[list[str]] = None, allow_mutation: bool = False
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
-    cfg = load_cfg_as_omegaconf(
-        config_file_name=config_file_name,
-        overrides=overrides,
-    )
+    cfg = load_cfg_as_omegaconf(config_file_name=config_file_name, overrides=overrides)
 
     return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
 
 
-def validate_classification_objective(
-    cfg: FullConfigSchema,
-    col_names: Union[str, list[str]],
-):
+def validate_classification_objective(cfg: FullConfigSchema, col_names: Union[str, list[str]]):
     if cfg.preprocessing.pre_split.classification_objective == "binary":
         if not cfg.preprocessing.pre_split.keep_only_one_outcome_col:
-            raise ValueError(
-                "Only one outcome column can be used for binary classification tasks.",
-            )
+            raise ValueError("Only one outcome column can be used for binary classification tasks.")
 
         if isinstance(col_names, str):
             col_names = [col_names]
         if len(col_names) != 1:
-            raise ValueError(
-                "Only one outcome column can be used for binary classification tasks.",
-            )
+            raise ValueError("Only one outcome column can be used for binary classification tasks.")
 
     elif cfg.preprocessing.pre_split.classification_objective == "multilabel":
         if cfg.preprocessing.pre_split.keep_only_one_outcome_col:
             raise ValueError(
-                "Multiple outcome columns are needed for multilabel classification tasks.",
+                "Multiple outcome columns are needed for multilabel classification tasks."
             )
 
         if len(col_names) == 1:
             raise ValueError(
-                "Multiple outcome columns are needed for multilabel classification tasks.",
+                "Multiple outcome columns are needed for multilabel classification tasks."
             )
 
 

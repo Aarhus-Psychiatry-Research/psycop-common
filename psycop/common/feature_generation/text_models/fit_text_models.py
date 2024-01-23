@@ -32,7 +32,7 @@ def fit_text_model(
 
     if model not in vec_type:
         raise ValueError(
-            f"model name '{model}' not in vec_type. Available choices are 'bow' or 'tfidf'",
+            f"model name '{model}' not in vec_type. Available choices are 'bow' or 'tfidf'"
         )
 
     # Define vectorizer

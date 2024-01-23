@@ -15,10 +15,7 @@ def load_raw_test_csv(filename: str, n_rows: int | None = None) -> pd.DataFrame:
         filename (str): Name of the file to load.
         n_rows (int, optional): Number of rows to load. Defaults to None.
     """
-    df = pd.read_csv(
-        PSYCOP_PKG_ROOT / "tests" / "test_data" / "raw" / filename,
-        nrows=n_rows,
-    )
+    df = pd.read_csv(PSYCOP_PKG_ROOT / "tests" / "test_data" / "raw" / filename, nrows=n_rows)
 
     # Convert timestamp col to datetime
     if "timestamp" in df.columns:
@@ -28,9 +25,7 @@ def load_raw_test_csv(filename: str, n_rows: int | None = None) -> pd.DataFrame:
 
 
 @data_loaders.register("synth_predictor_float")
-def synth_predictor_float(
-    n_rows: int | None = None,
-) -> pd.DataFrame:
+def synth_predictor_float(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 
     Args:
@@ -43,9 +38,7 @@ def synth_predictor_float(
 
 
 @data_loaders.register("synth_predictor_binary")
-def synth_predictor_binary(
-    n_rows: int | None = None,
-) -> pd.DataFrame:
+def synth_predictor_binary(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 
     Args:
@@ -58,9 +51,7 @@ def synth_predictor_binary(
 
 
 @data_loaders.register("synth_outcome")
-def load_synth_outcome(
-    n_rows: int | None = None,
-) -> pd.DataFrame:
+def load_synth_outcome(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 
     Args:
@@ -76,9 +67,7 @@ def load_synth_outcome(
 
 
 @data_loaders.register("synth_prediction_times")
-def load_synth_prediction_times(
-    n_rows: int | None = None,
-) -> pd.DataFrame:
+def load_synth_prediction_times(n_rows: int | None = None) -> pd.DataFrame:
     """Load synth predictor data.".
 
     Args:

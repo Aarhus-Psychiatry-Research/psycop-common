@@ -2,13 +2,8 @@
 import logging
 from typing import TYPE_CHECKING
 
-from timeseriesflattener.aggregation_fns import (
-    maximum,
-)
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    OutcomeGroupSpec,
-)
+from timeseriesflattener.aggregation_fns import maximum
+from timeseriesflattener.feature_specs.group_specs import NamedDataframe, OutcomeGroupSpec
 from timeseriesflattener.feature_specs.single_specs import (
     AnySpec,
     BaseModel,
@@ -21,9 +16,7 @@ from psycop.common.feature_generation.loaders.raw.load_demographic import sex_fe
 from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
     CVDCohortDefiner,
 )
-from psycop.projects.cvd.feature_generation.feature_layeres.base import (
-    AnySpecType,
-)
+from psycop.projects.cvd.feature_generation.feature_layeres.base import AnySpecType
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_1 import CVDLayer1
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_2 import CVDLayer2
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_3 import CVDLayer3
@@ -49,12 +42,7 @@ class CVDFeatureSpecifier:
 
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
-        return [
-            StaticSpec(
-                feature_base_name="sex_female",
-                timeseries_df=sex_female(),
-            ),
-        ]
+        return [StaticSpec(feature_base_name="sex_female", timeseries_df=sex_female())]
 
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
         """Get outcome specs."""
@@ -65,7 +53,7 @@ class CVDFeatureSpecifier:
                 NamedDataframe(
                     df=CVDCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
                     name="score2_cvd",
-                ),
+                )
             ],
             lookahead_days=[365 * 5],
             aggregation_fns=[maximum],

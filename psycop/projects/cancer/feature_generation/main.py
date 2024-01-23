@@ -17,8 +17,7 @@ if __name__ == "__main__":
     # will not run without this chunk, should be fixed properly at some point
     if sys.platform == "win32":
         (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
+            exist_ok=True, parents=True
         )
 
     init_wandb_and_generate_feature_set(

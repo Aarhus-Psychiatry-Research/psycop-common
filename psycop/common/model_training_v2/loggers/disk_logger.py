@@ -46,8 +46,7 @@ class DiskLogger(BaselineLogger):
         # Create file handler
         fh = logging.FileHandler(self.log_path, mode="w", encoding="utf-8")
         formatter = logging.Formatter(
-            "%(asctime)s %(levelname)s %(name)s %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
+            "%(asctime)s %(levelname)s %(name)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
         fh.setFormatter(formatter)
 

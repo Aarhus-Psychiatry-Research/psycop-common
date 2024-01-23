@@ -3,22 +3,14 @@ import logging
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import AggregationFunType, mean
-from timeseriesflattener.df_transforms import (
-    df_with_multiple_values_to_named_dataframes,
-)
-from timeseriesflattener.feature_specs.group_specs import (
-    PredictorGroupSpec,
-)
+from timeseriesflattener.df_transforms import df_with_multiple_values_to_named_dataframes
+from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
 from timeseriesflattener.feature_specs.single_specs import (
     PredictorSpec,  # type: ignore
 )
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
-from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
-    EmbeddedTextLoader,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
 
 log = logging.getLogger(__name__)
 
@@ -75,9 +67,7 @@ class TextFeatureSpecifier:
 
         return tfidf_specs
 
-    def get_feature_specs(
-        self,
-    ) -> list[PredictorSpec]:
+    def get_feature_specs(self) -> list[PredictorSpec]:
         """Generate text predictor spec list."""
         log.info("-------- Generating text predictor specs --------")
 

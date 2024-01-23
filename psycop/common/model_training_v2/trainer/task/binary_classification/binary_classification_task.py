@@ -26,12 +26,7 @@ def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
 class BinaryClassificationTask(BaselineTask):
     task_pipe: BinaryClassificationPipeline
 
-    def train(
-        self,
-        x: pd.DataFrame,
-        y: pd.DataFrame,
-        y_col_name: str,
-    ) -> None:
+    def train(self, x: pd.DataFrame, y: pd.DataFrame, y_col_name: str) -> None:
         assert len(y.columns) == 1
         y_series = y[y_col_name]
 

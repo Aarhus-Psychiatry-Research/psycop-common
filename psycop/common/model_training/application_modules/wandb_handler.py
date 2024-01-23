@@ -65,8 +65,7 @@ class WandbHandler:
         # Create debug-cli on Windows, otherwise complains that it's missing
         if sys.platform == "win32":
             (PSYCOP_PKG_ROOT.parent.parent / "wandb" / "debug-cli.onerm").mkdir(
-                exist_ok=True,
-                parents=True,
+                exist_ok=True, parents=True
             )
 
         wandb.init(

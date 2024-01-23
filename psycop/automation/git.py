@@ -10,9 +10,7 @@ from .logger import echo_header, msg_type
 
 def is_uncommitted_changes(c: Context) -> bool:
     git_status_result: Result = c.run(  # type: ignore
-        "git status --porcelain",
-        pty=NOT_WINDOWS,
-        hide=True,
+        "git status --porcelain", pty=NOT_WINDOWS, hide=True
     )
 
     uncommitted_changes = git_status_result.stdout != ""
@@ -21,13 +19,10 @@ def is_uncommitted_changes(c: Context) -> bool:
 
 def filetype_modified_since_main(c: Context, regex_pattern: str) -> bool:
     files_modified_since_main = c.run(
-        "git diff --name-only origin/main HEAD",
-        hide=True,
+        "git diff --name-only origin/main HEAD", hide=True
     ).stdout.splitlines()  # type: ignore
 
-    if any(
-        re.compile(regex_pattern).search(file) for file in files_modified_since_main
-    ):
+    if any(re.compile(regex_pattern).search(file) for file in files_modified_since_main):
         return True
 
     return False
@@ -44,9 +39,7 @@ def add_commit(c: Context, msg: Optional[str] = None):
         c.run("git commit --amend --reuse-message=HEAD", pty=NOT_WINDOWS, hide=True)
         print(f"{msg_type.GOOD} Commit amended")
     elif msg == "-a":
-        print(
-            f"{msg_type.FAIL} You typed '-a'. Did you mean '--a' to amend the previous commit?",
-        )
+        print(f"{msg_type.FAIL} You typed '-a'. Did you mean '--a' to amend the previous commit?")
     else:
         c.run(f'git commit -m "{msg}"', pty=NOT_WINDOWS, hide=True)
         print(f"{msg_type.GOOD} Changes added and committed")
@@ -56,14 +49,10 @@ def add_and_commit(c: Context, msg: Optional[str] = None):
     """Add and commit all changes."""
     if is_uncommitted_changes(c):
         uncommitted_changes_descr = c.run(
-            "git status --porcelain",
-            pty=NOT_WINDOWS,
-            hide=True,
+            "git status --porcelain", pty=NOT_WINDOWS, hide=True
         ).stdout  # type: ignore
 
-        echo_header(
-            f"{msg_type.WARN} Uncommitted changes detected",
-        )
+        echo_header(f"{msg_type.WARN} Uncommitted changes detected")
 
         for line in uncommitted_changes_descr.splitlines():
             print(f"    {line.strip()}")
@@ -75,8 +64,7 @@ def branch_exists_on_remote(c: Context) -> bool:
     branch_name = Path(".git/HEAD").read_text().split("/")[-1].strip()
 
     branch_exists_result: Result = c.run(  # type: ignore
-        f"git ls-remote --heads origin {branch_name}",
-        hide=True,
+        f"git ls-remote --heads origin {branch_name}", hide=True
     )
 
     return branch_name in branch_exists_result.stdout

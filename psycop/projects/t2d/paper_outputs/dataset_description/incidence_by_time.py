@@ -28,10 +28,7 @@ from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeli
 
 get_best_eval_pipeline().paper_outputs.paths.figures.mkdir(parents=True, exist_ok=True)
 
-save_path = (
-    get_best_eval_pipeline().paper_outputs.paths.figures
-    / "diabetes_incidence_by_time.png"
-)
+save_path = get_best_eval_pipeline().paper_outputs.paths.figures / "diabetes_incidence_by_time.png"
 
 p.save(save_path, dpi=600)
 

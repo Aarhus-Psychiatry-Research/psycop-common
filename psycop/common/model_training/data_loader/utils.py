@@ -43,18 +43,14 @@ def load_and_filter_split_from_cfg(
     dataset = DataLoader(data_cfg=data_cfg).load_dataset_from_dir(split_names=split)
 
     filtered_data = pre_split_process_full_dataset(
-        dataset=dataset,
-        pre_split_cfg=pre_split_cfg,
-        data_cfg=data_cfg,
-        cache_dir=cache_dir,
+        dataset=dataset, pre_split_cfg=pre_split_cfg, data_cfg=data_cfg, cache_dir=cache_dir
     )
 
     return filtered_data
 
 
 def load_and_filter_train_from_cfg(
-    cfg: FullConfigSchema,
-    cache_dir: Optional[Path] = None,
+    cfg: FullConfigSchema, cache_dir: Optional[Path] = None
 ) -> pd.DataFrame:
     """Load train dataset from config.
 
@@ -74,14 +70,11 @@ def load_and_filter_train_from_cfg(
 
 
 def load_train_raw(
-    cfg: FullConfigSchema,
-    convert_timestamp_types_and_nans: bool = True,
+    cfg: FullConfigSchema, convert_timestamp_types_and_nans: bool = True
 ) -> pd.DataFrame:
     """Load the data."""
     if not isinstance(cfg.data.dir, Path):
-        raise ValueError(
-            f"cfg.data.dir must be a Path, got {type(cfg.data.dir)}",
-        )
+        raise ValueError(f"cfg.data.dir must be a Path, got {type(cfg.data.dir)}")
 
     file_names = list(cfg.data.dir.glob(pattern=r"*train*"))
 

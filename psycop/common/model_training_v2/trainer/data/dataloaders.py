@@ -28,16 +28,13 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
 
         if validate_on_init:
             missing_paths = (
-                Iter(self.dataset_paths)
-                .map(self._check_path_exists)
-                .flatten()
-                .to_list()
+                Iter(self.dataset_paths).map(self._check_path_exists).flatten().to_list()
             )
             if missing_paths:
                 raise MissingPathError(
                     f"""The following paths are missing:
                     {missing_paths}
-                """,
+                """
                 )
 
     def _check_path_exists(self, path: Path) -> list[MissingPathError]:
@@ -48,6 +45,5 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
 
     def load(self) -> pl.LazyFrame:
         return pl.concat(
-            how="vertical",
-            items=[pl.scan_parquet(path) for path in self.dataset_paths],
+            how="vertical", items=[pl.scan_parquet(path) for path in self.dataset_paths]
         )

@@ -14,9 +14,7 @@ from psycop.common.feature_generation.sequences.prediction_time_collater import 
     BasePredictionTimeCollater,
 )
 
-from ..feature_generation.sequences.patient_slice_collater import (
-    BasePatientSliceCollater,
-)
+from ..feature_generation.sequences.patient_slice_collater import BasePatientSliceCollater
 from .tasks.patientslice_classifier_base import BasePredictionTimeClassifier
 from .tasks.pretrainer_base import BasePatientSlicePretrainer
 

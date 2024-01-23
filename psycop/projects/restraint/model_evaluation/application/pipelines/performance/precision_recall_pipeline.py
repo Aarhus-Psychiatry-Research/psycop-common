@@ -32,8 +32,7 @@ def bootstrap_pr(
     for _ in range(n_bootstraps):
         y_resampled, y_hat_probs_resampled = resample(y, y_hat_probs)  # type: ignore
         prec_resampled, rec_resampled, _ = precision_recall_curve(
-            y_resampled,
-            y_hat_probs_resampled,
+            y_resampled, y_hat_probs_resampled
         )
 
         rec_bootstrapped = np.interp(base_fpr, prec_resampled, rec_resampled)
@@ -49,16 +48,11 @@ def bootstrap_pr(
 def precision_recall_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
-    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(
-        eval_ds.y_hat_probs,
-        pd.DataFrame,
-    ):
+    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(eval_ds.y_hat_probs, pd.DataFrame):
         raise TypeError
 
     recs_bootstrapped, prec_bootstrapped, base_fpr = bootstrap_pr(
-        n_bootstraps=1000,
-        y=eval_ds.y,
-        y_hat_probs=eval_ds.y_hat_probs,
+        n_bootstraps=1000, y=eval_ds.y, y_hat_probs=eval_ds.y_hat_probs
     )
 
     mean_recs = recs_bootstrapped.mean(axis=0)
@@ -84,12 +78,7 @@ def precision_recall_pipeline(run: Run, path: Path):
     )
 
     df = pd.DataFrame(
-        {
-            "fpr": base_fpr,
-            "rec": mean_recs,
-            "rec_lower": recs_lower,
-            "rec_upper": recs_upper,
-        },
+        {"fpr": base_fpr, "rec": mean_recs, "rec_lower": recs_lower, "rec_upper": recs_upper}
     )
 
     (

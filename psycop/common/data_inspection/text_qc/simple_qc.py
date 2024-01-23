@@ -23,9 +23,7 @@ def sample_sfi(df: pd.DataFrame) -> DfValues:
     """Sample a random sfi name and text from the data"""
     sample = df.sample(1)
     return DfValues(
-        sfi=sample["overskrift"].item(),
-        text=sample["value"].item(),
-        index=sample.index.item(),
+        sfi=sample["overskrift"].item(), text=sample["value"].item(), index=sample.index.item()
     )
 
 
@@ -95,10 +93,7 @@ if __name__ == "__main__":
 
     if DEV:
         DF = pd.DataFrame(
-            {
-                "text": ["test1", "test2", "test3"],
-                "overskrift": ["test1", "test2", "test3"],
-            },
+            {"text": ["test1", "test2", "test3"], "overskrift": ["test1", "test2", "test3"]}
         )
     else:
         DF = load_all_notes(include_sfi_name=True)  # type: ignore

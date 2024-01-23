@@ -8,10 +8,7 @@ import pandas as pd
 from wasabi import Printer
 
 
-def add_age_is_female(
-    df: pd.DataFrame,
-    id_column_name: str = "dw_ek_borger",
-) -> pd.DataFrame:
+def add_age_is_female(df: pd.DataFrame, id_column_name: str = "dw_ek_borger") -> pd.DataFrame:
     """Add age and gender columns to dataframe.
 
     Args:
@@ -83,17 +80,13 @@ def overwrite_prop_with_null(
     Returns:
         A pd.Series.
     """
-    series.loc[
-        np.random.choice(series.index, int(len(series) * prop), replace=False)
-    ] = null_value
+    series.loc[np.random.choice(series.index, int(len(series) * prop), replace=False)] = null_value
 
     return series
 
 
 def random_timestamp(
-    start_time: pd.Timestamp,
-    end_time: pd.Timestamp,
-    number_of_timestamps: int,
+    start_time: pd.Timestamp, end_time: pd.Timestamp, number_of_timestamps: int
 ) -> pd.DatetimeIndex:
     """Generate a range of random timestamps within a start and end time.
 
@@ -109,9 +102,7 @@ def random_timestamp(
     start = start_time.value
     end = end_time.value
 
-    return pd.to_datetime(
-        np.random.randint(start, end, number_of_timestamps, dtype=np.int64),
-    )
+    return pd.to_datetime(np.random.randint(start, end, number_of_timestamps, dtype=np.int64))
 
 
 def synth_pred_times(df: pd.DataFrame, pred_hour: int = 6) -> pd.DataFrame:
@@ -149,25 +140,19 @@ if __name__ == "__main__":
 
     msg.info("Generating synth admission times")
     df["admission_timestamp"] = random_timestamp(
-        pd.Timestamp("2015-01-01"),
-        pd.Timestamp("2020-01-01"),
-        N_ROWS,
+        pd.Timestamp("2015-01-01"), pd.Timestamp("2020-01-01"), N_ROWS
     )
 
     msg.info("Generating synth outcome timestamps")
-    df["outcome_timestamp"] = df.groupby("dw_ek_borger")[
-        "admission_timestamp"
-    ].transform(
-        "min",
+    df["outcome_timestamp"] = df.groupby("dw_ek_borger")["admission_timestamp"].transform(
+        "min"
     ) + dt.timedelta(  # type: ignore
-        seconds=np.random.randint(0, days_to_seconds(days=5)),  # type: ignore
+        seconds=np.random.randint(0, days_to_seconds(days=5))  # type: ignore
     )
 
     df["outcome_timestamp"] = (
         df.groupby("dw_ek_borger")["outcome_timestamp"]
-        .apply(
-            lambda x: null_series_with_prob(x, prob=0.85),
-        )
+        .apply(lambda x: null_series_with_prob(x, prob=0.85))
         .reset_index(drop=True)
     )
 

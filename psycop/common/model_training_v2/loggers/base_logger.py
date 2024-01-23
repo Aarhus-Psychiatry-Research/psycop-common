@@ -3,9 +3,7 @@ from typing import Protocol, runtime_checkable
 
 from confection import Config
 
-from psycop.common.model_training_v2.trainer.task.base_metric import (
-    CalculatedMetric,
-)
+from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
 @runtime_checkable

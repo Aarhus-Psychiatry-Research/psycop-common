@@ -4,9 +4,7 @@ from datetime import datetime
 
 import coloredlogs
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 
 
 def init_root_logger(
@@ -28,10 +26,7 @@ def init_root_logger(
     # to get prettier console output and to add a streamhandler,
     # which will write all logging messages from the root logger to
     # stdout
-    coloredlogs.install(
-        level=stdout_log_level,
-        fmt="%(asctime)s [%(levelname)s] %(message)s",
-    )
+    coloredlogs.install(level=stdout_log_level, fmt="%(asctime)s [%(levelname)s] %(message)s")
 
     # Create a timestamped file handler which writes all logging messages from
     # the root logger to a file

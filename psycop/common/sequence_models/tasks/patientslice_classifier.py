@@ -6,10 +6,7 @@ from torch import nn
 from torchmetrics import Metric
 from torchmetrics.classification import BinaryAUROC, MulticlassAUROC
 
-from psycop.common.sequence_models.tasks.patientslice_classifier_base import (
-    Logits,
-    Loss,
-)
+from psycop.common.sequence_models.tasks.patientslice_classifier_base import Logits, Loss
 
 from ...data_structures.patient import PatientSlice
 from ...data_structures.prediction_time import PredictionTime
@@ -18,10 +15,7 @@ from ..datatypes import BatchWithLabels
 from ..embedders.interface import PatientSliceEmbedder
 from ..optimizers import LRSchedulerFn, OptimizerFn
 from ..registry import SequenceRegistry
-from .patientslice_classifier_base import (
-    BasePredictionTimeClassifier,
-    PredictedProbabilities,
-)
+from .patientslice_classifier_base import BasePredictionTimeClassifier, PredictedProbabilities
 
 
 @SequenceRegistry.tasks.register("patient_slice_classifier")
@@ -82,11 +76,7 @@ class PatientSliceClassifier(BasePredictionTimeClassifier):
         loss = self._step(batch=batch, mode="Validation")
         return loss
 
-    def _step(
-        self,
-        batch: BatchWithLabels,
-        mode: Literal["Validation", "Training"],
-    ) -> Loss:
+    def _step(self, batch: BatchWithLabels, mode: Literal["Validation", "Training"]) -> Loss:
         """
         Logs the metrics for the given mode.
         """
@@ -101,22 +91,15 @@ class PatientSliceClassifier(BasePredictionTimeClassifier):
 
         return loss
 
-    def forward(
-        self,
-        inputs: dict[str, torch.Tensor],
-    ) -> Logits:
+    def forward(self, inputs: dict[str, torch.Tensor]) -> Logits:
         embedded_patients = self.embedder.forward(inputs)
         encoded_patients = self._encoder.forward(
-            src=embedded_patients.src,
-            src_key_padding_mask=embedded_patients.src_key_padding_mask,
+            src=embedded_patients.src, src_key_padding_mask=embedded_patients.src_key_padding_mask
         )
 
         # Aggregate the sequence
         is_padding = embedded_patients.src_key_padding_mask
-        aggregated_patients = self._aggregator(
-            encoded_patients,
-            attention_mask=~is_padding,
-        )
+        aggregated_patients = self._aggregator(encoded_patients, attention_mask=~is_padding)
 
         # Classification head
         return self.classification_head(aggregated_patients)
@@ -126,18 +109,13 @@ class PatientSliceClassifier(BasePredictionTimeClassifier):
             _labels = labels.unsqueeze(-1).float()
         else:
             # If not binary convert to one-hot encoding
-            _labels = torch.nn.functional.one_hot(
-                labels,
-                num_classes=self.num_classes,
-            ).float()
+            _labels = torch.nn.functional.one_hot(labels, num_classes=self.num_classes).float()
 
         loss = self.loss(logits, _labels)
         return loss
 
     def calculate_metrics(
-        self,
-        logits: torch.Tensor,
-        labels: torch.Tensor,
+        self, logits: torch.Tensor, labels: torch.Tensor
     ) -> dict[str, torch.Tensor]:
         """
         Calculates the metrics for the task.
@@ -158,19 +136,14 @@ class PatientSliceClassifier(BasePredictionTimeClassifier):
             probs = torch.softmax(logits, dim=1)
         return probs
 
-    def collate_fn(
-        self,
-        prediction_times: Sequence[PredictionTime],
-    ) -> BatchWithLabels:
+    def collate_fn(self, prediction_times: Sequence[PredictionTime]) -> BatchWithLabels:
         """
         Takes a list of patients and returns a dictionary of padded sequence ids.
         """
         patient_slices, outcomes = list(
-            zip(*[(p.patient_slice, int(p.outcome)) for p in prediction_times]),
+            zip(*[(p.patient_slice, int(p.outcome)) for p in prediction_times])
         )
-        padded_sequence_ids = self.embedder.collate_patient_slices(
-            list(patient_slices),
-        )
+        padded_sequence_ids = self.embedder.collate_patient_slices(list(patient_slices))
 
         outcome_tensor = torch.tensor(outcomes)
         return BatchWithLabels(inputs=padded_sequence_ids, labels=outcome_tensor)
@@ -178,17 +151,13 @@ class PatientSliceClassifier(BasePredictionTimeClassifier):
     def configure_optimizers(
         self,
     ) -> tuple[
-        list[torch.optim.Optimizer],
-        list[torch.optim.lr_scheduler._LRScheduler],  # type: ignore
+        list[torch.optim.Optimizer], list[torch.optim.lr_scheduler._LRScheduler]  # type: ignore
     ]:
         optimizer = self.optimizer(self.parameters())
         lr_scheduler = self.lr_scheduler_fn(optimizer)
         return [optimizer], [lr_scheduler]
 
-    def filter_and_reformat(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> Sequence[PatientSlice]:
+    def filter_and_reformat(self, patient_slices: Sequence[PatientSlice]) -> Sequence[PatientSlice]:
         reformatted_slices = self.embedder.reformat(patient_slices)
         return reformatted_slices
 

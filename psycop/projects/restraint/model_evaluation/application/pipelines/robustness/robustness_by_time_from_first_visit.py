@@ -2,9 +2,7 @@ from pathlib import Path
 
 import plotnine as pn
 
-from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    get_auroc_by_timedelta_df,
-)
+from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
 from psycop.projects.restraint.model_evaluation.config import (
     BEST_DEV_RUN,
     COLOURS,
@@ -14,21 +12,14 @@ from psycop.projects.restraint.model_evaluation.config import (
     TEXT_EVAL_RUN,
     TEXT_ROBUSTNESS_PATH,
 )
-from psycop.projects.restraint.model_evaluation.data.load_true_data import (
-    load_eval_df,
-)
+from psycop.projects.restraint.model_evaluation.data.load_true_data import load_eval_df
 from psycop.projects.restraint.utils.best_runs import Run
 
 
 def roc_auc_by_time_from_first_prediction(run: Run, path: Path):
-    df = load_eval_df(
-        wandb_group=run.group.name,
-        wandb_run=run.name,
-    )
+    df = load_eval_df(wandb_group=run.group.name, wandb_run=run.name)
 
-    df["first_prediction_day"] = df.groupby("adm_id")["pred_timestamps"].transform(
-        "min",
-    )
+    df["first_prediction_day"] = df.groupby("adm_id")["pred_timestamps"].transform("min")
 
     binned_df = get_auroc_by_timedelta_df(
         y=df.y,
@@ -45,10 +36,7 @@ def roc_auc_by_time_from_first_prediction(run: Run, path: Path):
     binned_df["n_in_bin"] = binned_df["n_in_bin"].astype(int)
 
     (
-        pn.ggplot(
-            binned_df,
-            pn.aes("unit_from_event_binned", "auroc"),
-        )
+        pn.ggplot(binned_df, pn.aes("unit_from_event_binned", "auroc"))
         + pn.geom_bar(
             pn.aes(x="unit_from_event_binned", y="proportion_in_bin"),
             stat="identity",
@@ -56,24 +44,15 @@ def roc_auc_by_time_from_first_prediction(run: Run, path: Path):
             fill=COLOURS["blue"],
         )
         + pn.geom_path(group=1, size=0.5)
-        + pn.geom_text(
-            pn.aes(y="proportion_in_bin", label="n_in_bin"),
-            va="bottom",
-            size=11,
-        )
-        + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-            size=0.5,
-        )
+        + pn.geom_text(pn.aes(y="proportion_in_bin", label="n_in_bin"), va="bottom", size=11)
+        + pn.geom_pointrange(pn.aes(ymin="ci_lower", ymax="ci_upper"), size=0.5)
         + pn.labs(
             x="Days in admission",
             y="AUROC",
             title=f"{MODEL_NAME[run.name]} Performance Over Admission",
         )
         + PN_THEME
-    ).save(
-        path / "auc_by_time_from_first_pred_day_in_adm.png",
-    )
+    ).save(path / "auc_by_time_from_first_pred_day_in_adm.png")
 
 
 if __name__ == "__main__":

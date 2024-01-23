@@ -3,9 +3,7 @@ from collections.abc import Sequence
 
 import lightning.pytorch as pl
 import torch
-from lightning.pytorch.utilities.types import (
-    OptimizerLRScheduler,
-)
+from lightning.pytorch.utilities.types import OptimizerLRScheduler
 from torch import nn
 
 from ...data_structures.patient import PatientSlice
@@ -21,10 +19,7 @@ PredictedProbabilities = torch.Tensor
 
 class BasePredictionTimeClassifier(ABC, pl.LightningModule):
     @abstractmethod
-    def collate_fn(
-        self,
-        prediction_times: Sequence[PredictionTime],
-    ) -> BatchWithLabels:
+    def collate_fn(self, prediction_times: Sequence[PredictionTime]) -> BatchWithLabels:
         ...
 
     @abstractmethod
@@ -37,29 +32,20 @@ class BasePredictionTimeClassifier(ABC, pl.LightningModule):
 
     @abstractmethod
     def forward(  # type: ignore
-        self,
-        inputs: dict[str, torch.Tensor],
+        self, inputs: dict[str, torch.Tensor]
     ) -> Logits:
         ...
 
     @abstractmethod
-    def filter_and_reformat(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> Sequence[PatientSlice]:
+    def filter_and_reformat(self, patient_slices: Sequence[PatientSlice]) -> Sequence[PatientSlice]:
         ...
 
-    def configure_optimizers(
-        self,
-    ) -> OptimizerLRScheduler:
+    def configure_optimizers(self) -> OptimizerLRScheduler:
         ...
 
     @abstractmethod
     def predict_step(  # type: ignore
-        self,
-        batch: BatchWithLabels,
-        batch_idx: int,
-        dataloader_idx: int = 0,
+        self, batch: BatchWithLabels, batch_idx: int, dataloader_idx: int = 0
     ) -> PredictedProbabilities:
         ...
 

@@ -1,14 +1,8 @@
 from collections.abc import Sequence
 
 from timeseriesflattener.aggregation_fns import count
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-    StaticSpec,
-)
+from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec, StaticSpec
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_medications import (
@@ -25,18 +19,12 @@ class SczBpLayer1(SczBpFeatureLayer):
         layer = 1
 
         sex_spec = [
-            StaticSpec(
-                feature_base_name=f"sex_female_layer_{layer}",
-                timeseries_df=sex_female(),
-            ),
+            StaticSpec(feature_base_name=f"sex_female_layer_{layer}", timeseries_df=sex_female())
         ]
 
         antipsychotics_spec = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(
-                    df=antipsychotics(),
-                    name=f"antipsychotics_layer_{layer}",
-                ),
+                NamedDataframe(df=antipsychotics(), name=f"antipsychotics_layer_{layer}"),
             ),
             lookbehind_days=lookbehind_days,
             aggregation_fns=[count],
@@ -45,10 +33,7 @@ class SczBpLayer1(SczBpFeatureLayer):
 
         antidepressives_spec = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(
-                    df=antidepressives(),
-                    name=f"antidepressives_layer_{layer}",
-                ),
+                NamedDataframe(df=antidepressives(), name=f"antidepressives_layer_{layer}"),
             ),
             lookbehind_days=lookbehind_days,
             aggregation_fns=[count],

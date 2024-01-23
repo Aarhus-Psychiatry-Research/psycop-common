@@ -38,5 +38,5 @@ class TerminalLogger(BaselineLogger):
     def log_artifact(self, local_path: Path) -> None:
         self.good(
             f"""Logging artifact from {local_path}.
-    NOTE: TerminalLogger does not log the artifact anywhere, but if you have other loggers defined, their methods have been called as well.""",
+    NOTE: TerminalLogger does not log the artifact anywhere, but if you have other loggers defined, their methods have been called as well."""
         )

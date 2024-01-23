@@ -34,7 +34,5 @@ def create_model_checkpoint(
 
 
 @SequenceRegistry.callbacks.register("learning_rate_monitor")
-def create_learning_rate_monitor(
-    logging_interval: str = "epoch",
-) -> LearningRateMonitor:
+def create_learning_rate_monitor(logging_interval: str = "epoch") -> LearningRateMonitor:
     return LearningRateMonitor(logging_interval=logging_interval, log_momentum=True)  # type: ignore

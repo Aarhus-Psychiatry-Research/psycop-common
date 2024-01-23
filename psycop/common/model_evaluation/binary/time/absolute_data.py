@@ -2,9 +2,7 @@ from collections.abc import Iterable
 
 import pandas as pd
 
-from psycop.common.model_evaluation.binary.utils import (
-    auroc_by_group,
-)
+from psycop.common.model_evaluation.binary.utils import auroc_by_group
 
 
 def create_roc_auc_by_absolute_time_df(
@@ -26,9 +24,7 @@ def create_roc_auc_by_absolute_time_df(
     Returns:
         Dataframe ready for plotting
     """
-    df = pd.DataFrame(
-        {"y": labels, "y_hat_probs": y_hat_probs, "timestamp": timestamps},
-    )
+    df = pd.DataFrame({"y": labels, "y_hat_probs": y_hat_probs, "timestamp": timestamps})
 
     df["time_bin"] = pd.PeriodIndex(df["timestamp"], freq=bin_period).format()
 

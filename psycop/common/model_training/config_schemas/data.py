@@ -9,17 +9,12 @@ class ColumnNamesSchema(PSYCOPBaseModel):
     """Column names in the data."""
 
     pred_timestamp: str = "timestamp"  # Column name for prediction times
-    outcome_timestamp: Union[
-        str,
-        None,
-    ] = "outc_timestamp"  # Column name for outcome timestamps
+    outcome_timestamp: Union[str, None] = "outc_timestamp"  # Column name for outcome timestamps
     id: str = "dw_ek_borger"  # Citizen colnames # noqa
     pred_time_uuid: str = "prediction_time_uuid"  # Unique identifier for each prediction, useful if you later want to join the predictions with the original data.
     age: Union[str, None] = "pred_age_in_years"  # Name of the age column
     is_female: Union[str, None] = "pred_sex_female"  # Name of the sex column
-    exclusion_timestamp: Optional[
-        str
-    ] = None  # Name of the exclusion timestamps column.
+    exclusion_timestamp: Optional[str] = None  # Name of the exclusion timestamps column.
     # Drops all visits whose pred_timestamp <= exclusion_timestamp.
     custom_columns: Optional[list[str]] = None
 
@@ -27,9 +22,7 @@ class ColumnNamesSchema(PSYCOPBaseModel):
 class DataSchema(PSYCOPBaseModel):
     """Data configuration."""
 
-    dir: list[  # noqa: A003
-        Path
-    ] | Path  # Location of the dataset. if list, datasets will be concatenated.
+    dir: list[Path] | Path  # noqa: A003  # Location of the dataset. if list, datasets will be concatenated.
     suffix: str = "parquet"  # File suffix to load.
 
     splits_for_training: list[str] = [  # noqa: RUF012

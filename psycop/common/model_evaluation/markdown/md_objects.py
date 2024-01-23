@@ -10,11 +10,7 @@ import pandas as pd
 
 class MarkdownArtifact(ABC):
     def __init__(
-        self,
-        title: str,
-        file_path: Path,
-        description: str,
-        check_filepath_exists: bool = True,
+        self, title: str, file_path: Path, description: str, check_filepath_exists: bool = True
     ):
         self.title = title
         self.file_path = file_path
@@ -81,13 +77,11 @@ class MarkdownTable(MarkdownArtifact):
             return pd.read_csv(self.file_path)
 
         if self.file_path.suffix == ".xlsx":
-            return pd.read_excel(
-                self.file_path,
-            )
+            return pd.read_excel(self.file_path)
 
         raise ValueError(
             f"File extension {self.file_path.suffix} not supported. "
-            f"Only .csv and .xlsx are supported.",
+            f"Only .csv and .xlsx are supported."
         )
 
     def get_markdown_table(self) -> str:
@@ -137,7 +131,7 @@ def create_supplementary_from_markdown_artifacts(
         else:
             raise ValueError(
                 f"Artifact type {artifact_type} not supported. "
-                f"Only MarkdownTable and MarkdownFigure are supported.",
+                f"Only MarkdownTable and MarkdownFigure are supported."
             )
 
         markdown += artifact_copy.get_markdown()

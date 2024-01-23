@@ -3,26 +3,17 @@ from collections.abc import Sequence
 import numpy as np
 import pandas as pd
 from timeseriesflattener.aggregation_fns import mean
-from timeseriesflattener.df_transforms import (
-    df_with_multiple_values_to_named_dataframes,
-)
-from timeseriesflattener.feature_specs.group_specs import (
-    PredictorGroupSpec,
-)
+from timeseriesflattener.df_transforms import df_with_multiple_values_to_named_dataframes
+from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
 from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
-from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import (
-    SczBpFeatureSpecifier,
-)
+from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import SczBpFeatureSpecifier
 
 
 class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
     def _text_specs_from_embedding_df(
-        self,
-        embedded_text_df: pd.DataFrame,
-        name_prefix: str,
-        lookbehind_days: list[float],
+        self, embedded_text_df: pd.DataFrame, name_prefix: str, lookbehind_days: list[float]
     ) -> Sequence[AnySpec]:
         embedded_text_df = df_with_multiple_values_to_named_dataframes(
             df=embedded_text_df,
@@ -39,10 +30,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         ).create_combinations()
 
     def _get_feature_by_note_type_and_model_name(
-        self,
-        note_type: str,
-        model_name: str,
-        lookbehind_days: list[float],
+        self, note_type: str, model_name: str, lookbehind_days: list[float]
     ) -> Sequence[AnySpec]:
         filename = f"text_embeddings_{note_type}_{model_name}.parquet"
         embedded_text_df = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
@@ -54,10 +42,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         )
 
     def _get_tfidf_by_size_and_note_type(
-        self,
-        note_type: str,
-        max_features: int,
-        lookbehind_days: list[float],
+        self, note_type: str, max_features: int, lookbehind_days: list[float]
     ) -> Sequence[AnySpec]:
         filename = f"text_embeddings_{note_type}_tfidf_{max_features}.parquet"
         embedded_text_df = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
@@ -69,8 +54,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         )
 
     def get_feature_specs(  # type: ignore[override]
-        self,
-        lookbehind_days: list[float],
+        self, lookbehind_days: list[float]
     ) -> list[AnySpec]:
         feature_specs: list[Sequence[AnySpec]] = [
             self._get_metadata_specs(),
@@ -88,10 +72,8 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
             for model_name in sentence_transformer_models:
                 feature_specs.append(
                     self._get_feature_by_note_type_and_model_name(
-                        note_type=note_type,
-                        model_name=model_name,
-                        lookbehind_days=lookbehind_days,
-                    ),
+                        note_type=note_type, model_name=model_name, lookbehind_days=lookbehind_days
+                    )
                 )
 
             for max_features in tfidf_max_features:
@@ -100,7 +82,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
                         note_type=note_type,
                         max_features=max_features,
                         lookbehind_days=lookbehind_days,
-                    ),
+                    )
                 )
         # flatten the sequence of lists
         features = [feature for sublist in feature_specs for feature in sublist]

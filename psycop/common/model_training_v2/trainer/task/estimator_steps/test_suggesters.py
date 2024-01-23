@@ -31,13 +31,9 @@ class SuggesterExample:
         ),
         SuggesterExample(
             should="Logistic regression with list resolves correctly",
-            suggester=LogisticRegressionSuggester(
-                C=[0.1, 1, False],
-            ),
+            suggester=LogisticRegressionSuggester(C=[0.1, 1, False]),
         ),
     ],
 )
 def test_logistic_regression_suggester(example: SuggesterExample):
-    suggester_tester(
-        suggester=example.suggester,
-    )
+    suggester_tester(suggester=example.suggester)

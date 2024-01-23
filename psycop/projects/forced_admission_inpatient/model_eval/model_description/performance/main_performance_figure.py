@@ -15,9 +15,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 )
 
 
-def fa_inpatient_create_main_performance_figure(
-    run: ForcedAdmissionInpatientPipelineRun,
-) -> None:
+def fa_inpatient_create_main_performance_figure(run: ForcedAdmissionInpatientPipelineRun) -> None:
     fa_inpatient_create_patchwork_figure(
         run=run,
         plot_fns=(

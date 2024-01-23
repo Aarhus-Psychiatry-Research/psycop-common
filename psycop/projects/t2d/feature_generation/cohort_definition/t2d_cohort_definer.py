@@ -8,9 +8,7 @@ from psycop.common.cohort_definition import (
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
+from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     NoIncidentDiabetes,
@@ -32,10 +30,7 @@ class T2DCohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         msg.info("Getting unfiltered prediction times")
         unfiltered_prediction_times = pl.from_pandas(
-            physical_visits_to_psychiatry(
-                timestamps_only=True,
-                timestamp_for_output="start",
-            ),
+            physical_visits_to_psychiatry(timestamps_only=True, timestamp_for_output="start")
         ).lazy()
 
         msg.info("Filtering prediction times")
@@ -54,9 +49,7 @@ class T2DCohortDefiner(CohortDefiner):
 
     @staticmethod
     def get_outcome_timestamps() -> OutcomeTimestampFrame:
-        return OutcomeTimestampFrame(
-            frame=pl.from_pandas(get_first_diabetes_indicator()),
-        )
+        return OutcomeTimestampFrame(frame=pl.from_pandas(get_first_diabetes_indicator()))
 
 
 if __name__ == "__main__":

@@ -8,15 +8,9 @@ from torch.utils.data import DataLoader
 
 from psycop.common.data_structures.patient import PatientSlice
 from psycop.common.data_structures.prediction_time import PredictionTime
-from psycop.common.sequence_models.aggregators import (
-    Aggregator,
-    AveragePooler,
-    CLSAggregator,
-)
+from psycop.common.sequence_models.aggregators import Aggregator, AveragePooler, CLSAggregator
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
-from psycop.common.sequence_models.tasks.patientslice_classifier import (
-    PatientSliceClassifier,
-)
+from psycop.common.sequence_models.tasks.patientslice_classifier import PatientSliceClassifier
 
 from ..dataset import PredictionTimeDataset
 from ..embedders.BEHRT_embedders import BEHRTEmbedder
@@ -35,9 +29,7 @@ skip_if_arm_within_docker = pytest.mark.skipif(
 
 
 @pytest.fixture()
-def patient_dataset_with_labels(
-    patient_slices: list[PatientSlice],
-) -> PredictionTimeDataset:
+def patient_dataset_with_labels(patient_slices: list[PatientSlice]) -> PredictionTimeDataset:
     prediction_times = []
     for i, patient_slice in enumerate(patient_slices):
         prediction_times.append(
@@ -45,22 +37,16 @@ def patient_dataset_with_labels(
                 patient_slice=patient_slice,
                 prediction_timestamp=dt.datetime(year=2000 + i, month=1, day=1),
                 outcome=i % 2 == 0,
-            ),
+            )
         )
 
     return PredictionTimeDataset(prediction_times=prediction_times)
 
 
-parametrise_aggregator = pytest.mark.parametrize(
-    "aggregator",
-    [CLSAggregator(), AveragePooler()],
-)
+parametrise_aggregator = pytest.mark.parametrize("aggregator", [CLSAggregator(), AveragePooler()])
 
 
-def _run_backward_pass(
-    dataloader: DataLoader[PredictionTime],
-    clf: PatientSliceClassifier,
-) -> None:
+def _run_backward_pass(dataloader: DataLoader[PredictionTime], clf: PatientSliceClassifier) -> None:
     for input_ids, labels in dataloader:
         logits = clf.forward(input_ids)
         loss = clf._calculate_loss(labels=labels, logits=logits)  # type: ignore[privateImportUsage]
@@ -87,10 +73,7 @@ def test_encoder_for_clf(
     )
 
     dataloader = DataLoader(
-        patient_dataset_with_labels,
-        batch_size=32,
-        shuffle=True,
-        collate_fn=clf.collate_fn,
+        patient_dataset_with_labels, batch_size=32, shuffle=True, collate_fn=clf.collate_fn
     )
     _run_backward_pass(dataloader=dataloader, clf=clf)
 
@@ -114,10 +97,7 @@ def test_encoder_for_clf_for_multiclass(
     )
 
     dataloader = DataLoader(
-        patient_dataset_with_labels,
-        batch_size=32,
-        shuffle=True,
-        collate_fn=clf.collate_fn,
+        patient_dataset_with_labels, batch_size=32, shuffle=True, collate_fn=clf.collate_fn
     )
 
     _run_backward_pass(dataloader=dataloader, clf=clf)
@@ -155,10 +135,7 @@ def test_pretrain_from_checkpoint(
     )
 
     dataloader = DataLoader(
-        patient_dataset_with_labels,
-        batch_size=32,
-        shuffle=True,
-        collate_fn=clf.collate_fn,
+        patient_dataset_with_labels, batch_size=32, shuffle=True, collate_fn=clf.collate_fn
     )
 
     _run_backward_pass(dataloader=dataloader, clf=clf)

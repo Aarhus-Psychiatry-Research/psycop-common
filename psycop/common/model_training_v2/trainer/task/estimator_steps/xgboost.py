@@ -4,9 +4,7 @@ import numpy as np
 from xgboost import XGBClassifier
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.task.model_step import (
-    ModelStep,
-)
+from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 
 
 @BaselineRegistry.estimator_steps.register("xgboost")
@@ -21,9 +19,6 @@ def xgboost_classifier_step(
     return (
         "xgboost",
         XGBClassifier(
-            n_estimators=n_estimators,
-            max_depth=max_depth,
-            tree_method=tree_method,
-            missing=np.nan,
+            n_estimators=n_estimators, max_depth=max_depth, tree_method=tree_method, missing=np.nan
         ),
     )

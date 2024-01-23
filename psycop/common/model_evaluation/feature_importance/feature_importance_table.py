@@ -3,14 +3,11 @@ from typing import Union
 import pandas as pd
 import wandb
 
-from psycop.common.model_evaluation.utils import (
-    output_table,
-)
+from psycop.common.model_evaluation.utils import output_table
 
 
 def generate_feature_importances_table(
-    feature_importance_dict: dict[str, float],
-    output_format: str = "wandb_table",
+    feature_importance_dict: dict[str, float], output_format: str = "wandb_table"
 ) -> Union[pd.DataFrame, wandb.Table, str]:
     """Generate table with feature importances.
     Args:
@@ -22,9 +19,7 @@ def generate_feature_importances_table(
     feature_names = list(feature_importance_dict.keys())
     feature_importances = list(feature_importance_dict.values())
 
-    df = pd.DataFrame(
-        {"predictor": feature_names, "feature_importance": feature_importances},
-    )
+    df = pd.DataFrame({"predictor": feature_names, "feature_importance": feature_importances})
     df = df.sort_values("feature_importance", ascending=False)
 
     return output_table(output_format=output_format, df=df)
@@ -45,12 +40,7 @@ def generate_selected_features_table(
     feature_names = list(selected_features_dict.keys())
     is_selected = list(selected_features_dict.values())
 
-    df = pd.DataFrame(
-        {
-            "predictor": feature_names,
-            "selected": is_selected,
-        },
-    )
+    df = pd.DataFrame({"predictor": feature_names, "selected": is_selected})
 
     # Sort df so removed columns appear first
     df = df.sort_values("selected", ascending=removed_first)

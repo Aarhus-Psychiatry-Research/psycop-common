@@ -13,18 +13,9 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     FloatSpace,
     FloatSpaceT,
 )
-from psycop.common.model_training_v2.trainer.task.model_step import (
-    ModelStep,
-)
+from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 
-LogRegSolvers = Literal[
-    "lbfgs",
-    "liblinear",
-    "newton-cg",
-    "newton-cholesky",
-    "sag",
-    "saga",
-]
+LogRegSolvers = Literal["lbfgs", "liblinear", "newton-cg", "newton-cholesky", "sag", "saga"]
 LogRegPenalties = Literal["l1", "l2", "elasticnet"]
 
 
@@ -42,11 +33,7 @@ def logistic_regression_step(
     return (
         "logistic_regression",
         LogisticRegression(
-            penalty=penalty,
-            solver=solver,
-            C=C,
-            l1_ratio=l1_ratio,
-            random_state=41,
+            penalty=penalty, solver=solver, C=C, l1_ratio=l1_ratio, random_state=41
         ),  # Random_state is required for reproducibility, e.g. getting the same result on every test
     )
 

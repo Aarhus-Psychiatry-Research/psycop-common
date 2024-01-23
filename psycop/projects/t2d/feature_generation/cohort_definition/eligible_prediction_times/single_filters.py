@@ -1,9 +1,7 @@
 import polars as pl
 from wasabi import Printer
 
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    MoveIntoRMBaselineLoader,
-)
+from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 
 from ......common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
@@ -38,9 +36,7 @@ class T2DMinAgeFilter(PredictionTimeFilter):
     def _add_age(self, df: pl.LazyFrame) -> pl.LazyFrame:
         df = df.join(self.birthday_df, on="dw_ek_borger", how="inner")
         df = df.with_columns(
-            ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(
-                AGE_COL_NAME,
-            ),
+            ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(AGE_COL_NAME)
         )
         df = df.with_columns((pl.col(AGE_COL_NAME) / 365.25).alias(AGE_COL_NAME))
 
@@ -56,20 +52,14 @@ class WithoutPrevalentDiabetes(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_diabetes_indicator = pl.from_pandas(get_first_diabetes_indicator()).lazy()
 
-        indicator_before_min_date = first_diabetes_indicator.filter(
-            pl.col("timestamp") < MIN_DATE,
-        )
+        indicator_before_min_date = first_diabetes_indicator.filter(pl.col("timestamp") < MIN_DATE)
 
         prediction_times_from_patients_with_diabetes = df.join(
-            indicator_before_min_date,
-            on="dw_ek_borger",
-            how="inner",
+            indicator_before_min_date, on="dw_ek_borger", how="inner"
         )
 
         no_prevalent_diabetes = df.join(
-            prediction_times_from_patients_with_diabetes,
-            on="dw_ek_borger",
-            how="anti",
+            prediction_times_from_patients_with_diabetes, on="dw_ek_borger", how="anti"
         )
 
         return no_prevalent_diabetes.drop(["age"])
@@ -78,24 +68,19 @@ class WithoutPrevalentDiabetes(PredictionTimeFilter):
 class NoIncidentDiabetes(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         results_above_threshold = pl.from_pandas(
-            get_first_diabetes_lab_result_above_threshold(),
+            get_first_diabetes_lab_result_above_threshold()
         ).lazy()
 
         contacts_with_hba1c = df.join(
-            results_above_threshold,
-            on="dw_ek_borger",
-            how="left",
-            suffix="_result",
+            results_above_threshold, on="dw_ek_borger", how="left", suffix="_result"
         )
 
         after_incident_diabetes = contacts_with_hba1c.filter(
-            pl.col("timestamp") > pl.col("timestamp_result"),
+            pl.col("timestamp") > pl.col("timestamp_result")
         )
 
         not_after_incident_diabetes = contacts_with_hba1c.join(
-            after_incident_diabetes,
-            on="dw_ek_borger",
-            how="anti",
+            after_incident_diabetes, on="dw_ek_borger", how="anti"
         )
 
         return not_after_incident_diabetes.drop(["timestamp_result", "value"])
