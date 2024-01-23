@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 import pandas as pd
