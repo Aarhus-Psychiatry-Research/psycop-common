@@ -5,7 +5,7 @@ from confection import registry
 
 
 class SequenceRegistry(registry):
-    tasks = catalogue.create("psycop", "encoders")
+    tasks = catalogue.create("psycop", "tasks")
     layers = catalogue.create("psycop", "layers")
     embedders = catalogue.create("psycop", "embedders")
 

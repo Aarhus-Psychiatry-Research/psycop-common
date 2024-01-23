@@ -79,7 +79,8 @@ class SplitTrainer(BaselineTrainer):
         )
 
         main_metric = self.metric.calculate(y=training_y, y_hat_prob=y_hat_prob)
-        self.logger.log_metric(main_metric)
+        self._log_main_metric(main_metric)
+        self._log_sklearn_pipe()
 
         return TrainingResult(
             metric=main_metric,

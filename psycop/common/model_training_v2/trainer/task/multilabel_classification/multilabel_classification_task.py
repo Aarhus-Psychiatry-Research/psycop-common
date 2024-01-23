@@ -20,7 +20,7 @@ class MultilabelClassificationTask(BaselineTask):
         main_metric: MultilabelMetric,
         supplementary_metrics: Sequence[MultilabelMetric] | None = None,
     ):
-        self.pipe = pipe
+        self.task_pipe = pipe
         self.metrics = main_metric
         self.supplementary_metrics = supplementary_metrics
 
