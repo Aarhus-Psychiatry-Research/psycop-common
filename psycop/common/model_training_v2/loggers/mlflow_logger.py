@@ -1,3 +1,5 @@
+import random
+import string
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -19,6 +21,10 @@ def sanitise_dict_keys(d: dict[str, Any]) -> dict[str, Any]:
     return replace_symbols_in_dict_keys(d=d, symbol2replacement={"@": "", "*": "_"})
 
 
+def generate_temp_filename() -> str:
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
+
+
 @BaselineRegistry.loggers.register("mlflow_logger")
 class MLFlowLogger(BaselineLogger):
     def __init__(
@@ -38,9 +44,10 @@ class MLFlowLogger(BaselineLogger):
 
         This is a workaround for MLFlow not supporting logging text directly.
         Note that multiple logs to the same remote_path will overwrite each other."""
-        with tempfile.NamedTemporaryFile() as tmp_path:
-            tmp_path.write_text(text)
-            mlflow.log_artifact(local_path=tmp_path.__str__(), artifact_path=remote_path)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_file = Path(tmp_dir) / (generate_temp_filename() + ".txt")
+            tmp_file.write_text(text)
+            mlflow.log_artifact(local_path=str(tmp_file), artifact_path=remote_path)
 
     def _log(self, prefix: str, message: str):
         """MLFLow supports logging metrics, parameters, datasets and artifacts. Since a log message is neither,

@@ -28,8 +28,10 @@ class BaselineTrainer(ABC):
         ...
 
     def _log_sklearn_pipe(self) -> None:
-        with tempfile.NamedTemporaryFile(prefix="sklearn_pipe", suffix=".pkl") as f:
-            pickle.dump(self.task.task_pipe.sklearn_pipe, f)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            filename = Path(tmp_dir) / "sklearn_pipe.pkl"
+            with filename.open("wb") as f:
+                pickle.dump(self.task.task_pipe.sklearn_pipe, f)
             self.logger.log_artifact(Path(f.name))
 
     def _log_main_metric(self, main_metric: CalculatedMetric) -> None:
