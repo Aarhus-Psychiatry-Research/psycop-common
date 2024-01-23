@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.182.0 (2024-01-23)
+
+### Feature
+
+* Embed text with tfidf ([#743](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/743)) ([`77760d2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/77760d20ed03bb0fbe6ada090a5f085e1bdc4c08))
+* Embed text with tfidf on region split ([`d47d2d9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d47d2d9c2c4517b3bfdc50686e1dbabbfac4c2ac))
+
 ## v0.181.0 (2024-01-23)
 
 ### Feature
