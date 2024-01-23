@@ -9,9 +9,12 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
     Suggester,
 )
 
-FloatSpaceT = Mapping[str, float | bool]
+FloatspaceMappingT = Mapping[str, float | bool]
+FloatSpaceSequenceT = Sequence[float | bool]
+FloatSpaceT = FloatspaceMappingT | FloatSpaceSequenceT
 # Used when specifying mappings in the confection .cfg, which is then immediately cast to a FloatSpace
-# As such, requires keys that correspond to the FloatSpace's attributes (see below)
+# For the mapping, requires keys that correspond to the FloatSpace's attributes (see below)
+# For the sequence, requres a float, float, int
 
 
 @dataclass(frozen=True)
@@ -29,12 +32,34 @@ class FloatSpace:
         )
 
     @classmethod
-    def from_mapping(cls: type["FloatSpace"], mapping: FloatSpaceT) -> "FloatSpace":
+    def from_mapping(
+        cls: type["FloatSpace"],
+        mapping: Mapping[str, float | bool],
+    ) -> "FloatSpace":
         return cls(
             low=mapping["low"],
             high=mapping["high"],
             logarithmic=mapping["logarithmic"],  # type: ignore
         )
+
+    @classmethod
+    def from_list(
+        cls: type["FloatSpace"], sequence: Sequence[float | bool],
+    ) -> "FloatSpace":
+        return cls(
+            low=sequence[0],
+            high=sequence[1],
+            logarithmic=sequence[2],  # type: ignore
+        )
+
+    @classmethod
+    def from_list_or_mapping(
+        cls: type["FloatSpace"],
+        sequence_or_mapping: FloatSpaceT,
+    ) -> "FloatSpace":
+        if isinstance(sequence_or_mapping, Mapping):
+            return cls.from_mapping(sequence_or_mapping)
+        return cls.from_list(sequence_or_mapping)
 
 
 @dataclass(frozen=True)
