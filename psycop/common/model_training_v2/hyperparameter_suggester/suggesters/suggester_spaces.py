@@ -44,7 +44,8 @@ class FloatSpace:
 
     @classmethod
     def from_list(
-        cls: type["FloatSpace"], sequence: Sequence[float | bool],
+        cls: type["FloatSpace"],
+        sequence: Sequence[float | bool],
     ) -> "FloatSpace":
         return cls(
             low=sequence[0],
