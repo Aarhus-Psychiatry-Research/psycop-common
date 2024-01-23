@@ -64,8 +64,8 @@ class LogisticRegressionSuggester(Suggester):
         solvers: Sequence[LogRegSolvers] = ("saga",),
         penalties: Sequence[LogRegPenalties] = ("l1", "l2", "elasticnet"),
     ):
-        self.C = FloatSpace.from_mapping(C)
-        self.l1_ratio = FloatSpace.from_mapping(l1_ratio)
+        self.C = FloatSpace.from_list_or_mapping(C)
+        self.l1_ratio = FloatSpace.from_list_or_mapping(l1_ratio)
         self.solver = CategoricalSpace(solvers)
         self.penalties = CategoricalSpace(penalties)
 
