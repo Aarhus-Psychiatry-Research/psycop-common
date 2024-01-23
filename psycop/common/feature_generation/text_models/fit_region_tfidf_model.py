@@ -1,5 +1,3 @@
-
-
 import polars as pl
 
 from psycop.common.feature_generation.text_models.fit_text_models import fit_text_model
@@ -18,7 +16,6 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_spli
 )
 
 if __name__ == "__main__":
-
     ## train 2 TF-IDF models; 500 and 1000 features - on both aktuelt psykisk and all SFIs
 
     n_features = [500, 1000]
@@ -39,7 +36,6 @@ if __name__ == "__main__":
         ],
     }
 
-
     all_preprocessed_text = pl.scan_parquet(
         PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet",
     )
@@ -48,12 +44,14 @@ if __name__ == "__main__":
 
     min_df = 2
     max_df = 0.9
-    ngram_range = (1,2)
+    ngram_range = (1, 2)
 
     for note_name_key, note_types in note_types_dict.items():
         print(f"Fitting TF-IDF models on {note_name_key}")
         # filter columns
-        sub_df = all_preprocessed_text.filter(pl.col("overskrift").is_in(note_types)).collect()
+        sub_df = all_preprocessed_text.filter(
+            pl.col("overskrift").is_in(note_types)
+        ).collect()
         print(sub_df.shape)
         for max_features in n_features:
             print(f"Fitting model with {max_features} features")
@@ -77,8 +75,5 @@ if __name__ == "__main__":
                 max_df=max_df,
                 min_df=min_df,
                 max_features=max_features,
-
             )
             save_text_model_to_shared_dir(model=mdl, filename=model_filename)
-
-
