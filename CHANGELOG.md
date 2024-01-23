@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.181.0 (2024-01-23)
+
+### Feature
+
+* Test effect of interval ([`4dbafb5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4dbafb5f158c5a0fd6117d0fc9bc1ee08fb52115))
+
+### Fix
+
+* Mlflow logger on overtaci ([`a0eef17`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a0eef170d47af65cfd5dc85f5cad4ccb1e0c8543))
+
 ## v0.180.0 (2024-01-22)
 
 ### Feature
