@@ -32,8 +32,6 @@ class CrossValidatorTrainer(BaselineTrainer):
         )
 
         X = training_data_preprocessed.drop([self.outcome_col_name, self.uuid_col_name], axis=1)
-        self.logger.info(f"Training on:\n\tFeatures: {X.columns}")
-
         y = pd.DataFrame(
             training_data_preprocessed[self.outcome_col_name], columns=[self.outcome_col_name]
         )
