@@ -1,9 +1,7 @@
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     init_wandb_and_generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
     T2DCohortDefiner,

@@ -4,9 +4,7 @@ from confection import Config
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 if __name__ == "__main__":
     populate_baseline_registry()
@@ -22,9 +20,9 @@ if __name__ == "__main__":
 
     for blacklist_name, blacklist_regex in blacklist_dict.items():
         cfg_copy = cfg.copy()
-        cfg_copy["trainer"]["preprocessing_pipeline"]["*"]["regex_column_blacklist"][
-            "*"
-        ] += [blacklist_regex]
+        cfg_copy["trainer"]["preprocessing_pipeline"]["*"]["regex_column_blacklist"]["*"] += [
+            blacklist_regex
+        ]
 
         cfg_schema = BaselineSchema(**BaselineRegistry.resolve(cfg_copy))
         result = cfg_schema.trainer.train()

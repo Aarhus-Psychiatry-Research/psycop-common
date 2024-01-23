@@ -22,12 +22,7 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 class T2DLookbehindExperimentFeatureSpecifier:
     def _get_static_predictor_specs(self) -> list[StaticSpec]:
         """Get static predictor specs."""
-        return [
-            StaticSpec(
-                feature_base_name="sex_female",
-                timeseries_df=sex_female(),
-            ),
-        ]
+        return [StaticSpec(feature_base_name="sex_female", timeseries_df=sex_female())]
 
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
         """Get outcome specs."""
@@ -37,7 +32,7 @@ class T2DLookbehindExperimentFeatureSpecifier:
                 NamedDataframe(
                     df=get_first_diabetes_lab_result_above_threshold(),
                     name="first_diabetes_lab_result",
-                ),
+                )
             ],
             lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
             aggregation_fns=[maximum],
@@ -54,27 +49,17 @@ class T2DLookbehindExperimentFeatureSpecifier:
                 lookbehind_days=730,
                 aggregation_fn=maximum,
                 fallback=np.nan,
-            ),
+            )
         ]
         hba1c_yearly_interval = PredictorGroupSpec(
-            named_dataframes=[
-                NamedDataframe(
-                    df=hba1c(),
-                    name="hba1c_yearly_interval",
-                ),
-            ],
+            named_dataframes=[NamedDataframe(df=hba1c(), name="hba1c_yearly_interval")],
             lookbehind_days=[(0, 365), (365, 730)],
             aggregation_fns=[maximum],
             fallback=[np.nan],
         ).create_combinations()
 
         hba1c_multiple_intervals = PredictorGroupSpec(
-            named_dataframes=[
-                NamedDataframe(
-                    df=hba1c(),
-                    name="hba1c_multiple_intervals",
-                ),
-            ],
+            named_dataframes=[NamedDataframe(df=hba1c(), name="hba1c_multiple_intervals")],
             lookbehind_days=[(0, 60), (60, 180), (180, 365), (365, 730)],
             aggregation_fns=[maximum],
             fallback=[np.nan],

@@ -47,10 +47,7 @@ class MLFlowLogger(BaselineLogger):
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_file = Path(tmp_dir) / (generate_temp_filename() + ".txt")
             tmp_file.write_text(text)
-            mlflow.log_artifact(
-                local_path=str(tmp_file),
-                artifact_path=remote_path,
-            )
+            mlflow.log_artifact(local_path=str(tmp_file), artifact_path=remote_path)
 
     def _log(self, prefix: str, message: str):
         """MLFLow supports logging metrics, parameters, datasets and artifacts. Since a log message is neither,
