@@ -1,6 +1,6 @@
 """Apply tfidf model to text data and save to disk"""
+from collections.abc import Iterable
 from time import time
-from typing import Iterable
 
 import pandas as pd
 import polars as pl

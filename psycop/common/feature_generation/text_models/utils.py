@@ -6,7 +6,6 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from psycop.common.feature_generation.text_models.text_model_paths import TEXT_MODEL_DIR
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.global_utils.pickle import read_pickle, write_to_pickle
 
 

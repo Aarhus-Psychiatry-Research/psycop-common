@@ -50,7 +50,7 @@ if __name__ == "__main__":
             text_sfi_names=note_types,
             epochs=EPOCHS,
             batch_size=BATCH_SIZE,
-            model_save_name=f"dfm-encoder-large-v1-{note_types_name}-finetuned-split-{SPLIT_TYPE}-n_rows_{str(N_ROWS)}",
+            model_save_name=f"dfm-encoder-large-v1-{note_types_name}-finetuned-split-{SPLIT_TYPE}-n_rows_{N_ROWS!s}",
             n_rows=N_ROWS,
             split_ids_presplit_step=split_id_loaders[SPLIT_TYPE],
             debug=DEBUG,

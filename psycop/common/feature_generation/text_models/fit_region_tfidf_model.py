@@ -1,6 +1,5 @@
 
 
-import pandas as pd
 import polars as pl
 
 from psycop.common.feature_generation.text_models.fit_text_models import fit_text_model
@@ -11,7 +10,9 @@ from psycop.common.feature_generation.text_models.text_model_paths import (
 from psycop.common.feature_generation.text_models.text_model_pipeline import (
     create_model_filename,
 )
-from psycop.common.feature_generation.text_models.utils import save_text_model_to_shared_dir
+from psycop.common.feature_generation.text_models.utils import (
+    save_text_model_to_shared_dir,
+)
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     RegionalFilter,
 )
@@ -67,7 +68,7 @@ if __name__ == "__main__":
             )
             model_path = TEXT_MODEL_DIR / model_filename
             if model_path.exists():
-                print(f"Model already exists. Skipping..")
+                print("Model already exists. Skipping..")
 
             mdl = fit_text_model(
                 model="tfidf",
@@ -75,9 +76,9 @@ if __name__ == "__main__":
                 ngram_range=ngram_range,
                 max_df=max_df,
                 min_df=min_df,
-                max_features=max_features
-                
+                max_features=max_features,
+
             )
-            save_text_model_to_shared_dir(model=mdl, filename=model_filename) 
-            
-        
+            save_text_model_to_shared_dir(model=mdl, filename=model_filename)
+
+

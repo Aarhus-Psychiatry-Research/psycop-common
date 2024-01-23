@@ -1,8 +1,8 @@
 """Script for fitting text models"""
 
-from typing import Iterable, Literal, Optional, Union
+from collections.abc import Iterable
+from typing import Literal, Union
 
-import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
