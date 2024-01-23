@@ -23,6 +23,16 @@ class FloatSpace:
     high: float
     logarithmic: bool
 
+    def __post_init__(self):
+        if self.low >= self.high:
+            raise ValueError(
+                f"Invalid FloatSpace: low value {self.low} must be less than high value {self.high}",
+            )
+        if self.logarithmic and (self.low <= 0 or self.high <= 0):
+            raise ValueError(
+                "Invalid FloatSpace: The logarithm is undefined for values less than or equal to 0, so all values must be greater than 0.",
+            )
+
     def suggest(self, trial: optuna.Trial, name: str) -> float:
         return trial.suggest_float(
             name=name,
