@@ -60,6 +60,7 @@ reportUnusedImport = "none" # Fixed by ruff
 reportPrivateImportUsage = "none"
 
 [tool.ruff]
+line-length = 100
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
 select = [
   "A",
@@ -134,6 +135,9 @@ exclude = [
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 target-version = "py39"
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
 
 [tool.ruff.flake8-annotations]
 mypy-init-return = true
