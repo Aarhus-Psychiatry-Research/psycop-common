@@ -25,10 +25,18 @@ class BaselinePreprocessingPipeline(PreprocessingPipeline):
         self.steps = list(args)
         self.logger = logger
 
+    def _get_column_stats_string(self, data: pl.LazyFrame) -> str:
+        return f"""
+n_cols: {len(data.columns)}
+Columns: {data.columns}"""
+
     def apply(self, data: pl.LazyFrame) -> pd.DataFrame:
         if self.logger:
-            self.logger.info(f"Applying preprocessing pipeline. Initial columns:\n {data.schema}")
+            self.logger.info(self._get_column_stats_string(data))
+
         for step in self.steps:
             data = step.apply(data)
 
+        if self.logger:
+            self.logger.info(self._get_column_stats_string(data))
         return data.collect().to_pandas()
