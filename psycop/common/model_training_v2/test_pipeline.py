@@ -44,7 +44,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
             validation_data=MinimalTestData(),
             validation_outcome_col_name="outcome_val",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
-                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")
+                steps=[AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")], logger=logger
             ),
             task=BinaryClassificationTask(
                 task_pipe=BinaryClassificationPipeline(
@@ -79,7 +79,7 @@ def test_v2_crossval_model_pipeline(tmp_path: Path):
             training_data=MinimalTestData(),
             outcome_col_name="outcome",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
-                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")
+                steps=[AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")], logger=logger
             ),
             task=BinaryClassificationTask(
                 task_pipe=BinaryClassificationPipeline(
