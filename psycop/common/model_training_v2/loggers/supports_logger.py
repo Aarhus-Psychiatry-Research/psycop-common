@@ -16,11 +16,11 @@ class SupportsLoggerMixin:
 
         # If a class without any attributes, continue
         try:
-            annotations = self.__annotations__
+            attributes = dir(self)
         except AttributeError:
             return
 
-        for attr_name in annotations:
+        for attr_name in attributes:
             attr = getattr(self, attr_name)
             if isinstance(attr, SupportsLoggerMixin):
                 attr.set_logger(self.logger)

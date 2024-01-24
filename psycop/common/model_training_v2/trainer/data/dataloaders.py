@@ -7,8 +7,6 @@ from iterpy import Iter
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 
-from ...loggers.supports_logger import SupportsLoggerMixin
-
 
 class MissingPathError(Exception):
     ...
@@ -50,3 +48,11 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
         return pl.concat(
             how="vertical", items=[pl.scan_parquet(path) for path in self.dataset_paths]
         )
+
+
+if __name__ == "__main__":
+    concatenator = ParquetVerticalConcatenator(
+        ["/home/psycop/psycop/data/processed/2021-09-01/2021-09-01.parquet"], validate_on_init=False
+    )
+
+    pass
