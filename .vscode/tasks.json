@@ -12,9 +12,9 @@
                 "isDefault": true
             },
             "dependsOn": [
-                "Lint",
                 "Test",
-                "Submit PR"
+                "Submit PR",
+                "Types",
             ],
             "presentation": {
                 "reveal": "never",
@@ -25,19 +25,9 @@
             "problemMatcher": []
         },
         {
-            "label": "Lint",
-            "type": "shell",
-            "command": "inv lint --auto-fix",
-            "presentation": {
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false,
-            }
-        },
-        {
             "label": "Test",
             "type": "shell",
-            "command": "inv qtest",
+            "command": "lefthook run test",
             "presentation": {
                 "group": "pr",
                 "clear": true,
@@ -47,7 +37,7 @@
         {
             "label": "Submit PR",
             "type": "shell",
-            "command": "echo '🚧️ Any problems in the PR? Press Ctrl+C to cancel.' && lumberman sync --squash",
+            "command": "lumberman sync --squash",
             "presentation": {
                 "group": "pr",
                 "revealProblems": "onProblem",
@@ -57,14 +47,14 @@
             }
         },
         {
-            "label": "Static type check",
+            "label": "Types",
             "type": "shell",
-            "command": "inv qtypes",
+            "command": "lefthook run types",
             "presentation": {
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
             }
-        }
+        },
     ]
 }
