@@ -54,5 +54,3 @@ if __name__ == "__main__":
     concatenator = ParquetVerticalConcatenator(
         ["/home/psycop/psycop/data/processed/2021-09-01/2021-09-01.parquet"], validate_on_init=False
     )
-
-    pass
