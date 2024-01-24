@@ -15,3 +15,6 @@ class BaselineSchema(BaseModel):
     project_info: ProjectInfo
     logger: BaselineLogger
     trainer: BaselineTrainer
+
+    def __post_init__(self):
+        self.trainer.set_logger(self.logger)

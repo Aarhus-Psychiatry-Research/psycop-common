@@ -19,9 +19,7 @@ def test_lookbehind_combination_filter():
     from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 
     logger = TerminalLogger()
-    result = LookbehindCombinationColFilter(
-        lookbehinds={2, 3}, pred_col_prefix="pred_", logger=logger
-    ).apply(df)
+    result = LookbehindCombinationColFilter(lookbehinds={2, 3}, pred_col_prefix="pred_").apply(df)
 
     assert len(result.columns) == 3
 

@@ -7,7 +7,7 @@ from psycop.common.types.polarsframe import PolarsFrame
 from ..base_pipeline import BasePipeline
 
 
-class MultilabelClassificationPipeline(BasePipeline, Protocol):
+class MultilabelClassificationPipeline(BasePipeline):
     def __init__(self, steps: Sequence[ModelStep]) -> None:
         ...
 

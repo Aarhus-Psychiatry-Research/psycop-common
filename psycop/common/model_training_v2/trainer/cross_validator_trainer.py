@@ -22,7 +22,6 @@ class CrossValidatorTrainer(BaselineTrainer):
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
-    logger: BaselineLogger
     n_splits: int = 5
     group_col_name: str = "dw_ek_borger"
 
