@@ -31,12 +31,11 @@ from .loggers.multi_logger import MultiLogger
 
 
 def test_v2_train_model_pipeline(tmpdir: Path):
-    logger = TerminalLogger()
     schema = BaselineSchema(
         project_info=ProjectInfo(
             experiment_path=Path(tmpdir)
         ),  # Must recast to Path, since the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
-        logger=logger,
+        logger=TerminalLogger(),
         trainer=SplitTrainer(
             uuid_col_name="pred_time_uuid",
             training_data=MinimalTestData(),

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, DirectoryPath
+from pydantic import BaseModel, ConfigDict, DirectoryPath, model_validator
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
@@ -16,5 +16,7 @@ class BaselineSchema(BaseModel):
     logger: BaselineLogger
     trainer: BaselineTrainer
 
-    def __post_init__(self):
+    @model_validator(mode="after")
+    def update_loggers(self) -> "BaselineSchema":
         self.trainer.set_logger(self.logger)
+        return self

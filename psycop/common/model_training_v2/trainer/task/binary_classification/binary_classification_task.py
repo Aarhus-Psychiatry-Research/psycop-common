@@ -11,7 +11,6 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_c
 )
 from psycop.common.types.polarsframe import PolarsFrame
 
-from ....loggers.base_logger import BaselineLogger
 from ....loggers.supports_logger import SupportsLoggerMixin
 
 
@@ -26,7 +25,7 @@ def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
 
 @BaselineRegistry.tasks.register("binary_classification")
 @dataclass
-class BinaryClassificationTask(BaselineTask, SupportsLoggerMixin):
+class BinaryClassificationTask(BaselineTask):
     task_pipe: BinaryClassificationPipeline
 
     def train(self, x: pd.DataFrame, y: pd.DataFrame, y_col_name: str) -> None:

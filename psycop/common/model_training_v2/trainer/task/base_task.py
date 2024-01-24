@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import TYPE_CHECKING
 
-from ...loggers.base_logger import BaselineLogger
 from ...loggers.supports_logger import SupportsLoggerMixin
 from .base_pipeline import BasePipeline
 
