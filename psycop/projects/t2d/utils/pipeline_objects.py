@@ -131,7 +131,7 @@ class PipelineInputs:
         """
         pipeline_dict = self.get_cfg_as_json()
 
-        return FullConfigSchema.parse_obj(pipeline_dict)
+        return FullConfigSchema.model_validate(pipeline_dict)
 
 
 @dataclass

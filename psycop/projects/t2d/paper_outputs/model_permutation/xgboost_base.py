@@ -18,7 +18,7 @@ if __name__ == "__main__":
     print(f"Best AUC: {best_auc}")
 
     msg.divider("Training with default xgboost params")
-    cfg.model.Config.allow_mutation = True
+    cfg.model.model_config["frozen"] = False
     cfg.n_crossval_splits = 10
     cfg.model.args = {
         "n_estimators": 100,
