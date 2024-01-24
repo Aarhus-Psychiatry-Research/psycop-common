@@ -7,13 +7,15 @@ from iterpy import Iter
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 
+from ...loggers.supports_logger import SupportsLoggerMixin
+
 
 class MissingPathError(Exception):
     ...
 
 
 @BaselineRegistry.data.register("parquet_vertical_concatenator")
-class ParquetVerticalConcatenator(BaselineDataLoader):
+class ParquetVerticalConcatenator(BaselineDataLoader, SupportsLoggerMixin):
     def __init__(self, paths: Sequence[str], validate_on_init: bool = True):
         """Vertical concatenation of multiple parquet files.
 
