@@ -11,8 +11,6 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_c
 )
 from psycop.common.types.polarsframe import PolarsFrame
 
-from ....loggers.supports_logger import SupportsLoggerMixin
-
 
 def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
     if isinstance(polarsframe, pl.LazyFrame):

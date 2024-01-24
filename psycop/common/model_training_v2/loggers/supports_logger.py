@@ -1,7 +1,4 @@
-from dataclasses import dataclass
-
 from .base_logger import BaselineLogger
-from .dummy_logger import DummyLogger
 
 
 class SupportsLoggerMixin:
