@@ -6,7 +6,6 @@ import polars as pl
 from ...loggers.supports_logger import SupportsLoggerMixin
 
 
-@dataclass
 class PresplitStep(ABC, SupportsLoggerMixin):
     @abstractmethod
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
