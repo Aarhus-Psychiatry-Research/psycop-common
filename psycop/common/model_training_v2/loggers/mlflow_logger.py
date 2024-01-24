@@ -25,8 +25,14 @@ class MLFlowLogger(BaselineLogger):
         self, experiment_name: str, tracking_uri: str = "http://exrhel0371.it.rm.dk:5050"
     ) -> None:
         mlflow.set_tracking_uri(tracking_uri)
+
+        # Start a new run. End a run if it already exists within the process.
+        if mlflow.active_run() is not None:
+            mlflow.end_run()
+
         self.mlflow_experiment = mlflow.set_experiment(experiment_name=experiment_name)
         self.experiment_id = self.mlflow_experiment.experiment_id
+
         self._log_str = ""
 
     def _append_log_str(self, prefix: str, message: str):
