@@ -34,8 +34,8 @@ def _get_test_pipeline_dir(pipeline_to_train: T2DPipelineRun) -> Path:
 
 def _train_pipeline_on_test(pipeline_to_train: T2DPipelineRun):
     cfg = pipeline_to_train.inputs.cfg
-    cfg.project.wandb.Config.allow_mutation = True
-    cfg.data.Config.allow_mutation = True
+    cfg.project.wandb.model_config["frozen"] = False
+    cfg.data.model_config["frozen"] = False
     cfg.data.splits_for_evaluation = ["test"]
 
     override_dir = _get_test_pipeline_dir(pipeline_to_train=pipeline_to_train)

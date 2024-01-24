@@ -61,7 +61,7 @@ def test_v2_train_model_pipeline(tmpdir: Path):
 
 def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
     config = load_baseline_config(Path(__file__).parent / "config" / "baseline_test_config.cfg")
-    config.project_info.Config.allow_mutation = True
+    config.project_info.model_config["frozen"] = False
     config.project_info.experiment_path = Path(
         tmpdir
     )  # For some reason, the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.

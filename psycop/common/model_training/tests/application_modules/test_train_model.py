@@ -36,6 +36,7 @@ def test_crossvalidation(muteable_test_config: FullConfigSchema):
 def test_list_of_data_dirs(muteable_test_config: FullConfigSchema):
     """Test train model can resolve list of data dir paths."""
     cfg = muteable_test_config
+    cfg.data.model_config["frozen"] = False
     cfg.data.dir = [
         Path("psycop/common/model_training/tests/test_data/synth_splits_subsampled/"),
         Path("psycop/common/model_training/tests/test_data/synth_splits_subsampled/"),
@@ -46,6 +47,7 @@ def test_list_of_data_dirs(muteable_test_config: FullConfigSchema):
 def test_train_val_predict(muteable_test_config: FullConfigSchema):
     """Test train without crossvalidation."""
     cfg = muteable_test_config
+    cfg.data.model_config["frozen"] = False
     cfg.data.splits_for_evaluation = ["test"]
     train_model(cfg)
 
@@ -53,6 +55,7 @@ def test_train_val_predict(muteable_test_config: FullConfigSchema):
 def test_min_prediction_time_date(muteable_test_config: FullConfigSchema):
     """Test minimum prediction times correctly resolving the string."""
     cfg = muteable_test_config
+    cfg.preprocessing.pre_split.model_config["frozen"] = False
     cfg.preprocessing.pre_split.min_prediction_time_date = "1972-01-01"
     train_model(cfg)
 
@@ -60,7 +63,7 @@ def test_min_prediction_time_date(muteable_test_config: FullConfigSchema):
 def test_feature_selection(muteable_test_config: FullConfigSchema):
     """Test feature selection."""
     cfg = muteable_test_config
-    cfg.preprocessing.post_split.feature_selection.Config.allow_mutation = True
+    cfg.preprocessing.post_split.feature_selection.model_config["frozen"] = False
     cfg.preprocessing.post_split.feature_selection.name = "mutual_info_classif"
     cfg.preprocessing.post_split.feature_selection.params["percentile"] = 10  # type: ignore
     train_model(cfg)
@@ -74,7 +77,9 @@ def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSche
     returns 0.5 for Optuna search.
     """
     cfg = muteable_test_config
+    cfg.preprocessing.post_split.model_config["frozen"] = False
     cfg.preprocessing.post_split.imputation_method = None
+    cfg.preprocessing.post_split.feature_selection.model_config["frozen"] = False
     cfg.preprocessing.post_split.feature_selection.params["percentile"] = 10  # type: ignore
     cfg.preprocessing.post_split.feature_selection.name = "mutual_info_classif"
 

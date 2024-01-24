@@ -1,4 +1,4 @@
-from pydantic import BaseModel, DirectoryPath
+from pydantic import BaseModel, ConfigDict, DirectoryPath
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
@@ -10,8 +10,7 @@ class ProjectInfo(PSYCOPBaseModel):
 
 
 class BaselineSchema(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     project_info: ProjectInfo
     logger: BaselineLogger

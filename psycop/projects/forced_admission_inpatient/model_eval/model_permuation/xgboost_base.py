@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     msg.divider("Training with best params")
     cfg = run.inputs.cfg
-    cfg.model.Config.allow_mutation = True
+    cfg.model.model_config["frozen"] = False
     cfg.data.splits_for_training = ["train", "val"]
     cfg.data.splits_for_evaluation = None
     cfg.n_crossval_splits = 10

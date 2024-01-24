@@ -88,7 +88,7 @@ if __name__ == "__main__":
         cfg = run.inputs.cfg
 
         # Set XGBoost to default hyperparameters
-        cfg.model.Config.allow_mutation = True
+        cfg.model.model_config["frozen"] = False
         cfg.model.args = {
             "n_estimators": 100,
             "alpha": 0,

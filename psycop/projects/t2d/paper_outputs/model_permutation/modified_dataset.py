@@ -29,7 +29,7 @@ class FeatureModifier(ABC):
 
 
 def train_model_with_modified_dataset(cfg: FullConfigSchema, boolean_dataset_dir: Path) -> float:
-    cfg.data.Config.allow_mutation = True
+    cfg.data.model_config["frozen"] = False
     cfg.data.dir = Path(boolean_dataset_dir)
     cfg.data.splits_for_training = ["train"]
     cfg.data.splits_for_evaluation = ["test"]

@@ -40,5 +40,5 @@ class DataSchema(PSYCOPBaseModel):
     pred_prefix: str = "pred_"  # prefix of predictor columns
     outc_prefix: str = "outc_"  # prefix of outcome columns
 
-    n_training_samples: Optional[int]
+    n_training_samples: Optional[int] = None
     # Number of training samples to use, defaults to null in which cases it uses all samples.

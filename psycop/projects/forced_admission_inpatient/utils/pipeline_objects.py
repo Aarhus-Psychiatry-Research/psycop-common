@@ -109,7 +109,7 @@ class PipelineInputs:
         # Loading the json instead of the .pkl makes us independent
         # of whether the imports in psycop-common model-training have changed
         # TODO: Note that this means assigning to the cfg property does nothing, since it's recomputed every time it's called
-        return FullConfigSchema.parse_obj(self.get_cfg_as_json())
+        return FullConfigSchema.model_validate(self.get_cfg_as_json())
 
 
 @dataclass

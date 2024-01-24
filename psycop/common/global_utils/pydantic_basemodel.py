@@ -1,19 +1,13 @@
 from typing import Any
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import Extra
+from pydantic import ConfigDict
 
 
 class PSYCOPBaseModel(PydanticBaseModel):
     """."""
 
-    class Config:
-        """An pydantic basemodel, which doesn't allow attributes that are not
-        defined in the class."""
-
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True, extra="forbid")
 
     def __transform_attributes_with_str_to_object(
         self, output_object: Any, input_string: str = "str"
@@ -24,7 +18,7 @@ class PSYCOPBaseModel(PydanticBaseModel):
 
     def __init__(self, allow_mutation: bool = False, **kwargs: Any):
         super().__init__(**kwargs)
-        self.Config.allow_mutation = allow_mutation
+        self.model_config["frozen"] = not allow_mutation
 
         self.__transform_attributes_with_str_to_object(input_string="null", output_object=None)
         self.__transform_attributes_with_str_to_object(input_string="false", output_object=False)

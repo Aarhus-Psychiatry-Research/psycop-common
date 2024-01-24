@@ -41,7 +41,7 @@ def get_eligible_prediction_times_for_pipeline(run: T2DPipelineRun) -> pd.DataFr
     )
 
     cfg = run.inputs.cfg
-    cfg.preprocessing.pre_split.Config.allow_mutation = True
+    cfg.preprocessing.pre_split.model_config["frozen"] = False
     cfg.preprocessing.pre_split.lookbehind_combination = [365]
 
     eligible_for_pipeline = PreSplitRowFilter(
