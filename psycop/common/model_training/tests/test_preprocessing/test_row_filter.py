@@ -9,10 +9,16 @@ def test_drop_datetime_predictor_columns(muteable_test_config: FullConfigSchema)
     specified lookbehind combination list."""
     cfg = muteable_test_config
 
+    cfg.preprocessing.pre_split.model_config["frozen"] = False
     cfg.preprocessing.pre_split.drop_datetime_predictor_columns = True
+
+    cfg.preprocessing.post_split.model_config["frozen"] = False
     cfg.preprocessing.post_split.imputation_method = None
+    cfg.preprocessing.post_split.feature_selection.model_config["frozen"] = False
     cfg.preprocessing.post_split.feature_selection.name = None
     cfg.preprocessing.post_split.scaling = None
+
+    cfg.data.model_config["frozen"] = False
     cfg.data.pred_prefix = "timestamp"
 
     train_df = load_and_filter_train_from_cfg(cfg=cfg)
@@ -24,6 +30,8 @@ def test_drop_rows_with_insufficient_lookahead(muteable_test_config: FullConfigS
     """Test that rows are dropped if they can't look sufficiently far into the
     correct direction."""
     cfg = muteable_test_config
+
+    cfg.preprocessing.pre_split.model_config["frozen"] = False
     cfg.preprocessing.pre_split.keep_only_one_outcome_col = False
     cfg.debug = DebugConfSchema(assert_outcome_col_matching_lookahead_exists=False)
 
@@ -51,6 +59,7 @@ def test_drop_rows_with_insufficient_lookbehind(muteable_test_config: FullConfig
 
     # Without lookbehind
     min_lookbehind = 30
+    cfg.preprocessing.pre_split.model_config["frozen"] = False
     cfg.preprocessing.pre_split.lookbehind_combination = [min_lookbehind]
     df_no_lookbehind = load_and_filter_train_from_cfg(cfg=cfg)
     min_timestamp_sans_lookahead = df_no_lookbehind["timestamp"].min()

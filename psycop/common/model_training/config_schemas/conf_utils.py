@@ -24,7 +24,10 @@ def convert_omegaconf_to_pydantic_object(
         FullConfig: Pydantic object
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
-    return FullConfigSchema(**conf, allow_mutation=allow_mutation)  # type: ignore
+    config_schema = FullConfigSchema(**conf)
+    if allow_mutation:
+        config_schema.model_config["frozen"] = False
+    return config_schema
 
 
 def load_cfg_as_omegaconf(
