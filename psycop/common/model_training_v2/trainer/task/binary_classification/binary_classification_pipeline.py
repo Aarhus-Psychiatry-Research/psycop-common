@@ -10,7 +10,7 @@ from ..base_pipeline import BasePipeline
 
 
 @BaselineRegistry.task_pipelines.register("binary_classification_pipeline")
-@dataclass(frozen=True)
+@dataclass
 class BinaryClassificationPipeline(BasePipeline):
     sklearn_pipe: Pipeline
 

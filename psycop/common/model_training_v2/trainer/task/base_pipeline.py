@@ -1,7 +1,9 @@
-from typing import Protocol
+from abc import ABC
 
 from sklearn.pipeline import Pipeline
 
+from ...loggers.supports_logger import SupportsLoggerMixin
 
-class BasePipeline(Protocol):
+
+class BasePipeline(ABC, SupportsLoggerMixin):
     sklearn_pipe: Pipeline

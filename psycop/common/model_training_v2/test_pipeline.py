@@ -31,12 +31,11 @@ from .loggers.multi_logger import MultiLogger
 
 
 def test_v2_train_model_pipeline(tmpdir: Path):
-    logger = TerminalLogger()
     schema = BaselineSchema(
         project_info=ProjectInfo(
             experiment_path=Path(tmpdir)
         ),  # Must recast to Path, since the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
-        logger=logger,
+        logger=TerminalLogger(),
         trainer=SplitTrainer(
             uuid_col_name="pred_time_uuid",
             training_data=MinimalTestData(),
@@ -44,14 +43,13 @@ def test_v2_train_model_pipeline(tmpdir: Path):
             validation_data=MinimalTestData(),
             validation_outcome_col_name="outcome_val",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
-                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"), logger=logger
+                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")
             ),
             task=BinaryClassificationTask(
                 task_pipe=BinaryClassificationPipeline(
                     sklearn_pipe=Pipeline([logistic_regression_step()])
                 )
             ),
-            logger=logger,
             metric=BinaryAUROC(),
         ),
     )
@@ -70,16 +68,15 @@ def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
 
 
 def test_v2_crossval_model_pipeline(tmp_path: Path):
-    logger = MultiLogger(TerminalLogger(), DiskLogger(tmp_path.__str__()))
     schema = BaselineSchema(
         project_info=ProjectInfo(experiment_path=tmp_path),
-        logger=logger,
+        logger=MultiLogger(TerminalLogger(), DiskLogger(tmp_path.__str__())),
         trainer=CrossValidatorTrainer(
             uuid_col_name="pred_time_uuid",
             training_data=MinimalTestData(),
             outcome_col_name="outcome",
             preprocessing_pipeline=BaselinePreprocessingPipeline(
-                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age"), logger=logger
+                AgeFilter(min_age=4, max_age=99, age_col_name="pred_age")
             ),
             task=BinaryClassificationTask(
                 task_pipe=BinaryClassificationPipeline(
@@ -88,7 +85,6 @@ def test_v2_crossval_model_pipeline(tmp_path: Path):
             ),
             metric=BinaryAUROC(),
             n_splits=2,
-            logger=logger,
         ),
     )
 

@@ -5,7 +5,6 @@ import pandas as pd
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer, TrainingResult
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import PreprocessingPipeline
@@ -14,7 +13,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
 @BaselineRegistry.trainers.register("split_trainer")
-@dataclass(frozen=True)
+@dataclass
 class SplitTrainer(BaselineTrainer):
     uuid_col_name: str
     training_data: BaselineDataLoader
@@ -24,7 +23,6 @@ class SplitTrainer(BaselineTrainer):
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
-    logger: BaselineLogger
 
     # When using sklearn pipelines, the outcome column must retain its name
     # throughout the pipeline.

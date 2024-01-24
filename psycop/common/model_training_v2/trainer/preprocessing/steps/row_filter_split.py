@@ -72,7 +72,7 @@ def _get_regional_split_df() -> pl.LazyFrame:
 
 @BaselineRegistry.preprocessing.register("regional_data_filter")
 @SequenceRegistry.preprocessing.register("regional_data_filter")
-@dataclass(frozen=True)
+@dataclass
 class RegionalFilter(PresplitStep):
     """Filter data to only include ids from the desired regions. Removes
     predictions times after the patient has moved to a different region to
@@ -130,7 +130,7 @@ class RegionalFilter(PresplitStep):
 
 
 @BaselineRegistry.preprocessing.register("id_data_filter")
-@dataclass(frozen=True)
+@dataclass
 class FilterByEntityID(PresplitStep):
     """Filter the data to only include ids in split_ids"""
 
@@ -142,7 +142,7 @@ class FilterByEntityID(PresplitStep):
 
 
 @BaselineRegistry.preprocessing.register("outcomestratified_split_filter")
-@dataclass(frozen=True)
+@dataclass
 class FilterByOutcomeStratifiedSplits(PresplitStep):
     """Filter the data to only include ids from the splits stratified by outcome, for the given split_to_keep."""
 

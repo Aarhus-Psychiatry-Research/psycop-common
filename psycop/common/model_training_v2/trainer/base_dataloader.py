@@ -1,9 +1,11 @@
-from typing import Protocol, runtime_checkable
+from abc import ABC, abstractmethod
 
 import polars as pl
 
+from ..loggers.supports_logger import SupportsLoggerMixin
 
-@runtime_checkable
-class BaselineDataLoader(Protocol):
+
+class BaselineDataLoader(ABC, SupportsLoggerMixin):
+    @abstractmethod
     def load(self) -> pl.LazyFrame:
         ...

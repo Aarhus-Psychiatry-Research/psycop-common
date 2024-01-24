@@ -7,18 +7,21 @@ from iterpy import Iter
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 
+from ...loggers.supports_logger import SupportsLoggerMixin
+
 
 class MissingPathError(Exception):
     ...
 
 
 @BaselineRegistry.data.register("parquet_vertical_concatenator")
-class ParquetVerticalConcatenator(BaselineDataLoader):
+class ParquetVerticalConcatenator(BaselineDataLoader, SupportsLoggerMixin):
     def __init__(self, paths: Sequence[str], validate_on_init: bool = True):
         """Vertical concatenation of multiple parquet files.
 
         Args:
             paths: Paths to parquet files.
+            logger: Logger to use.
             validate_on_init: Whether to validate the paths on init.
                 Helpful when testing the .cfg parses, where the absolute path will differ between devcontainer and Ovartaci.
                 Defaults to True.
@@ -47,3 +50,9 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
         return pl.concat(
             how="vertical", items=[pl.scan_parquet(path) for path in self.dataset_paths]
         )
+
+
+if __name__ == "__main__":
+    concatenator = ParquetVerticalConcatenator(
+        ["/home/psycop/psycop/data/processed/2021-09-01/2021-09-01.parquet"], validate_on_init=False
+    )

@@ -44,8 +44,8 @@ class WindowFilter(PresplitStep):
 
 
 @BaselineRegistry.preprocessing.register("quarantine_filter")
-@dataclass(frozen=True)
-class QuarantineFilter:
+@dataclass
+class QuarantineFilter(PresplitStep):
     entity_id_col_name: str
     timestamp_col_name: str
     quarantine_timestamps_loader: BaselineDataLoader

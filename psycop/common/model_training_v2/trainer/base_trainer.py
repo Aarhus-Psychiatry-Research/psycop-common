@@ -9,7 +9,7 @@ import polars as pl
 
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
-from ..loggers.base_logger import BaselineLogger
+from ..loggers.supports_logger import SupportsLoggerMixin
 from .task.base_task import BaselineTask
 
 
@@ -19,8 +19,8 @@ class TrainingResult:
     df: pl.DataFrame
 
 
-class BaselineTrainer(ABC):
-    logger: BaselineLogger
+@dataclass
+class BaselineTrainer(ABC, SupportsLoggerMixin):
     task: BaselineTask
 
     @abstractmethod
