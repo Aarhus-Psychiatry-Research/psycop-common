@@ -21,7 +21,7 @@ class PreprocessingPipeline(Protocol):
 
 @BaselineRegistry.preprocessing.register("baseline_preprocessing_pipeline")
 class BaselinePreprocessingPipeline(PreprocessingPipeline):
-    def __init__(self, *args: PresplitStep, logger: BaselineLogger | None = None) -> None:
+    def __init__(self, *args: PresplitStep, logger: BaselineLogger | None) -> None:
         self.steps = list(args)
         self.logger = logger
 
