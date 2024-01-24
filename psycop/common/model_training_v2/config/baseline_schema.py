@@ -1,5 +1,4 @@
 from pydantic import BaseModel, ConfigDict, DirectoryPath, model_validator
-
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
