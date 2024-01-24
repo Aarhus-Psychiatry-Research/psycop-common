@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
 import pandas as pd
@@ -13,6 +13,7 @@ from .step import PresplitStep
 class PreprocessingPipeline(ABC, SupportsLoggerMixin):
     steps: Sequence[PresplitStep]
 
+    @abstractmethod
     def apply(self, data: pl.LazyFrame) -> pd.DataFrame:
         ...
 
@@ -24,14 +25,16 @@ class BaselinePreprocessingPipeline(PreprocessingPipeline):
 
     def _get_column_stats_string(self, data: pl.LazyFrame) -> str:
         return f"""
-n_cols: {len(data.columns)}
-Columns: {data.columns}"""
+    n_cols: {len(data.columns)}
+    Columns: {data.columns}"""
 
     def apply(self, data: pl.LazyFrame) -> pd.DataFrame:
-        self.logger.info(self._get_column_stats_string(data))
+        self.logger.info(
+            f"Column stats before preprocessing: {self._get_column_stats_string(data)}"
+        )
 
         for step in self.steps:
             data = step.apply(data)
 
-        self.logger.info(self._get_column_stats_string(data))
+        self.logger.info(f"Column stats after preprocessing: {self._get_column_stats_string(data)}")
         return data.collect().to_pandas()
