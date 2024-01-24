@@ -10,11 +10,10 @@ from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitS
 
 @BaselineRegistry.preprocessing.register("lookbehind_combination_col_filter")
 class LookbehindCombinationColFilter(PresplitStep):
-    def __init__(self, lookbehinds: set[int], pred_col_prefix: str, logger: BaselineLogger):
+    def __init__(self, lookbehinds: set[int], pred_col_prefix: str):
         self.lookbehinds = lookbehinds
         self.pred_col_prefix = pred_col_prefix
         self.lookbehind_pattern = r"within_(\d+)_days"
-        self.logger = logger
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         pred_cols_with_lookbehind = [

@@ -10,6 +10,8 @@ from psycop.common.model_training_v2.trainer.task.multilabel_classification.mult
     MultilabelMetric,
 )
 
+from ....loggers.base_logger import BaselineLogger
+
 
 class MultilabelClassificationTask(BaselineTask):
     def __init__(

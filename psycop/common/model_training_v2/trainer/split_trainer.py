@@ -14,7 +14,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
 @BaselineRegistry.trainers.register("split_trainer")
-@dataclass(frozen=True)
+@dataclass
 class SplitTrainer(BaselineTrainer):
     uuid_col_name: str
     training_data: BaselineDataLoader
@@ -24,7 +24,6 @@ class SplitTrainer(BaselineTrainer):
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
-    logger: BaselineLogger
 
     # When using sklearn pipelines, the outcome column must retain its name
     # throughout the pipeline.
