@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.182.1 (2024-01-24)
+
+### Fix
+
+* **#748:** Mlflow creates new logging file for each logging operation ([#749](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/749)) ([`46fa246`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/46fa246127211025c2888e0f48e30f893adc564f))
+
 ## v0.182.0 (2024-01-23)
 
 ### Feature
