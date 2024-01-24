@@ -7,7 +7,6 @@ from iterpy import Iter
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 
-from ...loggers.base_logger import BaselineLogger
 from ...loggers.supports_logger import SupportsLoggerMixin
 
 

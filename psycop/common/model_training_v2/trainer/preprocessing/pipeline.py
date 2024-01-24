@@ -1,12 +1,10 @@
 from abc import ABC
 from collections.abc import Sequence
-from typing import Protocol, runtime_checkable
 
 import pandas as pd
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 
 from ...loggers.supports_logger import SupportsLoggerMixin
 from .step import PresplitStep

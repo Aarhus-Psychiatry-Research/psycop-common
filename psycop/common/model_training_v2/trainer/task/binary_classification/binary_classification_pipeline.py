@@ -6,8 +6,6 @@ from sklearn.pipeline import Pipeline
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.task.base_metric import PredProbaSeries
 
-from ....loggers.base_logger import BaselineLogger
-from ....loggers.supports_logger import SupportsLoggerMixin
 from ..base_pipeline import BasePipeline
 
 

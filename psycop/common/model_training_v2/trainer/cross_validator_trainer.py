@@ -5,7 +5,6 @@ import polars as pl
 from sklearn.model_selection import StratifiedGroupKFold
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer, TrainingResult
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import PreprocessingPipeline
@@ -14,7 +13,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
 @BaselineRegistry.trainers.register("crossval_trainer")
-@dataclass(frozen=True)
+@dataclass
 class CrossValidatorTrainer(BaselineTrainer):
     uuid_col_name: str
     training_data: BaselineDataLoader
