@@ -47,8 +47,8 @@ def _train_pipeline_on_test(
         splits_for_evaluation = ["val"]
 
     cfg = pipeline_to_train.inputs.cfg
-    cfg.project.wandb.Config.allow_mutation = True
-    cfg.data.Config.allow_mutation = True
+    cfg.project.wandb.model_config["frozen"] = False
+    cfg.data.model_config["frozen"] = False
     cfg.data.splits_for_training = splits_for_training
     cfg.data.splits_for_evaluation = splits_for_evaluation
 

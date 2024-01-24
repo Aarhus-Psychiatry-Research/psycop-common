@@ -51,7 +51,7 @@ class EvalDataset(PSYCOPBaseModel):
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        self.Config.allow_mutation = True
+        self.model_config["frozen"] = False
 
     def get_predictions_for_positive_rate(
         self, desired_positive_rate: float, y_hat_probs_column: Optional[str] = "y_hat_probs"
@@ -84,7 +84,7 @@ class EvalDataset(PSYCOPBaseModel):
         """Converts to a dataframe. Ignores attributes that are not set and
         unpacks the columns in custom_columns.
         """
-        as_dict = self.dict()
+        as_dict = self.model_dump()
         # remove custom_column to avoid appending a row for each custom column
         as_dict.pop("custom_columns")
         df = pd.DataFrame(as_dict)
@@ -111,7 +111,7 @@ class PipeMetadata(PSYCOPBaseModel):
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        self.Config.allow_mutation = True
+        self.model_config["frozen"] = False
 
 
 class ModelEvalData(PSYCOPBaseModel):

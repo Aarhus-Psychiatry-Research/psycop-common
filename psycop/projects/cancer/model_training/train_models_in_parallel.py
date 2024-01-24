@@ -22,7 +22,7 @@ def main(
 ):
     """Main."""
     if dataset_override_path is not None:
-        cfg.data.Config.allow_mutation = True
+        cfg.data.model_config["frozen"] = False
         cfg.data.dir = dataset_override_path
 
     # Load dataset without dropping any rows for inferring

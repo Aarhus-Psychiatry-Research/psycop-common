@@ -27,7 +27,7 @@ def _get_cfg_from_json_file(path: Path) -> FullConfigSchema:
     # Loading the json instead of the .pkl makes us independent
     # of whether the imports in psycop-common model-training have changed
     # TODO: Note that this means assigning to the cfg property does nothing, since it's recomputed every time it's called
-    return FullConfigSchema.parse_obj(json.loads(json.loads(path.read_text())))
+    return FullConfigSchema.model_validate(json.loads(json.loads(path.read_text())))
 
 
 def main(cfg: Union[DictConfig, FullConfigSchema]) -> float:

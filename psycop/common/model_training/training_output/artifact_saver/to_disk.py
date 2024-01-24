@@ -115,7 +115,7 @@ class ArtifactsToDiskSaver:
         dump_to_pickle(cfg, self.dir_path / "cfg.pkl")
 
         with (self.dir_path / "cfg.json").open(mode="w") as f:
-            cfg_dict = cfg.json()
+            cfg_dict = cfg.model_dump_json()
             json.dump(cfg_dict, f)
 
         if pipe_metadata is not None:

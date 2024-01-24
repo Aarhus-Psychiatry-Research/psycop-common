@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import wandb
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import Extra
+from pydantic import ConfigDict
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
@@ -27,13 +27,7 @@ TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
 class BaseModel(PydanticBaseModel):
     """."""
 
-    class Config:
-        """An pydantic basemodel, which doesn't allow attributes that are not
-        defined in the class."""
-
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True, extra="forbid")
 
 
 def format_dict_for_printing(d: dict) -> str:  # type: ignore
