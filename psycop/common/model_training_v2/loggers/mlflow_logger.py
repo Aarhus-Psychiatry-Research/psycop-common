@@ -29,6 +29,7 @@ class MLFlowLogger(BaselineLogger):
         # Start a new run. End a run if it already exists within the process.
         if mlflow.active_run() is not None:
             mlflow.end_run()
+
         self.mlflow_experiment = mlflow.set_experiment(experiment_name=experiment_name)
         self.experiment_id = self.mlflow_experiment.experiment_id
 
