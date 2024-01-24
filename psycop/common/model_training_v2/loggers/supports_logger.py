@@ -7,7 +7,7 @@ from .dummy_logger import DummyLogger
 @dataclass(kw_only=True)
 class SupportsLoggerMixin:
     _logger: BaselineLogger | None = None
-    use_dummy_logger: bool = False  # Useful in tests
+    use_dummy_logger: bool = False  # Useful in tests, where you might not want to specify a logger.
 
     @property
     def logger(self) -> BaselineLogger:
