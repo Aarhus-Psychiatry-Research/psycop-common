@@ -47,7 +47,7 @@
         {
             "label": "Submit PR",
             "type": "shell",
-            "command": "echo '🚧️ Any problems in the PR? Press Ctrl+C to cancel.' && lumberman sync",
+            "command": "echo '🚧️ Any problems in the PR? Press Ctrl+C to cancel.' && lumberman sync --squash",
             "presentation": {
                 "group": "pr",
                 "revealProblems": "onProblem",
