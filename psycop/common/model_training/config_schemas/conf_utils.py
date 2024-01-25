@@ -12,20 +12,20 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 
 
 def convert_omegaconf_to_pydantic_object(
-    conf: DictConfig, allow_mutation: bool = False
+    conf: DictConfig, unfrozen: bool = False
 ) -> FullConfigSchema:
     """Converts an omegaconf DictConfig to a pydantic object.
 
     Args:
         conf (DictConfig): Omegaconf DictConfig
-        allow_mutation (bool, optional): Whether to allow mutation of the
+        unfrozen (bool, optional): Whether to allow mutation of the
 
     Returns:
         FullConfig: Pydantic object
     """
     conf = OmegaConf.to_container(conf, resolve=True)  # type: ignore
     config_schema = FullConfigSchema(**conf)  # type: ignore
-    if allow_mutation:
+    if unfrozen:
         config_schema.model_config["frozen"] = False
     return config_schema
 
@@ -74,12 +74,12 @@ def load_app_cfg_as_pydantic(
 
 
 def load_test_cfg_as_pydantic(
-    config_file_name: str, overrides: Optional[list[str]] = None, allow_mutation: bool = False
+    config_file_name: str, overrides: Optional[list[str]] = None, unfrozen: bool = False
 ) -> FullConfigSchema:
     """Load config as pydantic object."""
     cfg = load_cfg_as_omegaconf(config_file_name=config_file_name, overrides=overrides)
 
-    return convert_omegaconf_to_pydantic_object(conf=cfg, allow_mutation=allow_mutation)
+    return convert_omegaconf_to_pydantic_object(conf=cfg, unfrozen=unfrozen)
 
 
 def validate_classification_objective(cfg: FullConfigSchema, col_names: Union[str, list[str]]):

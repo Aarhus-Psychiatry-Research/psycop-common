@@ -16,9 +16,9 @@ class PSYCOPBaseModel(PydanticBaseModel):
             if isinstance(value, str) and value.lower() == input_string.lower():
                 self.__dict__[key] = output_object
 
-    def __init__(self, allow_mutation: bool = False, **kwargs: Any):
+    def __init__(self, frozen: bool = False, **kwargs: Any):
         super().__init__(**kwargs)
-        self.model_config["frozen"] = not allow_mutation
+        self.model_config["frozen"] = frozen
 
         self.__transform_attributes_with_str_to_object(input_string="null", output_object=None)
         self.__transform_attributes_with_str_to_object(input_string="false", output_object=False)
