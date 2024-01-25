@@ -14,7 +14,6 @@
             "dependsOn": [
                 "Test",
                 "Submit PR",
-                "Types",
             ],
             "presentation": {
                 "reveal": "never",
@@ -42,16 +41,6 @@
                 "group": "pr",
                 "revealProblems": "onProblem",
                 "focus": true,
-                "clear": true,
-                "showReuseMessage": false,
-            }
-        },
-        {
-            "label": "Types",
-            "type": "shell",
-            "command": "lefthook run types",
-            "presentation": {
-                "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
             }

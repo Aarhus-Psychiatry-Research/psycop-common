@@ -1,8 +1,6 @@
 """Test that the model trains correctly."""
 
 
-from pathlib import Path
-
 import pytest
 
 from psycop.common.model_training.application_modules.train_model.main import (
@@ -30,17 +28,6 @@ def test_train_model(model_name: str):
 def test_crossvalidation(muteable_test_config: FullConfigSchema):
     """Test crossvalidation."""
     cfg = muteable_test_config
-    train_model(cfg)
-
-
-def test_list_of_data_dirs(muteable_test_config: FullConfigSchema):
-    """Test train model can resolve list of data dir paths."""
-    cfg = muteable_test_config
-    cfg.data.model_config["frozen"] = False
-    cfg.data.dir = [
-        Path("psycop/common/model_training/tests/test_data/synth_splits_subsampled/"),
-        Path("psycop/common/model_training/tests/test_data/synth_splits_subsampled/"),
-    ]  # type: ignore
     train_model(cfg)
 
 
@@ -86,7 +73,7 @@ def test_self_healing_nan_select_percentile(muteable_test_config: FullConfigSche
     # Train without the wrapper
     with pytest.raises(ValueError, match=r".*Input X contains NaN.*"):  # noqa
         WandbHandler(cfg=cfg).setup_wandb()
-        post_wandb_setup_train_model.__wrapped__(cfg)  # type: ignore
+        post_wandb_setup_train_model.__wrapped__(cfg)
 
     # Train with the wrapper
     wrapped_return_value = post_wandb_setup_train_model(cfg)

@@ -1,5 +1,5 @@
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
-    init_wandb_and_generate_feature_set,
+    generate_feature_set,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
@@ -11,7 +11,7 @@ from psycop.projects.t2d.feature_generation.lookbehind_experiment.feature_specif
 )
 
 if __name__ == "__main__":
-    init_wandb_and_generate_feature_set(
+    generate_feature_set(
         project_info=ProjectInfo(
             project_name="t2d_lookbehind_experiment",
             project_path=OVARTACI_SHARED_DIR / "t2d_lookbehind_experiment",

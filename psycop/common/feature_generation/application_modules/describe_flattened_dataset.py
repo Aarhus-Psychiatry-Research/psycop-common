@@ -7,9 +7,6 @@ from typing import TYPE_CHECKING
 from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
 from timeseriesflattener.flattened_dataset import PredictorSpec
 
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
-)
 from psycop.common.feature_generation.data_checks.flattened.data_integrity import (
     save_feature_set_integrity_checks_from_dir,
 )
@@ -26,7 +23,6 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-@wandb_alert_on_exception
 def save_flattened_dataset_description_to_disk(
     project_info: ProjectInfo,
     feature_set_dir: Path,
