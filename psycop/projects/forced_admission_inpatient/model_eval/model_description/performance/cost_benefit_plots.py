@@ -70,6 +70,8 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame,
 
     legend_order = sorted(list(df['savings_recources_ratio'].unique()), key=lambda s: int(s.split(":")[0]), reverse=True)
 
+    df = df.assign(values = pd.Categorical(df['savings_recources_ratio'], legend_order))
+
     p = (
         pn.ggplot(
             df,
@@ -83,7 +85,6 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame,
         + pn.labs(x="Predicted Positive Rate", y="Benefit/Harm")
         + FA_PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=45, hjust=1))
-        + pn.scale_color_manual(values=["green", "blue", "purple", "orange"], labels=legend_order)
         + pn.labs(color="Profit/Cost ratio")
         + pn.theme(
             panel_grid_major=pn.element_blank(),
@@ -100,8 +101,8 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame,
     else: 
         p += pn.ggtitle("Cost/benefit estimate based on unique outcomes predicted ≥1")
 
-
-    for value in df["savings_recources_ratio"].unique():
+    for value in legend_order:
+        
         p += pn.geom_path(df[df["savings_recources_ratio"] == value], group=1)
 
     return p

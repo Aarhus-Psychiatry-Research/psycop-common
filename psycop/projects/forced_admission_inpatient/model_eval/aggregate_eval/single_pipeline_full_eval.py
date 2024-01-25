@@ -85,7 +85,7 @@ def fa_inpatient_main_manuscript_eval(
     fa_inpatient_create_main_robustness_figure(run=pipeline)
     performance_by_lookahead_table(
         run=pipeline,
-        lookaheads_for_performance_eval=[30, 90, 180, 360],
+        lookaheads_for_performance_eval=[30, 90, 180, 365],
     )
     generate_feature_importance_table(
         pipeline_run=pipeline,
