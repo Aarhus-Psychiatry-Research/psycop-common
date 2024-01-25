@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from typing import Protocol
 
+from timeseriesflattener.aggregation_fns import AggregationFunType
 from timeseriesflattener.feature_specs.single_specs import (
     AnySpec,
     OutcomeSpec,
@@ -12,5 +13,7 @@ AnySpecType = AnySpec | PredictorSpec | OutcomeSpec | StaticSpec
 
 
 class FeatureLayer(Protocol):
-    def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
+    def get_features(
+        self, lookbehind_days: int, aggregation_fns: Sequence[AggregationFunType]
+    ) -> Sequence[PredictorSpec]:
         ...

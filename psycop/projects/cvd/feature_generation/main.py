@@ -1,6 +1,8 @@
 """Main feature generation."""
 
 
+from timeseriesflattener.aggregation_fns import boolean, count, maximum, mean, minimum
+
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
@@ -13,9 +15,7 @@ from psycop.projects.cvd.feature_generation.specify_features import CVDFeatureSp
 
 
 def get_cvd_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="cvd", project_path=OVARTACI_SHARED_DIR / "cvd" / "e2e_base_test"
-    )
+    return ProjectInfo(project_name="cvd", project_path=OVARTACI_SHARED_DIR / "cvd" / "feature_set")
 
 
 if __name__ == "__main__":
@@ -23,7 +23,9 @@ if __name__ == "__main__":
     eligible_prediction_times = (
         CVDCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas()
     )
-    feature_specs = CVDFeatureSpecifier().get_feature_specs(layer=3)
+    feature_specs = CVDFeatureSpecifier().get_feature_specs(
+        layer=3, aggregation_fns=[boolean, count, maximum, mean, minimum]
+    )
 
     generate_feature_set(
         project_info=project_info,
