@@ -16,9 +16,8 @@ from psycop.common.model_training.preprocessing.post_split.pipeline import (
 from psycop.common.model_training.training.train_and_predict import train_and_predict
 from psycop.common.model_training.training_output.model_evaluator import ModelEvaluator
 from psycop.common.model_training.utils.col_name_inference import get_col_names
-from psycop.common.model_training.utils.decorators import (
-    wandb_alert_on_exception_return_terrible_auc,
-)
+
+from ...utils.decorators import return_terrible_auroc_on_exception
 
 
 def get_eval_dir(cfg: FullConfigSchema) -> Path:
@@ -37,7 +36,7 @@ def get_eval_dir(cfg: FullConfigSchema) -> Path:
     return eval_dir_path
 
 
-@wandb_alert_on_exception_return_terrible_auc
+@return_terrible_auroc_on_exception
 def post_wandb_setup_train_model(
     cfg: FullConfigSchema, override_output_dir: Optional[Path] = None
 ) -> float:

@@ -4,7 +4,6 @@ wandb.
 
 from pathlib import Path
 
-from psycop.common.global_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
 from psycop.common.model_training.application_modules.get_search_space import SearchSpaceInferrer
 from psycop.common.model_training.application_modules.process_manager_setup import setup
 from psycop.common.model_training.application_modules.trainer_spawner import spawn_trainers
@@ -12,7 +11,6 @@ from psycop.common.model_training.config_schemas.full_config import FullConfigSc
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 
 
-@wandb_alert_on_exception
 def main(cfg: FullConfigSchema, wandb_group: str):
     """Main."""
     # Load dataset without dropping any rows for inferring

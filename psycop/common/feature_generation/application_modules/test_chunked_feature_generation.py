@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import polars as pl
 import pytest
-import wandb
 from polars.testing import assert_series_equal
 from timeseriesflattener.aggregation_fns import mean
 from timeseriesflattener.feature_specs.single_specs import PredictorSpec
@@ -95,8 +94,6 @@ def test_concatenation_assumptions(
     synth_project_info: ProjectInfo,
 ):
     """assert that timeseriesflattener outputs are sorted as expected"""
-
-    wandb.init(project="test", mode="offline")
 
     predictor_specs = [
         PredictorSpec(

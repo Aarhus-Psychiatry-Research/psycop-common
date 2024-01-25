@@ -58,7 +58,7 @@ def print_df_dimensions_diff(func):  # noqa # type: ignore
     return wrapper
 
 
-def wandb_alert_on_exception_return_terrible_auc(func):  # noqa # type: ignore
+def return_terrible_auroc_on_exception(func):  # noqa # type: ignore
     """Alerts wandb on exception."""
 
     @wraps(func)

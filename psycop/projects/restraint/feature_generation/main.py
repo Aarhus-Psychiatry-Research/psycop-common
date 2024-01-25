@@ -16,9 +16,6 @@ from psycop.common.feature_generation.application_modules.loggers import init_ro
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
-)
 from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     load_coercion_prediction_times,
 )
@@ -28,7 +25,6 @@ from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_
 log = logging.getLogger()
 
 
-@wandb_alert_on_exception
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""

@@ -8,9 +8,6 @@ import numpy as np
 import pandas as pd
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
-)
 from psycop.common.feature_generation.loaders.raw.load_ids import (
     SplitName,
     load_stratified_by_outcome_split_ids,
@@ -72,7 +69,6 @@ def get_split_id_df(split_name: SplitName) -> pd.DataFrame:
     return split_id_df.frame.collect().to_pandas()
 
 
-@wandb_alert_on_exception
 def split_and_save_dataset_to_disk(
     flattened_df: pd.DataFrame,
     project_info: ProjectInfo,

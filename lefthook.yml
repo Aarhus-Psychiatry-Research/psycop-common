@@ -16,14 +16,12 @@ pre-commit:
   commands:
     format:
       glob: "*.{py}"
-      run: inv lint
+      run: ruff format {staged_files}
       stage_fixed: true
-
-types:
-  commands:
-    pyright:
+    lint:
       glob: "*.{py}"
-      run: pyright {push_files}
+      run: ruff --fix --extend-select F401 --extend-select F841 --extend-select B007 {staged_files}
+      stage_fixed: true
 
 test:
   commands:

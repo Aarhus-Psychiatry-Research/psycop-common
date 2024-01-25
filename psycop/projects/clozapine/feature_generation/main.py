@@ -13,15 +13,9 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
     save_flattened_dataset_description_to_disk,
 )
 from psycop.common.feature_generation.application_modules.loggers import init_root_logger
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-    init_wandb,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
-)
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
 )
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
@@ -36,7 +30,6 @@ log = logging.getLogger()
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
 
-@wandb_alert_on_exception
 def main(
     add_text_features: bool = False,
     min_set_for_debug: bool = False,
@@ -129,8 +122,6 @@ if __name__ == "__main__":
         (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
             exist_ok=True, parents=True
         )
-
-    init_wandb(project_info=project_info)
 
     main(
         add_text_features=False,
