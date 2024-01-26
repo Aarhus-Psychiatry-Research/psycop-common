@@ -63,6 +63,8 @@ class LookbehindCombinationColFilter(PresplitStep):
 
 @BaselineRegistry.preprocessing.register("temporal_col_filter")
 class TemporalColumnFilter(PresplitStep):
+    """Drops all temporal columns"""
+
     def __init__(self):
         pass
 
