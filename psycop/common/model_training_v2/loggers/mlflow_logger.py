@@ -26,9 +26,10 @@ class MLFlowLogger(BaselineLogger):
     experiment_name: str
     tracking_uri: str = "http://exrhel0371.it.rm.dk:5050"
     postpone_run_creation_to_first_log: bool = False
-    _run_initialised: bool = False
 
     def __post_init__(self) -> None:
+        self._run_initialised = False
+
         if not self.postpone_run_creation_to_first_log:
             self._init_run()
 
