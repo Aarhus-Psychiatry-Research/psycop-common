@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.183.0 (2024-01-26)
+
+### Feature
+
+* Do not init mlflow until first logging operation ([`9085833`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/90858331b6b0302e9f05080d58d342223afcc188))
+
 ## v0.182.1 (2024-01-24)
 
 ### Fix
