@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import mean
+from timeseriesflattener.aggregation_fns import AggregationFunType
 from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
 from timeseriesflattener.feature_specs.single_specs import PredictorSpec
 
@@ -16,7 +16,9 @@ from psycop.projects.cvd.feature_generation.feature_layeres.base import FeatureL
 
 
 class CVDLayer2(FeatureLayer):
-    def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
+    def get_features(
+        self, lookbehind_days: int, aggregation_fns: Sequence[AggregationFunType]
+    ) -> Sequence[PredictorSpec]:
         layer = 2
         specs = PredictorGroupSpec(
             lookbehind_days=[lookbehind_days],
@@ -34,7 +36,7 @@ class CVDLayer2(FeatureLayer):
                     df=chronic_lung_disease(), name=f"chronic_lung_disease_layer_{layer}"
                 ),
             ],
-            aggregation_fns=[mean],
+            aggregation_fns=aggregation_fns,
             fallback=[np.nan],
         ).create_combinations()
 
