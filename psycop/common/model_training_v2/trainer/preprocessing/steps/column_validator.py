@@ -99,7 +99,7 @@ class ColumnPrefixExpectation(PresplitStep):
             column for column in df.columns if column.startswith(expectation.prefix)
         ]
 
-        if len(matching_columns) != expectation.count:
+        if len(matching_columns) != int(expectation.count):
             return [
                 ColumnCountError(
                     f'{self._wrap_str_in_quotes(expectation.prefix)} matched {matching_columns if matching_columns else "None"}, expected {expectation.count}.'
