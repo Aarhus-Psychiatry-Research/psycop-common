@@ -16,8 +16,8 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 @dataclass
 class CrossValidatorTrainer(BaselineTrainer):
     uuid_col_name: str
-    training_data: BaselineDataLoader
     outcome_col_name: str
+    training_data: BaselineDataLoader
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
