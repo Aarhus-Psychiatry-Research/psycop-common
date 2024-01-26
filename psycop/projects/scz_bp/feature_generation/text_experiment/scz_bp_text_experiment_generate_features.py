@@ -6,7 +6,6 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
-from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import SczBpFeatureSpecifier
 from psycop.projects.scz_bp.feature_generation.text_experiment.scz_bp_text_experiment_feature_spec import (
     SczBpTextExperimentFeatures,
 )
