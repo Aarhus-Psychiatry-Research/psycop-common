@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.185.0 (2024-01-29)
+
+### Feature
+
+* Fix legend order ([`56b3609`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/56b3609c225efd14516173ff624cacdd7a9474c9))
+* Cost benefit plots added ([`43de4bd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/43de4bd1769cfeeb65749c9f47b43754a3144418))
+
+### Fix
+
+* **#780:** Terminallogger pretty print should print non-flattened cfg ([#783](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/783)) ([`7abd94a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7abd94aef5e5a6fdfe83029d47b98e88d38c5063))
+* **#780:** Terminallogger pretty print should print non-flattened cfg ([`356ca28`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/356ca2820f2ef77f55a854c9d20caf06c6484f15))
+* Fix c/b plot ([`2594b54`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2594b54f54497d815c2a58335e3bec7f832722bf))
+
 ## v0.184.0 (2024-01-29)
 
 ### Feature
