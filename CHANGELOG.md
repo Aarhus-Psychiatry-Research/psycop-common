@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.184.0 (2024-01-29)
+
+### Feature
+
+* **#772:** Use rich for pretty printing in terminallogger ([#777](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/777)) ([`c924a95`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c924a954a3757db5a9c37c6aab2ad3c2dd4ad1dc))
+* **#772:** Use rich for pretty printing in terminallogger ([`48cff23`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/48cff23b03950bae887fcdb672afe980f8632795))
+
+### Fix
+
+* **#775:** Log outcome column as string, not Index ([`a4ff66b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a4ff66b1d9da27c5a54cc9838cbf7ef73ab23327))
+
 ## v0.183.0 (2024-01-26)
 
 ### Feature

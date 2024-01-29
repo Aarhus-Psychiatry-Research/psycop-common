@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 import pandas as pd
 from wasabi import Printer
 
@@ -104,11 +106,14 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     return renamed_df
 
 
-def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipelineRun):
+def fa_inpatient_output_performance_by_ppr(
+    run: ForcedAdmissionInpatientPipelineRun,
+    save: bool = True,
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
+) -> pd.DataFrame | None:
     output_path = (
         run.paper_outputs.paths.tables / run.paper_outputs.artifact_names.performance_by_ppr
     )
-    positive_rates = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01]
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
@@ -136,15 +141,13 @@ def fa_inpatient_output_performance_by_ppr(run: ForcedAdmissionInpatientPipeline
         3,
     )
 
-    df["Benefit/harm value"] = (df["true_positives"] * 10) - df["false_positives"]
-
-    df["Benefit/harm value based on unique outcomes detected ≥1"] = (
-        df["Number of unique outcome events detected ≥1"] * 10
-    ) - df["false_positives"]
-
     df = clean_up_performance_by_ppr(df)
 
-    df.to_excel(output_path, index=False)
+    if save:
+        df.to_excel(output_path, index=False)
+        return None
+
+    return df
 
 
 if __name__ == "__main__":

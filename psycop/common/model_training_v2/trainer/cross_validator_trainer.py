@@ -33,7 +33,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         y = pd.DataFrame(
             training_data_preprocessed[self.outcome_col_name], columns=[self.outcome_col_name]
         )
-        self.logger.info(f"\tOutcome: {y.columns}")
+        self.logger.info(f"\tOutcome: {list(y.columns)}")
 
         folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
             X=X, y=y, groups=training_data_preprocessed[self.group_col_name]

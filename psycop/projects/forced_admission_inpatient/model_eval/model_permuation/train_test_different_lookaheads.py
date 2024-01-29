@@ -143,5 +143,5 @@ if __name__ == "__main__":
     )
 
     performance_by_lookahead_table(
-        run=get_best_eval_pipeline(), lookaheads_for_performance_eval=[30, 90, 180, 360]
+        run=get_best_eval_pipeline(), lookaheads_for_performance_eval=[30, 90, 180, 365]
     )
