@@ -2,6 +2,7 @@ from pathlib import Path
 
 import wasabi
 from confection import Config
+from rich.pretty import pprint
 
 from psycop.common.global_utils.config_utils import flatten_nested_dict
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -32,8 +33,7 @@ class TerminalLogger(BaselineLogger):
     def log_config(self, config: Config) -> None:
         self._l.divider("Logging config")
         config = flatten_nested_dict(config)  # type: ignore # Config is a subclass of dict so false positive
-        cfg_str = "\n".join([f"{k}: {v}" for k, v in config.items()])
-        self._l.info(cfg_str)
+        pprint(config)
 
     def log_artifact(self, local_path: Path) -> None:
         self.good(
