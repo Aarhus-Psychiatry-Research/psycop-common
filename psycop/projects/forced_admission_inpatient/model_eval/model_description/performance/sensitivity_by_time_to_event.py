@@ -58,7 +58,9 @@ def fa_inpatient_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplo
     return p
 
 
-def sensitivity_by_time_to_event(eval_dataset: EvalDataset, positive_rates: Sequence[float] | None = None) -> pn.ggplot:  # type: ignore
+def sensitivity_by_time_to_event(
+    eval_dataset: EvalDataset, positive_rates: Sequence[float] | None = None
+) -> pn.ggplot:  # type: ignore
     dfs = []
 
     if positive_rates is None:
@@ -94,18 +96,14 @@ def sensitivity_by_time_to_event(eval_dataset: EvalDataset, positive_rates: Sequ
 
 
 def fa_inpatient_sensitivity_by_time_to_event(
-    pipeline_run: ForcedAdmissionInpatientPipelineRun,
-    positive_rates: Sequence[float] | None = None,
+    pipeline_run: ForcedAdmissionInpatientPipelineRun, positive_rates: Sequence[float] | None = None
 ) -> pn.ggplot:
     eval_ds = pipeline_run.pipeline_outputs.get_eval_dataset()
 
     if positive_rates is None:
         positive_rates = [0.01, 0.03, 0.05, 0.075, 0.1, 0.2]
 
-    p = sensitivity_by_time_to_event(
-        eval_dataset=eval_ds,
-        positive_rates=positive_rates,
-    )
+    p = sensitivity_by_time_to_event(eval_dataset=eval_ds, positive_rates=positive_rates)
 
     p.save(
         pipeline_run.paper_outputs.paths.figures / "fa_inpatient_sens_by_time_to_event.png",

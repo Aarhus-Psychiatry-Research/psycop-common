@@ -22,27 +22,16 @@ def calculate_cost_benefit(
     cost_of_intervention: int,
     efficiency_of_intervention: float,
     per_true_positive: bool = True,
-    positive_rates: Sequence[float] = [
-        0.5,
-        0.2,
-        0.1,
-        0.075,
-        0.05,
-        0.04,
-        0.03,
-        0.02,
-        0.01,
-    ],
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pd.DataFrame:
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
-        eval_dataset=eval_dataset,
-        positive_rates=positive_rates,
+        eval_dataset=eval_dataset, positive_rates=positive_rates
     )
 
     df["Total number of unique outcome events"] = _get_num_of_unique_outcome_events(
-        eval_dataset=eval_dataset,
+        eval_dataset=eval_dataset
     )
 
     df["Number of positive outcomes in test set (TP+FN)"] = (
@@ -51,15 +40,12 @@ def calculate_cost_benefit(
 
     df["Number of unique outcome events detected ≥1"] = [
         _get_number_of_outcome_events_with_at_least_one_true_positve(
-            eval_dataset=eval_dataset,
-            positive_rate=pos_rate,
+            eval_dataset=eval_dataset, positive_rate=pos_rate
         )
         for pos_rate in positive_rates
     ]
 
-    saving_per_positive_pred = (
-        savings_from_prevented_outcome * efficiency_of_intervention
-    )
+    saving_per_positive_pred = savings_from_prevented_outcome * efficiency_of_intervention
 
     if per_true_positive:
         df["benefit_harm"] = (
@@ -69,37 +55,22 @@ def calculate_cost_benefit(
 
     else:
         df["benefit_harm"] = (
-            (
-                df["Number of unique outcome events detected ≥1"]
-                * saving_per_positive_pred
-            )
+            (df["Number of unique outcome events detected ≥1"] * saving_per_positive_pred)
             - (df["false_positives"] * cost_of_intervention)
         ) / df["Total number of unique outcome events"]
 
     return df[["benefit_harm", "positive_rate"]]
 
 
-def plot_cost_benefit_by_ppr(
-    df: pd.DataFrame,
-    per_true_positive: bool,
-) -> pn.ggplot:
+def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.ggplot:
     legend_order = sorted(
-        df["savings_recources_ratio"].unique(),
-        key=lambda s: int(s.split(":")[0]),
-        reverse=True,
+        df["savings_recources_ratio"].unique(), key=lambda s: int(s.split(":")[0]), reverse=True
     )
 
     df = df.assign(values=pd.Categorical(df["savings_recources_ratio"], legend_order))
 
     p = (
-        pn.ggplot(
-            df,
-            pn.aes(
-                x="positive_rate",
-                y="benefit_harm",
-                color="savings_recources_ratio",
-            ),
-        )
+        pn.ggplot(df, pn.aes(x="positive_rate", y="benefit_harm", color="savings_recources_ratio"))
         + pn.geom_point()
         + pn.labs(x="Predicted Positive Rate", y="Benefit/Harm")
         + FA_PN_THEME
@@ -148,17 +119,7 @@ def cost_benefit_by_savings_recources_ratio(
     savings_from_prevented_outcome: Sequence[int],
     cost_of_intervention: int,
     efficiency_of_intervention: float,
-    positive_rates: Sequence[float] = [
-        0.5,
-        0.2,
-        0.1,
-        0.075,
-        0.05,
-        0.04,
-        0.03,
-        0.02,
-        0.01,
-    ],
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pn.ggplot:
     dfs = []
 
@@ -194,17 +155,7 @@ def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
     savings_from_prevented_outcome: Sequence[int],
     cost_of_intervention: int,
     efficiency_of_intervention: float,
-    positive_rates: Sequence[float] = [
-        0.5,
-        0.2,
-        0.1,
-        0.075,
-        0.05,
-        0.04,
-        0.03,
-        0.02,
-        0.01,
-    ],
+    positive_rates: Sequence[float] = [0.5, 0.2, 0.1, 0.075, 0.05, 0.04, 0.03, 0.02, 0.01],
 ) -> pn.ggplot:
     p = cost_benefit_by_savings_recources_ratio(
         run=run,
