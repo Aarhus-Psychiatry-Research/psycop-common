@@ -3,20 +3,16 @@ from abc import abstractmethod
 import torch
 from torch import nn
 
-from .registry import Registry
+from .registry import SequenceRegistry
 
 
 class Aggregator(nn.Module):
     @abstractmethod
-    def forward(
-        self,
-        last_hidden: torch.Tensor,
-        attention_mask: torch.Tensor,
-    ) -> torch.Tensor:
+    def forward(self, last_hidden: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         pass
 
 
-@Registry.layers.register("cls_aggregator")
+@SequenceRegistry.layers.register("cls_aggregator")
 class CLSAggregator(Aggregator):
     """
     Takes the hidden state corresponding to the first token (i.e. the CLS token).
@@ -33,7 +29,7 @@ class CLSAggregator(Aggregator):
         return last_hidden[:, 0, :]
 
 
-@Registry.layers.register("average_pooler")
+@SequenceRegistry.layers.register("average_pooler")
 class AveragePooler(Aggregator):
     """
     Parameter-free poolers to get the sentence embedding
@@ -43,11 +39,7 @@ class AveragePooler(Aggregator):
     def __init__(self):
         super().__init__()
 
-    def forward(
-        self,
-        last_hidden: torch.Tensor,
-        attention_mask: torch.Tensor,
-    ) -> torch.Tensor:
+    def forward(self, last_hidden: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         return (last_hidden * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(
-            -1,
+            -1
         ).unsqueeze(-1)

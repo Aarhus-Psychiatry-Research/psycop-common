@@ -39,28 +39,14 @@ class FullProcessor:
     users.
     """
 
-    def __init__(
-        self,
-        pre_split_cfg: PreSplitPreprocessingConfigSchema,
-        data_cfg: DataSchema,
-    ):
+    def __init__(self, pre_split_cfg: PreSplitPreprocessingConfigSchema, data_cfg: DataSchema):
         self.cfg = pre_split_cfg
-        self.row_filterer = PreSplitRowFilter(
-            pre_split_cfg=pre_split_cfg,
-            data_cfg=data_cfg,
-        )
-        self.col_filterer = PresSplitColFilter(
-            pre_split_cfg=pre_split_cfg,
-            data_cfg=data_cfg,
-        )
+        self.row_filterer = PreSplitRowFilter(pre_split_cfg=pre_split_cfg, data_cfg=data_cfg)
+        self.col_filterer = PresSplitColFilter(pre_split_cfg=pre_split_cfg, data_cfg=data_cfg)
         self.value_transformer = PreSplitValueTransformer(
-            pre_split_cfg=pre_split_cfg,
-            data_cfg=data_cfg,
+            pre_split_cfg=pre_split_cfg, data_cfg=data_cfg
         )
-        self.value_cleaner = PreSplitValueCleaner(
-            pre_split_cfg=pre_split_cfg,
-            data_cfg=data_cfg,
-        )
+        self.value_cleaner = PreSplitValueCleaner(pre_split_cfg=pre_split_cfg, data_cfg=data_cfg)
 
     def process(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Process a dataframe using the configuration."""
@@ -86,10 +72,7 @@ def pre_split_process_full_dataset(
         pre_split_cfg: PreSplitPreprocessingConfigSchema,
         data_cfg: DataSchema,
     ) -> pd.DataFrame:
-        processor = FullProcessor(
-            pre_split_cfg=pre_split_cfg,
-            data_cfg=data_cfg,
-        )
+        processor = FullProcessor(pre_split_cfg=pre_split_cfg, data_cfg=data_cfg)
         processed_dataset = processor.process(dataset=dataset)
         return processed_dataset
 

@@ -4,8 +4,8 @@ import pytest
 from torch import nn
 
 from psycop.common.data_structures.patient import Patient, PatientSlice
-from psycop.common.sequence_models import BEHRTEmbedder, PatientSliceDataset
 from psycop.common.sequence_models.aggregators import Aggregator, CLSAggregator
+from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.optimizers import (
     LRSchedulerFn,
     OptimizerFn,
@@ -13,6 +13,7 @@ from psycop.common.sequence_models.optimizers import (
     create_linear_schedule_with_warmup,
 )
 
+from ..dataset import PatientSliceDataset
 from .utils import create_patients
 
 
@@ -56,10 +57,7 @@ def embedder(patient_slices: list[PatientSlice]) -> BEHRTEmbedder:
 def encoder() -> nn.Module:
     d_model = 32
     encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model,
-        nhead=int(d_model / 4),
-        dim_feedforward=d_model * 4,
-        batch_first=True,
+        d_model=d_model, nhead=int(d_model / 4), dim_feedforward=d_model * 4, batch_first=True
     )
     encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
     return encoder

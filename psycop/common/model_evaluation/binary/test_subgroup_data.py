@@ -1,9 +1,6 @@
 import pandas as pd
 
-from psycop.common.model_evaluation.binary.utils import (
-    auroc_by_group,
-    sensitivity_by_group,
-)
+from psycop.common.model_evaluation.binary.utils import auroc_by_group, sensitivity_by_group
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
@@ -25,16 +22,13 @@ def test_auroc_by_group():
         3,1,0.3, # Bad prediction
         3,0,0.9, # Bad prediction
         3,0,0.8, # Bad prediction
-        """,
+        """
     )
 
     large_df = pd.concat([input_df for _ in range(10)])
 
     auroc_by_group_df = auroc_by_group(
-        df=large_df,
-        groupby_col_name="id",
-        confidence_interval=True,
-        n_bootstraps=10,
+        df=large_df, groupby_col_name="id", confidence_interval=True, n_bootstraps=10
     )
 
     assert auroc_by_group_df["auroc"].is_monotonic_decreasing
@@ -52,7 +46,7 @@ def test_sensitivity_by_group():
         2,1,0, # Bad prediction
         2,1,0, # Bad prediction
         2,1,0, # Bad prediction
-        """,
+        """
     )
 
     # Test using a categorical
@@ -61,10 +55,7 @@ def test_sensitivity_by_group():
     large_df = pd.concat([input_df for _ in range(10)])
 
     output_df = sensitivity_by_group(
-        df=large_df,
-        groupby_col_name="id",
-        confidence_interval=True,
-        n_bootstraps=10,
+        df=large_df, groupby_col_name="id", confidence_interval=True, n_bootstraps=10
     )
 
     assert output_df["sensitivity"].to_list() == [1.0, 0.0]

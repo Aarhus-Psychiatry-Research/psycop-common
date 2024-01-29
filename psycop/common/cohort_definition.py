@@ -1,11 +1,44 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 import polars as pl
 from wasabi import Printer
 
 from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
+from psycop.common.types.validated_frame import ValidatedFrame
+from psycop.common.types.validator_rules import ColumnTypeRule, ValidatorRule
+
+
+@dataclass(frozen=True)
+class PredictionTimeFrame(ValidatedFrame[pl.DataFrame]):
+    """ValidatedFrame with extra validation for prediction times"""
+
+    frame: pl.DataFrame
+
+    entity_id_col_name: str = "dw_ek_borger"
+    entity_id_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Int64),)
+
+    timestamp_col_name: str = "timestamp"
+    timestamp_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Datetime),)
+
+    allow_extra_columns: bool = True
+
+
+@dataclass(frozen=True)
+class OutcomeTimestampFrame(ValidatedFrame[pl.DataFrame]):
+    """ValidatedFrame with extra validation for prediction times"""
+
+    frame: pl.DataFrame
+
+    entity_id_col_name: str = "dw_ek_borger"
+    entity_id_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Int64),)
+
+    timestamp_col_name: str = "timestamp"
+    timestamp_col_rules: Sequence[ValidatorRule] = (ColumnTypeRule(expected_type=pl.Datetime),)
+
+    allow_extra_columns: bool = True
 
 
 @runtime_checkable
@@ -33,8 +66,9 @@ class StepDelta(PSYCOPBaseModel):
         return self.n_ids_before - self.n_ids_after
 
 
-class FilteredPredictionTimeBundle(PSYCOPBaseModel):
-    prediction_times: pl.DataFrame
+@dataclass(frozen=True)
+class FilteredPredictionTimeBundle:
+    prediction_times: PredictionTimeFrame
     filter_steps: list[StepDelta]
 
 
@@ -46,7 +80,7 @@ class CohortDefiner(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
         ...
 
 
@@ -80,14 +114,10 @@ def filter_prediction_times(
                     step_name=filter_step.__class__.__name__,
                     n_prediction_times_before=prefilter_prediction_times.shape[0],  # type: ignore
                     n_prediction_times_after=prediction_times.collect().shape[0],
-                    n_ids_before=prefilter_prediction_times[  # type: ignore
-                        entity_id_col_name
-                    ].n_unique(),
-                    n_ids_after=prediction_times.collect()[
-                        entity_id_col_name
-                    ].n_unique(),
+                    n_ids_before=prefilter_prediction_times[entity_id_col_name].n_unique(),  # type: ignore
+                    n_ids_after=prediction_times.collect()[entity_id_col_name].n_unique(),
                     step_index=i,
-                ),
+                )
             )
         # For much faster speeds, we can apply the filter step to the lazy frame.
         # This means we won't get the counts before and after. If you want those, be sure to pass in a DataFrame.
@@ -96,6 +126,6 @@ def filter_prediction_times(
         prediction_times = prediction_times.drop("date_of_birth")
 
     return FilteredPredictionTimeBundle(
-        prediction_times=prediction_times.collect(),
+        prediction_times=PredictionTimeFrame(frame=prediction_times.collect()),
         filter_steps=stepdeltas,
     )

@@ -1,11 +1,9 @@
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
-from psycop.common.feature_generation.application_modules.filter_prediction_times import (
-    PredictionTimeFilterer,
-)
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    load_move_into_rm_for_exclusion,
+from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
+    QuarantineFilter,
 )
 from psycop.projects.cvd.feature_generation.cohort_definition.eligible_prediction_times.eligible_config import (
     AGE_COL_NAME,
@@ -37,20 +35,14 @@ class WithoutPrevalentCVD(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         first_cvd_indicator = pl.from_pandas(get_first_cvd_indicator())
 
-        indicator_before_min_date = first_cvd_indicator.filter(
-            pl.col("timestamp") < MIN_DATE,
-        )
+        indicator_before_min_date = first_cvd_indicator.filter(pl.col("timestamp") < MIN_DATE)
 
         prediction_times_from_patients_with_cvd = df.join(
-            indicator_before_min_date.lazy(),
-            on="dw_ek_borger",
-            how="inner",
+            indicator_before_min_date.lazy(), on="dw_ek_borger", how="inner"
         )
 
         no_prevalent_cvd = df.join(
-            prediction_times_from_patients_with_cvd,
-            on="dw_ek_borger",
-            how="anti",
+            prediction_times_from_patients_with_cvd, on="dw_ek_borger", how="anti"
         )
 
         return no_prevalent_cvd.drop(["age"])
@@ -58,25 +50,18 @@ class WithoutPrevalentCVD(PredictionTimeFilter):
 
 class NoIncidentCVD(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        contacts_with_cvd = pl.from_pandas(
-            get_first_cvd_indicator(),
-        )
+        contacts_with_cvd = pl.from_pandas(get_first_cvd_indicator())
 
         contacts_with_cvd = df.join(
-            contacts_with_cvd.lazy(),
-            on="dw_ek_borger",
-            how="left",
-            suffix="_result",
+            contacts_with_cvd.lazy(), on="dw_ek_borger", how="left", suffix="_result"
         )
 
         after_incident_cvd = contacts_with_cvd.filter(
-            pl.col("timestamp") > pl.col("timestamp_result"),
+            pl.col("timestamp") > pl.col("timestamp_result")
         )
 
         not_after_incident_cvd = contacts_with_cvd.join(
-            after_incident_cvd,
-            on="dw_ek_borger",
-            how="anti",
+            after_incident_cvd, on="dw_ek_borger", how="anti"
         )
 
         return not_after_incident_cvd.drop(["timestamp_result", "cause"])
@@ -84,14 +69,11 @@ class NoIncidentCVD(PredictionTimeFilter):
 
 class CVDWashoutMove(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        not_within_two_years_from_move = pl.from_pandas(
-            PredictionTimeFilterer(
-                prediction_times_df=df.collect().to_pandas(),
-                entity_id_col_name="dw_ek_borger",
-                quarantine_timestamps_df=load_move_into_rm_for_exclusion(),
-                quarantine_interval_days=730,
-                timestamp_col_name="timestamp",
-            ).run_filter(),
-        )
+        not_within_two_years_from_move = QuarantineFilter(
+            entity_id_col_name="dw_ek_borger",
+            quarantine_timestamps_loader=MoveIntoRMBaselineLoader(),
+            quarantine_interval_days=730,
+            timestamp_col_name="timestamp",
+        ).apply(df)
 
-        return not_within_two_years_from_move.lazy()
+        return not_within_two_years_from_move

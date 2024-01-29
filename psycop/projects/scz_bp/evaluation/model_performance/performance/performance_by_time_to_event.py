@@ -7,12 +7,8 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
-    EvalConfigResolver,
-)
-from psycop.projects.t2d.paper_outputs.config import (
-    T2D_PN_THEME,
-)
+from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import EvalConfigResolver
+from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
 
 
 def _plot_metric_by_time_to_event(df: pd.DataFrame, metric: str) -> pn.ggplot:
@@ -56,14 +52,12 @@ def reverse_x_axis_categories(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def scz_bp_get_sensitivity_by_time_to_event_df(
-    eval_ds: EvalDataset,
-) -> pd.DataFrame:
+def scz_bp_get_sensitivity_by_time_to_event_df(eval_ds: EvalDataset) -> pd.DataFrame:
     dfs = []
 
     if eval_ds.outcome_timestamps is None:
         raise ValueError(
-            "The outcome timestamps must be provided in order to calculate the metric by time to event.",
+            "The outcome timestamps must be provided in order to calculate the metric by time to event."
         )
 
     eval_dataset_polars = eval_ds.to_polars()
@@ -71,16 +65,12 @@ def scz_bp_get_sensitivity_by_time_to_event_df(
         eval_dataset_df = eval_dataset_polars.with_columns(
             pl.Series(
                 name="y_hat",
-                values=eval_ds.get_predictions_for_positive_rate(
-                    desired_positive_rate=ppr,
-                )[0],
-            ),
+                values=eval_ds.get_predictions_for_positive_rate(desired_positive_rate=ppr)[0],
+            )
         )
         for diagnosis_subset in ["scz", "bp", "both"]:
             if diagnosis_subset != "both":
-                filtered_df = eval_dataset_df.filter(
-                    pl.col("scz_or_bp") == diagnosis_subset,
-                )
+                filtered_df = eval_dataset_df.filter(pl.col("scz_or_bp") == diagnosis_subset)
             else:
                 filtered_df = eval_dataset_df
 
@@ -108,9 +98,7 @@ def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset) -> pn.ggplot:
     plot_df = reverse_x_axis_categories(plot_df)
 
     p = _plot_metric_by_time_to_event(df=plot_df, metric="sensitivity") + pn.labs(
-        x="Months to outcome",
-        y="Sensitivitiy",
-        color="Predicted Positive Rate",
+        x="Months to outcome", y="Sensitivitiy", color="Predicted Positive Rate"
     )
 
     return p

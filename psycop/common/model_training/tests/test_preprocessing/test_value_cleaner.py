@@ -17,7 +17,7 @@ def test_offset_so_no_negative_values():
             "pred_1": [-10, 0, 10],  # Monotonically increasing
             "pred_2": [100, -100, 0],  # If the first value is not min
             "pred_3": [0, 1, 2],  # No negative values, should not be offset
-        },
+        }
     )
 
     expected_df = pd.DataFrame(
@@ -27,7 +27,7 @@ def test_offset_so_no_negative_values():
             "pred_1": [0, 10, 20],
             "pred_2": [200, 0, 100],
             "pred_3": [0, 1, 2],
-        },
+        }
     )
 
     df = PreSplitValueCleaner._offset_so_no_negative_values(df)  # type: ignore

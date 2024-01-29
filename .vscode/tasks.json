@@ -12,9 +12,8 @@
                 "isDefault": true
             },
             "dependsOn": [
-                "Lint",
                 "Test",
-                "Actions requiring input"
+                "Submit PR",
             ],
             "presentation": {
                 "reveal": "never",
@@ -25,50 +24,26 @@
             "problemMatcher": []
         },
         {
-            "label": "Lint",
-            "type": "shell",
-            "command": "inv lint --auto-fix",
-            "presentation": {
-                "reveal": "always",
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false,
-            }
-        },
-        {
             "label": "Test",
             "type": "shell",
-            "command": "inv qtest",
+            "command": "lefthook run test",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
             }
         },
         {
-            "label": "Actions requiring input",
+            "label": "Submit PR",
             "type": "shell",
-            "command": "inv qtypes && inv prompt-to-submit-pr --skip-submit-prompt",
+            "command": "lumberman sync --squash",
             "presentation": {
                 "group": "pr",
-                "reveal": "always",
                 "revealProblems": "onProblem",
                 "focus": true,
                 "clear": true,
                 "showReuseMessage": false,
             }
         },
-        {
-            "label": "Static type check",
-            "type": "shell",
-            "command": "inv qtypes",
-            "presentation": {
-                "reveal": "always",
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false,
-            }
-        }
     ]
 }

@@ -36,8 +36,6 @@ def sex_female(n_rows: int | None = None) -> pd.DataFrame:
     df.loc[df["koennavn"] == "Mand", "koennavn"] = False
     df.loc[df["koennavn"] == "Kvinde", "koennavn"] = True
 
-    df = df.rename(
-        columns={"koennavn": "sex_female"},
-    )
+    df = df.rename(columns={"koennavn": "sex_female"})
 
     return df.reset_index(drop=True)

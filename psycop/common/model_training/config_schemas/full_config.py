@@ -5,9 +5,7 @@ from psycop.common.global_utils.pydantic_basemodel import PSYCOPBaseModel
 from psycop.common.model_training.config_schemas.data import DataSchema
 from psycop.common.model_training.config_schemas.debug import DebugConfSchema
 from psycop.common.model_training.config_schemas.model import ModelConfSchema
-from psycop.common.model_training.config_schemas.preprocessing import (
-    PreprocessingConfigSchema,
-)
+from psycop.common.model_training.config_schemas.preprocessing import PreprocessingConfigSchema
 from psycop.common.model_training.config_schemas.project import ProjectSchema
 from psycop.common.model_training.config_schemas.train import TrainConfSchema
 

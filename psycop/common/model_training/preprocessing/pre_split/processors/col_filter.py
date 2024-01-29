@@ -20,19 +20,12 @@ from psycop.common.model_training.utils.utils import get_percent_lost
 class PresSplitColFilter:
     """Class for filtering columns before split."""
 
-    def __init__(
-        self,
-        pre_split_cfg: PreSplitPreprocessingConfigSchema,
-        data_cfg: DataSchema,
-    ):
+    def __init__(self, pre_split_cfg: PreSplitPreprocessingConfigSchema, data_cfg: DataSchema):
         self.pre_split_cfg = pre_split_cfg
         self.data_cfg = data_cfg
 
     @print_df_dimensions_diff
-    def _drop_cols_not_in_lookbehind_combination(
-        self,
-        dataset: pd.DataFrame,
-    ) -> pd.DataFrame:
+    def _drop_cols_not_in_lookbehind_combination(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Drop predictor columns that are not in the specified combination of
         lookbehind windows.
 
@@ -54,21 +47,15 @@ class PresSplitColFilter:
         }
 
         # Convert list to set
-        lookbehinds_in_spec = set(
-            self.pre_split_cfg.lookbehind_combination,
-        )
+        lookbehinds_in_spec = set(self.pre_split_cfg.lookbehind_combination)
 
         # Check that all loobehinds in lookbehind_combination are used in the predictors
-        if not lookbehinds_in_spec.issubset(
-            lookbehinds_in_dataset,
-        ):
+        if not lookbehinds_in_spec.issubset(lookbehinds_in_dataset):
             msg.warn(
-                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {lookbehinds_in_spec - lookbehinds_in_dataset}",
+                f"One or more of the provided lookbehinds in lookbehind_combination is/are not used in any predictors in the dataset: {lookbehinds_in_spec - lookbehinds_in_dataset}"
             )
 
-            lookbehinds_to_keep = lookbehinds_in_spec.intersection(
-                lookbehinds_in_dataset,
-            )
+            lookbehinds_to_keep = lookbehinds_in_spec.intersection(lookbehinds_in_dataset)
 
             if not lookbehinds_to_keep:
                 raise ValueError("No predictors left after dropping lookbehinds.")
@@ -92,10 +79,7 @@ class PresSplitColFilter:
 
     @print_df_dimensions_diff
     def _drop_cols_if_exceeds_look_direction_threshold(
-        self,
-        dataset: pd.DataFrame,
-        look_direction_threshold: float,
-        direction: str,
+        self, dataset: pd.DataFrame, look_direction_threshold: float, direction: str
     ) -> pd.DataFrame:
         """Drop columns if they look behind or ahead longer than a specified
         threshold.
@@ -137,34 +121,28 @@ class PresSplitColFilter:
 
         n_cols_after_modification = dataset.shape[1]
         percent_dropped = get_percent_lost(
-            n_before=n_cols_before_modification,
-            n_after=n_cols_after_modification,
+            n_before=n_cols_before_modification, n_after=n_cols_after_modification
         )
 
         if n_cols_before_modification - n_cols_after_modification != 0:
             msg.info(
-                f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days.",
+                f"Dropped {n_cols_before_modification - n_cols_after_modification} ({percent_dropped}%) columns because they were looking {direction} further out than {look_direction_threshold} days."
             )
 
         return dataset[[c for c in dataset.columns if c not in cols_to_drop]]
 
     @print_df_dimensions_diff
     def _keep_unique_outcome_col_with_lookahead_days_matching_conf(
-        self,
-        dataset: pd.DataFrame,
+        self, dataset: pd.DataFrame
     ) -> pd.DataFrame:
         """Keep only one outcome column with the same lookahead days as set in
         the config."""
         outcome_cols = infer_outcome_col_name(
-            df=dataset,
-            prefix=self.data_cfg.outc_prefix,
-            allow_multiple=True,
+            df=dataset, prefix=self.data_cfg.outc_prefix, allow_multiple=True
         )
 
         col_to_drop = [
-            c
-            for c in outcome_cols
-            if f"_{self.pre_split_cfg.min_lookahead_days!s}_" not in c
+            c for c in outcome_cols if f"_{self.pre_split_cfg.min_lookahead_days!s}_" not in c
         ]
 
         # If no columns to drop, return the dataset
@@ -174,17 +152,15 @@ class PresSplitColFilter:
         df = dataset.drop(col_to_drop, axis=1)
 
         try:
-            n_col_names = len(
-                infer_outcome_col_name(df, prefix=self.data_cfg.outc_prefix),
-            )
+            n_col_names = len(infer_outcome_col_name(df, prefix=self.data_cfg.outc_prefix))
         except ValueError as err:
             raise ValueError(
-                f"No outcome columns matching both prefix {self.data_cfg.outc_prefix} and lookahead {self.pre_split_cfg.min_lookahead_days} found",
+                f"No outcome columns matching both prefix {self.data_cfg.outc_prefix} and lookahead {self.pre_split_cfg.min_lookahead_days} found"
             ) from err
 
         if n_col_names > 1:
             raise ValueError(
-                f"Returning {n_col_names} outcome columns, will cause problems during eval.",
+                f"Returning {n_col_names} outcome columns, will cause problems during eval."
             )
 
         return df
@@ -209,11 +185,7 @@ class PresSplitColFilter:
     def n_outcome_col_names(self, df: pd.DataFrame) -> int:
         """How many outcome columns there are in a dataframe."""
         return len(
-            infer_outcome_col_name(
-                df=df,
-                allow_multiple=True,
-                prefix=self.data_cfg.outc_prefix,
-            ),
+            infer_outcome_col_name(df=df, allow_multiple=True, prefix=self.data_cfg.outc_prefix)
         )
 
     def run_filter(self, dataset: pd.DataFrame) -> pd.DataFrame:
@@ -227,9 +199,7 @@ class PresSplitColFilter:
                 raise ValueError(f"Unknown direction {direction}")
 
             dataset = self._drop_cols_if_exceeds_look_direction_threshold(
-                dataset=dataset,
-                look_direction_threshold=n_days,
-                direction=direction,
+                dataset=dataset, look_direction_threshold=n_days, direction=direction
             )
 
         if self.pre_split_cfg.lookbehind_combination:
@@ -237,13 +207,12 @@ class PresSplitColFilter:
 
         if self.pre_split_cfg.keep_only_one_outcome_col:
             dataset = self._keep_unique_outcome_col_with_lookahead_days_matching_conf(
-                dataset=dataset,
+                dataset=dataset
             )
 
         if self.pre_split_cfg.drop_datetime_predictor_columns:
             dataset = self._drop_datetime_columns(
-                pred_prefix=self.data_cfg.pred_prefix,
-                dataset=dataset,
+                pred_prefix=self.data_cfg.pred_prefix, dataset=dataset
             )
 
         return dataset

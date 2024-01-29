@@ -9,9 +9,12 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
     Suggester,
 )
 
-FloatSpaceT = Mapping[str, float | bool]
+FloatspaceMappingT = Mapping[str, float | bool]
+FloatSpaceSequenceT = Sequence[float | bool]
+FloatSpaceT = FloatspaceMappingT | FloatSpaceSequenceT
 # Used when specifying mappings in the confection .cfg, which is then immediately cast to a FloatSpace
-# As such, requires keys that correspond to the FloatSpace's attributes (see below)
+# For the mapping, requires keys that correspond to the FloatSpace's attributes (see below)
+# For the sequence, requres a float, float, int
 
 
 @dataclass(frozen=True)
@@ -20,21 +23,42 @@ class FloatSpace:
     high: float
     logarithmic: bool
 
+    def __post_init__(self):
+        if self.low >= self.high:
+            raise ValueError(
+                f"Invalid FloatSpace: low value {self.low} must be less than high value {self.high}"
+            )
+        if self.logarithmic and (self.low <= 0 or self.high <= 0):
+            raise ValueError(
+                "Invalid FloatSpace: The logarithm is undefined for values less than or equal to 0, so all values must be greater than 0."
+            )
+
     def suggest(self, trial: optuna.Trial, name: str) -> float:
-        return trial.suggest_float(
-            name=name,
-            low=self.low,
-            high=self.high,
-            log=self.logarithmic,
-        )
+        return trial.suggest_float(name=name, low=self.low, high=self.high, log=self.logarithmic)
 
     @classmethod
-    def from_mapping(cls: type["FloatSpace"], mapping: FloatSpaceT) -> "FloatSpace":
+    def from_mapping(cls: type["FloatSpace"], mapping: Mapping[str, float | bool]) -> "FloatSpace":
         return cls(
             low=mapping["low"],
             high=mapping["high"],
             logarithmic=mapping["logarithmic"],  # type: ignore
         )
+
+    @classmethod
+    def from_list(cls: type["FloatSpace"], sequence: Sequence[float | bool]) -> "FloatSpace":
+        return cls(
+            low=sequence[0],
+            high=sequence[1],
+            logarithmic=sequence[2],  # type: ignore
+        )
+
+    @classmethod
+    def from_list_or_mapping(
+        cls: type["FloatSpace"], sequence_or_mapping: FloatSpaceT
+    ) -> "FloatSpace":
+        if isinstance(sequence_or_mapping, Mapping):
+            return cls.from_mapping(sequence_or_mapping)
+        return cls.from_list(sequence_or_mapping)
 
 
 @dataclass(frozen=True)
@@ -45,7 +69,7 @@ class CategoricalSpace:
         return trial.suggest_categorical(name=name, choices=self.choices)
 
 
-@BaselineRegistry.estimator_steps.register("mock_suggester")
+@BaselineRegistry.suggesters.register("mock_suggester")
 class MockSuggester(Suggester):
     """Suggester used only for tests. Ensures tests only break if the interface breaks, not because of implementation details in e.g. LogisticRegression."""
 

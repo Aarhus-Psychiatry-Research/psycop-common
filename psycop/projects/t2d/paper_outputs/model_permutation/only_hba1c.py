@@ -17,12 +17,7 @@ msg = Printer(timestamp=True)
 
 
 class Hba1cOnly(FeatureModifier):
-    def __init__(
-        self,
-        lookbehind: str,
-        aggregation_method: str,
-        name: str = "hba1c_only",
-    ):
+    def __init__(self, lookbehind: str, aggregation_method: str, name: str = "hba1c_only"):
         self.name = name
         self.lookahead = lookbehind
         self.aggregation_method = aggregation_method
@@ -40,13 +35,11 @@ class Hba1cOnly(FeatureModifier):
             return
 
         df: pl.LazyFrame = pl.concat(
-            run.inputs.get_flattened_split_as_lazyframe(split)
-            for split in input_split_names
+            run.inputs.get_flattened_split_as_lazyframe(split) for split in input_split_names
         )
 
         hba1c_only_df = self._keep_only_hba1c_predictors(
-            df,
-            predictor_prefix=run.inputs.cfg.data.pred_prefix,
+            df, predictor_prefix=run.inputs.cfg.data.pred_prefix
         )
 
         msg.info(f"Collecting modified df with input_splits {input_split_names}")
@@ -55,11 +48,7 @@ class Hba1cOnly(FeatureModifier):
         output_dir_path.mkdir(exist_ok=True, parents=True)
         hba1c_only_df.write_parquet(output_dir_path / f"{output_split_name}.parquet")
 
-    def _keep_only_hba1c_predictors(
-        self,
-        df: pl.LazyFrame,
-        predictor_prefix: str,
-    ) -> pl.LazyFrame:
+    def _keep_only_hba1c_predictors(self, df: pl.LazyFrame, predictor_prefix: str) -> pl.LazyFrame:
         non_hba1c_pred_cols = [
             c
             for c in df.schema
@@ -80,9 +69,7 @@ class Hba1cOnly(FeatureModifier):
             for c in lookahead_hba1c_only.schema
             if "pred_hba1c" in c and f"_{self.aggregation_method}_" not in c
         ]
-        mean_five_year_hba1c_only = lookahead_hba1c_only.drop(
-            non_aggregation_method_hba1c,
-        )
+        mean_five_year_hba1c_only = lookahead_hba1c_only.drop(non_aggregation_method_hba1c)
 
         return mean_five_year_hba1c_only
 
@@ -90,9 +77,7 @@ class Hba1cOnly(FeatureModifier):
 if __name__ == "__main__":
     from copy import copy
 
-    from psycop.projects.t2d.paper_outputs.selected_runs import (
-        get_best_eval_pipeline,
-    )
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
     run = copy(get_best_eval_pipeline())
     run.name = "xgboost_hba1c_only"
@@ -103,7 +88,7 @@ if __name__ == "__main__":
         cfg = run.inputs.cfg
 
         # Set XGBoost to default hyperparameters
-        cfg.model.Config.allow_mutation = True
+        cfg.model.model_config["frozen"] = False
         cfg.model.args = {
             "n_estimators": 100,
             "alpha": 0,

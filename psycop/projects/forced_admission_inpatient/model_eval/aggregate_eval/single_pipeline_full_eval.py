@@ -74,11 +74,9 @@ def fa_inpatient_main_manuscript_eval(
     pipeline: ForcedAdmissionInpatientPipelineRun,
 ) -> list[MarkdownArtifact]:
     msg.divider(
-        f"Evaluating {pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {pipeline.model_type} - {pipeline.name}",
+        f"Evaluating {pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {pipeline.model_type} - {pipeline.name}"
     )
-    msg.info(
-        f"Generating main manuscript eval to {pipeline.paper_outputs.artifact_path}",
-    )
+    msg.info(f"Generating main manuscript eval to {pipeline.paper_outputs.artifact_path}")
 
     fa_inpatient_output_performance_by_ppr(run=pipeline)
     fa_inpatient_create_main_performance_figure(run=pipeline)

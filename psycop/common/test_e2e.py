@@ -10,10 +10,7 @@ from psycop.common.feature_generation.application_modules.project_setup import (
     ProjectInfo,
 )
 from psycop.common.minimal_pipeline import minimal_pipeline
-from psycop.common.model_training.config_schemas.data import (
-    ColumnNamesSchema,
-    DataSchema,
-)
+from psycop.common.model_training.config_schemas.data import ColumnNamesSchema, DataSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.config_schemas.model import ModelConfSchema
 from psycop.common.model_training.config_schemas.preprocessing import (
@@ -22,10 +19,7 @@ from psycop.common.model_training.config_schemas.preprocessing import (
     PreprocessingConfigSchema,
     PreSplitPreprocessingConfigSchema,
 )
-from psycop.common.model_training.config_schemas.project import (
-    ProjectSchema,
-    WandbSchema,
-)
+from psycop.common.model_training.config_schemas.project import ProjectSchema, WandbSchema
 from psycop.common.test_utils.str_to_df import str_to_df
 
 
@@ -48,7 +42,7 @@ def test_e2e(tmp_path: Path):
 5,2020-01-02 00:00:00,
 6,2020-01-02 00:00:00,
 999,2030-01-01, # Late end of dataset to avoid filtering
-""",
+"""
     )
 
     prediction_times_dfs = []
@@ -66,7 +60,7 @@ def test_e2e(tmp_path: Path):
 4,2020-01-01,0
 5,2020-01-01,1
 6,2020-01-01,0
-""",
+"""
     )
 
     outcome_df = str_to_df(
@@ -77,7 +71,7 @@ def test_e2e(tmp_path: Path):
 4,2020-01-03,0
 5,2020-01-03,1
 6,2020-01-03,0
-""",
+"""
     )
 
     feature_specs = [
@@ -104,11 +98,7 @@ def test_e2e(tmp_path: Path):
 
     model_training_cfg = FullConfigSchema(
         project=ProjectSchema(
-            wandb=WandbSchema(
-                group="test_group",
-                mode="offline",
-                entity="test_entity",
-            ),
+            wandb=WandbSchema(group="test_group", mode="offline", entity="test_entity"),
             project_path=project_info.project_path,
             name=project_info.project_name,
             seed=42,
@@ -118,10 +108,7 @@ def test_e2e(tmp_path: Path):
             dir=project_info.flattened_dataset_dir,
             splits_for_training=["train"],
             col_name=ColumnNamesSchema(
-                age=None,
-                is_female=None,
-                id="entity_id",
-                outcome_timestamp=None,
+                age=None, is_female=None, id="entity_id", outcome_timestamp=None
             ),
             pred_prefix=project_info.prefix.predictor,
             outc_prefix=project_info.prefix.outcome,
@@ -137,16 +124,10 @@ def test_e2e(tmp_path: Path):
                 drop_rows_after_outcome=False,
             ),
             post_split=PostSplitPreprocessingConfigSchema(
-                imputation_method=None,
-                scaling=None,
-                feature_selection=FeatureSelectionSchema(),
+                imputation_method=None, scaling=None, feature_selection=FeatureSelectionSchema()
             ),
         ),
-        model=ModelConfSchema(
-            name="xgboost",
-            require_imputation=False,
-            args={},
-        ),
+        model=ModelConfSchema(name="xgboost", require_imputation=False, args={}),
         n_crossval_splits=2,
     )
 
@@ -182,7 +163,7 @@ def test_e2e_multilabel(tmp_path: Path):
 5,2020-01-02 00:00:00,
 6,2020-01-02 00:00:00,
 999,2030-01-01, # Late end of dataset to avoid filtering
-""",
+"""
     )
 
     prediction_times_dfs = []
@@ -200,7 +181,7 @@ def test_e2e_multilabel(tmp_path: Path):
 4,2020-01-01,0
 5,2020-01-01,1
 6,2020-01-01,0
-""",
+"""
     )
 
     outcome1_df = str_to_df(
@@ -211,7 +192,7 @@ def test_e2e_multilabel(tmp_path: Path):
 4,2020-01-03,0
 5,2020-01-03,1
 6,2020-01-03,0
-""",
+"""
     )
 
     outcome2_df = str_to_df(
@@ -222,7 +203,7 @@ def test_e2e_multilabel(tmp_path: Path):
 4,2020-01-03,0
 5,2020-01-03,1
 6,2020-01-03,0
-""",
+"""
     )
 
     feature_specs = [
@@ -257,11 +238,7 @@ def test_e2e_multilabel(tmp_path: Path):
 
     model_training_cfg = FullConfigSchema(
         project=ProjectSchema(
-            wandb=WandbSchema(
-                group="test_group",
-                mode="offline",
-                entity="test_entity",
-            ),
+            wandb=WandbSchema(group="test_group", mode="offline", entity="test_entity"),
             project_path=project_info.project_path,
             name=project_info.project_name,
             seed=42,
@@ -271,10 +248,7 @@ def test_e2e_multilabel(tmp_path: Path):
             dir=project_info.flattened_dataset_dir,
             splits_for_training=["train"],
             col_name=ColumnNamesSchema(
-                age=None,
-                is_female=None,
-                id="entity_id",
-                outcome_timestamp=None,
+                age=None, is_female=None, id="entity_id", outcome_timestamp=None
             ),
             pred_prefix=project_info.prefix.predictor,
             outc_prefix=project_info.prefix.outcome,
@@ -292,16 +266,10 @@ def test_e2e_multilabel(tmp_path: Path):
                 classification_objective="multilabel",
             ),
             post_split=PostSplitPreprocessingConfigSchema(
-                imputation_method=None,
-                scaling=None,
-                feature_selection=FeatureSelectionSchema(),
+                imputation_method=None, scaling=None, feature_selection=FeatureSelectionSchema()
             ),
         ),
-        model=ModelConfSchema(
-            name="xgboost",
-            require_imputation=False,
-            args={},
-        ),
+        model=ModelConfSchema(name="xgboost", require_imputation=False, args={}),
         n_crossval_splits=2,
     )
 

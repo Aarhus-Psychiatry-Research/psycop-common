@@ -4,14 +4,14 @@ import pytest
 import torch
 from torch import nn
 
-from psycop.common.sequence_models import PretrainerBEHRT
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
 
+from ..tasks.pretrainer_behrt import PretrainerBEHRT
+
 
 @pytest.mark.parametrize(
-    "embedder",
-    [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)],
+    "embedder", [BEHRTEmbedder(d_model=32, dropout_prob=0.1, max_sequence_length=128)]
 )
 def test_masking_fn(
     patient_slices: list,  # type: ignore
@@ -28,10 +28,7 @@ def test_masking_fn(
     embedder.fit(patient_slices)
 
     task = PretrainerBEHRT(
-        embedder=embedder,
-        encoder=encoder,
-        optimizer=optimizer,
-        lr_scheduler=lr_scheduler_fn,
+        embedder=embedder, encoder=encoder, optimizer=optimizer, lr_scheduler=lr_scheduler_fn
     )
 
     inputs_ids = embedder.collate_patient_slices(patient_slices)

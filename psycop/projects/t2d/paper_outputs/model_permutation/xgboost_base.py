@@ -1,17 +1,13 @@
 from wasabi import Printer
 
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
-)
+from psycop.common.model_training.application_modules.train_model.main import train_model
 
 msg = Printer(timestamp=True)
 
 if __name__ == "__main__":
     from copy import copy
 
-    from psycop.projects.t2d.paper_outputs.selected_runs import (
-        get_best_eval_pipeline,
-    )
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
     run = copy(get_best_eval_pipeline())
     run.name = "xgboost_full_dataset"
@@ -22,7 +18,7 @@ if __name__ == "__main__":
     print(f"Best AUC: {best_auc}")
 
     msg.divider("Training with default xgboost params")
-    cfg.model.Config.allow_mutation = True
+    cfg.model.model_config["frozen"] = False
     cfg.n_crossval_splits = 10
     cfg.model.args = {
         "n_estimators": 100,

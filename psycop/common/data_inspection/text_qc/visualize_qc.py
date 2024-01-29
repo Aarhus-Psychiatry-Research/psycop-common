@@ -6,10 +6,7 @@ import polars as pl
 
 def plot_qc_results(df: pl.DataFrame) -> pn.ggplot:
     p = (
-        pn.ggplot(
-            df,
-            pn.aes(x="overskrift", y="prop_true"),
-        )
+        pn.ggplot(df, pn.aes(x="overskrift", y="prop_true"))
         + pn.geom_col()
         + pn.theme(axis_text_x=pn.element_text(rotation=90))
     )
@@ -22,13 +19,8 @@ if __name__ == "__main__":
     df = pl.read_csv(cur_dir / "log.csv", separator=";")
     df = (
         df.groupby("overskrift")
-        .agg(
-            pl.count(),
-            pl.sum("useful").alias("n_true"),
-        )
-        .with_columns(
-            (pl.col("n_true") / pl.col("count")).alias("prop_true"),
-        )
+        .agg(pl.count(), pl.sum("useful").alias("n_true"))
+        .with_columns((pl.col("n_true") / pl.col("count")).alias("prop_true"))
         .sort("prop_true", descending=True)
         .with_columns([pl.col("overskrift").cast(pl.Categorical)])
     )

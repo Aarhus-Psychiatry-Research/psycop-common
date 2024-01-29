@@ -12,7 +12,7 @@ def test_get_top_2_shap_values_for_output():
         """Rank,Feature,Mean absolute SHAP,
     1,Feature_3,0.75,
     2,Feature_2,0.3,
-    """,
+    """
     )
 
     shap_long_df = str_to_df(
@@ -23,12 +23,11 @@ feature_2,1,0,0.2
 feature_2,2,1,0.4
 feature_3,1,0,0.5
 feature_3,3,2,1.0
-""",
+"""
     )
 
     computed = get_top_i_shap_values_for_printing(
-        shap_long_df=pl.from_pandas(shap_long_df),
-        i=2,
+        shap_long_df=pl.from_pandas(shap_long_df), i=2
     ).to_pandas()
 
     # Compare with pandas

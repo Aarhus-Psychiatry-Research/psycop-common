@@ -2,9 +2,7 @@ from collections.abc import Iterable
 
 import pandas as pd
 
-from psycop.common.model_evaluation.binary.utils import (
-    auroc_by_group,
-)
+from psycop.common.model_evaluation.binary.utils import auroc_by_group
 
 
 def roc_auc_by_periodic_time_df(
@@ -27,9 +25,7 @@ def roc_auc_by_periodic_time_df(
     Returns:
         pd.DataFrame: Dataframe ready for plotting
     """
-    df = pd.DataFrame(
-        {"y": labels, "y_hat_probs": y_hat_probs, "timestamp": timestamps},
-    )
+    df = pd.DataFrame({"y": labels, "y_hat_probs": y_hat_probs, "timestamp": timestamps})
 
     if bin_period == "H":
         df["time_bin"] = pd.to_datetime(df["timestamp"]).dt.strftime("%H")
@@ -72,7 +68,7 @@ def roc_auc_by_periodic_time_df(
         )
     else:
         raise ValueError(
-            "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year",
+            "bin_period must be 'H' for hour of day, 'D' for day of week or 'M' for month of year"
         )
 
     output_df = auroc_by_group(

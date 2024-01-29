@@ -23,14 +23,9 @@ class ColumnInfo:
     def specification_string(self) -> str:
         return f"Attr '{self.attr}' specifies '{self.name}'"
 
-    def check_rules(
-        self,
-        frame: PolarsFrame,
-    ) -> Sequence["FrameValidationError"]:
+    def check_rules(self, frame: PolarsFrame) -> Sequence["FrameValidationError"]:
         return (
-            Iter(
-                [rule(self, frame) for rule in self.rules if rule(self, frame)],
-            )
+            Iter([rule(self, frame) for rule in self.rules if rule(self, frame)])
             .flatten()
             .to_list()
         )
@@ -38,9 +33,7 @@ class ColumnInfo:
 
 class ValidatorRule(Protocol):
     def __call__(
-        self,
-        column_info: ColumnInfo,
-        frame: PolarsFrame,
+        self, column_info: ColumnInfo, frame: PolarsFrame
     ) -> Sequence[FrameValidationError]:
         ...
 
@@ -54,15 +47,9 @@ class ColumnMissingError(FrameValidationError):
 
 
 class ColumnExistsRule(ValidatorRule):
-    def __call__(
-        self,
-        column_info: ColumnInfo,
-        frame: PolarsFrame,
-    ) -> Sequence[ColumnMissingError]:
+    def __call__(self, column_info: ColumnInfo, frame: PolarsFrame) -> Sequence[ColumnMissingError]:
         if column_info.name not in frame.columns:
-            return [
-                ColumnMissingError(column=column_info),
-            ]
+            return [ColumnMissingError(column=column_info)]
 
         return []
 
@@ -81,11 +68,7 @@ class ColumnTypeError(FrameValidationError):
 class ColumnTypeRule(ValidatorRule):
     expected_type: pl.PolarsDataType
 
-    def __call__(
-        self,
-        column_info: ColumnInfo,
-        frame: PolarsFrame,
-    ) -> Sequence[ColumnTypeError]:
+    def __call__(self, column_info: ColumnInfo, frame: PolarsFrame) -> Sequence[ColumnTypeError]:
         try:
             column_type = frame.schema[column_info.name]
         except pl.ColumnNotFoundError:
@@ -96,8 +79,6 @@ class ColumnTypeRule(ValidatorRule):
 
         return [
             ColumnTypeError(
-                column=column_info,
-                actual_type=column_type,
-                expected_type=self.expected_type,
-            ),
+                column=column_info, actual_type=column_type, expected_type=self.expected_type
+            )
         ]

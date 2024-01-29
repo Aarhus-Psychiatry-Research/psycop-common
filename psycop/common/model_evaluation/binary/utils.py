@@ -2,15 +2,11 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import recall_score, roc_auc_score
 
-from psycop.common.model_evaluation.binary.bootstrap_estimates import (
-    bootstrap_estimates,
-)
+from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
 
 
 def _auroc_within_group(
-    df: pd.DataFrame,
-    confidence_interval: bool = True,
-    n_bootstraps: int = 100,
+    df: pd.DataFrame, confidence_interval: bool = True, n_bootstraps: int = 100
 ) -> pd.DataFrame:
     """Get the auroc within a dataframe."""
     if df.empty or df["y"].nunique() == 1 or len(df) < 5:
@@ -46,9 +42,7 @@ def auroc_by_group(
     """Get the auroc by group within a dataframe."""
     df = (
         df.groupby(groupby_col_name).apply(
-            _auroc_within_group,
-            confidence_interval=confidence_interval,
-            n_bootstraps=n_bootstraps,
+            _auroc_within_group, confidence_interval=confidence_interval, n_bootstraps=n_bootstraps
         )
     ).reset_index(drop=False)
 
@@ -56,9 +50,7 @@ def auroc_by_group(
 
 
 def _sensitivity_within_group(
-    df: pd.DataFrame,
-    confidence_interval: bool = True,
-    n_bootstraps: int = 100,
+    df: pd.DataFrame, confidence_interval: bool = True, n_bootstraps: int = 100
 ) -> pd.DataFrame:
     """Get the sensitivity within a dataframe."""
     if df.empty or len(df) < 5:

@@ -8,15 +8,13 @@ from typing import Any, Optional, Union
 
 from lightning.pytorch.callbacks import Callback
 from lightning.pytorch.loggers import Logger as plLogger
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from psycop.common.feature_generation.sequences.prediction_time_collater import (
     BasePredictionTimeCollater,
 )
 
-from ..feature_generation.sequences.patient_slice_collater import (
-    BasePatientSliceCollater,
-)
+from ..feature_generation.sequences.patient_slice_collater import BasePatientSliceCollater
 from .tasks.patientslice_classifier_base import BasePredictionTimeClassifier
 from .tasks.pretrainer_base import BasePatientSlicePretrainer
 
@@ -26,9 +24,7 @@ class TrainerConfigSchema(BaseModel):
     A config for the pytorch lightning trainer
     """
 
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
 
     accelerator: str = "auto"
     strategy: str = "auto"
@@ -59,14 +55,11 @@ class TrainerConfigSchema(BaseModel):
     default_root_dir: Optional[Path] = None
 
     def to_dict(self) -> dict[str, Any]:
-        return self.dict()
+        return self.model_dump()
 
 
 class TrainingConfigSchema(BaseModel):
-    class Config:
-        extra = "forbid"
-        allow_mutation = False
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
     batch_size: int
     num_workers_for_dataloader: int = 8
@@ -74,10 +67,7 @@ class TrainingConfigSchema(BaseModel):
 
 
 class PretrainingModelAndDataset(BaseModel):
-    class Config:
-        extra = "forbid"
-        allow_mutation = False
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
     model: BasePatientSlicePretrainer
     training_dataset: BasePatientSliceCollater
@@ -85,10 +75,7 @@ class PretrainingModelAndDataset(BaseModel):
 
 
 class ClassificationModelAndDataset(BaseModel):
-    class Config:
-        extra = "forbid"
-        allow_mutation = False
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
     model: BasePredictionTimeClassifier
     training_dataset: BasePredictionTimeCollater
@@ -96,9 +83,7 @@ class ClassificationModelAndDataset(BaseModel):
 
 
 class ResolvedConfigSchema(BaseModel):
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
 
     # Required because dataset and model are coupled through their input and outputs
     model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset

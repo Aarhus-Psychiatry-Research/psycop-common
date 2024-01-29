@@ -14,9 +14,7 @@ feature_specs = FeatureSpecifier(
     min_set_for_debug=False,  # Remember to set to False when generating full dataset
 ).get_feature_specs()
 
-selected_specs = [
-    spec for spec in feature_specs if "pred" in spec.get_output_col_name()
-]
+selected_specs = [spec for spec in feature_specs if "pred" in spec.get_output_col_name()]
 
 # %%
 # %reload_ext autoreload
@@ -40,9 +38,7 @@ df = generate_feature_description_df(
 import pandas as pd
 
 
-def prettify_feature_description_df(
-    input_df: pd.DataFrame,
-) -> pd.DataFrame:
+def prettify_feature_description_df(input_df: pd.DataFrame) -> pd.DataFrame:
     df = input_df
 
     df = df.rename(
@@ -69,13 +65,10 @@ def prettify_feature_description_df(
             "f7_disorders": "f7 - Mental retardation",
             "f8_disorders": "f8 - Developmental disorders",
             "hyperkinetic_disorders": "f9 - Child & adolescent disorders",
-        },
+        }
     )
 
-    df = df.drop(
-        ["1.0-percentile", "99.0-percentile", "Histogram", "Proportion missing"],
-        axis=1,
-    )
+    df = df.drop(["1.0-percentile", "99.0-percentile", "Histogram", "Proportion missing"], axis=1)
 
     df = df.sort_values("Predictor df", ascending=True)
 
@@ -118,10 +111,8 @@ md = MarkdownTable(
 """,
 ).get_markdown()
 
-with (
-    get_best_eval_pipeline().paper_outputs.paths.tables / "predictor_description.md"
-).open(
-    "+w",
+with (get_best_eval_pipeline().paper_outputs.paths.tables / "predictor_description.md").open(
+    "+w"
 ) as f:
     f.write(md)
 

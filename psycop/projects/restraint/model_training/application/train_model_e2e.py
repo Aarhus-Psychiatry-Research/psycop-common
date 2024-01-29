@@ -5,18 +5,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    Prefixes,
-    ProjectInfo,
-)
-from psycop.common.model_training.application_modules.train_model.main import (
-    get_eval_dir,
-)
+from psycop.common.feature_generation.application_modules.project_setup import Prefixes, ProjectInfo
+from psycop.common.model_training.application_modules.train_model.main import get_eval_dir
 from psycop.common.model_training.application_modules.wandb_handler import WandbHandler
-from psycop.common.model_training.config_schemas.data import (
-    ColumnNamesSchema,
-    DataSchema,
-)
+from psycop.common.model_training.config_schemas.data import ColumnNamesSchema, DataSchema
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.config_schemas.model import ModelConfSchema
 from psycop.common.model_training.config_schemas.preprocessing import (
@@ -25,13 +17,8 @@ from psycop.common.model_training.config_schemas.preprocessing import (
     PreprocessingConfigSchema,
     PreSplitPreprocessingConfigSchema,
 )
-from psycop.common.model_training.config_schemas.project import (
-    ProjectSchema,
-    WandbSchema,
-)
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.config_schemas.project import ProjectSchema, WandbSchema
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.common.model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
@@ -49,7 +36,7 @@ def load_datasets(cfg: FullConfigSchema) -> pd.DataFrame:
                 data_cfg=cfg.data,
                 pre_split_cfg=cfg.preprocessing.pre_split,
                 split=cfg.data.splits_for_training[0],
-            ),
+            )
         ],
         ignore_index=True,
     )
@@ -64,9 +51,9 @@ def train_remove_days(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
     for day in range(160, 16, -10):
-        train_dataset = train_datasets[
-            train_datasets.pred_adm_day_count < day
-        ].reset_index(drop=True)
+        train_dataset = train_datasets[train_datasets.pred_adm_day_count < day].reset_index(
+            drop=True
+        )
 
         eval_dataset = train_and_predict(
             cfg=cfg,
@@ -96,9 +83,7 @@ def train_add_features(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
     pipe = create_post_split_pipeline(cfg)
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
-    pred_types = np.unique(
-        [re.findall(r"pred_(.+)?_within", x) for x in train_col_names],
-    )
+    pred_types = np.unique([re.findall(r"pred_(.+)?_within", x) for x in train_col_names])
     pred_types = [x for x in pred_types if x != []]
     predictor_names = [
         "pred_adm_day_count",
@@ -164,10 +149,7 @@ def train_multilabel(cfg: FullConfigSchema, train_datasets: pd.DataFrame):
     outcome_col_name, train_col_names = get_col_names(cfg, train_datasets)
 
     train_datasets = train_datasets.drop(
-        columns=[
-            "outcome_coercion_bool_within_2_days",
-            "outcome_coercion_type_within_2_days",
-        ],
+        columns=["outcome_coercion_bool_within_2_days", "outcome_coercion_type_within_2_days"]
     )
 
     eval_dataset = train_and_predict(
@@ -201,11 +183,7 @@ if __name__ == "__main__":
 
     cfg = FullConfigSchema(
         project=ProjectSchema(
-            wandb=WandbSchema(
-                group="days",
-                mode="offline",
-                entity="test_entity",
-            ),
+            wandb=WandbSchema(group="days", mode="offline", entity="test_entity"),
             project_path=project_info.project_path,
             name=project_info.project_name,
             seed=42,
@@ -234,16 +212,10 @@ if __name__ == "__main__":
                 drop_rows_after_outcome=False,
             ),
             post_split=PostSplitPreprocessingConfigSchema(
-                imputation_method=None,
-                scaling=None,
-                feature_selection=FeatureSelectionSchema(),
+                imputation_method=None, scaling=None, feature_selection=FeatureSelectionSchema()
             ),
         ),
-        model=ModelConfSchema(
-            name="xgboost",
-            require_imputation=False,
-            args={},
-        ),
+        model=ModelConfSchema(name="xgboost", require_imputation=False, args={}),
         n_crossval_splits=3,
     )
 

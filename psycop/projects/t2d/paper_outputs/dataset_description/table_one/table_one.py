@@ -19,36 +19,28 @@ model_train_df = pl.concat(
 
 test_dataset = (
     get_best_eval_pipeline()
-    .inputs.get_flattened_split_as_lazyframe(
-        split="test",
-    )
-    .with_columns(
-        dataset=pl.format("test"),
-    )
+    .inputs.get_flattened_split_as_lazyframe(split="test")
+    .with_columns(dataset=pl.format("test"))
 )
 
 flattened_combined = pl.concat([model_train_df, test_dataset], how="vertical").rename(
-    {"prediction_time_uuid": "pred_time_uuid"},
+    {"prediction_time_uuid": "pred_time_uuid"}
 )
 
 # %%
-pred_times_to_keep = (
-    T2DCohortDefiner.get_filtered_prediction_times_bundle().prediction_times
-)
+pred_times_to_keep = T2DCohortDefiner.get_filtered_prediction_times_bundle().prediction_times
 
 
 # %%
-pred_times_to_keep_with_uuid = pred_times_to_keep.lazy().with_columns(
+pred_times_to_keep_with_uuid = pred_times_to_keep.frame.lazy().with_columns(
     pred_time_uuid=pl.col("dw_ek_borger").cast(pl.Utf8)
     + "-"
-    + pl.col("timestamp").dt.strftime(format="%Y-%m-%d-%H-%M-%S"),
+    + pl.col("timestamp").dt.strftime(format="%Y-%m-%d-%H-%M-%S")
 )
 
 # %%
 eligible_prediction_times = flattened_combined.join(
-    pred_times_to_keep_with_uuid,
-    on="pred_time_uuid",
-    how="inner",
+    pred_times_to_keep_with_uuid, on="pred_time_uuid", how="inner"
 )
 
 # %%
@@ -64,16 +56,8 @@ from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_l
 )
 
 visit_row_specs = [
-    RowSpecification(
-        source_col_name="pred_age_in_years",
-        readable_name="Age",
-        nonnormal=True,
-    ),
-    RowSpecification(
-        source_col_name="age_grouped",
-        readable_name="Age grouped",
-        categorical=True,
-    ),
+    RowSpecification(source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True),
+    RowSpecification(source_col_name="age_grouped", readable_name="Age grouped", categorical=True),
     RowSpecification(
         source_col_name="pred_sex_female",
         readable_name="Female",
@@ -115,19 +99,19 @@ visit_flattened_df = (
             for r in visit_row_specs
             if r.source_col_name not in ["age_grouped", "any_hba1c_before_visit"]
         ]
-        + ["dataset"],
+        + ["dataset"]
     )
     .with_columns(
         any_hba1c_before_visit=pl.col(
-            "eval_hba1c_within_9999_days_count_fallback_nan",
-        ).is_not_null(),
+            "eval_hba1c_within_9999_days_count_fallback_nan"
+        ).is_not_null()
     )
     .collect()
     .to_pandas()
 )
 
 visit_flattened_df["age_grouped"] = pd.Series(
-    bin_continuous_data(visit_flattened_df["pred_age_in_years"], bins=age_bins)[0],
+    bin_continuous_data(visit_flattened_df["pred_age_in_years"], bins=age_bins)[0]
 ).astype(str)
 
 # %%
@@ -136,9 +120,7 @@ from psycop.projects.t2d.paper_outputs.dataset_description.table_one.table_one_l
 )
 
 visit_table_one = create_table(
-    row_specs=visit_row_specs,
-    data=visit_flattened_df,
-    groupby_col_name="dataset",
+    row_specs=visit_row_specs, data=visit_flattened_df, groupby_col_name="dataset"
 )
 
 # %%
@@ -171,7 +153,7 @@ patient_df = (
         .agg(
             pred_sex_female=pl.col("pred_sex_female").first(),
             incident_t2d=pl.col(
-                "outc_first_diabetes_lab_result_within_1095_days_max_fallback_0_dichotomous",
+                "outc_first_diabetes_lab_result_within_1095_days_max_fallback_0_dichotomous"
             ).max(),
             first_contact_timestamp=pl.col("timestamp").min(),
             outcome_timestamp=pl.col("timestamp_first_diabetes_lab_result").max(),
@@ -184,12 +166,12 @@ patient_df = (
                 "first_contact_timestamp",
                 "outcome_timestamp",
                 "dataset",
-            ],
+            ]
         )
         .with_columns(
             days_from_first_contact_to_outcome=(
                 pl.col("outcome_timestamp") - pl.col("first_contact_timestamp")
-            ),
+            )
         )
     )
     .collect()
@@ -202,9 +184,7 @@ patient_df["days_from_first_contact_to_outcome"] = (
 ).astype(float)
 
 patient_table_one = create_table(
-    row_specs=patient_row_specs,
-    data=patient_df,
-    groupby_col_name="dataset",
+    row_specs=patient_row_specs, data=patient_df, groupby_col_name="dataset"
 )
 
 # %%
@@ -214,9 +194,7 @@ patient_table_one = create_table(
 combined = pd.concat([visit_table_one, patient_table_one])
 
 get_best_eval_pipeline().paper_outputs.paths.tables.mkdir(parents=True, exist_ok=True)
-combined.to_csv(
-    get_best_eval_pipeline().paper_outputs.paths.tables / "descriptive_stats_table.csv",
-)
+combined.to_csv(get_best_eval_pipeline().paper_outputs.paths.tables / "descriptive_stats_table.csv")
 
 # %%
 # %load_ext autoreload

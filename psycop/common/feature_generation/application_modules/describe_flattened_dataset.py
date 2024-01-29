@@ -7,9 +7,6 @@ from typing import TYPE_CHECKING
 from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
 from timeseriesflattener.flattened_dataset import PredictorSpec
 
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
-)
 from psycop.common.feature_generation.data_checks.flattened.data_integrity import (
     save_feature_set_integrity_checks_from_dir,
 )
@@ -21,14 +18,11 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
 
-    from psycop.common.feature_generation.application_modules.project_setup import (
-        ProjectInfo,
-    )
+    from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 
 log = logging.getLogger(__name__)
 
 
-@wandb_alert_on_exception
 def save_flattened_dataset_description_to_disk(
     project_info: ProjectInfo,
     feature_set_dir: Path,
@@ -45,20 +39,16 @@ def save_flattened_dataset_description_to_disk(
         splits (Iterable[str], optional): Splits to include in the integrity checks. Defaults to ("train", "val", "test").
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
-    feature_set_descriptive_stats_path = (
-        feature_set_dir / "feature_set_descriptive_stats"
-    )
+    feature_set_descriptive_stats_path = feature_set_dir / "feature_set_descriptive_stats"
     data_integrity_checks_path = feature_set_dir / "data_integrity_checks"
 
     log.info(
-        f"Saving flattened dataset descriptions to disk. Check {feature_set_descriptive_stats_path} and {data_integrity_checks_path} to view data set descriptions and validate that your dataset is not broken in some way.",
+        f"Saving flattened dataset descriptions to disk. Check {feature_set_descriptive_stats_path} and {data_integrity_checks_path} to view data set descriptions and validate that your dataset is not broken in some way."
     )
 
     save_feature_descriptive_stats_from_dir(
         feature_set_dir=feature_set_dir,
-        feature_specs=[
-            s for s in feature_specs if isinstance(s, (StaticSpec, PredictorSpec))
-        ],
+        feature_specs=[s for s in feature_specs if isinstance(s, (StaticSpec, PredictorSpec))],
         file_suffix=".parquet",
         prefixes_to_describe=set(project_info.prefix.__dict__.values()),
     )

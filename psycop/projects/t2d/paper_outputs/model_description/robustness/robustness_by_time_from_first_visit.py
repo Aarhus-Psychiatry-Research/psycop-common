@@ -1,9 +1,7 @@
 import plotnine as pn
 import polars as pl
 
-from psycop.common.model_evaluation.binary.time.timedelta_data import (
-    get_auroc_by_timedelta_df,
-)
+from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
@@ -20,7 +18,7 @@ def t2d_auroc_by_time_from_first_visit(run: T2DPipelineRun) -> pn.ggplot:
             "y": eval_ds.y,
             "y_hat_probs": eval_ds.y_hat_probs,
             "pred_timestamp": eval_ds.pred_timestamps,
-        },
+        }
     )
 
     # @Martin - correct me if I'm wrong, but isn't this rather the first prediction
@@ -32,10 +30,7 @@ def t2d_auroc_by_time_from_first_visit(run: T2DPipelineRun) -> pn.ggplot:
         .rename({"pred_timestamp": "first_visit_timestamp"})
     )
 
-    df = df.join(
-        first_visit.select(["first_visit_timestamp", "id"]),
-        on="id",
-    ).to_pandas()
+    df = df.join(first_visit.select(["first_visit_timestamp", "id"]), on="id").to_pandas()
 
     plot_df = get_auroc_by_timedelta_df(
         y=df["y"],
@@ -44,11 +39,7 @@ def t2d_auroc_by_time_from_first_visit(run: T2DPipelineRun) -> pn.ggplot:
         time_two=df["pred_timestamp"],
         direction="t2-t1",
         bin_unit="M",
-        bins=range(
-            0,
-            60,
-            6,
-        ),
+        bins=range(0, 60, 6),
     )
 
     return t2d_plot_robustness(

@@ -63,9 +63,7 @@ def check_df_conforms_to_feature_spec(
         msg.fail(f"{msg_prefix} errors: {source_failures}")
         return {arg_dict["predictor_df"]: source_failures}
 
-    msg.good(
-        f"{msg_prefix} passed data validation criteria.",
-    )
+    msg.good(f"{msg_prefix} passed data validation criteria.")
     return None
 
 
@@ -159,8 +157,7 @@ def check_feature_combinations_return_correct_dfs(
     required_keys = ["predictor_df", "allowed_nan_value_prop"]
 
     unique_subset_dicts = get_unique_predictor_dfs(
-        predictor_dict_list=predictor_dict_list,
-        required_keys=required_keys,
+        predictor_dict_list=predictor_dict_list, required_keys=required_keys
     )
 
     msg.info(f"Loading {n_rows} rows from each predictor_df")
@@ -174,7 +171,7 @@ def check_feature_combinations_return_correct_dfs(
             df = get_predictor_df_with_loader_fn(d=d, n_rows=n_rows)
         except KeyError:
             msg.warn(
-                f"{d['predictor_df']} does not appear to be a loader function in catalogue, assuming a well-formatted dataframe. Continuing.",
+                f"{d['predictor_df']} does not appear to be a loader function in catalogue, assuming a well-formatted dataframe. Continuing."
             )
             continue
 
@@ -193,8 +190,6 @@ def check_feature_combinations_return_correct_dfs(
             failure_dicts.append(df_failures)
 
     if not failure_dicts:
-        msg.good(
-            f"Checked {len(unique_subset_dicts)} predictor_dfs, all returned appropriate dfs",
-        )
+        msg.good(f"Checked {len(unique_subset_dicts)} predictor_dfs, all returned appropriate dfs")
     else:
         raise ValueError(f"{failure_dicts}")

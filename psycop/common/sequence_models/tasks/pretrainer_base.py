@@ -3,9 +3,7 @@ from collections.abc import Sequence
 
 import lightning.pytorch as pl
 import torch
-from lightning.pytorch.utilities.types import (
-    OptimizerLRScheduler,
-)
+from lightning.pytorch.utilities.types import OptimizerLRScheduler
 from torch import nn
 
 from ...data_structures.patient import PatientSlice
@@ -17,10 +15,7 @@ Metrics = dict[str, torch.Tensor]
 
 class BasePatientSlicePretrainer(ABC, pl.LightningModule):
     @abstractmethod
-    def collate_fn(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> BatchWithLabels:
+    def collate_fn(self, patient_slices: Sequence[PatientSlice]) -> BatchWithLabels:
         ...
 
     @abstractmethod
@@ -33,22 +28,15 @@ class BasePatientSlicePretrainer(ABC, pl.LightningModule):
 
     @abstractmethod
     def forward(  # type: ignore
-        self,
-        inputs: dict[str, torch.Tensor],
-        labels: torch.Tensor,
+        self, inputs: dict[str, torch.Tensor], labels: torch.Tensor
     ) -> Metrics:
         ...
 
     @abstractmethod
-    def filter_and_reformat(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> Sequence[PatientSlice]:
+    def filter_and_reformat(self, patient_slices: Sequence[PatientSlice]) -> Sequence[PatientSlice]:
         ...
 
-    def configure_optimizers(
-        self,
-    ) -> OptimizerLRScheduler:
+    def configure_optimizers(self) -> OptimizerLRScheduler:
         ...
 
     @property

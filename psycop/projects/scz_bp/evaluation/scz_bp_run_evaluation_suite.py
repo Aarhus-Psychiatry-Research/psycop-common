@@ -22,12 +22,8 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
-from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
-    CrossValidatorTrainer,
-)
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
 from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import (
     scz_bp_plot_sensitivity_by_time_to_event,
@@ -59,21 +55,12 @@ def load_and_resolve_cfg(path: Path) -> BaselineSchema:
     return cfg_schema
 
 
-def prediction_time_uuid_to_prediction_time(
-    prediction_time_uuid_series: pl.Series,
-) -> pl.Series:
-    return (
-        prediction_time_uuid_series.str.split("-")
-        .list.slice(1)
-        .list.join("-")
-        .str.to_datetime()
-    )
+def prediction_time_uuid_to_prediction_time(prediction_time_uuid_series: pl.Series) -> pl.Series:
+    return prediction_time_uuid_series.str.split("-").list.slice(1).list.join("-").str.to_datetime()
 
 
 def scz_bp_df_to_eval_df(
-    df: pl.DataFrame,
-    y_hat_prop_col_name: str,
-    y_col_name: str,
+    df: pl.DataFrame, y_hat_prop_col_name: str, y_col_name: str
 ) -> EvalDataset:
     return EvalDataset(
         ids=df["dw_ek_borger"].to_pandas(),
@@ -92,14 +79,9 @@ def scz_bp_df_to_eval_df(
 
 
 def merge_pred_df_with_validation_df(
-    pred_df: pl.DataFrame,
-    validation_df: pl.DataFrame,
+    pred_df: pl.DataFrame, validation_df: pl.DataFrame
 ) -> pl.DataFrame:
-    validation_df = validation_df.select(
-        pl.col("^meta.*$"),
-        "timestamp",
-        "prediction_time_uuid",
-    )
+    validation_df = validation_df.select(pl.col("^meta.*$"), "timestamp", "prediction_time_uuid")
     return pred_df.join(validation_df, how="left", on="prediction_time_uuid")
 
 
@@ -112,10 +94,7 @@ class EvalConfigResolver:
         pred_df = self._read_pred_df()
         self.outcome_col_name = pred_df.select(pl.col("^outc_.*$")).columns[0]
 
-        self.df = merge_pred_df_with_validation_df(
-            pred_df=pred_df,
-            validation_df=validation_df,
-        )
+        self.df = merge_pred_df_with_validation_df(pred_df=pred_df, validation_df=validation_df)
         self.eval_ds = scz_bp_df_to_eval_df(
             df=self.df,
             y_hat_prop_col_name=self.y_hat_prop_col_name,
@@ -126,19 +105,15 @@ class EvalConfigResolver:
         match self.schema.trainer:
             case CrossValidatorTrainer():
                 self.y_hat_prop_col_name = "oof_y_hat_prob"
-                return self.schema.trainer.training_data.collect()
+                return self.schema.trainer.training_data.load().collect()
             case SplitTrainer():
                 self.y_hat_prop_col_name = "y_hat_prob"
-                return self.schema.trainer.validation_data.collect()
+                return self.schema.trainer.validation_data.load().collect()
             case _:
-                raise ValueError(
-                    f"Handler for {type(self.schema.trainer)} not implemented",
-                )
+                raise ValueError(f"Handler for {type(self.schema.trainer)} not implemented")
 
     def _read_pred_df(self) -> pl.DataFrame:
-        return pl.read_parquet(
-            self.schema.project_info.experiment_path / "eval_df.parquet",
-        )
+        return pl.read_parquet(self.schema.project_info.experiment_path / "eval_df.parquet")
 
 
 def full_eval(run: EvalConfigResolver) -> list[pn.ggplot]:

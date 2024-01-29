@@ -52,14 +52,10 @@ def pruned_data_integrity_checks(**kwargs: Any) -> Suite:
         MixedNulls(**kwargs).add_condition_different_nulls_less_equal_to(),
         MixedDataTypes(**kwargs).add_condition_rare_type_ratio_not_in_range(),
         DataDuplicates(**kwargs).add_condition_ratio_less_or_equal(),
-        StringLengthOutOfBounds(
-            **kwargs,
-        ).add_condition_ratio_of_outliers_less_or_equal(),
+        StringLengthOutOfBounds(**kwargs).add_condition_ratio_of_outliers_less_or_equal(),
         OutlierSampleDetection(**kwargs),
         FeatureLabelCorrelation(**kwargs).add_condition_feature_pps_less_than(),
-        FeatureFeatureCorrelation(
-            **kwargs,
-        ).add_condition_max_number_of_pairs_above_threshold(),
+        FeatureFeatureCorrelation(**kwargs).add_condition_max_number_of_pairs_above_threshold(),
         IdentifierLabelCorrelation(**kwargs).add_condition_pps_less_or_equal(),
     )
 
@@ -94,13 +90,9 @@ def custom_train_test_validation(**kwargs: Any) -> Suite:
     """
     return Suite(
         "Train Test Validation Suite",
-        DatasetsSizeComparison(
-            **kwargs,
-        ).add_condition_test_train_size_ratio_greater_than(),
+        DatasetsSizeComparison(**kwargs).add_condition_test_train_size_ratio_greater_than(),
         NewLabelTrainTest(**kwargs).add_condition_new_labels_number_less_or_equal(),
-        CategoryMismatchTrainTest(
-            **kwargs,
-        ).add_condition_new_category_ratio_less_or_equal(),
+        CategoryMismatchTrainTest(**kwargs).add_condition_new_category_ratio_less_or_equal(),
         IndexTrainTestLeakage(**kwargs).add_condition_ratio_less_or_equal(),
     )
 
@@ -174,16 +166,11 @@ def check_train_data_integrity(
     )
 
     data_s = Dataset(
-        df=train_predictors,
-        index_name="dw_ek_borger",
-        datetime_name="timestamp",
-        cat_features=[],
+        df=train_predictors, index_name="dw_ek_borger", datetime_name="timestamp", cat_features=[]
     )
 
     # Running checks that do not require a label
-    integ_suite = pruned_data_integrity_checks(
-        timeout=0,
-    )  # timeout=0 removes timeout
+    integ_suite = pruned_data_integrity_checks(timeout=0)  # timeout=0 removes timeout
 
     suite_results = integ_suite.run(data_s)
     suite_results.save_as_html(str(out_dir / "train_integrity.html"))
@@ -206,13 +193,9 @@ def check_train_data_integrity(
 
         suite_results = label_checks.run(data_s)
 
-        suite_results.save_as_html(
-            str(outcome_checks_dir / f"{outcome_column}_check.html"),
-        )
+        suite_results.save_as_html(str(outcome_checks_dir / f"{outcome_column}_check.html"))
 
-        failures[f"{outcome_column}_check"] = get_failed_check_names(
-            suite_results,
-        )
+        failures[f"{outcome_column}_check"] = get_failed_check_names(suite_results)
 
     msg.good("Finshed data integrity checks!")
 
@@ -241,22 +224,16 @@ def get_suite_results_for_split_pair_and_save_to_disk(
     """
 
     suite_results = deepchecks_suite.run(
-        split_dicts[split_pair[0]]["ds"],
-        split_dicts[split_pair[1]]["ds"],
+        split_dicts[split_pair[0]]["ds"], split_dicts[split_pair[1]]["ds"]
     )
 
-    suite_results.save_as_html(
-        str(out_dir / f"{split_pair[0]}_{split_pair[1]}_{file_suffix}.html"),
-    )
+    suite_results.save_as_html(str(out_dir / f"{split_pair[0]}_{split_pair[1]}_{file_suffix}.html"))
 
     return suite_results
 
 
 def get_split_as_ds_dict(
-    feature_set_dir: Path,
-    n_rows: int | None,
-    split: str,
-    file_suffix: str,
+    feature_set_dir: Path, n_rows: int | None, split: str, file_suffix: str
 ) -> dict[str, Any]:
     """Loads a split as a Deepchecks Dataset dict.
 
@@ -279,24 +256,14 @@ def get_split_as_ds_dict(
         file_suffix=file_suffix,
     )
     outcomes = load_split_outcomes(
-        feature_set_dir=feature_set_dir,
-        split=split,
-        nrows=n_rows,
-        file_suffix=file_suffix,
+        feature_set_dir=feature_set_dir, split=split, nrows=n_rows, file_suffix=file_suffix
     )
 
     data_s = Dataset(
-        df=predictors,
-        index_name="dw_ek_borger",
-        datetime_name="timestamp",
-        cat_features=[],
+        df=predictors, index_name="dw_ek_borger", datetime_name="timestamp", cat_features=[]
     )
 
-    return {
-        "predictors": predictors,
-        "outcomes": outcomes,
-        "ds": data_s,
-    }
+    return {"predictors": predictors, "outcomes": outcomes, "ds": data_s}
 
 
 def run_validation_requiring_split_comparison(
@@ -343,9 +310,7 @@ def run_validation_requiring_split_comparison(
             file_suffix="integrity",
         )
 
-        checks[f"{split_pair[0]}_{split_pair[1]}_integrity"] = get_failed_check_names(
-            suite_results,
-        )
+        checks[f"{split_pair[0]}_{split_pair[1]}_integrity"] = get_failed_check_names(suite_results)
 
     for split_name, split_contents in split_dicts.items():
         # don't check train/train
@@ -353,9 +318,7 @@ def run_validation_requiring_split_comparison(
             continue
 
         for outcome_col in train_outcome_df:
-            msg.info(
-                f"Running split validation for train/{split_name} and {outcome_col}",
-            )
+            msg.info(f"Running split validation for train/{split_name} and {outcome_col}")
 
             deepchecks_ds_dict = {
                 "train": {
@@ -365,7 +328,7 @@ def run_validation_requiring_split_comparison(
                         datetime_name="timestamp",
                         label=split_dicts["train"]["outcomes"][outcome_col],
                         cat_features=[],
-                    ),
+                    )
                 },
                 split_name: {
                     "ds": Dataset(
@@ -374,7 +337,7 @@ def run_validation_requiring_split_comparison(
                         datetime_name="timestamp",
                         label=split_contents["outcomes"][outcome_col],
                         cat_features=[],
-                    ),
+                    )
                 },
             }
 
@@ -387,14 +350,12 @@ def run_validation_requiring_split_comparison(
             )
 
             checks[f"train_{split_name}_{outcome_col}_check"] = get_failed_check_names(
-                suite_results,
+                suite_results
             )
 
         msg.good(f"All data checks done! Saved to {out_dir}")
 
-        if any(
-            failed_checks for failed_checks in checks.values() if len(failed_checks) > 0
-        ):
+        if any(failed_checks for failed_checks in checks.values() if len(failed_checks) > 0):
             msg.warn(f"Failed checks: {checks}")
 
 
@@ -422,9 +383,7 @@ def save_feature_set_integrity_checks_from_dir(
         compare_splits (bool, optional): Whether to compare splits, e.g. do all categories exist in both train and val. Defaults to True.
     """
     if dataset_format not in ("parquet", "csv"):
-        raise ValueError(
-            f"file_suffix must be either 'parquet' or 'csv', got {dataset_format}",
-        )
+        raise ValueError(f"file_suffix must be either 'parquet' or 'csv', got {dataset_format}")
 
     if out_dir is None:
         out_dir = feature_set_dir / "data_integrity_checks"
@@ -432,15 +391,10 @@ def save_feature_set_integrity_checks_from_dir(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     train_outcomes_df = load_split_outcomes(
-        feature_set_dir=feature_set_dir,
-        split="train",
-        nrows=n_rows,
-        file_suffix=dataset_format,
+        feature_set_dir=feature_set_dir, split="train", nrows=n_rows, file_suffix=dataset_format
     )
 
-    failed_checks = (
-        {}
-    )  # Collect failed checks for error messages at the end of the function
+    failed_checks = {}  # Collect failed checks for error messages at the end of the function
 
     # Check if file splits exist before running checks
     for split_name in splits:
@@ -449,9 +403,7 @@ def save_feature_set_integrity_checks_from_dir(
         if not file:
             raise ValueError(f"{split_name} split not found in {feature_set_dir}")
         if len(file) > 1:
-            raise ValueError(
-                f"Multiple {split_name} files found in {feature_set_dir}",
-            )
+            raise ValueError(f"Multiple {split_name} files found in {feature_set_dir}")
 
     # Create subfolder for outcome specific checks
     outcome_checks_dir = out_dir / "outcomes"

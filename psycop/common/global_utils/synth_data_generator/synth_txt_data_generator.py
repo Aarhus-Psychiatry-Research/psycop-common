@@ -39,10 +39,7 @@ def generate_synth_txt_data(
 
     # Generate data
     df = generate_data_columns(
-        predictors=predictors,
-        n_samples=n_samples,
-        df=df,
-        text_prompt=text_prompt,
+        predictors=predictors, n_samples=n_samples, df=df, text_prompt=text_prompt
     )
 
     # randomly replace predictors with NAs
@@ -60,9 +57,7 @@ if __name__ == "__main__":
     }
 
     out_df = generate_synth_txt_data(
-        predictors=column_specifications,
-        n_samples=100,
-        text_prompt="The patient",
+        predictors=column_specifications, n_samples=100, text_prompt="The patient"
     )
 
     save_path = Path(__file__).parent.parent.parent.parent

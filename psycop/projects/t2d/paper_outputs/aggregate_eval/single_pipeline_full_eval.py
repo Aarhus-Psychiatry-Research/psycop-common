@@ -22,9 +22,7 @@ msg = Printer(timestamp=True)
 def t2d_create_markdown_artifacts(pipeline: T2DPipelineRun) -> list[MarkdownArtifact]:
     relative_to = pipeline.paper_outputs.artifact_path.parent
     pos_rate_percent = f"{int(pipeline.paper_outputs.pos_rate * 100)}%"
-    lookahead_years = int(
-        pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365,
-    )
+    lookahead_years = int(pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days / 365)
 
     artifacts = [
         MarkdownFigure(
@@ -66,11 +64,9 @@ def t2d_create_markdown_artifacts(pipeline: T2DPipelineRun) -> list[MarkdownArti
 
 def t2d_main_manuscript_eval(pipeline: T2DPipelineRun) -> list[MarkdownArtifact]:
     msg.divider(
-        f"Evaluating {pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {pipeline.model_type} - {pipeline.name}",
+        f"Evaluating {pipeline.inputs.cfg.preprocessing.pre_split.min_lookahead_days} - {pipeline.model_type} - {pipeline.name}"
     )
-    msg.info(
-        f"Generating main manuscript eval to {pipeline.paper_outputs.artifact_path}",
-    )
+    msg.info(f"Generating main manuscript eval to {pipeline.paper_outputs.artifact_path}")
 
     t2d_output_performance_by_ppr(run=pipeline)
     t2d_create_main_performance_figure(run=pipeline)

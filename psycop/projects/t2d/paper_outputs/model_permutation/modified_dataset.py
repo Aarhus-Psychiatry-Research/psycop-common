@@ -5,9 +5,7 @@ from typing import Callable
 
 from wasabi import Printer
 
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
-)
+from psycop.common.model_training.application_modules.train_model.main import train_model
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRun
 
@@ -30,11 +28,8 @@ class FeatureModifier(ABC):
         pass
 
 
-def train_model_with_modified_dataset(
-    cfg: FullConfigSchema,
-    boolean_dataset_dir: Path,
-) -> float:
-    cfg.data.Config.allow_mutation = True
+def train_model_with_modified_dataset(cfg: FullConfigSchema, boolean_dataset_dir: Path) -> float:
+    cfg.data.model_config["frozen"] = False
     cfg.data.dir = Path(boolean_dataset_dir)
     cfg.data.splits_for_training = ["train"]
     cfg.data.splits_for_evaluation = ["test"]
@@ -79,17 +74,12 @@ def evaluate_pipeline_with_modified_dataset(
     )
 
     # Point the model at that dataset
-    auroc = train_model_with_modified_dataset(
-        cfg=cfg,
-        boolean_dataset_dir=modified_dataset_dir,
-    )
+    auroc = train_model_with_modified_dataset(cfg=cfg, boolean_dataset_dir=modified_dataset_dir)
 
     msg.divider(f"AUROC was {auroc}")
 
     if auroc == 0.5:
-        raise ValueError(
-            "Returned AUROC was 0.5, indicates that try/except block was hit",
-        )
+        raise ValueError("Returned AUROC was 0.5, indicates that try/except block was hit")
 
     # Write AUROC
     with auroc_md_path.open("a") as f:

@@ -4,21 +4,9 @@ from pathlib import Path
 from typing import Literal, Union
 
 import pandas as pd
-from plotnine import (
-    aes,
-    coord_flip,
-    geom_bar,
-    geom_text,
-    ggplot,
-    labs,
-    theme,
-)
+from plotnine import aes, coord_flip, geom_bar, geom_text, ggplot, labs, theme
 
-from psycop.projects.restraint.model_evaluation.config import (
-    COLOURS,
-    FIGURES_PATH,
-    PN_THEME,
-)
+from psycop.projects.restraint.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
 from psycop.projects.restraint.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
@@ -58,24 +46,19 @@ def plot_gain(  #
     # create and filter df to plot
     feature_names = list(feature_importance_dict.keys())
     feature_importances = list(feature_importance_dict.values())
-    df = pd.DataFrame(
-        {"feature_names": feature_names, "feature_importances": feature_importances},
-    )
+    df = pd.DataFrame({"feature_names": feature_names, "feature_importances": feature_importances})
     df = df.sort_values(by="feature_importances", ascending=False)
     df = df.iloc[:top_n].reset_index(drop=True)
     df = df.sort_values(by="feature_importances", ascending=True)
 
     # transform feature names to readable feature names
     df["feature_names"] = [
-        feature_name_to_readable(feature_name_row)
-        for feature_name_row in df["feature_names"]
+        feature_name_to_readable(feature_name_row) for feature_name_row in df["feature_names"]
     ]
 
     # sort categorical axis
     df["feature_names"] = pd.Categorical(
-        df["feature_names"],
-        categories=df["feature_names"],
-        ordered=True,
+        df["feature_names"], categories=df["feature_names"], ordered=True
     )
 
     # create plot
@@ -84,11 +67,7 @@ def plot_gain(  #
     p = (
         ggplot(data=df, mapping=aes(x="feature_names", y="feature_importances"))
         + geom_bar(stat="identity", fill=COLOURS["blue"], width=0.9)
-        + labs(
-            x="",
-            y="Information Gain",
-            title=f"{model.capitalize()} model: Information gain",
-        )
+        + labs(x="", y="Information Gain", title=f"{model.capitalize()} model: Information gain")
         + geom_text(
             mapping=aes(label="feature_importances"),
             size=8,

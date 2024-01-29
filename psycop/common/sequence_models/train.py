@@ -9,9 +9,7 @@ import lightning.pytorch as pl
 import torch
 from torch.utils.data import DataLoader
 
-from psycop.common.global_utils.config_utils import (
-    flatten_nested_dict,
-)
+from psycop.common.global_utils.config_utils import flatten_nested_dict
 
 from ..model_training_v2.loggers.mlflow_logger import sanitise_dict_keys
 from .config_utils import load_config, parse_config
@@ -20,7 +18,7 @@ log = logging.getLogger(__name__)
 os.environ["WANDB__SERVICE_WAIT"] = "300"  # to avoid issues with wandb service
 
 
-def populate_registry() -> None:
+def populate_sequence_model_registry() -> None:
     """
     Populate the registry with all the registered functions
 
@@ -28,6 +26,9 @@ def populate_registry() -> None:
     and easier to debug for people who are not familiar with python setup hooks.
     """
     from .callbacks import create_learning_rate_monitor, create_model_checkpoint  # noqa
+    from ..model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+        RegionalFilter,  # noqa
+    )
     from .embedders.BEHRT_embedders import create_behrt_embedder  # noqa
     from .logger import create_mlflow_logger, create_wandb_logger  # noqa
     from .model_layers import create_encoder_layer, create_transformers_encoder  # noqa
@@ -35,9 +36,15 @@ def populate_registry() -> None:
     from .optimizers import create_adamw  # noqa
     from .optimizers import create_linear_schedule_with_warmup  # noqa
     from .tasks.pretrainer_behrt import PretrainerBEHRT  # noqa
+    from ..feature_generation.sequences.patient_loader import PatientLoader  # noqa
+    from ...projects.sequence_models.finetune_t2d import (
+        load_embedder_from_checkpoint,  # noqa
+        load_encoder_from_checkpoint,  # noqa
+        load_model_from_checkpoint,  # noqa
+    )
 
 
-populate_registry()
+populate_sequence_model_registry()
 
 
 def train(config_path: Path | None = None) -> None:

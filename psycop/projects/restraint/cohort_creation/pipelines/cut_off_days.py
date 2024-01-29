@@ -18,13 +18,9 @@ from psycop.projects.restraint.cohort_creation.utils.utils import cut_off_check
 df_cohort = sql_load(query="SELECT * FROM fct.[psycop_coercion_within_2_days_feb2022]")
 
 # Load train (to find cut-off)
-df_train = pd.read_parquet(
-    path="E:/shared_resources/coercion/flattened_datasets/train.parquet",
-)
+df_train = pd.read_parquet(path="E:/shared_resources/coercion/flattened_datasets/train.parquet")
 
-df_val = pd.read_parquet(
-    path="E:/shared_resources/coercion/flattened_datasets/val.parquet",
-)
+df_val = pd.read_parquet(path="E:/shared_resources/coercion/flattened_datasets/val.parquet")
 
 df_train = pd.concat([df_train, df_val])
 
@@ -33,22 +29,14 @@ df_train = pd.concat([df_train, df_val])
 # ---------------------------------
 
 df_adm_grain = df_train[
-    [
-        "adm_id",
-        "dw_ek_borger",
-        "timestamp_admission",
-        "timestamp_discharge",
-        "timestamp_outcome",
-    ]
+    ["adm_id", "dw_ek_borger", "timestamp_admission", "timestamp_discharge", "timestamp_outcome"]
 ].drop_duplicates(keep="first")
 
 # calculate adm duration
 df_adm_grain["adm_duration"] = (
     df_adm_grain["timestamp_discharge"] - df_adm_grain["timestamp_admission"]
 )
-df_train["adm_duration"] = (
-    df_train["timestamp_discharge"] - df_train["timestamp_admission"]
-)
+df_train["adm_duration"] = df_train["timestamp_discharge"] - df_train["timestamp_admission"]
 
 # ---------------------------------
 # Train: Cut-off definition
@@ -76,5 +64,5 @@ df_cohort_exclude_days_after_cut_off = cut_off_prediction_days(df_cohort, cut_of
 today = date.today().strftime("%d%m%y")
 lookahead_days = 2
 df_cohort_exclude_days_after_cut_off.to_csv(
-    f"psycop_coercion_within_{lookahead_days}_days_feb2022_exclude_days_after_cut_off_run_{today}.csv",
+    f"psycop_coercion_within_{lookahead_days}_days_feb2022_exclude_days_after_cut_off_run_{today}.csv"
 )

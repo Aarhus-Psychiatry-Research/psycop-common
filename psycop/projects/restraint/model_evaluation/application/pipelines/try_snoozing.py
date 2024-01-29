@@ -4,15 +4,12 @@ import pandas as pd
 from sklearn.metrics import roc_auc_score
 
 from psycop.projects.restraint.model_evaluation.best_runs import best_run
-from psycop.projects.restraint.model_evaluation.data.load_true_data import (
-    load_eval_dataset,
-)
+from psycop.projects.restraint.model_evaluation.data.load_true_data import load_eval_dataset
 from psycop.projects.restraint.model_evaluation.snoozing import snooze_dataframe
 
 if __name__ == "__main__":
     evaluation_dataset = load_eval_dataset(
-        wandb_group=best_run.wandb_group,
-        wandb_run=best_run.model,
+        wandb_group=best_run.wandb_group, wandb_run=best_run.model
     )
 
     eval_df = pd.DataFrame(
@@ -21,14 +18,12 @@ if __name__ == "__main__":
             "pred_timestamps": evaluation_dataset.pred_timestamps,
             "y": evaluation_dataset.y,
             "y_hat_probs": evaluation_dataset.y_hat_probs,
-        },
+        }
     )
 
     pred_threshold = evaluation_dataset.y_hat_probs.quantile(0.95)
 
-    eval_df["y_hat_int"] = eval_df["y_hat_probs"].apply(
-        lambda x: 1 if x > pred_threshold else 0,
-    )
+    eval_df["y_hat_int"] = eval_df["y_hat_probs"].apply(lambda x: 1 if x > pred_threshold else 0)
 
     for snooze_days in range(360, -90, -90):
         filtered_pred_times = snooze_dataframe(
@@ -40,14 +35,11 @@ if __name__ == "__main__":
         )
 
         filtered_eval_df = eval_df.merge(
-            filtered_pred_times,
-            on=["id", "pred_timestamps"],
-            how="inner",
+            filtered_pred_times, on=["id", "pred_timestamps"], how="inner"
         )
 
         roc_auc = roc_auc_score(
-            y_true=filtered_eval_df["y"],
-            y_score=filtered_eval_df["y_hat_probs"],
+            y_true=filtered_eval_df["y"], y_score=filtered_eval_df["y_hat_probs"]
         )
 
         print(f"Snooze days: {snooze_days}, ROC AUC: {roc_auc:.4f}")

@@ -5,15 +5,14 @@ from typing import Literal
 import polars as pl
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.preprocessing.step import (
-    PresplitStep,
-)
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 from .....feature_generation.loaders.raw.load_ids import (
     SplitName,
     load_stratified_by_outcome_split_ids,
 )
 from .....feature_generation.loaders.raw.load_visits import physical_visits
+from .....sequence_models.registry import SequenceRegistry
 from .geographical_split._geographical_split import (
     add_migration_date_by_patient,
     add_shak_to_region_mapping,
@@ -42,24 +41,19 @@ def _get_regional_split_df() -> pl.LazyFrame:
     ).sort(["dw_ek_borger", "timestamp"])
 
     # find timestamp of first visit at each different region
-    first_visit_at_each_region = get_first_visit_at_each_region_by_patient(
-        df=sorted_all_visits_df,
-    )
+    first_visit_at_each_region = get_first_visit_at_each_region_by_patient(df=sorted_all_visits_df)
 
     # get the first visit
-    first_visit_at_first_region = get_first_visit_by_patient(
-        df=first_visit_at_each_region,
-    )
+    first_visit_at_first_region = get_first_visit_by_patient(df=first_visit_at_each_region)
 
     # get the first visit at a different region
     first_visit_at_second_region = get_first_visit_at_second_region_by_patient(
-        df=first_visit_at_each_region,
+        df=first_visit_at_each_region
     )
 
     # add the migration date for each patient
     geographical_split_df = add_migration_date_by_patient(
-        first_visit_at_first_region,
-        first_visit_at_second_region,
+        first_visit_at_first_region, first_visit_at_second_region
     )
     # add indicator for which split each patient belongs to
     geographical_split_df = geographical_split_df.with_columns(
@@ -68,19 +62,17 @@ def _get_regional_split_df() -> pl.LazyFrame:
         .when(pl.col("region") == "vest")
         .then("val")
         .otherwise("test")
-        .alias("split"),
+        .alias("split")
     )
 
     return geographical_split_df.select(
-        "dw_ek_borger",
-        "region",
-        "first_regional_move_timestamp",
-        "split",
+        "dw_ek_borger", "region", "first_regional_move_timestamp", "split"
     ).lazy()
 
 
 @BaselineRegistry.preprocessing.register("regional_data_filter")
-@dataclass(frozen=True)
+@SequenceRegistry.preprocessing.register("regional_data_filter")
+@dataclass
 class RegionalFilter(PresplitStep):
     """Filter data to only include ids from the desired regions. Removes
     predictions times after the patient has moved to a different region to
@@ -112,24 +104,17 @@ class RegionalFilter(PresplitStep):
 
         regional_move_df = (
             _get_regional_split_df().select(
-                "dw_ek_borger",
-                "region",
-                "first_regional_move_timestamp",
+                "dw_ek_borger", "region", "first_regional_move_timestamp"
             )
             if self.regional_move_df is None
             else self.regional_move_df
         )
 
-        filtered_regional_move_df = self._filter_regional_move_df_by_regions(
-            regional_move_df,
-        )
+        filtered_regional_move_df = self._filter_regional_move_df_by_regions(regional_move_df)
 
         return (
             input_df.join(filtered_regional_move_df, on=self.id_col_name, how="inner")
-            .filter(
-                pl.col(self.timestamp_col_name)
-                < pl.col(self.timestamp_cutoff_col_name),
-            )
+            .filter(pl.col(self.timestamp_col_name) < pl.col(self.timestamp_cutoff_col_name))
             .drop(columns=[self.region_col_name, self.timestamp_cutoff_col_name])
         )
 
@@ -140,12 +125,12 @@ class RegionalFilter(PresplitStep):
         regions_to_keep = {splits2region[split] for split in self.splits_to_keep}
 
         return df.rename({"dw_ek_borger": self.id_col_name}).filter(
-            pl.col(self.region_col_name).is_in(regions_to_keep),
+            pl.col(self.region_col_name).is_in(regions_to_keep)
         )
 
 
 @BaselineRegistry.preprocessing.register("id_data_filter")
-@dataclass(frozen=True)
+@dataclass
 class FilterByEntityID(PresplitStep):
     """Filter the data to only include ids in split_ids"""
 
@@ -157,7 +142,7 @@ class FilterByEntityID(PresplitStep):
 
 
 @BaselineRegistry.preprocessing.register("outcomestratified_split_filter")
-@dataclass(frozen=True)
+@dataclass
 class FilterByOutcomeStratifiedSplits(PresplitStep):
     """Filter the data to only include ids from the splits stratified by outcome, for the given split_to_keep."""
 
@@ -183,12 +168,7 @@ class FilterByOutcomeStratifiedSplits(PresplitStep):
                     split_names.append(SplitName.TEST)
 
         return (
-            pl.concat(
-                [
-                    load_stratified_by_outcome_split_ids(split).frame
-                    for split in split_names
-                ],
-            )
+            pl.concat([load_stratified_by_outcome_split_ids(split).frame for split in split_names])
             .collect()
             .get_column("dw_ek_borger")
         )

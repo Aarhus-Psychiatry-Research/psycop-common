@@ -1,8 +1,6 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.load_medications import (
-    clozapine,
-)
+from psycop.common.feature_generation.loaders.raw.load_medications import clozapine
 
 
 def get_first_clozapine_prescription() -> pd.DataFrame:

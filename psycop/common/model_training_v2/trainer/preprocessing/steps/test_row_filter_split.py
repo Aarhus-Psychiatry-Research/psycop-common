@@ -17,7 +17,7 @@ def mock_data_for_id_filters() -> pl.LazyFrame:
             1, 2020-03-01
             2, 2020-01-01
             3, 2020-01-01
-            """,
+            """
     ).lazy()
 
 
@@ -27,13 +27,10 @@ def test_regional_filter():
         """dw_ek_borger,region,first_regional_move_timestamp
         1,vest,2020-03-01
         2,vest,2100-01-01
-        3,øst,2100-01-01""",
+        3,øst,2100-01-01"""
     ).lazy()
 
-    regional_filter = RegionalFilter(
-        splits_to_keep=["val"],
-        regional_move_df=regional_move_df,
-    )
+    regional_filter = RegionalFilter(splits_to_keep=["val"], regional_move_df=regional_move_df)
 
     filtered_df = regional_filter.apply(input_df).collect()
 
@@ -43,9 +40,7 @@ def test_regional_filter():
 def test_id_filter():
     split_sequence = pl.Series("dw_ek_borger", [1])
     input_df = mock_data_for_id_filters()
-    id_filter = FilterByEntityID(
-        split_ids=split_sequence,
-    )
+    id_filter = FilterByEntityID(split_ids=split_sequence)
     filtered_df = id_filter.apply(input_df).collect()
 
     assert filtered_df.shape == (3, 2)
@@ -56,7 +51,7 @@ def mock_regional_move_df() -> pl.LazyFrame:
     return str_to_pl_df(
         """dw_ek_borger,region,first_regional_move_timestamp
         1,vest,2020-03-01
-        2,vest,2100-01-01""",
+        2,vest,2100-01-01"""
     ).lazy()
 
 

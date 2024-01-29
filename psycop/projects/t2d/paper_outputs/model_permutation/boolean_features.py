@@ -13,15 +13,9 @@ from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRu
 msg = Printer(timestamp=True)
 
 
-def convert_predictors_to_boolean(
-    df: pl.LazyFrame,
-    predictor_prefix: str,
-) -> pl.LazyFrame:
+def convert_predictors_to_boolean(df: pl.LazyFrame, predictor_prefix: str) -> pl.LazyFrame:
     boolean_df = df.with_columns(
-        pl.when(pl.col(f"^{predictor_prefix}.*$").is_not_null())
-        .then(1)
-        .otherwise(0)
-        .keep_name(),
+        pl.when(pl.col(f"^{predictor_prefix}.*$").is_not_null()).then(1).otherwise(0).keep_name()
     )
 
     return boolean_df
@@ -44,13 +38,11 @@ class CreateBooleanDataset(FeatureModifier):
             return
 
         df: pl.LazyFrame = pl.concat(
-            run.inputs.get_flattened_split_as_lazyframe(split)
-            for split in input_split_names
+            run.inputs.get_flattened_split_as_lazyframe(split) for split in input_split_names
         )
 
         boolean_df = convert_predictors_to_boolean(
-            df,
-            predictor_prefix=run.inputs.cfg.data.pred_prefix,
+            df, predictor_prefix=run.inputs.cfg.data.pred_prefix
         )
 
         msg.info(f"Collecting boolean df with input_splits {input_split_names}")
@@ -61,11 +53,8 @@ class CreateBooleanDataset(FeatureModifier):
 
 
 if __name__ == "__main__":
-    from psycop.projects.t2d.paper_outputs.selected_runs import (
-        get_best_eval_pipeline,
-    )
+    from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
     evaluate_pipeline_with_modified_dataset(
-        run=get_best_eval_pipeline(),
-        feature_modifier=CreateBooleanDataset(),
+        run=get_best_eval_pipeline(), feature_modifier=CreateBooleanDataset()
     )

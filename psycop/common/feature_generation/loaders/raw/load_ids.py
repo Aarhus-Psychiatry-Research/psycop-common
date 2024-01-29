@@ -29,14 +29,11 @@ class SplitFrame(ValidatedFrame[pl.LazyFrame]):
     id_col_name: str = "dw_ek_borger"
     id_col_rules: Sequence[ValidatorRule] = (
         ColumnExistsRule(),
-        ColumnTypeRule(expected_type=pl.Utf8),
+        ColumnTypeRule(expected_type=pl.Int64),
     )
 
 
-def load_stratified_by_outcome_split_ids(
-    split: SplitName,
-    n_rows: int | None = None,
-) -> SplitFrame:
+def load_stratified_by_outcome_split_ids(split: SplitName, n_rows: int | None = None) -> SplitFrame:
     """Loads ids for a given split based on the original data split.
 
     Args:

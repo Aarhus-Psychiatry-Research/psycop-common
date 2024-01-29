@@ -14,16 +14,12 @@ def get_forced_admissions(write: bool = True) -> pd.DataFrame:
     cols_to_keep = "datotid_start_sei, datotid_slut_sei, dw_ek_borger, typetekst_sei"
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
-    sql += (
-        "WHERE datotid_start_sei > '2012-01-01' AND typetekst_sei = 'Tvangsindlæggelse'"
-    )
+    sql += "WHERE datotid_start_sei > '2012-01-01' AND typetekst_sei = 'Tvangsindlæggelse'"
 
     forced_admissions = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
     forced_admissions[["datotid_start_sei", "datotid_slut_sei"]] = forced_admissions[  # type: ignore
         ["datotid_start_sei", "datotid_slut_sei"]
-    ].apply(
-        pd.to_datetime,
-    )
+    ].apply(pd.to_datetime)
 
     if write:
         ROWS_PER_CHUNK = 5_000
@@ -38,8 +34,7 @@ def get_forced_admissions(write: bool = True) -> pd.DataFrame:
 
 
 def forced_admissions_onset_timestamps(
-    timestamps_only: bool = False,
-    timestamp_as_value_col: bool = False,
+    timestamps_only: bool = False, timestamp_as_value_col: bool = False
 ) -> pd.DataFrame:
     # Load forced_admissions data
     view = "[forced_admissions_processed_2012_2021]"
@@ -50,7 +45,7 @@ def forced_admissions_onset_timestamps(
     forced_admissions = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
 
     forced_admissions = forced_admissions.rename(  # type: ignore
-        columns={"datotid_start_sei": "timestamp"},
+        columns={"datotid_start_sei": "timestamp"}
     )
 
     if timestamp_as_value_col:
@@ -74,7 +69,7 @@ def forced_admissions_end_timestamps() -> pd.DataFrame:
     forced_admissions = pd.DataFrame(sql_load(sql, chunksize=None)).drop_duplicates()  # type: ignore
 
     forced_admissions = forced_admissions.rename(  # type: ignore
-        columns={"datotid_slut_sei": "timestamp"},
+        columns={"datotid_slut_sei": "timestamp"}
     )
 
     return forced_admissions

@@ -8,9 +8,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Literal
 
-from psycop.common.feature_generation.loaders.filters.cvd_filters import (
-    only_SCORE2_CVD_diagnoses,
-)
+from psycop.common.feature_generation.loaders.filters.cvd_filters import only_SCORE2_CVD_diagnoses
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t1d_diag,
     keep_rows_where_diag_matches_t2d_diag,
@@ -56,21 +54,18 @@ def from_contacts(
     """
 
     log.warning(
-        "The DNPR3 data model replaced the DNPR2 model on 3 February 2019. Due to changes in DNPR3 granularity of diagnoses differ across the two models. If your prediction timestamps, lookbehind or lookahead span across this date, you should not use count as a resolve_multiple_fn. See the wiki (LPR2 compared to LPR3) for more information.",
+        "The DNPR3 data model replaced the DNPR2 model on 3 February 2019. Due to changes in DNPR3 granularity of diagnoses differ across the two models. If your prediction timestamps, lookbehind or lookahead span across this date, you should not use count as a resolve_multiple_fn. See the wiki (LPR2 compared to LPR3) for more information."
     )
 
     log.warning(
-        "Diagnoses should be identified by either contact start or end time, depending on whether the diagnoses are intended as predictors or outcomes. See the wiki (OBS: Diagnosis as outcome) for more information.",
+        "Diagnoses should be identified by either contact start or end time, depending on whether the diagnoses are intended as predictors or outcomes. See the wiki (OBS: Diagnosis as outcome) for more information."
     )
 
-    allowed_timestamp_purposes = (
-        "predictor",
-        "outcome",
-    )
+    allowed_timestamp_purposes = ("predictor", "outcome")
     if timestamp_purpose not in allowed_timestamp_purposes:
         raise ValueError(
             f"Invalid value for timestamp_purpose. "
-            f"Allowed values are {allowed_timestamp_purposes}.",
+            f"Allowed values are {allowed_timestamp_purposes}."
         )
 
     if timestamp_purpose == "predictor":
@@ -93,10 +88,7 @@ def from_contacts(
         shak_sql_operator=shak_sql_operator,
     )
 
-    df = df.drop_duplicates(
-        subset=["dw_ek_borger", "timestamp", output_col_name],
-        keep="first",
-    )
+    df = df.drop_duplicates(subset=["dw_ek_borger", "timestamp", output_col_name], keep="first")
 
     return df.reset_index(drop=True)  # type: ignore
 
@@ -129,10 +121,7 @@ def hyperlipidemia(
     timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
 ) -> pd.DataFrame:
     return from_contacts(
-        icd_code=[
-            "E780",
-            "E785",
-        ],  # Only these two, as the others are exceedingly rare
+        icd_code=["E780", "E785"],  # Only these two, as the others are exceedingly rare
         wildcard_icd_code=False,
         n_rows=n_rows,
         shak_location_col=shak_location_col,
@@ -269,10 +258,7 @@ def type_2_diabetes(
         keep_code_col=True,
     )
 
-    df_filtered = keep_rows_where_diag_matches_t2d_diag(
-        df=df,
-        col_name="diagnosegruppestreng",
-    )
+    df_filtered = keep_rows_where_diag_matches_t2d_diag(df=df, col_name="diagnosegruppestreng")
 
     return df_filtered
 
@@ -337,7 +323,7 @@ def acute_myocardial_infarction(
 ) -> pd.DataFrame:
     df = from_contacts(
         icd_code=[
-            "I21",  # Acute myocardial infarction
+            "I21"  # Acute myocardial infarction
         ],
         wildcard_icd_code=True,
         n_rows=n_rows,
@@ -373,10 +359,7 @@ def SCORE2_CVD(
         keep_code_col=True,
     )
 
-    df_filtered = only_SCORE2_CVD_diagnoses(
-        df=df,
-        col_name="diagnosegruppestreng",
-    )
+    df_filtered = only_SCORE2_CVD_diagnoses(df=df, col_name="diagnosegruppestreng")
 
     return df_filtered
 
@@ -413,10 +396,7 @@ def type_1_diabetes(
         keep_code_col=True,
     )
 
-    df_filtered = keep_rows_where_diag_matches_t1d_diag(
-        df=df,
-        col_name="diagnosegruppestreng",
-    )
+    df_filtered = keep_rows_where_diag_matches_t1d_diag(df=df, col_name="diagnosegruppestreng")
 
     return df_filtered
 

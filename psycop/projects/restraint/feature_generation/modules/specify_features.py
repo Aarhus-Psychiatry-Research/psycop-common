@@ -15,18 +15,10 @@ from timeseriesflattener.aggregation_fns import (
     summed,
     variance,
 )
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    PredictorSpec,
-    StaticSpec,
-)
+from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.feature_specs.single_specs import PredictorSpec, StaticSpec
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_coercion import (
     af_helbredsmaessige_grunde,
     af_legemlig_lidelse,
@@ -44,9 +36,7 @@ from psycop.common.feature_generation.loaders.raw.load_coercion import (
     tvangsindlaeggelse,
     tvangstilbageholdelse,
 )
-from psycop.common.feature_generation.loaders.raw.load_demographic import (
-    sex_female,
-)
+from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     depressive_disorders,
     f0_disorders,
@@ -130,13 +120,11 @@ class FeatureSpecifier:
                 timeseries_df=sex_female(),
                 feature_base_name="sex_female",
                 prefix=self.project_info.prefix.predictor,
-            ),
+            )
         ]
 
     def _get_weight_and_height_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get weight and height specs."""
         log.info("-------- Generating weight and height specs --------")
@@ -156,9 +144,7 @@ class FeatureSpecifier:
         return weight_height_bmi
 
     def _get_visits_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get visits specs."""
         log.info("-------- Generating visits specs --------")
@@ -167,25 +153,12 @@ class FeatureSpecifier:
             named_dataframes=(
                 NamedDataframe(df=physical_visits(), name="physical_visits"),
                 NamedDataframe(
-                    df=physical_visits_to_psychiatry(),
-                    name="physical_visits_to_psychiatry",
+                    df=physical_visits_to_psychiatry(), name="physical_visits_to_psychiatry"
                 ),
-                NamedDataframe(
-                    df=physical_visits_to_somatic(),
-                    name="physical_visits_to_somatic",
-                ),
-                NamedDataframe(
-                    df=admissions(),
-                    name="admissions",
-                ),
-                NamedDataframe(
-                    df=ambulatory_visits(),
-                    name="ambulatory_visits",
-                ),
-                NamedDataframe(
-                    df=emergency_visits(),
-                    name="emergency_visits",
-                ),
+                NamedDataframe(df=physical_visits_to_somatic(), name="physical_visits_to_somatic"),
+                NamedDataframe(df=admissions(), name="admissions"),
+                NamedDataframe(df=ambulatory_visits(), name="ambulatory_visits"),
+                NamedDataframe(df=emergency_visits(), name="emergency_visits"),
                 NamedDataframe(
                     df=admissions(shak_code=6600, shak_sql_operator="="),
                     name="admissions_to_psychiatry",
@@ -219,9 +192,7 @@ class FeatureSpecifier:
         return visits
 
     def _get_diagnoses_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get diagnoses specs."""
         log.info("-------- Generating diagnoses specs --------")
@@ -249,9 +220,7 @@ class FeatureSpecifier:
         return psychiatric_diagnoses
 
     def _get_medication_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get medication specs."""
         log.info("-------- Generating medication specs --------")
@@ -259,33 +228,25 @@ class FeatureSpecifier:
         psychiatric_medications = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=antipsychotics(), name="antipsychotics"),
+                NamedDataframe(df=sedative_antipsychotics(), name="sedative_antipsychotics"),
                 NamedDataframe(
-                    df=sedative_antipsychotics(),
-                    name="sedative_antipsychotics",
+                    df=non_sedative_antipsychotics(), name="non_sedative_antipsychotics"
                 ),
                 NamedDataframe(
-                    df=non_sedative_antipsychotics(),
-                    name="non_sedative_antipsychotics",
+                    df=antipsychotics(administration_method="Fast"), name="antipsychotics_fast"
                 ),
                 NamedDataframe(
-                    df=antipsychotics(administration_method="Fast"),
-                    name="antipsychotics_fast",
-                ),
-                NamedDataframe(
-                    df=antipsychotics(administration_method="PN"),
-                    name="antipsychotics_pn",
+                    df=antipsychotics(administration_method="PN"), name="antipsychotics_pn"
                 ),
                 NamedDataframe(
                     df=antipsychotics(administration_method="Engangs"),
                     name="antipsychotics_engangs",
                 ),
                 NamedDataframe(
-                    df=antipsychotics(administration_route="IM"),
-                    name="antipsychotics_im",
+                    df=antipsychotics(administration_route="IM"), name="antipsychotics_im"
                 ),
                 NamedDataframe(
-                    df=antipsychotics(administration_route="PO"),
-                    name="antipsychotics_po",
+                    df=antipsychotics(administration_route="PO"), name="antipsychotics_po"
                 ),
                 NamedDataframe(
                     df=sedative_antipsychotics(administration_method="Fast"),
@@ -327,63 +288,40 @@ class FeatureSpecifier:
                     df=non_sedative_antipsychotics(administration_route="PO"),
                     name="non_sedative_antipsychotics_po",
                 ),
+                NamedDataframe(df=clozapine(administration_method="Fast"), name="clozapine_fast"),
+                NamedDataframe(df=clozapine(administration_method="PN"), name="clozapine_pn"),
                 NamedDataframe(
-                    df=clozapine(administration_method="Fast"),
-                    name="clozapine_fast",
+                    df=clozapine(administration_method="Engangs"), name="clozapine_engangs"
                 ),
-                NamedDataframe(
-                    df=clozapine(administration_method="PN"),
-                    name="clozapine_pn",
-                ),
-                NamedDataframe(
-                    df=clozapine(administration_method="Engangs"),
-                    name="clozapine_engangs",
-                ),
-                NamedDataframe(
-                    df=clozapine(administration_route="PO"),
-                    name="clozapine_po",
-                ),
+                NamedDataframe(df=clozapine(administration_route="PO"), name="clozapine_po"),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
                 NamedDataframe(
-                    df=anxiolytics(administration_method="Fast"),
-                    name="anxiolytics_fast",
+                    df=anxiolytics(administration_method="Fast"), name="anxiolytics_fast"
+                ),
+                NamedDataframe(df=anxiolytics(administration_method="PN"), name="anxiolytics_pn"),
+                NamedDataframe(
+                    df=anxiolytics(administration_method="Engangs"), name="anxiolytics_engangs"
                 ),
                 NamedDataframe(
-                    df=anxiolytics(administration_method="PN"),
-                    name="anxiolytics_pn",
+                    df=pregabaline(administration_method="Fast"), name="pregabaline_fast"
                 ),
+                NamedDataframe(df=pregabaline(administration_method="PN"), name="pregabaline_pn"),
                 NamedDataframe(
-                    df=anxiolytics(administration_method="Engangs"),
-                    name="anxiolytics_engangs",
-                ),
-                NamedDataframe(
-                    df=pregabaline(administration_method="Fast"),
-                    name="pregabaline_fast",
-                ),
-                NamedDataframe(
-                    df=pregabaline(administration_method="PN"),
-                    name="pregabaline_pn",
-                ),
-                NamedDataframe(
-                    df=pregabaline(administration_method="Engangs"),
-                    name="pregabaline_engangs",
+                    df=pregabaline(administration_method="Engangs"), name="pregabaline_engangs"
                 ),
                 NamedDataframe(df=hypnotics(), name="hypnotics_and_sedatives"),
                 NamedDataframe(
-                    df=hypnotics(administration_method="Fast"),
-                    name="hypnotics_and_sedatives_fast",
+                    df=hypnotics(administration_method="Fast"), name="hypnotics_and_sedatives_fast"
                 ),
                 NamedDataframe(
-                    df=hypnotics(administration_method="PN"),
-                    name="hypnotics_and_sedatives_pn",
+                    df=hypnotics(administration_method="PN"), name="hypnotics_and_sedatives_pn"
                 ),
                 NamedDataframe(
                     df=hypnotics(administration_method="Engangs"),
                     name="hypnotics_and_sedatives_engangs",
                 ),
                 NamedDataframe(
-                    df=hypnotics_and_rivotril(),
-                    name="hypnotics_and_sedatives_with_rivotril",
+                    df=hypnotics_and_rivotril(), name="hypnotics_and_sedatives_with_rivotril"
                 ),
                 NamedDataframe(
                     df=hypnotics_and_rivotril(administration_method="Fast"),
@@ -404,10 +342,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=clozapine(), name="clozapine"),
                 NamedDataframe(df=pregabaline(), name="pregabaline"),
                 NamedDataframe(df=mood_stabilisers(), name="mood_stabilisers"),
-                NamedDataframe(
-                    df=nervous_system_stimulants(),
-                    name="nervous_system_stimulants",
-                ),
+                NamedDataframe(df=nervous_system_stimulants(), name="nervous_system_stimulants"),
             ),
             lookbehind_days=interval_days,
             aggregation_fns=resolve_multiple,
@@ -417,9 +352,7 @@ class FeatureSpecifier:
         return psychiatric_medications
 
     def _get_schema_1_and_2_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get schema 1 and schema 2 coercion specs."""
         log.info("-------- Generating schema 1 and schema 2 coercion specs --------")
@@ -428,22 +361,14 @@ class FeatureSpecifier:
             named_dataframes=(
                 NamedDataframe(df=skema_1(), name="skema_1"),
                 NamedDataframe(df=tvangsindlaeggelse(), name="tvangsindlaeggelse"),
+                NamedDataframe(df=tvangstilbageholdelse(), name="tvangstilbageholdelse"),
                 NamedDataframe(
-                    df=tvangstilbageholdelse(),
-                    name="tvangstilbageholdelse",
-                ),
-                NamedDataframe(
-                    df=paa_grund_af_farlighed(),
-                    name="paa_grund_af_farlighed",
+                    df=paa_grund_af_farlighed(), name="paa_grund_af_farlighed"
                 ),  # røde papirer
                 NamedDataframe(
-                    df=af_helbredsmaessige_grunde(),
-                    name="af_helbredsmaessige_grunde",
+                    df=af_helbredsmaessige_grunde(), name="af_helbredsmaessige_grunde"
                 ),  # gule papirer
-                NamedDataframe(
-                    df=skema_2_without_nutrition(),
-                    name="skema_2_without_nutrition",
-                ),
+                NamedDataframe(df=skema_2_without_nutrition(), name="skema_2_without_nutrition"),
                 NamedDataframe(df=medicinering(), name="medicinering"),
                 NamedDataframe(df=ect(), name="ect"),
                 NamedDataframe(df=af_legemlig_lidelse(), name="af_legemlig_lidelse"),
@@ -456,25 +381,19 @@ class FeatureSpecifier:
         return coercion
 
     def _get_schema_1_and_2_current_status_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get "current" status of schema 1 and schema 2 coercion."""
-        log.info(
-            "Generating schema 1 and schema 2 current status specs --------",
-        )
+        log.info("Generating schema 1 and schema 2 current status specs --------")
 
         coercion = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(df=skema_1(unpack_to_intervals=True), name="skema_1"),
                 NamedDataframe(
-                    df=tvangsindlaeggelse(unpack_to_intervals=True),
-                    name="tvangsindlaeggelse",
+                    df=tvangsindlaeggelse(unpack_to_intervals=True), name="tvangsindlaeggelse"
                 ),
                 NamedDataframe(
-                    df=tvangstilbageholdelse(unpack_to_intervals=True),
-                    name="tvangstilbageholdelse",
+                    df=tvangstilbageholdelse(unpack_to_intervals=True), name="tvangstilbageholdelse"
                 ),
                 NamedDataframe(
                     df=paa_grund_af_farlighed(unpack_to_intervals=True),
@@ -488,14 +407,10 @@ class FeatureSpecifier:
                     df=skema_2_without_nutrition(unpack_to_intervals=True),
                     name="skema_2_without_nutrition",
                 ),
-                NamedDataframe(
-                    df=medicinering(unpack_to_intervals=True),
-                    name="medicinering",
-                ),
+                NamedDataframe(df=medicinering(unpack_to_intervals=True), name="medicinering"),
                 NamedDataframe(df=ect(unpack_to_intervals=True), name="ect"),
                 NamedDataframe(
-                    df=af_legemlig_lidelse(unpack_to_intervals=True),
-                    name="af_legemlig_lidelse",
+                    df=af_legemlig_lidelse(unpack_to_intervals=True), name="af_legemlig_lidelse"
                 ),
             ),
             lookbehind_days=interval_days,
@@ -506,9 +421,7 @@ class FeatureSpecifier:
         return coercion
 
     def _get_schema_3_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get schema 3 coercion specs."""
         log.info("-------- Generating schema 3 coercion specs --------")
@@ -529,9 +442,7 @@ class FeatureSpecifier:
         return coercion
 
     def _get_forced_medication_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get forced medication coercion specs."""
         log.info("-------- Generating forced medication coercion specs --------")
@@ -548,19 +459,14 @@ class FeatureSpecifier:
         return beroligende_medicin_df
 
     def _get_structured_sfi_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get structured sfi specs."""
         log.info("-------- Generating structured sfi specs --------")
 
         structured_sfi = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(
-                    df=broeset_violence_checklist(),
-                    name="broeset_violence_checklist",
-                ),
+                NamedDataframe(df=broeset_violence_checklist(), name="broeset_violence_checklist"),
                 NamedDataframe(df=selvmordsrisiko(), name="selvmordsrisiko"),
                 NamedDataframe(df=hamilton_d17(), name="hamilton_d17"),
                 NamedDataframe(df=mas_m(), name="mas_m"),
@@ -573,9 +479,7 @@ class FeatureSpecifier:
         return structured_sfi
 
     def _get_temporary_leave_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get structured sfi specs."""
         log.info("-------- Generating temporary leave specs --------")
@@ -584,13 +488,9 @@ class FeatureSpecifier:
             named_dataframes=(
                 NamedDataframe(df=no_temporary_leave(), name="no_temporary_leave"),
                 NamedDataframe(df=temporary_leave(), name="temporary_leave"),
+                NamedDataframe(df=supervised_temporary_leave(), name="supervised_temporary_leave"),
                 NamedDataframe(
-                    df=supervised_temporary_leave(),
-                    name="supervised_temporary_leave",
-                ),
-                NamedDataframe(
-                    df=unsupervised_temporary_leave(),
-                    name="unsupervised_temporary_leave",
+                    df=unsupervised_temporary_leave(), name="unsupervised_temporary_leave"
                 ),
             ),
             lookbehind_days=interval_days,
@@ -601,9 +501,7 @@ class FeatureSpecifier:
         return temporary_leave_specs
 
     def _get_lab_result_specs(
-        self,
-        resolve_multiple: list[AggregationFunType],
-        interval_days: list[float],
+        self, resolve_multiple: list[AggregationFunType], interval_days: list[float]
     ) -> list[PredictorSpec]:
         """Get lab result specs."""
         log.info("-------- Generating lab result specs --------")
@@ -622,8 +520,7 @@ class FeatureSpecifier:
                 NamedDataframe(df=p_nortriptyline(), name="p_nortriptyline"),
                 NamedDataframe(df=p_clomipramine(), name="p_clomipramine"),
                 NamedDataframe(
-                    df=cancelled_standard_lab_results(),
-                    name="cancelled_standard_lab_results",
+                    df=cancelled_standard_lab_results(), name="cancelled_standard_lab_results"
                 ),
             ),
             aggregation_fns=resolve_multiple,
@@ -646,52 +543,42 @@ class FeatureSpecifier:
                     aggregation_fn=boolean,
                     fallback=np.nan,
                     prefix=self.project_info.prefix.predictor,
-                ),
+                )
             ]
 
         resolve_multiple = [boolean, count]
         interval_days = [10.0, 30.0, 180.0, 365.0, 730.0]
 
         latest_weight_height_bmi = self._get_weight_and_height_specs(
-            resolve_multiple=[latest],
-            interval_days=interval_days,
+            resolve_multiple=[latest], interval_days=interval_days
         )
 
         visits = self._get_visits_specs(
-            resolve_multiple=[*resolve_multiple, summed],
-            interval_days=interval_days,
+            resolve_multiple=[*resolve_multiple, summed], interval_days=interval_days
         )
 
         diagnoses = self._get_diagnoses_specs(
-            resolve_multiple=[boolean],
-            interval_days=interval_days,
+            resolve_multiple=[boolean], interval_days=interval_days
         )
 
         medications = self._get_medication_specs(
-            resolve_multiple=resolve_multiple,
-            interval_days=[1, 3, 7, *interval_days],
+            resolve_multiple=resolve_multiple, interval_days=[1, 3, 7, *interval_days]
         )
 
         schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
-            resolve_multiple=[*resolve_multiple, summed],
-            interval_days=[7, *interval_days],
+            resolve_multiple=[*resolve_multiple, summed], interval_days=[7, *interval_days]
         )
 
-        schema_1_schema_2_coercion_current_status = (
-            self._get_schema_1_and_2_current_status_specs(
-                resolve_multiple=[boolean],
-                interval_days=[1, 3],
-            )
+        schema_1_schema_2_coercion_current_status = self._get_schema_1_and_2_current_status_specs(
+            resolve_multiple=[boolean], interval_days=[1, 3]
         )
 
         schema_3_coercion = self._get_schema_3_specs(
-            resolve_multiple=[*resolve_multiple, summed],
-            interval_days=[730],
+            resolve_multiple=[*resolve_multiple, summed], interval_days=[730]
         )
 
         forced_medication_coercion = self._get_forced_medication_specs(
-            resolve_multiple=resolve_multiple,
-            interval_days=[730],
+            resolve_multiple=resolve_multiple, interval_days=[730]
         )
 
         structured_sfi = self._get_structured_sfi_specs(
@@ -700,13 +587,11 @@ class FeatureSpecifier:
         )
 
         temporary_leave = self._get_temporary_leave_specs(
-            resolve_multiple=resolve_multiple,
-            interval_days=[1, 3, 7, *interval_days],
+            resolve_multiple=resolve_multiple, interval_days=[1, 3, 7, *interval_days]
         )
 
         lab_results = self._get_lab_result_specs(
-            resolve_multiple=[maximum, minimum, mean, latest],
-            interval_days=interval_days,
+            resolve_multiple=[maximum, minimum, mean, latest], interval_days=interval_days
         )
 
         return (
@@ -723,15 +608,10 @@ class FeatureSpecifier:
             + lab_results
         )
 
-    def get_feature_specs(
-        self,
-    ) -> list[Union[StaticSpec, PredictorSpec]]:
+    def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_lab_result_specs(
-                resolve_multiple=[boolean],
-                interval_days=[30],
-            )  # type: ignore
+            return self._get_lab_result_specs(resolve_multiple=[boolean], interval_days=[30])  # type: ignore
 
         return self._get_static_predictor_specs() + self._get_temporal_predictor_specs()

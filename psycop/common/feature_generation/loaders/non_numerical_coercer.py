@@ -29,15 +29,8 @@ def multiply_inequalities_in_df(
     Returns:
         pd.Dataframe: The modified dataframe.
     """
-    if (
-        ineq2mult is None
-    ):  # Avoid sharing a mutable keyword argument between function invocations
-        ineq2mult = {
-            "<": 0.67,
-            "<=": 0.8,
-            ">": 1.5,
-            ">=": 1.2,
-        }
+    if ineq2mult is None:  # Avoid sharing a mutable keyword argument between function invocations
+        ineq2mult = {"<": 0.67, "<=": 0.8, ">": 1.5, ">=": 1.2}
 
     # Sort inequalities by length, so that we don't replace "<" in "<=".
     in_eqs = sorted(ineq2mult.keys(), key=len, reverse=True)
@@ -46,9 +39,7 @@ def multiply_inequalities_in_df(
         col_can_contain_ineq = df[col_to_multiply].dtype == "object"
 
         if col_can_contain_ineq:
-            starts_with_ineq_idxs = (
-                df[col_to_multiply].str.startswith(in_eq).fillna(False)
-            )
+            starts_with_ineq_idxs = df[col_to_multiply].str.startswith(in_eq).fillna(False)
 
             df.loc[starts_with_ineq_idxs, col_to_multiply] = (
                 df.loc[starts_with_ineq_idxs, col_to_multiply]

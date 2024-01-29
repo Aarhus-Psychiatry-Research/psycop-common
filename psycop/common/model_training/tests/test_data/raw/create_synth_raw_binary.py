@@ -11,16 +11,8 @@ if __name__ == "__main__":
     project_root = Path(__file__).resolve().parents[3]
 
     column_specs = {
-        "dw_ek_borger": {
-            "column_type": "uniform_int",
-            "min": 0,
-            "max": 10_000,
-        },
-        "timestamp": {
-            "column_type": "datetime_uniform",
-            "min": -5 * 365,
-            "max": 0 * 365,
-        },
+        "dw_ek_borger": {"column_type": "uniform_int", "min": 0, "max": 10_000},
+        "timestamp": {"column_type": "datetime_uniform", "min": -5 * 365, "max": 0 * 365},
         "value": {"column_type": "uniform_int", "min": 0, "max": 1},
     }
 
@@ -31,6 +23,5 @@ if __name__ == "__main__":
         )
 
         df.to_csv(
-            project_root / "tests" / "test_data" / "raw" / f"synth_raw_binary_{i}.csv",
-            index=False,
+            project_root / "tests" / "test_data" / "raw" / f"synth_raw_binary_{i}.csv", index=False
         )

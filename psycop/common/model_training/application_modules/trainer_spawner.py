@@ -7,9 +7,7 @@ from typing import Optional, Union
 
 from wasabi import Printer
 
-from psycop.common.model_training.application_modules.get_search_space import (
-    TrainerSpec,
-)
+from psycop.common.model_training.application_modules.get_search_space import TrainerSpec
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 
 
@@ -29,9 +27,7 @@ def start_trainer(
         raise ValueError("cfg.train is None, but is required for training in parallel.")
 
     if train_single_model_file_path is None:
-        train_single_model_file_path = Path(
-            "application/train_model_from_application_module.py",
-        )
+        train_single_model_file_path = Path("application/train_model_from_application_module.py")
 
     subprocess_args: list[str] = [
         "python",
@@ -61,9 +57,7 @@ def start_trainer(
 
     msg.info(f'{" ".join(subprocess_args)}')
 
-    return subprocess.Popen(
-        args=subprocess_args,
-    )
+    return subprocess.Popen(args=subprocess_args)
 
 
 def spawn_trainers(
@@ -97,9 +91,7 @@ def spawn_trainers(
         trainer_spec = trainer_combinations_queue.pop()
 
         msg = Printer(timestamp=True)
-        msg.info(
-            f"Spawning a new trainer with lookahead={trainer_spec.lookahead_days} days",
-        )
+        msg.info(f"Spawning a new trainer with lookahead={trainer_spec.lookahead_days} days")
         wandb_group = f"{wandb_prefix}"
 
         active_trainers.append(
@@ -111,7 +103,7 @@ def spawn_trainers(
                 model_name=trainer_spec.model_name,
                 dataset_dir=cfg.data.dir,
                 train_single_model_file_path=train_single_model_file_path,
-            ),
+            )
         )
 
         # Sleep a bit to avoid segfaults

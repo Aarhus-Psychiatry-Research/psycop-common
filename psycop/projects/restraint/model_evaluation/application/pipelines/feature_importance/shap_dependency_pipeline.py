@@ -36,16 +36,13 @@ def shap_dependency_pipeline(
         raise ValueError(f"model is {model}, but must be 'baseline' or 'text'")
 
     long_shap_df = get_shap_bundle_for_best_run(
-        run=run,
-        n_rows=100_000,
-        cache_ver=0.01,
+        run=run, n_rows=100_000, cache_ver=0.01
     ).get_long_shap_df()  # type: ignore
 
     if top_n_shap_table:
         # write table with shap values for top i features (largest abs SHAP mean)
         table_df = get_top_i_shap_values_for_printing(
-            shap_long_df=pl.from_pandas(long_shap_df),
-            i=top_n_shap_table,
+            shap_long_df=pl.from_pandas(long_shap_df), i=top_n_shap_table
         )
         table_df.write_csv(file=t_path / "shap_table.csv")
 
@@ -57,10 +54,7 @@ def shap_dependency_pipeline(
         shap_figures_path.mkdir(exist_ok=True, parents=True)
 
         save_plots_for_top_i_shap_by_mean_abs(
-            shap_long_df=plotting_df,
-            i=top_n_shap_scatter,
-            save_dir=shap_figures_path,
-            model=model,
+            shap_long_df=plotting_df, i=top_n_shap_scatter, save_dir=shap_figures_path, model=model
         )
 
 

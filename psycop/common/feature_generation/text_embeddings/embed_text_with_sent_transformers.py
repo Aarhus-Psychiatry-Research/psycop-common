@@ -13,9 +13,7 @@ def embed_text_to_df(model: SentenceTransformer, text: list[str]) -> pl.DataFram
     print("Start embedding")
     embeddings = model.encode(text, batch_size=256)
     print(f"Embedding time: {time() - t0:.2f} seconds")
-    return pl.DataFrame(embeddings).select(
-        pl.all().map_alias(lambda c: c.replace("column", "emb")),
-    )
+    return pl.DataFrame(embeddings).select(pl.all().map_alias(lambda c: c.replace("column", "emb")))
 
 
 if __name__ == "__main__":
@@ -31,6 +29,4 @@ if __name__ == "__main__":
     embedded_notes = pl.concat([all_notes, embeddings], how="horizontal")
 
     TEXT_EMBEDDINGS_DIR.mkdir(exist_ok=True, parents=True)
-    embedded_notes.write_parquet(
-        TEXT_EMBEDDINGS_DIR / f"text_embeddings_{model_str}.parquet",
-    )
+    embedded_notes.write_parquet(TEXT_EMBEDDINGS_DIR / f"text_embeddings_{model_str}.parquet")

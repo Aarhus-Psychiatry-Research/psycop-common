@@ -2,6 +2,138 @@
 
 <!--next-version-placeholder-->
 
+## v0.184.0 (2024-01-29)
+
+### Feature
+
+* **#772:** Use rich for pretty printing in terminallogger ([#777](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/777)) ([`c924a95`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c924a954a3757db5a9c37c6aab2ad3c2dd4ad1dc))
+* **#772:** Use rich for pretty printing in terminallogger ([`48cff23`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/48cff23b03950bae887fcdb672afe980f8632795))
+
+### Fix
+
+* **#775:** Log outcome column as string, not Index ([`a4ff66b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a4ff66b1d9da27c5a54cc9838cbf7ef73ab23327))
+
+## v0.183.0 (2024-01-26)
+
+### Feature
+
+* Do not init mlflow until first logging operation ([`9085833`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/90858331b6b0302e9f05080d58d342223afcc188))
+
+## v0.182.1 (2024-01-24)
+
+### Fix
+
+* **#748:** Mlflow creates new logging file for each logging operation ([#749](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/749)) ([`46fa246`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/46fa246127211025c2888e0f48e30f893adc564f))
+
+## v0.182.0 (2024-01-23)
+
+### Feature
+
+* Embed text with tfidf ([#743](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/743)) ([`77760d2`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/77760d20ed03bb0fbe6ada090a5f085e1bdc4c08))
+* Embed text with tfidf on region split ([`d47d2d9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d47d2d9c2c4517b3bfdc50686e1dbabbfac4c2ac))
+
+## v0.181.0 (2024-01-23)
+
+### Feature
+
+* Test effect of interval ([`4dbafb5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4dbafb5f158c5a0fd6117d0fc9bc1ee08fb52115))
+
+### Fix
+
+* Mlflow logger on overtaci ([`a0eef17`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a0eef170d47af65cfd5dc85f5cad4ccb1e0c8543))
+
+## v0.180.0 (2024-01-22)
+
+### Feature
+
+* **#700:** Pretrain and finetune a sequential model for T2D ([`470b0bc`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/470b0bc6b4d65dcd5b7e1447253a5846661066cd))
+
+## v0.179.0 (2024-01-18)
+
+### Feature
+
+* Use namedtemporaryfile ([`19fcf49`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/19fcf49d6360769797a6506322a4e8483e823f8c))
+
+## v0.178.0 (2024-01-18)
+
+### Feature
+
+* Working pretraining ([#718](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/718)) ([`a240c79`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a240c79611184ee96628e557b9cc42c49d5f20ac))
+
+## v0.177.1 (2024-01-18)
+
+### Fix
+
+* **#717:** Remove-PredictionTimeFilterer ([#719](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/719)) ([`a6e3a2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a6e3a2ddbc0352f83708132c01769db79f46f919))
+* Remove `PredictionTimeFilterer` ([`bd3e3f0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/bd3e3f094b459ae114efe757077ea1a76b8d7955))
+* **#717:** Remove-PredictionTimeFilterer ([`0bcf8bd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0bcf8bd707a249bd4fa0a3f4ada0d84892f57c4e))
+
+## v0.177.0 (2024-01-17)
+
+### Feature
+
+* Cohortdefiners return validatedframes ([#711](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/711)) ([`978e84d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/978e84d97c5a31677736e394893f8cd3957e540b))
+
+### Fix
+
+* Runtime_checkable ([`6048d8a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6048d8aae211b08d06529963459fa2f97146afa4))
+
+## v0.176.0 (2024-01-17)
+
+### Feature
+
+* Working pretraining ([#716](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/716)) ([`a8dd2c7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a8dd2c78cdbb6916a606da49c70d76ac1fffdff7))
+* Working config ([`2233f57`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2233f572365881a664949664bf5da7c21654a922))
+* Working pretraining ([`8356fd6`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/8356fd6b884d2d1e8f1415c3fa051800326c7762))
+
+## v0.175.0 (2024-01-17)
+
+### Feature
+
+* Match suggester regex in hparam tuning ([`be443f4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/be443f42a5c6293581264eae1ba468eb7d3393d1))
+* Hyperparameter tuning with optuna ([`679dffb`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/679dffba8d2defcf6a641df3db9d667ca4c2f037))
+* **#699:** Optuna-hparam-optimization ([`7773099`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/77730991b4a20bbaa1f503c0b6b707777254b836))
+
+## v0.174.0 (2024-01-17)
+
+### Feature
+
+* Test on Ovartaci ([`57364ce`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/57364ce8ac546560098e4f2413e7433840029908))
+
+### Fix
+
+* Circular imports on Ovartaci ([#714](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/714)) ([`a7d7334`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a7d73348273f498ecf8479c35168ef45575c4906))
+
+## v0.173.0 (2024-01-17)
+
+### Feature
+
+* **#702:** Allow filtering when generating patient slices ([`5970ec0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5970ec090ea5e4a5e867dab89b7794f5f74be97f))
+
+## v0.172.0 (2024-01-17)
+
+### Feature
+
+* **#709:** Support temporary uuid in quarantine filter ([`1d3058a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1d3058a5f4b1c6d3cd9974747b5bdbd8bca060e2))
+
+## v0.171.1 (2024-01-16)
+
+### Fix
+
+* Correct types for id col in splitframe ([`df7750a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/df7750a0584b25b3c10979ec7369515878ce8f7d))
+* Type ignore invoke 🥷 ([`8516981`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/851698150ee497cfdcc02a4753f4e3b45c87c8ef))
+
+## v0.171.0 (2024-01-15)
+
+### Feature
+
+* Add feature gen specs for text experiment ([`b4791b8`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b4791b86998f9ba1275fb34b5e1835c603140c3e))
+* Add script for embedding text ([`82713e5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/82713e54b398ca243915fa043b641099879f3880))
+
+### Fix
+
+* Correct splitting of text data for sentence transformers ([`7040115`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7040115d4456c20c4110e841c31cef95bb65b6b0))
+
 ## v0.170.5 (2024-01-15)
 
 ### Documentation

@@ -9,7 +9,7 @@ authors = [
   { name = "Jakob G. Damgaard" },
   { name = "Erik Perfalk" },
 ]
-version = "0.170.5"
+version = "0.184.0"
 description = "PSYCOP"
 classifiers = [
   "Operating System :: POSIX :: Linux",
@@ -60,6 +60,7 @@ reportUnusedImport = "none" # Fixed by ruff
 reportPrivateImportUsage = "none"
 
 [tool.ruff]
+line-length = 100
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
 select = [
   "A",
@@ -95,12 +96,15 @@ ignore = [
   "ANN101",
   "ANN401",
   "B007",
+  "COM812",
   "E402",
   "E501",
   "F401",
   "F841",
   "RUF100",
   "RET504",
+  "SIM108",
+  "TCH001",
 ]
 ignore-init-module-imports = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -133,12 +137,16 @@ exclude = [
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 target-version = "py39"
 
+[tool.ruff.format]
+skip-magic-trailing-comma = true
+
 [tool.ruff.flake8-annotations]
 mypy-init-return = true
 suppress-none-returning = true
 
 [tool.ruff.isort]
 known-third-party = ["wandb", "joblib"]
+split-on-trailing-comma = false
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

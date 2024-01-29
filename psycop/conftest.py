@@ -15,12 +15,7 @@ CONFIG_DIR_PATH_REL = "../application/config"
 
 
 def pytest_addoption(parser: pytest.Parser):
-    parser.addoption(
-        "--runslow",
-        action="store_true",
-        default=False,
-        help="run slow tests",
-    )
+    parser.addoption("--runslow", action="store_true", default=False, help="run slow tests")
 
 
 def pytest_configure(config: pytest.Config):
@@ -51,13 +46,7 @@ def add_eval_column(df: pd.DataFrame) -> pd.DataFrame:
 @pytest.fixture()
 def synth_eval_df() -> pd.DataFrame:
     """Load synthetic data."""
-    csv_path = (
-        PSYCOP_PKG_ROOT
-        / "test_utils"
-        / "test_data"
-        / "model_eval"
-        / "synth_eval_data.csv"
-    )
+    csv_path = PSYCOP_PKG_ROOT / "test_utils" / "test_data" / "model_eval" / "synth_eval_data.csv"
     df = pd.read_csv(csv_path)
 
     # Convert all timestamp cols to datetime
@@ -101,18 +90,13 @@ def synth_eval_dataset(synth_eval_df: pd.DataFrame) -> EvalDataset:
 @pytest.fixture()
 def immuteable_test_config() -> FullConfigSchema:
     """Get an immutable config for testing."""
-    return load_test_cfg_as_pydantic(
-        config_file_name="default_config.yaml",
-    )
+    return load_test_cfg_as_pydantic(config_file_name="default_config.yaml")
 
 
 @pytest.fixture()
 def muteable_test_config() -> FullConfigSchema:
     """Get a mutable config for testing."""
-    return load_test_cfg_as_pydantic(
-        config_file_name="default_config.yaml",
-        allow_mutation=True,
-    )
+    return load_test_cfg_as_pydantic(config_file_name="default_config.yaml", unfrozen=True)
 
 
 @pytest.fixture()

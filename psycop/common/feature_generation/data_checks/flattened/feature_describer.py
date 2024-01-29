@@ -9,12 +9,8 @@ import pandas as pd
 from timeseriesflattener.feature_specs.single_specs import PredictorSpec, StaticSpec
 from wasabi import Printer
 
-from psycop.common.feature_generation.data_checks.utils import (
-    save_df_to_pretty_html_table,
-)
-from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import (
-    load_split,
-)
+from psycop.common.feature_generation.data_checks.utils import save_df_to_pretty_html_table
+from psycop.common.feature_generation.loaders.flattened.local_feature_loaders import load_split
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -83,9 +79,7 @@ def create_unicode_hist(series: pd.Series) -> pd.Series:  # type: ignore
     # Now do value counts
     key_vector = np.array(list(UNICODE_HIST.keys()), dtype="float")
 
-    ucode_to_print = "".join(
-        [UNICODE_HIST[_find_nearest(key_vector, val)] for val in hist],
-    )
+    ucode_to_print = "".join([UNICODE_HIST[_find_nearest(key_vector, val)] for val in hist])
 
     return pd.Series(ucode_to_print)
 
@@ -107,10 +101,7 @@ def generate_temporal_feature_description(
         "Fallback strategy": str(predictor_spec.fallback),
         "Proportion missing": series.isna().mean(),
         "Mean": round(series.mean(), 2),
-        "Proportion using fallback": get_value_proportion(
-            series,
-            predictor_spec.fallback,
-        ),
+        "Proportion using fallback": get_value_proportion(series, predictor_spec.fallback),
     }
 
     for percentile in (0.25, 0.5, 0.75):
@@ -158,9 +149,7 @@ def generate_feature_description_row(
             return generate_static_feature_description(series, predictor_spec)
         case PredictorSpec():
             return generate_temporal_feature_description(
-                series,
-                predictor_spec,
-                feature_name=feature_name,
+                series, predictor_spec, feature_name=feature_name
             )
         case _:  # type: ignore
             raise ValueError(f"Unknown predictor spec type: {type(predictor_spec)}")
@@ -189,10 +178,7 @@ def generate_feature_description_df(
 
         if spec.prefix in prefixes_to_describe:
             rows.append(
-                generate_feature_description_row(
-                    series=df[column_name],
-                    predictor_spec=spec,
-                ),
+                generate_feature_description_row(series=df[column_name], predictor_spec=spec)
             )
 
     # Convert to dataframe
@@ -232,25 +218,18 @@ def save_feature_descriptive_stats_from_dir(
     for split in splits:
         msg.info(f"{split}: Creating descriptive stats for feature set")
 
-        dataset = load_split(
-            feature_set_dir=feature_set_dir,
-            split=split,
-            file_suffix=file_suffix,
-        )
+        dataset = load_split(feature_set_dir=feature_set_dir, split=split, file_suffix=file_suffix)
 
         msg.info(f"{split}: Generating descriptive stats dataframe")
 
         feature_descriptive_stats = generate_feature_description_df(
-            df=dataset,
-            predictor_specs=feature_specs,
-            prefixes_to_describe=prefixes_to_describe,
+            df=dataset, predictor_specs=feature_specs, prefixes_to_describe=prefixes_to_describe
         )
 
         msg.info(f"{split}: Writing descriptive stats dataframe to disk")
 
         feature_descriptive_stats.to_csv(
-            out_dir / f"{split}_feature_descriptive_stats.csv",
-            index=False,
+            out_dir / f"{split}_feature_descriptive_stats.csv", index=False
         )
         # Writing html table as well
         save_df_to_pretty_html_table(

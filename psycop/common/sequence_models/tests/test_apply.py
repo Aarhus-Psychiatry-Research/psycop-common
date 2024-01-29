@@ -7,19 +7,14 @@ from torch import nn
 from psycop.common.feature_generation.sequences.prediction_time_collater import (
     BasePredictionTimeCollater,
 )
-from psycop.common.sequence_models import (
-    BasePredictionTimeClassifier,
-    apply,
-)
 from psycop.common.sequence_models.aggregators import Aggregator
-from psycop.common.sequence_models.config_schema import (
-    TrainerConfigSchema,
-    TrainingConfigSchema,
-)
+from psycop.common.sequence_models.apply import apply
+from psycop.common.sequence_models.config_schema import TrainerConfigSchema, TrainingConfigSchema
 from psycop.common.sequence_models.embedders.interface import PatientSliceEmbedder
 from psycop.common.sequence_models.optimizers import LRSchedulerFn, OptimizerFn
-from psycop.common.sequence_models.tasks.patientslice_classifier import (
-    PatientSliceClassifier,
+from psycop.common.sequence_models.tasks.patientslice_classifier import PatientSliceClassifier
+from psycop.common.sequence_models.tasks.patientslice_classifier_base import (
+    BasePredictionTimeClassifier,
 )
 
 from .test_encoder_for_clf import skip_if_arm_within_docker
@@ -71,12 +66,7 @@ def test_apply(
     training_config: TrainingConfigSchema,
 ):
     output_parquet_path = tmp_path / "output.parquet"
-    apply(
-        patient_slice_classifier,
-        dataset_collater,
-        training_config,
-        output_parquet_path,
-    )
+    apply(patient_slice_classifier, dataset_collater, training_config, output_parquet_path)
 
     df = pl.read_parquet(output_parquet_path)
 

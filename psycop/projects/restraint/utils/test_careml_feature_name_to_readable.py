@@ -5,10 +5,7 @@ from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_r
 
 @pytest.mark.parametrize(
     ("feature_name", "expected_output"),
-    [
-        ("pred_hba1c_within_730_days_max_fallback_nan", "730-day max HbA1c"),
-        ("pred_age", "Age"),
-    ],
+    [("pred_hba1c_within_730_days_max_fallback_nan", "730-day max HbA1c"), ("pred_age", "Age")],
 )
 def test_restraint_feature_name_to_readable(feature_name: str, expected_output: str):
     extracted_feature_name = feature_name_to_readable(feature_name)

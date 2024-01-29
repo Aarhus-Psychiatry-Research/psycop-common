@@ -3,6 +3,7 @@ import polars as pl
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
     filter_prediction_times,
 )
 from psycop.projects.forced_admission_inpatient.cohort.extract_admissions_and_visits.get_forced_admissions import (
@@ -24,9 +25,7 @@ class ForcedAdmissionsInpatientCohortDefiner(CohortDefiner):
     def get_filtered_prediction_times_bundle(
         washout_on_prior_forced_admissions: bool = True,
     ) -> FilteredPredictionTimeBundle:
-        unfiltered_prediction_times = pl.from_pandas(
-            admissions_discharge_timestamps(),
-        ).lazy()
+        unfiltered_prediction_times = pl.from_pandas(admissions_discharge_timestamps()).lazy()
 
         if washout_on_prior_forced_admissions:
             return filter_prediction_times(
@@ -50,23 +49,19 @@ class ForcedAdmissionsInpatientCohortDefiner(CohortDefiner):
         )
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return pl.from_pandas(forced_admissions_onset_timestamps())
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(frame=pl.from_pandas(forced_admissions_onset_timestamps()))
 
 
 if __name__ == "__main__":
-    bundle = (
-        ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle()
+    bundle = ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle()
+
+    bundle_no_washout = ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
+        washout_on_prior_forced_admissions=False
     )
 
-    bundle_no_washout = (
-        ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
-            washout_on_prior_forced_admissions=False,
-        )
-    )
+    df = bundle.prediction_times.frame.to_pandas()
 
-    df = bundle.prediction_times.to_pandas()
-
-    df_no_washout = bundle_no_washout.prediction_times.to_pandas()
+    df_no_washout = bundle_no_washout.prediction_times.frame.to_pandas()
 
     outcome_timestamps = ForcedAdmissionsInpatientCohortDefiner.get_outcome_timestamps()

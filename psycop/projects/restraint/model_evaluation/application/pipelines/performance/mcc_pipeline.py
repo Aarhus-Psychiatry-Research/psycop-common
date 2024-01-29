@@ -3,9 +3,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.metrics import matthews_corrcoef
 
-from psycop.common.model_evaluation.binary.bootstrap_estimates import (
-    bootstrap_estimates,
-)
+from psycop.common.model_evaluation.binary.bootstrap_estimates import bootstrap_estimates
 from psycop.projects.restraint.model_evaluation.config import (
     BEST_DEV_RUN,
     TABLES_PATH,
@@ -25,11 +23,7 @@ def bootstrap_mcc(
 
     if confidence_interval:
         ci = bootstrap_estimates(
-            matthews_corrcoef,
-            n_bootstraps=n_bootstraps,
-            ci_width=0.95,
-            input_1=y,
-            input_2=y_hat,
+            matthews_corrcoef, n_bootstraps=n_bootstraps, ci_width=0.95, input_1=y, input_2=y_hat
         )
         mcc["ci_lower"] = ci[0][0]
         mcc["ci_upper"] = ci[0][1]
@@ -40,17 +34,11 @@ def bootstrap_mcc(
 def mcc_pipeline(run: Run, path: Path):
     eval_ds = run.get_eval_dataset()
 
-    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(
-        eval_ds.y_hat_probs,
-        pd.DataFrame,
-    ):
+    if isinstance(eval_ds.y, pd.DataFrame) or isinstance(eval_ds.y_hat_probs, pd.DataFrame):
         raise TypeError
 
     mcc = bootstrap_mcc(
-        eval_ds.y,
-        eval_ds.get_predictions_for_positive_rate(
-            desired_positive_rate=run.pos_rate,
-        )[0],
+        eval_ds.y, eval_ds.get_predictions_for_positive_rate(desired_positive_rate=run.pos_rate)[0]
     )
 
     mcc.to_csv(path / "mcc.csv")

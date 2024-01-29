@@ -3,11 +3,7 @@ import plotnine as pn
 
 from psycop.common.model_training.application_modules.process_manager_setup import setup
 from psycop.common.model_training.data_loader.data_loader import DataLoader
-from psycop.projects.restraint.model_evaluation.config import (
-    COLOURS,
-    FIGURES_PATH,
-    PN_THEME,
-)
+from psycop.projects.restraint.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
 
 # load train and test splits using config
 cfg, _ = setup(
@@ -33,16 +29,8 @@ df_q = df[["time_bin", "n_in_bin"]].drop_duplicates(keep="first")
 p = (
     pn.ggplot(data=df_q, mapping=pn.aes(x="time_bin", y="n_in_bin"))
     + pn.geom_bar(stat="identity", fill=COLOURS["blue"], width=0.9)
-    + pn.labs(
-        x="Quarter",
-        y="Count",
-        title="Target days per quarter",
-    )
-    + pn.geom_text(
-        mapping=pn.aes(label="n_in_bin"),
-        size=8,
-        va="bottom",
-    )
+    + pn.labs(x="Quarter", y="Count", title="Target days per quarter")
+    + pn.geom_text(mapping=pn.aes(label="n_in_bin"), size=8, va="bottom")
     + PN_THEME
     + pn.theme(figure_size=(7, 4), axis_text_x=pn.element_text(rotation=90))
 )

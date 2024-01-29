@@ -49,10 +49,7 @@ HTML_TEMPLATE2 = """
 
 
 def save_df_to_pretty_html_table(
-    df: pd.DataFrame,
-    path: Path,
-    title: str | None = None,
-    subtitle: str | None = None,
+    df: pd.DataFrame, path: Path, title: str | None = None, subtitle: str | None = None
 ) -> None:
     """Write dataframe to a HTML file with nice formatting. Stolen from
     stackoverflow: https://stackoverflow.com/a/52722850.
