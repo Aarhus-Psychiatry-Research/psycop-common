@@ -1,7 +1,7 @@
 """Main feature generation."""
 
 
-from timeseriesflattener.aggregation_fns import boolean, count, maximum, mean, minimum
+from timeseriesflattener.aggregation_fns import mean
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     )
     feature_specs = CVDFeatureSpecifier().get_feature_specs(
         layer=1,
-        aggregation_fns=[mean], # [boolean, count, maximum, mean, minimum],
+        aggregation_fns=[mean],  # [boolean, count, maximum, mean, minimum],
         lookbehind_days=[90, 365, 730],
     )
 
@@ -33,5 +33,5 @@ if __name__ == "__main__":
         project_info=project_info,
         eligible_prediction_times=eligible_prediction_times,
         feature_specs=feature_specs,
-        feature_set_name="cvd_lookbehind_experiments"
+        feature_set_name="cvd_lookbehind_experiments",
     )
