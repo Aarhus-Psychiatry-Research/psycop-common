@@ -17,11 +17,11 @@ from psycop.projects.cvd.feature_generation.feature_layeres.base import FeatureL
 
 class CVDLayer2(FeatureLayer):
     def get_features(
-        self, lookbehind_days: int, aggregation_fns: Sequence[AggregationFunType]
+        self, lookbehind_days: Sequence[int], aggregation_fns: Sequence[AggregationFunType]
     ) -> Sequence[PredictorSpec]:
         layer = 2
         specs = PredictorGroupSpec(
-            lookbehind_days=[lookbehind_days],
+            lookbehind_days=lookbehind_days,
             named_dataframes=[
                 NamedDataframe(
                     df=acute_myocardial_infarction(),
