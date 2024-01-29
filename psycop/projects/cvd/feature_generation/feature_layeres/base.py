@@ -14,6 +14,6 @@ AnySpecType = AnySpec | PredictorSpec | OutcomeSpec | StaticSpec
 
 class FeatureLayer(Protocol):
     def get_features(
-        self, lookbehind_days: int, aggregation_fns: Sequence[AggregationFunType]
+        self, lookbehind_days: Sequence[int], aggregation_fns: Sequence[AggregationFunType]
     ) -> Sequence[PredictorSpec]:
         ...

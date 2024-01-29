@@ -58,7 +58,10 @@ class CVDFeatureSpecifier:
         ).create_combinations()
 
     def get_feature_specs(
-        self, layer: int, aggregation_fns: Sequence[AggregationFunType]
+        self,
+        layer: int,
+        aggregation_fns: Sequence[AggregationFunType],
+        lookbehind_days: Sequence[int],
     ) -> list[AnySpecType]:
         """Get a spec set."""
         feature_sequences: list[Sequence[AnySpecType]] = [
@@ -68,15 +71,21 @@ class CVDFeatureSpecifier:
 
         if layer >= 1:
             feature_sequences.append(
-                CVDLayer1().get_features(lookbehind_days=730, aggregation_fns=aggregation_fns)
+                CVDLayer1().get_features(
+                    lookbehind_days=lookbehind_days, aggregation_fns=aggregation_fns
+                )
             )
         if layer >= 2:
             feature_sequences.append(
-                CVDLayer2().get_features(lookbehind_days=730, aggregation_fns=aggregation_fns)
+                CVDLayer2().get_features(
+                    lookbehind_days=lookbehind_days, aggregation_fns=aggregation_fns
+                )
             )
         if layer >= 3:
             feature_sequences.append(
-                CVDLayer3().get_features(lookbehind_days=730, aggregation_fns=aggregation_fns)
+                CVDLayer3().get_features(
+                    lookbehind_days=lookbehind_days, aggregation_fns=aggregation_fns
+                )
             )
         if layer > 3:
             raise ValueError(f"Layer {layer} not supported.")

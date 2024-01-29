@@ -24,11 +24,14 @@ if __name__ == "__main__":
         CVDCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas()
     )
     feature_specs = CVDFeatureSpecifier().get_feature_specs(
-        layer=3, aggregation_fns=[boolean, count, maximum, mean, minimum]
+        layer=1,
+        aggregation_fns=[mean], # [boolean, count, maximum, mean, minimum],
+        lookbehind_days=[90, 365, 730],
     )
 
     generate_feature_set(
         project_info=project_info,
         eligible_prediction_times=eligible_prediction_times,
         feature_specs=feature_specs,
+        feature_set_name="cvd_lookbehind_experiments"
     )
