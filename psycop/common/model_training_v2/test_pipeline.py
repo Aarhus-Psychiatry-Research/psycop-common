@@ -24,10 +24,10 @@ from psycop.common.model_training_v2.trainer.task.binary_classification.binary_c
 from psycop.common.model_training_v2.trainer.task.binary_classification.binary_metrics import (
     BinaryAUROC,
 )
-from psycop.common.model_training_v2.trainer.task.estimator_steps import logistic_regression_step
 
 from .loggers.disk_logger import DiskLogger
 from .loggers.multi_logger import MultiLogger
+from .trainer.task.estimator_steps.logistic_regression import logistic_regression_step
 
 
 def test_v2_train_model_pipeline(tmpdir: Path):
