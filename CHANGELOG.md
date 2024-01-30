@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.185.1 (2024-01-30)
+
+### Performance
+
+* **#787:** Add LightGBM ([`fef71b9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fef71b92d56fc1e30547ceedd3015b8b59988076))
+
 ## v0.185.0 (2024-01-29)
 
 ### Feature
