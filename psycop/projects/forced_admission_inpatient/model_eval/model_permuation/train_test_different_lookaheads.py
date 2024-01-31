@@ -5,7 +5,9 @@ from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
+from psycop.common.model_training.data_loader.utils import (
+    load_and_filter_split_from_cfg,
+)
 from psycop.common.model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
