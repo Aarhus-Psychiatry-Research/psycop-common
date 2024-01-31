@@ -56,7 +56,7 @@ if __name__ == "__main__":
             )
             if save_path.exists():
                 print(f"Already embedded {note_name_key} with {model_str}. Skipping...")
-                continue
+                # continue
 
             mdl = load_text_model(model_str)
             embeddings = encode_tfidf_values_to_df(mdl, preprocessed_notes["value"])

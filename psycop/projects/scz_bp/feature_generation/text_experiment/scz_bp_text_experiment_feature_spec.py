@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -34,36 +35,43 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
     ) -> Sequence[AnySpec]:
         filename = f"text_embeddings_{note_type}_{model_name}.parquet"
         embedded_text_df = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
+        if "overskrift" in embedded_text_df.columns:
+            embedded_text_df = embedded_text_df.drop("overskrift", axis="columns")
 
         return self._text_specs_from_embedding_df(
             embedded_text_df=embedded_text_df,
-            name_prefix=f"pred_{note_type}_{model_name}_",
+            name_prefix=f"{note_type}_{model_name}_",
             lookbehind_days=lookbehind_days,
         )
 
     def get_feature_specs(  # type: ignore[override]
-        self, lookbehind_days: list[float]
+        self, lookbehind_days: list[float], note_type: str, model_name: str
     ) -> list[AnySpec]:
         feature_specs: list[Sequence[AnySpec]] = [
             self._get_metadata_specs(),
             self._get_outcome_specs(),
         ]
-        note_types = ["aktuelt_psykisk", "all_relevant"]
-        models_names = [
-            "dfm-encoder-large",
-            #            "e5-large",
-            "dfm-encoder-large-v1-finetuned",
-            "tfidf-500",
-            "tfidf-1000",
-        ]
+        feature_specs.append(
+            self._get_feature_by_note_type_and_model_name(
+                note_type=note_type, model_name=model_name, lookbehind_days=lookbehind_days
+            )
+        )
 
-        for note_type in note_types:
-            for model_name in models_names:
-                feature_specs.append(
-                    self._get_feature_by_note_type_and_model_name(
-                        note_type=note_type, model_name=model_name, lookbehind_days=lookbehind_days
-                    )
-                )
+        # note_types = ["aktuelt_psykisk", "all_relevant"]
+        # models_names = [
+        #     "dfm-encoder-large",
+        #     "dfm-encoder-large-v1-finetuned",
+        #     "tfidf-500",
+        #     "tfidf-1000",
+        # ]
+
+        # for note_type in note_types:
+        #     for model_name in models_names:
+        #         feature_specs.append(
+        #             self._get_feature_by_note_type_and_model_name(
+        #                 note_type=note_type, model_name=model_name, lookbehind_days=lookbehind_days
+        #             )
+        #         )
 
         # flatten the sequence of lists
         features = [feature for sublist in feature_specs for feature in sublist]
