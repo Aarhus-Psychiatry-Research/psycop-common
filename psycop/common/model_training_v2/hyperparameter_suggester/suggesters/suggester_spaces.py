@@ -110,9 +110,12 @@ class IntegerSpace:
         return cls.from_list(sequence_or_mapping)
 
 
+CategoricalSpaceT = Sequence[optuna.distributions.CategoricalChoiceType]
+
+
 @dataclass(frozen=True)
 class CategoricalSpace:
-    choices: Sequence[optuna.distributions.CategoricalChoiceType]
+    choices: CategoricalSpaceT
 
     def suggest(self, trial: optuna.Trial, name: str) -> Any:
         return trial.suggest_categorical(name=name, choices=self.choices)
