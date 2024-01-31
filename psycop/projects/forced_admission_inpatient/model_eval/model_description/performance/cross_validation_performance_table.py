@@ -75,11 +75,9 @@ def stratified_cross_validation(
 
         oof_y_pred = pipe.predict_proba(X.loc[val_idxs])[:, 1]  # type: ignore
 
-        oof_auc = round(roc_auc_score(y.loc[val_idxs], oof_y_pred), 3)
+        oof_auc = round(roc_auc_score(y.loc[val_idxs], oof_y_pred), 3)  # type: ignore
 
-        msg.info(
-            f"{msg_prefix}: Oof AUC = {oof_auc}"  # type: ignore
-        )  # type: ignore
+        msg.info(f"{msg_prefix}: Oof AUC = {oof_auc}")  # type: ignore
 
         train_df.loc[val_idxs, "oof_y_hat"] = oof_y_pred  # type: ignore
 
