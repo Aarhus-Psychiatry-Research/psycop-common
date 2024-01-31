@@ -26,7 +26,7 @@
         {
             "label": "Test",
             "type": "shell",
-            "command": "lefthook run test",
+            "command": "inv qtest",
             "presentation": {
                 "group": "pr",
                 "clear": true,
