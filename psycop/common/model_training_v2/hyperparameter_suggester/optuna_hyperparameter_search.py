@@ -17,6 +17,8 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_su
     Suggester,
 )
 
+from ..config.baseline_pipeline import train_baseline_model_from_schema
+
 
 class OptunaHyperParameterOptimization:
     @staticmethod
@@ -74,11 +76,7 @@ class OptunaHyperParameterOptimization:
             base_cfg=cfg_with_resolved_suggesters, trial=trial
         )
         concrete_config_schema = BaselineSchema(**BaselineRegistry.resolve(concrete_config))
-
-        concrete_config_schema.logger.log_config(Config(concrete_config))
-
-        run_result = concrete_config_schema.trainer.train()
-        return run_result.metric.value
+        return train_baseline_model_from_schema(cfg=concrete_config_schema)
 
     @staticmethod
     def conduct_hyperparameter_optimization_from_file(

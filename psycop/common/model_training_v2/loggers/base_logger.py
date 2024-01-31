@@ -1,8 +1,7 @@
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from confection import Config
-
+from psycop.common.model_training_v2.loggers.logger_types import ConfigT
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
@@ -23,7 +22,7 @@ class BaselineLogger(Protocol):
     def log_metric(self, metric: CalculatedMetric) -> None:
         ...
 
-    def log_config(self, config: Config) -> None:
+    def log_config(self, config: ConfigT) -> None:
         ...
 
     def log_artifact(self, local_path: Path) -> None:

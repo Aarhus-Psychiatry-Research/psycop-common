@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from confection import Config
-
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+from psycop.common.model_training_v2.loggers.logger_types import ConfigT
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
@@ -22,7 +21,7 @@ class DummyLogger(BaselineLogger):
     def log_metric(self, metric: CalculatedMetric) -> None:
         pass
 
-    def log_config(self, config: Config) -> None:
+    def log_config(self, config: ConfigT) -> None:
         pass
 
     def log_artifact(self, local_path: Path) -> None:

@@ -1,11 +1,11 @@
+import json
 import logging
 import shutil
 from pathlib import Path
 
-from confection import Config
-
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+from psycop.common.model_training_v2.loggers.logger_types import ConfigT
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
@@ -33,9 +33,10 @@ class DiskLogger(BaselineLogger):
     def log_metric(self, metric: CalculatedMetric) -> None:
         self._l.info(f"{metric.name}: {round(metric.value, 2)}")
 
-    def log_config(self, config: Config) -> None:
+    def log_config(self, config: ConfigT) -> None:
         self.info(f"Logging config to cfg file at {self.cfg_log_path}")
-        config.to_disk(self.cfg_log_path)
+        with self.cfg_log_path.open("w") as f:
+            f.write(json.dumps(config))
 
     def _setup_logging_module(self) -> logging.Logger:
         logger = logging.getLogger("DiskLogger")

@@ -13,6 +13,7 @@ from psycop.common.global_utils.config_utils import (
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+from psycop.common.model_training_v2.loggers.logger_types import ConfigT
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
@@ -83,11 +84,14 @@ class MLFlowLogger(BaselineLogger):
         self._init_run()
         mlflow.log_metric(key=metric.name, value=metric.value)
 
-    def log_config(self, config: dict[str, Any]):
+    def log_config(self, config: ConfigT):
         self._init_run()
-        flattened_config = flatten_nested_dict(config)
+        mutable_config = dict(config)
+        flattened_config = flatten_nested_dict(mutable_config)
         mlflow.log_params(sanitise_dict_keys(flattened_config))
-        self._log_text_as_artifact(confection.Config(config).to_str(), filename="config.cfg")
+        self._log_text_as_artifact(
+            confection.Config(mutable_config).to_str(), filename="config.cfg"
+        )
 
     def log_artifact(self, local_path: Path) -> None:
         self._init_run()

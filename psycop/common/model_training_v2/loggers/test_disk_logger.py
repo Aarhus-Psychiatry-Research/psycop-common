@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from confection import Config
@@ -23,7 +24,8 @@ def test_disklogger_log_config(tmpdir: str):
     config = Config({"parameters": {"param1": 123, "param2": "abc"}})
     logger.log_config(config)
 
-    logged_config = Config().from_disk(logger.cfg_log_path)
+    config_dict = json.loads(Path(logger.cfg_log_path).read_text())
+    logged_config = Config(config_dict)
     assert logged_config == config
 
 

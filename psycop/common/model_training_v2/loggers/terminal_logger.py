@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import wasabi
-from confection import Config
 from rich.pretty import pprint
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
+from psycop.common.model_training_v2.loggers.logger_types import ConfigT
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
 
 
@@ -29,7 +29,7 @@ class TerminalLogger(BaselineLogger):
     def log_metric(self, metric: CalculatedMetric) -> None:
         self._l.info(f"{metric.name}: {round(metric.value, 2)}")
 
-    def log_config(self, config: Config) -> None:
+    def log_config(self, config: ConfigT) -> None:
         self._l.divider("Logging config")
         pprint(config)
 
