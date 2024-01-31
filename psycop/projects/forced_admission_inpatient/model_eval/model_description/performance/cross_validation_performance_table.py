@@ -160,7 +160,7 @@ def train_model(cfg: FullConfigSchema): # type: ignore
     return roc_auc, oof_aucs # type: ignore
 
 
-def cross_validation_performance_table(models_to_train: pd.DataFrame):
+def cross_validation_performance_table(models_to_train: pd.DataFrame, models_descriptions: str | None = None):
 
     roc_aucs = []
     cfs = []
@@ -188,6 +188,7 @@ def cross_validation_performance_table(models_to_train: pd.DataFrame):
 
 
     df_dict = {
+        "Predictor set": models_to_train['pretty_model_name'],
         "AUROC score": roc_aucs,
         '95 percent confidence interval': cfs,
         "Standard deviation": std_devs,
@@ -196,7 +197,7 @@ def cross_validation_performance_table(models_to_train: pd.DataFrame):
     df = pd.DataFrame(df_dict)
 
     EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/eval")
-    df.to_excel(EVAL_ROOT / 'cross_validation_table.xlsx', index=False)
+    df.to_excel(EVAL_ROOT / f'{models_descriptions}cross_validation_table.xlsx', index=False)
 
     return df
 
@@ -205,20 +206,31 @@ if __name__ == "__main__":
         get_best_eval_pipeline,
     )
     df = pd.DataFrame({
+                    'pretty_model_name':
+                    [
+                    'Diagnoses',
+                    'Patient descriptors',
+                    'Sentence transformer embeddings',
+                    'TF-IDF features',
+                    'Full predictor set'
+                    ],
                     'model_name': 
                     [
-                    'full_model_with_text_features',
-                    'full_model_without_text_features',
-                    'only_tfidf_750_model',
                     'limited_model_demographics_diagnoses',
+                    'full_model_without_text_features',
+                    'only_sent_trans_model',
+                    'only_tfidf_750_model',
+                    'full_model_with_text_features',
+
                      ]
                     ,'group_name': 
                     [
-                    'capuan-unselfish',
-                    'frustums-liveable',
-                    'supersensuously-bronzed',
                     'elaborations-piecrust',
+                    'frustums-liveable',
+                    'overlogicality-gardenesque',
+                    'transcendentalists-habenar',
+                    'capuan-unselfish',
                     ]
-                       })
+                })
 
-    cross_validation_performance_table(df)
+    cross_validation_performance_table(df, 'primary_models_')
