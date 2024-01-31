@@ -81,7 +81,7 @@ class OptunaHyperParameterOptimization:
         return run_result.metric.value
 
     @staticmethod
-    def conduct_hyperparameter_optimization_from_file(
+    def from_file(
         cfg_file: Path, n_trials: int, n_jobs: int, direction: Literal["maximize", "minimize"]
     ) -> Study:
         cfg = Config().from_disk(cfg_file)

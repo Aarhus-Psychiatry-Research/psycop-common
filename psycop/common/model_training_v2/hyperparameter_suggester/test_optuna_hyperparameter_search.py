@@ -86,7 +86,7 @@ def test_resolve_only_suggesters():
 
 def test_hyperparameter_optimization_from_file():
     populate_baseline_registry()
-    study = OptunaHyperParameterOptimization().conduct_hyperparameter_optimization_from_file(
+    study = OptunaHyperParameterOptimization().from_file(
         (Path(__file__).parent / "test_optuna_hyperparameter_search.cfg"),
         n_trials=2,
         n_jobs=1,
