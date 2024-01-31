@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.186.0 (2024-01-31)
+
+### Feature
+
+* Base table works ([`d5d6645`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d5d66459399e455c65edbb166f3485768544ea4a))
+
+### Fix
+
+* Minor bugs ([`29c3a19`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/29c3a193d65beb0529fa663bbf9d84dd6d70d5f0))
+
 ## v0.185.1 (2024-01-30)
 
 ### Performance
