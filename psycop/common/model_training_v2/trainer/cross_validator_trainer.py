@@ -16,8 +16,8 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 @dataclass
 class CrossValidatorTrainer(BaselineTrainer):
     uuid_col_name: str
-    training_data: BaselineDataLoader
     outcome_col_name: str
+    training_data: BaselineDataLoader
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
@@ -33,7 +33,7 @@ class CrossValidatorTrainer(BaselineTrainer):
         y = pd.DataFrame(
             training_data_preprocessed[self.outcome_col_name], columns=[self.outcome_col_name]
         )
-        self.logger.info(f"\tOutcome: {y.columns}")
+        self.logger.info(f"\tOutcome: {list(y.columns)}")
 
         folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
             X=X, y=y, groups=training_data_preprocessed[self.group_col_name]

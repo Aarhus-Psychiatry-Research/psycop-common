@@ -28,10 +28,11 @@ shap==0.41.0
 sqlalchemy==1.4.39
 tableone==0.8.0
 tabulate==0.8.10
-timeseriesflattener==1.9.1
+timeseriesflattener==1.10.0
 wandb==0.15.4
 wasabi==0.9.1
 xgboost==1.7.3
+lightgbm==4.3.0
 imbalanced-learn==0.11.0
 cleanlab==2.5.0
 rapidfuzz==3.6.1

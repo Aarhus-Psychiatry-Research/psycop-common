@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import polars as pl
@@ -14,9 +15,9 @@ class MissingColumnError(Exception):
 
 
 @BaselineRegistry.preprocessing.register("column_exists_validator")
+@dataclass(frozen=True)
 class ColumnExistsValidator(PresplitStep):
-    def __init__(self, *args: str):
-        self.column_names = args
+    column_names: Sequence[str]
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         df = input_df.fetch(1) if isinstance(input_df, LazyFrame) else input_df  # type: ignore
@@ -51,7 +52,7 @@ class ColumnCountExpectation:
 
     @classmethod
     def from_list(
-        cls: type["ColumnCountExpectation"], args: list[str | int]
+        cls: type["ColumnCountExpectation"], args: Sequence[str | int]
     ) -> "ColumnCountExpectation":
         if not len(args) == 2:
             raise ValueError(
@@ -65,9 +66,9 @@ class ColumnCountExpectation:
 
 @BaselineRegistry.preprocessing.register("column_prefix_count_expectation")
 class ColumnPrefixExpectation(PresplitStep):
-    def __init__(self, *args: list[str | int]):
+    def __init__(self, column_expectations: Sequence[Sequence[str | int]]):
         self.column_expectations = (
-            Iter(args).map(lambda x: ColumnCountExpectation.from_list(x)).to_list()
+            Iter(column_expectations).map(lambda x: ColumnCountExpectation.from_list(x)).to_list()
         )
 
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
@@ -98,7 +99,7 @@ class ColumnPrefixExpectation(PresplitStep):
             column for column in df.columns if column.startswith(expectation.prefix)
         ]
 
-        if len(matching_columns) != expectation.count:
+        if len(matching_columns) != int(expectation.count):
             return [
                 ColumnCountError(
                     f'{self._wrap_str_in_quotes(expectation.prefix)} matched {matching_columns if matching_columns else "None"}, expected {expectation.count}.'

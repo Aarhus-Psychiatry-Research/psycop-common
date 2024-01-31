@@ -2,6 +2,42 @@
 
 <!--next-version-placeholder-->
 
+## v0.185.1 (2024-01-30)
+
+### Performance
+
+* **#787:** Add LightGBM ([`fef71b9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fef71b92d56fc1e30547ceedd3015b8b59988076))
+
+## v0.185.0 (2024-01-29)
+
+### Feature
+
+* Fix legend order ([`56b3609`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/56b3609c225efd14516173ff624cacdd7a9474c9))
+* Cost benefit plots added ([`43de4bd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/43de4bd1769cfeeb65749c9f47b43754a3144418))
+
+### Fix
+
+* **#780:** Terminallogger pretty print should print non-flattened cfg ([#783](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/783)) ([`7abd94a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7abd94aef5e5a6fdfe83029d47b98e88d38c5063))
+* **#780:** Terminallogger pretty print should print non-flattened cfg ([`356ca28`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/356ca2820f2ef77f55a854c9d20caf06c6484f15))
+* Fix c/b plot ([`2594b54`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2594b54f54497d815c2a58335e3bec7f832722bf))
+
+## v0.184.0 (2024-01-29)
+
+### Feature
+
+* **#772:** Use rich for pretty printing in terminallogger ([#777](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/777)) ([`c924a95`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c924a954a3757db5a9c37c6aab2ad3c2dd4ad1dc))
+* **#772:** Use rich for pretty printing in terminallogger ([`48cff23`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/48cff23b03950bae887fcdb672afe980f8632795))
+
+### Fix
+
+* **#775:** Log outcome column as string, not Index ([`a4ff66b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a4ff66b1d9da27c5a54cc9838cbf7ef73ab23327))
+
+## v0.183.0 (2024-01-26)
+
+### Feature
+
+* Do not init mlflow until first logging operation ([`9085833`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/90858331b6b0302e9f05080d58d342223afcc188))
+
 ## v0.182.1 (2024-01-24)
 
 ### Fix

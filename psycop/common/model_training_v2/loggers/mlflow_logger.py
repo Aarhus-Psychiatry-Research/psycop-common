@@ -1,4 +1,5 @@
 import tempfile
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -20,20 +21,27 @@ def sanitise_dict_keys(d: dict[str, Any]) -> dict[str, Any]:
 
 
 @BaselineRegistry.loggers.register("mlflow_logger")
+@dataclass
 class MLFlowLogger(BaselineLogger):
-    def __init__(
-        self, experiment_name: str, tracking_uri: str = "http://exrhel0371.it.rm.dk:5050"
-    ) -> None:
-        mlflow.set_tracking_uri(tracking_uri)
+    experiment_name: str
+    tracking_uri: str = "http://exrhel0371.it.rm.dk:5050"
+    postpone_run_creation_to_first_log: bool = False
 
-        # Start a new run. End a run if it already exists within the process.
-        if mlflow.active_run() is not None:
-            mlflow.end_run()
+    def __post_init__(self) -> None:
+        self._run_initialised = False
 
-        self.mlflow_experiment = mlflow.set_experiment(experiment_name=experiment_name)
-        self.experiment_id = self.mlflow_experiment.experiment_id
+        if not self.postpone_run_creation_to_first_log:
+            self._init_run()
 
-        self._log_str = ""
+    def _init_run(self):
+        if not self._run_initialised:
+            self._log_str = ""
+            mlflow.set_tracking_uri(self.tracking_uri)
+            # Start a new run. End a run if it already exists within the process.
+            if mlflow.active_run() is not None:
+                mlflow.end_run()
+            self.mlflow_experiment = mlflow.set_experiment(experiment_name=self.experiment_name)
+            self._run_initialised = True
 
     def _append_log_str(self, prefix: str, message: str):
         timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -56,24 +64,31 @@ class MLFlowLogger(BaselineLogger):
         self._log_text_as_artifact(text=self._log_str, filename="log.txt")
 
     def info(self, message: str) -> None:
+        self._init_run()
         self._log(prefix="INFO", message=message)
 
     def good(self, message: str) -> None:
+        self._init_run()
         self._log(prefix="GOOD", message=message)
 
     def warn(self, message: str) -> None:
+        self._init_run()
         self._log(prefix="WARN", message=message)
 
     def fail(self, message: str) -> None:
+        self._init_run()
         self._log(prefix="FAIL", message=message)
 
     def log_metric(self, metric: CalculatedMetric) -> None:
+        self._init_run()
         mlflow.log_metric(key=metric.name, value=metric.value)
 
     def log_config(self, config: dict[str, Any]):
+        self._init_run()
         flattened_config = flatten_nested_dict(config)
         mlflow.log_params(sanitise_dict_keys(flattened_config))
         self._log_text_as_artifact(confection.Config(config).to_str(), filename="config.cfg")
 
     def log_artifact(self, local_path: Path) -> None:
+        self._init_run()
         mlflow.log_artifact(local_path=local_path.__str__())

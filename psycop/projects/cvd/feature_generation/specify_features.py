@@ -1,8 +1,8 @@
 """Feature specification module."""
 import logging
-from typing import TYPE_CHECKING
+from collections.abc import Sequence
 
-from timeseriesflattener.aggregation_fns import maximum
+from timeseriesflattener.aggregation_fns import AggregationFunType, maximum
 from timeseriesflattener.feature_specs.group_specs import NamedDataframe, OutcomeGroupSpec
 from timeseriesflattener.feature_specs.single_specs import (
     AnySpec,
@@ -20,10 +20,6 @@ from psycop.projects.cvd.feature_generation.feature_layeres.base import AnySpecT
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_1 import CVDLayer1
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_2 import CVDLayer2
 from psycop.projects.cvd.feature_generation.feature_layeres.layer_3 import CVDLayer3
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
 
 log = logging.getLogger(__name__)
 
@@ -61,7 +57,12 @@ class CVDFeatureSpecifier:
             incident=[True],
         ).create_combinations()
 
-    def get_feature_specs(self, layer: int) -> list[AnySpecType]:
+    def get_feature_specs(
+        self,
+        layer: int,
+        aggregation_fns: Sequence[AggregationFunType],
+        lookbehind_days: Sequence[int],
+    ) -> list[AnySpecType]:
         """Get a spec set."""
         feature_sequences: list[Sequence[AnySpecType]] = [
             self._get_static_predictor_specs(),
@@ -69,11 +70,23 @@ class CVDFeatureSpecifier:
         ]
 
         if layer >= 1:
-            feature_sequences.append(CVDLayer1().get_features(lookbehind_days=730))
+            feature_sequences.append(
+                CVDLayer1().get_features(
+                    lookbehind_days=lookbehind_days, aggregation_fns=aggregation_fns
+                )
+            )
         if layer >= 2:
-            feature_sequences.append(CVDLayer2().get_features(lookbehind_days=730))
+            feature_sequences.append(
+                CVDLayer2().get_features(
+                    lookbehind_days=lookbehind_days, aggregation_fns=aggregation_fns
+                )
+            )
         if layer >= 3:
-            feature_sequences.append(CVDLayer3().get_features(lookbehind_days=730))
+            feature_sequences.append(
+                CVDLayer3().get_features(
+                    lookbehind_days=lookbehind_days, aggregation_fns=aggregation_fns
+                )
+            )
         if layer > 3:
             raise ValueError(f"Layer {layer} not supported.")
 

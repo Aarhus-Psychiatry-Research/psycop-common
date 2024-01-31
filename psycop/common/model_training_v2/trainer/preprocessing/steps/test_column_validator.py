@@ -24,11 +24,11 @@ def test_columns_exist_validator():
     # We use .fetch() in ColumnExistsValidator, which can return a dataframe with no rows. Ensure the validator still works in that case.
 
     # Check passing test
-    ColumnExistsValidator("pred_age").apply(df)
+    ColumnExistsValidator(["pred_age"]).apply(df)
 
     # Fail
     with pytest.raises(MissingColumnError, match=r".+\[unknown_column\] not found in dataset.*"):
-        ColumnExistsValidator("pred_age", "unknown_column").apply(df)
+        ColumnExistsValidator(["pred_age", "unknown_column"]).apply(df)
 
 
 def test_column_prefix_expectation():
@@ -40,8 +40,8 @@ def test_column_prefix_expectation():
     ).lazy()
 
     # Check passing test
-    ColumnPrefixExpectation(["pred_", 1]).apply(df)
+    ColumnPrefixExpectation([["pred_", 1]]).apply(df)
 
     # Fail
     with pytest.raises(ColumnCountError, match=r".+count expectation.*"):
-        ColumnPrefixExpectation(["pred_", 2]).apply(df)
+        ColumnPrefixExpectation([["pred_", 2]]).apply(df)

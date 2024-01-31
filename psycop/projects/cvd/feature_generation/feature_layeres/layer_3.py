@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from timeseriesflattener.aggregation_fns import boolean, count
+from timeseriesflattener.aggregation_fns import AggregationFunType
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
@@ -27,7 +27,9 @@ from psycop.projects.cvd.feature_generation.feature_layeres.base import FeatureL
 
 
 class CVDLayer3(FeatureLayer):
-    def get_features(self, lookbehind_days: int) -> Sequence[PredictorSpec]:
+    def get_features(
+        self, lookbehind_days: Sequence[int], aggregation_fns: Sequence[AggregationFunType]
+    ) -> Sequence[PredictorSpec]:
         layer = 3
         psychiatric_disorders = PredictorGroupSpec(
             named_dataframes=(
@@ -46,8 +48,8 @@ class CVDLayer3(FeatureLayer):
                     name=f"top_10_weight_gaining_antipsychotics_layer_{layer}",
                 ),
             ),
-            aggregation_fns=[count],
-            lookbehind_days=[lookbehind_days],
+            aggregation_fns=aggregation_fns,
+            lookbehind_days=lookbehind_days,
             fallback=[0],
         ).create_combinations()
 
@@ -57,15 +59,15 @@ class CVDLayer3(FeatureLayer):
                     df=top_10_weight_gaining_antipsychotics(), name=f"antipsychotics_layer_{layer}"
                 ),
             ),
-            lookbehind_days=[lookbehind_days],
-            aggregation_fns=[boolean],
+            lookbehind_days=lookbehind_days,
+            aggregation_fns=aggregation_fns,
             fallback=[0],
         ).create_combinations()
 
         hdl_spec = PredictorGroupSpec(
             named_dataframes=[NamedDataframe(df=hdl(), name=f"hdl_layer_{layer}")],
-            lookbehind_days=[lookbehind_days],
-            aggregation_fns=[boolean],
+            lookbehind_days=lookbehind_days,
+            aggregation_fns=aggregation_fns,
             fallback=[0],
         ).create_combinations()
 
