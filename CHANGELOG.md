@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.190.0 (2024-02-06)
+
+### Feature
+
+* Lightgbm suggester ([`7b9569a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7b9569a2f56ca7be9284d548a10bb4379872170a))
+* Joblib based hyperparameter search ([`4df2dec`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4df2dec3afb47b4b3ef363392a8f35b19a4684a8))
+* **#789:** CVD, hyperparam tune for layer 2 ([`075313d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/075313d262cf100744315a20b558c56ff9e4d047))
+* Lightgbm suggester ([`feb6a68`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/feb6a689764a041fc45958b0d73cfb91db89c57c))
+
 ## v0.189.0 (2024-02-06)
 
 ### Feature
