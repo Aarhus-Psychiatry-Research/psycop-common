@@ -18,6 +18,9 @@ def populate_baseline_registry() -> None:
     from ..trainer.task.estimator_steps.logistic_regression import logistic_regression_step
     from ..trainer.task.estimator_steps.xgboost import xgboost_classifier_step
     from ..trainer.task.estimator_steps.lightgbm import lightgbm_classifier_step
+    from ..trainer.task.estimator_steps.sequential_feature_selection import (
+        sequential_feature_selection_step,
+    )
 
     # Preprocessing
     from ..trainer.preprocessing.pipeline import BaselinePreprocessingPipeline
