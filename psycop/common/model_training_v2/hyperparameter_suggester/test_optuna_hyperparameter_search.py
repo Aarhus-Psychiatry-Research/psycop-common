@@ -91,5 +91,7 @@ def test_hyperparameter_optimization_from_file():
         n_trials=2,
         n_jobs=1,
         direction="maximize",
+        study_name="test_study",
+        catch=(Exception,),
     )
     assert len(study.trials) == 2
