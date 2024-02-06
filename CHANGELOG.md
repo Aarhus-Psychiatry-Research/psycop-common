@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.188.0 (2024-02-06)
+
+### Feature
+
+* Xgboost suggester ([#792](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/792)) ([`2e9fc40`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2e9fc409306cc702e6d6e162230faae201b657d4))
+
 ## v0.187.0 (2024-02-06)
 
 ### Feature
