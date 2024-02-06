@@ -10,6 +10,7 @@ from psycop.common.model_training_v2.trainer.task.estimator_steps.logistic_regre
 )
 
 from ....hyperparameter_suggester.suggesters.base_suggester import Suggester
+from .xgboost import XGBoostSuggester
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,7 @@ class SuggesterExample:
             should="Logistic regression with list resolves correctly",
             suggester=LogisticRegressionSuggester(C=[0.1, 1, False]),
         ),
+        SuggesterExample(should="XGBoost resolves correctly", suggester=XGBoostSuggester()),
     ],
 )
 def test_logistic_regression_suggester(example: SuggesterExample):
