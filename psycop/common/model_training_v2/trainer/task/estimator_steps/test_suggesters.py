@@ -39,5 +39,5 @@ class SuggesterExample:
         SuggesterExample(should="LightGBM resolves correctly", suggester=LightGBMSuggester()),
     ],
 )
-def test_logistic_regression_suggester(example: SuggesterExample):
+def test_suggesters(example: SuggesterExample):
     suggester_tester(suggester=example.suggester)

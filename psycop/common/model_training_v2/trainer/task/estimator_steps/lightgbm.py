@@ -17,11 +17,21 @@ from ....hyperparameter_suggester.suggesters.suggester_spaces import (
 
 @BaselineRegistry.estimator_steps.register("lightgbm")
 def lightgbm_classifier_step(
-    num_leaves: int = 31, max_bin: int = 64, device_type: Literal["cpu", "gpu"] = "cpu"
+    num_leaves: int = 31,
+    max_bin: int = 63,
+    device_type: Literal["cpu", "gpu"] = "cpu",
+    n_estimators: int = 100,
+    learning_rate: float = 0.1,
 ) -> ModelStep:
     return (
         "lightgbm",
-        LGBMClassifier(num_leaves=num_leaves, device_type=device_type, max_bin=max_bin),  # type: ignore
+        LGBMClassifier(
+            num_leaves=num_leaves,
+            device_type=device_type,
+            max_bin=max_bin,
+            n_estimators=n_estimators,
+            learning_rate=learning_rate,
+        ),  # type: ignore
     )
 
 
@@ -42,6 +52,7 @@ class LightGBMSuggester(Suggester):
         # The same goes forthis, can be auto-generated.
         return {
             "@estimator_steps": "xgboost",
+            "@estimator_steps": "lightgbm",
             "num_leaves": self.num_leaves.suggest(trial, name="num_leaves"),
             "n_estimators": self.n_estimators.suggest(trial, name="n_estimators"),
             "learning_rate": self.learning_rate.suggest(trial, name="learning_rate"),
