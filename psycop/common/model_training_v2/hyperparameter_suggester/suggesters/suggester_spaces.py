@@ -37,7 +37,7 @@ class FloatSpace:
         return trial.suggest_float(name=name, low=self.low, high=self.high, log=self.logarithmic)
 
     @classmethod
-    def from_mapping(cls: type["FloatSpace"], mapping: Mapping[str, float | bool]) -> "FloatSpace":
+    def from_mapping(cls: type["FloatSpace"], mapping: FloatspaceMappingT) -> "FloatSpace":
         return cls(
             low=mapping["low"],
             high=mapping["high"],
@@ -45,7 +45,7 @@ class FloatSpace:
         )
 
     @classmethod
-    def from_list(cls: type["FloatSpace"], sequence: Sequence[float | bool]) -> "FloatSpace":
+    def from_list(cls: type["FloatSpace"], sequence: FloatSpaceSequenceT) -> "FloatSpace":
         return cls(
             low=sequence[0],
             high=sequence[1],
@@ -56,6 +56,55 @@ class FloatSpace:
     def from_list_or_mapping(
         cls: type["FloatSpace"], sequence_or_mapping: FloatSpaceT
     ) -> "FloatSpace":
+        if isinstance(sequence_or_mapping, Mapping):
+            return cls.from_mapping(sequence_or_mapping)
+        return cls.from_list(sequence_or_mapping)
+
+
+IntegerspaceMappingT = Mapping[str, int | bool]
+IntegerspaceSequenceT = Sequence[int | bool]
+IntegerspaceT = IntegerspaceMappingT | IntegerspaceSequenceT
+
+
+@dataclass(frozen=True)
+class IntegerSpace:
+    low: int
+    high: int
+    logarithmic: bool
+
+    def __post_init__(self):
+        if self.low >= self.high:
+            raise ValueError(
+                f"Invalid IntegerSpace: low value {self.low} must be less than high value {self.high}"
+            )
+        if self.logarithmic and (self.low <= 0 or self.high <= 0):
+            raise ValueError(
+                "Invalid IntegerSpace: The logarithm is undefined for values less than or equal to 0, so all values must be greater than 0."
+            )
+
+    def suggest(self, trial: optuna.Trial, name: str) -> float:
+        return trial.suggest_int(name=name, low=self.low, high=self.high, log=self.logarithmic)
+
+    @classmethod
+    def from_mapping(cls: type["IntegerSpace"], mapping: IntegerspaceMappingT) -> "IntegerSpace":
+        return cls(
+            low=mapping["low"],
+            high=mapping["high"],
+            logarithmic=mapping["logarithmic"],  # type: ignore
+        )
+
+    @classmethod
+    def from_list(cls: type["IntegerSpace"], sequence: IntegerspaceSequenceT) -> "IntegerSpace":
+        return cls(
+            low=sequence[0],
+            high=sequence[1],
+            logarithmic=sequence[2],  # type: ignore
+        )
+
+    @classmethod
+    def from_list_or_mapping(
+        cls: type["IntegerSpace"], sequence_or_mapping: IntegerspaceT
+    ) -> "IntegerSpace":
         if isinstance(sequence_or_mapping, Mapping):
             return cls.from_mapping(sequence_or_mapping)
         return cls.from_list(sequence_or_mapping)
