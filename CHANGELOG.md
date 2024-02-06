@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.187.0 (2024-02-06)
+
+### Feature
+
+* Add integerspace ([#791](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/791)) ([`aa908d7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/aa908d7bdd15f8e5e63a1ea4de7092d34c058937))
+* Add integerspace ([`b4e44a5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b4e44a57cbbcf02f66be677f5d80e148d4abc077))
+
 ## v0.186.0 (2024-01-31)
 
 ### Feature
