@@ -1,8 +1,6 @@
 import copy
-import random
 import re
-import time
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Literal
 
@@ -20,7 +18,6 @@ from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_sug
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
-from psycop.projects.cvd.model_training import populate_cvd_registry
 
 from ..config.populate_registry import populate_baseline_registry
 
@@ -96,7 +93,7 @@ class OptunaHyperParameterOptimization:
         n_trials: int,
         catch: tuple[type[Exception]],
         cfg_with_resolved_suggesters: dict[str, Any],
-    ):
+    ) -> Study:
         study = optuna.create_study(
             direction=direction,
             load_if_exists=True,
@@ -111,6 +108,7 @@ class OptunaHyperParameterOptimization:
             n_trials=n_trials,
             catch=catch,
         )
+        return study
 
     @staticmethod
     def from_file(
@@ -120,7 +118,7 @@ class OptunaHyperParameterOptimization:
         study_name: str,
         direction: Literal["maximize", "minimize"],
         catch: tuple[type[Exception]],
-    ):
+    ) -> Sequence[Study]:
         cfg = Config().from_disk(cfg_file)
 
         cfg_with_resolved_suggesters = (
@@ -132,7 +130,7 @@ class OptunaHyperParameterOptimization:
             cfg=cfg_with_resolved_suggesters
         )
 
-        joblib.Parallel(n_jobs)(
+        studies = joblib.Parallel(n_jobs)(
             joblib.delayed(OptunaHyperParameterOptimization._optimize_study)(
                 direction=direction,
                 n_trials=n_trials // n_jobs,
@@ -142,3 +140,4 @@ class OptunaHyperParameterOptimization:
             )
             for _ in range(n_jobs)
         )
+        return studies  # type: ignore
