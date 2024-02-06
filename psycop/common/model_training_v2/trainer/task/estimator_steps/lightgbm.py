@@ -51,7 +51,6 @@ class LightGBMSuggester(Suggester):
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         # The same goes forthis, can be auto-generated.
         return {
-            "@estimator_steps": "xgboost",
             "@estimator_steps": "lightgbm",
             "num_leaves": self.num_leaves.suggest(trial, name="num_leaves"),
             "n_estimators": self.n_estimators.suggest(trial, name="n_estimators"),

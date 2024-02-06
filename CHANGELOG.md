@@ -2,6 +2,36 @@
 
 <!--next-version-placeholder-->
 
+## v0.189.0 (2024-02-06)
+
+### Feature
+
+* Lightgbm suggester ([#798](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/798)) ([`fce05e9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fce05e953bed5ed2b279cc60bc7413c8230713f4))
+* Lightgbm suggester ([`cd4fec7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd4fec7d81359dab538c61a3b9c31380ef193457))
+
+## v0.188.0 (2024-02-06)
+
+### Feature
+
+* Xgboost suggester ([#792](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/792)) ([`2e9fc40`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2e9fc409306cc702e6d6e162230faae201b657d4))
+
+## v0.187.0 (2024-02-06)
+
+### Feature
+
+* Add integerspace ([#791](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/791)) ([`aa908d7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/aa908d7bdd15f8e5e63a1ea4de7092d34c058937))
+* Add integerspace ([`b4e44a5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b4e44a57cbbcf02f66be677f5d80e148d4abc077))
+
+## v0.186.0 (2024-01-31)
+
+### Feature
+
+* Base table works ([`d5d6645`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d5d66459399e455c65edbb166f3485768544ea4a))
+
+### Fix
+
+* Minor bugs ([`29c3a19`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/29c3a193d65beb0529fa663bbf9d84dd6d70d5f0))
+
 ## v0.185.1 (2024-01-30)
 
 ### Performance
