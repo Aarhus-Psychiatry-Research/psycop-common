@@ -51,7 +51,7 @@ class XGBoostSuggester(Suggester):
         n_estimators: IntegerspaceT = (100, 1200, True),
         alpha: FloatSpaceT = (1e-8, 0.1, True),
         reg_lambda: FloatSpaceT = (1e-8, 1.0, True),
-        max_depth: IntegerspaceT = (1, 10, True),
+        max_depth: IntegerspaceT = (3, 8, True),
         learning_rate: FloatSpaceT = (1e-8, 1, True),
         gamma: FloatSpaceT = (1e-8, 0.001, True),
     ):
