@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.189.0 (2024-02-06)
+
+### Feature
+
+* Lightgbm suggester ([#798](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/798)) ([`fce05e9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fce05e953bed5ed2b279cc60bc7413c8230713f4))
+* Lightgbm suggester ([`cd4fec7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd4fec7d81359dab538c61a3b9c31380ef193457))
+
 ## v0.188.0 (2024-02-06)
 
 ### Feature
