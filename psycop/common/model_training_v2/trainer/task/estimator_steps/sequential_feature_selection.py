@@ -16,16 +16,18 @@ def sequential_feature_selection_step(
     cv: BaseCrossValidator | int,
     forward: bool,
     n_jobs: int = 1,
+    verbose: Literal[0, 1, 2] = 2,
 ) -> ModelStep:
     return (
         "sequential_feature_selection",
         SequentialFeatureSelector(
-            estimator=estimator,
+            estimator=estimator[1],
             k_features=tuple(k_features),  # type: ignore
             scoring=scoring,
             cv=cv,  # type: ignore
             forward=forward,
             n_jobs=n_jobs,
             clone_estimator=False,
+            verbose=verbose,
         ),
     )

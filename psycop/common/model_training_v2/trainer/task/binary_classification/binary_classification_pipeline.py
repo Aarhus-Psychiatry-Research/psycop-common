@@ -16,6 +16,14 @@ class BinaryClassificationPipeline(BasePipeline):
 
     def fit(self, x: pd.DataFrame, y: pd.Series) -> None:  # type: ignore
         self.sklearn_pipe.fit(X=x, y=y)
+        print(
+            [
+                s["feature_names"]
+                for s in self.sklearn_pipe.named_steps[
+                    "sequential_feature_selection"
+                ].subsets_.values()
+            ]
+        )
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
         """Returns the predicted probabilities of the `1`
