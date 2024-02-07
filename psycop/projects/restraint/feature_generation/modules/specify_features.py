@@ -18,7 +18,6 @@ from timeseriesflattener.aggregation_fns import (
 from timeseriesflattener.feature_specs.group_specs import (
     NamedDataframe,
     PredictorGroupSpec,
-    OutcomeGroupSpec,
 )
 from timeseriesflattener.feature_specs.single_specs import (
     PredictorSpec,
@@ -645,7 +644,7 @@ class FeatureSpecifier:
 
         mechanical_restraint_spec = OutcomeSpec(
             timeseries_df=sql_load(
-                "SELECT *, 1 as value FROM fct.psycop_coercion_outcome_timestamps_v2"
+                "SELECT *, 1  as value FROM fct.psycop_coercion_outcome_timestamps_2"
             )
             .rename(
                 columns={
@@ -754,10 +753,10 @@ class FeatureSpecifier:
 
     def get_feature_specs(
         self,
-    ) -> list[Union[StaticSpec, PredictorSpec]]:
+    ) -> list[Union[StaticSpec, PredictorSpec, OutcomeSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
             return self._get_outcome_specs()  # type: ignore
 
-        return self._get_static_predictor_specs() + self._get_temporal_predictor_specs()
+        return self._get_static_predictor_specs() + self._get_temporal_predictor_specs() + self._get_outcome_specs()

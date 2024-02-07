@@ -10,6 +10,7 @@ from psycop.projects.restraint.cohort.utils.filters import (
     RestraintAdmissionTypeFilter,
     RestraintCoercionTypeFilter,
     RestraintDoubleAdmissionFilter,
+    RestraintExcludeDaysFollowingCoercionFilter,
     RestraintExcludeFirstDayFilter,
     RestraintForcedAdmissionFilter,
     RestraintMinAgeFilter,
@@ -41,7 +42,6 @@ class RestraintCohortDefiner(CohortDefiner):
             prediction_times=unfiltered_prediction_times,
             filtering_steps=[
                 RestraintAdmissionTypeFilter(),
-                RestraintMinDateFilter(), # move
                 RestraintMinAgeFilter(),
             ],
             entity_id_col_name="dw_ek_borger",
@@ -54,6 +54,14 @@ class RestraintCohortDefiner(CohortDefiner):
         filtered_prediction_times = preprocess_readmissions(
             df=filtered_prediction_times
         )
+
+        filtered_prediction_times = filter_prediction_times(
+            prediction_times=filtered_prediction_times,
+            filtering_steps=[
+                RestraintMinDateFilter(),
+            ],
+            entity_id_col_name="dw_ek_borger",
+        ).prediction_times
 
         unfiltered_coercion_timestamps = pl.from_pandas(load_coercion_timestamps())
 
@@ -86,19 +94,25 @@ class RestraintCohortDefiner(CohortDefiner):
 
         excluded_cohort = excluded_cohort.unique(keep="first")
 
-        unfiltered_cohort = unfiltered_cohort.join(
+        filtered_cohort = unfiltered_cohort.join(
             excluded_cohort,
             how="anti",
             on=["dw_ek_borger", "datotid_start"],
         )
 
-        deduplicated_cohort = unfiltered_cohort.unique(
+        cohort_with_coercion = filter_prediction_times(prediction_times=filtered_cohort, filtering_steps=[RestraintWithinAdmissionsFilter(), RestraintTreatmentUnitFilter()], entity_id_col_name="dw_ek_borger").prediction_times
+
+        cohort_with_outcomes = select_outcomes(cohort_with_coercion)
+
+        deduplicated_cohort = filtered_cohort.unique(
             subset=["dw_ek_borger", "datotid_start", "datotid_slut"],
             keep="first",
-        )
+        ).select(["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"])
+
+        filtered_cohort = deduplicated_cohort.join(cohort_with_outcomes, how="left", on=["dw_ek_borger", "datotid_start", "datotid_slut"])
 
         filtered_cohort = filter_prediction_times(
-            prediction_times=deduplicated_cohort,
+            prediction_times=filtered_cohort,
             filtering_steps=[
                 RestraintAdmissionFilter(),
                 RestraintShakCodeFilter(),
@@ -119,7 +133,7 @@ class RestraintCohortDefiner(CohortDefiner):
             .dt.strftime("%Y-%m-%d 00:00:00")
             .str.strptime(pl.Datetime("ns"))  # type: ignore
             .alias("dato_start")
-        ).select(["dw_ek_borger", "datotid_start", "datotid_slut", "dato_start"])
+        ).select(["dw_ek_borger", "datotid_start", "datotid_slut", "datotid_start_sei", "dato_start"])
 
         forced_admissions_cohort = filtered_cohort.join(
             forced_admissions,
@@ -134,14 +148,14 @@ class RestraintCohortDefiner(CohortDefiner):
                 RestraintDoubleAdmissionFilter(),
             ],
             entity_id_col_name="dw_ek_borger",
-        ).prediction_times.select(
-            ["dw_ek_borger", "datotid_start", "datotid_slut", "pred_time"]
-        )
+        ).prediction_times.select(["dw_ek_borger", "datotid_start", "datotid_slut", "datotid_start_sei"])
 
         exploded_cohort = explode_admissions(filtered_forced_admissions_cohort)
 
+        filtered_exploded_cohort = filter_prediction_times(prediction_times=exploded_cohort, filtering_steps=[RestraintExcludeDaysFollowingCoercionFilter(),], entity_id_col_name="dw_ek_borger").prediction_times
+        
         return filter_prediction_times(
-            prediction_times=exploded_cohort,
+            prediction_times=filtered_exploded_cohort,
             filtering_steps=[RestraintExcludeFirstDayFilter()],
             entity_id_col_name="dw_ek_borger",
         )
@@ -154,7 +168,7 @@ class RestraintCohortDefiner(CohortDefiner):
 
         filtered_prediction_times = filter_prediction_times(
             prediction_times=unfiltered_prediction_times,
-            filtering_steps=[RestraintAdmissionTypeFilter()],
+            filtering_steps=[RestraintAdmissionTypeFilter(), RestraintMinAgeFilter()],
             entity_id_col_name="dw_ek_borger",
         ).prediction_times
 
@@ -196,7 +210,7 @@ class RestraintCohortDefiner(CohortDefiner):
 
 
 if __name__ == "__main__":
-    # bundle = RestraintCohortDefiner.get_filtered_prediction_times_bundle()
+    bundle = RestraintCohortDefiner.get_filtered_prediction_times_bundle()
 
     outcome_timestamps = RestraintCohortDefiner.get_outcome_timestamps()
 

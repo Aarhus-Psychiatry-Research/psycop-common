@@ -110,3 +110,10 @@ class RestraintTreatmentUnitFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(pl.col("behandlingsomraade") == "Psykiatrien")
+
+
+class RestraintExcludeDaysFollowingCoercionFilter(PredictionTimeFilter):
+    @staticmethod
+    def apply(df: pl.DataFrame) -> pl.DataFrame:
+        return df.filter((pl.col("datotid_start_sei") > pl.col("pred_time")) | (pl.col("datotid_start_sei").is_null()))
+    

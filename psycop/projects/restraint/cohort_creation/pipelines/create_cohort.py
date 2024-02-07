@@ -34,9 +34,6 @@ df_adm = df_adm[df_adm["pt_type"] == "Indlagt"]
 # only keep age >= 18 at the start of contact
 df_adm = df_adm[df_adm["alder_start"] >= 18]
 
-# only keep admissions after January 1st 2015 (so we can use use lookbehind windows of two years)
-df_adm = df_adm[df_adm["datotid_start"] >= "2015-01-01"]
-
 # only keep relevant columns
 df_adm = df_adm[["dw_ek_borger", "datotid_start", "datotid_slut"]]
 
@@ -68,8 +65,12 @@ df_patients_list = [df_patients.get_group(key) for key in df_patients.groups]
 # concatenate dataframes for individual patients
 df_adm = pd.concat([concat_readmissions(patient) for patient in df_patients_list])
 
+# only keep admissions after January 1st 2015 (so we can use use lookbehind windows of two years)
+df_cohort_ = df_adm[df_adm["datotid_start"] >= "2015-01-01"]
+
+
 # for all patients, join all instances of coercion onto all admissions
-df_cohort = df_adm.merge(df_coercion, how="left", on="dw_ek_borger")
+df_cohort = df_cohort_.merge(df_coercion, how="left", on="dw_ek_borger")
 
 
 # exclude admission if there has been an instance of coercion between 0 and 365 days before admission start (including 0 and 365)

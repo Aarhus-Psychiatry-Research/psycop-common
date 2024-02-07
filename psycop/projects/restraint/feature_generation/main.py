@@ -40,13 +40,13 @@ def main():
 
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=True,  # Remember to set to False when generating full dataset
+        min_set_for_debug=False,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,  # type: ignore
         prediction_times_df=load_coercion_prediction_times(),
-        drop_pred_times_with_insufficient_look_distance=False,
+        drop_pred_times_with_insufficient_look_distance=True,
         project_info=project_info,
         add_birthdays=True,
     )
