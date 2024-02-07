@@ -1,14 +1,9 @@
 from collections.abc import Sequence
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import count, latest
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-)
+from timeseriesflattener.aggregation_fns import boolean, latest
+from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f0_disorders,
@@ -49,16 +44,13 @@ class SczBpLayer3(SczBpFeatureLayer):
                 NamedDataframe(df=f9_disorders(), name="f9_disorders"),
             ),
             lookbehind_days=lookbehind_days,
-            aggregation_fns=[count],
+            aggregation_fns=[boolean],
             fallback=[0],
         ).create_combinations()
 
         hamilton_spec = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(
-                    df=hamilton_d17(),
-                    name=f"hamilton_d17_layer_{layer}",
-                ),
+                NamedDataframe(df=hamilton_d17(), name=f"hamilton_d17_layer_{layer}"),
             ),
             lookbehind_days=lookbehind_days,
             aggregation_fns=[latest],

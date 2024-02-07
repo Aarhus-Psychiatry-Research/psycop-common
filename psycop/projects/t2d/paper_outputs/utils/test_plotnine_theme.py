@@ -6,14 +6,10 @@ from psycop.common.model_evaluation.utils import TEST_PLOT_PATH
 
 
 def test_patchwork_grid(subsampled_synth_eval_df: pd.DataFrame):
-    input_df = subsampled_synth_eval_df.rename(
-        columns={"pred": "y", "pred_prob": "y_hat_probs"},
-    )
+    input_df = subsampled_synth_eval_df.rename(columns={"pred": "y", "pred_prob": "y_hat_probs"})
 
     df = auroc_by_group(
-        df=input_df,
-        groupby_col_name="is_female",
-        confidence_interval=False,
+        df=input_df, groupby_col_name="is_female", confidence_interval=False
     ).reset_index()
 
     from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME

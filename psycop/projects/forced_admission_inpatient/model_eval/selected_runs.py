@@ -14,10 +14,7 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
 def get_best_dev_pipeline() -> ForcedAdmissionInpatientPipelineRun:
     return ForcedAdmissionInpatientPipelineRun(
         group=DEVELOPMENT_GROUP,
-        name=DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[
-            MODEL_ALGORITHM,
-            2,
-        ],
+        name=DEVELOPMENT_GROUP.get_best_runs_by_lookahead()[MODEL_ALGORITHM, 2],
         pos_rate=BEST_POS_RATE,
         create_output_paths_on_init=False,
     )
@@ -26,5 +23,6 @@ def get_best_dev_pipeline() -> ForcedAdmissionInpatientPipelineRun:
 def get_best_eval_pipeline() -> ForcedAdmissionInpatientPipelineRun:
     return test_selected_model_pipeline(
         pipeline_to_test=get_best_dev_pipeline(),
-        splits_for_evaluation=["val"],
+        splits_for_training=["train"],
+        splits_for_evaluation=["val"],  # add with_washout if eval on cohort with washout
     )

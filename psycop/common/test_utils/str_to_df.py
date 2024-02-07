@@ -7,8 +7,7 @@ from pandas import DataFrame
 
 
 def convert_cols_with_matching_colnames_to_datetime(
-    df: pd.DataFrame,
-    colname_substr: str,
+    df: pd.DataFrame, colname_substr: str
 ) -> pd.DataFrame:
     """Convert columns that contain colname_substr in their name to datetimes.
 
@@ -20,11 +19,8 @@ def convert_cols_with_matching_colnames_to_datetime(
         pd.DataFrame: The converted dataframe.
     """
     df.loc[:, df.columns.str.contains(colname_substr)] = df.loc[
-        :,
-        df.columns.str.contains(colname_substr),
-    ].apply(
-        pd.to_datetime,
-    )
+        :, df.columns.str.contains(colname_substr)
+    ].apply(pd.to_datetime)
     return df
 
 
@@ -51,9 +47,14 @@ def str_to_df(
     """
     # Drop comments for each line if any exist inside the str
     lines = []
+    header_index = 0
+
     for i, line in enumerate(string.split("\n")):
-        is_header = i == 0
-        if is_header:
+        is_blank_line = line.strip() == ""
+        if is_blank_line:
+            header_index += 1
+
+        if i == header_index:
             # Remove whitespace at the start and end of headers
             header_items = line.split(",")
             header_items_stripped = [item.strip() for item in header_items]

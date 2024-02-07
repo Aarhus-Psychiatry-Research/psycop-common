@@ -1,8 +1,6 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.load_scz_bp_outcomes import (
-    manic_or_bipolar,
-)
+from psycop.common.feature_generation.loaders.raw.load_scz_bp_outcomes import manic_or_bipolar
 
 
 def get_first_bp_diagnosis() -> pd.DataFrame:

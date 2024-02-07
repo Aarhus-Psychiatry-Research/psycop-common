@@ -44,10 +44,7 @@ def format_dict_for_printing(d: dict[str, Any]) -> str:
     )
 
 
-def load_dataset_from_file(
-    file_path: Path,
-    nrows: int | None = None,
-) -> pd.DataFrame:
+def load_dataset_from_file(file_path: Path, nrows: int | None = None) -> pd.DataFrame:
     """Load dataset from file. Handles csv and parquet files based on suffix.
 
     Args:
@@ -73,9 +70,7 @@ def load_dataset_from_file(
 
 
 def load_most_recent_file_matching_pattern_as_df(
-    dir_path: Path,
-    file_pattern: str,
-    file_suffix: str,
+    dir_path: Path, file_pattern: str, file_suffix: str
 ) -> pd.DataFrame:
     """Load most recent df matching pattern.
 
@@ -113,10 +108,7 @@ def df_contains_duplicates(df: pd.DataFrame, col_subset: list[str]) -> bool:
     return df.duplicated(subset=col_subset).any()
 
 
-def write_df_to_file(
-    df: pd.DataFrame,
-    file_path: Path,
-):
+def write_df_to_file(df: pd.DataFrame, file_path: Path):
     """Write dataset to file. Handles csv and parquet files based on suffix.
 
     Args:

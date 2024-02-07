@@ -9,14 +9,11 @@ from psycop.projects.t2d.paper_outputs.model_description.performance.performance
 )
 
 
-def test_generate_performance_by_ppr_table(
-    subsampled_eval_dataset: EvalDataset,
-):
+def test_generate_performance_by_ppr_table(subsampled_eval_dataset: EvalDataset):
     positive_rates = [0.3, 0.2, 0.1]
 
     generated_table = generate_performance_by_ppr_table(
-        eval_dataset=subsampled_eval_dataset,
-        positive_rates=positive_rates,
+        eval_dataset=subsampled_eval_dataset, positive_rates=positive_rates
     )
 
     output_table = clean_up_performance_by_ppr(table=generated_table)

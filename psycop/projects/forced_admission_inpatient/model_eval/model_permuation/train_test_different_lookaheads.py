@@ -5,9 +5,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.common.model_training.preprocessing.post_split.pipeline import (
     create_post_split_pipeline,
 )
@@ -54,29 +52,23 @@ def train_validate(
     y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
 
     print(
-        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",  # type: ignore
+        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}"  # type: ignore
     )
 
     df = val
     df["y_hat_prob"] = y_val_hat_prob
 
     return create_eval_dataset(
-        col_names=cfg.data.col_name,
-        outcome_col_name=outcome_col_name_for_test,
-        df=df,
+        col_names=cfg.data.col_name, outcome_col_name=outcome_col_name_for_test, df=df
     )
 
 
-def load_data(
-    cfg: FullConfigSchema,
-) -> list[pd.DataFrame]:
+def load_data(cfg: FullConfigSchema) -> list[pd.DataFrame]:
     """Train a single model and evaluate it."""
     train_dataset = pd.concat(
         [
             load_and_filter_split_from_cfg(
-                data_cfg=cfg.data,
-                pre_split_cfg=cfg.preprocessing.pre_split,
-                split=split,
+                data_cfg=cfg.data, pre_split_cfg=cfg.preprocessing.pre_split, split=split
             )
             for split in cfg.data.splits_for_training
         ],
@@ -98,10 +90,7 @@ def load_data(
     return [train_dataset, eval_dataset]
 
 
-def train_model(
-    cfg: FullConfigSchema,
-    outcome_col_name_for_test: str,
-) -> float:
+def train_model(cfg: FullConfigSchema, outcome_col_name_for_test: str) -> float:
     """Train a single model and evaluate it."""
     datasets = load_data(cfg)
 
@@ -120,17 +109,14 @@ def train_model(
     )
 
     roc_auc = roc_auc_score(  # type: ignore
-        eval_dataset.y,
-        eval_dataset.y_hat_probs,
+        eval_dataset.y, eval_dataset.y_hat_probs
     )
     return roc_auc  # type: ignore
 
 
 def performance_by_lookahead_table(
-    run: ForcedAdmissionInpatientPipelineRun,
-    lookaheads_for_performance_eval: list[float],
+    run: ForcedAdmissionInpatientPipelineRun, lookaheads_for_performance_eval: list[float]
 ):
-
     roc_auc_table = {}
 
     for _, lookahead in enumerate(lookaheads_for_performance_eval):
@@ -157,6 +143,5 @@ if __name__ == "__main__":
     )
 
     performance_by_lookahead_table(
-        run=get_best_eval_pipeline(),
-        lookaheads_for_performance_eval=[30, 90, 180, 360],
+        run=get_best_eval_pipeline(), lookaheads_for_performance_eval=[30, 90, 180, 365]
     )

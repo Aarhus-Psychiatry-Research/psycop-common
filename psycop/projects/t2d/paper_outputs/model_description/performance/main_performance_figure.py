@@ -1,6 +1,4 @@
-from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import (
-    t2d_auroc_plot,
-)
+from psycop.projects.t2d.paper_outputs.model_description.performance.auroc import t2d_auroc_plot
 from psycop.projects.t2d.paper_outputs.model_description.performance.confusion_matrix_pipeline import (
     t2d_confusion_matrix_plot,
 )

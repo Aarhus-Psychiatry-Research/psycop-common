@@ -3,8 +3,7 @@ import polars as pl
 
 
 def concat_readmissions(
-    df_patient: pd.DataFrame,
-    readmission_interval_hours: int = 4,
+    df_patient: pd.DataFrame, readmission_interval_hours: int = 4
 ) -> pd.DataFrame:
     """
     Concatenates individual readmissions into continuous admissions. An admission is defined as a readmission when the admission starts less than a specifiec number of
@@ -25,19 +24,17 @@ def concat_readmissions(
     # 'end_readmission' indicates whether the end of the admission was followed be a readmission less than four hours later
     df_patient = df_patient.assign(
         end_readmission=lambda x: x["datotid_start"].shift(-1) - x["datotid_slut"]
-        < pd.Timedelta(readmission_interval_hours, "hours"),
+        < pd.Timedelta(readmission_interval_hours, "hours")
     )
     # 'start_readmission' indicates whether the admission started less than four hours later after the previous admission
     df_patient = df_patient.assign(
         start_readmission=lambda x: x["datotid_start"] - x["datotid_slut"].shift(1)
-        < pd.Timedelta(readmission_interval_hours, "hours"),
+        < pd.Timedelta(readmission_interval_hours, "hours")
     )
 
     # if the patients have any readmissions, the affected rows are subsetted
     if df_patient["end_readmission"].any() & df_patient["start_readmission"].any():
-        readmissions = df_patient[
-            df_patient["end_readmission"] | df_patient["start_readmission"]
-        ]
+        readmissions = df_patient[df_patient["end_readmission"] | df_patient["start_readmission"]]
 
         # if there are multiple subsequent readmissions (i.e., both 'end_readmission' and 'start_readmission' == True), all but the first and last are excluded
         readmissions_subset = readmissions[
@@ -110,17 +107,17 @@ def keep_first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFram
     admission = admission.assign(
         first_mechanical_restraint=admission.datotid_start_sei[
             admission.typetekst_sei == "Bælte"
-        ].min(),
+        ].min()
     )
     admission = admission.assign(
         first_forced_medication=admission.datotid_start_sei[
             admission.typetekst_sei == "Beroligende medicin"
-        ].min(),
+        ].min()
     )
     admission = admission.assign(
         first_manual_restraint=admission.datotid_start_sei[
             admission.typetekst_sei == "Fastholden"
-        ].min(),
+        ].min()
     )
 
     return admission.drop(columns="typetekst_sei")[
@@ -160,10 +157,7 @@ def unpack_adm_days(
 
     # expand admission days between admission start and discharge
     adm_day = pd.DataFrame(
-        pd.date_range(
-            row.loc[idx, "datotid_start"].date(),
-            row.loc[idx, "datotid_slut"].date(),
-        ),
+        pd.date_range(row.loc[idx, "datotid_start"].date(), row.loc[idx, "datotid_slut"].date())
     )
 
     # add admission start to every day of admission
@@ -173,14 +167,10 @@ def unpack_adm_days(
     days_unpacked = pd.merge(row, adm_day, how="left", on="datotid_start")
 
     # add counter for days
-    days_unpacked["pred_adm_day_count"] = (
-        adm_day.groupby(by="datotid_start").cumcount() + 1
-    )
+    days_unpacked["pred_adm_day_count"] = adm_day.groupby(by="datotid_start").cumcount() + 1
 
     # add prediction time to prediction dates
-    days_unpacked = days_unpacked.assign(
-        pred_time=lambda x: x[0] + pd.Timedelta(hours=pred_hour),
-    )
+    days_unpacked = days_unpacked.assign(pred_time=lambda x: x[0] + pd.Timedelta(hours=pred_hour))
 
     # exclude admission start days where admission happens after prediction
     if days_unpacked.loc[0, "datotid_start"] >= days_unpacked.loc[0, "pred_time"]:  # type: ignore

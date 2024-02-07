@@ -4,18 +4,12 @@ from typing import Callable, Literal
 
 import numpy as np
 from timeseriesflattener.aggregation_fns import mean
-from timeseriesflattener.df_transforms import (
-    df_with_multiple_values_to_named_dataframes,
-)
+from timeseriesflattener.df_transforms import df_with_multiple_values_to_named_dataframes
 from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
 from timeseriesflattener.feature_specs.single_specs import PredictorSpec
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
-from psycop.common.feature_generation.loaders.raw.load_embedded_text import (
-    EmbeddedTextLoader,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.loaders.raw.load_embedded_text import EmbeddedTextLoader
 
 log = logging.getLogger(__name__)
 
@@ -33,9 +27,7 @@ class TextFeatureSpecifier:
         interval_days: list[float],
     ) -> list[PredictorSpec]:
         log.info("-------- Generating sentence transformer specs --------")
-        embedded_text_filename = (
-            "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
-        )
+        embedded_text_filename = "text_embeddings_paraphrase-multilingual-MiniLM-L12-v2.parquet"
         TEXT_SFIS = [
             "Observation af patient, Psykiatri",
             "Samtale med behandlingssigte",
@@ -118,8 +110,7 @@ class TextFeatureSpecifier:
         return tfidf_specs
 
     def _get_text_specs(
-        self,
-        embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "tfidf",
+        self, embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "tfidf"
     ) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("-------- Generating text predictor specs --------")
@@ -128,14 +119,10 @@ class TextFeatureSpecifier:
             return []
 
         sentence_transformer_specs = self._get_sentence_transformer_specs(
-            resolve_multiple=[mean],
-            interval_days=[30],
+            resolve_multiple=[mean], interval_days=[30]
         )
 
-        tfidf_specs = self._get_tfidf_specs(
-            resolve_multiple=[mean],
-            interval_days=[180],
-        )
+        tfidf_specs = self._get_tfidf_specs(resolve_multiple=[mean], interval_days=[180])
 
         if embedding_method == "both":
             return sentence_transformer_specs + tfidf_specs
@@ -146,13 +133,10 @@ class TextFeatureSpecifier:
         return tfidf_specs
 
     def get_text_feature_specs(
-        self,
-        embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "tfidf",
+        self, embedding_method: Literal["tfidf", "sentence_transformer", "both"] = "tfidf"
     ) -> list[PredictorSpec]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            log.warning(
-                "--- !!! Using the minimum set of features for debugging !!! ---",
-            )
+            log.warning("--- !!! Using the minimum set of features for debugging !!! ---")
         return self._get_text_specs(embedding_method=embedding_method)

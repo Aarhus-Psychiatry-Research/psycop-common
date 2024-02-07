@@ -3,9 +3,7 @@ from typing import Any
 
 
 def flatten_nested_dict(
-    d: MutableMapping[str, Any],
-    parent_key: str = "",
-    sep: str = ".",
+    d: MutableMapping[str, Any], parent_key: str = "", sep: str = "."
 ) -> dict[str, Any]:
     """Recursively flatten an infinitely nested config. E.g. {"level1":
 
@@ -31,3 +29,15 @@ def flatten_nested_dict(
         else:
             items.append((new_key, v))
     return dict(items)
+
+
+def replace_symbols_in_dict_keys(
+    d: dict[str, Any], symbol2replacement: dict[str, str]
+) -> dict[str, Any]:
+    new_dict = {}
+    for key, value in d.items():
+        new_key = key
+        for symbol, replacement in symbol2replacement.items():
+            new_key = new_key.replace(symbol, replacement)
+        new_dict[new_key] = value
+    return new_dict

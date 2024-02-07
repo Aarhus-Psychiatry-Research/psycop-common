@@ -2,19 +2,21 @@
 The config Schema for sequence models.
 """
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Optional, Union
 
 from lightning.pytorch.callbacks import Callback
-from lightning.pytorch.loggers.wandb import WandbLogger
-from pydantic import BaseModel
+from lightning.pytorch.loggers import Logger as plLogger
+from pydantic import BaseModel, ConfigDict
 
-from psycop.common.sequence_models.tasks import (
-    BEHRTForMaskedLM,
-    EncoderForClassification,
+from psycop.common.feature_generation.sequences.prediction_time_collater import (
+    BasePredictionTimeCollater,
 )
 
-from .dataset import PatientSliceDataset, PatientSlicesWithLabels
+from ..feature_generation.sequences.patient_slice_collater import BasePatientSliceCollater
+from .tasks.patientslice_classifier_base import BasePredictionTimeClassifier
+from .tasks.pretrainer_base import BasePatientSlicePretrainer
 
 
 class TrainerConfigSchema(BaseModel):
@@ -22,9 +24,7 @@ class TrainerConfigSchema(BaseModel):
     A config for the pytorch lightning trainer
     """
 
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
 
     accelerator: str = "auto"
     strategy: str = "auto"
@@ -32,7 +32,7 @@ class TrainerConfigSchema(BaseModel):
     num_nodes: int = 1
     callbacks: list[Callback] = []
     precision: str = "32-true"
-    logger: WandbLogger
+    logger: Optional[plLogger] = None
     max_epochs: Optional[int] = None
     min_epochs: Optional[int] = None
     max_steps: int = 10
@@ -55,30 +55,37 @@ class TrainerConfigSchema(BaseModel):
     default_root_dir: Optional[Path] = None
 
     def to_dict(self) -> dict[str, Any]:
-        return self.dict()
+        return self.model_dump()
 
 
 class TrainingConfigSchema(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
+
     batch_size: int
     num_workers_for_dataloader: int = 8
     trainer: TrainerConfigSchema
 
 
-class DatasetsConfigSchema(BaseModel):
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
+class PretrainingModelAndDataset(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
-    training: PatientSliceDataset | PatientSlicesWithLabels
-    validation: PatientSliceDataset | PatientSlicesWithLabels
+    model: BasePatientSlicePretrainer
+    training_dataset: BasePatientSliceCollater
+    validation_dataset: BasePatientSliceCollater
+
+
+class ClassificationModelAndDataset(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
+
+    model: BasePredictionTimeClassifier
+    training_dataset: BasePredictionTimeCollater
+    validation_dataset: BasePredictionTimeCollater
 
 
 class ResolvedConfigSchema(BaseModel):
-    class Config:
-        extra = "forbid"
-        allow_mutation = False
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
 
-    dataset: DatasetsConfigSchema
-    model: BEHRTForMaskedLM | EncoderForClassification
+    # Required because dataset and model are coupled through their input and outputs
+    model_and_dataset: PretrainingModelAndDataset | ClassificationModelAndDataset
     training: TrainingConfigSchema
+    logger: Sequence[plLogger] | None = None

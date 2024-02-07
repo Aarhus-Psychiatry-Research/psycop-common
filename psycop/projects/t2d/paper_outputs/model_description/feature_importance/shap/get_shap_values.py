@@ -3,17 +3,15 @@ from typing import Optional
 
 import pandas as pd
 import polars as pl
-import shap
 from sklearn.pipeline import Pipeline
 
+import shap
 from psycop.common.global_utils.cache import mem
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
 def generate_shap_df_for_predictor_col(
-    colname: str,
-    X: pd.DataFrame,
-    shap_values: list[float],
+    colname: str, X: pd.DataFrame, shap_values: list[float]
 ) -> pd.DataFrame:
     colname_index = X.columns.get_loc(colname)
 
@@ -23,7 +21,7 @@ def generate_shap_df_for_predictor_col(
             "feature_value": X[colname],
             "pred_time_index": list(range(len(X))),
             "shap_value": shap_values[:, colname_index],  # type: ignore
-        },
+        }
     )
 
     return df
@@ -35,13 +33,7 @@ def get_long_shap_df(X: pd.DataFrame, shap_values: list[float]) -> pd.DataFrame:
     dfs = []
 
     for c in predictor_cols:
-        dfs.append(
-            generate_shap_df_for_predictor_col(
-                colname=c,
-                X=X,
-                shap_values=shap_values,
-            ),
-        )
+        dfs.append(generate_shap_df_for_predictor_col(colname=c, X=X, shap_values=shap_values))
 
     return pd.concat(dfs, axis=0)
 
@@ -63,9 +55,7 @@ class ShapBundle:
 
 
 def generate_shap_values_from_pipe(
-    features: pl.LazyFrame,
-    outcome: pl.LazyFrame,
-    pipeline: Pipeline,
+    features: pl.LazyFrame, outcome: pl.LazyFrame, pipeline: Pipeline
 ) -> list[float]:
     numerical_predictors = []
 
@@ -86,9 +76,7 @@ def generate_shap_values_from_pipe(
 
 @mem.cache
 def get_shap_bundle_for_best_run(
-    run: T2DPipelineRun,
-    n_rows: Optional[int] = 10_000,
-    cache_ver: float = 0.1,
+    run: T2DPipelineRun, n_rows: Optional[int] = 10_000, cache_ver: float = 0.1
 ) -> ShapBundle:
     print(f"Generating shap values for {run.name}, with cache version {cache_ver}")
 
@@ -105,9 +93,7 @@ def get_shap_bundle_for_best_run(
         flattened_ds = flattened_ds.sample(n=n_rows)
 
     cfg = run.inputs.cfg
-    predictor_cols = [
-        c for c in flattened_ds.columns if c.startswith(cfg.data.pred_prefix)
-    ]
+    predictor_cols = [c for c in flattened_ds.columns if c.startswith(cfg.data.pred_prefix)]
     outcome_cols = [
         c
         for c in flattened_ds.columns
@@ -123,40 +109,28 @@ def get_shap_bundle_for_best_run(
         pipeline=pipe,  # type: ignore
     )
 
-    return ShapBundle(
-        shap_values=shap_values,
-        X=flattened_ds.select(predictor_cols).to_pandas(),
-    )
+    return ShapBundle(shap_values=shap_values, X=flattened_ds.select(predictor_cols).to_pandas())
 
 
-def get_top_i_features_by_mean_abs_shap(
-    shap_long_df: pl.DataFrame,
-    i: int,
-) -> pl.DataFrame:
+def get_top_i_features_by_mean_abs_shap(shap_long_df: pl.DataFrame, i: int) -> pl.DataFrame:
     feature_shap_agg = shap_long_df.groupby("feature_name").agg(
-        shap_std=pl.col("shap_value").abs().mean(),
+        shap_std=pl.col("shap_value").abs().mean()
     )
 
     feature_shap_agg_with_ranks = feature_shap_agg.with_columns(
-        shap_std_rank=pl.col("shap_std")
-        .rank(method="average", descending=True)
-        .cast(pl.Int32),
+        shap_std_rank=pl.col("shap_std").rank(method="average", descending=True).cast(pl.Int32)
     )
 
     selected_features = feature_shap_agg_with_ranks.filter(i >= pl.col("shap_std_rank"))
 
-    return selected_features.join(shap_long_df, on="feature_name", how="left").drop(
-        "shap_std",
-    )
+    return selected_features.join(shap_long_df, on="feature_name", how="left").drop("shap_std")
 
 
 if __name__ == "__main__":
     from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 
     shap_bundle = get_shap_bundle_for_best_run(
-        run=get_best_eval_pipeline(),
-        n_rows=1_000,
-        cache_ver=0.1,
+        run=get_best_eval_pipeline(), n_rows=1_000, cache_ver=0.1
     )
 
     long_shap_df = shap_bundle.get_long_shap_df()  # type: ignore

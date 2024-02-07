@@ -1,17 +1,15 @@
 """ Utils for text_models  """
 
-from typing import Any
+from typing import Union
 
+import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.common.feature_generation.text_models.text_model_paths import TEXT_MODEL_DIR
 from psycop.common.global_utils.pickle import read_pickle, write_to_pickle
 
 
-def save_text_model_to_dir(
-    model: Any,
-    filename: str,
-):
+def save_text_model_to_shared_dir(model: Union[CountVectorizer, TfidfVectorizer], filename: str):
     """
     Saves the model to a pickle file
 
@@ -20,13 +18,18 @@ def save_text_model_to_dir(
         filename (str): The filename to save the model as
 
     """
-    filepath = OVARTACI_SHARED_DIR / "text_models" / filename
-    write_to_pickle(model, filepath)
+
+    model_filepath = TEXT_MODEL_DIR / filename
+    write_to_pickle(model, model_filepath)
+
+    vocab_filepath = TEXT_MODEL_DIR / "vocabulary_lists" / f"vocab_{filename}"
+    vocab = model.vocabulary_
+    vocab = pd.DataFrame(list(vocab.items()), columns=["Word", "Index"])
+    vocab.sort_values(by="Index").reset_index(drop=True)
+    vocab.to_parquet(vocab_filepath, index=False)
 
 
-def load_text_model(
-    filename: str,
-) -> CountVectorizer | TfidfVectorizer:
+def load_text_model(filename: str) -> TfidfVectorizer:
     """
     Loads a text model from a pickle file
 
@@ -34,7 +37,7 @@ def load_text_model(
         filename: filename name of the model
         path_str: path of model location
     """
-    filepath = OVARTACI_SHARED_DIR / "text_models" / filename
+    filepath = TEXT_MODEL_DIR / filename
     return read_pickle(filepath)
 
 

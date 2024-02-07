@@ -66,9 +66,7 @@ def plot_auc_roc(
 
     # Initialize lists for bootstrapped TPRs and FPRs
     tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_roc(
-        n_bootstraps=n_bootstraps,
-        y=y,
-        y_hat_probs=y_hat_probs,
+        n_bootstraps=n_bootstraps, y=y, y_hat_probs=y_hat_probs
     )
 
     mean_tprs = tprs_bootstrapped.mean(axis=0)
@@ -84,17 +82,12 @@ def plot_auc_roc(
     auc_ci = [auc_mean - 1.96 * auc_se, auc_mean + 1.96 * auc_se]
 
     df = pd.DataFrame(
-        {
-            "fpr": base_fpr,
-            "tpr": mean_tprs,
-            "tpr_lower": tprs_lower,
-            "tpr_upper": tprs_upper,
-        },
+        {"fpr": base_fpr, "tpr": mean_tprs, "tpr_lower": tprs_lower, "tpr_upper": tprs_upper}
     )
 
     auroc_label = pn.annotate(
         "text",
-        label=f"AUROC (95% CI): {auc_mean:.2f} ({auc_ci[0]:.2f}-{auc_ci[1]:.2f})",
+        label=f"AUROC (95% CI): {auc_mean:.3f} ({auc_ci[0]:.3f}-{auc_ci[1]:.3f})",
         x=1,
         y=0,
         ha="right",

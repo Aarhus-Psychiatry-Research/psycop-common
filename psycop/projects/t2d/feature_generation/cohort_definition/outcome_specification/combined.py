@@ -26,16 +26,10 @@ def get_first_diabetes_indicator() -> pd.DataFrame:
     for df_type in dfs:
         dfs[df_type]["source"] = df_type
 
-    combined = pd.concat(
-        [dfs[k] for k in dfs],
-        axis=0,
-    )
+    combined = pd.concat([dfs[k] for k in dfs], axis=0)
 
     first_diabetes_indicator = (
-        combined.sort_values("timestamp")
-        .groupby("dw_ek_borger")
-        .first()
-        .reset_index(drop=False)
+        combined.sort_values("timestamp").groupby("dw_ek_borger").first().reset_index(drop=False)
     )
 
     first_diabetes_indicator["value"] = 1

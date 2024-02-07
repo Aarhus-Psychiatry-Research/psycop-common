@@ -1,3 +1,4 @@
+# type: ignore
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -24,8 +25,7 @@ SCZ_BP_CUSTOM_COLUMNS = ["meta_scz_or_bp_indicator"]  # , "meta_first_visit"]
 date_str = datetime.now().strftime("%Y-%m-%d")
 
 T2D_PN_THEME = pn.theme_bw() + pn.theme(
-    panel_grid=pn.element_blank(),
-    axis_title=pn.element_text(size=14),
+    panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
 )
 
 

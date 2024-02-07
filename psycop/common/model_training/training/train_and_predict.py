@@ -58,9 +58,7 @@ def stratified_cross_validation(
     msg.info(f"Training on {X.shape[1]} columns and {X.shape[0]} rows")
 
     folds = StratifiedGroupKFold(n_splits=cfg.n_crossval_splits).split(
-        X=X,
-        y=y,
-        groups=train_df[cfg.data.col_name.id],
+        X=X, y=y, groups=train_df[cfg.data.col_name.id]
     )
 
     # Perform CV and get out of fold predictions
@@ -71,23 +69,17 @@ def stratified_cross_validation(
 
         msg.info(f"{msg_prefix}: Training fold")
 
-        X_train, y_train = (
-            X.loc[train_idxs],
-            y.loc[train_idxs],
-        )
+        X_train, y_train = (X.loc[train_idxs], y.loc[train_idxs])
         pipe.fit(X_train, y_train)
 
         y_pred = pipe.predict_proba(X_train)[:, 1]
 
         msg.info(f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train,y_pred), 3)}")  # type: ignore
 
-        oof_y_pred = pipe.predict_proba(X.loc[val_idxs])[  # type: ignore
-            :,
-            1,
-        ]
+        oof_y_pred = pipe.predict_proba(X.loc[val_idxs])[:, 1]  # type: ignore
 
         msg.info(
-            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs],oof_y_pred), 3)}",  # type: ignore
+            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs],oof_y_pred), 3)}"  # type: ignore
         )  # type: ignore
 
         train_df.loc[val_idxs, "oof_y_hat"] = oof_y_pred  # type: ignore
@@ -105,7 +97,7 @@ def multilabel_cross_validation(
     """Performs stratified and grouped cross validation using the pipeline."""
     if cfg.model.name not in SUPPORTS_MULTILABEL_CLASSIFICATION:
         raise ValueError(
-            f"{cfg.model.name} does not support multilabel classification. Models that support multilabel classification include: {SUPPORTS_MULTILABEL_CLASSIFICATION}.",
+            f"{cfg.model.name} does not support multilabel classification. Models that support multilabel classification include: {SUPPORTS_MULTILABEL_CLASSIFICATION}."
         )
 
     msg = Printer(timestamp=True)
@@ -122,9 +114,7 @@ def multilabel_cross_validation(
 
     # stratify by first outcome column
     folds = StratifiedGroupKFold(n_splits=cfg.n_crossval_splits).split(
-        X=X,
-        y=y_joined,
-        groups=train_df[cfg.data.col_name.id],
+        X=X, y=y_joined, groups=train_df[cfg.data.col_name.id]
     )
 
     # Perform CV and get out of fold predictions
@@ -135,23 +125,20 @@ def multilabel_cross_validation(
 
         msg.info(f"{msg_prefix}: Training fold")
 
-        X_train, y_train = (
-            X.loc[train_idxs],
-            y.loc[train_idxs],
-        )
+        X_train, y_train = (X.loc[train_idxs], y.loc[train_idxs])
 
         pipe.fit(X_train, y_train)
 
         y_pred = pipe.predict_proba(X_train)
 
         msg.info(
-            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, y_pred), 3)}",  # type: ignore
+            f"{msg_prefix}: Train AUC = {round(roc_auc_score(y_train, y_pred), 3)}"  # type: ignore
         )
 
         oof_y_pred = pipe.predict_proba(X.loc[val_idxs])
 
         msg.info(
-            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs], oof_y_pred), 3)}",  # type: ignore
+            f"{msg_prefix}: Oof AUC = {round(roc_auc_score(y.loc[val_idxs], oof_y_pred), 3)}"  # type: ignore
         )
 
         for x, col_name in enumerate(outcome_col_name):
@@ -191,9 +178,7 @@ def crossvalidate(
     df = df.rename(columns={"oof_y_hat": "y_hat_prob"})
 
     return create_eval_dataset(
-        col_names=cfg.data.col_name,
-        outcome_col_name=outcome_col_name,
-        df=df,
+        col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df
     )
 
 
@@ -226,9 +211,7 @@ def multilabel_crossvalidate(
     )
 
     return create_eval_dataset(
-        col_names=cfg.data.col_name,
-        outcome_col_name=outcome_col_name,
-        df=df,
+        col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df
     )
 
 
@@ -265,16 +248,14 @@ def train_validate(
     y_val_hat_prob = pipe.predict_proba(X_val)[:, 1]
 
     print(
-        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",  # type: ignore
+        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}"  # type: ignore
     )
 
     df = val
     df["y_hat_prob"] = y_val_hat_prob
 
     return create_eval_dataset(
-        col_names=cfg.data.col_name,
-        outcome_col_name=outcome_col_name,
-        df=df,
+        col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df
     )
 
 
@@ -311,7 +292,7 @@ def multilabel_train_validate(
     y_val_hat_prob = pipe.predict_proba(X_val)
 
     print(
-        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}",  # type: ignore
+        f"Performance on train: {round(roc_auc_score(y_train, y_train_hat_prob), 3)}"  # type: ignore
     )
 
     df = val
@@ -319,9 +300,7 @@ def multilabel_train_validate(
         df.loc[:, f"y_hat_prob_{col_name}"] = y_val_hat_prob[:, x]
 
     return create_eval_dataset(
-        col_names=cfg.data.col_name,
-        outcome_col_name=outcome_col_name,
-        df=df,
+        col_names=cfg.data.col_name, outcome_col_name=outcome_col_name, df=df
     )
 
 

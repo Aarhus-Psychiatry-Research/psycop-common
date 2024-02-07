@@ -26,12 +26,7 @@ def fa_inpatient_auroc_by_sex(run: ForcedAdmissionInpatientPipelineRun) -> pn.gg
     int_to_sex = {0: "Male", 1: "Female"}
     df["Sex"] = df["is_female"].map(int_to_sex).astype("category")
 
-    return fa_inpatient_plot_robustness(
-        df,
-        x_column="Sex",
-        line_y_col_name="auroc",
-        xlab="Sex",
-    )
+    return fa_inpatient_plot_robustness(df, x_column="Sex", line_y_col_name="auroc", xlab="Sex")
 
 
 if __name__ == "__main__":

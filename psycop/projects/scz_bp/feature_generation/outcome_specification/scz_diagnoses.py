@@ -1,8 +1,6 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.load_scz_bp_outcomes import (
-    scz_or_sczaffective,
-)
+from psycop.common.feature_generation.loaders.raw.load_scz_bp_outcomes import scz_or_sczaffective
 
 
 def get_first_scz_diagnosis() -> pd.DataFrame:

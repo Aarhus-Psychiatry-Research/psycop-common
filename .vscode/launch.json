@@ -15,5 +15,15 @@
                 "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
             },
         },
+        {
+            "name": "Debug Pytest",
+            "type": "python",
+            "request": "test",
+            "console": "integratedTerminal",
+            // "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
+            },
+        }
     ]
 }

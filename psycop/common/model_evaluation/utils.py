@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import wandb
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import Extra
+from pydantic import ConfigDict
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.paths import PSYCOP_PKG_ROOT
@@ -27,13 +27,7 @@ TEST_PLOT_PATH.mkdir(parents=True, exist_ok=True)
 class BaseModel(PydanticBaseModel):
     """."""
 
-    class Config:
-        """An pydantic basemodel, which doesn't allow attributes that are not
-        defined in the class."""
-
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True, extra="forbid")
 
 
 def format_dict_for_printing(d: dict) -> str:  # type: ignore
@@ -63,10 +57,7 @@ def format_dict_for_printing(d: dict) -> str:  # type: ignore
 
 
 def drop_records_if_datediff_days_smaller_than(
-    df: pd.DataFrame,
-    t2_col_name: str,
-    t1_col_name: str,
-    threshold_days: float,
+    df: pd.DataFrame, t2_col_name: str, t1_col_name: str, threshold_days: float
 ) -> pd.Series:  # type: ignore
     """Drop rows where datediff is smaller than threshold_days. datediff = t2 - t1.
 
@@ -157,14 +148,8 @@ def bin_continuous_data(
     df = pd.DataFrame(
         {
             "series": series,
-            "bin": pd.cut(
-                series,
-                bins=bins,
-                labels=labels,
-                duplicates="drop",
-                include_lowest=True,
-            ),
-        },
+            "bin": pd.cut(series, bins=bins, labels=labels, duplicates="drop", include_lowest=True),
+        }
     )
 
     # Drop all rows where bin is NaN
@@ -219,10 +204,7 @@ def read_pickle(path: Union[str, Path]) -> Any:
         return pkl.load(f)
 
 
-def write_df_to_file(
-    df: pd.DataFrame,
-    file_path: Path,
-):
+def write_df_to_file(df: pd.DataFrame, file_path: Path):
     """Write dataset to file. Handles csv and parquet files based on suffix.
 
     Args:
@@ -250,13 +232,12 @@ def get_feature_importance_dict(pipe: Pipeline) -> Union[None, dict[str, float]]
         Union[None, dict[str, float]]: Dictionary of feature importances.
     """
     return dict(
-        zip(pipe["model"].feature_names, pipe["model"].feature_importances_),  # type: ignore
+        zip(pipe["model"].feature_names, pipe["model"].feature_importances_)  # type: ignore
     )
 
 
 def get_selected_features_dict(
-    pipe: Pipeline,
-    train_col_names: list[str],
+    pipe: Pipeline, train_col_names: list[str]
 ) -> Union[None, dict[str, int]]:
     """Returns results from feature selection as a dict.
 
@@ -271,35 +252,22 @@ def get_selected_features_dict(
         int(i)
         for i in pipe["preprocessing"]["feature_selection"].get_support()  # type: ignore
     ]
-    return dict(
-        zip(train_col_names, is_selected),
-    )
+    return dict(zip(train_col_names, is_selected))
 
 
 def create_wandb_folders():
     """Creates folders to store logs on Overtaci."""
     if sys.platform == "win32":
-        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
-        )
-        (PSYCOP_PKG_ROOT / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
-        )
+        (Path(tempfile.gettempdir()) / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
+        (PSYCOP_PKG_ROOT / "wandb" / "debug-cli.onerm").mkdir(exist_ok=True, parents=True)
 
 
 def coerce_to_datetime(date_repr: Union[str, date]) -> datetime:
     """Coerce date or str to datetime."""
     if isinstance(date_repr, str):
-        date_repr = date.fromisoformat(
-            date_repr,
-        )
+        date_repr = date.fromisoformat(date_repr)
 
-    date_repr = datetime.combine(
-        date_repr,
-        datetime.min.time(),
-    )
+    date_repr = datetime.combine(date_repr, datetime.min.time())
 
     return date_repr
 
@@ -309,10 +277,7 @@ def get_percent_lost(n_before: float, n_after: float) -> float:
     return round((100 * (1 - n_after / n_before)), 2)
 
 
-def output_table(
-    output_format: str,
-    df: pd.DataFrame,
-) -> Union[pd.DataFrame, wandb.Table, str]:
+def output_table(output_format: str, df: pd.DataFrame) -> Union[pd.DataFrame, wandb.Table, str]:
     """Output table in specified format."""
     if output_format == "html":
         return df.reset_index(drop=True).to_html()

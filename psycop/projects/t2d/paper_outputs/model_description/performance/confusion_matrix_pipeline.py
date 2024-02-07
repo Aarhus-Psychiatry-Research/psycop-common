@@ -16,10 +16,8 @@ def t2d_confusion_matrix_plot(run: T2DPipelineRun) -> pn.ggplot:
     df = pd.DataFrame(
         {
             "true": eval_ds.y,
-            "pred": eval_ds.get_predictions_for_positive_rate(
-                run.paper_outputs.pos_rate,
-            )[0],
-        },
+            "pred": eval_ds.get_predictions_for_positive_rate(run.paper_outputs.pos_rate)[0],
+        }
     )
     confusion_matrix = get_confusion_matrix_cells_from_df(df=df)
 

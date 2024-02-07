@@ -44,10 +44,7 @@ def print_df_dimensions_diff(func):  # noqa # type: ignore
             diff = n_in_dim_before_func - result.shape[dim_int]
 
             if diff != 0:
-                percent_diff = round(
-                    (diff) / n_in_dim_before_func * 100,
-                    2,
-                )
+                percent_diff = round((diff) / n_in_dim_before_func * 100, 2)
 
                 diff_msg += f"Dropped {diff} ({percent_diff}%) {dim}, started with {n_in_dim_before_func} {dim}. | "
 
@@ -61,7 +58,7 @@ def print_df_dimensions_diff(func):  # noqa # type: ignore
     return wrapper
 
 
-def wandb_alert_on_exception_return_terrible_auc(func):  # noqa # type: ignore
+def return_terrible_auroc_on_exception(func):  # noqa # type: ignore
     """Alerts wandb on exception."""
 
     @wraps(func)

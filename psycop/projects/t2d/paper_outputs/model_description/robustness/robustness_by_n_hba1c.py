@@ -8,12 +8,10 @@ from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeli
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
-def t2d_auroc_by_n_hba1c(
-    run: T2DPipelineRun,
-) -> pn.ggplot:
+def t2d_auroc_by_n_hba1c(run: T2DPipelineRun) -> pn.ggplot:
     """Plot performance by n hba1c"""
     eval_ds = run.pipeline_outputs.get_eval_dataset(
-        custom_columns=["eval_hba1c_within_9999_days_count_fallback_nan"],
+        custom_columns=["eval_hba1c_within_9999_days_count_fallback_nan"]
     )
 
     col_name = "eval_hba1c_within_9999_days_count_fallback_nan"

@@ -1,8 +1,6 @@
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.load_cancer_outcomes import (
-    any_cancer,
-)
+from psycop.common.feature_generation.loaders.raw.load_cancer_outcomes import any_cancer
 
 
 def get_first_cancer_diagnosis() -> pd.DataFrame:

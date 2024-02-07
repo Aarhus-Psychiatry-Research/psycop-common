@@ -16,9 +16,7 @@ def get_predictions_for_positive_rate(
     positive_threshold = y_hat_probs.quantile(1 - desired_positive_rate)
 
     # Remap y_hat_probs to 0/1 based on positive rate threshold
-    y_hat_int = pd.Series(
-        (y_hat_probs >= positive_threshold).astype(int),
-    )
+    y_hat_int = pd.Series((y_hat_probs >= positive_threshold).astype(int))
 
     actual_positive_rate = y_hat_int.mean()
 
@@ -53,12 +51,10 @@ class EvalDataset(PSYCOPBaseModel):
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        self.Config.allow_mutation = True
+        self.model_config["frozen"] = False
 
     def get_predictions_for_positive_rate(
-        self,
-        desired_positive_rate: float,
-        y_hat_probs_column: Optional[str] = "y_hat_probs",
+        self, desired_positive_rate: float, y_hat_probs_column: Optional[str] = "y_hat_probs"
     ) -> tuple[pd.Series, Union[float, float64]]:  # type: ignore
         """Takes the top positive_rate% of predicted probabilities and turns them into 1, the rest 0.
 
@@ -74,24 +70,21 @@ class EvalDataset(PSYCOPBaseModel):
         )
 
     def get_predictions_for_threshold(
-        self,
-        desired_threshold: float,
-        y_hat_probs_column: Optional[str] = "y_hat_probs",
+        self, desired_threshold: float, y_hat_probs_column: Optional[str] = "y_hat_probs"
     ) -> tuple[pd.Series, float]:  # type: ignore
         """Turns predictions above `desired_threshold` to 1, rest to 0"""
         if isinstance(self.y_hat_probs, pd.Series):
             self.y_hat_probs = self.y_hat_probs.to_frame(name="y_hat_probs")
 
         return get_predictions_for_threshold(
-            desired_threshold=desired_threshold,
-            y_hat_probs=self.y_hat_probs[y_hat_probs_column],
+            desired_threshold=desired_threshold, y_hat_probs=self.y_hat_probs[y_hat_probs_column]
         )
 
     def to_pandas(self) -> pd.DataFrame:
         """Converts to a dataframe. Ignores attributes that are not set and
         unpacks the columns in custom_columns.
         """
-        as_dict = self.dict()
+        as_dict = self.model_dump()
         # remove custom_column to avoid appending a row for each custom column
         as_dict.pop("custom_columns")
         df = pd.DataFrame(as_dict)
@@ -118,7 +111,7 @@ class PipeMetadata(PSYCOPBaseModel):
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        self.Config.allow_mutation = True
+        self.model_config["frozen"] = False
 
 
 class ModelEvalData(PSYCOPBaseModel):

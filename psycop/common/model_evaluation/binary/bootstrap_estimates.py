@@ -16,10 +16,7 @@ def bootstrap_estimates(
     ci_width: float = 0.95,
     **kwargs: Any,
 ) -> pd.Series:  # type: ignore
-    _kwargs = {
-        "method": "basic",
-        "n_resamples": n_bootstraps,
-    }
+    _kwargs = {"method": "basic", "n_resamples": n_bootstraps}
     _kwargs.update(kwargs)
 
     # Calculate the confidence interval
@@ -46,6 +43,4 @@ def bootstrap_estimates(
 
     low, high = boot.confidence_interval.low, boot.confidence_interval.high
 
-    return pd.Series(
-        {"ci": (low, high)},
-    )
+    return pd.Series({"ci": (low, high)})

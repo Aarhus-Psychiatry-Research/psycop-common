@@ -7,20 +7,19 @@ import torch
 from psycop.common.data_structures import TemporalEvent
 from psycop.common.data_structures.patient import Patient, PatientSlice
 from psycop.common.sequence_models.embedders.BEHRT_embedders import BEHRTEmbedder
-from psycop.common.sequence_models.embedders.interface import Embedder
+from psycop.common.sequence_models.embedders.interface import PatientSliceEmbedder
 
 
 @pytest.mark.parametrize(
-    "embedding_module",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+    "embedder", [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)]
 )
-def test_embeddings(patient_slices: Sequence[PatientSlice], embedding_module: Embedder):
+def test_embeddings(patient_slices: Sequence[PatientSlice], embedder: PatientSliceEmbedder):
     """
     Test embedding interface
     """
-    embedding_module.fit(patient_slices)
+    embedder.fit(patient_slices)
 
-    inputs_ids = embedding_module.collate_patient_slices(patient_slices)
+    inputs_ids = embedder.collate_patient_slices(patient_slices)
 
     assert isinstance(inputs_ids, dict)
     assert isinstance(inputs_ids["diagnosis"], torch.Tensor)  # type: ignore
@@ -28,26 +27,19 @@ def test_embeddings(patient_slices: Sequence[PatientSlice], embedding_module: Em
     assert isinstance(inputs_ids["segment"], torch.Tensor)
     assert isinstance(inputs_ids["position"], torch.Tensor)
 
-    # forward
-    embedding_module(inputs_ids)
+    embedder.forward(inputs_ids)
 
 
 @pytest.mark.parametrize(
-    "embedding_module",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+    "embedder", [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)]
 )
-def test_diagnosis_mapping(
-    embedding_module: BEHRTEmbedder,
-):
+def test_diagnosis_mapping(embedder: BEHRTEmbedder):
     """
     Test mapping of diagnosis from ICD10 to caliber
     """
     # Check that diagnosis codes that are not in the mapping are excluded
     # (this patient has no diagnosis codes in the mapping)
-    patient = Patient(
-        patient_id=11,
-        date_of_birth=dt.datetime(year=1990, month=1, day=1),
-    )
+    patient = Patient(patient_id=11, date_of_birth=dt.datetime(year=1990, month=1, day=1))
 
     # Add temporal events to check that diagnosis codes are mapped correctly
     temporal_events = [
@@ -90,17 +82,15 @@ def test_diagnosis_mapping(
     patient.add_events(temporal_events)
 
     patient_events: list[tuple[Patient, TemporalEvent]] = [
-        (p, e)
-        for p in [patient]
-        for e in embedding_module.filter_events(p.temporal_events)
+        (p, e) for p in [patient] for e in filter(embedder.is_A_diagnosis, p.temporal_events)
     ]
     diagnosis_codes: list[str] = [e.value for p, e in patient_events]  # type: ignore
 
     # map diagnosis codes
     mapped_diagnosis_codes = [
-        embedding_module.map_icd10_to_caliber(d)
+        embedder.map_icd10_to_caliber(d)
         for d in diagnosis_codes
-        if embedding_module.map_icd10_to_caliber(d)
+        if embedder.map_icd10_to_caliber(d)
     ]
 
     assert mapped_diagnosis_codes == [
@@ -112,21 +102,15 @@ def test_diagnosis_mapping(
 
 
 @pytest.mark.parametrize(
-    "embedding_module",
-    [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)],
+    "embedder", [BEHRTEmbedder(d_model=384, dropout_prob=0.1, max_sequence_length=128)]
 )
-def test_reformat_and_filter(
-    embedding_module: BEHRTEmbedder,
-):
+def test_reformat_and_filter(embedder: BEHRTEmbedder):
     """
     Test mapping of diagnosis from ICD10 to caliber
     """
     # Check that diagnosis codes that are not in the mapping are excluded
     # (this patient has no diagnosis codes in the mapping)
-    patient = Patient(
-        patient_id=11,
-        date_of_birth=dt.datetime(year=1990, month=1, day=1),
-    )
+    patient = Patient(patient_id=11, date_of_birth=dt.datetime(year=1990, month=1, day=1))
 
     # Add temporal events to check that diagnosis codes are mapped correctly
     temporal_events = [
@@ -167,12 +151,8 @@ def test_reformat_and_filter(
     ]
 
     patient.add_events(temporal_events)
-    patient_slices_mapped = embedding_module.filter_and_reformat_events(
-        [patient.as_slice()],
-    )
-    diagnosis_codes = [
-        e.value for ps in patient_slices_mapped for e in ps.temporal_events
-    ]
+    patient_slices_mapped = embedder.reformat([patient.as_slice()])
+    diagnosis_codes = [e.value for ps in patient_slices_mapped for e in ps.temporal_events]
 
     assert diagnosis_codes == [
         "Bacterial Diseases (excl TB)",

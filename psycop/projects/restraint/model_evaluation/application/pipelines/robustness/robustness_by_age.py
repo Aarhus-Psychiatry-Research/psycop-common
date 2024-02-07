@@ -26,16 +26,11 @@ def roc_auc_by_age(run: Run, path: Path):
         n_bootstraps=1000,
     )
 
-    binned_df["proportion_in_bin"] = (
-        binned_df["n_in_bin"] / sum(binned_df.n_in_bin) * 7.5
-    )
+    binned_df["proportion_in_bin"] = binned_df["n_in_bin"] / sum(binned_df.n_in_bin) * 7.5
     binned_df["n_in_bin"] = binned_df["n_in_bin"].astype(int)
 
     (
-        pn.ggplot(
-            binned_df,
-            pn.aes("age_binned", "auroc"),
-        )
+        pn.ggplot(binned_df, pn.aes("age_binned", "auroc"))
         + pn.geom_bar(
             pn.aes(x="age_binned", y="proportion_in_bin"),
             stat="identity",
@@ -43,27 +38,13 @@ def roc_auc_by_age(run: Run, path: Path):
             fill=COLOURS["blue"],
         )
         + pn.geom_path(group=1, size=0.5)
-        + pn.geom_text(
-            pn.aes(y="proportion_in_bin", label="n_in_bin"),
-            va="bottom",
-            size=11,
-        )
-        + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-            size=0.5,
-        )
-        + pn.labs(
-            x="Age",
-            y="AUROC",
-            title=f"{MODEL_NAME[run.name]} Performance by Age",
-        )
+        + pn.geom_text(pn.aes(y="proportion_in_bin", label="n_in_bin"), va="bottom", size=11)
+        + pn.geom_pointrange(pn.aes(ymin="ci_lower", ymax="ci_upper"), size=0.5)
+        + pn.labs(x="Age", y="AUROC", title=f"{MODEL_NAME[run.name]} Performance by Age")
         + pn.coord_cartesian(ylim=(0.3, 1.05))
         + PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=90))
-    ).save(
-        path / "auc_by_age.png",
-        dpi=300,
-    )
+    ).save(path / "auc_by_age.png", dpi=300)
 
 
 if __name__ == "__main__":

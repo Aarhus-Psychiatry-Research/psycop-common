@@ -10,9 +10,7 @@ from typing import Any, Union
 import pandas as pd
 
 import psycop.common.feature_generation.loaders.raw as raw_loaders
-from psycop.common.feature_generation.data_checks.raw.check_predictor_lists import (
-    check_raw_df,
-)
+from psycop.common.feature_generation.data_checks.raw.check_predictor_lists import check_raw_df
 
 
 def will_it_float(value: Any) -> bool:
@@ -54,8 +52,7 @@ def get_prop_of_each_unique_value_for_non_floats(
     # Convert all strings that start with a number to floats
     # Replace all "," with "."
     series[starts_with_number_idx] = series[starts_with_number_idx].str.replace(  # type: ignore
-        ",",
-        ".",
+        ",", "."
     )
 
     # Convert all str in series to float
@@ -65,29 +62,21 @@ def get_prop_of_each_unique_value_for_non_floats(
     unique_values = series.unique()
 
     # Get the proportion of each unique value
-    prop_of_each_unique_value = series.value_counts(
-        normalize=True,
-    )
+    prop_of_each_unique_value = series.value_counts(normalize=True)
 
     # Get the unique values which cannot be converted to floats
     non_float_unique_values = [
-        value
-        for value in unique_values
-        if (not will_it_float(value) and value is not None)
+        value for value in unique_values if (not will_it_float(value) and value is not None)
     ]
 
     # Get the proportion of each unique value which cannot be converted to floats
-    prop_of_each_non_float_unique_value = prop_of_each_unique_value[
-        non_float_unique_values
-    ]
+    prop_of_each_non_float_unique_value = prop_of_each_unique_value[non_float_unique_values]
 
     return prop_of_each_non_float_unique_value  # type: ignore
 
 
 if __name__ == "__main__":
-    df = raw_loaders.load_lab_results.ldl(
-        values_to_load="numerical_and_coerce",
-    )
+    df = raw_loaders.load_lab_results.ldl(values_to_load="numerical_and_coerce")
 
     value_props = get_prop_of_each_unique_value_for_non_floats(df["value"])
     print(value_props)

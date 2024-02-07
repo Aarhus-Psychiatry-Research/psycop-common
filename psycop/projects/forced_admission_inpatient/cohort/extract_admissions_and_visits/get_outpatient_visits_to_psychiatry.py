@@ -22,7 +22,7 @@ def get_outpatient_visits_to_psychiatry(write: bool = True) -> pd.DataFrame:
     df = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
 
     df[["datotid_start", "datotid_slut"]] = df[["datotid_start", "datotid_slut"]].apply(
-        pd.to_datetime,
+        pd.to_datetime
     )
 
     # Subtract 1 day from datotid_slut in ambulant dates because we want to make predictions one day prior to visit
@@ -51,9 +51,7 @@ def outpatient_visits_timestamps() -> pd.DataFrame:
 
     outpatient_visits = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
 
-    outpatient_visits = outpatient_visits.rename(
-        columns={"datotid_predict": "timestamp"},
-    )
+    outpatient_visits = outpatient_visits.rename(columns={"datotid_predict": "timestamp"})
 
     return outpatient_visits
 

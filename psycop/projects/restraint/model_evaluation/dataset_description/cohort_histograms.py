@@ -18,10 +18,10 @@ def main():
 
     # sex and age histogram
     sex_age = get_sex_and_age_group_at_first_contact(df).drop(
-        columns=["dw_ek_borger", "pred_age_in_years"],
+        columns=["dw_ek_borger", "pred_age_in_years"]
     )
     sex_age = pd.concat(
-        [sex_age.value_counts("pred_sex_female"), sex_age.value_counts("age_group")],
+        [sex_age.value_counts("pred_sex_female"), sex_age.value_counts("age_group")]
     ).reset_index()
     sex_age.loc[sex_age["index"] == False, "index"] = "Male"  # noqa: E712
     sex_age.loc[sex_age["index"] == True, "index"] = "Female"  # noqa: E712
@@ -59,19 +59,11 @@ def main():
         pn.ggplot(sex, pn.aes(x="Category", y="Value"))
         + pn.geom_col(stat="identity", width=0.9, fill=COLOURS["blue"])
         + pn.geom_text(
-            pn.aes(label="Value"),
-            position=pn.position_dodge(width=0.9),
-            size=16,
-            va="bottom",
+            pn.aes(label="Value"), position=pn.position_dodge(width=0.9), size=16, va="bottom"
         )
         + pn.lims(y=(0, 8000))
         + pn.labs(y="Patients (n)", x="Sex", title="A) Sex Distribution")
-        + pn.scale_fill_manual(
-            values=[
-                COLOURS["blue"],
-                COLOURS["green"],
-            ],
-        )
+        + pn.scale_fill_manual(values=[COLOURS["blue"], COLOURS["green"]])
         + PN_THEME
         + pn.theme(figure_size=(3, 5), text=pn.element_text(size=20))
     ).save(GENERAL_ARTIFACT_PATH.parent.parent / "cohort_hist_sex.png", dpi=600)
@@ -81,11 +73,7 @@ def main():
         + pn.geom_col(stat="identity", width=0.9, fill=COLOURS["blue"])
         + pn.geom_text(pn.aes(label="Value"), position=dodge_text, size=16, va="bottom")
         + pn.lims(y=(0, 2200))
-        + pn.labs(
-            y="Patients (n)",
-            x="Age Group",
-            title="B) Age Distribution (At First Contact)",
-        )
+        + pn.labs(y="Patients (n)", x="Age Group", title="B) Age Distribution (At First Contact)")
         + PN_THEME
         + pn.theme(figure_size=(13, 5), text=pn.element_text(size=20))
     ).save(GENERAL_ARTIFACT_PATH.parent.parent / "cohort_hist_age_group.png", dpi=600)
@@ -101,18 +89,12 @@ def main():
     bins = [0, 10, 20, 30, 40, 50, 60, 70]
     labels = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60+"]
     adm_length["outcome_bins"] = pd.cut(
-        adm_length["Day of Admission"],
-        bins=bins,
-        labels=labels,
-        right=False,
+        adm_length["Day of Admission"], bins=bins, labels=labels, right=False
     )
 
     adm_length = adm_length.groupby("outcome_bins").sum().reset_index()
     (
-        pn.ggplot(
-            adm_length,
-            pn.aes(x="outcome_bins", y="Count"),
-        )  # , color=COLOURS["blue"]))
+        pn.ggplot(adm_length, pn.aes(x="outcome_bins", y="Count"))  # , color=COLOURS["blue"]))
         + pn.geom_col(stat="identity", width=0.9, fill=COLOURS["blue"])
         + pn.lims(y=(0, 26000))
         + pn.labs(
@@ -129,31 +111,21 @@ def main():
     day_of_outcome = df[df["outcome_timestamp"].notnull()][
         ["adm_id", "outcome_timestamp", "pred_adm_day_count"]
     ]
-    day_of_outcome = df.groupby(["adm_id", "outcome_timestamp"])[
-        "pred_adm_day_count"
-    ].max()
+    day_of_outcome = df.groupby(["adm_id", "outcome_timestamp"])["pred_adm_day_count"].max()
     day_of_outcome = pd.DataFrame(day_of_outcome).reset_index()
 
     bins = [0, 10, 20, 30, 40, 50, 60, 70]
     labels = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60+"]
     day_of_outcome["outcome_bins"] = pd.cut(
-        day_of_outcome["pred_adm_day_count"],
-        bins=bins,
-        labels=labels,
-        right=False,
+        day_of_outcome["pred_adm_day_count"], bins=bins, labels=labels, right=False
     )
-    day_of_outcome = day_of_outcome[["adm_id", "outcome_bins"]].value_counts(
-        "outcome_bins",
-    )
+    day_of_outcome = day_of_outcome[["adm_id", "outcome_bins"]].value_counts("outcome_bins")
     day_of_outcome = pd.DataFrame(day_of_outcome).reset_index(drop=False)
     day_of_outcome.columns = ["Outcome bins", "Count"]
     day_of_outcome = day_of_outcome.sort_values("Outcome bins")
 
     (
-        pn.ggplot(
-            day_of_outcome,
-            pn.aes(x="Outcome bins", y="Count"),
-        )  # , color=COLOURS["blue"]))
+        pn.ggplot(day_of_outcome, pn.aes(x="Outcome bins", y="Count"))  # , color=COLOURS["blue"]))
         + pn.geom_col(stat="identity", width=0.9, fill=COLOURS["blue"])
         + pn.labs(
             y="Outcomes (n)",

@@ -16,8 +16,7 @@ from psycop.common.test_utils.str_to_df import str_to_df
 
 
 def convert_cols_with_matching_colnames_to_datetime(
-    df: DataFrame,
-    colname_substr: str,
+    df: DataFrame, colname_substr: str
 ) -> DataFrame:
     """Convert columns that contain colname_substr in their name to datetimes
     Args:
@@ -28,8 +27,7 @@ def convert_cols_with_matching_colnames_to_datetime(
         DataFrame: The converted df
     """
     df.loc[:, df.columns.str.contains(colname_substr)] = df.loc[
-        :,
-        df.columns.str.contains(colname_substr),
+        :, df.columns.str.contains(colname_substr)
     ].apply(pd.to_datetime)
 
     return df

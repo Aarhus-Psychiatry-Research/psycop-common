@@ -28,33 +28,26 @@ def sensitivity_pipeline(run: Run, path: Path):
     )
 
     types = pd.Series(
-        eval_ds.custom_columns["outcome_coercion_type_within_2_days"],  # type: ignore
+        eval_ds.custom_columns["outcome_coercion_type_within_2_days"]  # type: ignore
     ).value_counts()
 
     output_df = output_df.merge(types, left_on="outcome_type", right_on=types.index)  # type: ignore
 
     output_df["outcome_type"] = output_df["outcome_type"].replace(
-        {
-            3: "Mechanical restraint",
-            2: "Chemical restraint",
-            1: "Manual restraint",
-        },
+        {3: "Mechanical restraint", 2: "Chemical restraint", 1: "Manual restraint"}
     )
 
     output_df = output_df[output_df["outcome_type"] != 0]
 
-    output_df["proportion_in_bin"] = output_df[
-        "outcome_coercion_type_within_2_days"
-    ] / sum(output_df.outcome_coercion_type_within_2_days)
+    output_df["proportion_in_bin"] = output_df["outcome_coercion_type_within_2_days"] / sum(
+        output_df.outcome_coercion_type_within_2_days
+    )
     output_df["outcome_coercion_type_within_2_days"] = output_df[
         "outcome_coercion_type_within_2_days"
     ].astype(int)
 
     (
-        pn.ggplot(
-            output_df,
-            pn.aes("outcome_type", "sensitivity"),
-        )
+        pn.ggplot(output_df, pn.aes("outcome_type", "sensitivity"))
         + pn.geom_bar(
             pn.aes(x="outcome_type", y="proportion_in_bin"),
             stat="identity",
@@ -69,21 +62,14 @@ def sensitivity_pipeline(run: Run, path: Path):
         + pn.scale_x_discrete(
             limits=output_df.sort_values("outcome_coercion_type_within_2_days")[
                 "outcome_type"
-            ].to_list(),
+            ].to_list()
         )
-        + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-            size=0.5,
-        )
+        + pn.geom_pointrange(pn.aes(ymin="ci_lower", ymax="ci_upper"), size=0.5)
         + pn.labs(
-            x="Outcome type",
-            y="AUROC",
-            title=f"{MODEL_NAME[run.name]} Performane by Outcome Type",
+            x="Outcome type", y="AUROC", title=f"{MODEL_NAME[run.name]} Performane by Outcome Type"
         )
         + PN_THEME
-    ).save(
-        path / "sensitivity_by_outcome_type.png",
-    )
+    ).save(path / "sensitivity_by_outcome_type.png")
 
 
 if __name__ == "__main__":

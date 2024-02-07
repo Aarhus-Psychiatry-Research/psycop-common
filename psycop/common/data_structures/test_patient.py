@@ -5,13 +5,9 @@ from psycop.common.data_structures.temporal_event import TemporalEvent
 
 
 def get_test_patient(
-    patient_id: int | str,
-    date_of_birth: dt.datetime = dt.datetime(year=1990, month=1, day=1),
+    patient_id: int | str, date_of_birth: dt.datetime = dt.datetime(year=1990, month=1, day=1)
 ) -> Patient:
-    patient = Patient(
-        patient_id=patient_id,
-        date_of_birth=date_of_birth,
-    )
+    patient = Patient(patient_id=patient_id, date_of_birth=date_of_birth)
 
     return patient
 
@@ -34,9 +30,7 @@ class TestPatientSequenceGenerator:
             ),
         ]
 
-        patient = get_test_patient(
-            patient_id=1,
-        )
+        patient = get_test_patient(patient_id=1)
         patient.add_events(temporal_events)
 
         prediction_sequences = patient.to_prediction_times(
@@ -53,9 +47,7 @@ class TestPatientSequenceGenerator:
 
         exclude_events_before_start_of_lookbehind = prediction_sequences[
             1
-        ].patient_slice.temporal_events == [
-            temporal_events[1],
-        ]
+        ].patient_slice.temporal_events == [temporal_events[1]]
         assert exclude_events_before_start_of_lookbehind
 
         outcome_not_within_lookahead = prediction_sequences[0].outcome is False

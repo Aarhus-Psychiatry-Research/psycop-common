@@ -37,16 +37,12 @@ def create_outcome_values(
         effect, col = var.split("*")
         _y = float(effect) * df[col] + _y
 
-    noise = np.random.normal(
-        loc=noise_mean_sd[0],
-        scale=noise_mean_sd[1],
-        size=n_samples,
-    )
+    noise = np.random.normal(loc=noise_mean_sd[0], scale=noise_mean_sd[1], size=n_samples)
 
     # Z-score normalise and add noise
     _y = stats.zscore(_y) + noise
 
-    out = 1 / (1 + np.exp(_y))
+    out = 1 / (1 + np.exp(_y))  # type: ignore
     return out  # type: ignore
 
 
@@ -69,20 +65,14 @@ def generate_text_data(
     """
     from transformers import GPT2LMHeadModel, GPT2Tokenizer  # type: ignore
 
-    tokenizer = (
-        GPT2Tokenizer.from_pretrained("gpt2") if tokenizer is None else tokenizer
-    )
+    tokenizer = GPT2Tokenizer.from_pretrained("gpt2") if tokenizer is None else tokenizer
     model = GPT2LMHeadModel.from_pretrained("gpt2") if model is None else model  # type: ignore
 
     inputs = tokenizer.encode(sequence, return_tensors="pt")
 
     generated_texts = []
     for _ in range(n_samples):
-        max_tokens = np.random.randint(
-            low=0,
-            high=500,
-            size=1,
-        )[0]
+        max_tokens = np.random.randint(low=0, high=500, size=1)[0]
 
         outputs = model.generate(  # type: ignore
             inputs,  # type: ignore
@@ -127,10 +117,7 @@ def generate_col_from_specs(
         if sequence is None:
             raise ValueError("If column_type is text, sequence must be specified.")
         generated_texts = generate_text_data(
-            n_samples=n_samples,
-            sequence=sequence,
-            tokenizer=tokenizer,
-            model=model,
+            n_samples=n_samples, sequence=sequence, tokenizer=tokenizer, model=model
         )
 
         return generated_texts
@@ -139,36 +126,22 @@ def generate_col_from_specs(
         return -np.arange(n_samples)
 
     if column_type == "uniform_int":
-        return np.random.randint(
-            low=col_specs["min"],
-            high=col_specs["max"],
-            size=n_samples,
-        )
+        return np.random.randint(low=col_specs["min"], high=col_specs["max"], size=n_samples)
 
     if column_type == "uniform_float":
-        return np.random.uniform(
-            low=col_specs["min"],
-            high=col_specs["max"],
-            size=n_samples,
-        )
+        return np.random.uniform(low=col_specs["min"], high=col_specs["max"], size=n_samples)
 
     if column_type == "normal":
-        return np.random.normal(
-            loc=col_specs["mean"],
-            scale=col_specs["sd"],
-            size=n_samples,
-        )
+        return np.random.normal(loc=col_specs["mean"], scale=col_specs["sd"], size=n_samples)
 
     if column_type == "datetime_uniform":
         return pd.to_datetime(
             np.random.uniform(  # type: ignore
-                low=col_specs["min"],
-                high=col_specs["max"],
-                size=n_samples,
+                low=col_specs["min"], high=col_specs["max"], size=n_samples
             ),
             unit="D",
         ).round(  # type: ignore
-            "min",
+            "min"
         )
 
     raise ValueError(f"Unknown distribution: {column_type}")
@@ -221,10 +194,7 @@ def generate_data_columns(
             column_type = col_props["column_type"]
 
             df[col_name] = generate_col_from_specs(
-                column_type=column_type,
-                n_samples=n_samples,
-                sequence=sequence,
-                col_specs=col_props,
+                column_type=column_type, n_samples=n_samples, sequence=sequence, col_specs=col_props
             )
 
             # If column has min and/or max, floor and ceil appropriately
@@ -241,16 +211,11 @@ if __name__ == "__main__":
     # Get project root directory
     column_specs = [
         {
-            "dw_ek_borger": {
-                "column_type": "id",
-            },
+            "dw_ek_borger": {"column_type": "id"},
             "raw_predictor": {"column_type": "uniform_float", "min": 0, "max": 10},
-        },
+        }
     ]
 
-    df = generate_data_columns(
-        predictors=column_specs,
-        n_samples=10_000,
-    )
+    df = generate_data_columns(predictors=column_specs, n_samples=10_000)
 
     df.to_csv(PSYCOP_PKG_ROOT / "tests" / "test_data" / "synth_raw.csv", index=False)

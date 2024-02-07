@@ -61,8 +61,7 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
         renamed_df[col] = renamed_df[col].apply(format_with_thousand_separator)
 
     renamed_df["Median years from first positive to T2D"] = round(
-        df["median_warning_days"] / 365.25,
-        1,
+        df["median_warning_days"] / 365.25, 1
     )
 
     return renamed_df
@@ -70,14 +69,12 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
 
 def t2d_output_performance_by_ppr(run: T2DPipelineRun):
     output_path = (
-        run.paper_outputs.paths.tables
-        / run.paper_outputs.artifact_names.performance_by_ppr
+        run.paper_outputs.paths.tables / run.paper_outputs.artifact_names.performance_by_ppr
     )
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
 
     df: pd.DataFrame = generate_performance_by_ppr_table(  # type: ignore
-        eval_dataset=eval_dataset,
-        positive_rates=[0.05, 0.04, 0.03, 0.02, 0.01],
+        eval_dataset=eval_dataset, positive_rates=[0.05, 0.04, 0.03, 0.02, 0.01]
     )
 
     df = clean_up_performance_by_ppr(df)

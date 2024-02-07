@@ -9,18 +9,16 @@ from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import Ru
 ########################################
 # UPDATE THESE TO SELECT MODEL OUTPUTS #
 ########################################
-MODEL_NAME = "limited_feature_set_demographics_diagnoses"
+MODEL_NAME = "full_model_with_text_features"
 PROJECT_MODEL_DIR = Path(
-    f"E:/shared_resources/forced_admissions_inpatient/models/{MODEL_NAME}/pipeline_eval",
+    f"E:/shared_resources/forced_admissions_inpatient/models/{MODEL_NAME}/pipeline_eval"
 )
 MODEL_ALGORITHM = 1  # 0 fo logistic regression and 1 for best xgboost
 
-DEV_GROUP_NAME = "autocades-percentage"
+DEV_GROUP_NAME = "capuan-unselfish"
 DEVELOPMENT_GROUP = RunGroup(model_name=MODEL_NAME, group_name=DEV_GROUP_NAME)
-BEST_POS_RATE = 0.03
+BEST_POS_RATE = 0.04
 
-EVAL_GROUP_NAME = f"{DEV_GROUP_NAME}-eval-on-test"
-EVAL_GROUP = RunGroup(model_name=MODEL_NAME, group_name=EVAL_GROUP_NAME)
 
 ################
 # OUTPUT PATHS #
@@ -28,8 +26,7 @@ EVAL_GROUP = RunGroup(model_name=MODEL_NAME, group_name=EVAL_GROUP_NAME)
 date_str = datetime.now().strftime("%Y-%m-%d")
 
 FA_PN_THEME = pn.theme_bw() + pn.theme(
-    panel_grid=pn.element_blank(),
-    axis_title=pn.element_text(size=14),
+    panel_grid=pn.element_blank(), axis_title=pn.element_text(size=14)
 )
 
 

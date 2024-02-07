@@ -18,7 +18,7 @@ class FeatureSelectionSchema(PSYCOPBaseModel):
 class PreSplitPreprocessingConfigSchema(PSYCOPBaseModel):
     """Pre split preprocessing config."""
 
-    drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]] = None
+    drop_patient_if_exclusion_before_date: Optional[Union[str, datetime, bool]] = None
     # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
 
     drop_visits_after_exclusion_timestamp: bool = True
@@ -50,9 +50,9 @@ class PreSplitPreprocessingConfigSchema(PSYCOPBaseModel):
     min_lookahead_days: int
     # Drop all prediction times where (max timestamp in the dataset) - (current timestamp) is less than min_lookahead_days
 
-    min_age: Optional[float]  # Minimum age to include in the dataset
+    min_age: Optional[float] = None  # Minimum age to include in the dataset
 
-    min_prediction_time_date: Optional[Union[str, datetime]]
+    min_prediction_time_date: Optional[Union[str, datetime]] = None
     # Drop all prediction times before this date.
 
     lookbehind_combination: list[int]
@@ -68,11 +68,11 @@ class PreSplitPreprocessingConfigSchema(PSYCOPBaseModel):
 class PostSplitPreprocessingConfigSchema(PSYCOPBaseModel):
     """Post split preprocessing config."""
 
-    imputation_method: Optional[Literal["most_frequent", "mean", "median", "null"]]
+    imputation_method: Optional[Literal["most_frequent", "mean", "median", "null"]] = None
     # How to replace missing values. Takes all values from the sklearn.impute.SimpleImputer class.
     # https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
 
-    scaling: Optional[str]
+    scaling: Optional[str] = None
     # Scaling applied to all predictors after imputation. Options include "z-score-normalization".
 
     feature_selection: FeatureSelectionSchema

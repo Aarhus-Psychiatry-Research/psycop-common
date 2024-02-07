@@ -1,8 +1,9 @@
-black==22.6.0
 cruft==2.15.0
+lumberman # Pull request management with graphite, written by MB
 invoke==2.1.0
+lefthook==0.1.2
 pre-commit==3.4.0
 pyright==1.1.332
 pytest-sugar==0.9.7
-ruff==0.1.5
+ruff==0.1.14
 pandas-stubs==2.1.1.230928

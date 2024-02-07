@@ -26,25 +26,19 @@ def t2d_plot_robustness(
     p = (
         pn.ggplot(df, pn.aes(x=x_column, y=line_y_col_name))
         + pn.geom_bar(
-            pn.aes(x=x_column, y="proportion_of_n"),
-            stat="identity",
-            fill=COLORS.background,
+            pn.aes(x=x_column, y="proportion_of_n"), stat="identity", fill=COLORS.background
         )
         + pn.geom_path(group=1, color=COLORS.primary, size=1)
         + pn.xlab(xlab)
         + pn.ylab("AUROC / Proportion of patients")
         + T2D_PN_THEME
-        + pn.theme(
-            axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1),
-        )
+        + pn.theme(axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1))
         + pn.ylim(0, 1)
     )
 
     if "ci_lower" in df.columns:
         p += pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-            color=COLORS.primary,
-            size=0.5,
+            pn.aes(ymin="ci_lower", ymax="ci_upper"), color=COLORS.primary, size=0.5
         )
 
     if df[x_column].nunique() < 3:

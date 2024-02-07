@@ -6,13 +6,10 @@ from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_
 
 log = logging.getLogger()
 
-from psycop.projects.restraint.feature_generation.modules.specify_features import (
-    FeatureSpecifier,
-)
+from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
 
 feature_specs = FeatureSpecifier(
-    project_info=RESTRAINT_PROJECT_INFO,
-    min_set_for_debug=False,
+    project_info=RESTRAINT_PROJECT_INFO, min_set_for_debug=False
 ).get_feature_specs()
 
 selected_specs = [
@@ -24,10 +21,7 @@ selected_specs = [
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
-from psycop.projects.restraint.model_evaluation.config import (
-    TEXT_EVAL_RUN,
-    TEXT_TABLES_PATH,
-)
+from psycop.projects.restraint.model_evaluation.config import TEXT_EVAL_RUN, TEXT_TABLES_PATH
 
 out_dir = TEXT_TABLES_PATH / "feature_description"
 out_dir.mkdir(parents=True, exist_ok=True)

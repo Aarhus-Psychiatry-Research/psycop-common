@@ -11,9 +11,7 @@ class BestRun:
 
 
 best_run = BestRun(
-    wandb_group="exophthalmia-intombed",
-    model="nonrandomnessseparableness",
-    pos_rate=0.05,
+    wandb_group="exophthalmia-intombed", model="nonrandomnessseparableness", pos_rate=0.05
 )
 
 # Get current date as string

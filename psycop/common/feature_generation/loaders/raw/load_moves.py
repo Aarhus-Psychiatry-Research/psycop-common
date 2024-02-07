@@ -2,8 +2,13 @@
 from __future__ import annotations
 
 import pandas as pd
+import polars as pl
+from wasabi import Printer
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
+
+msg = Printer(timestamp=True)
 
 
 def load_moves(n_rows: int | None = None) -> pd.DataFrame:
@@ -28,6 +33,12 @@ def load_move_into_rm_for_exclusion(n_rows: int | None = None) -> pd.DataFrame:
     df = df.loc[df["timestamp"] >= pd.to_datetime("2012-01-01")]
 
     return df
+
+
+class MoveIntoRMBaselineLoader(BaselineDataLoader):
+    def load(self) -> pl.LazyFrame:
+        msg.info("Loading move dates for exclusion")
+        return pl.from_pandas(load_move_into_rm_for_exclusion()).lazy()
 
 
 if __name__ == "__main__":

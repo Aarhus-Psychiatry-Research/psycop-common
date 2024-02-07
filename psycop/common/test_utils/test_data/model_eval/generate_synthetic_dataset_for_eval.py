@@ -8,10 +8,7 @@ import pandas as pd
 from wasabi import Printer
 
 
-def add_age_is_female(
-    df: pd.DataFrame,
-    id_column_name: str = "dw_ek_borger",
-) -> pd.DataFrame:
+def add_age_is_female(df: pd.DataFrame, id_column_name: str = "dw_ek_borger") -> pd.DataFrame:
     """Add age and gender columns to dataframe.
 
     Args:
@@ -81,9 +78,7 @@ def overwrite_prop_with_null(
     Returns:
         A pd.Series.
     """
-    series.loc[
-        np.random.choice(series.index, int(len(series) * prop), replace=False)
-    ] = null_value
+    series.loc[np.random.choice(series.index, int(len(series) * prop), replace=False)] = null_value
 
     return series
 
@@ -106,7 +101,7 @@ if __name__ == "__main__":
             seconds=np.random.randint(  # type: ignore
                 years_to_seconds(years=5),  # type: ignore
                 years_to_seconds(years=10),  # type: ignore
-            ),
+            )
         )
         for _ in range(N_ROWS)
     ]
@@ -117,39 +112,33 @@ if __name__ == "__main__":
     df["pred_prob"] = df["pred_prob"].clip(0, 1)
     df["pred"] = df["pred_prob"].clip(0, 1).round()
 
-    df["timestamp_first_pred_time"] = df.groupby("dw_ek_borger")["timestamp"].transform(
-        "min",
-    )
+    df["timestamp_first_pred_time"] = df.groupby("dw_ek_borger")["timestamp"].transform("min")
 
     # Generate t2d timestamps
     msg.info("Generating T2D-timestamps")
-    df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")[
-        "timestamp_first_pred_time"
-    ].transform(
-        "min",
+    df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_first_pred_time"].transform(
+        "min"
     ) + dt.timedelta(  # type: ignore
-        seconds=np.random.randint(0, years_to_seconds(years=5)),  # type: ignore
+        seconds=np.random.randint(0, years_to_seconds(years=5))  # type: ignore
     )
     df["timestamp_t2d_diag"] = df.groupby("dw_ek_borger")["timestamp_t2d_diag"].apply(
-        lambda x: null_series_with_prob(x, prob=0.85),
+        lambda x: null_series_with_prob(x, prob=0.85)
     )
 
     # Generate first HbA1c timestamps
     msg.info("Generating HbA1c timestamps")
-    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
-        "timestamp_first_pred_time"
-    ].transform(
-        "min",
+    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")["timestamp_first_pred_time"].transform(
+        "min"
     ) + dt.timedelta(  # type: ignore
-        seconds=np.random.randint(0, years_to_seconds(years=4)),  # type: ignore
+        seconds=np.random.randint(0, years_to_seconds(years=4))  # type: ignore
     )
     df["timestamp_hba1c_copy"] = df["timestamp_first_hba1c"]
 
     # Replace most with null
     msg.info("Replacing with null")
-    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")[
-        "timestamp_first_hba1c"
-    ].apply(lambda x: null_series_with_prob(x, prob=0.95))
+    df["timestamp_first_hba1c"] = df.groupby("dw_ek_borger")["timestamp_first_hba1c"].apply(
+        lambda x: null_series_with_prob(x, prob=0.95)
+    )
 
     # Put back values if there is a T2D date
     msg.info("Putting back if there is T2D date")

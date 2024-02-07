@@ -1,13 +1,8 @@
 from collections.abc import Sequence
 
 from timeseriesflattener.aggregation_fns import count
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    AnySpec,
-)
+from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     admissions,
@@ -26,9 +21,7 @@ class SczBpLayer2(SczBpFeatureLayer):
         visits_to_psychiatry_spec = PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
-                    df=physical_visits_to_psychiatry(
-                        return_value_as_visit_length_days=False,
-                    ),
+                    df=physical_visits_to_psychiatry(return_value_as_visit_length_days=False),
                     name=f"physical_visits_to_psychiatry_layer_{layer}",
                 ),
             ),
@@ -53,7 +46,7 @@ class SczBpLayer2(SczBpFeatureLayer):
             named_dataframes=(
                 NamedDataframe(
                     df=admissions(shak_code=6600, shak_sql_operator="="),
-                    name=f"antidepressives_layer_{layer}",
+                    name=f"admissions_layer_{layer}",
                 ),
             ),
             lookbehind_days=lookbehind_days,
@@ -61,8 +54,4 @@ class SczBpLayer2(SczBpFeatureLayer):
             fallback=[0],
         ).create_combinations()
 
-        return (
-            visits_to_psychiatry_spec
-            + visits_to_somatic_spec
-            + admissions_to_psychiatry_spec
-        )
+        return visits_to_psychiatry_spec + visits_to_somatic_spec + admissions_to_psychiatry_spec

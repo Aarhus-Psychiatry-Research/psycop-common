@@ -15,10 +15,7 @@ from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
-def get_true_positives(
-    eval_dataset: EvalDataset,
-    positive_rate: float = 0.5,
-) -> pd.DataFrame:
+def get_true_positives(eval_dataset: EvalDataset, positive_rate: float = 0.5) -> pd.DataFrame:
     """Get dataframe containing only true positives.
 
     Args:
@@ -31,7 +28,7 @@ def get_true_positives(
 
     # Generate df
     positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
-        desired_positive_rate=positive_rate,
+        desired_positive_rate=positive_rate
     )
 
     df = pd.DataFrame(
@@ -41,7 +38,7 @@ def get_true_positives(
             "y": eval_dataset.y,
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
-        },
+        }
     )
 
     # Keep only true positives
@@ -50,10 +47,7 @@ def get_true_positives(
     return df[df["true_positive"]]
 
 
-def performance_by_ppr(
-    eval_dataset: EvalDataset,
-    positive_rate: float,
-) -> pd.DataFrame:
+def performance_by_ppr(eval_dataset: EvalDataset, positive_rate: float) -> pd.DataFrame:
     """Generates a row for a performance_by_threshold table.
 
     Args:
@@ -110,16 +104,14 @@ def performance_by_ppr(
             "true_negatives": [true_neg],
             "false_positives": [false_pos],
             "false_negatives": [false_neg],
-        },
+        }
     )
 
     return metrics_matrix.reset_index(drop=True)
 
 
 def days_from_first_positive_to_diagnosis(
-    eval_dataset: EvalDataset,
-    positive_rate: float = 0.5,
-    aggregation_method: str = "sum",
+    eval_dataset: EvalDataset, positive_rate: float = 0.5, aggregation_method: str = "sum"
 ) -> float:
     """Calculate number of days from the first positive prediction to the
     patient's outcome timestamp.
@@ -137,23 +129,21 @@ def days_from_first_positive_to_diagnosis(
         {
             "id": eval_dataset.ids,
             "pred": eval_dataset.get_predictions_for_positive_rate(
-                desired_positive_rate=positive_rate,
+                desired_positive_rate=positive_rate
             )[0],
             "y": eval_dataset.y,
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
-        },
+        }
     )
 
     return get_days_from_first_positive_to_diagnosis_from_df(
-        aggregation_method=aggregation_method,
-        df=df,
+        aggregation_method=aggregation_method, df=df
     )
 
 
 def get_days_from_first_positive_to_diagnosis_from_df(
-    aggregation_method: str,
-    df: pd.DataFrame,
+    aggregation_method: str, df: pd.DataFrame
 ) -> float:
     df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
 
@@ -162,8 +152,7 @@ def get_days_from_first_positive_to_diagnosis_from_df(
 
 
 def get_prop_with_at_least_one_true_positve(
-    eval_dataset: EvalDataset,
-    positive_rate: float = 0.5,
+    eval_dataset: EvalDataset, positive_rate: float = 0.5
 ) -> float:
     """Get proportion of ids with at least one true positive prediction.
 
@@ -175,18 +164,14 @@ def get_prop_with_at_least_one_true_positve(
         float: Proportion of thresholds with at least one true positive.
     """
     # Generate df with only true positives
-    df = get_true_positives(
-        eval_dataset=eval_dataset,
-        positive_rate=positive_rate,
-    )
+    df = get_true_positives(eval_dataset=eval_dataset, positive_rate=positive_rate)
 
     # Return number of unique ids with at least one true positive
     return df["id"].nunique() / len(set(eval_dataset.ids))
 
 
 def generate_performance_by_ppr_table(
-    eval_dataset: EvalDataset,
-    positive_rates: Sequence[float],
+    eval_dataset: EvalDataset, positive_rates: Sequence[float]
 ) -> pd.DataFrame:
     """Generates a performance_by_threshold table as either a DataFrame or html
     object.
@@ -204,50 +189,35 @@ def generate_performance_by_ppr_table(
     # For each percentile, calculate relevant performance metrics
     for positive_rate in positive_rates:
         threshold_metrics = performance_by_ppr(
-            eval_dataset=eval_dataset,
-            positive_rate=positive_rate,
+            eval_dataset=eval_dataset, positive_rate=positive_rate
         )
 
         threshold_metrics["total_warning_days"] = days_from_first_positive_to_diagnosis(
-            eval_dataset=eval_dataset,
-            positive_rate=positive_rate,
-            aggregation_method="sum",
+            eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="sum"
         )
 
         threshold_metrics["mean_warning_days"] = days_from_first_positive_to_diagnosis(
-            eval_dataset=eval_dataset,
-            positive_rate=positive_rate,
-            aggregation_method="mean",
+            eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="mean"
         )
 
-        threshold_metrics[
-            "median_warning_days"
-        ] = days_from_first_positive_to_diagnosis(
-            eval_dataset=eval_dataset,
-            positive_rate=positive_rate,
-            aggregation_method="median",
+        threshold_metrics["median_warning_days"] = days_from_first_positive_to_diagnosis(
+            eval_dataset=eval_dataset, positive_rate=positive_rate, aggregation_method="median"
         )
 
-        threshold_metrics[
-            "prop with ≥1 true positive"
-        ] = get_prop_with_at_least_one_true_positve(
-            eval_dataset=eval_dataset,
-            positive_rate=positive_rate,
+        threshold_metrics["prop with ≥1 true positive"] = get_prop_with_at_least_one_true_positve(
+            eval_dataset=eval_dataset, positive_rate=positive_rate
         )
 
         threshold_metrics[
             "prop of all events captured"
         ] = get_prop_of_events_captured_from_eval_dataset(
-            eval_dataset=eval_dataset,
-            positive_rate=positive_rate,
+            eval_dataset=eval_dataset, positive_rate=positive_rate
         )
 
         rows.append(threshold_metrics)
 
     df = pd.concat(rows)
 
-    df["warning_days_per_false_positive"] = (
-        df["total_warning_days"] / df["false_positives"]
-    )
+    df["warning_days_per_false_positive"] = df["total_warning_days"] / df["false_positives"]
 
     return df

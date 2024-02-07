@@ -2,9 +2,11 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from lightning.pytorch.loggers.wandb import WandbLogger
+from lightning.pytorch.loggers import Logger as plLogger
+from lightning.pytorch.loggers.mlflow import MLFlowLogger as plMLFlowLogger
+from lightning.pytorch.loggers.wandb import WandbLogger as plWandbLogger
 
-from .registry import Registry
+from .registry import SequenceRegistry
 
 
 def handle_wandb_folder():
@@ -13,35 +15,32 @@ def handle_wandb_folder():
     """
     if sys.platform == "win32":
         (Path(__file__).resolve().parents[0] / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
+            exist_ok=True, parents=True
         )
 
 
-@Registry.loggers.register("wandb")
+@SequenceRegistry.loggers.register("wandb")
 def create_wandb_logger(
-    name: Optional[str] = None,
-    save_dir: Path | str = ".",
-    version: Optional[str] = None,
-    offline: bool = False,
-    dir: Optional[Path] = None,  # noqa: A002
-    id: Optional[str] = None,  # noqa: A002
-    anonymous: Optional[bool] = None,
-    project: Optional[str] = None,
-    prefix: str = "",
-    checkpoint_name: Optional[str] = None,
-) -> WandbLogger:
+    save_dir: Path | str, experiment_name: str, offline: bool, run_name: Optional[str] = None
+) -> plLogger:
     handle_wandb_folder()
 
-    return WandbLogger(
-        name=name,
-        save_dir=save_dir,
-        version=version,
-        offline=offline,
-        dir=dir,
-        id=id,
-        anonymous=anonymous,
-        project=project,
-        prefix=prefix,
-        checkpoint_name=checkpoint_name,
+    return plWandbLogger(name=run_name, save_dir=save_dir, offline=offline, project=experiment_name)
+
+
+@SequenceRegistry.loggers.register("mlflow")
+def create_mlflow_logger(
+    save_dir: Path | str,
+    experiment_name: str,
+    offline: bool = False,
+    run_name: Optional[str] = None,
+) -> plLogger:
+    if offline:
+        raise NotImplementedError("MLFlow does not support offline mode")
+
+    return plMLFlowLogger(
+        save_dir=str(save_dir),
+        experiment_name=experiment_name,
+        run_name=run_name,
+        tracking_uri="http://exrhel0371.it.rm.dk:5050",
     )

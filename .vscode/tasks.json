@@ -6,42 +6,20 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "git push && inv create-pr",
-            "group": "test",
+            "command": "echo All done!",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "dependsOn": [
-                "Lint",
                 "Test",
-                "Static type check",
-                "Merge main"
+                "Submit PR",
             ],
             "presentation": {
-                "reveal": "always",
-                "group": "pr",
+                "reveal": "never",
+                "group": "confirmation",
                 "clear": true,
-                "showReuseMessage": false,
-            }
-        },
-        {
-            "label": "Merge main",
-            "type": "shell",
-            "command": "inv merge-main && git push",
-            "presentation": {
-                "reveal": "always",
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false,
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Lint",
-            "type": "shell",
-            "command": "inv lint",
-            "presentation": {
-                "reveal": "always",
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false,
+                "showReuseMessage": false
             },
             "problemMatcher": []
         },
@@ -50,30 +28,22 @@
             "type": "shell",
             "command": "inv qtest",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
                 "showReuseMessage": false,
-            },
-            "dependsOn": [
-                "Lint",
-                "Merge main"
-            ]
+            }
         },
         {
-            "label": "Static type check",
+            "label": "Submit PR",
             "type": "shell",
-            "command": "inv qtypes",
+            "command": "lumberman sync --squash",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
+                "revealProblems": "onProblem",
+                "focus": true,
                 "clear": true,
                 "showReuseMessage": false,
-            },
-            "dependsOn": [
-                "Lint",
-                "Merge main"
-            ]
-        }
+            }
+        },
     ]
 }

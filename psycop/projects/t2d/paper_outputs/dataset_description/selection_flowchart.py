@@ -27,11 +27,9 @@ if __name__ == "__main__":
         n_positive = outcomes.filter(pl.col(col_name) == 1).shape[0]
         percent_positive = f"{round(n_positive / total*100, 1)}%"
 
-        n_negative = (
-            outcomes.select(pl.col(col_name)).filter(pl.col(col_name) == 0).shape[0]
-        )
+        n_negative = outcomes.select(pl.col(col_name)).filter(pl.col(col_name) == 0).shape[0]
         percent_negative = f"{round(n_negative / total*100, 1)}%"
 
         msg.info(
-            f"{lookahead_distance}: pos: {n_positive:,} ({percent_positive}) | neg: {n_negative:,} ({percent_negative})",
+            f"{lookahead_distance}: pos: {n_positive:,} ({percent_positive}) | neg: {n_negative:,} ({percent_negative})"
         )

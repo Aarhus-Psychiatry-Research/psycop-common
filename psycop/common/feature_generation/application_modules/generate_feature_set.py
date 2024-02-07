@@ -13,24 +13,15 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
-from psycop.common.feature_generation.application_modules.loggers import (
-    init_root_logger,
-)
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-    init_wandb,
-)
+from psycop.common.feature_generation.application_modules.loggers import init_root_logger
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
-)
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
 )
 
 log = logging.getLogger()
 
 
-@wandb_alert_on_exception
 def generate_feature_set(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
@@ -52,7 +43,7 @@ def generate_feature_set(
     if Path.exists(feature_set_dir):
         while True:
             response = input(
-                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): ",
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
             )
 
             if response.lower() not in ["yes", "y", "no", "n"]:
@@ -66,10 +57,7 @@ def generate_feature_set(
 
     if generate_in_chunks:
         flattened_df = ChunkedFeatureGenerator.create_flattened_dataset_with_chunking(
-            project_info,
-            eligible_prediction_times,
-            feature_specs,
-            chunksize,
+            project_info, eligible_prediction_times, feature_specs, chunksize
         )
 
     else:
@@ -81,9 +69,7 @@ def generate_feature_set(
         )
 
     split_and_save_dataset_to_disk(
-        flattened_df=flattened_df,
-        project_info=project_info,
-        feature_set_dir=feature_set_dir,
+        flattened_df=flattened_df, project_info=project_info, feature_set_dir=feature_set_dir
     )
 
     save_flattened_dataset_description_to_disk(
@@ -95,41 +81,10 @@ def generate_feature_set(
     return feature_set_dir
 
 
-def init_wandb_and_generate_feature_set(
-    project_info: ProjectInfo,
-    eligible_prediction_times: pd.DataFrame,
-    feature_specs: list[AnySpec],
-    generate_in_chunks: bool = False,
-    chunksize: int = 250,
-    feature_set_name: str | None = None,
-) -> Path:
-    # Run elements that are required before wandb init first,
-    # then run the rest in main so you can wrap it all in
-    # wandb_alert_on_exception, which will send a slack alert
-    # if you have wandb alerts set up in wandb
-    init_logger_and_wandb(project_info)
-
-    return generate_feature_set(
-        project_info=project_info,
-        eligible_prediction_times=eligible_prediction_times,
-        feature_specs=feature_specs,
-        generate_in_chunks=generate_in_chunks,
-        chunksize=chunksize,
-        feature_set_name=feature_set_name,
-    )
-
-
-def init_logger_and_wandb(project_info: ProjectInfo):
+def init_logger(project_info: ProjectInfo):
     init_root_logger(project_info=project_info)
 
     log.info(  # pylint: disable=logging-fstring-interpolation
-        f"Stdout level is {logging.getLevelName(log.level)}",
+        f"Stdout level is {logging.getLevelName(log.level)}"
     )
     log.debug("Debugging is still captured in the log file")
-
-    # Use wandb to keep track of your dataset generations
-    # Makes it easier to find paths on wandb, as well as
-    # allows monitoring and automatic slack alert on failure
-    init_wandb(
-        project_info=project_info,
-    )  # allows monitoring and automatic slack alert on failure

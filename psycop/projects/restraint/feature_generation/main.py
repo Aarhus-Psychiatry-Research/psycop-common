@@ -12,15 +12,11 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
-from psycop.common.feature_generation.application_modules.loggers import (
-    init_root_logger,
-)
+from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop.common.feature_generation.application_modules.wandb_utils import (
-    wandb_alert_on_exception,
-)
+
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 
 from psycop.projects.restraint.feature_generation.modules.specify_features import (
@@ -31,7 +27,6 @@ from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_
 log = logging.getLogger()
 
 
-@wandb_alert_on_exception
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""
@@ -79,15 +74,12 @@ if __name__ == "__main__":
     # allows monitoring and automatic slack alert on failure
     if sys.platform == "win32":
         (Path(__file__).resolve().parents[1] / "wandb" / "debug-cli.onerm").mkdir(
-            exist_ok=True,
-            parents=True,
+            exist_ok=True, parents=True
         )
 
     wandb.init(
         project=f"{project_info.project_name}-feature-generation",
         entity="psycop",
-        config={
-            "feature_set_path": project_info.flattened_dataset_dir,
-        },
+        config={"feature_set_path": project_info.flattened_dataset_dir},
         mode="offline",
     )

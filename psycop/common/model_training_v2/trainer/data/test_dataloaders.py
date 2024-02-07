@@ -2,16 +2,16 @@ from pathlib import Path
 
 import polars as pl
 import pytest
+from polars import LazyFrame
 
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
-    FilteredDataLoader,
     MissingPathError,
     ParquetVerticalConcatenator,
 )
-from psycop.common.model_training_v2.trainer.data.minimal_test_data import (
-    MinimalTestData,
-)
+
+from ....test_utils.str_to_df import str_to_pl_df
+from ...config.baseline_registry import BaselineRegistry
 
 
 def test_vertical_concatenator(tmpdir: Path):
@@ -24,11 +24,7 @@ def test_vertical_concatenator(tmpdir: Path):
         df.write_parquet(p)
 
     concatenated = (
-        ParquetVerticalConcatenator(
-            paths=[str(p) for p in parquet_paths],
-        )
-        .load()
-        .collect()
+        ParquetVerticalConcatenator(paths=[str(p) for p in parquet_paths]).load().collect()
     )
 
     assert len(concatenated) == len(df) * n_paths
@@ -36,20 +32,25 @@ def test_vertical_concatenator(tmpdir: Path):
 
     with pytest.raises(MissingPathError):
         ParquetVerticalConcatenator(
-            paths=[str(p) for p in parquet_paths] + ["non_existent_path"],
+            paths=[str(p) for p in parquet_paths] + ["non_existent_path"]
         ).load()
 
 
-def test_dataloader_filterer():
-    base_dataloader = MinimalTestData()
+@BaselineRegistry.data.register("minimal_test_data")
+class MinimalTestData(BaselineDataLoader):
+    def __init__(self) -> None:
+        pass
 
-    class MockDataFilter:
-        def apply(self, dataloader: BaselineDataLoader) -> pl.LazyFrame:
-            return dataloader.load().filter(pl.col("dw_ek_borger") == 1)
+    def load(self) -> LazyFrame:
+        data = str_to_pl_df(
+            """ pred_time_uuid, dw_ek_borger, pred_1, outcome,    outcome_val,    pred_age
+                1,              1, 1,      1,          1,              1
+                2,              2, 1,      1,          1,              99
+                3,              3, 1,      1,          1,              99
+                4,              4, 0,      0,          0,              99
+                5,             5,  0,      0,          0,              99
+                6,              6, 0,      0,          0,              99
+                                        """
+        ).lazy()
 
-    filter_dataloader = FilteredDataLoader(
-        dataloader=base_dataloader,
-        data_filter=MockDataFilter(),
-    )
-
-    assert filter_dataloader.load().collect().shape == (1, 6)
+        return data

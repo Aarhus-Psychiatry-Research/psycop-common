@@ -1,13 +1,11 @@
-from typing import Protocol, TypeVar, runtime_checkable
+from abc import ABC, abstractmethod
 
-from psycop.common.model_training_v2.trainer.preprocessing.polars_frame import (
-    PolarsFrame,
-)
+import polars as pl
 
-PolarsFrame_T0 = TypeVar("PolarsFrame_T0", bound=PolarsFrame)
+from ...loggers.supports_logger import SupportsLoggerMixin
 
 
-@runtime_checkable
-class PresplitStep(Protocol):
-    def apply(self, input_df: PolarsFrame_T0) -> PolarsFrame_T0:
+class PresplitStep(ABC, SupportsLoggerMixin):
+    @abstractmethod
+    def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         ...

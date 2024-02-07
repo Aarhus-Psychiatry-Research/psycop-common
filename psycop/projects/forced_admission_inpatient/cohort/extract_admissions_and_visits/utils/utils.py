@@ -39,18 +39,13 @@ def lpr2_lpr3_overlap(df: pd.DataFrame) -> pd.DataFrame:
 
     # Remove ambulant duplicates from LPR2
     df_LPR2 = df_LPR2.sort_values(["dw_ek_borger", "pt_type"]).drop_duplicates(
-        subset="dw_ek_borger",
-        keep="first",
+        subset="dw_ek_borger", keep="first"
     )
 
     # Sorting values so that the order of the indexes corresponds to the ones of the LPR3 dataframe
-    df_LPR2 = (
-        df_LPR2.sort_values(["dw_ek_borger"]).reset_index().drop(columns=["index"])
-    )
+    df_LPR2 = df_LPR2.sort_values(["dw_ek_borger"]).reset_index().drop(columns=["index"])
 
-    df_LPR3 = (
-        df_LPR3.sort_values(["dw_ek_borger"]).reset_index().drop(columns=["index"])
-    )
+    df_LPR3 = df_LPR3.sort_values(["dw_ek_borger"]).reset_index().drop(columns=["index"])
 
     # Keep LPR2 patient IDs:
     # Creat temporary list of all discharge times from LPR3 version
@@ -71,8 +66,7 @@ def lpr2_lpr3_overlap(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def concat_readmissions_for_all_patients(
-    df: pd.DataFrame,
-    readmission_interval_hours: int = 4,
+    df: pd.DataFrame, readmission_interval_hours: int = 4
 ) -> pd.DataFrame:
     """
     Concatenates close  individual readmissions into continuous admissions.
@@ -101,15 +95,14 @@ def concat_readmissions_for_all_patients(
                 readmission_interval_hours=readmission_interval_hours,
             )
             for patient in df_patients_list
-        ],
+        ]
     )
 
     return df
 
 
 def concat_readmissions_for_single_patient(
-    df_patient: pd.DataFrame,
-    readmission_interval_hours: int = 4,
+    df_patient: pd.DataFrame, readmission_interval_hours: int = 4
 ) -> pd.DataFrame:
     """
     Concatenates individual readmissions into continuous admissions. An admission is defined as a readmission when the admission starts less than a specifiec number of
@@ -130,37 +123,32 @@ def concat_readmissions_for_single_patient(
     # 'end_readmission' indicates whether the end of the admission was followed be a readmission less than four hours later
     df_patient = df_patient.assign(
         end_readmission=lambda x: x["datotid_start"].shift(-1) - x["datotid_slut"]
-        < pd.Timedelta(readmission_interval_hours, "hours"),
+        < pd.Timedelta(readmission_interval_hours, "hours")
     )
     # 'start_readmission' indicates whether the admission started less than four hours later after the previous admission
     df_patient = df_patient.assign(
         start_readmission=lambda x: x["datotid_start"] - x["datotid_slut"].shift(1)
-        < pd.Timedelta(readmission_interval_hours, "hours"),
+        < pd.Timedelta(readmission_interval_hours, "hours")
     )
 
     # if the patients have any readmissions, the affected rows are subsetted
     if df_patient["end_readmission"].any() & df_patient["start_readmission"].any():
         readmissions = df_patient[
-            (df_patient["end_readmission"] is True)
-            | (df_patient["start_readmission"] is True)
+            (df_patient["end_readmission"] is True) | (df_patient["start_readmission"] is True)
         ]
 
         # if there are multiple subsequent readmissions (i.e., both 'end_readmission' and 'start_readmission' == True), all but the first and last are excluded
         readmissions_subset = readmissions[
-            (df_patient["end_readmission"] is False)
-            | (df_patient["start_readmission"] is False)
+            (df_patient["end_readmission"] is False) | (df_patient["start_readmission"] is False)
         ]
 
         # insert discharge time from the last readmission into the first
         readmissions_subset.loc[
-            readmissions_subset["start_readmission"] is False,
-            "datotid_slut",
+            readmissions_subset["start_readmission"] is False, "datotid_slut"
         ] = readmissions_subset["datotid_slut"].shift(-1)
 
         # keep only the first admission
-        readmissions_subset = readmissions_subset[
-            readmissions_subset["end_readmission"] is True
-        ]
+        readmissions_subset = readmissions_subset[readmissions_subset["end_readmission"] is True]
 
         # remove readmissions from the original data
         df_patient_no_readmissions = df_patient.merge(
@@ -175,15 +163,13 @@ def concat_readmissions_for_single_patient(
 
         # merge the new rows with the rest of the admissions
         df_patient_concatenated_readmissions = df_patient_no_readmissions.merge(
-            readmissions_subset,
-            how="outer",
-            on=["dw_ek_borger", "datotid_start", "datotid_slut"],
+            readmissions_subset, how="outer", on=["dw_ek_borger", "datotid_start", "datotid_slut"]
         )
 
     else:
-        return df_patient[
-            ["dw_ek_borger", "datotid_start", "datotid_slut"]
-        ].sort_values(["dw_ek_borger", "datotid_start"])
+        return df_patient[["dw_ek_borger", "datotid_start", "datotid_slut"]].sort_values(
+            ["dw_ek_borger", "datotid_start"]
+        )
 
     return df_patient_concatenated_readmissions[
         ["dw_ek_borger", "datotid_start", "datotid_slut"]
@@ -191,8 +177,7 @@ def concat_readmissions_for_single_patient(
 
 
 def map_forced_admissions(
-    forced_admissions: pd.DataFrame,
-    admissions_df: pd.DataFrame,
+    forced_admissions: pd.DataFrame, admissions_df: pd.DataFrame
 ) -> pd.DataFrame:
     """Function for generating new contact id column in forced_admissions data
     that may match contacts data.
@@ -247,13 +232,13 @@ def map_forced_admissions(
                     )
                 ):
                     # Set start of admission
-                    one_patient_forced_admissions["datotid_start"][
-                        j
-                    ] = one_patient_contacts["datotid_start"][i]
+                    one_patient_forced_admissions["datotid_start"][j] = one_patient_contacts[
+                        "datotid_start"
+                    ][i]
                     # And set end of admission
-                    one_patient_forced_admissions["datotid_slut"][
-                        j
-                    ] = one_patient_contacts["datotid_slut"][i]
+                    one_patient_forced_admissions["datotid_slut"][j] = one_patient_contacts[
+                        "datotid_slut"
+                    ][i]
 
         # Append patient df to list
         df_list.append(one_patient_forced_admissions)
@@ -270,18 +255,14 @@ def map_forced_admissions(
     ].apply(pd.to_datetime)
 
     # Keep only forced admissions that correspond to admissions in the cleaned admission data set
-    forced_admissions.merge(
-        admissions_df,
-        on=["datotid_start", "dw_ek_borger"],
-        how="inner",
-    )
+    forced_admissions.merge(admissions_df, on=["datotid_start", "dw_ek_borger"], how="inner")
 
     unmatching_start_dates = forced_admissions[
         pd.to_datetime(forced_admissions["datotid_start_sei"]).dt.date
         != pd.to_datetime(forced_admissions["datotid_start"]).dt.date
     ]
     print(
-        len(unmatching_start_dates),
+        len(unmatching_start_dates)
     )  # 346 'forced amdissions' with a different start date than the one registered in the SEI
     print(unmatching_start_dates.head(10))
     unmatching_end_dates = forced_admissions[
@@ -289,7 +270,7 @@ def map_forced_admissions(
         != pd.to_datetime(forced_admissions["datotid_slut"]).dt.date
     ]
     print(
-        len(unmatching_end_dates),
+        len(unmatching_end_dates)
     )  # 3845 'forced amdissions' with a different end date than the one registered in the SEI
     print(unmatching_end_dates.head(10))
     unmatching_dates = unmatching_end_dates[
@@ -297,7 +278,7 @@ def map_forced_admissions(
         != pd.to_datetime(unmatching_end_dates["datotid_start"]).dt.date
     ]
     print(
-        len(unmatching_dates),
+        len(unmatching_dates)
     )  # At least 188 'forced amdissions' have both a different start and end date than the SEI registration
     print(unmatching_dates.head(10))
 
