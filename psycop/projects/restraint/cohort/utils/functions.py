@@ -77,7 +77,7 @@ def concat_readmissions(
     ].sort_values(["dw_ek_borger", "datotid_start"])
 
 
-def preprocess_readmissions(df: pl.DataFrame) -> pl.DataFrame:
+def preprocess_readmissions(df: pl.DataFrame) -> pl.LazyFrame:
     df_ = df.to_pandas()
 
     df_ = df_.sort_values(["dw_ek_borger", "datotid_start"])
@@ -88,7 +88,7 @@ def preprocess_readmissions(df: pl.DataFrame) -> pl.DataFrame:
 
     df = pd.concat([concat_readmissions(patient) for patient in df_patients_list])  # type: ignore
 
-    return pl.DataFrame(df)
+    return pl.LazyFrame(df)
 
 
 def keep_first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFrame:
@@ -121,7 +121,7 @@ def keep_first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFram
     ].drop_duplicates()
 
 
-def select_outcomes(df: pl.DataFrame) -> pl.DataFrame:
+def select_outcomes(df: pl.DataFrame) -> pl.LazyFrame:
     df_ = df.to_pandas()
     groups = df_.groupby(["dw_ek_borger", "datotid_start"])
     df_list = [groups.get_group(key[0]) for key in groups]
@@ -130,10 +130,10 @@ def select_outcomes(df: pl.DataFrame) -> pl.DataFrame:
         [keep_first_coercion_within_admission(admission) for admission in df_list]
     )
 
-    return pl.DataFrame(df_concat)
+    return pl.LazyFrame(df_concat)
 
 
-def unpack_adm_days(idx: int, row: pd.Series, pred_hour: int = 6) -> pd.DataFrame:
+def unpack_adm_days(idx: int, row: pd.Series, pred_hour: int = 6) -> pd.DataFrame:  # type: ignore
     """Unpack admissions to long format (one row per day in the admission)
 
     Args:
@@ -177,9 +177,9 @@ def unpack_adm_days(idx: int, row: pd.Series, pred_hour: int = 6) -> pd.DataFram
     return days_unpacked.drop(columns=0)
 
 
-def explode_admissions(df: pl.DataFrame) -> pl.DataFrame:
-    df_ = df.to_pandas()
+def explode_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
+    df_ = df.collect().to_pandas()
 
     df_concat = pd.concat([unpack_adm_days(idx, row) for idx, row in df_.iterrows()])  # type: ignore
 
-    return pl.DataFrame(df_concat)
+    return pl.LazyFrame(df_concat)

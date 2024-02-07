@@ -537,7 +537,7 @@ class FeatureSpecifier:
 
         mechanical_restraint_spec = OutcomeSpec(
             timeseries_df=RestraintCohortDefiner.get_outcome_timestamps()
-            .to_pandas()
+            .frame.to_pandas()
             .assign(value=1)
             .rename(columns={"first_mechanical_restraint": "timestamp"})
             .dropna(subset="timestamp"),
