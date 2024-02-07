@@ -39,7 +39,7 @@ class RestraintCoercionTypeFilter(PredictionTimeFilter):
                 & (pl.col("begrundtekst_sei") != "Frivillig bæltefiksering")
             )
             | (pl.col("typetekst_sei") == "Fastholden")
-            | (pl.col("typetekst_sei") == "Beroligende medicin"),
+            | (pl.col("typetekst_sei") == "Beroligende medicin")
         )
 
 
@@ -47,14 +47,11 @@ class RestraintWashoutFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(
-            (
-                pl.col("datotid_start") - pl.col("datotid_start_sei")
-                >= pd.Timedelta(0, "days")
-            )
+            (pl.col("datotid_start") - pl.col("datotid_start_sei") >= pd.Timedelta(0, "days"))
             & (
                 pl.col("datotid_start") - pl.col("datotid_start_sei")
                 <= pd.Timedelta(WASHOUT_INTERVAL_IN_DAYS, "days")
-            ),
+            )
         )
 
 
@@ -63,7 +60,7 @@ class RestraintWithinAdmissionsFilter(PredictionTimeFilter):
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(
             (pl.col("datotid_start_sei") > pl.col("datotid_start"))
-            & (pl.col("datotid_start_sei") < pl.col("datotid_slut")),
+            & (pl.col("datotid_start_sei") < pl.col("datotid_slut"))
         )
 
 
@@ -72,7 +69,7 @@ class RestraintAdmissionFilter(PredictionTimeFilter):
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(
             (pl.col("datotid_slut").is_not_null())
-            & (pl.col("datotid_slut") <= datetime(year=2021, month=11, day=22)),
+            & (pl.col("datotid_slut") <= datetime(year=2021, month=11, day=22))
         )
 
 
@@ -81,7 +78,7 @@ class RestraintShakCodeFilter(PredictionTimeFilter):
     def apply(df: pl.DataFrame) -> pl.DataFrame:
         return df.filter(
             (pl.col("shakkode_ansvarlig") != "6600310")
-            & (pl.col("shakkode_ansvarlig") != "6600021"),
+            & (pl.col("shakkode_ansvarlig") != "6600021")
         )
 
 
@@ -115,5 +112,7 @@ class RestraintTreatmentUnitFilter(PredictionTimeFilter):
 class RestraintExcludeDaysFollowingCoercionFilter(PredictionTimeFilter):
     @staticmethod
     def apply(df: pl.DataFrame) -> pl.DataFrame:
-        return df.filter((pl.col("datotid_start_sei") > pl.col("pred_time")) | (pl.col("datotid_start_sei").is_null()))
-    
+        return df.filter(
+            (pl.col("datotid_start_sei") > pl.col("pred_time"))
+            | (pl.col("datotid_start_sei").is_null())
+        )

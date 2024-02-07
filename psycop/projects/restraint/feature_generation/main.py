@@ -16,12 +16,8 @@ from psycop.common.feature_generation.application_modules.loggers import init_ro
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
-
-from psycop.projects.restraint.feature_generation.modules.specify_features import (
-    FeatureSpecifier,
-)
+from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
 log = logging.getLogger()

@@ -15,20 +15,10 @@ from timeseriesflattener.aggregation_fns import (
     summed,
     variance,
 )
-from timeseriesflattener.feature_specs.group_specs import (
-    NamedDataframe,
-    PredictorGroupSpec,
-)
-from timeseriesflattener.feature_specs.single_specs import (
-    PredictorSpec,
-    StaticSpec,
-    OutcomeSpec,
-)
+from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.feature_specs.single_specs import OutcomeSpec, PredictorSpec, StaticSpec
 
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
-from psycop.common.feature_generation.loaders.raw import sql_load
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_coercion import (
     af_helbredsmaessige_grunde,
     af_legemlig_lidelse,
@@ -112,9 +102,7 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.projects.restraint.cohort.restraint_cohort_definer import (
-    RestraintCohortDefiner,
-)
+from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 
 log = logging.getLogger(__name__)
 
@@ -548,12 +536,10 @@ class FeatureSpecifier:
         log.info("-------- Generating outcome specs --------")
 
         mechanical_restraint_spec = OutcomeSpec(
-            timeseries_df=RestraintCohortDefiner.get_outcome_timestamps().to_pandas().assign(value=1)
-            .rename(
-                columns={
-                    "first_mechanical_restraint": "timestamp",
-                }
-            )
+            timeseries_df=RestraintCohortDefiner.get_outcome_timestamps()
+            .to_pandas()
+            .assign(value=1)
+            .rename(columns={"first_mechanical_restraint": "timestamp"})
             .dropna(subset="timestamp"),
             lookahead_days=2,
             aggregation_fn=boolean,
@@ -642,12 +628,14 @@ class FeatureSpecifier:
             + lab_results
         )
 
-    def get_feature_specs(
-        self,
-    ) -> list[Union[StaticSpec, PredictorSpec, OutcomeSpec]]:
+    def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec, OutcomeSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
             return self._get_outcome_specs()  # type: ignore
 
-        return self._get_static_predictor_specs() + self._get_temporal_predictor_specs() + self._get_outcome_specs()
+        return (
+            self._get_static_predictor_specs()
+            + self._get_temporal_predictor_specs()
+            + self._get_outcome_specs()
+        )

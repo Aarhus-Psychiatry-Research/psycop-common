@@ -38,20 +38,16 @@ def concat_readmissions(
 
         # if there are multiple subsequent readmissions (i.e., both 'end_readmission' and 'start_readmission' == True), all but the first and last are excluded
         readmissions_subset = readmissions[
-            (readmissions.end_readmission == False) # type: ignore
-            | (readmissions.start_readmission == False) # type: ignore
+            (readmissions.end_readmission == False) | (readmissions.start_readmission == False)  # noqa E712
         ]
 
         # insert discharge time from the last readmission into the first
         readmissions_subset.loc[
-            readmissions_subset.start_readmission == False, # type: ignore
-            "datotid_slut",
+            readmissions_subset.start_readmission == False, "datotid_slut"  # noqa E712
         ] = readmissions_subset["datotid_slut"].shift(-1)
 
         # keep only the first admission
-        readmissions_subset = readmissions_subset[
-            readmissions_subset.end_readmission == True # type: ignore
-        ]
+        readmissions_subset = readmissions_subset[readmissions_subset.end_readmission == True]  # noqa E712
 
         # remove readmissions from the original data
         df_patient_no_readmissions = df_patient.merge(
@@ -131,17 +127,13 @@ def select_outcomes(df: pl.DataFrame) -> pl.DataFrame:
     df_list = [groups.get_group(key[0]) for key in groups]
 
     df_concat = pd.concat(
-        [keep_first_coercion_within_admission(admission) for admission in df_list],
+        [keep_first_coercion_within_admission(admission) for admission in df_list]
     )
 
     return pl.DataFrame(df_concat)
 
 
-def unpack_adm_days(
-    idx: int,
-    row: pd.Series,
-    pred_hour: int = 6,
-) -> pd.DataFrame:
+def unpack_adm_days(idx: int, row: pd.Series, pred_hour: int = 6) -> pd.DataFrame:
     """Unpack admissions to long format (one row per day in the admission)
 
     Args:
