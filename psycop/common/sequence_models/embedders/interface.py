@@ -38,19 +38,12 @@ class PatientSliceEmbedder(Protocol):
         ...
 
     def collate_patient_slices(
-        self,
-        patient_slices: Sequence[PatientSlice],
+        self, patient_slices: Sequence[PatientSlice]
     ) -> dict[str, torch.Tensor]:
         ...
 
-    def fit(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> None:
+    def fit(self, patient_slices: Sequence[PatientSlice]) -> None:
         ...
 
-    def reformat(
-        self,
-        patient_slices: Sequence[PatientSlice],
-    ) -> list[PatientSlice]:
+    def reformat(self, patient_slices: Sequence[PatientSlice]) -> list[PatientSlice]:
         ...

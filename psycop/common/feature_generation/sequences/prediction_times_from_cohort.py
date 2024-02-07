@@ -10,15 +10,12 @@ from psycop.common.cohort_definition import CohortDefiner
 from psycop.common.data_structures.patient import Patient
 from psycop.common.data_structures.prediction_time import PredictionTime
 from psycop.common.feature_generation.sequences.event_loader import DiagnosisLoader
-from psycop.common.feature_generation.sequences.patient_loader import (
-    PatientLoader,
-)
+from psycop.common.feature_generation.sequences.patient_loader import PatientLoader
 from psycop.projects.t2d.feature_generation.cohort_definition.t2d_cohort_definer import (
     T2DCohortDefiner,
 )
 
-from ...model_training_v2.trainer.data.data_filters.geography import RegionalFilter
-from ...model_training_v2.trainer.preprocessing.step import PresplitStep
+from ...model_training_v2.trainer.preprocessing.steps.row_filter_split import RegionalFilter
 
 PATIENT_ID = str | int
 
@@ -27,7 +24,6 @@ PATIENT_ID = str | int
 class PredictionTimesFromCohort:
     cohort_definer: CohortDefiner
     patients: Sequence[Patient]
-    split_filter: PresplitStep
 
     @staticmethod
     def _polars_dataframe_to_patient_timestamp_mapping(
@@ -49,20 +45,16 @@ class PredictionTimesFromCohort:
         if lookahead is not None:
             max_timestamp: dt.datetime = dataframe[patient_timestamp_col_name].max()  # type: ignore
             dataframe = dataframe.filter(
-                pl.col(patient_timestamp_col_name) <= max_timestamp - lookahead,
+                pl.col(patient_timestamp_col_name) <= max_timestamp - lookahead
             )
 
         timestamp_dicts = dataframe.iter_rows(named=True)
 
         patient_to_prediction_times = defaultdict(list)
         for prediction_time_dict in timestamp_dicts:
-            patient_timestamp: dt.datetime = prediction_time_dict[
-                patient_timestamp_col_name
-            ]
+            patient_timestamp: dt.datetime = prediction_time_dict[patient_timestamp_col_name]
             patient_id = prediction_time_dict[id_col_name]
-            patient_to_prediction_times[patient_id].append(
-                patient_timestamp,
-            )
+            patient_to_prediction_times[patient_id].append(patient_timestamp)
 
         return patient_to_prediction_times
 
@@ -89,25 +81,20 @@ class PredictionTimesFromCohort:
         )
 
     def create_prediction_times(
-        self,
-        lookbehind: dt.timedelta,
-        lookahead: dt.timedelta,
+        self, lookbehind: dt.timedelta, lookahead: dt.timedelta
     ) -> tuple[PredictionTime, ...]:
         outcome_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
-            dataframe=self.cohort_definer.get_outcome_timestamps(),
+            dataframe=self.cohort_definer.get_outcome_timestamps().frame,
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
         )
 
         naive_prediction_times = (
-            self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times
+            self.cohort_definer.get_filtered_prediction_times_bundle().prediction_times.frame
         ).lazy()
-        prediction_times_for_split = self.split_filter.apply(
-            naive_prediction_times,
-        ).collect()
 
         prediction_timestamps = self._polars_dataframe_to_patient_timestamp_mapping(
-            dataframe=prediction_times_for_split,
+            dataframe=naive_prediction_times.collect(),
             id_col_name="dw_ek_borger",
             patient_timestamp_col_name="timestamp",
             lookahead=lookahead,
@@ -131,13 +118,9 @@ if __name__ == "__main__":
     patients = PatientLoader(
         event_loaders=[DiagnosisLoader()],
         min_n_events=5,
+        split_filter=RegionalFilter(splits_to_keep=["train"]),
     ).get_patients()
 
     prediction_times = PredictionTimesFromCohort(
-        cohort_definer=T2DCohortDefiner(),
-        patients=patients,
-        split_filter=RegionalFilter(splits_to_keep=["train"]),
-    ).create_prediction_times(
-        lookbehind=dt.timedelta(days=365),
-        lookahead=dt.timedelta(days=365),
-    )
+        cohort_definer=T2DCohortDefiner(), patients=patients
+    ).create_prediction_times(lookbehind=dt.timedelta(days=365), lookahead=dt.timedelta(days=365))

@@ -6,10 +6,7 @@ from psycop.projects.t2d.paper_outputs.model_description.feature_importance.shap
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
 
 
-def get_top_i_shap_values_for_printing(
-    shap_long_df: pl.DataFrame,
-    i: int,
-) -> pl.DataFrame:
+def get_top_i_shap_values_for_printing(shap_long_df: pl.DataFrame, i: int) -> pl.DataFrame:
     aggregated = (
         get_top_i_features_by_mean_abs_shap(shap_long_df=shap_long_df, i=i)
         .groupby("feature_name")
@@ -29,5 +26,5 @@ def get_top_i_shap_values_for_printing(
     )
 
     return ranked.with_columns(
-        pl.col("Feature").apply(lambda x: feature_name_to_readable(x)).alias("Feature"),  # type: ignore
+        pl.col("Feature").apply(lambda x: feature_name_to_readable(x)).alias("Feature")  # type: ignore
     )

@@ -38,14 +38,10 @@ from psycop.common.feature_generation.loaders.raw.load_visits import admissions
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
-from psycop.common.model_training_v2.trainer.data.data_filters.geographical_split.make_geographical_split import (
-    get_regional_split_df,
-)
-from psycop.common.model_training_v2.trainer.data.dataloaders import (
-    ParquetVerticalConcatenator,
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.trainer.data.dataloaders import ParquetVerticalConcatenator
+from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
+    _get_regional_split_df,  # type: ignore
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import (
     time_of_first_contact_to_psychiatry,
@@ -91,14 +87,10 @@ class SczBpTableOne:
                 values_to_display=[1],
             ),
             RowSpecification(
-                source_col_name="age_grouped",
-                readable_name="Age grouped",
-                categorical=True,
+                source_col_name="age_grouped", readable_name="Age grouped", categorical=True
             ),
             RowSpecification(
-                source_col_name="pred_age_in_years",
-                readable_name="Age",
-                nonnormal=True,
+                source_col_name="pred_age_in_years", readable_name="Age", nonnormal=True
             ),
             RowSpecification(
                 source_col_name="meta_bp_within_3_years_within_1095_days_maximum_fallback_0_dichotomous",
@@ -130,32 +122,24 @@ class SczBpTableOne:
                     for r in row_specifications
                     if r.source_col_name not in ["age_grouped"]
                 ]
-                + ["split"],
+                + ["split"]
             )
             .to_pandas()
         )
 
         pd_pred_times["age_grouped"] = pd.Series(
-            bin_continuous_data(pd_pred_times["pred_age_in_years"], bins=age_bins)[0],
+            bin_continuous_data(pd_pred_times["pred_age_in_years"], bins=age_bins)[0]
         ).astype(str)
 
         return create_table(
-            row_specs=row_specifications,
-            data=pd_pred_times,
-            groupby_col_name="split",
+            row_specs=row_specifications, data=pd_pred_times, groupby_col_name="split"
         )
 
     @staticmethod
-    def get_psychiatric_diagnosis_row_specs(
-        col_names: list[str],
-    ) -> list[RowSpecification]:
+    def get_psychiatric_diagnosis_row_specs(col_names: list[str]) -> list[RowSpecification]:
         pattern = re.compile(r"pred_f\d_disorders")
         columns = sorted(
-            [
-                c
-                for c in col_names
-                if pattern.search(c) and "boolean" in c and "730" in c
-            ],
+            [c for c in col_names if pattern.search(c) and "boolean" in c and "730" in c]
         )
 
         readable_col_names = []
@@ -174,7 +158,7 @@ class SczBpTableOne:
                     categorical=True,
                     nonnormal=False,
                     values_to_display=[1],
-                ),
+                )
             )
 
         return specs
@@ -197,11 +181,7 @@ class SczBpTableOne:
             df = fn(df)
 
         df = df.select(pl.exclude("first_contact", "dw_ek_borger"))
-        categorical = [
-            "sex_female",
-            "Incident BP",
-            "Incident SCZ",
-        ]
+        categorical = ["sex_female", "Incident BP", "Incident SCZ"]
         non_normal = [
             "Days from first contact to BP diagnosis",
             "Days from first contact to SCZ diagnosis",
@@ -229,25 +209,20 @@ class SczBpTableOne:
                 f"{data_dir}/train.parquet",
                 f"{data_dir}/val.parquet",
                 f"{data_dir}/test.parquet",
-            ],
+            ]
         ).load()
         preprocessing_pipeline = BaselineRegistry().resolve(
-            {"pipe": self.cfg["trainer"]["preprocessing_pipeline"]},
+            {"pipe": self.cfg["trainer"]["preprocessing_pipeline"]}
         )
 
         preprocessed_all_splits: pl.DataFrame = pl.from_pandas(
-            preprocessing_pipeline["pipe"].apply(all_splits),
+            preprocessing_pipeline["pipe"].apply(all_splits)
         )
 
         # check if all_splits and preprocessed.. are differnet
-        all_splits = all_splits.select(
-            pl.col("^meta.*$"),
-            "prediction_time_uuid",
-        ).collect()
+        all_splits = all_splits.select(pl.col("^meta.*$"), "prediction_time_uuid").collect()
         preprocessed_all_splits = preprocessed_all_splits.join(
-            all_splits,
-            on="prediction_time_uuid",
-            how="left",
+            all_splits, on="prediction_time_uuid", how="left"
         )
 
         return preprocessed_all_splits
@@ -263,16 +238,14 @@ class SczBpTableOne:
     @staticmethod
     def add_bipolar(df: pl.DataFrame) -> pl.DataFrame:
         bp_df = pl.from_pandas(get_first_bp_diagnosis()).select(
-            "dw_ek_borger",
-            pl.col("value").alias("Incident BP"),
+            "dw_ek_borger", pl.col("value").alias("Incident BP")
         )
         return df.join(bp_df, on="dw_ek_borger", how="left")
 
     @staticmethod
     def add_scz(df: pl.DataFrame) -> pl.DataFrame:
         scz_df = pl.from_pandas(get_first_scz_diagnosis()).select(
-            "dw_ek_borger",
-            pl.col("value").alias("Incident SCZ"),
+            "dw_ek_borger", pl.col("value").alias("Incident SCZ")
         )
         return df.join(scz_df, on="dw_ek_borger", how="left")
 
@@ -283,45 +256,34 @@ class SczBpTableOne:
 
     @staticmethod
     def add_time_from_first_contact_to_bp_diagnosis(df: pl.DataFrame) -> pl.DataFrame:
-        bp_df = pl.from_pandas(get_first_bp_diagnosis()).select(
-            "dw_ek_borger",
-            "timestamp",
-        )
+        bp_df = pl.from_pandas(get_first_bp_diagnosis()).select("dw_ek_borger", "timestamp")
         return (
             df.join(bp_df, on="dw_ek_borger", how="left")
             .with_columns(
                 ((pl.col("timestamp") - pl.col("first_contact")).dt.days()).alias(
-                    "Days from first contact to BP diagnosis",
-                ),
+                    "Days from first contact to BP diagnosis"
+                )
             )
             .select(pl.exclude("timestamp"))
         )
 
     @staticmethod
     def add_time_from_first_contact_to_scz_diagnosis(df: pl.DataFrame) -> pl.DataFrame:
-        bp_df = pl.from_pandas(get_first_scz_diagnosis()).select(
-            "dw_ek_borger",
-            "timestamp",
-        )
+        bp_df = pl.from_pandas(get_first_scz_diagnosis()).select("dw_ek_borger", "timestamp")
         return (
             df.join(bp_df, on="dw_ek_borger", how="left")
             .with_columns(
                 ((pl.col("timestamp") - pl.col("first_contact")).dt.days()).alias(
-                    "Days from first contact to SCZ diagnosis",
-                ),
+                    "Days from first contact to SCZ diagnosis"
+                )
             )
             .select(pl.exclude("timestamp"))
         )
 
     @staticmethod
-    def add_n_prediction_times(
-        df: pl.DataFrame,
-        pred_times: pl.DataFrame,
-    ) -> pl.DataFrame:
+    def add_n_prediction_times(df: pl.DataFrame, pred_times: pl.DataFrame) -> pl.DataFrame:
         n_prediction_times_pr_id = (
-            pred_times.groupby("dw_ek_borger")
-            .count()
-            .rename({"count": "N. outpatient visits"})
+            pred_times.groupby("dw_ek_borger").count().rename({"count": "N. outpatient visits"})
         )
         return df.join(n_prediction_times_pr_id, on="dw_ek_borger", how="left")
 
@@ -338,13 +300,13 @@ class SczBpTableOne:
     @staticmethod
     def add_split(df: pl.DataFrame) -> pl.DataFrame:
         split_df = (
-            get_regional_split_df()
+            _get_regional_split_df()
             .collect()
             .with_columns(
                 pl.when(pl.col("region").is_in(["øst", "vest"]))
                 .then("Train")
                 .otherwise("test")
-                .alias("split"),
+                .alias("split")
             )
             .select("dw_ek_borger", "split")
         )

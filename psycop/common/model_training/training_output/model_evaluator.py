@@ -8,13 +8,8 @@ from sklearn.metrics import roc_auc_score
 from sklearn.pipeline import Pipeline
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.training_output.artifact_saver.to_disk import (
-    ArtifactsToDiskSaver,
-)
-from psycop.common.model_training.training_output.dataclasses import (
-    EvalDataset,
-    PipeMetadata,
-)
+from psycop.common.model_training.training_output.artifact_saver.to_disk import ArtifactsToDiskSaver
+from psycop.common.model_training.training_output.dataclasses import EvalDataset, PipeMetadata
 from psycop.common.model_training.utils.utils import (
     get_feature_importance_dict,
     get_selected_features_dict,
@@ -30,17 +25,14 @@ class ModelEvaluator:
         pipe_metadata = PipeMetadata()
 
         if hasattr(self.pipe["model"], "feature_importances_"):  # type: ignore
-            pipe_metadata.feature_importances = get_feature_importance_dict(
-                pipe=self.pipe,
-            )
+            pipe_metadata.feature_importances = get_feature_importance_dict(pipe=self.pipe)
 
         if "preprocessing" in self.pipe and hasattr(
             self.pipe["preprocessing"].named_steps,  # type: ignore
             "feature_selection",
         ):
             pipe_metadata.selected_features = get_selected_features_dict(
-                pipe=self.pipe,
-                train_col_names=self.train_col_names,
+                pipe=self.pipe, train_col_names=self.train_col_names
             )
 
         return pipe_metadata
@@ -77,8 +69,7 @@ class ModelEvaluator:
     def evaluate_and_save_eval_data(self) -> float:
         """Evaluate the model and save artifacts."""
         roc_auc: float = roc_auc_score(  # type: ignore
-            self.eval_ds.y,
-            self.eval_ds.y_hat_probs,
+            self.eval_ds.y, self.eval_ds.y_hat_probs
         )
 
         self.disk_saver.save(
@@ -92,15 +83,11 @@ class ModelEvaluator:
         wandb.log(
             {
                 "roc_auc_unweighted": roc_auc,
-                "lookbehind": max(
-                    self.cfg.preprocessing.pre_split.lookbehind_combination,
-                ),
+                "lookbehind": max(self.cfg.preprocessing.pre_split.lookbehind_combination),
                 "lookahead": self.cfg.preprocessing.pre_split.min_lookahead_days,
-            },
+            }
         )
 
-        logging.info(
-            f"ROC AUC: {roc_auc}",
-        )
+        logging.info(f"ROC AUC: {roc_auc}")
 
         return roc_auc

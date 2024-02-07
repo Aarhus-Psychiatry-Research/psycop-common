@@ -9,9 +9,6 @@ on:
 
 jobs:
   lint:
-    concurrency:
-      group: "${{ github.workflow }} @ ${{ github.ref }}"
-      cancel-in-progress: true
     if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:

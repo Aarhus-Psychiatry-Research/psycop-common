@@ -13,9 +13,7 @@ from psycop.common.model_training.config_schemas.data import DataSchema
 from psycop.common.model_training.config_schemas.preprocessing import (
     PreSplitPreprocessingConfigSchema,
 )
-from psycop.common.model_training.utils.col_name_inference import (
-    infer_predictor_col_name,
-)
+from psycop.common.model_training.utils.col_name_inference import infer_predictor_col_name
 from psycop.common.model_training.utils.decorators import print_df_dimensions_diff
 
 msg = Printer(timestamp=True)
@@ -24,11 +22,7 @@ msg = Printer(timestamp=True)
 class PreSplitValueTransformer:
     """Pre-split value transformer."""
 
-    def __init__(
-        self,
-        pre_split_cfg: PreSplitPreprocessingConfigSchema,
-        data_cfg: DataSchema,
-    ):
+    def __init__(self, pre_split_cfg: PreSplitPreprocessingConfigSchema, data_cfg: DataSchema):
         self.pre_split_cfg = pre_split_cfg
         self.data_cfg = data_cfg
 

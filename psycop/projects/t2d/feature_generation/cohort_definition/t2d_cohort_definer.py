@@ -4,13 +4,12 @@ from wasabi import Printer
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
-from psycop.common.sequence_models.registry import Registry
+from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
+from psycop.common.sequence_models.registry import SequenceRegistry
 from psycop.projects.t2d.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     NoIncidentDiabetes,
     T2DMinAgeFilter,
@@ -25,16 +24,13 @@ from psycop.projects.t2d.feature_generation.cohort_definition.outcome_specificat
 msg = Printer(timestamp=True)
 
 
-@Registry.cohorts.register("t2d")
+@SequenceRegistry.cohorts.register("t2d")
 class T2DCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         msg.info("Getting unfiltered prediction times")
         unfiltered_prediction_times = pl.from_pandas(
-            physical_visits_to_psychiatry(
-                timestamps_only=True,
-                timestamp_for_output="start",
-            ),
+            physical_visits_to_psychiatry(timestamps_only=True, timestamp_for_output="start")
         ).lazy()
 
         msg.info("Filtering prediction times")
@@ -52,8 +48,8 @@ class T2DCohortDefiner(CohortDefiner):
         )
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return pl.from_pandas(get_first_diabetes_indicator())
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(frame=pl.from_pandas(get_first_diabetes_indicator()))
 
 
 if __name__ == "__main__":

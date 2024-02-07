@@ -3,11 +3,10 @@ import polars as pl
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    OutcomeTimestampFrame,
     filter_prediction_times,
 )
-from psycop.common.feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
+from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits_to_psychiatry
 from psycop.projects.cvd.feature_generation.cohort_definition.eligible_prediction_times.single_filters import (
     CVDMinAgeFilter,
     CVDMinDateFilter,
@@ -24,10 +23,7 @@ class CVDCohortDefiner(CohortDefiner):
     @staticmethod
     def get_filtered_prediction_times_bundle() -> FilteredPredictionTimeBundle:
         unfiltered_prediction_times = pl.from_pandas(
-            physical_visits_to_psychiatry(
-                timestamps_only=True,
-                timestamp_for_output="start",
-            ),
+            physical_visits_to_psychiatry(timestamps_only=True, timestamp_for_output="start")
         )
 
         result = filter_prediction_times(
@@ -45,11 +41,13 @@ class CVDCohortDefiner(CohortDefiner):
         return result
 
     @staticmethod
-    def get_outcome_timestamps() -> pl.DataFrame:
-        return (
-            pl.from_pandas(get_first_cvd_indicator())
-            .with_columns(value=pl.lit(1))
-            .select(["dw_ek_borger", "timestamp", "value"])
+    def get_outcome_timestamps() -> OutcomeTimestampFrame:
+        return OutcomeTimestampFrame(
+            frame=(
+                pl.from_pandas(get_first_cvd_indicator())
+                .with_columns(value=pl.lit(1))
+                .select(["dw_ek_borger", "timestamp", "value"])
+            )
         )
 
 

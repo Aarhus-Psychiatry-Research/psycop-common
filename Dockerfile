@@ -22,7 +22,7 @@ ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 # Install snyk
 RUN npm install -g snyk
 
-# Install graphite (PR stacking)
+# Install graphite (PR stacking), experimental, can be deleted without notice
 RUN npm install -g @withgraphite/graphite-cli@stable
 
 # Install dev tools
@@ -39,6 +39,10 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install -r gpu-requirements.t
 
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt --no-compile
+
+# Install lefthook (git hooks, e.g. pre-commit)
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash
+RUN apt install lefthook
 
 # Set the working directory to /app
 WORKDIR /app

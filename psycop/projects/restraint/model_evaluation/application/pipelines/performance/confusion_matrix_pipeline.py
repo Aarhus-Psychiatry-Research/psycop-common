@@ -4,9 +4,7 @@ import pandas as pd
 import plotnine as pn
 
 from psycop.common.model_evaluation.confusion_matrix import confusion_matrix
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-)
+from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.restraint.model_evaluation.config import (
     BEST_DEV_RUN,
@@ -28,7 +26,7 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, x_title: str) -> pn.ggplo
 " ",-,"NPV:\n{matrix.npv:.3f}",
 -," ","Spec:\n{matrix.specificity:.3f}",
 +," ","Sens:\n{matrix.sensitivity:.3f}",
-""",
+"""
     )
 
     """Create a confusion matrix and return a plotnine object."""
@@ -77,12 +75,7 @@ def confusion_matrix_metrics(
 
     # Create a separate dataframe for the metrics
     metrics_df = pd.DataFrame(
-        {
-            "PPV": [cm.ppv],
-            "NPV": [cm.npv],
-            "SENS": [cm.sensitivity],
-            "SPEC": [cm.specificity],
-        },
+        {"PPV": [cm.ppv], "NPV": [cm.npv], "SENS": [cm.sensitivity], "SPEC": [cm.specificity]}
     )
 
     return df, metrics_df, cm
@@ -95,13 +88,12 @@ def confusion_matrix_pipeline(run: Run, path: Path):
     df = pd.DataFrame(
         {
             "true": eval_ds["outcome_coercion_type_within_2_days"].replace(  # type: ignore
-                {1: 0, 2: 0, 3: 1},
+                {1: 0, 2: 0, 3: 1}
             ),
             "pred": eval_ds.get_predictions_for_positive_rate(
-                desired_positive_rate=run.pos_rate,
-                y_hat_probs_column="y_hat_prob",
+                desired_positive_rate=run.pos_rate, y_hat_probs_column="y_hat_prob"
             )[0],
-        },
+        }
     )
 
     conf_matrix, metrics_df, cm = confusion_matrix_metrics(df)
@@ -112,9 +104,7 @@ def confusion_matrix_pipeline(run: Run, path: Path):
     conf_matrix.to_csv(path / "confusion_matrix.csv")
     metrics_df.to_csv(path / "confusion_matrix_metrics.csv")
 
-    plotnine_confusion_matrix(cm, "Confusion Matrix").save(
-        path / "confusion_matrix.png",
-    )
+    plotnine_confusion_matrix(cm, "Confusion Matrix").save(path / "confusion_matrix.png")
 
 
 if __name__ == "__main__":

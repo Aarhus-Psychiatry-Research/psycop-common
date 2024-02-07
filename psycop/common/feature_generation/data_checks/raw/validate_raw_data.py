@@ -16,9 +16,7 @@ from psycop.common.feature_generation.data_checks.flattened.data_integrity impor
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     create_unicode_hist,
 )
-from psycop.common.feature_generation.data_checks.utils import (
-    save_df_to_pretty_html_table,
-)
+from psycop.common.feature_generation.data_checks.utils import save_df_to_pretty_html_table
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -105,10 +103,7 @@ def highlight_large_deviation(
         series.loc["0.99th_percentile"] > upper_bound
         or series.loc["0.01th_percentile"] < lower_bound
     )
-    return [
-        "background-color: yellow" if above_threshold.any() else ""
-        for _ in above_threshold
-    ]
+    return ["background-color: yellow" if above_threshold.any() else "" for _ in above_threshold]
 
 
 def validate_raw_data(
@@ -153,16 +148,11 @@ def validate_raw_data(
     timestamp_col_name = "timestamp" if "timestamp" in df.columns else None
     id_col_name = "dw_ek_borger" if "dw_ek_borger" in df.columns else None
     if timestamp_col_name or id_col_name is None:
-        raise ValueError(
-            "Dataframe must contain `timestamp` and `dw_ek_borger` columns.",
-        )
+        raise ValueError("Dataframe must contain `timestamp` and `dw_ek_borger` columns.")
 
     # Deepchecks
     d_set = Dataset(
-        df=df,
-        index_name=id_col_name,
-        datetime_name=timestamp_col_name,
-        cat_features=[],
+        df=df, index_name=id_col_name, datetime_name=timestamp_col_name, cat_features=[]
     )
     integ_suite = data_integrity(timeout=0)
 
@@ -174,13 +164,9 @@ def validate_raw_data(
     msg.good("Finished data integrity checks.")
 
     # Data description
-    data_columns = [
-        col for col in df.columns if col not in [id_col_name, timestamp_col_name]
-    ]
+    data_columns = [col for col in df.columns if col not in [id_col_name, timestamp_col_name]]
     with msg.loading("Generating data description..."):
-        data_description = [
-            generate_column_description(df[col]) for col in data_columns
-        ]
+        data_description = [generate_column_description(df[col]) for col in data_columns]
 
     msg.good("Finished data description.")
 
@@ -205,6 +191,4 @@ def validate_raw_data(
 
     msg.info(f"All files saved to {save_path}")
     if failed_checks:
-        print(
-            f"The following checks failed - look through the generated reports!\n{failed_checks}",
-        )
+        print(f"The following checks failed - look through the generated reports!\n{failed_checks}")

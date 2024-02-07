@@ -1,8 +1,6 @@
 import polars as pl
 
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.t2d.paper_outputs.selected_runs import get_best_eval_pipeline
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
 from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
@@ -23,7 +21,7 @@ def generate_feature_importance_table(pipeline_run: T2DPipelineRun) -> pl.DataFr
 
     if "feature_selection" in pipeline["preprocessing"]:  # type: ignore
         feature_indices = pipeline["preprocessing"]["feature_selection"].get_support(  # type: ignore
-            indices=True,
+            indices=True
         )
         selected_feature_names = [feature_names[i] for i in feature_indices]
     else:
@@ -31,7 +29,7 @@ def generate_feature_importance_table(pipeline_run: T2DPipelineRun) -> pl.DataFr
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
-        {"Feature Name": selected_feature_names, "Gain": feature_importances},
+        {"Feature Name": selected_feature_names, "Gain": feature_importances}
     )
 
     # Sort the table by gain in descending order
@@ -47,9 +45,9 @@ def generate_feature_importance_table(pipeline_run: T2DPipelineRun) -> pl.DataFr
     pd_df["index"] = pd_df["index"] + 1
     pd_df = pd_df.set_index("index")
 
-    with (
-        pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html"
-    ).open("w") as html_file:
+    with (pipeline_run.paper_outputs.paths.tables / "feature_importance_by_gain.html").open(
+        "w"
+    ) as html_file:
         html = pd_df.to_html()
         html_file.write(html)
 
@@ -57,6 +55,4 @@ def generate_feature_importance_table(pipeline_run: T2DPipelineRun) -> pl.DataFr
 
 
 if __name__ == "__main__":
-    top_100_features = generate_feature_importance_table(
-        pipeline_run=get_best_eval_pipeline(),
-    )
+    top_100_features = generate_feature_importance_table(pipeline_run=get_best_eval_pipeline())

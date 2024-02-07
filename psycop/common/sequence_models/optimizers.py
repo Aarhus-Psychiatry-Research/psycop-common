@@ -6,7 +6,7 @@ import torch
 from torch.optim.lr_scheduler import _LRScheduler  # , # type: ignore
 from transformers import get_linear_schedule_with_warmup
 
-from .registry import Registry
+from .registry import SequenceRegistry
 
 OptimizerFn = Callable[[Iterable[torch.nn.parameter.Parameter]], torch.optim.Optimizer]
 LRSchedulerFn = Callable[[torch.optim.Optimizer], _LRScheduler]
@@ -26,12 +26,12 @@ def _configure_adamw(
     return torch.optim.AdamW(parameters, lr=lr)
 
 
-@Registry.optimizers.register("adam")
+@SequenceRegistry.optimizers.register("adam")
 def create_adam(lr: float) -> OptimizerFn:
     return partial(_configure_adam, lr=lr)
 
 
-@Registry.optimizers.register("adamw")
+@SequenceRegistry.optimizers.register("adamw")
 def create_adamw(lr: float) -> OptimizerFn:
     return partial(_configure_adamw, lr=lr)
 
@@ -50,11 +50,9 @@ def _configure_linear_schedule_with_warmup(
     )
 
 
-@Registry.lr_schedulers.register("linear_schedule_with_warmup")
+@SequenceRegistry.lr_schedulers.register("linear_schedule_with_warmup")
 def create_linear_schedule_with_warmup(
-    num_warmup_steps: int,
-    num_training_steps: int,
-    last_epoch: int = -1,
+    num_warmup_steps: int, num_training_steps: int, last_epoch: int = -1
 ) -> LRSchedulerFn:
     return partial(
         _configure_linear_schedule_with_warmup,

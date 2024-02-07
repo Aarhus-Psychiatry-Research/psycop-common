@@ -9,11 +9,11 @@ from .test_utils.str_to_df import str_to_pl_df
 def test_filter_prediction_times():
     prediction_times = str_to_pl_df(
         """
-        entity_id,  timestamp,
+        dw_ek_borger,  timestamp,
         1,          2020-01-01,
         1,          2019-01-01, # Filtered because of timestamp in filter 1
         1,          2018-01-01, # Filtered because of timestamp in filter 2
-        """,
+        """
     ).lazy()
 
     class RemoveYear(PredictionTimeFilter):
@@ -22,9 +22,7 @@ def test_filter_prediction_times():
 
         def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
             """Remove all prediction times within the year of the timestamp"""
-            return df.filter(
-                pl.col("timestamp").dt.year() != self.year_timestamp.year,
-            )
+            return df.filter(pl.col("timestamp").dt.year() != self.year_timestamp.year)
 
     filtered = filter_prediction_times(
         prediction_times=prediction_times,
@@ -33,7 +31,7 @@ def test_filter_prediction_times():
             RemoveYear(dt.strptime("2018", "%Y")),
             RemoveYear(dt.strptime("2019", "%Y")),
         ],
-        entity_id_col_name="entity_id",
+        entity_id_col_name="dw_ek_borger",
     )
 
-    assert len(filtered.prediction_times) == 1
+    assert len(filtered.prediction_times.frame) == 1

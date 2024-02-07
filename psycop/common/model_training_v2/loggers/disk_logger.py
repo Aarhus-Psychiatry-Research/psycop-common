@@ -1,4 +1,5 @@
 import logging
+import shutil
 from pathlib import Path
 
 from confection import Config
@@ -45,8 +46,7 @@ class DiskLogger(BaselineLogger):
         # Create file handler
         fh = logging.FileHandler(self.log_path, mode="w", encoding="utf-8")
         formatter = logging.Formatter(
-            "%(asctime)s %(levelname)s %(name)s %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
+            "%(asctime)s %(levelname)s %(name)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
         fh.setFormatter(formatter)
 
@@ -55,3 +55,6 @@ class DiskLogger(BaselineLogger):
 
         logger.info("Disk logger initialized")
         return logger
+
+    def log_artifact(self, local_path: Path) -> None:
+        shutil.copy(local_path, (self.experiment_path / local_path.name))

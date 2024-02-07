@@ -22,9 +22,4 @@ def add_outcome_col(flattened_df: pd.DataFrame, visit_type: str) -> pd.DataFrame
     else:
         log.info("Tried to add outcome_col, but no visit type specified")
 
-    return pd.merge(
-        flattened_df,
-        outcome_df,
-        how="inner",
-        on=["dw_ek_borger", "timestamp"],
-    )
+    return pd.merge(flattened_df, outcome_df, how="inner", on=["dw_ek_borger", "timestamp"])

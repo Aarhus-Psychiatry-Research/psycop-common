@@ -3,7 +3,6 @@
 <!-- [![PyPI](https://img.shields.io/pypi/v/psycop-common.svg)][pypi status] -->
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/psycop-common)][pypi status] -->
 [![Open in Dev Container](https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)][dev container]
-[![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/charliermarsh/ruff)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 ![python versions](https://img.shields.io/badge/Python=3.10-blue)
@@ -11,7 +10,6 @@
 
 [dev container]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Aarhus-Psychiatry-Research/psycop-common
 [pypi status]: https://pypi.org/project/psycop-common/
-[black]: https://github.com/psf/black
 [roadmap]: https://github.com/orgs/Aarhus-Psychiatry-Research/projects/15/views/2
 
 
@@ -40,7 +38,7 @@ If you're working on Ovartaci, all you need is to activate the shared environmen
 conda activate psycop-main
 ```
 
-To reinstall the packages in the environment, run `setup_overtaci.sh` in a `git bash` session.
+To reinstall the packages in the environment, run `inv install-requirements`.
 
 ### Method 3: Virtual environment install
 If you're working locally:

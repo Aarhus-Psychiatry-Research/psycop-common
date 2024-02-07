@@ -42,7 +42,7 @@ ignore:
         reason: >-
           Vulnerability in MLFlow server, which we do not use. Exception
           approved via Slack huddle between Andreas and Martin on 2023-12-14.
-        expires: 2024-01-13T08:01:30.536Z
+        expires: 2024-02-13T08:01:30.536Z
         created: 2023-12-14T08:01:30.546Z
   SNYK-PYTHON-MLFLOW-6117546:
     - '*':
@@ -64,5 +64,5 @@ ignore:
           server. Exception approved via zoom call between Andreas
           and Lasse on 2024-01-04.
         expires: 2024-03-01T08:00:00.000Z
-        created: 2024-01-04T08:00:00.000Z          
+        created: 2024-01-04T08:00:00.000Z        
 patch: {}

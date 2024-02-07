@@ -13,11 +13,7 @@ from psycop.common.test_utils.str_to_df import str_to_df
 class TestMarkdownFigure:
     def test_file_does_not_exist(self):
         with pytest.raises(FileNotFoundError):
-            MarkdownFigure(
-                title="Title",
-                file_path=Path("path/to/file"),
-                description="Description",
-            )
+            MarkdownFigure(title="Title", file_path=Path("path/to/file"), description="Description")
 
     def test_markdown_figure_output(self):
         output = MarkdownFigure(
@@ -35,7 +31,7 @@ class TestMarkdownTable:
         """col1,col2,col3
 1,2,3,
 4,5,6,
-""",
+"""
     )
 
     def test_creating_markdown_table(self, tmp_path: Path):
@@ -62,7 +58,7 @@ class TestCreateSupplementaryFromMarkdownArtifacts:
         """col1,col2,col3
 1,2,3,
 4,5,6,
-""",
+"""
     )
 
     figure_string = "Figure here"

@@ -25,7 +25,7 @@ def get_admissions_to_psychiatry(write: bool = True) -> pd.DataFrame:
     df = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
 
     df[["datotid_start", "datotid_slut"]] = df[["datotid_start", "datotid_slut"]].apply(
-        pd.to_datetime,
+        pd.to_datetime
     )
 
     # Resolve lpr2/lpr3 transition
@@ -57,7 +57,7 @@ def admissions_onset_timestamps() -> pd.DataFrame:
     admissions_onset_timestamps = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
 
     admissions_onset_timestamps = admissions_onset_timestamps.rename(
-        columns={"datotid_star": "timestamp"},
+        columns={"datotid_star": "timestamp"}
     )
 
     return admissions_onset_timestamps
@@ -73,7 +73,7 @@ def admissions_discharge_timestamps() -> pd.DataFrame:
     admissions_discharge_timestamps = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
 
     admissions_discharge_timestamps = admissions_discharge_timestamps.rename(
-        columns={"datotid_slut": "timestamp"},
+        columns={"datotid_slut": "timestamp"}
     )
 
     return admissions_discharge_timestamps

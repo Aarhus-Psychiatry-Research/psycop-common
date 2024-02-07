@@ -2,12 +2,8 @@
 
 import pandas as pd
 
-from psycop.common.feature_generation.loaders.raw.utils import (
-    unpack_intervals,
-)
-from psycop.common.test_utils.str_to_df import (
-    str_to_df,
-)
+from psycop.common.feature_generation.loaders.raw.utils import unpack_intervals
+from psycop.common.test_utils.str_to_df import str_to_df
 
 
 def test_unpack_intervals_to_days():
@@ -38,10 +34,7 @@ def test_unpack_intervals_to_days():
     expected_df = str_to_df(expected_df_str, convert_str_to_float=False)
 
     df = unpack_intervals(
-        df,
-        starttime_col="timestamp_start",
-        endtime_col="timestamp_end",
-        unpack_freq="D",
+        df, starttime_col="timestamp_start", endtime_col="timestamp_end", unpack_freq="D"
     )
 
     for col in df.columns:
@@ -74,10 +67,7 @@ def test_unpack_intervals_to_5Hfreq():
     expected_df = str_to_df(expected_df_str, convert_str_to_float=False)
 
     df = unpack_intervals(
-        df,
-        starttime_col="timestamp_start",
-        endtime_col="timestamp_end",
-        unpack_freq="5H",
+        df, starttime_col="timestamp_start", endtime_col="timestamp_end", unpack_freq="5H"
     )
 
     for col in df.columns:

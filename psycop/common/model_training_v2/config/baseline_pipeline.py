@@ -9,13 +9,10 @@ from psycop.common.model_training_v2.config.baseline_schema import BaselineSchem
 def train_baseline_model(cfg_file: Path) -> float:
     cfg = Config().from_disk(cfg_file)
     cfg_schema = BaselineSchema(**BaselineRegistry.resolve(cfg))
-
-    cfg_schema.logger.log_config(
-        cfg,
-    )
+    cfg_schema.logger.log_config(cfg)
     cfg_schema.logger.warn(
         """Config is not filled, so defaults will not be logged.
-                           Waiting for https://github.com/explosion/confection/issues/47 to be resolved.""",
+                           Waiting for https://github.com/explosion/confection/issues/47 to be resolved."""
     )
 
     return train_baseline_model_from_schema(cfg_schema)

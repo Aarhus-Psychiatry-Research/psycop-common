@@ -19,11 +19,7 @@ def chunker(seq: Sequence | pd.DataFrame, size: int) -> Generator:  # type: igno
 
 
 def insert_with_progress(
-    df: pd.DataFrame,
-    table_name: str,
-    conn: Connection,
-    rows_per_chunk: int,
-    if_exists: str,
+    df: pd.DataFrame, table_name: str, conn: Connection, rows_per_chunk: int, if_exists: str
 ):
     """Chunk dataframe and insert each chunk, showing a progress bar.
 
@@ -36,16 +32,12 @@ def insert_with_progress(
     """
     with tqdm(total=len(df)) as pbar:
         for i, chunked_df in enumerate(  # pylint: disable=invalid-name
-            chunker(df, rows_per_chunk),
+            chunker(df, rows_per_chunk)
         ):
             replace = if_exists if i == 0 else "append"
 
             chunked_df.to_sql(
-                schema="fct",
-                con=conn,
-                name=table_name,
-                if_exists=replace,
-                index=False,
+                schema="fct", con=conn, name=table_name, if_exists=replace, index=False
             )
 
             pbar.update(rows_per_chunk)
@@ -73,7 +65,7 @@ def write_df_to_sql(
     driver = "ODBC Driver 17 for SQL Server"
 
     params = urllib.parse.quote(
-        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes",
+        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes"
     )
 
     url = f"mssql+pyodbc:///?odbc_connect={params}"
@@ -83,7 +75,7 @@ def write_df_to_sql(
 
     if if_exists == "replace":
         msg.warn(
-            "'replace' only replaces rows, not the table. If you want to delete rows, drop the entire table first (sql_load(query='DROP TABLE [fct].[psycop_train_ids]')).",
+            "'replace' only replaces rows, not the table. If you want to delete rows, drop the entire table first (sql_load(query='DROP TABLE [fct].[psycop_train_ids]'))."
         )
 
     insert_with_progress(

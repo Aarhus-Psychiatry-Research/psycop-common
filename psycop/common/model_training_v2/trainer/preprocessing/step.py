@@ -1,9 +1,11 @@
-from typing import Protocol, runtime_checkable
+from abc import ABC, abstractmethod
 
 import polars as pl
 
+from ...loggers.supports_logger import SupportsLoggerMixin
 
-@runtime_checkable
-class PresplitStep(Protocol):
+
+class PresplitStep(ABC, SupportsLoggerMixin):
+    @abstractmethod
     def apply(self, input_df: pl.LazyFrame) -> pl.LazyFrame:
         ...

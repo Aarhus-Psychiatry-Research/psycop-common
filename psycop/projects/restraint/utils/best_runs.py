@@ -9,9 +9,7 @@ import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training.config_schemas.conf_utils import (
-    FullConfigSchema,
-)
+from psycop.common.model_training.config_schemas.conf_utils import FullConfigSchema
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 
 
@@ -22,7 +20,7 @@ class RunGroup:
     @property
     def group_dir(self) -> Path:
         return Path(
-            f"E:/sara/psycop-common/psycop/projects/restraint/model_training/pipeline_eval/{self.name}",
+            f"E:/sara/psycop-common/psycop/projects/restraint/model_training/pipeline_eval/{self.name}"
         )
 
     @property
@@ -83,7 +81,7 @@ class Run:
     def cfg(self) -> FullConfigSchema:
         # Loading the json instead of the .pkl makes us independent
         # of whether the imports in psycop-common model-training have changed
-        return FullConfigSchema.parse_obj(self.get_cfg_as_json())
+        return FullConfigSchema.model_validate(self.get_cfg_as_json())
 
     @property
     def eval_dir(self) -> Path:
@@ -98,9 +96,7 @@ class Run:
         path = self.eval_dir / "cfg.json"
         return json.loads(json.loads(path.read_text()))
 
-    def get_eval_dataset(
-        self,
-    ) -> EvalDataset:
+    def get_eval_dataset(self) -> EvalDataset:
         df = pd.read_parquet(self.eval_dir / "evaluation_dataset.parquet")
 
         return df  # type: ignore
@@ -122,10 +118,7 @@ def load_file_from_pkl(file_path: Path) -> Any:
         return pickle.load(f)
 
 
-def df_to_eval_dataset(
-    df: pd.DataFrame,
-    custom_columns: Optional[Sequence[str]],
-) -> EvalDataset:
+def df_to_eval_dataset(df: pd.DataFrame, custom_columns: Optional[Sequence[str]]) -> EvalDataset:
     """Convert dataframe to EvalDataset."""
     return EvalDataset(
         ids=df["ids"],
@@ -136,7 +129,5 @@ def df_to_eval_dataset(
         age=df["age"],
         is_female=df["is_female"],
         pred_time_uuids=df["pred_time_uuids"],
-        custom_columns={col: df[col] for col in custom_columns}
-        if custom_columns
-        else None,
+        custom_columns={col: df[col] for col in custom_columns} if custom_columns else None,
     )

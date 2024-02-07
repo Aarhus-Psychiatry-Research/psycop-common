@@ -16,37 +16,36 @@ from psycop.projects.restraint.cohort_creation.utils.cohort_hyperparameters impo
 )
 
 df_cohort = sql_load(
-    "SELECT * FROM fct.[psycop_coercion_cohort_with_all_days_without_labels_feb2022]",
+    "SELECT * FROM fct.[psycop_coercion_cohort_with_all_days_without_labels_feb2022]"
 )
 
 lookahead_days = 2
 
 
 # First coercion to pred_time
-df_cohort["diff_first_coercion"] = pd.to_datetime(
-    df_cohort["datotid_start_sei"],
-) - pd.to_datetime(df_cohort["pred_time"])
+df_cohort["diff_first_coercion"] = pd.to_datetime(df_cohort["datotid_start_sei"]) - pd.to_datetime(
+    df_cohort["pred_time"]
+)
 
 # First mechanical restraint to pred_time
 df_cohort["diff_first_mechanical_restraint"] = pd.to_datetime(
-    df_cohort["first_mechanical_restraint"],
+    df_cohort["first_mechanical_restraint"]
 ) - pd.to_datetime(df_cohort["pred_time"])
 
 # First forced medication to pred_time
 df_cohort["diff_first_forced_medication"] = pd.to_datetime(
-    df_cohort["first_forced_medication"],
+    df_cohort["first_forced_medication"]
 ) - pd.to_datetime(df_cohort["pred_time"])
 
 # First manual restraint to pred_time
 df_cohort["diff_first_manual_restraint"] = pd.to_datetime(
-    df_cohort["first_manual_restraint"],
+    df_cohort["first_manual_restraint"]
 ) - pd.to_datetime(df_cohort["pred_time"])
 
 
 # apply create_labels function to data
 df_cohort = create_binary_and_categorical_labels_with_lookahead(
-    df_cohort,
-    lookahead_days=lookahead_days,
+    df_cohort, lookahead_days=lookahead_days
 )
 
 
@@ -62,7 +61,7 @@ df_cohort = (
             "datotid_slut": "timestamp_discharge",
             "datotid_start_sei": "timestamp_outcome",
             "pred_time": "timestamp",
-        },
+        }
     )
     .drop(
         columns=(
@@ -77,7 +76,7 @@ df_cohort = (
                 "diff_first_forced_medication",
                 "diff_first_manual_restraint",
             ]
-        ),
+        )
     )
     .reset_index(drop=True)
 )
@@ -86,17 +85,13 @@ df_cohort = (
 df_cohort.insert(
     loc=0,
     column="adm_id",
-    value=df_cohort.dw_ek_borger.astype(str)
-    + "-"
-    + df_cohort.timestamp_admission.astype(str),
+    value=df_cohort.dw_ek_borger.astype(str) + "-" + df_cohort.timestamp_admission.astype(str),
 )
 
 
 # write csv named with today's date
 today = date.today().strftime("%d%m%y")
-df_cohort.to_csv(
-    f"psycop_coercion_within_{lookahead_days}_days_feb2022_run_{today}.csv",
-)
+df_cohort.to_csv(f"psycop_coercion_within_{lookahead_days}_days_feb2022_run_{today}.csv")
 
 # Write to sql database
 write_df_to_sql(

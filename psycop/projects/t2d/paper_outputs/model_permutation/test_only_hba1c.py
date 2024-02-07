@@ -8,14 +8,13 @@ def test_keep_only_hba1c_predictors():
 1,2,1,1,1,1
 2,4,2,2,2,1
 3,6,3,3,3,1
-NaN,NaN,NaN,NaN,NaN,NaN""",
+NaN,NaN,NaN,NaN,NaN,NaN"""
     ).lazy()
 
     hba1c_only_df = (
         Hba1cOnly(lookbehind="365", aggregation_method="mean")
         ._keep_only_hba1c_predictors(  # type: ignore
-            df=input_df,
-            predictor_prefix="pred_",
+            df=input_df, predictor_prefix="pred_"
         )
         .collect()
     )

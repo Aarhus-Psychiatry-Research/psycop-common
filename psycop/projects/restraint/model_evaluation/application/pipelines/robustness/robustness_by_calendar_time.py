@@ -33,10 +33,7 @@ def roc_auc_by_calendar_time(run: Run, path: Path):
     binned_df["n_in_bin"] = binned_df["n_in_bin"].astype(int)
 
     (
-        pn.ggplot(
-            binned_df,
-            pn.aes("time_bin", "auroc"),
-        )
+        pn.ggplot(binned_df, pn.aes("time_bin", "auroc"))
         + pn.geom_bar(
             pn.aes(x="time_bin", y="proportion_in_bin"),
             stat="identity",
@@ -44,25 +41,12 @@ def roc_auc_by_calendar_time(run: Run, path: Path):
             fill=COLOURS["blue"],
         )
         + pn.geom_path(group=1, size=0.5)
-        + pn.geom_text(
-            pn.aes(y="proportion_in_bin", label="n_in_bin"),
-            va="bottom",
-            size=11,
-        )
-        + pn.geom_pointrange(
-            pn.aes(ymin="ci_lower", ymax="ci_upper"),
-            size=0.5,
-        )
-        + pn.labs(
-            x="Year",
-            y="AUROC",
-            title=f"{MODEL_NAME[run.name]} Performance Over Time",
-        )
+        + pn.geom_text(pn.aes(y="proportion_in_bin", label="n_in_bin"), va="bottom", size=11)
+        + pn.geom_pointrange(pn.aes(ymin="ci_lower", ymax="ci_upper"), size=0.5)
+        + pn.labs(x="Year", y="AUROC", title=f"{MODEL_NAME[run.name]} Performance Over Time")
         + pn.coord_cartesian(ylim=(0.4, 0.95))
         + PN_THEME
-    ).save(
-        path / "auc_by_calendar_time.png",
-    )
+    ).save(path / "auc_by_calendar_time.png")
 
 
 if __name__ == "__main__":

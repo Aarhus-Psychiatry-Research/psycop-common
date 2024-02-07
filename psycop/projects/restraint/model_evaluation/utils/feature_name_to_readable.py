@@ -60,25 +60,20 @@ def parse_text_feature(full_string: str, warning: bool = True) -> str:
     """Takes a text feature name and returns a human readable version of it."""
     if "Count" in full_string:
         feature_name = re.findall(
-            r"pred_aktuelt_psykisk-(.*)?_CountVectorizer_within",
-            full_string,
+            r"pred_aktuelt_psykisk-(.*)?_CountVectorizer_within", full_string
         )[0]
         vectorizer = "BoW"
     elif "Tfidf" in full_string:
         feature_name = re.findall(
-            r"pred_aktuelt_psykisk-(.*)?_TfidfVectorizer_within",
-            full_string,
+            r"pred_aktuelt_psykisk-(.*)?_TfidfVectorizer_within", full_string
         )[0]
         vectorizer = "Tf-Idf"
     else:
         if warning:
             raise ValueError(
-                f"feature_name {full_string} does not include 'CountVectorizer' or 'TfidfVectorizer'. Text feature parsing will not work optimally.",
+                f"feature_name {full_string} does not include 'CountVectorizer' or 'TfidfVectorizer'. Text feature parsing will not work optimally."
             )
-        feature_name = re.findall(
-            r"pred_aktuelt_psykisk-(.*)?_within",
-            full_string,
-        )[0]
+        feature_name = re.findall(r"pred_aktuelt_psykisk-(.*)?_within", full_string)[0]
         vectorizer = "Unknown vectorizer"
 
     feature_name_mappings = {
@@ -127,7 +122,7 @@ def parse_text_feature(full_string: str, warning: bool = True) -> str:
         words[0] = words[0].capitalize()
         feature_name = " ".join(word for word in words)
         print(
-            f"Warning: feature_name {feature_name} is not in feature_mapping and will not be translated for plotting.",
+            f"Warning: feature_name {feature_name} is not in feature_mapping and will not be translated for plotting."
         )
 
     lookbehind = re.findall(r"within_(.*)?_days", full_string)[0]

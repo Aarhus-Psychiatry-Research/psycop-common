@@ -6,9 +6,6 @@ from iterpy import Iter
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
-from psycop.common.model_training_v2.trainer.data.data_filters.base_data_filter import (
-    BaselineDataFilter,
-)
 
 
 class MissingPathError(Exception):
@@ -22,6 +19,7 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
 
         Args:
             paths: Paths to parquet files.
+            logger: Logger to use.
             validate_on_init: Whether to validate the paths on init.
                 Helpful when testing the .cfg parses, where the absolute path will differ between devcontainer and Ovartaci.
                 Defaults to True.
@@ -31,16 +29,13 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
 
         if validate_on_init:
             missing_paths = (
-                Iter(self.dataset_paths)
-                .map(self._check_path_exists)
-                .flatten()
-                .to_list()
+                Iter(self.dataset_paths).map(self._check_path_exists).flatten().to_list()
             )
             if missing_paths:
                 raise MissingPathError(
                     f"""The following paths are missing:
                     {missing_paths}
-                """,
+                """
                 )
 
     def _check_path_exists(self, path: Path) -> list[MissingPathError]:
@@ -51,19 +46,11 @@ class ParquetVerticalConcatenator(BaselineDataLoader):
 
     def load(self) -> pl.LazyFrame:
         return pl.concat(
-            how="vertical",
-            items=[pl.scan_parquet(path) for path in self.dataset_paths],
+            how="vertical", items=[pl.scan_parquet(path) for path in self.dataset_paths]
         )
 
 
-@BaselineRegistry.data.register("filtered_dataloader")
-class FilteredDataLoader(BaselineDataLoader):
-    """Filter the rows from dataloader using a filter, such as by geographical region,
-    id split, or other filters."""
-
-    def __init__(self, dataloader: BaselineDataLoader, data_filter: BaselineDataFilter):
-        self.dataloader = dataloader
-        self.data_filter = data_filter
-
-    def load(self) -> pl.LazyFrame:
-        return self.data_filter.apply(self.dataloader)
+if __name__ == "__main__":
+    concatenator = ParquetVerticalConcatenator(
+        ["/home/psycop/psycop/data/processed/2021-09-01/2021-09-01.parquet"], validate_on_init=False
+    )

@@ -4,9 +4,7 @@ from typing import Callable
 
 from wasabi import Printer
 
-from psycop.common.model_evaluation.patchwork.patchwork_grid import (
-    create_patchwork_grid,
-)
+from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
@@ -42,9 +40,7 @@ def fa_inpatient_create_patchwork_figure(
             p.save(output_path)
             finished = datetime.now()
 
-            msg.good(
-                f"{fn.__name__} finished in {round((finished - now).seconds, 0)} seconds",
-            )
+            msg.good(f"{fn.__name__} finished in {round((finished - now).seconds, 0)} seconds")
         except Exception:
             msg.fail(f"{fn.__name__} failed")
             any_plot_failed = True
@@ -52,9 +48,7 @@ def fa_inpatient_create_patchwork_figure(
 
     if not any_plot_failed:
         grid = create_patchwork_grid(
-            plots=plots,
-            single_plot_dimensions=single_plot_dimensions,
-            n_in_row=n_in_row,
+            plots=plots, single_plot_dimensions=single_plot_dimensions, n_in_row=n_in_row
         )
         grid_output_path = run.paper_outputs.paths.figures / output_filename
         grid.savefig(grid_output_path)

@@ -8,11 +8,7 @@ from psycop.common.feature_generation.loaders.raw.load_lab_results import (
 )
 
 
-def get_rows_above_value(
-    value: float,
-    df: pd.DataFrame,
-    value_type: str,
-) -> pd.DataFrame:
+def get_rows_above_value(value: float, df: pd.DataFrame, value_type: str) -> pd.DataFrame:
     output_df = df[df["value"] > value]
     output_df["value_type"] = value_type
 
@@ -24,11 +20,7 @@ def get_hba1cs_above_threshold() -> pd.DataFrame:
 
 
 def get_unscheduled_p_glc_above_threshold() -> pd.DataFrame:
-    return get_rows_above_value(
-        df=unscheduled_p_glc(),
-        value=11.0,
-        value_type="unscheduled_p_glc",
-    )
+    return get_rows_above_value(df=unscheduled_p_glc(), value=11.0, value_type="unscheduled_p_glc")
 
 
 def get_ogtt_above_threshold() -> pd.DataFrame:
@@ -36,11 +28,7 @@ def get_ogtt_above_threshold() -> pd.DataFrame:
 
 
 def get_fasting_glc_above_threshold() -> pd.DataFrame:
-    return get_rows_above_value(
-        df=fasting_p_glc(),
-        value=6.9,
-        value_type="fasting_p_glc",
-    )
+    return get_rows_above_value(df=fasting_p_glc(), value=6.9, value_type="fasting_p_glc")
 
 
 def get_diabetes_lab_results_above_threshold() -> pd.DataFrame:
@@ -49,25 +37,14 @@ def get_diabetes_lab_results_above_threshold() -> pd.DataFrame:
     fasting_glc = get_fasting_glc_above_threshold()
     ogtt = get_ogtt_above_threshold()
 
-    return pd.concat(
-        [
-            hba1cs,
-            unscheduled_p_glc,
-            fasting_glc,
-            ogtt,
-        ],
-        axis=0,
-    )
+    return pd.concat([hba1cs, unscheduled_p_glc, fasting_glc, ogtt], axis=0)
 
 
 def get_first_diabetes_lab_result_above_threshold() -> pd.DataFrame:
     df = get_diabetes_lab_results_above_threshold()
 
     first_lab_result_above_threshold = (
-        df.sort_values("timestamp")
-        .groupby("dw_ek_borger")
-        .first()
-        .reset_index(drop=False)
+        df.sort_values("timestamp").groupby("dw_ek_borger").first().reset_index(drop=False)
     )
 
     first_lab_result_above_threshold["value"] = 1

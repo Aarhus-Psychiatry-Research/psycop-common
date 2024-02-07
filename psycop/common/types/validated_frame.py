@@ -73,11 +73,7 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
         except AttributeError:
             rules = [ColumnExistsRule()]
 
-        return ColumnInfo(
-            attr=col_name_attr,
-            name=getattr(self, f"{col_name_attr}"),
-            rules=rules,
-        )
+        return ColumnInfo(attr=col_name_attr, name=getattr(self, f"{col_name_attr}"), rules=rules)
 
     def _get_column_infos(self) -> Iter[ColumnInfo]:
         return (
@@ -102,24 +98,23 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
 
         missing_in_frame: list[ColumnMissingError] = (
             rules_with_missing_columns.filter(
-                lambda try_attr: not isinstance(try_attr, ColumnAttrMissingError),
+                lambda try_attr: not isinstance(try_attr, ColumnAttrMissingError)
             )
             .filter(lambda col_name: col_name not in self.frame.columns)
             .map(
-                lambda col_name: ColumnMissingInFrameError(col_name=col_name),  # type: ignore
+                lambda col_name: ColumnMissingInFrameError(col_name=col_name)  # type: ignore
             )
             .to_list()
         )
 
-        return [
-            *column_rules_without_attr,
-            *missing_in_frame,
-        ]
+        return [*column_rules_without_attr, *missing_in_frame]
 
     def _get_extra_column_errors(
-        self,
-        column_infos: Iter[ColumnInfo],
+        self, column_infos: Iter[ColumnInfo]
     ) -> Sequence[ExtraColumnError]:
+        if self.allow_extra_columns:
+            return []
+
         dataclass_column_names = {ci.name for ci in column_infos}
         errors = (
             Iter(self.frame.columns)
@@ -129,15 +124,8 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
         )
         return errors
 
-    def _get_rule_errors(
-        self,
-        column_infos: Iter[ColumnInfo],
-    ) -> Sequence[FrameValidationError]:
-        return (
-            Iter([c_info.check_rules(self.frame) for c_info in column_infos])
-            .flatten()
-            .to_list()
-        )
+    def _get_rule_errors(self, column_infos: Iter[ColumnInfo]) -> Sequence[FrameValidationError]:
+        return Iter([c_info.check_rules(self.frame) for c_info in column_infos]).flatten().to_list()
 
     def __post_init__(self):
         column_infos = self._get_column_infos()
@@ -146,13 +134,7 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
         missing_column_error_strings = self._get_missing_column_errors()
 
         error_strings = (
-            Iter(
-                [
-                    *extra_columns_error_strings,
-                    *rule_errors,
-                    *missing_column_error_strings,
-                ],
-            )
+            Iter([*extra_columns_error_strings, *rule_errors, *missing_column_error_strings])
             .map(lambda error: error.get_error_string())
             .to_list()
         )
@@ -160,5 +142,5 @@ class ValidatedFrame(Generic[PolarsFrameGeneric]):
         if error_strings:
             validation_error_string = "\n".join(error_strings)
             raise CombinedFrameValidationError(
-                f"Dataframe did not pass validation. Errors:\n{validation_error_string}",
+                f"Dataframe did not pass validation. Errors:\n{validation_error_string}"
             )

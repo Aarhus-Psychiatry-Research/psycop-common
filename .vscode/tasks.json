@@ -6,31 +6,18 @@
         {
             "label": "PR",
             "type": "shell",
-            "command": "echo 'All done!'",
+            "command": "echo All done!",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "dependsOn": [
-                "Lint",
                 "Test",
-                "Static type check"
+                "Submit PR",
             ],
             "presentation": {
-                "reveal": "always",
-                "group": "pr",
-                "clear": true,
-                "showReuseMessage": false
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Lint",
-            "type": "shell",
-            "command": "inv lint --auto-fix",
-            "presentation": {
-                "reveal": "always",
-                "group": "pr",
+                "reveal": "never",
+                "group": "confirmation",
                 "clear": true,
                 "showReuseMessage": false
             },
@@ -41,28 +28,22 @@
             "type": "shell",
             "command": "inv qtest",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "dependsOn": [
-                "Lint",
-            ]
+                "showReuseMessage": false,
+            }
         },
         {
-            "label": "Static type check",
+            "label": "Submit PR",
             "type": "shell",
-            "command": "inv qtypes",
+            "command": "lumberman sync --squash",
             "presentation": {
-                "reveal": "always",
                 "group": "pr",
+                "revealProblems": "onProblem",
+                "focus": true,
                 "clear": true,
-                "showReuseMessage": false
-            },
-            "dependsOn": [
-                "Lint",
-            ]
-        }
+                "showReuseMessage": false,
+            }
+        },
     ]
 }

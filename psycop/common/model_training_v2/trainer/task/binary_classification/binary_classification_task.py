@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pandas as pd
 import polars as pl
 
@@ -20,23 +22,15 @@ def polarsframe_to_series(polarsframe: PolarsFrame) -> pl.Series:
 
 
 @BaselineRegistry.tasks.register("binary_classification")
+@dataclass
 class BinaryClassificationTask(BaselineTask):
-    def __init__(
-        self,
-        task_pipe: BinaryClassificationPipeline,
-    ):
-        self.pipe = task_pipe
+    task_pipe: BinaryClassificationPipeline
 
-    def train(
-        self,
-        x: pd.DataFrame,
-        y: pd.DataFrame,
-        y_col_name: str,
-    ) -> None:
+    def train(self, x: pd.DataFrame, y: pd.DataFrame, y_col_name: str) -> None:
         assert len(y.columns) == 1
         y_series = y[y_col_name]
 
-        self.pipe.fit(x=x, y=y_series)
+        self.task_pipe.fit(x=x, y=y_series)
 
     def predict_proba(self, x: pd.DataFrame) -> PredProbaSeries:
-        return self.pipe.predict_proba(x)
+        return self.task_pipe.predict_proba(x)

@@ -19,41 +19,17 @@ def test_synth_data_generator():
     column_specifications = [
         {"citizen_ids": {"column_type": "uniform_int", "min": 0, "max": 1_200_001}},
         {"timestamp": {"column_type": "datetime_uniform", "min": 0, "max": 10 * 365}},
-        {
-            "timestamp_exclusion": {
-                "column_type": "datetime_uniform",
-                "min": 0,
-                "max": 5 * 365,
-            },
-        },
-        {
-            "pred_age": {
-                "column_type": "uniform_int",
-                "min": 18,
-                "max": 90,
-            },
-        },
-        {
-            "hba1c_within_9999_days_count_nan": {
-                "column_type": "uniform_int",
-                "min": 0,
-                "max": 8,
-            },
-        },
-        {
-            "timestamp_outcome": {
-                "column_type": "datetime_uniform",
-                "min": 1 * 365,
-                "max": 6 * 365,
-            },
-        },
+        {"timestamp_exclusion": {"column_type": "datetime_uniform", "min": 0, "max": 5 * 365}},
+        {"pred_age": {"column_type": "uniform_int", "min": 18, "max": 90}},
+        {"hba1c_within_9999_days_count_nan": {"column_type": "uniform_int", "min": 0, "max": 8}},
+        {"timestamp_outcome": {"column_type": "datetime_uniform", "min": 1 * 365, "max": 6 * 365}},
         {
             "pred_hba1c_within_30_days_max_fallback_np.nan": {
                 "column_type": "normal",
                 "mean": 48,
                 "sd": 5,
                 "fallback": np.nan,
-            },
+            }
         },
         {
             "pred_hba1c_within_60_days_max_fallback_np.nan": {
@@ -61,7 +37,7 @@ def test_synth_data_generator():
                 "mean": 48,
                 "sd": 5,
                 "fallback": np.nan,
-            },
+            }
         },
         {
             "pred_hba1c_within_100_days_max_fallback_np.nan": {
@@ -69,7 +45,7 @@ def test_synth_data_generator():
                 "mean": 48,
                 "sd": 5,
                 "fallback": np.nan,
-            },
+            }
         },
         {
             "pred_hdl_within_100_days_max_fallback_np.nan": {
@@ -78,7 +54,7 @@ def test_synth_data_generator():
                 "sd": 0.5,
                 "min": 0,
                 "fallback": np.nan,
-            },
+            }
         },
     ]
 
@@ -98,23 +74,18 @@ def test_synth_data_generator():
 
         synth_df["pred_time_uuid"] = synth_df["citizen_ids"].astype(str) + synth_df[
             "timestamp"
-        ].dt.strftime(
-            "-%Y-%m-%d-%H-%M-%S",
-        )
+        ].dt.strftime("-%Y-%m-%d-%H-%M-%S")
 
         synth_df = add_age_is_female(synth_df, id_column_name="citizen_ids")
 
         if override_dataset_on_test_run:
             # Save to csv
             synth_df.to_csv(
-                Path(__file__).parent / "synth_splits" / f"synth_{split}.csv",
-                index=False,
+                Path(__file__).parent / "synth_splits" / f"synth_{split}.csv", index=False
             )
 
             synth_df.sample(frac=0.01, random_state=RANDOM_SEED).to_csv(
-                Path(__file__).parent
-                / "synth_splits_subsampled"
-                / f"synth_{split}_sample.csv",
+                Path(__file__).parent / "synth_splits_subsampled" / f"synth_{split}_sample.csv",
                 index=False,
             )
 

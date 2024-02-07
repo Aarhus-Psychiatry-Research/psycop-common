@@ -11,59 +11,37 @@ from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 CANCER_DATA_DIR = Path(r"E:\shared_resources") / "cancer"
 
 # LPR3, both in and outpatient
-df_lpr3_preproc = sql_load(
-    "SELECT * FROM [fct].FOR_LPR3kontakter_psyk_somatik_inkl_2021",
-)[
-    [
-        "dw_ek_borger",
-        "datotid_lpr3kontaktstart",
-        "adiagnosekode",
-        "shakkode_lpr3kontaktansvarlig",
-    ]
+df_lpr3_preproc = sql_load("SELECT * FROM [fct].FOR_LPR3kontakter_psyk_somatik_inkl_2021")[
+    ["dw_ek_borger", "datotid_lpr3kontaktstart", "adiagnosekode", "shakkode_lpr3kontaktansvarlig"]
 ]
 
 df_lpr3_preproc = df_lpr3_preproc.rename(
     columns={
         "datotid_lpr3kontaktstart": "datotid_start",
         "shakkode_lpr3kontaktansvarlig": "shakafskode",
-    },
+    }
 )
 
 # LPR2
 # inpatient
-df_lpr2_inp_preproc = sql_load(
-    "SELECT * FROM [fct].FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021",
-)[
-    [
-        "dw_ek_borger",
-        "adiagnosekode",
-        "datotid_indlaeggelse",
-        "shakKode_kontaktansvarlig",
-    ]
+df_lpr2_inp_preproc = sql_load("SELECT * FROM [fct].FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021")[
+    ["dw_ek_borger", "adiagnosekode", "datotid_indlaeggelse", "shakKode_kontaktansvarlig"]
 ]
 
 df_lpr2_inp_preproc = df_lpr2_inp_preproc.rename(
-    columns={
-        "datotid_indlaeggelse": "datotid_start",
-        "shakKode_kontaktansvarlig": "shakafskode",
-    },
+    columns={"datotid_indlaeggelse": "datotid_start", "shakKode_kontaktansvarlig": "shakafskode"}
 )
 
 # outpatient
-df_lpr2_outp_preproc = sql_load(
-    "SELECT * FROM [fct].FOR_besoeg_psyk_somatik_LPR2_inkl_2021",
-)[["dw_ek_borger", "diagnoseKode", "datotid_start", "shakafskode"]]
+df_lpr2_outp_preproc = sql_load("SELECT * FROM [fct].FOR_besoeg_psyk_somatik_LPR2_inkl_2021")[
+    ["dw_ek_borger", "diagnoseKode", "datotid_start", "shakafskode"]
+]
 
-df_lpr2_outp_preproc = df_lpr2_outp_preproc.rename(
-    columns={
-        "diagnoseKode": "adiagnosekode",
-    },
-)
+df_lpr2_outp_preproc = df_lpr2_outp_preproc.rename(columns={"diagnoseKode": "adiagnosekode"})
 
 # Combine all
 all_visits_combined = pd.concat(
-    [df_lpr3_preproc, df_lpr2_inp_preproc, df_lpr2_outp_preproc],
-    ignore_index=True,
+    [df_lpr3_preproc, df_lpr2_inp_preproc, df_lpr2_outp_preproc], ignore_index=True
 )
 
 # extract first visit to psych in RM
@@ -75,7 +53,7 @@ df_first_psych_visit = (
     .reset_index()
 )
 df_first_psych_visit = df_first_psych_visit.rename(
-    columns={"datotid_start": "datotid_first_psych_visit"},
+    columns={"datotid_start": "datotid_first_psych_visit"}
 )
 
 
@@ -90,10 +68,7 @@ df_cancer_visits = all_visits_combined[
 df_cancer_visits_ = df_cancer_visits.merge(df_first_psych_visit, on="dw_ek_borger")
 
 df_cancer_visits_after_first_psych_visit = df_cancer_visits_[
-    (
-        df_cancer_visits_["datotid_start"]
-        > df_cancer_visits_["datotid_first_psych_visit"]
-    )
+    (df_cancer_visits_["datotid_start"] > df_cancer_visits_["datotid_first_psych_visit"])
     & (df_cancer_visits_["datotid_start"] > "2013-01-01")
 ]
 

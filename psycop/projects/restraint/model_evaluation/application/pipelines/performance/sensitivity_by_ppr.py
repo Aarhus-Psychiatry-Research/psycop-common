@@ -18,11 +18,7 @@ from psycop.projects.restraint.model_evaluation.config import (
 from psycop.projects.restraint.utils.best_runs import Run
 
 
-def _plot_sensitivity_by_time_to_event(
-    df: pd.DataFrame,
-    path: Path,
-    title: str,
-) -> pn.ggplot:
+def _plot_sensitivity_by_time_to_event(df: pd.DataFrame, path: Path, title: str) -> pn.ggplot:
     p = (
         pn.ggplot(
             df,
@@ -41,11 +37,7 @@ def _plot_sensitivity_by_time_to_event(
         + PN_THEME
         + pn.theme(axis_text_x=pn.element_text(rotation=90))
         + pn.scale_color_manual(
-            {
-                "0.01": COLOURS["blue"],
-                "0.03": COLOURS["red"],
-                "0.05": COLOURS["purple"],
-            },
+            {"0.01": COLOURS["blue"], "0.03": COLOURS["red"], "0.05": COLOURS["purple"]}
         )
         + pn.labs(color="PPR")
         + pn.theme(
@@ -56,24 +48,15 @@ def _plot_sensitivity_by_time_to_event(
     )
 
     for value, colour in zip(
-        df["actual_positive_rate"].unique(),
-        [COLOURS["blue"], COLOURS["red"], COLOURS["purple"]],
+        df["actual_positive_rate"].unique(), [COLOURS["blue"], COLOURS["red"], COLOURS["purple"]]
     ):
-        p += pn.geom_path(
-            df[df["actual_positive_rate"] == value],
-            group=1,
-            colour=colour,
-        )
+        p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1, colour=colour)
 
     p.save(path / "sensitivity_by_ppr.png")
     return p
 
 
-def plot_sensitivity_by_time_to_event(
-    df: pd.DataFrame,
-    path: Path,
-    title: str,
-) -> pn.ggplot:
+def plot_sensitivity_by_time_to_event(df: pd.DataFrame, path: Path, title: str) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories[::-1]  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -93,9 +76,7 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
     for ppr in [0.01, 0.03, 0.05]:
         df = get_sensitivity_by_timedelta_df(
             y=eval_ds.y,  # type: ignore
-            y_hat=eval_ds.get_predictions_for_positive_rate(
-                desired_positive_rate=ppr,
-            )[0],
+            y_hat=eval_ds.get_predictions_for_positive_rate(desired_positive_rate=ppr)[0],
             time_one=eval_ds.pred_timestamps,
             time_two=eval_ds.outcome_timestamps,  # type: ignore
             direction="t2-t1",
@@ -112,9 +93,7 @@ def sensitivity_by_time_to_event(run: Run, path: Path):
     plot_df = pd.concat(dfs)
 
     plot_sensitivity_by_time_to_event(
-        plot_df,
-        path,
-        f"Performance of Positive Rates for {MODEL_NAME[run.name]}",
+        plot_df, path, f"Performance of Positive Rates for {MODEL_NAME[run.name]}"
     )
 
 
