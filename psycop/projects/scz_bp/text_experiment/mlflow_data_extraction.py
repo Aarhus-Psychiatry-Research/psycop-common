@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 import polars as pl
 from mlflow.entities import Run
@@ -64,4 +64,3 @@ if __name__ == "__main__":
     df = MlflowDataExtraction().get_metrics_for_experiment(
         "text_exp", ["all_oof_BinaryAUROC", "within_fold_0_BinaryAUROC"]
     )
-    
