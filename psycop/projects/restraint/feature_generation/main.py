@@ -35,7 +35,7 @@ def main():
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
+        prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore
         drop_pred_times_with_insufficient_look_distance=True,
         project_info=project_info,
         add_birthdays=True,
