@@ -1,8 +1,10 @@
 import copy
 import re
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Literal
 
+import joblib
 import optuna
 from confection import Config
 from optuna import Study, Trial
@@ -16,6 +18,8 @@ from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_sug
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
+
+from ..config.populate_registry import populate_baseline_registry
 
 
 class OptunaHyperParameterOptimization:
@@ -73,6 +77,8 @@ class OptunaHyperParameterOptimization:
         concrete_config = suggest_hyperparams_from_cfg(
             base_cfg=cfg_with_resolved_suggesters, trial=trial
         )
+
+        populate_baseline_registry()
         concrete_config_schema = BaselineSchema(**BaselineRegistry.resolve(concrete_config))
 
         concrete_config_schema.logger.log_config(Config(concrete_config))
@@ -81,9 +87,38 @@ class OptunaHyperParameterOptimization:
         return run_result.metric.value
 
     @staticmethod
-    def conduct_hyperparameter_optimization_from_file(
-        cfg_file: Path, n_trials: int, n_jobs: int, direction: Literal["maximize", "minimize"]
+    def _optimize_study(
+        direction: Literal["maximize", "minimize"],
+        study_name: str,
+        n_trials: int,
+        catch: tuple[type[Exception]],
+        cfg_with_resolved_suggesters: dict[str, Any],
     ) -> Study:
+        study = optuna.create_study(
+            direction=direction,
+            load_if_exists=True,
+            study_name=study_name,
+            storage=f"sqlite:///./{study_name}.db",
+        )
+
+        study.optimize(
+            lambda trial: OptunaHyperParameterOptimization()._optuna_objective(
+                trial=trial, cfg_with_resolved_suggesters=cfg_with_resolved_suggesters
+            ),
+            n_trials=n_trials,
+            catch=catch,
+        )
+        return study
+
+    @staticmethod
+    def from_file(
+        cfg_file: Path,
+        n_trials: int,
+        n_jobs: int,
+        study_name: str,
+        direction: Literal["maximize", "minimize"],
+        catch: tuple[type[Exception]],
+    ) -> Sequence[Study]:
         cfg = Config().from_disk(cfg_file)
 
         cfg_with_resolved_suggesters = (
@@ -95,12 +130,14 @@ class OptunaHyperParameterOptimization:
             cfg=cfg_with_resolved_suggesters
         )
 
-        study = optuna.create_study(direction=direction)
-        study.optimize(
-            lambda trial: OptunaHyperParameterOptimization()._optuna_objective(
-                trial=trial, cfg_with_resolved_suggesters=cfg_with_resolved_suggesters
-            ),
-            n_trials=n_trials,
-            n_jobs=n_jobs,
+        studies = joblib.Parallel(n_jobs)(
+            joblib.delayed(OptunaHyperParameterOptimization._optimize_study)(
+                direction=direction,
+                n_trials=n_trials // n_jobs,
+                study_name=study_name,
+                catch=catch,
+                cfg_with_resolved_suggesters=cfg_with_resolved_suggesters,
+            )
+            for _ in range(n_jobs)
         )
-        return study
+        return studies  # type: ignore
