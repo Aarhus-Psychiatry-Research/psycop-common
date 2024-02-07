@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.191.0 (2024-02-07)
+
+### Feature
+
+* Feature gen for sczbp text experiment ([`13a3622`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/13a36229bd6219a0b2a764743117fee5b7c425ec))
+
 ## v0.190.0 (2024-02-06)
 
 ### Feature
