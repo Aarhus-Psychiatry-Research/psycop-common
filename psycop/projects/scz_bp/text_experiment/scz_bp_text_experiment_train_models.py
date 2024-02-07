@@ -1,5 +1,5 @@
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Sequence
 
 from confection import Config
 
@@ -8,11 +8,11 @@ from psycop.common.model_training_v2.config.baseline_schema import BaselineSchem
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 
-def regex_match_string_anywhere(input: str) -> str:
-    return f".*{input}.*"
+def regex_match_string_anywhere(input_str: str) -> str:
+    return f".*{input_str}.*"
 
 
-def get_list_of_paths_to_splits(feature_set_dir: Path):
+def get_list_of_paths_to_splits(feature_set_dir: Path) -> Iterable[str]:
     return [
         str(feature_set_dir / "train.parquet"),
         str(feature_set_dir / "val.parquet"),

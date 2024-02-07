@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -56,22 +55,6 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
                 note_type=note_type, model_name=model_name, lookbehind_days=lookbehind_days
             )
         )
-
-        # note_types = ["aktuelt_psykisk", "all_relevant"]
-        # models_names = [
-        #     "dfm-encoder-large",
-        #     "dfm-encoder-large-v1-finetuned",
-        #     "tfidf-500",
-        #     "tfidf-1000",
-        # ]
-
-        # for note_type in note_types:
-        #     for model_name in models_names:
-        #         feature_specs.append(
-        #             self._get_feature_by_note_type_and_model_name(
-        #                 note_type=note_type, model_name=model_name, lookbehind_days=lookbehind_days
-        #             )
-        #         )
 
         # flatten the sequence of lists
         features = [feature for sublist in feature_specs for feature in sublist]

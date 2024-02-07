@@ -1,11 +1,6 @@
 from pathlib import Path
-from typing import Sequence
-
-from confection import Config
 
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 
 if __name__ == "__main__":
