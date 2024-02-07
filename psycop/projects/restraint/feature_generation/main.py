@@ -21,9 +21,8 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
-from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
-    load_coercion_prediction_times,
-)
+from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
+
 from psycop.projects.restraint.feature_generation.modules.specify_features import (
     FeatureSpecifier,
 )
@@ -45,7 +44,7 @@ def main():
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=load_coercion_prediction_times(),
+        prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),
         drop_pred_times_with_insufficient_look_distance=True,
         project_info=project_info,
         add_birthdays=True,
