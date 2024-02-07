@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.192.0 (2024-02-07)
+
+### Feature
+
+* Get best run from experiment ([`8036058`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/80360585770f5cdf6bee695717382774a40ea99c))
+* Tool for extracting metrics from mlflow ([`ce51700`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ce5170046fb02fb0a06efc58319c1d56424663f8))
+
 ## v0.191.0 (2024-02-07)
 
 ### Feature
