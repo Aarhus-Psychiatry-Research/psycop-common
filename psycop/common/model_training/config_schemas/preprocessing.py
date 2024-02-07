@@ -18,7 +18,7 @@ class FeatureSelectionSchema(PSYCOPBaseModel):
 class PreSplitPreprocessingConfigSchema(PSYCOPBaseModel):
     """Pre split preprocessing config."""
 
-    drop_patient_if_exclusion_before_date: Optional[Union[str, datetime]] = None
+    drop_patient_if_exclusion_before_date: Optional[Union[str, datetime, bool]] = None
     # Drop all visits from a patient if the outcome is before this date. If None, no patients are dropped.
 
     drop_visits_after_exclusion_timestamp: bool = True
