@@ -1,3 +1,4 @@
+import functools
 from pathlib import Path
 
 import pytest
@@ -96,3 +97,15 @@ def test_registered_callables_should_have_valid_example_cfgs(
         raise Exception(
             f"Failed to resolve \n\n{locations}.\n\n{REGISTERED_FUNCTION_ERROR_MSG}"
         ) from cfgs_with_errors[0].error
+
+
+def test_partial(a: bool, b: int) -> int:
+    return b if a else 0
+
+
+if __name__ == "__main__":
+    get_number = functools.partial(test_partial, True)
+    number = get_number(2)
+    from . import populate_registry
+
+    value = populate_registry.populate_baseline_registry()
