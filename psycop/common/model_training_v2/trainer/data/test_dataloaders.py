@@ -7,11 +7,28 @@ from polars import LazyFrame
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
     MissingPathError,
+    ParquetLoader,
     ParquetVerticalConcatenator,
 )
 
 from ....test_utils.str_to_df import str_to_pl_df
 from ...config.baseline_registry import BaselineRegistry
+
+
+def test_parquet_loader(tmpdir: Path):
+    df = pl.DataFrame({"a": [1, 2, 3]})
+
+    parquet_path = Path(tmpdir) / f"test.parquet"
+
+    df.write_parquet(parquet_path)
+
+    parquet = ParquetLoader(str(parquet_path)).load().collect()
+
+    assert len(parquet) == len(df)
+    assert parquet.columns == df.columns
+
+    with pytest.raises(MissingPathError):
+        ParquetLoader("non_existent_path").load()
 
 
 def test_vertical_concatenator(tmpdir: Path):
