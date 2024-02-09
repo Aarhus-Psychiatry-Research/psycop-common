@@ -12,7 +12,7 @@ def populate_baseline_registry() -> None:
     and easier to debug for people who are not familiar with python setup hooks.
     """
     # Data
-    from ..trainer.data.dataloaders import ParquetVerticalConcatenator
+    from ..trainer.data.dataloaders import ParquetVerticalConcatenator, ParquetLoader
 
     # Estimator steps
     from ..trainer.task.estimator_steps.logistic_regression import logistic_regression_step
