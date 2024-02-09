@@ -14,17 +14,17 @@ class MissingPathError(Exception):
 
 @BaselineRegistry.data.register("parquet_loader")
 class ParquetLoader(BaselineDataLoader):
-    def __init__(self, paths: str, validate_on_init: bool = True) -> None:
+    def __init__(self, path: str, validate_on_init: bool = True) -> None:
         """Load single parquet file.
 
         Args:
-            paths: Path to parquet file.
+            path: Path to parquet file.
             validate_on_init: Whether to validate the path on init.
                 Helpful when testing the .cfg parses, where the absolute path will differ between devcontainer and Ovartaci.
                 Defaults to True.
 
         """
-        self.dataset_paths = Path(paths)
+        self.dataset_paths = Path(path)
 
         if validate_on_init:
             missing_path = self._check_path_exists(self.dataset_paths)
