@@ -11,6 +11,7 @@ from psycop.common.model_training_v2.trainer.base_dataloader import BaselineData
 class MissingPathError(Exception):
     ...
 
+
 @BaselineRegistry.data.register("parquet_loader")
 class ParquetLoader(BaselineDataLoader):
     def __init__(self, path: str, validate_on_init: bool = True) -> None:
@@ -33,13 +34,13 @@ class ParquetLoader(BaselineDataLoader):
                     {missing_path}
                 """
                 )
-        
+
     def _check_path_exists(self, path: Path) -> list[MissingPathError]:
         if not path.exists():
             return [MissingPathError(path)]
 
         return []
-    
+
     def load(self) -> pl.LazyFrame:
         return pl.scan_parquet(self.dataset_paths)
 

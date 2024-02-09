@@ -18,7 +18,7 @@ from ...config.baseline_registry import BaselineRegistry
 def test_parquet_loader(tmpdir: Path):
     df = pl.DataFrame({"a": [1, 2, 3]})
 
-    parquet_path = Path(tmpdir) / f"test.parquet"
+    parquet_path = Path(tmpdir) / "test.parquet"
 
     df.write_parquet(parquet_path)
 
