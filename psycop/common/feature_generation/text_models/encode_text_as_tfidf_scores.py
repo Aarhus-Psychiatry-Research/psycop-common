@@ -16,9 +16,7 @@ def encode_tfidf_values_to_df(model: TfidfVectorizer, text: Iterable[str]) -> pl
     print("Start encoding")
     tfidf = model.transform(text)
     print(f"Encoding time: {time() - t0:.2f} seconds")
-    return pl.DataFrame(tfidf.toarray()).select(  # type: ignore
-        pl.all().map_alias(lambda c: c.replace("column", "tfidf"))
-    )
+    return pl.DataFrame(tfidf.toarray(), schema=model.get_feature_names_out().tolist())  # type: ignore
 
 
 if __name__ == "__main__":
