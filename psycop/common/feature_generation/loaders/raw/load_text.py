@@ -46,6 +46,7 @@ def get_valid_text_sfi_names() -> set[str]:
         "Plan",
         "Semistruktureret diagnostisk interview",
         "Vurdering/konklusion",
+        "Konklusion",
     }
 
 
