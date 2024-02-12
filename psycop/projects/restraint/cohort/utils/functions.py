@@ -1,8 +1,5 @@
-"""Utility functions for cohort creation"""
-
-from typing import Optional, Union
-
 import pandas as pd
+import polars as pl
 
 
 def concat_readmissions(
@@ -41,14 +38,16 @@ def concat_readmissions(
 
         # if there are multiple subsequent readmissions (i.e., both 'end_readmission' and 'start_readmission' == True), all but the first and last are excluded
         readmissions_subset = readmissions[
-            (readmissions.end_readmission is False) | (readmissions.start_readmission is False)
+            (readmissions.end_readmission == False) | (readmissions.start_readmission == False)  # noqa E712
         ]
 
         # insert discharge time from the last readmission into the first
-        readmissions_subset = readmissions_subset[readmissions_subset.end_readmission]
+        readmissions_subset.loc[
+            readmissions_subset.start_readmission == False, "datotid_slut"  # noqa E712
+        ] = readmissions_subset["datotid_slut"].shift(-1)
 
         # keep only the first admission
-        readmissions_subset = readmissions_subset[readmissions_subset.end_readmission is True]
+        readmissions_subset = readmissions_subset[readmissions_subset.end_readmission == True]  # noqa E712
 
         # remove readmissions from the original data
         df_patient_no_readmissions = df_patient.merge(
@@ -63,20 +62,36 @@ def concat_readmissions(
 
         # merge the new rows with the rest of the admissions
         df_patient_concatenated_readmissions = df_patient_no_readmissions.merge(
-            readmissions_subset, how="outer", on=["dw_ek_borger", "datotid_start", "datotid_slut"]
+            readmissions_subset,
+            how="outer",
+            on=["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"],
         )
 
     else:
-        return df_patient[["dw_ek_borger", "datotid_start", "datotid_slut"]].sort_values(
-            ["dw_ek_borger", "datotid_start"]
-        )
+        return df_patient[
+            ["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"]
+        ].sort_values(["dw_ek_borger", "datotid_start"])
 
     return df_patient_concatenated_readmissions[
-        ["dw_ek_borger", "datotid_start", "datotid_slut"]
+        ["dw_ek_borger", "datotid_start", "datotid_slut", "shakkode_ansvarlig"]
     ].sort_values(["dw_ek_borger", "datotid_start"])
 
 
-def first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFrame:
+def preprocess_readmissions(df: pl.DataFrame) -> pl.LazyFrame:
+    df_ = df.to_pandas()
+
+    df_ = df_.sort_values(["dw_ek_borger", "datotid_start"])
+
+    df_patients = df_.groupby("dw_ek_borger")
+
+    df_patients_list = [df_patients.get_group(key) for key in df_patients.groups]
+
+    df = pd.concat([concat_readmissions(patient) for patient in df_patients_list])  # type: ignore
+
+    return pl.LazyFrame(df)
+
+
+def keep_first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFrame:
     """Find first coercion instances within admissions
 
     Args:
@@ -101,16 +116,24 @@ def first_coercion_within_admission(admission: pd.DataFrame) -> pd.DataFrame:
         ].min()
     )
 
-    return admission.drop(columns=["typetekst_sei", "_merge"])[
+    return admission.drop(columns="typetekst_sei")[
         (admission.datotid_start_sei == admission.datotid_start_sei.min())
     ].drop_duplicates()
 
 
-def unpack_adm_days(
-    idx: int,
-    row: pd.Series,  # type: ignore
-    pred_hour: int = 6,
-) -> pd.DataFrame:
+def select_outcomes(df: pl.DataFrame) -> pl.LazyFrame:
+    df_ = df.to_pandas()
+    groups = df_.groupby(["dw_ek_borger", "datotid_start"])
+    df_list = [groups.get_group(key[0]) for key in groups]
+
+    df_concat = pd.concat(
+        [keep_first_coercion_within_admission(admission) for admission in df_list]
+    )
+
+    return pl.LazyFrame(df_concat)
+
+
+def unpack_adm_days(idx: int, row: pd.Series, pred_hour: int = 6) -> pd.DataFrame:  # type: ignore
     """Unpack admissions to long format (one row per day in the admission)
 
     Args:
@@ -147,66 +170,16 @@ def unpack_adm_days(
 
     # if admission is longer than 1 day and if time is <= pred_hour
     if (len(days_unpacked) > 1) and (
-        days_unpacked.iloc[-1, 2].time() <= days_unpacked.iloc[-1, 10].time()  # type: ignore
+        days_unpacked.iloc[-1, 2].time() <= days_unpacked.iloc[-1, -1].time()  # type: ignore
     ):
         days_unpacked = days_unpacked.iloc[:-1, :]
 
     return days_unpacked.drop(columns=0)
 
 
-def cut_off_check(
-    df: pd.DataFrame,
-    df_adm_grain: pd.DataFrame,
-    std: Optional[Union[int, None]] = None,
-    cut_off_day: Optional[Union[int, None]] = None,
-):
-    """Check cut-offs based on standard deviations
+def explode_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
+    df_ = df.collect().to_pandas()
 
-    Args:
-        df (pd.DataFrame): Dataframe with admissions on day grain
-        df_adm_grain (pd.DataFrame): Dataframe with admissions on admission grain
-        std (int, optional): Standard deviation to cut by. Defaults to None.
-        cut_off_day: (int, optional): Number of day in admission to cut by. Defaults to None.
-    """
-    if std is not None:
-        cut_off = df_adm_grain["adm_duration"].mean() + df_adm_grain["adm_duration"].std() * std
-        print(f"Cut_off: Mean + Std x {std} =", cut_off)
+    df_concat = pd.concat([unpack_adm_days(idx, row) for idx, row in df_.iterrows()])  # type: ignore
 
-    if cut_off_day is not None:
-        cut_off = pd.to_timedelta(cut_off_day, unit="D")
-
-    n_excl_days = df[pd.to_timedelta(df["pred_adm_day_count"], "days") > cut_off].shape[0]  # type: ignore
-    n_days = df.shape[0]
-
-    n_excl_days_with_outcome = df[
-        (pd.to_timedelta(df["pred_adm_day_count"], "days") > cut_off)  # type: ignore
-        & (df["outcome_coercion_bool_within_2_days"] == 1)
-    ].shape[0]
-    n_days_with_outcome = df[df["outcome_coercion_bool_within_2_days"] == 1].shape[0]
-
-    print(
-        "We will exclude",
-        n_excl_days,
-        "days out of",
-        n_days,
-        "days, corresponding to",
-        round((n_excl_days / n_days) * 100, 2),
-        "% of days/observations",
-    )
-    print(
-        "We will lose",
-        n_excl_days_with_outcome,
-        "days with outcome out of",
-        n_days_with_outcome,
-        ", corresponding to",
-        round((n_excl_days_with_outcome / n_days_with_outcome) * 100, 2),
-        "% of days with outcome",
-    )
-
-    print(
-        "We will include",
-        n_days - n_excl_days,
-        "days and",
-        n_days_with_outcome - n_excl_days_with_outcome,
-        "days with outcome",
-    )
+    return pl.LazyFrame(df_concat)

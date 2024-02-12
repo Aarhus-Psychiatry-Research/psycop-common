@@ -2,6 +2,48 @@
 
 <!--next-version-placeholder-->
 
+## v0.192.0 (2024-02-07)
+
+### Feature
+
+* Get best run from experiment ([`8036058`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/80360585770f5cdf6bee695717382774a40ea99c))
+* Tool for extracting metrics from mlflow ([`ce51700`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ce5170046fb02fb0a06efc58319c1d56424663f8))
+
+## v0.191.0 (2024-02-07)
+
+### Feature
+
+* Feature gen for sczbp text experiment ([`13a3622`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/13a36229bd6219a0b2a764743117fee5b7c425ec))
+
+## v0.190.0 (2024-02-06)
+
+### Feature
+
+* Lightgbm suggester ([`7b9569a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/7b9569a2f56ca7be9284d548a10bb4379872170a))
+* Joblib based hyperparameter search ([`4df2dec`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4df2dec3afb47b4b3ef363392a8f35b19a4684a8))
+* **#789:** CVD, hyperparam tune for layer 2 ([`075313d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/075313d262cf100744315a20b558c56ff9e4d047))
+* Lightgbm suggester ([`feb6a68`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/feb6a689764a041fc45958b0d73cfb91db89c57c))
+
+## v0.189.0 (2024-02-06)
+
+### Feature
+
+* Lightgbm suggester ([#798](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/798)) ([`fce05e9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fce05e953bed5ed2b279cc60bc7413c8230713f4))
+* Lightgbm suggester ([`cd4fec7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/cd4fec7d81359dab538c61a3b9c31380ef193457))
+
+## v0.188.0 (2024-02-06)
+
+### Feature
+
+* Xgboost suggester ([#792](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/792)) ([`2e9fc40`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/2e9fc409306cc702e6d6e162230faae201b657d4))
+
+## v0.187.0 (2024-02-06)
+
+### Feature
+
+* Add integerspace ([#791](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/791)) ([`aa908d7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/aa908d7bdd15f8e5e63a1ea4de7092d34c058937))
+* Add integerspace ([`b4e44a5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b4e44a57cbbcf02f66be677f5d80e148d4abc077))
+
 ## v0.186.0 (2024-01-31)
 
 ### Feature

@@ -16,7 +16,7 @@ from timeseriesflattener.aggregation_fns import (
     variance,
 )
 from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
-from timeseriesflattener.feature_specs.single_specs import PredictorSpec, StaticSpec
+from timeseriesflattener.feature_specs.single_specs import OutcomeSpec, PredictorSpec, StaticSpec
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.loaders.raw.load_coercion import (
@@ -102,6 +102,7 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
+from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 
 log = logging.getLogger(__name__)
 
@@ -530,6 +531,25 @@ class FeatureSpecifier:
 
         return lab_results
 
+    def _get_outcome_specs(self) -> list[OutcomeSpec]:
+        """Generate outcome specs."""
+        log.info("-------- Generating outcome specs --------")
+
+        mechanical_restraint_spec = OutcomeSpec(
+            timeseries_df=RestraintCohortDefiner.get_outcome_timestamps()
+            .frame.to_pandas()
+            .assign(value=1)
+            .rename(columns={"first_mechanical_restraint": "timestamp"})
+            .dropna(subset="timestamp"),
+            lookahead_days=2,
+            aggregation_fn=boolean,
+            fallback=0,
+            incident=False,
+            feature_base_name="mechanical_restraint",
+        )
+
+        return [mechanical_restraint_spec]
+
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("-------- Generating temporal predictor specs --------")
@@ -608,10 +628,14 @@ class FeatureSpecifier:
             + lab_results
         )
 
-    def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec]]:
+    def get_feature_specs(self) -> list[Union[StaticSpec, PredictorSpec, OutcomeSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_lab_result_specs(resolve_multiple=[boolean], interval_days=[30])  # type: ignore
+            return self._get_outcome_specs()  # type: ignore
 
-        return self._get_static_predictor_specs() + self._get_temporal_predictor_specs()
+        return (
+            self._get_static_predictor_specs()
+            + self._get_temporal_predictor_specs()
+            + self._get_outcome_specs()
+        )
