@@ -7,7 +7,6 @@ from polars import LazyFrame
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.data.dataloaders import (
     MissingPathError,
-    ParquetLoader,
     ParquetVerticalConcatenator,
 )
 
@@ -50,7 +49,7 @@ def test_single_parquet_load(tmpdir: Path):
     assert parquet.columns == df.columns
 
     with pytest.raises(MissingPathError):
-        ParquetLoader("non_existent_path").load()
+        ParquetVerticalConcatenator(["non_existent_path"]).load()
 
 
 @BaselineRegistry.data.register("minimal_test_data")
