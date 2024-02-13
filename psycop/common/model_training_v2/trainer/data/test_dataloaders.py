@@ -15,22 +15,6 @@ from ....test_utils.str_to_df import str_to_pl_df
 from ...config.baseline_registry import BaselineRegistry
 
 
-def test_parquet_loader(tmpdir: Path):
-    df = pl.DataFrame({"a": [1, 2, 3]})
-
-    parquet_path = Path(tmpdir) / "test.parquet"
-
-    df.write_parquet(parquet_path)
-
-    parquet = ParquetLoader(str(parquet_path)).load().collect()
-
-    assert len(parquet) == len(df)
-    assert parquet.columns == df.columns
-
-    with pytest.raises(MissingPathError):
-        ParquetLoader("non_existent_path").load()
-
-
 def test_vertical_concatenator(tmpdir: Path):
     df = pl.DataFrame({"a": [1, 2, 3]})
     n_paths = 2
@@ -51,6 +35,22 @@ def test_vertical_concatenator(tmpdir: Path):
         ParquetVerticalConcatenator(
             paths=[str(p) for p in parquet_paths] + ["non_existent_path"]
         ).load()
+
+
+def test_single_parquet_load(tmpdir: Path):
+    df = pl.DataFrame({"a": [1, 2, 3]})
+
+    parquet_path = Path(tmpdir) / "test.parquet"
+
+    df.write_parquet(parquet_path)
+
+    parquet = ParquetVerticalConcatenator(paths=[str(parquet_path)]).load().collect()
+
+    assert len(parquet) == len(df)
+    assert parquet.columns == df.columns
+
+    with pytest.raises(MissingPathError):
+        ParquetLoader("non_existent_path").load()
 
 
 @BaselineRegistry.data.register("minimal_test_data")

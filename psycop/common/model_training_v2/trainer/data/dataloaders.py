@@ -47,7 +47,7 @@ class ParquetLoader(BaselineDataLoader):
 
 @BaselineRegistry.data.register("parquet_vertical_concatenator")
 class ParquetVerticalConcatenator(BaselineDataLoader):
-    def __init__(self, paths: Sequence[str], validate_on_init: bool = True) -> None:
+    def __init__(self, paths: Sequence[str], validate_on_init: bool = True):
         """Vertical concatenation of multiple parquet files.
 
         Args:
