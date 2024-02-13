@@ -37,4 +37,8 @@ class BaselinePreprocessingPipeline(PreprocessingPipeline):
             data = step.apply(data)
 
         self.logger.info(f"Column stats after preprocessing: {self._get_column_stats_string(data)}")
-        return data.collect().to_pandas()
+        
+        preprocessed_data = data.collect().to_pandas()
+        self.logger.info(f"Number of rows after preprocessing: {len(preprocessed_data)}")
+        
+        return preprocessed_data
