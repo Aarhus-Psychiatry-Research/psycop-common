@@ -10,7 +10,6 @@ from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import (
     populate_scz_bp_registry,
 )
 
-# FILTERS NOT WORKING PROPERLY - FIX
 
 if __name__ == "__main__":
     populate_baseline_registry()
