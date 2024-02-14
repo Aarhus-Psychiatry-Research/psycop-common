@@ -1,5 +1,6 @@
 """Main feature generation."""
 
+from datetime import datetime
 import logging
 import sys
 from pathlib import Path
@@ -19,6 +20,7 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
+from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import load_coercion_prediction_times
 
 log = logging.getLogger()
 
@@ -33,13 +35,16 @@ def main():
         min_set_for_debug=False,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
+    begin = datetime.now()
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore
+        prediction_times_df=load_coercion_prediction_times(), # RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore
         drop_pred_times_with_insufficient_look_distance=True,
         project_info=project_info,
         add_birthdays=True,
     )
+    end = datetime.now()
+    print(end-begin)
 
     split_and_save_dataset_to_disk(
         flattened_df=flattened_df,
