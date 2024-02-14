@@ -30,7 +30,7 @@ class CVDLayer2(FeatureLayer):
                 NamedDataframe(df=pci(), name=f"pci_layer_{layer}"),
                 NamedDataframe(df=cabg(), name=f"cabg_layer_{layer}"),
                 NamedDataframe(df=ischemic_stroke(), name=f"ischemic_stroke_layer_{layer}"),
-                NamedDataframe(df=pad(), name=f"peripheral_arterial_disease_layer_{layer}"),
+                # NamedDataframe(df=pad(), name=f"peripheral_arterial_disease_layer_{layer}"),
                 NamedDataframe(df=hba1c(), name=f"hba1c_layer_{layer}"),
                 NamedDataframe(
                     df=chronic_lung_disease(), name=f"chronic_lung_disease_layer_{layer}"

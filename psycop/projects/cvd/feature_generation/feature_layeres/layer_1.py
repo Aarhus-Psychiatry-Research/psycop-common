@@ -29,16 +29,16 @@ class CVDLayer1(FeatureLayer):
             lookbehind_days=lookbehind_days,
         ).create_combinations()
 
-        systolic_blood_pressure_spec = PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(
-                    df=systolic_blood_pressure(), name=f"systolic_blood_pressure_layer_{layer}"
-                ),
-            ),
-            aggregation_fns=aggregation_fns,
-            fallback=[np.nan],
-            lookbehind_days=lookbehind_days,
-        ).create_combinations()
+        # systolic_blood_pressure_spec = PredictorGroupSpec(
+        #     named_dataframes=(
+        #         NamedDataframe(
+        #             df=systolic_blood_pressure(), name=f"systolic_blood_pressure_layer_{layer}"
+        #         ),
+        #     ),
+        #     aggregation_fns=aggregation_fns,
+        #     fallback=[np.nan],
+        #     lookbehind_days=lookbehind_days,
+        # ).create_combinations()
 
         smoking_continuous_spec = PredictorGroupSpec(
             named_dataframes=(
@@ -60,7 +60,7 @@ class CVDLayer1(FeatureLayer):
 
         return (
             ldl_spec
-            + systolic_blood_pressure_spec
+            # + systolic_blood_pressure_spec
             + smoking_continuous_spec
             + smoking_categorical_spec
         )

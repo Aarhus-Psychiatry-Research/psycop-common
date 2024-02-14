@@ -3,7 +3,7 @@
 
 import logging
 
-from timeseriesflattener.aggregation_fns import maximum, mean
+from timeseriesflattener.aggregation_fns import count, maximum, mean, minimum
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
@@ -37,8 +37,13 @@ if __name__ == "__main__":
 
     log.info("Getting feature specs")
     feature_specs = CVDFeatureSpecifier().get_feature_specs(
-        layer=1,
-        aggregation_fns=[mean, maximum],  # [boolean, count, maximum, mean, minimum],
+        layer=3,
+        aggregation_fns=[
+            mean,
+            minimum,
+            maximum,
+            count,
+        ],  # [boolean, count, maximum, mean, minimum],
         lookbehind_days=[90, 365, 730],
     )
 
