@@ -72,11 +72,11 @@ def generate_feature_set(
         flattened_df=flattened_df, project_info=project_info, feature_set_dir=feature_set_dir
     )
 
-    save_flattened_dataset_description_to_disk(
-        project_info=project_info,
-        feature_specs=feature_specs,  # type: ignore
-        feature_set_dir=feature_set_dir,
-    )
+    # save_flattened_dataset_description_to_disk(
+    #     project_info=project_info,
+    #     feature_specs=feature_specs,  # type: ignore
+    #     feature_set_dir=feature_set_dir,
+    # )
 
     return feature_set_dir
 
