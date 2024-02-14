@@ -10,8 +10,8 @@ from psycop.common.model_training.config_schemas.data import DataSchema
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 
 
-def load_all_splits(dir: Path) -> pd.DataFrame:
-    return DataLoader(DataSchema(dir=dir), column_name_checker=None).load_dataset_from_dir(
+def load_all_splits(data_dir: Path) -> pd.DataFrame:
+    return DataLoader(DataSchema(dir=data_dir), column_name_checker=None).load_dataset_from_dir(
         split_names=["train", "val", "test"]
     )
 
