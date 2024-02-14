@@ -1,3 +1,5 @@
+import time
+
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
@@ -10,17 +12,20 @@ from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import Sc
 
 
 def get_scz_bp_project_info() -> ProjectInfo:
-    return ProjectInfo(
-        project_name="scz_bp", project_path=OVARTACI_SHARED_DIR / "scz_bp" / "initial_feature_set"
-    )
+    return ProjectInfo(project_name="scz_bp", project_path=OVARTACI_SHARED_DIR / "scz_bp")
 
 
 if __name__ == "__main__":
+    t0 = time.time()
     generate_feature_set(
         project_info=get_scz_bp_project_info(),
         eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
-        feature_specs=SczBpFeatureSpecifier().get_feature_specs(max_layer=3, lookbehind_days=[730]),
+        feature_specs=SczBpFeatureSpecifier().get_feature_specs(
+            max_layer=4, lookbehind_days=[183, 365, 730]
+        ),
         # generate_in_chunks=True,  # noqa: ERA001
         # chunksize=10,  # noqa: ERA001
-        feature_set_name="layer3",
+        feature_set_name="structured_predictors",
     )
+    t = time.time()
+    print(f"Time taken: {t - t0}")
