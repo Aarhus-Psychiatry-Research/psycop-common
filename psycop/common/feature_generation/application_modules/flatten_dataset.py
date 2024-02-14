@@ -89,4 +89,7 @@ def create_flattened_dataset(
 
     flattened_dataset.add_spec(spec=feature_specs)
 
-    return flattened_dataset.get_df()
+    log.info("Starting flattening")
+    df = flattened_dataset.get_df()
+    log.info("Finished flattening")
+    return df

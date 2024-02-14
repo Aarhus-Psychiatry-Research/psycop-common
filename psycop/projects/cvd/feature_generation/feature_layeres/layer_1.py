@@ -36,7 +36,7 @@ class CVDLayer1(FeatureLayer):
                 ),
             ),
             aggregation_fns=aggregation_fns,
-            fallback=[0],
+            fallback=[np.nan],
             lookbehind_days=lookbehind_days,
         ).create_combinations()
 
@@ -45,7 +45,7 @@ class CVDLayer1(FeatureLayer):
                 NamedDataframe(df=smoking_continuous(), name=f"smoking_continuous_layer_{layer}"),
             ),
             aggregation_fns=aggregation_fns,
-            fallback=[0],
+            fallback=[np.nan],
             lookbehind_days=lookbehind_days,
         ).create_combinations()
 
@@ -54,7 +54,7 @@ class CVDLayer1(FeatureLayer):
                 NamedDataframe(df=smoking_categorical(), name=f"smoking_categorical_layer_{layer}"),
             ),
             aggregation_fns=aggregation_fns,
-            fallback=[0],
+            fallback=[np.nan],
             lookbehind_days=lookbehind_days,
         ).create_combinations()
 
