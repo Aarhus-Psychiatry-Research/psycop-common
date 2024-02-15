@@ -568,7 +568,7 @@ class FeatureSpecifier:
             ]
 
         resolve_multiple = [boolean, count]
-        interval_days = [10.0, 30.0, 180.0, 365.0, 730.0]
+        interval_days = [10.0, (10.0, 30.0), (30.0, 180.0), (180.0, 365.0), (365.0, 730.0)]
 
         latest_weight_height_bmi = self._get_weight_and_height_specs(
             resolve_multiple=[latest], interval_days=interval_days
@@ -583,15 +583,15 @@ class FeatureSpecifier:
         )
 
         medications = self._get_medication_specs(
-            resolve_multiple=resolve_multiple, interval_days=[1, 3, 7, *interval_days]
+            resolve_multiple=resolve_multiple, interval_days=[1, (1, 3), (3, 7), (7, 10), (10.0, 30.0), (30.0, 180.0), (180.0, 365.0), (365.0, 730.0)]
         )
 
         schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
-            resolve_multiple=[*resolve_multiple, summed], interval_days=[7, *interval_days]
+            resolve_multiple=[*resolve_multiple, summed], interval_days=[7, (7, 10), (10.0, 30.0), (30.0, 180.0), (180.0, 365.0), (365.0, 730.0)]
         )
 
         schema_1_schema_2_coercion_current_status = self._get_schema_1_and_2_current_status_specs(
-            resolve_multiple=[boolean], interval_days=[1, 3]
+            resolve_multiple=[boolean], interval_days=[1, (1, 3)]
         )
 
         schema_3_coercion = self._get_schema_3_specs(
@@ -604,11 +604,11 @@ class FeatureSpecifier:
 
         structured_sfi = self._get_structured_sfi_specs(
             resolve_multiple=[mean, maximum, minimum, change_per_day, variance],
-            interval_days=[1, 3, 7, *interval_days],
+            interval_days=[1, (1, 3), (3, 7), (7, 10), (10.0, 30.0), (30.0, 180.0), (180.0, 365.0), (365.0, 730.0)],
         )
 
         temporary_leave = self._get_temporary_leave_specs(
-            resolve_multiple=resolve_multiple, interval_days=[1, 3, 7, *interval_days]
+            resolve_multiple=resolve_multiple, interval_days=[1, (1, 3), (3, 7), (7, 10), (10.0, 30.0), (30.0, 180.0), (180.0, 365.0), (365.0, 730.0)]
         )
 
         lab_results = self._get_lab_result_specs(
