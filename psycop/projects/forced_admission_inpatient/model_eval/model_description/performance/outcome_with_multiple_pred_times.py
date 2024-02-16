@@ -51,6 +51,7 @@ def plot_distribution_of_n_pred_times_per_outcome(
     n_pred_times_counts = df['n_pred_times'].value_counts()
     filtered_df = df[df['n_pred_times'].isin(n_pred_times_counts[n_pred_times_counts > 4].index)]
     filtered_df = filtered_df.reset_index(drop=True)
+    filtered_df['n_pred_times'] = filtered_df['n_pred_times'].astype(str)
 
     plot = (
     pn.ggplot(filtered_df) 
@@ -74,5 +75,5 @@ if __name__ == "__main__":
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    n=2
-    plot_distribution_of_n_pred_times_per_outcome(run, eval_dataset, 9)
+    max_n=20
+    plot_distribution_of_n_pred_times_per_outcome(run, eval_dataset, max_n)
