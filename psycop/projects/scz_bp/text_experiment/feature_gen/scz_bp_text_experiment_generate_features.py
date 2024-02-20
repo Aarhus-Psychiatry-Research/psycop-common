@@ -36,3 +36,16 @@ if __name__ == "__main__":
                 chunksize=10,  # noqa: ERA001
                 feature_set_name=feature_set_name,
             )
+
+    # pse keywords
+    feature_set_name = "text_exp_730_pse_keyword"
+    save_path = project_path / "flattened_datasets" / feature_set_name
+
+    generate_feature_set(
+        project_info=project_info,
+        eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
+        feature_specs=SczBpTextExperimentFeatures().get_keyword_specs(lookbehind_days=[730]),
+        generate_in_chunks=True,  # noqa: ERA001
+        chunksize=10,  # noqa: ERA001
+        feature_set_name=feature_set_name,
+    )

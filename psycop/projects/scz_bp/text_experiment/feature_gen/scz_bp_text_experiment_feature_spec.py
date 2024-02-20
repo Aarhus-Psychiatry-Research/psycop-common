@@ -1,8 +1,8 @@
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 import pandas as pd
-from timeseriesflattener.aggregation_fns import mean
+from timeseriesflattener.aggregation_fns import boolean, mean, summed
 from timeseriesflattener.df_transforms import df_with_multiple_values_to_named_dataframes
 from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
 from timeseriesflattener.feature_specs.single_specs import AnySpec
@@ -59,3 +59,23 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         # flatten the sequence of lists
         features = [feature for sublist in feature_specs for feature in sublist]
         return features
+
+    def get_keyword_specs(self, lookbehind_days: Iterable[float]) -> Iterable[AnySpec]:
+        filename = "pse_keyword_counts_all_sfis.parquet"
+        embedded_text_df = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
+        if "overskrift" in embedded_text_df.columns:
+            embedded_text_df = embedded_text_df.drop("overskrift", axis="columns")
+
+        embedded_text_df = df_with_multiple_values_to_named_dataframes(
+            df=embedded_text_df,
+            entity_id_col_name="dw_ek_borger",
+            timestamp_col_name="timestamp",
+            name_prefix="pse_keywords_",
+        )  # type: ignore
+
+        return PredictorGroupSpec(
+            named_dataframes=embedded_text_df,  # type: ignore
+            aggregation_fns=[summed, boolean],
+            lookbehind_days=lookbehind_days,
+            fallback=[np.nan],
+        ).create_combinations()
