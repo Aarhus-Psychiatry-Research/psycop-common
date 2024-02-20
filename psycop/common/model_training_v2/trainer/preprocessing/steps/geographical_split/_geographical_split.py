@@ -51,7 +51,9 @@ def add_migration_date_by_patient(
         ).drop("timestamp")
     ).with_columns(
         pl.when(pl.col("first_regional_move_timestamp").is_null())
-        .then(pl.lit("2100-01-01 00:00:00"))  # set cutoff to 2100 if patient only has visits in one region
+        .then(
+            pl.lit("2100-01-01 00:00:00")
+        )  # set cutoff to 2100 if patient only has visits in one region
         .otherwise(pl.col("first_regional_move_timestamp"))
         .str.strptime(pl.Datetime)
         .alias("first_regional_move_timestamp")
