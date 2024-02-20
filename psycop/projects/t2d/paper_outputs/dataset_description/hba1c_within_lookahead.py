@@ -157,13 +157,13 @@ class MeasurementsWithinLookaheadPlot(AbstractPlot):
             )
             .with_columns(
                 prediction=pl.when((pl.col("y") == 0) & (pl.col("y_hat") == 1))
-                .then("False positive")
+                .then(pl.lit("False positive"))
                 .when((pl.col("y") == 0) & (pl.col("y_hat") == 0))
-                .then("True negative")
+                .then(pl.lit("True negative"))
                 .when((pl.col("y") == 1) & (pl.col("y_hat") == 1))
-                .then("True positive")
+                .then(pl.lit("True positive"))
                 .when((pl.col("y") == 1) & (pl.col("y_hat") == 0))
-                .then("False negative")
+                .then(pl.lit("False negative"))
             )
             .rename(
                 {

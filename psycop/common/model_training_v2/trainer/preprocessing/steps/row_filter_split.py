@@ -58,10 +58,10 @@ def _get_regional_split_df() -> pl.LazyFrame:
     # add indicator for which split each patient belongs to
     geographical_split_df = geographical_split_df.with_columns(
         pl.when(pl.col("region") == "øst")
-        .then("train")
+        .then(pl.lit("train"))
         .when(pl.col("region") == "vest")
-        .then("val")
-        .otherwise("test")
+        .then(pl.lit("val"))
+        .otherwise(pl.lit("test"))
         .alias("split")
     )
 
