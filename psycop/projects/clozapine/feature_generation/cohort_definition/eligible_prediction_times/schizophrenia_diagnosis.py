@@ -1,11 +1,17 @@
 import polars as pl
 
-from psycop.common.feature_generation.loaders.raw.load_diagnoses import schizophrenia
+from psycop.common.feature_generation.loaders.raw.load_diagnoses import schizophrenia,schizoaffective
 
 
-def add_only_patients_with_schizophrenia() -> pl.DataFrame:
+def add_only_patients_with_schizo() -> pl.DataFrame:
     schizophrenia_df = pl.from_pandas(schizophrenia())
+    
+    schizoaffective_df= pl.from_pandas(schizoaffective())
 
-    schizophrenia_df_only_time_and_borger = schizophrenia_df.select(["dw_ek_borger", "timestamp"])
+    combined_df= pl.concat([schizophrenia_df,schizoaffective_df])
 
-    return schizophrenia_df_only_time_and_borger
+    schizo_df_only_time_and_borger = combined_df.select(["dw_ek_borger", "timestamp"])
+
+    return schizo_df_only_time_and_borger
+
+
