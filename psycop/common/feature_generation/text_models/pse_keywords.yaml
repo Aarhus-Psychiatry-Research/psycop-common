@@ -1,0 +1,384 @@
+F0:
+  - Demens
+  - Vaskulær demens
+  - Alzheimer
+  - Lewy body
+  - Delir
+  - delirøs
+F1:
+  - Misbrug
+  - Trang 
+  - Craving
+  - Svigtende kontrol
+  - Abstinenssymptomer
+  - Tolerans
+  - Risikofyldt adfærd
+  - Alkohol
+  - Opioder
+  - Cannabis
+  - hash
+  - cannabinoider
+  - Sedativa
+  - hypnotika
+  - Kokain
+  - Centralstimulerende
+  - hallucinogener
+F2:
+  - skizofreni
+  - hebefren
+  - skizotypi
+  - paranoid
+  - paranoia
+  - psykose
+  - psykotisk
+  - skizoaffektiv
+  - skizo-affektiv
+  - Positive symptomer
+  - Auditive hallucinationer
+  - hørehallucinationer
+  - Verbale 
+  - non-verbale
+  - 2.person
+  - Andenpersons
+  - 3.person
+  - Tredjepersons
+  - Kommenterende
+  - Diskuterende
+  - Depressive
+  - Expansive
+  - Dissociative
+  - Hypnagoge
+  - Hypnopompe
+  - Stemmer
+  - devaluerende
+  - Synshallucinationer
+  - Uformede
+  - Formede
+  - Sceniske
+  - Interne
+  - Eksterne
+  - Lugthallucinationer
+  - Taktile hallucinationer
+  - Somatiske hallucinationer
+  - Berøringshallucinationer
+  - Seksuelle hallucinationer
+  - Legemlige fornemmelser
+  - tankeforstyrrelser
+  - Tankefradrag
+  - Tankepåføring
+  - Tankeudspredning
+  - Tankehørlighed
+  - Tanke-ekko
+  - Styringsoplevelser
+  - Påførte handlinger
+  - Fremmed vilje
+  - Påført tale
+  - Påført skriven
+  - Påførte følelser
+  - Fremmed magt
+  - Påførte impulser
+  - Vrangforestillinger
+  - Vrangstemning
+  - Selvhenførende vrangforestillinger
+  - Mistydning
+  - Primær vrangsansning
+  - Persekutoriske vrangforestillinger
+  - Forfølgelsesforestillinger
+  - forfulgt
+  - Forgifte
+  - Skade dig
+  - Sammensværgelsesforestillinger
+  - Komplot
+  - Religiøse forestillinger
+  - Guddommelig
+  - Religiøse budskaber
+  - Overnaturlige forklaringer
+  - Okkult
+  - telepati
+  - Seksuelle forestillinger
+  - Jalousiforestillinger
+  - Fantastiske forestillinger
+  - Bizarre vrangforestillinger
+  - Førsterangssymptomer
+  - Katatoni
+  - kataton
+  - Negative symptomer
+  - Koncentrationsbesvær
+  - Tab af følelser
+  - Social tilbagetrækning
+  - Formålsløs adfærd
+  - Passitivitet
+  - Manglende fremdrift
+  - Derealisation
+  - Depersonalisation
+  - Perceptionsforstyrrelse
+  - fremmedfølelse
+F3:
+  - Bipolar affektiv sindslidelse
+  - bipolar
+  - Mani
+  - manisk
+  - hypomani
+  - hypomanisk
+  - Expansivt stemningsleje
+  - eretisme
+  - Øget energi
+  - hyperaktiv
+  - Tankepres
+  - tankeflugt
+  - Talepres
+  - Taletrang
+  - Grandios
+  - Grandiose vrangforestillinger
+  - megalomane
+  - Særlig mission
+  - Udsædvanlige kræfter
+  - Usædvanlige evner
+  - berømt
+  - Letafledlighed
+  - Købetrang
+  - Over-optimisme
+  - Kompromitterende adfærd
+  - Hæmningsløs
+  - Overmodig
+  - overfamiliaritet
+  - Ukritisk adfærd
+  - hensynsløs
+  - Uansvarlig adfærd
+  - Nye interesser
+  - distraktibilitet
+  - Nedsat søvnbehov
+  - Øget seksualtrang
+  - Øget sex-drift
+  - depression
+  - nedtrykthed
+  - Nedsat stemningsleje
+  - Nedsat humør
+  - Nedsat energi
+  - trætbarhed
+  - Nedsat interesse
+  - Nedsat lyst
+  - Interessetab
+  - Håbløshed
+  - hæmning
+  - Rumination
+  - pessimisme
+  - Grådtendens
+  - dødstanker
+  - Selvmordstanker
+  - Selvmord
+  - Selvmordforsøg
+  - Selvskade
+  - Nedsat selvtillid
+  - selvbebrejdelser
+  - Vægttab
+  - Nedsat libido
+  - Nedsat sexlyst
+  - Nedsat appetit
+  - Initiativløshed
+  - Søvnløs
+  - Søvnbesvær
+  - Tidlig opvågen
+  - Tidlig opvågning
+  - Melankoliform
+  - Depressive vrangforestillinger
+  - Skyldsforestillinger
+  - Skyldfølelse
+  - Selvforringende
+  - Dårligt menneske
+  - Uduelig
+  - betydningsløs
+  - Forarmningsforestillinger
+  - ruineret
+  - Verdens undergang
+  - Hypokondre forestillinger
+  - Nihilistiske forestillinger
+  - Rådne
+  - Cotard’s syndrom
+  - Dysmorfofobe forestillinger
+  - Derealisationsvrangforestillinger
+  - Capgra’s syndrom
+  - cyklothymi
+  - dysthymi
+F4:
+  - Fobi
+  - agorafobi
+  - Socialfobi
+  - Social angst
+  - Enkelfobi
+  - Generaliseret angst
+  - Belastningsreaktion
+  - Tilpasningsreaktion
+  - Dissociativ
+  - somatoform
+  - Bekymringstendens
+  - Anspændt
+  - Generel muskelspænding
+  - Angst
+  - Bange
+  - Undgåelse
+  - Panikanfald
+  - panikangst
+  - Hjertebanken
+  - Smerter i brystet
+  - trykken for brystet
+  - Åndedrætsbesvær
+  - Kvælningsfornemmelse
+  - Kvalme
+  - maveuro
+  - Hedeture
+  - kuldegysninger
+  - Sveden 
+  - mundtørhed
+  - Rysten
+  - Sitren
+  - Dødsangst
+  - Synkebesvær
+  - Klump i halsen
+  - Uvirkelighedsfølelse
+  - Undgåelsesadfærd
+  - Paræstesier
+  - Føleforstyrrelser
+  - PTSD
+  - Posttraumatisk belastningsreaktion
+  - Flashbacks
+  - Mareridt
+  - Hypervigilitet
+  - Katastrofe
+  - traume
+  - Obsessiv-kompulsiv tilstand
+  - OCD
+  - Tvangstanker
+  - Tvangshandlinger
+  - Fugue 
+  - Tranceoplevelser
+  - Besættelsesoplevelse
+F5:
+  - Spiseforstyrrelse
+  - Anorexi 
+  - Anoreksi
+  - Anorexia nervosa
+  - Bulimi
+F6:
+  - Personlighedsforstyrrelse
+  - Paranoid
+  - Skizoid
+  - Dyssocial
+  - Emotionel ustabil personlighedsstruktur
+  - Borderline
+  - Histrionisk
+  - Tvangspræget
+  - Ængstelig
+  - Evasiv
+  - Dependent
+F7:
+  - Mental retardering
+  - Lav IQ
+F8:
+  - Gennemgribende udviklingsforstyrrelser
+  - Infantil autisme
+  - Autisme
+  - asperger
+  - Manglende blikkontakt
+  - Nedsat blikkontakt
+  - Nedsat mimik
+  - Nedsat gestik
+  - Stereotyp adfærd
+  - Repetitivt
+  - Impressivt sprog
+  - Expressivt sprog
+  - Nedsat spontan tale
+  - Idiosynkratisk sprogbrug
+  - Indsnævrede interesser
+  - Afvigende socialt samspil
+  - Afvigende kommunikation
+  - Nedsat empati
+  - Nedsat situationsfornemmelse
+  - Emotionel dysregulering
+F9:
+  - Opmærksomhedsforstyrrelser
+  - Hyperkinetiske forstyrrelser
+  - Hyperkinetisk
+  - ADHD
+  - ADD
+  - Koncentrationsbesvær
+  - Skødesløse fejl
+  - Besvær med at planlægge
+  - Mister ting
+  - Motorisk aktivitet
+  - Hyperaktiv
+  - Impulsiv
+  - Impulsivitet
+  - afbryder
+  - søvnbesvær
+  - Adfærdsforstyrrelse
+  - Tics
+  - tourettes
+Objektiv_beskrivelse:
+  - Perseveration
+  - Konfabulation
+  - Amnesi
+  - Opmærksomhedssvækkelse
+  - Desorientering
+  - Apati
+  - Afasi
+  - Træghed
+  - Opfattelsesbesvær
+  - apraksi
+  - Stupor
+  - initiativløshed
+  - Monoton stemme
+  - Manglende øjenkontakt
+  - Letafledelig
+  - Rastløs
+  - Agiteret
+  - Hyperaktiv
+  - Påfaldende udseende eller påklædning
+  - Usammenhængende adfærd
+  - Excentrisk adfærd
+  - Selvforsømmelse
+  - Dårlig hygiejne
+  - kataton
+  - negativisme
+  - Automatisk lydighed
+  - Katalepsi
+  - Flexibilitas cerea
+  - Abnorm legemsholdning
+  - Stirren
+  - Grimasseren
+  - Bevægelsesstereotypier
+  - stereotypier
+  - Løftet stemningsleje
+  - euforisk
+  - Irritable
+  - Forvirring
+  - Forvirret
+  - Emotionel labilitet
+  - Mistroisk
+  - Histrionisk affekt
+  - Ambivalens
+  - Ambivalent
+  - Indsnævret affekt
+  - Inadækvat affekt
+  - Inkongruent affekt
+  - Aggressiv
+  - Affektaffladning
+  - affektlabil
+  - manglende emotionelt respons
+  - Latenstid
+  - Omstændelig
+  - Springende tankegang
+  - Associerer frit
+  - Frit associerende
+  - Tankeflugt
+  - Usammenhængende tankegang
+  - Usamlet
+  - Kaotisk tankegang
+  - Inkoherent tale
+  - neologismer
+  - Metaforisk tale
+  - metonymier
+  - Vaghed
+  - Mutisme
+  - Mumler
+  - Perseverationstendens
