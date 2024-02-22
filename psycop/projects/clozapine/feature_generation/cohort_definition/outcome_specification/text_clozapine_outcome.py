@@ -114,8 +114,8 @@ def extract_clozapine_from_free_text() -> pl.DataFrame:
                 row_df = schizophrenia_text_medicin_df[index, :]
 
                 row_df = row_df.with_columns(matched_word=pl.lit(value))
-                # pyright: reportUnboundVariable=none
-                row_df = row_df.with_columns(fuzz_ratio=pl.lit(int(similarity_score)))
+               
+                row_df = row_df.with_columns(fuzz_ratio=pl.lit(int(similarity_score)))  # pyright: reportUnboundVariable=none
 
                 # Concatenate the current row to the filtered DataFrame
                 clozapine_df = pl.concat([clozapine_df, row_df])
