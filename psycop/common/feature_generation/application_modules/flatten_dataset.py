@@ -5,7 +5,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import psutil
-from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+from timeseriesflattener.v1.flattened_dataset import TimeseriesFlattener
 
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     import pandas as pd
-    from timeseriesflattener.feature_specs.single_specs import AnySpec
+    from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
     from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 

@@ -1,4 +1,4 @@
-from timeseriesflattener.feature_specs.single_specs import AnySpec
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR

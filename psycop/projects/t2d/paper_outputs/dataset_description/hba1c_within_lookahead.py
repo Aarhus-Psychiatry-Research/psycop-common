@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import plotnine as pn
 import polars as pl
-from timeseriesflattener.aggregation_fns import latest
-from timeseriesflattener.feature_specs.single_specs import OutcomeSpec
-from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+from timeseriesflattener.v1.aggregation_fns import latest
+from timeseriesflattener.v1.feature_specs.single_specs import OutcomeSpec
+from timeseriesflattener.v1.flattened_dataset import TimeseriesFlattener
 
 from psycop.common.feature_generation.loaders.raw.load_lab_results import (
     fasting_p_glc,

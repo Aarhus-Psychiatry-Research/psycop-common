@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 import pandas as pd
-from timeseriesflattener.feature_specs.single_specs import AnySpec
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,

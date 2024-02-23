@@ -4,8 +4,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from timeseriesflattener.aggregation_fns import maximum
-from timeseriesflattener.feature_specs.single_specs import OutcomeSpec, PredictorSpec, StaticSpec
+from timeseriesflattener.v1.aggregation_fns import maximum
+from timeseriesflattener.v1.feature_specs.single_specs import OutcomeSpec, PredictorSpec, StaticSpec
 
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     generate_feature_description_df,
