@@ -6,8 +6,8 @@ import pandas as pd
 import polars as pl
 import pytest
 from polars.testing import assert_series_equal
-from timeseriesflattener.aggregation_fns import mean
-from timeseriesflattener.feature_specs.single_specs import PredictorSpec
+from timeseriesflattener.v1.aggregation_fns import mean
+from timeseriesflattener.v1.feature_specs.single_specs import PredictorSpec
 
 from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,

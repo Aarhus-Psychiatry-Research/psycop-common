@@ -1,7 +1,7 @@
 """Main feature generation."""
 
 
-from timeseriesflattener.aggregation_fns import mean
+from timeseriesflattener.v1.aggregation_fns import mean
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
