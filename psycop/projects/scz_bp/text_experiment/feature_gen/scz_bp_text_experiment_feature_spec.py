@@ -60,7 +60,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         features = [feature for sublist in feature_specs for feature in sublist]
         return features
 
-    def get_keyword_specs(self, lookbehind_days: Iterable[float]) -> Iterable[AnySpec]:
+    def get_keyword_specs(self, lookbehind_days: list[float]) -> list[AnySpec]:
         filename = "pse_keyword_counts_all_sfis.parquet"
         embedded_text_df = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
         if "overskrift" in embedded_text_df.columns:

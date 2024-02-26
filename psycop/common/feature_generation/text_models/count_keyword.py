@@ -27,9 +27,10 @@ if __name__ == "__main__":
     vocab = get_present_state_examination_keywords()
     vec = CountVectorizer(vocabulary=vocab)
 
-    corpus = pl.from_pandas(
-        pd.read_parquet(path=PREPROCESSED_TEXT_DIR / "psycop_train_all_sfis_preprocessed.parquet")
-    )
+    corpus = pl.read_parquet(
+            source=PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet", low_memory=True
+        )
+    
     counts = encode_tfidf_values_to_df(vec, corpus["value"].to_list())  # type: ignore
 
     corpus = corpus.drop(columns=["value"])
