@@ -1,7 +1,9 @@
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.application_modules.project_setup import (
+    ProjectInfo,
+)
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
@@ -41,10 +43,18 @@ if __name__ == "__main__":
     feature_set_name = "text_exp_730_pse_keyword"
     save_path = project_path / "flattened_datasets" / feature_set_name
 
+    keyword_specs = [
+        SczBpTextExperimentFeatures()._get_outcome_specs(), # type: ignore
+        SczBpTextExperimentFeatures()._get_metadata_specs(), # type: ignore
+        SczBpTextExperimentFeatures().get_keyword_specs(), # type: ignore
+    ]
+    keyword_specs = [feature for sublist in keyword_specs for feature in sublist]
+
+
     generate_feature_set(
         project_info=project_info,
         eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
-        feature_specs=SczBpTextExperimentFeatures().get_keyword_specs(lookbehind_days=[730]),
+        feature_specs=keyword_specs,
         generate_in_chunks=True,  # noqa: ERA001
         chunksize=10,  # noqa: ERA001
         feature_set_name=feature_set_name,

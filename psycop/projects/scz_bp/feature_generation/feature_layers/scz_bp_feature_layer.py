@@ -3,7 +3,9 @@ from typing import Protocol
 
 from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
+from psycop.projects.scz_bp.feature_generation.feature_layers.value_specification import ValueSpecification
+
 
 class SczBpFeatureLayer(Protocol):
-    def get_features(self, lookbehind_days: list[float]) -> Sequence[AnySpec]:
+    def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]:
         ...

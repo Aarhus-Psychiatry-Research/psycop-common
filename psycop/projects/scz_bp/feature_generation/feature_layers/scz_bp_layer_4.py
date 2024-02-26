@@ -1,7 +1,8 @@
 from collections.abc import Sequence
 
+from timeseriesflattener import PredictorGroupSpec
 from timeseriesflattener.v1.aggregation_fns import boolean
-from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
 from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_medications import (
@@ -22,13 +23,14 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
 from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_feature_layer import (
     SczBpFeatureLayer,
 )
+from psycop.projects.scz_bp.feature_generation.feature_layers.value_specification import ValueSpecification
 
 
 class SczBpLayer4(SczBpFeatureLayer):
-    def get_features(self, lookbehind_days: list[float]) -> Sequence[AnySpec]:
+    def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]:
         layer = 4
 
-        psychiatric_medications = PredictorGroupSpec(
+        psychiatric_medications = list(PredictorGroupSpec(
             named_dataframes=(
                 NamedDataframe(
                     df=first_gen_antipsychotics(), name=f"first_gen_antipsychotics_layer_{layer}"
@@ -54,6 +56,6 @@ class SczBpLayer4(SczBpFeatureLayer):
             lookbehind_days=lookbehind_days,
             aggregation_fns=[boolean],
             fallback=[0],
-        ).create_combinations()
+        ).create_combinations())
 
         return psychiatric_medications
