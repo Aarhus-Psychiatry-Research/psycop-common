@@ -9,7 +9,7 @@ hydra-optuna-sweeper==1.2.0
 ipython==7.34.0
 iterpy==1.6.0
 Levenshtein==0.21.0
-mlflow==2.9.2
+mlflow==2.10.0
 numpy==1.26.0
 pandas==1.5.2
 patchworklib==0.6.2
