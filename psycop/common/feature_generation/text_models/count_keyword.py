@@ -1,7 +1,6 @@
 from collections.abc import Iterable
 from pathlib import Path
 
-import pandas as pd
 import polars as pl
 import yaml
 from sklearn.feature_extraction.text import CountVectorizer
@@ -28,9 +27,10 @@ if __name__ == "__main__":
     vec = CountVectorizer(vocabulary=vocab)
 
     corpus = pl.read_parquet(
-            source=PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet", low_memory=True
-        )
-    
+        source=PREPROCESSED_TEXT_DIR / "psycop_train_val_test_all_sfis_preprocessed.parquet",
+        low_memory=True,
+    )
+
     counts = encode_tfidf_values_to_df(vec, corpus["value"].to_list())  # type: ignore
 
     corpus = corpus.drop(columns=["value"])

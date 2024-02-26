@@ -4,7 +4,6 @@ import numpy as np
 from timeseriesflattener import PredictorGroupSpec
 from timeseriesflattener.v1.aggregation_fns import boolean, latest
 from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
-from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f0_disorders,
@@ -30,48 +29,53 @@ from psycop.projects.scz_bp.feature_generation.feature_layers.value_specificatio
 )
 
 
-
 class SczBpLayer3(SczBpFeatureLayer):
     def get_features(self, lookbehind_days: list[float]) -> Sequence[ValueSpecification]:
         layer = 3
 
-        psychiatric_diagnoses = list(PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(df=f0_disorders(), name=f"f0_disorders_layer_{layer}"),
-                NamedDataframe(df=f1_disorders(), name=f"f1_disorders_layer_{layer}"),
-                NamedDataframe(df=f2_disorders(), name=f"f2_disorders_layer_{layer}"),
-                NamedDataframe(df=f3_disorders(), name=f"f3_disorders_layer_{layer}"),
-                NamedDataframe(df=f4_disorders(), name=f"f4_disorders_layer_{layer}"),
-                NamedDataframe(df=f5_disorders(), name=f"f5_disorders_layer_{layer}"),
-                NamedDataframe(df=f6_disorders(), name=f"f6_disorders_layer_{layer}"),
-                NamedDataframe(df=f7_disorders(), name=f"f7_disorders_layer_{layer}"),
-                NamedDataframe(df=f8_disorders(), name=f"f8_disorders_layer_{layer}"),
-                NamedDataframe(df=f9_disorders(), name=f"f9_disorders_layer_{layer}"),
-            ),
-            lookbehind_days=lookbehind_days,
-            aggregation_fns=[boolean],
-            fallback=[0],
-        ).create_combinations())
-
-        hamilton_spec = list(PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(df=hamilton_d17(), name=f"hamilton_d17_layer_{layer}"),
-            ),
-            lookbehind_days=lookbehind_days,
-            aggregation_fns=[latest],
-            fallback=[np.nan],
-        ).create_combinations())
-
-        broeset_violence_spec = list(PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(
-                    df=broeset_violence_checklist(),
-                    name=f"broeset_violence_checklist_layer_{layer}",
+        psychiatric_diagnoses = list(
+            PredictorGroupSpec(
+                named_dataframes=(
+                    NamedDataframe(df=f0_disorders(), name=f"f0_disorders_layer_{layer}"),
+                    NamedDataframe(df=f1_disorders(), name=f"f1_disorders_layer_{layer}"),
+                    NamedDataframe(df=f2_disorders(), name=f"f2_disorders_layer_{layer}"),
+                    NamedDataframe(df=f3_disorders(), name=f"f3_disorders_layer_{layer}"),
+                    NamedDataframe(df=f4_disorders(), name=f"f4_disorders_layer_{layer}"),
+                    NamedDataframe(df=f5_disorders(), name=f"f5_disorders_layer_{layer}"),
+                    NamedDataframe(df=f6_disorders(), name=f"f6_disorders_layer_{layer}"),
+                    NamedDataframe(df=f7_disorders(), name=f"f7_disorders_layer_{layer}"),
+                    NamedDataframe(df=f8_disorders(), name=f"f8_disorders_layer_{layer}"),
+                    NamedDataframe(df=f9_disorders(), name=f"f9_disorders_layer_{layer}"),
                 ),
-            ),
-            lookbehind_days=lookbehind_days,
-            aggregation_fns=[latest],
-            fallback=[np.nan],
-        ).create_combinations())
+                lookbehind_days=lookbehind_days,
+                aggregation_fns=[boolean],
+                fallback=[0],
+            ).create_combinations()
+        )
+
+        hamilton_spec = list(
+            PredictorGroupSpec(
+                named_dataframes=(
+                    NamedDataframe(df=hamilton_d17(), name=f"hamilton_d17_layer_{layer}"),
+                ),
+                lookbehind_days=lookbehind_days,
+                aggregation_fns=[latest],
+                fallback=[np.nan],
+            ).create_combinations()
+        )
+
+        broeset_violence_spec = list(
+            PredictorGroupSpec(
+                named_dataframes=(
+                    NamedDataframe(
+                        df=broeset_violence_checklist(),
+                        name=f"broeset_violence_checklist_layer_{layer}",
+                    ),
+                ),
+                lookbehind_days=lookbehind_days,
+                aggregation_fns=[latest],
+                fallback=[np.nan],
+            ).create_combinations()
+        )
 
         return psychiatric_diagnoses + hamilton_spec + broeset_violence_spec

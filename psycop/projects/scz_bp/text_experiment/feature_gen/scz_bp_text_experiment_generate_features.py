@@ -1,9 +1,7 @@
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
@@ -19,37 +17,36 @@ if __name__ == "__main__":
     note_types = ["aktuelt_psykisk", "all_relevant"]
     model_names = ["dfm-encoder-large", "dfm-encoder-large-v1-finetuned", "tfidf-500", "tfidf-1000"]
 
-    # for note_type in note_types:
-    #     for model_name in model_names:
-    #         feature_set_name = f"text_exp_730_{note_type}_{model_name}"
+    for note_type in note_types:
+        for model_name in model_names:
+            feature_set_name = f"text_exp_730_{note_type}_{model_name}"
 
-    #         save_path = project_path / "flattened_datasets" / feature_set_name
-    #         if save_path.exists():
-    #             print(f"{feature_set_name} already featurized. Skipping...")
-    #             continue
+            save_path = project_path / "flattened_datasets" / feature_set_name
+            if save_path.exists():
+                print(f"{feature_set_name} already featurized. Skipping...")
+                continue
 
-    #         generate_feature_set(
-    #             project_info=project_info,
-    #             eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
-    #             feature_specs=SczBpTextExperimentFeatures().get_feature_specs(
-    #                 note_type=note_type, model_name=model_name, lookbehind_days=[730]
-    #             ),
-    #             generate_in_chunks=True,  # noqa: ERA001
-    #             chunksize=10,  # noqa: ERA001
-    #             feature_set_name=feature_set_name,
-    #         )
+            generate_feature_set(
+                project_info=project_info,
+                eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
+                feature_specs=SczBpTextExperimentFeatures().get_feature_specs(
+                    note_type=note_type, model_name=model_name, lookbehind_days=[730]
+                ),
+                generate_in_chunks=True,  # noqa: ERA001
+                chunksize=10,  # noqa: ERA001
+                feature_set_name=feature_set_name,
+            )
 
     # pse keywords
     feature_set_name = "text_exp_730_pse_keyword"
     save_path = project_path / "flattened_datasets" / feature_set_name
 
     keyword_specs = [
-        SczBpTextExperimentFeatures()._get_outcome_specs(), # type: ignore
-        SczBpTextExperimentFeatures()._get_metadata_specs(), # type: ignore
-        SczBpTextExperimentFeatures().get_keyword_specs(), # type: ignore
+        SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore
+        SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore
+        SczBpTextExperimentFeatures().get_keyword_specs(),  # type: ignore
     ]
     keyword_specs = [feature for sublist in keyword_specs for feature in sublist]
-
 
     generate_feature_set(
         project_info=project_info,

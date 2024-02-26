@@ -3,7 +3,6 @@ from collections.abc import Sequence
 from timeseriesflattener import PredictorGroupSpec
 from timeseriesflattener.v1.aggregation_fns import count
 from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
-from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     admissions,

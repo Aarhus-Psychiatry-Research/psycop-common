@@ -1,4 +1,5 @@
 from typing import Union
+
 from timeseriesflattener import (
     BooleanOutcomeSpec,
     OutcomeSpec,
@@ -6,6 +7,7 @@ from timeseriesflattener import (
     StaticSpec,
     TimeDeltaSpec,
 )
+
 ValueSpecification = Union[
     PredictorSpec, OutcomeSpec, BooleanOutcomeSpec, TimeDeltaSpec, StaticSpec
 ]

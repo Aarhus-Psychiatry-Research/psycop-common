@@ -1,26 +1,11 @@
 """Feature specification module."""
 import datetime as dt
 import logging
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
-from timeseriesflattener import (
-    BooleanOutcomeSpec,
-    OutcomeSpec,
-    PredictorSpec,
-    StaticFrame,
-    StaticSpec,
-    TimeDeltaSpec,
-    TimestampValueFrame,
-    ValueFrame,
-)
+from timeseriesflattener import OutcomeSpec, StaticFrame, StaticSpec, ValueFrame
 from timeseriesflattener.aggregators import MaxAggregator
-from timeseriesflattener.v1.aggregation_fns import maximum
-from timeseriesflattener.v1.feature_specs.group_specs import (
-    NamedDataframe,
-    OutcomeGroupSpec,
-)
-from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,
@@ -28,19 +13,10 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_1 import (
-    SczBpLayer1,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_2 import (
-    SczBpLayer2,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_3 import (
-    SczBpLayer3,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_4 import (
-    SczBpLayer4,
-)
-
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_1 import SczBpLayer1
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_2 import SczBpLayer2
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_3 import SczBpLayer3
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_4 import SczBpLayer4
 from psycop.projects.scz_bp.feature_generation.feature_layers.value_specification import (
     ValueSpecification,
 )
@@ -61,13 +37,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-SczBpFeatureLayers = {
-    1: SczBpLayer1,
-    2: SczBpLayer2,
-    3: SczBpLayer3,
-    4: SczBpLayer4,
-}
-
+SczBpFeatureLayers = {1: SczBpLayer1, 2: SczBpLayer2, 3: SczBpLayer3, 4: SczBpLayer4}
 
 
 def make_timedeltas_from_zero(look_days: list[float]) -> list[dt.timedelta]:
@@ -156,7 +126,9 @@ class SczBpFeatureSpecifier:
             ),
         ]
 
-    def get_feature_specs(self, max_layer: int, lookbehind_days: list[float]) -> list[ValueSpecification]:
+    def get_feature_specs(
+        self, max_layer: int, lookbehind_days: list[float]
+    ) -> list[ValueSpecification]:
         if max_layer not in SczBpFeatureLayers:
             raise ValueError(f"Layer {max_layer} not supported.")
 

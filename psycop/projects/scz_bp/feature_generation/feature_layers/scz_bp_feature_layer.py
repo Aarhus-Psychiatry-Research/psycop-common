@@ -1,9 +1,9 @@
 from collections.abc import Sequence
 from typing import Protocol
 
-from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
-
-from psycop.projects.scz_bp.feature_generation.feature_layers.value_specification import ValueSpecification
+from psycop.projects.scz_bp.feature_generation.feature_layers.value_specification import (
+    ValueSpecification,
+)
 
 
 class SczBpFeatureLayer(Protocol):
