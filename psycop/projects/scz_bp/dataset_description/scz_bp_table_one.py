@@ -304,8 +304,8 @@ class SczBpTableOne:
             .collect()
             .with_columns(
                 pl.when(pl.col("region").is_in(["øst", "vest"]))
-                .then("Train")
-                .otherwise("test")
+                .then(pl.lit("Train"))
+                .otherwise(pl.lit("test"))
                 .alias("split")
             )
             .select("dw_ek_borger", "split")

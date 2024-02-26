@@ -1,8 +1,8 @@
 from collections.abc import Sequence
 
-from timeseriesflattener.aggregation_fns import count
-from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
-from timeseriesflattener.feature_specs.single_specs import AnySpec, StaticSpec
+from timeseriesflattener.v1.aggregation_fns import count
+from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec, StaticSpec
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_medications import (

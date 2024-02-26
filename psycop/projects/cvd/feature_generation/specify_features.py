@@ -2,9 +2,9 @@
 import logging
 from collections.abc import Sequence
 
-from timeseriesflattener.aggregation_fns import AggregationFunType, maximum
-from timeseriesflattener.feature_specs.group_specs import NamedDataframe, OutcomeGroupSpec
-from timeseriesflattener.feature_specs.single_specs import (
+from timeseriesflattener.v1.aggregation_fns import AggregationFunType, maximum
+from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe, OutcomeGroupSpec
+from timeseriesflattener.v1.feature_specs.single_specs import (
     AnySpec,
     BaseModel,
     OutcomeSpec,

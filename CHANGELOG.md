@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.194.0 (2024-02-26)
+
+### Feature
+
+* Migrate to v2 ([`c18450c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c18450c86125302a9406be1e0d1ffd0b5b9a60ee))
+
+## v0.193.0 (2024-02-15)
+
+### Feature
+
+* Add pse keyword count embedding ([`6cbdb42`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6cbdb42a707c0a7653a87039359b128d1cea49cf))
+
 ## v0.192.0 (2024-02-07)
 
 ### Feature

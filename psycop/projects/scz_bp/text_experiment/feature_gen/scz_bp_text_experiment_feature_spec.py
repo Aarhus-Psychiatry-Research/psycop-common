@@ -2,10 +2,10 @@ from collections.abc import Iterable, Sequence
 
 import numpy as np
 import pandas as pd
-from timeseriesflattener.aggregation_fns import boolean, mean, summed
-from timeseriesflattener.df_transforms import df_with_multiple_values_to_named_dataframes
-from timeseriesflattener.feature_specs.group_specs import PredictorGroupSpec
-from timeseriesflattener.feature_specs.single_specs import AnySpec
+from timeseriesflattener.v1.aggregation_fns import mean
+from timeseriesflattener.v1.df_transforms import df_with_multiple_values_to_named_dataframes
+from timeseriesflattener.v1.feature_specs.group_specs import PredictorGroupSpec
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import SczBpFeatureSpecifier

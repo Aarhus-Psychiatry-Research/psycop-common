@@ -2,7 +2,7 @@
 import logging
 from pathlib import Path
 
-from timeseriesflattener.feature_specs.single_specs import BaseModel
+from timeseriesflattener.v1.feature_specs.single_specs import BaseModel
 
 log = logging.getLogger(__name__)
 

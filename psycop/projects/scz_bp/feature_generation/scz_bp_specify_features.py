@@ -2,9 +2,9 @@
 import logging
 from typing import TYPE_CHECKING
 
-from timeseriesflattener.aggregation_fns import maximum
-from timeseriesflattener.feature_specs.group_specs import NamedDataframe, OutcomeGroupSpec
-from timeseriesflattener.feature_specs.single_specs import AnySpec, OutcomeSpec, StaticSpec
+from timeseriesflattener.v1.aggregation_fns import maximum
+from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe, OutcomeGroupSpec
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec, OutcomeSpec, StaticSpec
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import polars as pl
-from timeseriesflattener.feature_specs.single_specs import AnySpec
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,

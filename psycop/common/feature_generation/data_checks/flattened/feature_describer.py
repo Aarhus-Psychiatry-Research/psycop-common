@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-from timeseriesflattener.feature_specs.single_specs import PredictorSpec, StaticSpec
+from timeseriesflattener.v1.feature_specs.single_specs import PredictorSpec, StaticSpec
 from wasabi import Printer
 
 from psycop.common.feature_generation.data_checks.utils import save_df_to_pretty_html_table
