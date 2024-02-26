@@ -9,10 +9,6 @@ from timeseriesflattener import Flattener
 from timeseriesflattener import PredictionTimeFrame as FlattenerPredictionTimeFrame
 from timeseriesflattener.v1.flattened_dataset import TimeseriesFlattener
 
-from psycop.common.cohort_definition import PredictionTimeFrame
-from psycop.common.feature_generation.application_modules.generate_feature_set import (
-    ValueSpecification,
-)
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
@@ -26,6 +22,10 @@ if TYPE_CHECKING:
     import polars as pl
     from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
+    from psycop.common.cohort_definition import PredictionTimeFrame
+    from psycop.common.feature_generation.application_modules.generate_feature_set import (
+        ValueSpecification,
+    )
     from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 
 log = logging.getLogger(__name__)
