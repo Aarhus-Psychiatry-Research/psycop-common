@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.196.0 (2024-02-27)
+
+### Feature
+
+* **#834:** T2d add MCC and F1 to results table ([`a306f8b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a306f8bf435debc1e3f399ba5a646d5c556a49f8))
+* Create descriptive_stats_by_outcome.py ([`fe9d23e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fe9d23ebf80097e754a46b789d9517a5d2d78ea0))
+
 ## v0.195.0 (2024-02-27)
 
 ### Feature
