@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.195.0 (2024-02-27)
+
+### Feature
+
+* Generate features with tsflattener v2 ([`759fcc0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/759fcc062071ccbf8bc106619ac77012ac0c53ab))
+
 ## v0.194.0 (2024-02-26)
 
 ### Feature

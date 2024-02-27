@@ -30,7 +30,7 @@ if __name__ == "__main__":
     print("Loaded text")
     tfidf_values = encode_tfidf_values_to_df(tfidf_model, corpus["value"].to_list())  # type: ignore
 
-    corpus = corpus.drop(columns=["value"])
+    corpus = corpus.drop(["value"])
 
     tfidf_notes = pl.concat([corpus, tfidf_values], how="horizontal")
 
