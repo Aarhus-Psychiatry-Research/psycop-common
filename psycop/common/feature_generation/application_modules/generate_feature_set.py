@@ -1,9 +1,20 @@
 import logging
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Union
 
 import pandas as pd
-from timeseriesflattener.feature_specs.single_specs import AnySpec
+from timeseriesflattener import (
+    BooleanOutcomeSpec,
+    OutcomeSpec,
+    PredictorSpec,
+    StaticSpec,
+    TimeDeltaSpec,
+)
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
+from typing_extensions import TypeAlias
 
+from psycop.common.cohort_definition import PredictionTimeFrame
 from psycop.common.feature_generation.application_modules.chunked_feature_generation import (
     ChunkedFeatureGenerator,
 )
@@ -12,6 +23,7 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
 )
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
+    create_flattened_dataset_tsflattener_v1,
 )
 from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
@@ -21,8 +33,53 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 
 log = logging.getLogger()
 
+ValueSpecification: TypeAlias = Union[
+    PredictorSpec, OutcomeSpec, BooleanOutcomeSpec, TimeDeltaSpec, StaticSpec
+]
+
 
 def generate_feature_set(
+    project_info: ProjectInfo,
+    eligible_prediction_times_frame: PredictionTimeFrame,
+    feature_specs: Sequence[ValueSpecification],
+    feature_set_name: str,
+    n_workers: int,
+    do_dataset_description: bool,
+    compute_lazily: bool = False,
+) -> None:
+    feature_set_dir = project_info.flattened_dataset_dir / feature_set_name
+    if feature_set_dir.exists():
+        while True:
+            response = input(
+                f"The path '{feature_set_dir}' already exists. Do you want to potentially overwrite the contents of this folder with new feature sets? (yes/no): "
+            )
+
+            if response.lower() not in ["yes", "y", "no", "n"]:
+                print("Invalid response. Please enter 'yes/y' or 'no/n'.")
+            if response.lower() in ["no", "n"]:
+                print("Process stopped.")
+                return
+            if response.lower() in ["yes", "y"]:
+                print(f"Folder '{feature_set_dir}' will be overwritten.")
+                break
+
+    flattened_df = create_flattened_dataset(
+        feature_specs=feature_specs,
+        prediction_times_frame=eligible_prediction_times_frame,
+        n_workers=n_workers,
+        compute_lazily=compute_lazily,
+    )
+    if do_dataset_description:
+        # TODO #826
+        print(
+            "Dataset description not yet implemented for tsflattener v2 specs. Perhaps you should implement it?"
+        )
+
+    flattened_df.write_parquet(feature_set_dir / "flattened_dataset.parquet")
+    return
+
+
+def generate_feature_set_tsflattener_v1(
     project_info: ProjectInfo,
     eligible_prediction_times: pd.DataFrame,
     feature_specs: list[AnySpec],
@@ -61,7 +118,7 @@ def generate_feature_set(
         )
 
     else:
-        flattened_df = create_flattened_dataset(
+        flattened_df = create_flattened_dataset_tsflattener_v1(
             feature_specs=feature_specs,
             prediction_times_df=eligible_prediction_times,
             drop_pred_times_with_insufficient_look_distance=False,

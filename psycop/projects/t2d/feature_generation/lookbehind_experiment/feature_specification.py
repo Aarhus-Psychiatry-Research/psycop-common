@@ -1,11 +1,11 @@
 import numpy as np
-from timeseriesflattener.aggregation_fns import maximum
-from timeseriesflattener.feature_specs.group_specs import (
+from timeseriesflattener.v1.aggregation_fns import maximum
+from timeseriesflattener.v1.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
     PredictorGroupSpec,
 )
-from timeseriesflattener.feature_specs.single_specs import (
+from timeseriesflattener.v1.feature_specs.single_specs import (
     AnySpec,
     OutcomeSpec,
     PredictorSpec,

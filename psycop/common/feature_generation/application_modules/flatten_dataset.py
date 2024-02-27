@@ -5,7 +5,9 @@ import logging
 from typing import TYPE_CHECKING
 
 import psutil
-from timeseriesflattener.flattened_dataset import TimeseriesFlattener
+from timeseriesflattener import Flattener
+from timeseriesflattener import PredictionTimeFrame as FlattenerPredictionTimeFrame
+from timeseriesflattener.v1.flattened_dataset import TimeseriesFlattener
 
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
@@ -17,8 +19,13 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     import pandas as pd
-    from timeseriesflattener.feature_specs.single_specs import AnySpec
+    import polars as pl
+    from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
+    from psycop.common.cohort_definition import PredictionTimeFrame
+    from psycop.common.feature_generation.application_modules.generate_feature_set import (
+        ValueSpecification,
+    )
     from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 
 log = logging.getLogger(__name__)
@@ -33,7 +40,7 @@ def flatten_dataset_to_disk(
     add_birthdays: bool = True,
     split_names: Sequence[str] = ("train", "val", "test"),
 ):
-    flattened_dataset = create_flattened_dataset(
+    flattened_dataset = create_flattened_dataset_tsflattener_v1(
         project_info=project_info,
         feature_specs=feature_specs,
         prediction_times_df=prediction_times_df,
@@ -50,6 +57,24 @@ def flatten_dataset_to_disk(
 
 
 def create_flattened_dataset(
+    feature_specs: Sequence[ValueSpecification],
+    prediction_times_frame: PredictionTimeFrame,
+    n_workers: int,
+    compute_lazily: bool,
+) -> pl.DataFrame:
+    flattener = Flattener(
+        predictiontime_frame=FlattenerPredictionTimeFrame(
+            init_df=prediction_times_frame.frame,
+            entity_id_col_name=prediction_times_frame.entity_id_col_name,
+            timestamp_col_name=prediction_times_frame.timestamp_col_name,
+        ),
+        compute_lazily=compute_lazily,
+        n_workers=n_workers,
+    )
+    return flattener.aggregate_timeseries(specs=feature_specs).df.collect()
+
+
+def create_flattened_dataset_tsflattener_v1(
     project_info: ProjectInfo,
     feature_specs: list[AnySpec],
     prediction_times_df: pd.DataFrame,

@@ -1,10 +1,10 @@
 """Main feature generation."""
 
 
-from timeseriesflattener.aggregation_fns import mean
+from timeseriesflattener.v1.aggregation_fns import mean
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
-    generate_feature_set,
+    generate_feature_set_tsflattener_v1,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         lookbehind_days=[90, 365, 730],
     )
 
-    generate_feature_set(
+    generate_feature_set_tsflattener_v1(
         project_info=project_info,
         eligible_prediction_times=eligible_prediction_times,
         feature_specs=feature_specs,
