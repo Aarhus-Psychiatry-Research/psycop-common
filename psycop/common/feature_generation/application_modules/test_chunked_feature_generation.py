@@ -13,7 +13,7 @@ from psycop.common.feature_generation.application_modules.chunked_feature_genera
     ChunkedFeatureGenerator,
 )
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    create_flattened_dataset,
+    create_flattened_dataset_tsflattener_v1,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ColNames, ProjectInfo
 from psycop.common.test_utils.str_to_df import str_to_df
@@ -114,7 +114,7 @@ def test_concatenation_assumptions(
 
     # create a dataset with two predictors - chunking
     chunked_datasets = [
-        create_flattened_dataset(
+        create_flattened_dataset_tsflattener_v1(
             project_info=synth_project_info,
             prediction_times_df=synth_prediction_times,
             feature_specs=[spec],
@@ -124,7 +124,7 @@ def test_concatenation_assumptions(
     ]
     # create a dataset with two predictors - no chunking
     full_dataset = pl.from_pandas(
-        create_flattened_dataset(
+        create_flattened_dataset_tsflattener_v1(
             project_info=synth_project_info,
             prediction_times_df=synth_prediction_times,
             feature_specs=predictor_specs,  # type: ignore

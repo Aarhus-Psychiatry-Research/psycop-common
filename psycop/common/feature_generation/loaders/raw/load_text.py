@@ -9,10 +9,11 @@ import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.utils import data_loaders
-from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 
 
 import polars as pl
