@@ -32,6 +32,6 @@ if __name__ == "__main__":
     )
     counts = encode_tfidf_values_to_df(vec, corpus["value"].to_list())  # type: ignore
 
-    corpus = corpus.drop(columns=["value"])
+    corpus = corpus.drop(["value"])
     counts = pl.concat([corpus, counts], how="horizontal")
     counts.write_parquet(TEXT_EMBEDDINGS_DIR / "pse_keyword_counts_all_sfis.parquet")

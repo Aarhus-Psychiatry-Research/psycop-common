@@ -44,7 +44,7 @@ if __name__ == "__main__":
     for note_name_key, note_types in note_types_dict.items():
         print(f"Embedding {note_name_key}")
         notes = pl.from_pandas(load_text_sfis(text_sfi_names=note_types, include_sfi_name=False))
-        notes_metadata = notes.drop(columns=["value"])
+        notes_metadata = notes.drop(["value"])
 
         for model_name, model_str in models.items():
             print(f"Embedding using {model_name}")

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     model = SentenceTransformer(model_str)
     embeddings = embed_text_to_df(model, all_notes["value"].to_list())
 
-    all_notes = all_notes.drop(columns=["value"])
+    all_notes = all_notes.drop(["value"])
 
     embedded_notes = pl.concat([all_notes, embeddings], how="horizontal")
 
