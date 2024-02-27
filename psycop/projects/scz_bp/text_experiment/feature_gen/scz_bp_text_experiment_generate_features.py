@@ -41,6 +41,8 @@ if __name__ == "__main__":
     feature_set_name = "text_exp_730_pse_keyword"
     save_path = project_path / "flattened_datasets" / feature_set_name
 
+    pred_times = SczBpCohort.get_filtered_prediction_times_bundle().prediction_times
+
     start_col = 0
     for end_col in range(20, 315, 20):
         feature_set_name = f"{feature_set_name}_chunk_{start_col}_{end_col}"
@@ -51,8 +53,8 @@ if __name__ == "__main__":
         print(f"Generating pse keyword features for chunk {start_col} to {end_col}...")
 
         keyword_specs = [
-            SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore[reportPrivateUsage]
-            SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore[reportPrivateUsage]
+          #  SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore[reportPrivateUsage]
+          #  SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore[reportPrivateUsage]
             SczBpTextExperimentFeatures().get_keyword_specs(
                 lookbehind_days=[730], start_col=start_col, end_col=end_col
             ),  # type: ignore[reportPrivateUsage]
@@ -63,9 +65,10 @@ if __name__ == "__main__":
 
         generate_feature_set(
             project_info=project_info,
-            eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
+            eligible_prediction_times_frame=pred_times,
             feature_specs=keyword_specs,
             n_workers=None,
             do_dataset_description=False,
             feature_set_name=f"{feature_set_name}_chunk_{start_col}_{end_col}",
         )
+        start_col += end_col
