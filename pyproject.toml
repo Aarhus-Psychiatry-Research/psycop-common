@@ -58,6 +58,7 @@ reportIncompatibleVariableOverride = "none"
 reportUnusedVariable = "none" # Fixed by ruff
 reportUnusedImport = "none" # Fixed by ruff
 reportPrivateImportUsage = "none"
+reportUnusedExpression = "none" # Covered by ruff B018
 
 [tool.ruff]
 line-length = 100
