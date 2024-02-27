@@ -28,12 +28,12 @@ if __name__ == "__main__":
 
             generate_feature_set(
                 project_info=project_info,
-                eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
+                eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
                 feature_specs=SczBpTextExperimentFeatures().get_feature_specs(
                     note_type=note_type, model_name=model_name, lookbehind_days=[730]
                 ),
-                generate_in_chunks=True,  # noqa: ERA001
-                chunksize=10,  # noqa: ERA001
+                n_workers=1,
+                do_dataset_description=False,
                 feature_set_name=feature_set_name,
             )
 
@@ -42,17 +42,19 @@ if __name__ == "__main__":
     save_path = project_path / "flattened_datasets" / feature_set_name
 
     keyword_specs = [
-        SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore
-        SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore
-        SczBpTextExperimentFeatures().get_keyword_specs(),  # type: ignore
+        SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore[reportPrivateUsage]
+        SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore[reportPrivateUsage]
+        SczBpTextExperimentFeatures().get_keyword_specs(),  # type: ignore[reportPrivateUsage]
     ]
     keyword_specs = [feature for sublist in keyword_specs for feature in sublist]
 
+    print("Generating pse keyword features...")
+
     generate_feature_set(
         project_info=project_info,
-        eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
+        eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
         feature_specs=keyword_specs,
-        generate_in_chunks=True,  # noqa: ERA001
-        chunksize=10,  # noqa: ERA001
+        n_workers=1,
+        do_dataset_description=False,
         feature_set_name=feature_set_name,
     )

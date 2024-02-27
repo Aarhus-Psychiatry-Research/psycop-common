@@ -10,7 +10,7 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
     save_flattened_dataset_description_to_disk,
 )
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    create_flattened_dataset,
+    create_flattened_dataset_tsflattener_v1,
 )
 from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
@@ -33,7 +33,7 @@ def main():
         min_set_for_debug=False,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
-    flattened_df = create_flattened_dataset(
+    flattened_df = create_flattened_dataset_tsflattener_v1(
         feature_specs=feature_specs,  # type: ignore
         prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore
         drop_pred_times_with_insufficient_look_distance=True,
