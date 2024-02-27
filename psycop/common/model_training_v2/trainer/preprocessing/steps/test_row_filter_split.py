@@ -46,15 +46,6 @@ def test_id_filter():
     assert filtered_df.shape == (3, 2)
 
 
-@BaselineRegistry.data.register("mock_regional_move_df")
-def mock_regional_move_df() -> pl.LazyFrame:
-    return str_to_pl_df(
-        """dw_ek_borger,region,first_regional_move_timestamp
-        1,vest,2020-03-01
-        2,vest,2100-01-01"""
-    ).lazy()
-
-
 @BaselineRegistry.data.register("mock_split_id_sequence")
 def mock_split_id_sequence() -> list[int]:
     # converting to list as confection cannot resolve polars series
