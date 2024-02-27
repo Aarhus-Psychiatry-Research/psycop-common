@@ -18,10 +18,10 @@ def embed_text_to_df(model: SentenceTransformer, text: list[str]) -> pl.DataFram
 
 if __name__ == "__main__":
     model_str = "paraphrase-multilingual-MiniLM-L12-v2"
-
+    model = SentenceTransformer(model_str)
     all_notes = pl.from_pandas(load_all_notes(n_rows=None, include_sfi_name=True))
 
-    model = SentenceTransformer(model_str)
+    
     embeddings = embed_text_to_df(model, all_notes["value"].to_list())
 
     all_notes = all_notes.drop(["value"])

@@ -69,7 +69,7 @@ class SczBpLayer1(SczBpFeatureLayer):
                     value_timestamp_col_name="date_of_birth",
                 ),
                 fallback=np.nan,
-                output_name=f"age_in_years_layer_{layer}",
+                output_name=f"layer_{layer}_age",
                 time_format="years",
             )
         ]

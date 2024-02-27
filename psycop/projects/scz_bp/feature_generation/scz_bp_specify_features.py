@@ -64,7 +64,6 @@ class SczBpFeatureSpecifier:
                 ),
                 fallback=0,
                 aggregators=[MaxAggregator()],
-                column_prefix="outc_first_scz_or_bp",
             )
         ]
 

@@ -9,10 +9,12 @@ from timeseriesflattener import (
     PredictorSpec,
     StaticSpec,
     TimeDeltaSpec,
+    TimestampValueFrame,
     ValueFrame,
 )
 from timeseriesflattener.aggregators import HasValuesAggregator, MeanAggregator, SumAggregator
 
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import SczBpFeatureSpecifier
 
@@ -57,6 +59,20 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
             lookbehind_days=lookbehind_days,
         )
 
+    def get_age_spec(self) -> list[ValueSpecification]:
+        return [
+            TimeDeltaSpec(
+                init_frame=TimestampValueFrame(
+                    init_df=birthdays(),
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="date_of_birth",
+                ),
+                fallback=np.nan,
+                output_name=f"age_in_years",
+                time_format="years",
+            )
+        ]
+
     def get_feature_specs(  # type: ignore[override]
         self, lookbehind_days: list[float], note_type: str, model_name: str
     ) -> list[ValueSpecification]:
@@ -79,7 +95,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
             df = pl.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
             if "overskrift" in df.columns:
                 df = df.drop("overskrift")
-            
+
         return [
             PredictorSpec(
                 value_frame=ValueFrame(
