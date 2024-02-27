@@ -7,6 +7,9 @@ from wasabi import Printer
 from psycop.projects.t2d.paper_outputs.model_description.performance.main_performance_figure import (
     t2d_create_main_performance_figure,
 )
+from psycop.projects.t2d.paper_outputs.model_description.robustness.main_robustness_figure import (
+    t2d_create_main_robustness_figure,
+)
 from psycop.projects.t2d.paper_outputs.model_permutation.modified_dataset import (
     FeatureModifier,
     evaluate_pipeline_with_modified_dataset,
@@ -81,7 +84,7 @@ if __name__ == "__main__":
 
     run = copy(get_best_eval_pipeline())
     run.name = "xgboost_hba1c_only"
-    default_xgboost_params = True
+    default_xgboost_params = False
 
     if default_xgboost_params:
         msg.divider("Training with default xgboost params")
@@ -103,5 +106,5 @@ if __name__ == "__main__":
         run=run,
         feature_modifier=Hba1cOnly(lookbehind="730", aggregation_method="mean"),
         rerun_if_exists=True,
-        plot_fns=[t2d_create_main_performance_figure],
+        plot_fns=[t2d_create_main_robustness_figure, t2d_create_main_performance_figure],
     )

@@ -25,7 +25,7 @@ def df_to_eval_dataset(df: pd.DataFrame, custom_columns: Optional[Sequence[str]]
     return EvalDataset(
         ids=df["ids"],
         y=df["y"],
-        y_hat_probs=df["y_hat_probs"],
+        y_hat_probs=df["y_hat_prob"],
         pred_timestamps=df["pred_timestamps"],
         outcome_timestamps=df["outcome_timestamps"],
         age=df["age"],
@@ -140,8 +140,12 @@ class PipelineOutputs:
     group: RunGroup
     dir_path: Path
 
+    @property
+    def eval_dataset_path(self) -> Path:
+        return self.dir_path / "evaluation_dataset.parquet"
+
     def get_eval_dataset(self, custom_columns: Optional[Sequence[str]] = None) -> EvalDataset:
-        df = pd.read_parquet(self.dir_path / "evaluation_dataset.parquet")
+        df = pd.read_parquet(self.eval_dataset_path)
 
         eval_dataset = df_to_eval_dataset(df, custom_columns=custom_columns)
 
