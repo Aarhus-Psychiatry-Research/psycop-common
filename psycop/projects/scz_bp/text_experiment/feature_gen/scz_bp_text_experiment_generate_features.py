@@ -4,14 +4,15 @@ import polars.selectors as cs
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR, TEXT_EMBEDDINGS_DIR
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
-from psycop.projects.scz_bp.text_experiment.feature_gen.scz_bp_text_experiment_feature_spec import SczBpTextExperimentFeatures
+from psycop.projects.scz_bp.text_experiment.feature_gen.scz_bp_text_experiment_feature_spec import (
+    SczBpTextExperimentFeatures,
+)
+
 
 if __name__ == "__main__":
     project_path = OVARTACI_SHARED_DIR / "scz_bp" / "text_exp"
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     embedded_text_df = (
         embedded_text_df
             .with_columns(pl.col("dw_ek_borger").cast(pl.String))
-            .with_columns(cs.by_dtype(pl.NUMERIC_DTYPES).cast(pl.Int8), pl.col("dw_ek_borger").cast(pl.Int32))
+            .with_columns(cs.by_dtype(pl.NUMERIC_DTYPES).cast(pl.Int8), pl.col("dw_ek_borger").cast(pl.Int64))
     )
     print(f"n cols: {cols}")
 
