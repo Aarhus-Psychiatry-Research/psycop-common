@@ -44,7 +44,7 @@ if __name__ == "__main__":
     keyword_specs = [
         SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore[reportPrivateUsage]
         SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore[reportPrivateUsage]
-        SczBpTextExperimentFeatures().get_keyword_specs(),  # type: ignore[reportPrivateUsage]
+        SczBpTextExperimentFeatures().get_keyword_specs(lookbehind_days=[730]),  # type: ignore[reportPrivateUsage]
     ]
     keyword_specs = [feature for sublist in keyword_specs for feature in sublist]
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         project_info=project_info,
         eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
         feature_specs=keyword_specs,
-        n_workers=1,
+        n_workers=None,
         do_dataset_description=False,
         feature_set_name=feature_set_name,
     )

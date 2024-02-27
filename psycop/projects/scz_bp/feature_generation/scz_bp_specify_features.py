@@ -75,7 +75,7 @@ class SczBpFeatureSpecifier:
             StaticSpec(
                 value_frame=StaticFrame(
                     init_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().rename(
-                        {"value": "scz_or_bp_indicator"}
+                        {"source": "scz_or_bp_indicator"}
                     ),
                     entity_id_col_name="dw_ek_borger",
                 ),
@@ -85,7 +85,7 @@ class SczBpFeatureSpecifier:
             StaticSpec(
                 value_frame=StaticFrame(
                     init_df=get_time_of_first_scz_or_bp_diagnosis_after_washin().rename(
-                        {"value": "time_of_diagnosis"}
+                        {"timestamp": "time_of_diagnosis"}
                     ),
                     entity_id_col_name="dw_ek_borger",
                 ),
@@ -95,7 +95,7 @@ class SczBpFeatureSpecifier:
             StaticSpec(
                 value_frame=StaticFrame(
                     init_df=get_time_of_first_visit_to_psychiatry().rename(
-                        {"value": "first_visit"}
+                        {"timestamp": "first_visit"}
                     ),
                     entity_id_col_name="dw_ek_borger",
                 ),
@@ -104,7 +104,7 @@ class SczBpFeatureSpecifier:
             ),
             OutcomeSpec(
                 value_frame=ValueFrame(
-                    init_df=get_first_scz_diagnosis().rename({"value": "scz_within_3_years"}),
+                    init_df=get_first_scz_diagnosis().rename(columns={"value": "scz_within_3_years"}),
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
@@ -115,7 +115,7 @@ class SczBpFeatureSpecifier:
             ),
             OutcomeSpec(
                 value_frame=ValueFrame(
-                    init_df=get_first_bp_diagnosis().rename({"value": "bp_within_3_years"}),
+                    init_df=get_first_bp_diagnosis().rename(columns={"value": "bp_within_3_years"}),
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
