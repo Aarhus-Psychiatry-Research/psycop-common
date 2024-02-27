@@ -13,7 +13,7 @@ if __name__ == "__main__":
         (Path(__file__).parent / "restraint_baseline.cfg"),
         study_name="test",
         n_trials=1000,
-        n_jobs=30,
+        n_jobs=15,
         direction="maximize",
         catch=(), # type: ignore
     )
