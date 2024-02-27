@@ -2,7 +2,7 @@ import datetime as dt
 from typing import Union
 
 import numpy as np
-import pandas as pd
+import polars as pl
 from timeseriesflattener import (
     BooleanOutcomeSpec,
     OutcomeSpec,
@@ -27,7 +27,7 @@ def make_timedeltas_from_zero(lookbehind_days: list[float]) -> list[dt.timedelta
 
 class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
     def _text_specs_from_embedding_df(
-        self, embedded_text_df: pd.DataFrame, name_prefix: str, lookbehind_days: list[float]
+        self, embedded_text_df: pl.DataFrame, name_prefix: str, lookbehind_days: list[float]
     ) -> list[ValueSpecification]:
         return [
             PredictorSpec(
@@ -47,9 +47,9 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         self, note_type: str, model_name: str, lookbehind_days: list[float]
     ) -> list[ValueSpecification]:
         filename = f"text_embeddings_{note_type}_{model_name}.parquet"
-        embedded_text_df = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
+        embedded_text_df = pl.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
         if "overskrift" in embedded_text_df.columns:
-            embedded_text_df = embedded_text_df.drop("overskrift", axis="columns")
+            embedded_text_df = embedded_text_df.drop("overskrift")
 
         return self._text_specs_from_embedding_df(
             embedded_text_df=embedded_text_df,
@@ -71,11 +71,15 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         features = [feature for sublist in feature_specs for feature in sublist]
         return features
 
-    def get_keyword_specs(self, lookbehind_days: list[float]) -> list[ValueSpecification]:
+    def get_keyword_specs(
+        self, lookbehind_days: list[float], start_col: int, end_col: int
+    ) -> list[ValueSpecification]:
         filename = "pse_keyword_counts_all_sfis.parquet"
-        embedded_text_df = pd.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
+        embedded_text_df = pl.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
         if "overskrift" in embedded_text_df.columns:
-            embedded_text_df = embedded_text_df.drop("overskrift", axis="columns")
+            embedded_text_df = embedded_text_df.drop("overskrift")
+        keep_columns = embedded_text_df.columns[start_col:end_col]
+        embedded_text_df = embedded_text_df.select(keep_columns)
 
         return [
             PredictorSpec(

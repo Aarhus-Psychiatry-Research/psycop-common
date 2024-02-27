@@ -1,5 +1,5 @@
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
-    generate_feature_set_tsflattener_v1,
+    generate_feature_set,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
@@ -26,7 +26,7 @@ if __name__ == "__main__":
                 print(f"{feature_set_name} already featurized. Skipping...")
                 continue
 
-            generate_feature_set_tsflattener_v1(
+            generate_feature_set(
                 project_info=project_info,
                 eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
                 feature_specs=SczBpTextExperimentFeatures().get_feature_specs(
@@ -41,20 +41,31 @@ if __name__ == "__main__":
     feature_set_name = "text_exp_730_pse_keyword"
     save_path = project_path / "flattened_datasets" / feature_set_name
 
-    keyword_specs = [
-        SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore[reportPrivateUsage]
-        SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore[reportPrivateUsage]
-        SczBpTextExperimentFeatures().get_keyword_specs(lookbehind_days=[730]),  # type: ignore[reportPrivateUsage]
-    ]
-    keyword_specs = [feature for sublist in keyword_specs for feature in sublist]
+    start_col = 0
+    for end_col in range(20, 315, 20):
+        feature_set_name = f"{feature_set_name}_chunk_{start_col}_{end_col}"
+        save_path = project_path / "flattened_datasets" / feature_set_name
+        if save_path.exists():
+            print(f"{feature_set_name} already featurized. Skipping...")
+            continue
+        print(f"Generating pse keyword features for chunk {start_col} to {end_col}...")
 
-    print("Generating pse keyword features...")
+        keyword_specs = [
+            SczBpTextExperimentFeatures()._get_outcome_specs(),  # type: ignore[reportPrivateUsage]
+            SczBpTextExperimentFeatures()._get_metadata_specs(),  # type: ignore[reportPrivateUsage]
+            SczBpTextExperimentFeatures().get_keyword_specs(
+                lookbehind_days=[730], start_col=start_col, end_col=end_col
+            ),  # type: ignore[reportPrivateUsage]
+        ]
+        keyword_specs = [feature for sublist in keyword_specs for feature in sublist]
 
-    generate_feature_set(
-        project_info=project_info,
-        eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
-        feature_specs=keyword_specs,
-        n_workers=None,
-        do_dataset_description=False,
-        feature_set_name=feature_set_name,
-    )
+        print("Generating pse keyword features...")
+
+        generate_feature_set(
+            project_info=project_info,
+            eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
+            feature_specs=keyword_specs,
+            n_workers=None,
+            do_dataset_description=False,
+            feature_set_name=f"{feature_set_name}_chunk_{start_col}_{end_col}",
+        )
