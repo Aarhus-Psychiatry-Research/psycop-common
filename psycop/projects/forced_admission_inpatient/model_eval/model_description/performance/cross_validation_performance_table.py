@@ -29,7 +29,7 @@ def _get_model_pipeline(
 
     return ForcedAdmissionInpatientPipelineRun(
         group=group,
-        name=group.get_best_runs_by_lookahead()[model_type, 2],
+        name=group.get_best_runs_by_lookahead()[int(model_type), 2],
         pos_rate=0.04,
         create_output_paths_on_init=False,
     )
@@ -170,6 +170,7 @@ def cross_validation_performance_table(
         run = _get_model_pipeline(
             model_name=models_to_train["model_name"][i],  # type: ignore
             group_name=models_to_train["group_name"][i],  # type: ignore
+            model_type=models_to_train["model_type"][i],  # type: ignore
         )
         roc_auc, oof_aucs = train_model(run.inputs.cfg)
 
@@ -188,6 +189,7 @@ def cross_validation_performance_table(
 
     df_dict = {
         "Predictor set": models_to_train["pretty_model_name"],
+        "Model type": models_to_train["pretty_model_type"],
         "AUROC score": roc_aucs,
         "95 percent confidence interval": cfs,
         "Standard deviation": std_devs,
@@ -210,20 +212,38 @@ if __name__ == "__main__":
                 "Sentence transformer embeddings",
                 "TF-IDF features",
                 "Full predictor set",
+                "Full predictor set 90 days lookahead",
+                "Full predictor set 365 days lookahead",
             ],
             "model_name": [
                 "limited_model_demographics_diagnoses",
                 "full_model_without_text_features",
                 "only_sent_trans_model",
-                "only_tfidf_750_model",
-                "full_model_with_text_features",
+                "only_tfidf_750_model_added_konklusion",
+                "full_model_with_text_features_added_konklusion",
+                "full_model_with_text_features_lookahead_90_added_konklusion",
+                "full_model_with_text_features_lookahead_365_added_konklusion",
             ],
             "group_name": [
                 "elaborations-piecrust",
                 "frustums-liveable",
                 "overlogicality-gardenesque",
-                "transcendentalists-habenar",
-                "capuan-unselfish",
+                "hectical-jawboned",
+                "dittoed-tetrastylous",
+                "psychorhythmic-unmaneged",
+                "alopecias-peewees",
+            ],
+            # 0 is logistic regression and 1 is Xgboost
+            "model_type": [0, 0, 0, 0, 0, 0, 0],
+            # change this for either XGboost or Logistic regression
+            "pretty_model_type": [
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
+                "Logistic regression",
             ],
         }
     )
