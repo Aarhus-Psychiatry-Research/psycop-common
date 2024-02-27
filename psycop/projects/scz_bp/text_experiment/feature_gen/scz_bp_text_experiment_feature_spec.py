@@ -72,19 +72,18 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
         return features
 
     def get_keyword_specs(
-        self, lookbehind_days: list[float], start_col: int, end_col: int
+        self, lookbehind_days: list[float], df: pl.DataFrame | None
     ) -> list[ValueSpecification]:
-        filename = "pse_keyword_counts_all_sfis.parquet"
-        embedded_text_df = pl.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
-        if "overskrift" in embedded_text_df.columns:
-            embedded_text_df = embedded_text_df.drop("overskrift")
-        keep_columns = embedded_text_df.columns[start_col:end_col]
-        embedded_text_df = embedded_text_df.select(keep_columns)
-
+        if df is None:
+            filename = "pse_keyword_counts_all_sfis.parquet"
+            df = pl.read_parquet(TEXT_EMBEDDINGS_DIR / filename)
+            if "overskrift" in df.columns:
+                df = df.drop("overskrift")
+            
         return [
             PredictorSpec(
                 value_frame=ValueFrame(
-                    init_df=embedded_text_df,
+                    init_df=df,
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),
