@@ -43,7 +43,7 @@ def generate_feature_set(
     eligible_prediction_times_frame: PredictionTimeFrame,
     feature_specs: Sequence[ValueSpecification],
     feature_set_name: str,
-    n_workers: int,
+    n_workers: int | None,
     do_dataset_description: bool,
     compute_lazily: bool = False,
 ) -> None:
@@ -63,6 +63,8 @@ def generate_feature_set(
                 print(f"Folder '{feature_set_dir}' will be overwritten.")
                 break
 
+    feature_set_dir.mkdir(parents=True, exist_ok=True)
+
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
         prediction_times_frame=eligible_prediction_times_frame,
@@ -75,7 +77,7 @@ def generate_feature_set(
             "Dataset description not yet implemented for tsflattener v2 specs. Perhaps you should implement it?"
         )
 
-    flattened_df.write_parquet(feature_set_dir / "flattened_dataset.parquet")
+    flattened_df.write_parquet(feature_set_dir / f"{feature_set_name}.parquet")
     return
 
 
