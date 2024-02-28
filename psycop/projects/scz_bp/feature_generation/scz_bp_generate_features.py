@@ -1,7 +1,7 @@
 import time
 
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
-    generate_feature_set_tsflattener_v1,
+    generate_feature_set,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
@@ -17,7 +17,7 @@ def get_scz_bp_project_info() -> ProjectInfo:
 
 if __name__ == "__main__":
     t0 = time.time()
-    generate_feature_set_tsflattener_v1(
+    generate_feature_set(
         project_info=get_scz_bp_project_info(),
         eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
         feature_specs=SczBpFeatureSpecifier().get_feature_specs(

@@ -21,7 +21,6 @@ if __name__ == "__main__":
     model = SentenceTransformer(model_str)
     all_notes = pl.from_pandas(load_all_notes(n_rows=None, include_sfi_name=True))
 
-    
     embeddings = embed_text_to_df(model, all_notes["value"].to_list())
 
     all_notes = all_notes.drop(["value"])

@@ -5,5 +5,5 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 
 if __name__ == "__main__":
     populate_baseline_registry()
-    #train_baseline_model(Path(__file__).parent / "text_exp_combined_tfidf_encoder_config.cfg")
+    # train_baseline_model(Path(__file__).parent / "text_exp_combined_tfidf_encoder_config.cfg") # noqa: ERA001
     train_baseline_model(Path(__file__).parent / "text_exp_keywords.cfg")

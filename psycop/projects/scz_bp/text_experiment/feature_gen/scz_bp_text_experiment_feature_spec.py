@@ -68,7 +68,7 @@ class SczBpTextExperimentFeatures(SczBpFeatureSpecifier):
                     value_timestamp_col_name="date_of_birth",
                 ),
                 fallback=np.nan,
-                output_name=f"age_in_years",
+                output_name="age_in_years",
                 time_format="years",
             )
         ]

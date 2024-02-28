@@ -7,11 +7,10 @@ if __name__ == "__main__":
 
     df_paths = list(chunked_dir.iterdir())
 
-    df = pl.read_parquet(list(df_paths[0].iterdir())[0])
+    df = pl.read_parquet(list(df_paths[0].iterdir())[0])  # noqa: RUF015
 
-    for path in df_paths[1:]:
-        chunk_df = pl.read_parquet(list(path.iterdir())[0]).drop("timestamp", "dw_ek_borger")
+    for path in df_paths[1:]:  # noqa: RUF015
+        chunk_df = pl.read_parquet(list(path.iterdir())[0]).drop("timestamp", "dw_ek_borger")  # noqa: RUF015
         df = df.join(chunk_df, on="pred_time_uuid", validate="1:1")
 
     df.write_parquet(chunked_dir.parent / "keywords.parquet")
-    

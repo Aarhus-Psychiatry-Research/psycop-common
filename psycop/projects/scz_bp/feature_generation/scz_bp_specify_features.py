@@ -103,7 +103,9 @@ class SczBpFeatureSpecifier:
             ),
             OutcomeSpec(
                 value_frame=ValueFrame(
-                    init_df=get_first_scz_diagnosis().rename(columns={"value": "scz_within_3_years"}),
+                    init_df=get_first_scz_diagnosis().rename(
+                        columns={"value": "scz_within_3_years"}
+                    ),
                     entity_id_col_name="dw_ek_borger",
                     value_timestamp_col_name="timestamp",
                 ),

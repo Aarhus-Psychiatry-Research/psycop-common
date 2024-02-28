@@ -78,7 +78,7 @@ def generate_feature_set(
         )
 
     flattened_df.write_parquet(feature_set_dir / f"{feature_set_name}.parquet")
-    return None
+    return
 
 
 def generate_feature_set_tsflattener_v1(
