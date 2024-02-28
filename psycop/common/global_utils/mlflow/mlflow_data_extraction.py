@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
+from pathlib import Path
 
 import polars as pl
 from mlflow.entities import Run
@@ -71,6 +72,15 @@ class MlflowMetricExtractor:
             experiment_ids=experiment_ids, max_results=1, order_by=[f"metrics.{metric} DESC"]
         )[0]
         return best_run
+
+    def download_config_from_best_run_from_experiments(
+        self, experiment_names: Iterable[str], metric: str
+    ) -> Path:
+        """Download the config from the best from a list of experiments. Returns the path to the config"""
+        best_run = self.get_best_run_from_experiments(
+            experiment_names=experiment_names, metric=metric
+        )
+        return Path(self.client.download_artifacts(run_id=best_run.info.run_id, path="config.cfg"))
 
     def _get_metrics_for_run(self, run: Run, metrics: Iterable[str]) -> pl.DataFrame:
         metrics_df = [

@@ -7,7 +7,6 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import EvalConfigResolver
 from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
 
 
@@ -103,10 +102,3 @@ def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset) -> pn.ggplot:
 
     return p
 
-
-if __name__ == "__main__":
-    cfg_path = OVARTACI_SHARED_DIR / "scz_bp" / "experiments" / "l1"
-
-    run = EvalConfigResolver(path_to_cfg=cfg_path / "config.cfg")
-
-    p = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=run.eval_ds)

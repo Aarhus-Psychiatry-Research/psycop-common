@@ -10,8 +10,8 @@ if __name__ == "__main__":
     OptunaHyperParameterOptimization().from_file(
         (Path(__file__).parent / "config" / "scz_bp_hparam.cfg"),
         study_name="sczbp_3_year_lookahead",
-        n_trials=500,
-        n_jobs=30,
+        n_trials=300,
+        n_jobs=15,
         direction="maximize",
         catch=(Exception,),
     )

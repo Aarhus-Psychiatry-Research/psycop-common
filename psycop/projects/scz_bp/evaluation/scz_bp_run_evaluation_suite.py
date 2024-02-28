@@ -3,7 +3,8 @@ from pathlib import Path
 import plotnine as pn
 import polars as pl
 from confection import Config
-
+from mlflow.entities.run import Run
+from mlflow.artifacts import download_artifacts
 # Set path to BaselineSchema for the run
 ## Load dataset with predictions after training
 ## Load validation dataset
@@ -18,6 +19,7 @@ from confection import Config
 # Table of performance (sens, spec, ppv, f1) by threshold
 ## Confusion matrix at specified threshold
 # Plot feature importance
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -45,7 +47,6 @@ from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robus
     scz_bp_auroc_by_time_from_first_contact,
 )
 
-cfg_path = OVARTACI_SHARED_DIR / "scz_bp" / "experiments" / "l1"
 populate_baseline_registry()
 
 
@@ -109,8 +110,6 @@ class EvalConfigResolver:
             case SplitTrainer():
                 self.y_hat_prop_col_name = "y_hat_prob"
                 return self.schema.trainer.validation_data.load().collect()
-            case _:
-                raise ValueError(f"Handler for {type(self.schema.trainer)} not implemented")
 
     def _read_pred_df(self) -> pl.DataFrame:
         return pl.read_parquet(self.schema.project_info.experiment_path / "eval_df.parquet")
@@ -131,7 +130,17 @@ def full_eval(run: EvalConfigResolver) -> list[pn.ggplot]:
     return [age, sex, time_from_first_visit, dow, month, quarter, sens_time_to_event]
 
 
+def get_config_from_mlflow_run(run: Run) -> Path:
+    return Path(download_artifacts(run_id=run.info.run_id, artifact_path="config.cfg"))
+
+
 if __name__ == "__main__":
-    run = EvalConfigResolver(path_to_cfg=cfg_path / "config.cfg")
+    #    cfg_path = Path(__file__).parent / "model_training" / "config" / "scz_bp_baseline.cfg"
+    experiment_names = ["scz-bp_3_year_lookahead"]
+    cfg_path = MlflowMetricExtractor().download_config_from_best_run_from_experiments(
+        experiment_names=experiment_names, metric="all_oof_BinaryAUROC"
+    )
+    
+    run = EvalConfigResolver(path_to_cfg=cfg_path)
 
     full_eval(run)
