@@ -3,14 +3,20 @@ import logging
 from typing import Callable
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import AggregationFunType, latest, maximum, mean, minimum
-from timeseriesflattener.df_transforms import df_with_multiple_values_to_named_dataframes
-from timeseriesflattener.feature_specs.group_specs import (
+from timeseriesflattener.v1.aggregation_fns import (
+    AggregationFunType,
+    latest,
+    maximum,
+    mean,
+    minimum,
+)
+from timeseriesflattener.v1.df_transforms import df_with_multiple_values_to_named_dataframes
+from timeseriesflattener.v1.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
     PredictorGroupSpec,
 )
-from timeseriesflattener.feature_specs.single_specs import (
+from timeseriesflattener.v1.feature_specs.single_specs import (
     AnySpec,
     BaseModel,
     OutcomeSpec,

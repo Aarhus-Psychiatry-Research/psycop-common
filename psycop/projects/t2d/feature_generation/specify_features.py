@@ -2,7 +2,7 @@
 import logging
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import (
+from timeseriesflattener.v1.aggregation_fns import (
     AggregationFunType,
     count,
     latest,
@@ -10,12 +10,12 @@ from timeseriesflattener.aggregation_fns import (
     mean,
     minimum,
 )
-from timeseriesflattener.feature_specs.group_specs import (
+from timeseriesflattener.v1.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
     PredictorGroupSpec,
 )
-from timeseriesflattener.feature_specs.single_specs import (
+from timeseriesflattener.v1.feature_specs.single_specs import (
     AnySpec,
     BaseModel,
     OutcomeSpec,

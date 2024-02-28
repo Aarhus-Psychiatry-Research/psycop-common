@@ -1,9 +1,6 @@
 # ruff: noqa
 
 
-from ..trainer.preprocessing.steps.test_row_filter_split import mock_regional_move_df
-
-
 def populate_baseline_registry() -> None:
     """
     Populate the registry with all the registered functions

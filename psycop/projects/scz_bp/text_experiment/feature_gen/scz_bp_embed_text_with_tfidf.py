@@ -42,7 +42,7 @@ if __name__ == "__main__":
             .collect()
         )
 
-        notes_metadata = preprocessed_notes.drop(columns=["value"])
+        notes_metadata = preprocessed_notes.drop(["value"])
         for max_features in n_features:
             model_str = model_file_name.replace("NOTE_TYPE", note_name_key).replace(
                 "N_FEATURES", max_features

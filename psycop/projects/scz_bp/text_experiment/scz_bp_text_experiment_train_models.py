@@ -27,6 +27,9 @@ if __name__ == "__main__":
     cfg = Config().from_disk(cfg_file)
     file_dir = cfg["trainer"]["training_data"]["paths"][0]
     for feature_set_dir in Path(file_dir).iterdir():
+        if feature_set_dir.name != "text_exp_730_pse_keyword":
+            print(f"Skipping {feature_set_dir.name}")
+            continue
         cfg_copy = cfg.copy()
         cfg_copy["trainer"]["training_data"]["paths"] = get_list_of_paths_to_splits(
             feature_set_dir=feature_set_dir

@@ -1,6 +1,7 @@
 """Get performance by which threshold is used to classify positive. PPR means predicted positive rate, i.e. the proportion of the population that is predicted to be positive."""
 from collections.abc import Sequence
 
+import numpy as np
 import pandas as pd
 
 from psycop.common.model_evaluation.binary.performance_by_ppr.prop_of_all_events_hit_by_true_positive import (
@@ -87,6 +88,16 @@ def performance_by_ppr(eval_dataset: EvalDataset, positive_rate: float) -> pd.Da
 
     acc = (true_pos + true_neg) / n_total
 
+    precision = pos_pred_val
+    recall = sens
+    f1 = 2 * (precision * recall) / (precision + recall)
+    mcc = (true_pos * true_neg - false_pos * false_neg) / np.sqrt(
+        (true_pos + false_pos)
+        * (true_pos + false_neg)
+        * (true_neg + false_pos)
+        * (true_neg + false_neg)
+    )
+
     # Must return lists as values, otherwise pd.Dataframe requires setting indices
     metrics_matrix = pd.DataFrame(
         {
@@ -104,6 +115,8 @@ def performance_by_ppr(eval_dataset: EvalDataset, positive_rate: float) -> pd.Da
             "true_negatives": [true_neg],
             "false_positives": [false_pos],
             "false_negatives": [false_neg],
+            "f1": [f1],
+            "mcc": [mcc],
         }
     )
 

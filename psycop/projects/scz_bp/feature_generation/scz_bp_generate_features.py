@@ -19,12 +19,12 @@ if __name__ == "__main__":
     t0 = time.time()
     generate_feature_set(
         project_info=get_scz_bp_project_info(),
-        eligible_prediction_times=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times.frame.to_pandas(),
+        eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
         feature_specs=SczBpFeatureSpecifier().get_feature_specs(
             max_layer=4, lookbehind_days=[183, 365, 730]
         ),
-        # generate_in_chunks=True,  # noqa: ERA001
-        # chunksize=10,  # noqa: ERA001
+        n_workers=10,
+        do_dataset_description=False,
         feature_set_name="structured_predictors",
     )
     t = time.time()

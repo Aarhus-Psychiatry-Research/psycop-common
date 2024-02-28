@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pandas as pd
 import polars as pl
-from timeseriesflattener.feature_specs.single_specs import AnySpec
+from timeseriesflattener.v1.feature_specs.single_specs import AnySpec
 
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    create_flattened_dataset,
+    create_flattened_dataset_tsflattener_v1,
 )
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
@@ -30,7 +30,7 @@ class ChunkedFeatureGenerator:
         print(f"Generating features in chunks of {chunksize}")
         for i in range(0, len(feature_specs), chunksize):
             print(f"Generating features for chunk {i} to {i+chunksize}")
-            flattened_df_chunk = create_flattened_dataset(
+            flattened_df_chunk = create_flattened_dataset_tsflattener_v1(
                 feature_specs=feature_specs[i : i + chunksize],
                 prediction_times_df=eligible_prediction_times,
                 drop_pred_times_with_insufficient_look_distance=False,

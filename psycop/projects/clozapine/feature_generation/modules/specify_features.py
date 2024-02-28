@@ -3,7 +3,7 @@ import logging
 from typing import Union
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import (
+from timeseriesflattener.v1.aggregation_fns import (
     AggregationFunType,
     boolean,
     change_per_day,
@@ -16,12 +16,12 @@ from timeseriesflattener.aggregation_fns import (
     summed,
     variance,
 )
-from timeseriesflattener.feature_specs.group_specs import (
+from timeseriesflattener.v1.feature_specs.group_specs import (
     NamedDataframe,
     OutcomeGroupSpec,
     PredictorGroupSpec,
 )
-from timeseriesflattener.feature_specs.single_specs import (
+from timeseriesflattener.v1.feature_specs.single_specs import (
     AnySpec,
     BaseModel,
     OutcomeSpec,

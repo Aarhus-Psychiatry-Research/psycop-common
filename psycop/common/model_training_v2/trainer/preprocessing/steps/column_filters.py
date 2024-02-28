@@ -48,7 +48,7 @@ class LookbehindCombinationColFilter(PresplitStep):
             pred_cols_with_lookbehind, lookbehinds_to_keep
         )
 
-        return input_df.drop(columns=cols_to_drop)
+        return input_df.drop(cols_to_drop)
 
     def _cols_with_lookbehind_not_in_lookbehinds(
         self, pred_cols_with_lookbehind: list[str], lookbehinds_to_keep: set[int]

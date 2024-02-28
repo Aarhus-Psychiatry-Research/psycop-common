@@ -27,10 +27,10 @@ if __name__ == "__main__":
     corpus = pl.from_pandas(
         pd.read_parquet(path=PREPROCESSED_TEXT_DIR / "psycop_train_all_sfis_preprocessed.parquet")
     )
-
+    print("Loaded text")
     tfidf_values = encode_tfidf_values_to_df(tfidf_model, corpus["value"].to_list())  # type: ignore
 
-    corpus = corpus.drop(columns=["value"])
+    corpus = corpus.drop(["value"])
 
     tfidf_notes = pl.concat([corpus, tfidf_values], how="horizontal")
 

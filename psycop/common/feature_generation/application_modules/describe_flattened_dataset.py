@@ -4,8 +4,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from timeseriesflattener.feature_specs.single_specs import StaticSpec, TemporalSpec
-from timeseriesflattener.flattened_dataset import PredictorSpec
+from timeseriesflattener.v1.feature_specs.single_specs import StaticSpec, TemporalSpec
+from timeseriesflattener.v1.flattened_dataset import PredictorSpec
 
 from psycop.common.feature_generation.data_checks.flattened.data_integrity import (
     save_feature_set_integrity_checks_from_dir,
