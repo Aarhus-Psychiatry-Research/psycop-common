@@ -1,11 +1,7 @@
-from pathlib import Path
+from collections.abc import Sequence
 
 import plotnine as pn
 import polars as pl
-from confection import Config
-from mlflow.artifacts import download_artifacts
-from mlflow.entities.run import Run
-
 
 # Set path to BaselineSchema for the run
 ## Load dataset with predictions after training
@@ -21,8 +17,10 @@ from mlflow.entities.run import Run
 # Table of performance (sens, spec, ppv, f1) by threshold
 ## Confusion matrix at specified threshold
 # Plot feature importance
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor, PsycopMlflowRun
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
+    MlflowClientWrapper,
+    PsycopMlflowRun,
+)
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
@@ -30,8 +28,9 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
-from psycop.common.types.validated_frame import ValidatedFrame
-from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import MinimalEvalDataset
+from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import (
+    minimal_eval_dataset_from_mlflow_run,
+)
 from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import (
     scz_bp_plot_sensitivity_by_time_to_event,
 )
@@ -55,16 +54,6 @@ from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robus
 populate_baseline_registry()
 
 
-def load_and_resolve_cfg(path: Path) -> BaselineSchema:
-    cfg = Config().from_disk(path)
-    cfg_schema = BaselineSchema(**BaselineRegistry.resolve(cfg))
-    return cfg_schema
-
-
-def prediction_time_uuid_to_prediction_time(prediction_time_uuid_series: pl.Series) -> pl.Series:
-    return prediction_time_uuid_series.str.split("-").list.slice(1).list.join("-").str.to_datetime()
-
-
 def scz_bp_df_to_eval_df(
     df: pl.DataFrame, y_hat_prop_col_name: str, y_col_name: str
 ) -> EvalDataset:
@@ -84,6 +73,16 @@ def scz_bp_df_to_eval_df(
     )
 
 
+def _load_validation_data_from_schema(schema: BaselineSchema) -> pl.DataFrame:
+    match schema.trainer:
+        case CrossValidatorTrainer():
+            return schema.trainer.training_data.load().collect()
+        case SplitTrainer():
+            return schema.trainer.validation_data.load().collect()
+        case BaselineTrainer():
+            raise TypeError("That's an ABC, mate")
+
+
 def merge_pred_df_with_validation_df(
     pred_df: pl.DataFrame, validation_df: pl.DataFrame
 ) -> pl.DataFrame:
@@ -91,51 +90,16 @@ def merge_pred_df_with_validation_df(
     return pred_df.join(validation_df, how="left", on="prediction_time_uuid")
 
 
-
-
-def eval_dataset_from_run(run: PsycopMlflowRun, from_disk: bool) -> MinimalEvalDataset:
+def cohort_metadata_from_run(
+    run: PsycopMlflowRun, cohort_metadata_cols: Sequence[pl.Expr]
+) -> pl.DataFrame:
     cfg = run.get_config()
-    if from_disk:
-        df = pl.read_parquet(cfg["project_info"]["experiment_path"] + "")
+    schema = BaselineSchema(**BaselineRegistry.resolve(cfg))
+
+    return _load_validation_data_from_schema(schema=schema).select(cohort_metadata_cols)
 
 
-
-
-
-class EvalConfigResolver:
-    def __init__(self, path_to_cfg: Path):
-        self.path = path_to_cfg
-        self.schema = load_and_resolve_cfg(path=path_to_cfg)
-
-        validation_df = self._load_validation_data_from_schema()
-        pred_df = self._read_pred_df()
-        self.outcome_col_name = pred_df.select(pl.col("^outc_.*$")).columns[0]
-
-        self.df = merge_pred_df_with_validation_df(pred_df=pred_df, validation_df=validation_df)
-        self.eval_ds = scz_bp_df_to_eval_df(
-            df=self.df,
-            y_hat_prop_col_name=self.y_hat_prop_col_name,
-            y_col_name=self.outcome_col_name,
-        )
-
-    def _load_validation_data_from_schema(self) -> pl.DataFrame:
-        match self.schema.trainer:
-            case CrossValidatorTrainer():
-                self.y_hat_prop_col_name = "oof_y_hat_prob"
-                return self.schema.trainer.training_data.load().collect()
-            case SplitTrainer():
-                self.y_hat_prop_col_name = "y_hat_prob"
-                return self.schema.trainer.validation_data.load().collect()
-            case BaselineTrainer():
-                raise TypeError("That's an ABC, mate")
-
-    def _read_pred_df(self) -> pl.DataFrame:
-        return pl.read_parquet(self.schema.project_info.experiment_path / "eval_df.parquet")
-
-
-def full_eval(run: EvalConfigResolver) -> list[pn.ggplot]:
-    eval_ds = run.eval_ds
-
+def full_eval(eval_ds: EvalDataset) -> list[pn.ggplot]:
     age = scz_bp_auroc_by_age(eval_ds=eval_ds)
     sex = scz_bp_auroc_by_sex(eval_ds=eval_ds)
     time_from_first_visit = scz_bp_auroc_by_time_from_first_contact(eval_ds=eval_ds)
@@ -148,17 +112,20 @@ def full_eval(run: EvalConfigResolver) -> list[pn.ggplot]:
     return [age, sex, time_from_first_visit, dow, month, quarter, sens_time_to_event]
 
 
-def get_config_from_mlflow_run(run: Run) -> Path:
-    return Path(download_artifacts(run_id=run.info.run_id, artifact_path="config.cfg"))
-
-
 if __name__ == "__main__":
-    #    cfg_path = Path(__file__).parent / "model_training" / "config" / "scz_bp_baseline.cfg"
-    experiment_names = ["scz-bp_3_year_lookahead"]
-    cfg_path = MlflowMetricExtractor().download_config_from_best_run_from_experiments(
-        experiment_names=experiment_names, metric="all_oof_BinaryAUROC"
+    experiment_name = "scz-bp_3_year_lookahead"
+    best_run = MlflowClientWrapper().get_best_run_from_experiment(
+        experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
     )
 
-    run = EvalConfigResolver(path_to_cfg=cfg_path)
-
-    full_eval(run)
+    eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
+    cohort_metadata = cohort_metadata_from_run(
+        run=best_run,
+        cohort_metadata_cols=[
+            pl.col("prediction_time_uuid"),
+            pl.col("dw_ek_borger"),
+            pl.col("timestamp"),
+            pl.col("^meta.*$"),
+        ],
+    )
+    df = eval_ds.frame.join(cohort_metadata, how="left", on=eval_ds.pred_time_uuid_col_name)
