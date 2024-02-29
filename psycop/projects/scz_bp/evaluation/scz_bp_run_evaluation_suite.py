@@ -3,8 +3,10 @@ from pathlib import Path
 import plotnine as pn
 import polars as pl
 from confection import Config
-from mlflow.entities.run import Run
 from mlflow.artifacts import download_artifacts
+from mlflow.entities.run import Run
+
+
 # Set path to BaselineSchema for the run
 ## Load dataset with predictions after training
 ## Load validation dataset
@@ -25,6 +27,7 @@ from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
 from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import (
@@ -110,6 +113,8 @@ class EvalConfigResolver:
             case SplitTrainer():
                 self.y_hat_prop_col_name = "y_hat_prob"
                 return self.schema.trainer.validation_data.load().collect()
+            case BaselineTrainer():
+                raise TypeError("That's an ABC, mate")
 
     def _read_pred_df(self) -> pl.DataFrame:
         return pl.read_parquet(self.schema.project_info.experiment_path / "eval_df.parquet")
@@ -140,7 +145,7 @@ if __name__ == "__main__":
     cfg_path = MlflowMetricExtractor().download_config_from_best_run_from_experiments(
         experiment_names=experiment_names, metric="all_oof_BinaryAUROC"
     )
-    
+
     run = EvalConfigResolver(path_to_cfg=cfg_path)
 
     full_eval(run)
