@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.197.0 (2024-02-29)
+
+### Feature
+
+* Refactor mlflow client interface ([`d346aa9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d346aa9d0bf6c3d3fe686d52288e863a93f51307))
+* Mlflow artifact downloader ([`859e60d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/859e60d8e89a82c46bdb1e83f4bcaae5c272f4e2))
+
+## v0.196.0 (2024-02-27)
+
+### Feature
+
+* **#834:** T2d add MCC and F1 to results table ([`a306f8b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a306f8bf435debc1e3f399ba5a646d5c556a49f8))
+* Create descriptive_stats_by_outcome.py ([`fe9d23e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fe9d23ebf80097e754a46b789d9517a5d2d78ea0))
+
 ## v0.195.0 (2024-02-27)
 
 ### Feature
