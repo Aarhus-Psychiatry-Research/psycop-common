@@ -2,6 +2,7 @@ from pathlib import Path
 
 import wasabi
 from confection import Config
+from polars import DataFrame
 from rich.pretty import pprint
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -37,4 +38,9 @@ class TerminalLogger(BaselineLogger):
         self.good(
             f"""Logging artifact from {local_path}.
     NOTE: TerminalLogger does not log the artifact anywhere, but if you have other loggers defined, their methods have been called as well."""
+        )
+
+    def log_dataset(self, dataframe: DataFrame, filename: str) -> None:  # noqa: ARG002
+        self.good(
+            "NOTE: TerminalLogger does not log the dataset anywhere, but if you have other loggers defined, their methods have been called as well."
         )

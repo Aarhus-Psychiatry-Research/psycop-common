@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 from confection import Config
+from polars import DataFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
@@ -58,3 +59,6 @@ class DiskLogger(BaselineLogger):
 
     def log_artifact(self, local_path: Path) -> None:
         shutil.copy(local_path, (self.experiment_path / local_path.name))
+
+    def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
+        dataframe.write_parquet(self.experiment_path / filename)

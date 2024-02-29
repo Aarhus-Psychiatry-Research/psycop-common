@@ -75,4 +75,13 @@ class CrossValidatorTrainer(BaselineTrainer):
         self._log_main_metric(main_metric)
         self._log_sklearn_pipe()
 
-        return TrainingResult(metric=main_metric, df=pl.DataFrame(training_data_preprocessed))
+        eval_df = pl.DataFrame(
+            {
+                "y": training_data_preprocessed[self.outcome_col_name],
+                "y_hat_prob": training_data_preprocessed["oof_y_hat_prob"],
+                "pred_time_uuid": training_data_preprocessed[self.uuid_col_name],
+            }
+        )
+        self.logger.log_dataset(dataframe=eval_df, filename="eval_df.parquet")
+
+        return TrainingResult(metric=main_metric, df=eval_df)
