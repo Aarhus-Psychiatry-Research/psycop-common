@@ -21,7 +21,7 @@ from mlflow.entities.run import Run
 # Table of performance (sens, spec, ppv, f1) by threshold
 ## Confusion matrix at specified threshold
 # Plot feature importance
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor, PsycopMlflowRun
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -30,6 +30,8 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
+from psycop.common.types.validated_frame import ValidatedFrame
+from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import MinimalEvalDataset
 from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import (
     scz_bp_plot_sensitivity_by_time_to_event,
 )
@@ -87,6 +89,17 @@ def merge_pred_df_with_validation_df(
 ) -> pl.DataFrame:
     validation_df = validation_df.select(pl.col("^meta.*$"), "timestamp", "prediction_time_uuid")
     return pred_df.join(validation_df, how="left", on="prediction_time_uuid")
+
+
+
+
+def eval_dataset_from_run(run: PsycopMlflowRun, from_disk: bool) -> MinimalEvalDataset:
+    cfg = run.get_config()
+    if from_disk:
+        df = pl.read_parquet(cfg["project_info"]["experiment_path"] + "")
+
+
+
 
 
 class EvalConfigResolver:
