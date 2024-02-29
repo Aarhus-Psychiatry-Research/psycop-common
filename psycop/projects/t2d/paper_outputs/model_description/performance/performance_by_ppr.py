@@ -53,7 +53,9 @@ def _clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Handle proportion columns
-    prop_cols = [c for c in renamed_df.columns if renamed_df[c].dtype == "float64"]
+    prop_cols = [
+        c for c in renamed_df.columns if renamed_df[c].dtype == "float64" and c not in ["MCC", "F1"]
+    ]
     for c in prop_cols:
         renamed_df[c] = renamed_df[c].apply(_format_prop_as_percent)
 
