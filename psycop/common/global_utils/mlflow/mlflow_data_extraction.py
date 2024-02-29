@@ -1,6 +1,8 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
+from pathlib import Path
 
+import mlflow
 import polars as pl
 from mlflow.entities import Run
 from mlflow.tracking import MlflowClient
@@ -34,7 +36,10 @@ class MlflowTimeVaryingMetricsFrame(ValidatedFrame[pl.DataFrame]):
 
 class MlflowMetricExtractor:
     def __init__(self) -> None:
-        self.client = MlflowClient(tracking_uri="http://exrhel0371.it.rm.dk:5050")
+        tracking_uri = "http://exrhel0371.it.rm.dk:5050"
+
+        self.client = MlflowClient(tracking_uri=tracking_uri)
+        mlflow.set_tracking_uri(tracking_uri)
 
     def get_all_metrics_for_experiment(self, experiment_name: str) -> MlflowAllMetricsFrame:
         """Get the final value of all logged metrics for each run in an experiment.
@@ -71,6 +76,27 @@ class MlflowMetricExtractor:
             experiment_ids=experiment_ids, max_results=1, order_by=[f"metrics.{metric} DESC"]
         )[0]
         return best_run
+
+    def download_config_from_best_run_from_experiments(
+        self, experiment_names: Iterable[str], metric: str, save_location: str | None = None
+    ) -> Path:
+        """Download the config from the best from a list of experiments. Returns the path to the config.
+        If save_location is None, will save to temporary directory"""
+        best_run = self.get_best_run_from_experiments(
+            experiment_names=experiment_names, metric=metric
+        )
+        return self.download_artifact_from_run(run=best_run, artifact_name="config.cfg", save_location=save_location)
+
+    def download_artifact_from_run(
+        self, run: Run, artifact_name: str, save_location: str | None = None
+    ) -> Path:
+        """Download an artifact from a run. Eeturns the path to the downloaded artifact. 
+        If save_location is None, will save to temporary directory"""
+        return Path(
+            self.client.download_artifacts(
+                run_id=run.info.run_id, path=artifact_name, dst_path=save_location
+            )
+        )
 
     def _get_metrics_for_run(self, run: Run, metrics: Iterable[str]) -> pl.DataFrame:
         metrics_df = [
