@@ -37,7 +37,9 @@ class PsycopMlflowRun(Run):
         self._client = client
 
     @classmethod
-    def from_mlflow_run(cls, run: Run, client: MlflowClient) -> "PsycopMlflowRun":
+    def from_mlflow_run(
+        cls: type["PsycopMlflowRun"], run: Run, client: MlflowClient
+    ) -> "PsycopMlflowRun":
         return cls(run_info=run._info, run_data=run._data, run_inputs=run._inputs, client=client)
 
     def get_config(self) -> Config:
@@ -111,4 +113,3 @@ if __name__ == "__main__":
         )
         .get_config()
     )
-    pass
