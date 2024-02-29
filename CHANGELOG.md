@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.198.0 (2024-02-29)
+
+### Feature
+
+* Add dataset logging ([`ae662d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ae662d3fc6ce87a8cee3948f3ee064566acb689b))
+
 ## v0.197.0 (2024-02-29)
 
 ### Feature
