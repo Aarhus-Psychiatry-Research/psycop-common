@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
+import polars as pl
 from confection import Config
 
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
@@ -27,4 +28,7 @@ class BaselineLogger(Protocol):
         ...
 
     def log_artifact(self, local_path: Path) -> None:
+        ...
+
+    def log_dataset(self, dataframe: pl.DataFrame, filename: str) -> None:
         ...
