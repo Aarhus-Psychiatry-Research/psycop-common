@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -78,14 +78,17 @@ class MlflowClientWrapper:
 
         return MlflowAllMetricsFrame(frame=metrics_df, allow_extra_columns=False)
 
-    def get_best_run_from_experiment(self, experiment_name: str, metric: str) -> PsycopMlflowRun:
+    def get_best_run_from_experiment(
+        self, experiment_name: str, metric: str, larger_is_better: bool = True
+    ) -> PsycopMlflowRun:
         """Get the best run from one or more experiments based on some metric,
         e.g. 'all_oof_BinaryAUROC'"""
+        order = "DESC" if larger_is_better else "ASC"
 
         experiment_id = self._get_mlflow_experiment_id_from_experiment_name(experiment_name)
 
         best_run = self.client.search_runs(
-            experiment_ids=[experiment_id], max_results=1, order_by=[f"metrics.{metric} DESC"]
+            experiment_ids=[experiment_id], max_results=1, order_by=[f"metrics.{metric} {order}"]
         )[0]
         return PsycopMlflowRun.from_mlflow_run(run=best_run, client=self.client)
 
@@ -95,7 +98,7 @@ class MlflowClientWrapper:
             raise ValueError(f"{experiment_name} does not exist on MlFlow.")
         return experiment.experiment_id
 
-    def _get_mlflow_runs_by_experiment(self, experiment_name: str) -> Iterable[PsycopMlflowRun]:
+    def _get_mlflow_runs_by_experiment(self, experiment_name: str) -> Sequence[PsycopMlflowRun]:
         experiment_id = self._get_mlflow_experiment_id_from_experiment_name(
             experiment_name=experiment_name
         )
