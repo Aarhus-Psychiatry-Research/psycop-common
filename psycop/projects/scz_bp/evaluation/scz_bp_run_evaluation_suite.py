@@ -25,13 +25,9 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
-from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
-    CrossValidatorTrainer,
-)
+from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
 from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import (
     minimal_eval_dataset_from_mlflow_run,
@@ -96,6 +92,29 @@ def cohort_metadata_from_run(
     return _load_validation_data_from_schema(schema=schema).select(cohort_metadata_cols)
 
 
+def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> EvalDataset:
+    best_run = MlflowClientWrapper().get_best_run_from_experiment(
+        experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
+    )
+
+    # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
+    min_eval_ds = minimal_eval_dataset_from_path(
+        Path(best_run.get_config()["project_info"]["experiment_path"]) / "eval_df.parquet"
+    )
+    cohort_metadata = cohort_metadata_from_run(
+        run=best_run,
+        cohort_metadata_cols=[
+            pl.col("prediction_time_uuid"),
+            pl.col("dw_ek_borger"),
+            pl.col("timestamp"),
+            pl.col("^meta.*$"),
+            pl.col("pred_age_in_years"),
+            pl.col("pred_sex_female_layer_1"),
+        ],
+    ).rename({"prediction_time_uuid": "pred_time_uuid"})
+    df = min_eval_ds.frame.join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name)
+    return scz_bp_df_to_eval_df(df=df)
+
 
 def full_eval(eval_ds: EvalDataset) -> list[pn.ggplot]:
     age = scz_bp_auroc_by_age(eval_ds=eval_ds)
@@ -117,7 +136,9 @@ if __name__ == "__main__":
     )
 
     # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
-    min_eval_ds = minimal_eval_dataset_from_path(Path(best_run.get_config()["project_info"]["experiment_path"]) / "eval_ds.parquet" )
+    min_eval_ds = minimal_eval_dataset_from_path(
+        Path(best_run.get_config()["project_info"]["experiment_path"]) / "eval_df.parquet"
+    )
     cohort_metadata = cohort_metadata_from_run(
         run=best_run,
         cohort_metadata_cols=[
@@ -125,7 +146,9 @@ if __name__ == "__main__":
             pl.col("dw_ek_borger"),
             pl.col("timestamp"),
             pl.col("^meta.*$"),
+            pl.col("pred_age_in_years"),
+            pl.col("pred_sex_female_layer_1"),
         ],
-    )
+    ).rename({"prediction_time_uuid": "pred_time_uuid"})
     df = min_eval_ds.frame.join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name)
     eval_ds = scz_bp_df_to_eval_df(df=df)
