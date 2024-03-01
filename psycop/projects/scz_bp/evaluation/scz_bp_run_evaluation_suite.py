@@ -54,16 +54,14 @@ from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robus
 populate_baseline_registry()
 
 
-def scz_bp_df_to_eval_df(
-    df: pl.DataFrame, y_hat_prop_col_name: str, y_col_name: str
-) -> EvalDataset:
+def scz_bp_df_to_eval_df(df: pl.DataFrame) -> EvalDataset:
     return EvalDataset(
         ids=df["dw_ek_borger"].to_pandas(),
-        pred_time_uuids=df["prediction_time_uuid"].to_pandas(),
+        pred_time_uuids=df["pred_time_uuid"].to_pandas(),
         pred_timestamps=df["timestamp"].to_pandas(),
         outcome_timestamps=df["meta_time_of_diagnosis"].to_pandas(),
-        y=df[y_col_name].to_pandas(),
-        y_hat_probs=df[y_hat_prop_col_name].to_pandas(),
+        y=df["y"].to_pandas(),
+        y_hat_probs=df["y_hat_prob"].to_pandas(),
         age=df["pred_age_in_years"].to_pandas(),
         is_female=df["pred_sex_female_layer_1"].to_pandas(),
         custom_columns={
@@ -81,13 +79,6 @@ def _load_validation_data_from_schema(schema: BaselineSchema) -> pl.DataFrame:
             return schema.trainer.validation_data.load().collect()
         case BaselineTrainer():
             raise TypeError("That's an ABC, mate")
-
-
-def merge_pred_df_with_validation_df(
-    pred_df: pl.DataFrame, validation_df: pl.DataFrame
-) -> pl.DataFrame:
-    validation_df = validation_df.select(pl.col("^meta.*$"), "timestamp", "prediction_time_uuid")
-    return pred_df.join(validation_df, how="left", on="prediction_time_uuid")
 
 
 def cohort_metadata_from_run(
@@ -118,7 +109,7 @@ if __name__ == "__main__":
         experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
     )
 
-    eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
+    min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
     cohort_metadata = cohort_metadata_from_run(
         run=best_run,
         cohort_metadata_cols=[
@@ -128,4 +119,5 @@ if __name__ == "__main__":
             pl.col("^meta.*$"),
         ],
     )
-    df = eval_ds.frame.join(cohort_metadata, how="left", on=eval_ds.pred_time_uuid_col_name)
+    df = min_eval_ds.frame.join(cohort_metadata, how="left", on=min_eval_ds.pred_time_uuid_col_name)
+    eval_ds = scz_bp_df_to_eval_df(df=df)
