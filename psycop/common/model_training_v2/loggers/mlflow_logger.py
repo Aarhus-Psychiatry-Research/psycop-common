@@ -6,6 +6,7 @@ from typing import Any
 
 import confection
 import mlflow
+from polars import DataFrame
 
 from psycop.common.global_utils.config_utils import (
     flatten_nested_dict,
@@ -92,3 +93,12 @@ class MLFlowLogger(BaselineLogger):
     def log_artifact(self, local_path: Path) -> None:
         self._init_run()
         mlflow.log_artifact(local_path=local_path.__str__())
+
+    def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
+        self._init_run()
+        allowed_to_upload = False
+        if allowed_to_upload:
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                tmp_file = Path(tmp_dir) / filename
+                dataframe.write_parquet(tmp_file)
+                mlflow.log_artifact(local_path=tmp_file.__str__())
