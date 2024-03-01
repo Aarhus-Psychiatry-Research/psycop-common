@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from pathlib import Path
 
 import plotnine as pn
 import polars as pl
@@ -24,12 +25,17 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import (
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
-from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
+from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
+    CrossValidatorTrainer,
+)
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
 from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import (
     minimal_eval_dataset_from_mlflow_run,
+    minimal_eval_dataset_from_path,
 )
 from psycop.projects.scz_bp.evaluation.model_performance.performance.performance_by_time_to_event import (
     scz_bp_plot_sensitivity_by_time_to_event,
@@ -90,6 +96,7 @@ def cohort_metadata_from_run(
     return _load_validation_data_from_schema(schema=schema).select(cohort_metadata_cols)
 
 
+
 def full_eval(eval_ds: EvalDataset) -> list[pn.ggplot]:
     age = scz_bp_auroc_by_age(eval_ds=eval_ds)
     sex = scz_bp_auroc_by_sex(eval_ds=eval_ds)
@@ -104,12 +111,13 @@ def full_eval(eval_ds: EvalDataset) -> list[pn.ggplot]:
 
 
 if __name__ == "__main__":
-    experiment_name = "scz-bp_3_year_lookahead"
+    experiment_name = "scz-bp/develop"
     best_run = MlflowClientWrapper().get_best_run_from_experiment(
         experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
     )
 
-    min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
+    # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
+    min_eval_ds = minimal_eval_dataset_from_path(Path(best_run.get_config()["project_info"]["experiment_path"]) / "eval_ds.parquet" )
     cohort_metadata = cohort_metadata_from_run(
         run=best_run,
         cohort_metadata_cols=[
