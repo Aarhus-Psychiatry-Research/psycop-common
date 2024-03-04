@@ -41,8 +41,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     )
 
     for value in df["actual_positive_rate"].unique():
-        p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1)
-
+        p += pn.geom_path(df[df["actual_positive_rate"] == value], group=1)  # type: ignore
     return p
 
 
