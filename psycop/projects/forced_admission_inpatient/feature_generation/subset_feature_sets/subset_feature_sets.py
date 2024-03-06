@@ -16,7 +16,7 @@ def subset_feature_df(feature_set_path: str):
 
         # Get column subsets
         sent_trans_cols = [col for col in full_df.columns if col.startswith("pred_pred_sent")]  # type: ignore
-        tfidf_cols = [col for col in full_df.columns if col.startswith("pred_pred_tfidf")]  # type: ignore
+        tfidf_cols =list(filter(lambda x: x not in set(sent_trans_cols), [col for col in full_df.columns if col.startswith("pred_pred_")]))
         all_pred_cols = [col for col in full_df.columns if col.startswith("pred_")]  # type: ignore
         non_text_pred_cols = list(set(all_pred_cols) - set(tfidf_cols) - set(sent_trans_cols))
         non_text_pred_cols.remove("pred_age_in_years")
@@ -70,6 +70,5 @@ def subset_feature_df(feature_set_path: str):
 
 if __name__ == "__main__":
     subset_feature_df(
-        "no_washout_feature_sets/full_feature_set_with_sentence_transformers_and_tfidf_750_no_washout"
+        "full_feature_set_with_sentence_transformers_and_tfidf_750"
     )
-    subset_feature_df("full_feature_set_with_sentence_transformers_and_tfidf_750")
