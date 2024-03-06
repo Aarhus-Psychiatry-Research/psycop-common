@@ -108,8 +108,7 @@ def plot_cost_benefit_by_ppr(df: pd.DataFrame, per_true_positive: bool) -> pn.gg
         p += pn.ggtitle("Cost/benefit estimate based on unique outcomes predicted ≥1")
 
     for value in legend_order:
-        p += pn.geom_path(df[df["savings_recources_ratio"] == value], group=1)
-
+        p += pn.geom_path(df[df["savings_recources_ratio"] == value], group=1)  # type: ignore
     return p
 
 
