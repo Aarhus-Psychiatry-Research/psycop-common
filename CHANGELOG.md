@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.199.0 (2024-03-07)
+
+### Feature
+
+* Update perf table ([`354021a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/354021ae724e8fdd76bdb4e8c5fe859044df86fe))
+
+### Fix
+
+* Subset tfidf columns ([`c28353a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c28353a61112113f57ee0c9152fbe0e8c2601981))
+
 ## v0.198.0 (2024-02-29)
 
 ### Feature
