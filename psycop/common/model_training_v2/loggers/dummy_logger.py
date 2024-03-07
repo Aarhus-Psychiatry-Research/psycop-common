@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from confection import Config
+from polars import DataFrame
 
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
@@ -26,4 +27,7 @@ class DummyLogger(BaselineLogger):
         pass
 
     def log_artifact(self, local_path: Path) -> None:
+        pass
+
+    def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
         pass

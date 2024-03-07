@@ -63,7 +63,13 @@ class SplitTrainer(BaselineTrainer):
         self._log_main_metric(main_metric)
         self._log_sklearn_pipe()
 
-        return TrainingResult(
-            metric=main_metric,
-            df=pl.DataFrame(pd.concat([validation_data_preprocessed, y_hat_prob], axis=1)),
+        eval_df = pl.DataFrame(
+            {
+                "y": validation_data_preprocessed[self.validation_outcome_col_name],
+                "y_hat_prob": y_hat_prob,
+                "pred_time_uuid": validation_data_preprocessed[self.uuid_col_name],
+            }
         )
+        self.logger.log_dataset(dataframe=eval_df, filename="eval_df.parquet")
+
+        return TrainingResult(metric=main_metric, df=eval_df)

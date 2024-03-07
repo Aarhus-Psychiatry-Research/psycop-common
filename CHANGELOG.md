@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v0.198.0 (2024-02-29)
+
+### Feature
+
+* Add dataset logging ([`ae662d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ae662d3fc6ce87a8cee3948f3ee064566acb689b))
+
+## v0.197.0 (2024-02-29)
+
+### Feature
+
+* Refactor mlflow client interface ([`d346aa9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d346aa9d0bf6c3d3fe686d52288e863a93f51307))
+* Mlflow artifact downloader ([`859e60d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/859e60d8e89a82c46bdb1e83f4bcaae5c272f4e2))
+
 ## v0.196.0 (2024-02-27)
 
 ### Feature

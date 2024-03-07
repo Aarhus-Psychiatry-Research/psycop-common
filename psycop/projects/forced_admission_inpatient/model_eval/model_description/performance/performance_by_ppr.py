@@ -87,6 +87,8 @@ def clean_up_performance_by_ppr(table: pd.DataFrame) -> pd.DataFrame:
             "true_negatives": "TN",
             "false_positives": "FP",
             "false_negatives": "FN",
+            "f1": "F1",
+            "mcc": "MCC",
         },
         axis=1,
     )

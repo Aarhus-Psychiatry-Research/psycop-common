@@ -1,9 +1,9 @@
 import polars as pl
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 
 if __name__ == "__main__":
-    df = MlflowMetricExtractor().get_all_metrics_for_experiment(experiment_name="text_exp")
+    df = MlflowClientWrapper().get_all_metrics_for_experiment(experiment_name="text_exp")
 
     only_oof = (
         (
