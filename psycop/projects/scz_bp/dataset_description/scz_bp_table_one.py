@@ -27,6 +27,7 @@ B) Patients
 """
 import re
 from functools import partial
+from pathlib import Path
 
 import pandas as pd
 import polars as pl
@@ -39,7 +40,6 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-from psycop.common.model_training_v2.trainer.data.dataloaders import ParquetVerticalConcatenator
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     _get_regional_split_df,  # type: ignore
 )
@@ -200,27 +200,20 @@ class SczBpTableOne:
 
     def get_filtered_prediction_times(self) -> pl.DataFrame:
         # TODO: load from flattened df to get the actual filtered values
-        data_paths = self.cfg["trainer"]["training_data"]["dataloader"]["paths"]
+        data = BaselineRegistry.resolve({"data": self.cfg["trainer"]["training_data"]})[
+            "data"
+        ].load()
 
-        data_dir = "/".join(data_paths[0].split("/")[:-1])
-
-        all_splits = ParquetVerticalConcatenator(
-            paths=[
-                f"{data_dir}/train.parquet",
-                f"{data_dir}/val.parquet",
-                f"{data_dir}/test.parquet",
-            ]
-        ).load()
         preprocessing_pipeline = BaselineRegistry().resolve(
             {"pipe": self.cfg["trainer"]["preprocessing_pipeline"]}
         )
 
         preprocessed_all_splits: pl.DataFrame = pl.from_pandas(
-            preprocessing_pipeline["pipe"].apply(all_splits)
+            preprocessing_pipeline["pipe"].apply(data)
         )
 
         # check if all_splits and preprocessed.. are differnet
-        all_splits = all_splits.select(pl.col("^meta.*$"), "prediction_time_uuid").collect()
+        all_splits = data.select(pl.col("^meta.*$"), "prediction_time_uuid").collect()
         preprocessed_all_splits = preprocessed_all_splits.join(
             all_splits, on="prediction_time_uuid", how="left"
         )
@@ -299,6 +292,7 @@ class SczBpTableOne:
 
     @staticmethod
     def add_split(df: pl.DataFrame) -> pl.DataFrame:
+        # CHANGE THIS
         split_df = (
             _get_regional_split_df()
             .collect()
@@ -313,15 +307,62 @@ class SczBpTableOne:
         return df.join(split_df, on="dw_ek_borger", how="left")
 
 
+def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
+    data = BaselineRegistry.resolve({"data": cfg["trainer"]["training_data"]})["data"].load()
+
+    lookahead_distances = [365, 365 * 2, 365 * 3, 365 * 4, 365 * 5]
+    cfg_copy = cfg.copy()
+    del cfg_copy["trainer"]["preprocessing_pipeline"]["*"]["outcome_selector"]
+    del cfg_copy["trainer"]["preprocessing_pipeline"]["*"]["column_prefix_count_expectation"]
+
+    dfs = []
+    for lookahead_distance in lookahead_distances:
+        cfg_copy["trainer"]["preprocessing_pipeline"]["*"]["lookahead_distance_filter"][
+            "n_days"
+        ] = lookahead_distance
+        preprocessing_pipeline = BaselineRegistry().resolve(
+            {"pipe": cfg_copy["trainer"]["preprocessing_pipeline"]}
+        )
+        d = {}
+
+        preprocessed_data: pl.DataFrame = pl.from_pandas(preprocessing_pipeline["pipe"].apply(data))
+
+        positive_prediction_times = preprocessed_data.select(
+            pl.col(f"^outc.*{lookahead_distance}.*$")
+        ).sum()
+        cols = positive_prediction_times.columns
+        positive_prediction_times = positive_prediction_times.get_column(cols[0]).to_list()[0]
+
+        n_positive_patients = (
+            preprocessed_data.group_by("dw_ek_borger")
+            .agg(pl.col(f"^outc.*{lookahead_distance}.*$").max())
+            .sum()
+        )
+        n_positive_patients = n_positive_patients.get_column(cols[0]).to_list()[0]
+
+        d["Lookahead time"] = lookahead_distance
+        d["N prediction times"] = len(preprocessed_data)
+
+        d["N positive prediction times"] = positive_prediction_times
+        d["Proportion positive cases"] = positive_prediction_times / len(preprocessed_data)
+        d["N unique patients"] = preprocessed_data.get_column("dw_ek_borger").n_unique()
+
+        d["N unique positive patients"] = n_positive_patients
+        dfs.append(pl.DataFrame(d))
+    return pl.concat(dfs, how="vertical")
+
+
 if __name__ == "__main__":
     populate_baseline_registry()
-    cfg_path = OVARTACI_SHARED_DIR / "scz_bp" / "experiments" / "l3" / "config.cfg"
+    cfg_path = Path(__file__).parent.parent / "model_training" / "config" / "scz_bp_baseline.cfg"
     save_dir = OVARTACI_SHARED_DIR / "scz_bp" / "dataset_description"
     save_dir.mkdir(parents=True, exist_ok=True)
 
     cfg = Config().from_disk(cfg_path)
     resolved_cfg = BaselineRegistry().resolve(cfg)
 
-    tables = SczBpTableOne(cfg=cfg).make_tables()
-    tables[0].to_csv(save_dir / "table_1_prediction_times.csv")
-    tables[1].to_csv(save_dir / "table_1_patients.csv")
+    descriptive_stats_by_lookahead(cfg=cfg)
+
+    # tables = SczBpTableOne(cfg=cfg).make_tables() # noqa: ERA001
+    # tables[0].to_csv(save_dir / "table_1_prediction_times.csv") # noqa: ERA001
+    # tables[1].to_csv(save_dir / "table_1_patients.csv") # noqa: ERA001

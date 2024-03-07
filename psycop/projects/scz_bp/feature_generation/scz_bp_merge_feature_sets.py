@@ -25,7 +25,7 @@ if __name__ == "__main__":
         / "scz_bp"
         / "text_exp"
         / "flattened_datasets"
-        / "text_exp_730_all_relevant_dfm-encoder-large"
+        / "text_exp_730_all_relevant_tfidf-1000"
     )
 
     combined = DataLoader(
@@ -40,5 +40,5 @@ if __name__ == "__main__":
         path=OVARTACI_SHARED_DIR
         / "scz_bp"
         / "flattened_datasets"
-        / "l1_l4-lookbehind_183_365_730-all_relevant_dfm_encoder-lookbehind_730.parquet"
+        / "l1_l4-lookbehind_183_365_730-all_relevant_tfidf_1000_lookbehind_730.parquet"
     )
