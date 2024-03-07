@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
 
-import plotnine as pn
 import polars as pl
 
 # Set path to BaselineSchema for the run
@@ -30,10 +29,7 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
-from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import (
-    minimal_eval_dataset_from_mlflow_run,
-    minimal_eval_dataset_from_path,
-)
+from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import minimal_eval_dataset_from_path
 
 populate_baseline_registry()
 
@@ -77,18 +73,20 @@ def cohort_metadata_from_run(
 
 
 def load_sczbp_metadata() -> pl.DataFrame:
-    return (pl.read_parquet(
-        OVARTACI_SHARED_DIR
-        / "scz_bp"
-        / "flattened_datasets"
-        / "metadata_only"
-        / "metadata_only.parquet"
-    ).drop("pred_time_uuid")
-    .with_columns(pl.col("timestamp").dt.to_string(format="%Y-%m-%d-%H-%M-%S"))
-    .with_columns(
-        pl.concat_str("dw_ek_borger", "timestamp", separator="-").alias("pred_time_uuid")
-    )
-    .drop("dw_ek_borger", "timestamp")
+    return (
+        pl.read_parquet(
+            OVARTACI_SHARED_DIR
+            / "scz_bp"
+            / "flattened_datasets"
+            / "metadata_only"
+            / "metadata_only.parquet"
+        )
+        .drop("pred_time_uuid")
+        .with_columns(pl.col("timestamp").dt.to_string(format="%Y-%m-%d-%H-%M-%S"))
+        .with_columns(
+            pl.concat_str("dw_ek_borger", "timestamp", separator="-").alias("pred_time_uuid")
+        )
+        .drop("dw_ek_borger", "timestamp")
     )
 
 
@@ -97,7 +95,7 @@ def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> Eval
         experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
     )
 
-    # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
+    # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run) # noqa: ERA001
     min_eval_ds = minimal_eval_dataset_from_path(
         Path(best_run.get_config()["project_info"]["experiment_path"]) / "eval_df.parquet"
     )
@@ -107,7 +105,6 @@ def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> Eval
             pl.col("prediction_time_uuid"),
             pl.col("dw_ek_borger"),
             pl.col("timestamp"),
-            # pl.col("^meta.*$"),
             pl.col("pred_age_in_years"),
             pl.col("pred_sex_female_layer_1"),
         ],
@@ -119,26 +116,13 @@ def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> Eval
     return scz_bp_df_to_eval_df(df=df)
 
 
-# def full_eval(eval_ds: EvalDataset) -> list[pn.ggplot]:
-#     age = scz_bp_auroc_by_age(eval_ds=eval_ds)
-#     sex = scz_bp_auroc_by_sex(eval_ds=eval_ds)
-#     time_from_first_visit = scz_bp_auroc_by_time_from_first_contact(eval_ds=eval_ds)
-
-#     dow = scz_bp_auroc_by_day_of_week(eval_ds=eval_ds)
-#     month = scz_bp_auroc_by_month_of_year(eval_ds=eval_ds)
-#     quarter = scz_bp_auroc_by_quarter(eval_ds=eval_ds)
-
-#     sens_time_to_event = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds)
-#     return [age, sex, time_from_first_visit, dow, month, quarter, sens_time_to_event]
-
-
 if __name__ == "__main__":
     experiment_name = "scz-bp/develop"
     best_run = MlflowClientWrapper().get_best_run_from_experiment(
         experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
     )
 
-    # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run)
+    # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run) # noqa: ERA001
     min_eval_ds = minimal_eval_dataset_from_path(
         Path(best_run.get_config()["project_info"]["experiment_path"]) / "eval_df.parquet"
     )

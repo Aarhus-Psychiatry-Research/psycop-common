@@ -2,17 +2,17 @@ import pandas as pd
 import plotnine as pn
 import polars as pl
 
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import scz_bp_get_eval_ds_from_best_run_in_experiment
-from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
+from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
+    scz_bp_get_eval_ds_from_best_run_in_experiment,
+)
 
 
 def _plot_metric_by_time_to_event(df: pd.DataFrame, metric: str) -> pn.ggplot:
-    df["subset"] = df["subset"].replace({"bp" : "BP", "scz" : "SCZ", "both" : "Combined"})
+    df["subset"] = df["subset"].replace({"bp": "BP", "scz": "SCZ", "both": "Combined"})
     df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ", "Combined"])
 
     p = (
@@ -24,7 +24,7 @@ def _plot_metric_by_time_to_event(df: pd.DataFrame, metric: str) -> pn.ggplot:
                 ymin="ci_lower",
                 ymax="ci_upper",
                 color="subset",
-                group="subset"
+                group="subset",
             ),
         )
         + pn.scale_x_discrete(reverse=True)
@@ -40,7 +40,7 @@ def _plot_metric_by_time_to_event(df: pd.DataFrame, metric: str) -> pn.ggplot:
             legend_title=pn.element_blank(),
             legend_text=pn.element_text(size=11),
             axis_text=pn.element_text(size=10),
-            figure_size=(5,5)
+            figure_size=(5, 5),
         )
     )
 
@@ -106,6 +106,7 @@ def scz_bp_plot_sensitivity_by_time_to_event(eval_ds: EvalDataset, ppr: float) -
 
     return p
 
+
 if __name__ == "__main__":
     best_experiment = "sczbp/text_only"
     best_pos_rate = 0.04
@@ -113,13 +114,11 @@ if __name__ == "__main__":
 
     p = scz_bp_plot_sensitivity_by_time_to_event(eval_ds=eval_ds, ppr=best_pos_rate)
     p + pn.theme(
-            legend_position=(0.4, 0.92),
-            axis_text_x=pn.element_text(rotation=45, hjust=1),
-            axis_title=pn.element_text(size=14),
-            legend_title=pn.element_blank(),
-            legend_text=pn.element_text(size=11),
-            axis_text=pn.element_text(size=10),
-            figure_size=(5,5)
-        )
-
-
+        legend_position=(0.4, 0.92),
+        axis_text_x=pn.element_text(rotation=45, hjust=1),
+        axis_title=pn.element_text(size=14),
+        legend_title=pn.element_blank(),
+        legend_text=pn.element_text(size=11),
+        axis_text=pn.element_text(size=10),
+        figure_size=(5, 5),
+    )

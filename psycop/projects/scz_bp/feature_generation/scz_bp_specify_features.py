@@ -24,8 +24,13 @@ from psycop.projects.scz_bp.feature_generation.feature_layers.value_specificatio
 from psycop.projects.scz_bp.feature_generation.outcome_specification.bp_diagnoses import (
     get_first_bp_diagnosis,
 )
-from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin, get_time_of_first_scz_or_bp_diagnosis_after_washin
-from psycop.projects.scz_bp.feature_generation.outcome_specification.scz_diagnoses import get_first_scz_diagnosis
+from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
+    get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin,
+    get_time_of_first_scz_or_bp_diagnosis_after_washin,
+)
+from psycop.projects.scz_bp.feature_generation.outcome_specification.scz_diagnoses import (
+    get_first_scz_diagnosis,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

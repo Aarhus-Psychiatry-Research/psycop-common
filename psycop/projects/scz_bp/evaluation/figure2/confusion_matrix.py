@@ -14,9 +14,6 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
 )
 from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
-from psycop.projects.t2d.paper_outputs.model_description.performance.performance_by_ppr import (
-    _clean_up_performance_by_ppr,  # type: ignore
-)
 
 
 def scz_bp_plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.ggplot:
@@ -69,7 +66,7 @@ def scz_bp_confusion_matrix_plot(eval_ds: EvalDataset, positive_rate: float) -> 
     confusion_matrix = get_confusion_matrix_cells_from_df(df=df)
 
     p = scz_bp_plotnine_confusion_matrix(
-        matrix=confusion_matrix, outcome_text=f"SCZ or BP within 5 years"
+        matrix=confusion_matrix, outcome_text="SCZ or BP within 5 years"
     )
 
     return p
@@ -80,7 +77,7 @@ def _output_performance_by_ppr(eval_ds: EvalDataset) -> pd.DataFrame:  # type: i
         eval_dataset=eval_ds, positive_rates=[0.07, 0.06, 0.05, 0.04, 0.03]
     )
 
-    # df = _clean_up_performance_by_ppr(df)
+    # df = _clean_up_performance_by_ppr(df) # noqa: ERA001
     return df
 
 
@@ -89,5 +86,5 @@ if __name__ == "__main__":
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
-    # x = _output_performance_by_ppr(eval_ds=eval_ds)
+    # x = _output_performance_by_ppr(eval_ds=eval_ds) # noqa: ERA001
     p = scz_bp_confusion_matrix_plot(eval_ds=eval_ds, positive_rate=best_pos_rate)
