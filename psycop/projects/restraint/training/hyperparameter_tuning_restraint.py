@@ -12,8 +12,8 @@ if __name__ == "__main__":
     OptunaHyperParameterOptimization().from_file(
         (Path(__file__).parent / "restraint_hyperparam.cfg"),
         study_name="test",
-        n_trials=250,
-        n_jobs=5,
+        n_trials=1000,
+        n_jobs=15,
         direction="maximize",
         catch=(), # type: ignore
     )
