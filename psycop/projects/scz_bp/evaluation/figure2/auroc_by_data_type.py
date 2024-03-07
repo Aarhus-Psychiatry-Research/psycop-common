@@ -16,20 +16,6 @@ from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_p
     t2d_plot_robustness,
 )
 
-"""Figure 2A: AUROC by input data type: 
-- structured
-- text
-- structured + text
-- structured + text + synthetic data"""
-
-
-# modality2experiment = {
-#     "Structured only": "scz_bp/structured_only",
-#     "Text only": "scz_bp/text_only",
-#     "Structured + text": "scz_bp/structured_text",
-#     "Structured + text + synthetic": "scz_bp/structured_text_synthetic",
-# }
-
 
 def get_auc_roc_df(y: pd.Series, y_hat_probs: pd.Series) -> pl.DataFrame:  # type: ignore
     fpr, tpr, _ = roc_curve(y_true=y, y_score=y_hat_probs)
@@ -59,25 +45,47 @@ def scz_bp_make_group_auc_plot(roc_df: pl.DataFrame) -> pn.ggplot:
     roc_df = roc_df.with_columns(
         pl.concat_str(pl.col("modality"), pl.col("AUC").round(3), separator=": AUROC=")
     )
+    order = roc_df.group_by("modality").agg(pl.col("AUC").max()).sort(by="AUC", descending=True).get_column("modality").to_list()
+    roc_df = roc_df.with_columns(pl.col("modality").cast(pl.Enum(order)))
 
     return (
         pn.ggplot(roc_df, pn.aes(x="fpr", y="tpr", color="modality"))
         + pn.geom_line()
         + pn.geom_line(data=abline_df, linetype="dashed", color="grey", alpha=0.5)
         + pn.labs(x="1 - Specificity", y="Sensitivty")
-        # + pn.annotate("text", label=annotation_str, x=1, y=0, ha="right", va="bottom")
         + pn.coord_cartesian(xlim=(0, 1), ylim=(0, 1))
         + pn.theme_minimal()
         + pn.theme(
-            legend_position=(0.8, 0.3), legend_direction="vertical", legend_title=pn.element_blank()
+            legend_position=(0.65, 0.25),
+            legend_direction="vertical",
+            legend_title=pn.element_blank(),
+            axis_title=pn.element_text(size=14),
+            legend_text=pn.element_text(size=11),
+            axis_text=pn.element_text(size=10),
+            figure_size=(5,5)
         )
     )
 
 
+def plot_scz_bp_auroc_by_data_type(modality2experiment: dict[str, str]) -> pn.ggplot:
+    df = scz_bp_auroc_by_data_type(modality2experiment_mapping=modality2experiment)
+    return scz_bp_make_group_auc_plot(df)
+
+
 if __name__ == "__main__":
     modality2experiment = {
-        "Structured + text": "scz-bp/structured_text",
-        "Structured only ": "scz-bp/structured_only",
+        "Structured + text": "sczbp/structured_text",
+        "Structured only ": "sczbp/structured_only",
+        "Text only": "sczbp/text_only",
     }
     df = scz_bp_auroc_by_data_type(modality2experiment_mapping=modality2experiment)
-    scz_bp_make_group_auc_plot(df)
+    p = scz_bp_make_group_auc_plot(df)
+    p + pn.theme(
+            legend_position=(0.65, 0.25),
+            legend_direction="vertical",
+            legend_title=pn.element_blank(),
+            axis_title=pn.element_text(size=14),
+            legend_text=pn.element_text(size=11),
+            axis_text=pn.element_text(size=10),
+            figure_size=(5,5)
+        )
