@@ -42,11 +42,15 @@ class LightGBMSuggester(Suggester):
         num_leaves: IntegerspaceT = (5, 500, True),
         n_estimators: IntegerspaceT = (5, 500, True),
         learning_rate: FloatSpaceT = (1e-5, 0.2, True),
+        reg_alpha: FloatSpaceT = (0.0, 0.2, False),
+        reg_lambda: FloatSpaceT = (0.0, 0.2, False),
     ):
         # A little annoying, can be auto-generated using introspection of the annotations/types. E.g. added to the `Suggester` class. But this is fine for now.
         self.num_leaves = IntegerSpace.from_list_or_mapping(num_leaves)
         self.n_estimators = IntegerSpace.from_list_or_mapping(n_estimators)
         self.learning_rate = FloatSpace.from_list_or_mapping(learning_rate)
+        self.reg_alpha = FloatSpace.from_list_or_mapping(reg_alpha)
+        self.reg_lambda = FloatSpace.from_list_or_mapping(reg_lambda)
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         # The same goes forthis, can be auto-generated.
@@ -55,5 +59,7 @@ class LightGBMSuggester(Suggester):
             "num_leaves": self.num_leaves.suggest(trial, name="num_leaves"),
             "n_estimators": self.n_estimators.suggest(trial, name="n_estimators"),
             "learning_rate": self.learning_rate.suggest(trial, name="learning_rate"),
-            "device_type": "gpu",
+            "reg_alpha": self.reg_alpha.suggest(trial, name="reg_alpha"),
+            "reg_lambda": self.reg_lambda.suggest(trial, name="reg_lambda"),
+            "device_type": "cpu",
         }

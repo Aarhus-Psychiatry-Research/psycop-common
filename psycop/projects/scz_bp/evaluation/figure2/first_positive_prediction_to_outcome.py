@@ -100,7 +100,7 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/structured_only"
+    best_experiment = "sczbp/text_only"
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
@@ -115,3 +115,5 @@ if __name__ == "__main__":
             figure_size=(5,5),
             axis_text=pn.element_text(size=10)
         )
+
+# pl.from_pandas(plot_df).with_columns(pl.col("years_from_pred_to_event").round().alias("rounded")).group_by("outcome", "rounded").len().sort(["outcome", "rounded"])

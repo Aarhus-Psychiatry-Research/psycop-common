@@ -1,11 +1,14 @@
 import plotnine as pn
 import polars as pl
 
-from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
-    t2d_plot_robustness,
+from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_auroc_by_timedelta_df,
 )
+from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_plot import (
+    scz_bp_plot_robustness,
+)
+
 
 
 def scz_bp_auroc_by_time_from_first_contact(eval_ds: EvalDataset) -> pn.ggplot:
@@ -29,7 +32,7 @@ def scz_bp_auroc_by_time_from_first_contact(eval_ds: EvalDataset) -> pn.ggplot:
         bins=range(0, 60, 6),
     )
 
-    return t2d_plot_robustness(
+    return scz_bp_plot_robustness(
         plot_df,
         x_column="unit_from_event_binned",
         line_y_col_name="auroc",

@@ -2,6 +2,7 @@ import plotnine as pn
 
 from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_periodic_time_df
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_plot import scz_bp_plot_robustness
 from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
     t2d_plot_robustness,
 )
@@ -26,6 +27,6 @@ def scz_bp_auroc_by_month_of_year(eval_ds: EvalDataset) -> pn.ggplot:
         bin_period="M",
     )
 
-    return t2d_plot_robustness(
+    return scz_bp_plot_robustness(
         df, x_column="time_bin", line_y_col_name="auroc", xlab="Month of Year"
     )
