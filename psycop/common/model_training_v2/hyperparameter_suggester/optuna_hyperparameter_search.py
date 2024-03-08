@@ -93,7 +93,6 @@ class OptunaHyperParameterOptimization:
         catch: tuple[type[Exception]],
         cfg_with_resolved_suggesters: dict[str, Any],
     ) -> Study:
-
         study.optimize(
             lambda trial: OptunaHyperParameterOptimization()._optuna_objective(
                 trial=trial, cfg_with_resolved_suggesters=cfg_with_resolved_suggesters
