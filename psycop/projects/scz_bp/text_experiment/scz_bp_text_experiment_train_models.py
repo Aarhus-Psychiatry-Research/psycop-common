@@ -30,12 +30,12 @@ if __name__ == "__main__":
         if not feature_set_dir.is_dir():
             print(f"{feature_set_dir} is not a directory. Skipping")
             continue
-        # if "aktuelt_psykisk" in feature_set_dir.name:
-        #     print(f"Skipping {feature_set_dir}")
-        #     continue
-        # if not "tfidf-1000" in feature_set_dir.name:
-        #     print(f"Skipping {feature_set_dir}")
-        #     continue
+        # if "aktuelt_psykisk" in feature_set_dir.name: # noqa: ERA001
+        #     print(f"Skipping {feature_set_dir}") # noqa: ERA001
+        #     continue # noqa: ERA001
+        # if not "tfidf-1000" in feature_set_dir.name: # noqa: ERA001
+        #     print(f"Skipping {feature_set_dir}") # noqa: ERA001
+        #     continue # noqa: ERA001
         cfg_copy = cfg.copy()
         cfg_copy["trainer"]["training_data"]["paths"] = get_list_of_paths_to_splits(
             feature_set_dir=feature_set_dir

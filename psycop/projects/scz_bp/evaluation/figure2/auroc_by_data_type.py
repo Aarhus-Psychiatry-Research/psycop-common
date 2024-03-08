@@ -1,19 +1,10 @@
-from typing import Optional, Sequence
-
 import pandas as pd
 import plotnine as pn
 import polars as pl
-from iterpy import Iter
 from sklearn.metrics import roc_auc_score, roc_curve
 
-from psycop.common.model_evaluation.binary.utils import auroc_by_group
-from psycop.common.model_evaluation.utils import bin_continuous_data
-from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
-)
-from psycop.projects.t2d.paper_outputs.model_description.robustness.robustness_plot import (
-    t2d_plot_robustness,
 )
 
 
@@ -45,7 +36,13 @@ def scz_bp_make_group_auc_plot(roc_df: pl.DataFrame) -> pn.ggplot:
     roc_df = roc_df.with_columns(
         pl.concat_str(pl.col("modality"), pl.col("AUC").round(3), separator=": AUROC=")
     )
-    order = roc_df.group_by("modality").agg(pl.col("AUC").max()).sort(by="AUC", descending=True).get_column("modality").to_list()
+    order = (
+        roc_df.group_by("modality")
+        .agg(pl.col("AUC").max())
+        .sort(by="AUC", descending=True)
+        .get_column("modality")
+        .to_list()
+    )
     roc_df = roc_df.with_columns(pl.col("modality").cast(pl.Enum(order)))
 
     return (
@@ -62,7 +59,7 @@ def scz_bp_make_group_auc_plot(roc_df: pl.DataFrame) -> pn.ggplot:
             axis_title=pn.element_text(size=14),
             legend_text=pn.element_text(size=11),
             axis_text=pn.element_text(size=10),
-            figure_size=(5,5)
+            figure_size=(5, 5),
         )
     )
 
@@ -81,11 +78,11 @@ if __name__ == "__main__":
     df = scz_bp_auroc_by_data_type(modality2experiment_mapping=modality2experiment)
     p = scz_bp_make_group_auc_plot(df)
     p + pn.theme(
-            legend_position=(0.65, 0.25),
-            legend_direction="vertical",
-            legend_title=pn.element_blank(),
-            axis_title=pn.element_text(size=14),
-            legend_text=pn.element_text(size=11),
-            axis_text=pn.element_text(size=10),
-            figure_size=(5,5)
-        )
+        legend_position=(0.65, 0.25),
+        legend_direction="vertical",
+        legend_title=pn.element_blank(),
+        axis_title=pn.element_text(size=14),
+        legend_text=pn.element_text(size=11),
+        axis_text=pn.element_text(size=10),
+        figure_size=(5, 5),
+    )

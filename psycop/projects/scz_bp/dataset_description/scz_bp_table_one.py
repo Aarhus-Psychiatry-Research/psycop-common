@@ -40,7 +40,6 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
-from psycop.common.model_training_v2.trainer.data.dataloaders import ParquetVerticalConcatenator
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
     _get_regional_split_df,  # type: ignore
 )
@@ -308,7 +307,7 @@ class SczBpTableOne:
         return df.join(split_df, on="dw_ek_borger", how="left")
 
 
-def descriptive_stats_by_lookahead(cfg: Config):
+def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
     data = BaselineRegistry.resolve({"data": cfg["trainer"]["training_data"]})["data"].load()
 
     lookahead_distances = [365, 365 * 2, 365 * 3, 365 * 4, 365 * 5]
@@ -327,27 +326,27 @@ def descriptive_stats_by_lookahead(cfg: Config):
         d = {}
 
         preprocessed_data: pl.DataFrame = pl.from_pandas(preprocessing_pipeline["pipe"].apply(data))
-        
+
         positive_prediction_times = preprocessed_data.select(
             pl.col(f"^outc.*{lookahead_distance}.*$")
         ).sum()
         cols = positive_prediction_times.columns
         positive_prediction_times = positive_prediction_times.get_column(cols[0]).to_list()[0]
-        
+
         n_positive_patients = (
             preprocessed_data.group_by("dw_ek_borger")
             .agg(pl.col(f"^outc.*{lookahead_distance}.*$").max())
             .sum()
         )
         n_positive_patients = n_positive_patients.get_column(cols[0]).to_list()[0]
-        
+
         d["Lookahead time"] = lookahead_distance
         d["N prediction times"] = len(preprocessed_data)
-        
+
         d["N positive prediction times"] = positive_prediction_times
         d["Proportion positive cases"] = positive_prediction_times / len(preprocessed_data)
-        d["N unique patients"] = preprocessed_data.get_column('dw_ek_borger').n_unique()
-        
+        d["N unique patients"] = preprocessed_data.get_column("dw_ek_borger").n_unique()
+
         d["N unique positive patients"] = n_positive_patients
         dfs.append(pl.DataFrame(d))
     return pl.concat(dfs, how="vertical")
@@ -364,6 +363,6 @@ if __name__ == "__main__":
 
     descriptive_stats_by_lookahead(cfg=cfg)
 
-    # tables = SczBpTableOne(cfg=cfg).make_tables()
-    # tables[0].to_csv(save_dir / "table_1_prediction_times.csv")
-    # tables[1].to_csv(save_dir / "table_1_patients.csv")
+    # tables = SczBpTableOne(cfg=cfg).make_tables() # noqa: ERA001
+    # tables[0].to_csv(save_dir / "table_1_prediction_times.csv") # noqa: ERA001
+    # tables[1].to_csv(save_dir / "table_1_patients.csv") # noqa: ERA001

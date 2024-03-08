@@ -7,4 +7,3 @@ if __name__ == "__main__":
     populate_baseline_registry()
     # populate_scz_bp_registry()  # noqa: ERA001
     train_baseline_model(Path(__file__).parent / "config" / "scz_bp_text_only.cfg")
- 

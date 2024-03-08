@@ -9,7 +9,6 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
 )
 from psycop.projects.t2d.paper_outputs.config import T2D_PN_THEME
-from psycop.projects.t2d.utils.pipeline_objects import T2DPipelineRun
 
 
 def scz_bp_first_pred_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
@@ -48,7 +47,7 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
     outcome2timestamp = {
         "SCZ": eval_ds.custom_columns["time_of_scz_diagnosis"],  # type: ignore
         "BP": eval_ds.custom_columns["time_of_bp_diagnosis"],  # type: ignore
-        #   "both": eval_ds.outcome_timestamps,
+        #   "both": eval_ds.outcome_timestamps, # noqa: ERA001# noqa: ERA001
     }
     outcome2color = {"BP": "#669BBC", "SCZ": "#A8C686"}
 
@@ -86,8 +85,8 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
             legend_title=pn.element_blank(),
             legend_text=pn.element_text(size=11),
             axis_title=pn.element_text(size=14),
-            figure_size=(5,5),
-            axis_text=pn.element_text(size=9)
+            figure_size=(5, 5),
+            axis_text=pn.element_text(size=9),
         )
     )
 
@@ -104,16 +103,14 @@ if __name__ == "__main__":
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
-    #p = scz_bp_first_pred_to_event(eval_ds=eval_ds, ppr=best_pos_rate)
+    # p = scz_bp_first_pred_to_event(eval_ds=eval_ds, ppr=best_pos_rate) # noqa: ERA001
     p = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=best_pos_rate)
     p + pn.theme(
-            legend_position=(0.35, 0.85),
-            legend_direction="vertical",
-            legend_title=pn.element_blank(),
-            legend_text=pn.element_text(size=11),
-            axis_title=pn.element_text(size=14),
-            figure_size=(5,5),
-            axis_text=pn.element_text(size=10)
-        )
-
-# pl.from_pandas(plot_df).with_columns(pl.col("years_from_pred_to_event").round().alias("rounded")).group_by("outcome", "rounded").len().sort(["outcome", "rounded"])
+        legend_position=(0.35, 0.85),
+        legend_direction="vertical",
+        legend_title=pn.element_blank(),
+        legend_text=pn.element_text(size=11),
+        axis_title=pn.element_text(size=14),
+        figure_size=(5, 5),
+        axis_text=pn.element_text(size=10),
+    )
