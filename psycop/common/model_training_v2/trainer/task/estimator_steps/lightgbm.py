@@ -22,6 +22,8 @@ def lightgbm_classifier_step(
     device_type: Literal["cpu", "gpu"] = "cpu",
     n_estimators: int = 100,
     learning_rate: float = 0.1,
+    reg_alpha: float = 0.0,
+    reg_lambda: float = 0.0,
 ) -> ModelStep:
     return (
         "lightgbm",
@@ -31,6 +33,8 @@ def lightgbm_classifier_step(
             max_bin=max_bin,
             n_estimators=n_estimators,
             learning_rate=learning_rate,
+            reg_lambda=reg_lambda,
+            reg_alpha=reg_alpha
         ),  # type: ignore
     )
 

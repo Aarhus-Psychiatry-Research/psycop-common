@@ -10,10 +10,10 @@ from psycop.common.model_training_v2.hyperparameter_suggester.optuna_hyperparame
 if __name__ == "__main__":
     populate_baseline_registry()
     OptunaHyperParameterOptimization().from_file(
-        (Path(__file__).parent / "config" / "scz_bp_structured_only.cfg"),
-        study_name="sczbp/structured_only",
+        (Path(__file__).parent / "config" / "scz_bp_structured_text.cfg"),
+        study_name="sczbp-structured_text",
         n_trials=300,
-        n_jobs=1,
+        n_jobs=15,
         direction="maximize",
         catch=(Exception,),
     )
