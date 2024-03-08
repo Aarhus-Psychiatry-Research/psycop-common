@@ -12,15 +12,16 @@ from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMet
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
-@BaselineRegistry.trainers.register("split_trainer")
+@BaselineRegistry.trainers.register("split_trainer_split_Preprocessing")
 @dataclass
-class SplitTrainer(BaselineTrainer):
+class SplitTrainerSplitPreprocessing(BaselineTrainer):
     uuid_col_name: str
     training_data: BaselineDataLoader
     training_outcome_col_name: str
     validation_data: BaselineDataLoader
     validation_outcome_col_name: str
-    preprocessing_pipeline: PreprocessingPipeline
+    training_preprocessing_pipeline: PreprocessingPipeline
+    validation_preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
 
@@ -38,10 +39,10 @@ class SplitTrainer(BaselineTrainer):
         return [self.uuid_col_name, *self.outcome_columns]
 
     def train(self) -> TrainingResult:
-        training_data_preprocessed = self.preprocessing_pipeline.apply(
+        training_data_preprocessed = self.training_preprocessing_pipeline.apply(
             data=self.training_data.load()
         )
-        validation_data_preprocessed = self.preprocessing_pipeline.apply(
+        validation_data_preprocessed = self.validation_preprocessing_pipeline.apply(
             data=self.validation_data.load()
         )
 
@@ -73,3 +74,42 @@ class SplitTrainer(BaselineTrainer):
         self.logger.log_dataset(dataframe=eval_df, filename="eval_df.parquet")
 
         return TrainingResult(metric=main_metric, df=eval_df)
+
+
+@BaselineRegistry.trainers.register("split_trainer")
+@dataclass
+class SplitTrainer(BaselineTrainer):
+    uuid_col_name: str
+    training_data: BaselineDataLoader
+    training_outcome_col_name: str
+    validation_data: BaselineDataLoader
+    validation_outcome_col_name: str
+    preprocessing_pipeline: PreprocessingPipeline
+    task: BaselineTask
+    metric: BaselineMetric
+
+    # When using sklearn pipelines, the outcome column must retain its name
+    # throughout the pipeline.
+    # To accomplish this, we rename the two outcomes to a shared name.
+    _shared_outcome_col_name = "outcome"
+
+    @property
+    def outcome_columns(self) -> Sequence[str]:
+        return [self.training_outcome_col_name, self.validation_outcome_col_name]
+
+    @property
+    def non_predictor_columns(self) -> Sequence[str]:
+        return [self.uuid_col_name, *self.outcome_columns]
+
+    def train(self) -> TrainingResult:
+
+        return SplitTrainerSplitPreprocessing(uuid_col_name=self.uuid_col_name,
+                                    training_data=self.training_data,
+                                    training_outcome_col_name=self.training_outcome_col_name,
+                                    validation_data=self.validation_data,
+                                    validation_outcome_col_name=self.validation_outcome_col_name,
+                                    training_preprocessing_pipeline=self.preprocessing_pipeline,
+                                    validation_preprocessing_pipeline=self.preprocessing_pipeline,
+                                    task=self.task,
+                                    metric=self.metric).train()
+    
