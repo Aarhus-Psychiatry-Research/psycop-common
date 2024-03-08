@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 
 import polars as pl
@@ -26,6 +27,7 @@ def add_only_patients_with_schizo_with_text() -> pl.DataFrame:
     ]
 
     relevant_text_df = load_text_sfis(text_sfi_names=relevant_sfi_names, include_sfi_name=True)
+    relevant_text_df["value"] = relevant_text_df["value"].str.lower()
     relevant_text_df = pl.DataFrame(relevant_text_df)
 
     schizo_df = schizo_df.with_columns("dw_ek_borger").drop("timestamp")
@@ -68,7 +70,14 @@ def extract_clozapine_from_free_text() -> pl.DataFrame:
         "lene",
         "Olazapin",
         "olazapin",
+        "planzapin",
     ]
+
+    # Set the number of rows to process before printing the time
+    rows_per_print = 100000
+
+    # Start the timer
+    start_time = time.time()
 
     # Iterate over rows in the DataFrame
     for index, value_str in enumerate(schizophrenia_text_medicin_df["value"]):
@@ -101,11 +110,6 @@ def extract_clozapine_from_free_text() -> pl.DataFrame:
                 if similarity_score > 70:
                     matches.append(target_word)
 
-                    # Print the matched word
-                    print(
-                        f"Match found for '{target_word}' in '{value}' with similarity score {similarity_score}"
-                    )
-
                     # Stop the inner loop if a match is found
                     break
 
@@ -122,6 +126,14 @@ def extract_clozapine_from_free_text() -> pl.DataFrame:
 
                 break
 
+        if (index + 1) % rows_per_print == 0:
+            elapsed_time = time.time() - start_time  #
+            print(f"Processed {index + 1} rows in {elapsed_time:.2f} seconds.")
+
+    # Print the final elapsed time
+    total_elapsed_time = time.time() - start_time
+    print(f"Total processing time: {total_elapsed_time:.2f} seconds")
+
     return clozapine_df
 
 
@@ -132,7 +144,7 @@ if __name__ == "__main__":
     clozapine_df = clozapine_df.to_pandas()
 
     file_path = Path(
-        "E:/shared_resources/clozapine/text_outcome/raw_text_outcome_clozapine.parquet"
+        "E:/shared_resources/clozapine/text_outcome/raw_text_outcome_clozapine_v2.parquet"
     )
 
     write_df_to_file(df=clozapine_df, file_path=file_path)

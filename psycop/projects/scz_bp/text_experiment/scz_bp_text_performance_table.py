@@ -1,9 +1,11 @@
 import polars as pl
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 
 if __name__ == "__main__":
-    df = MlflowMetricExtractor().get_all_metrics_for_experiment(experiment_name="text_exp")
+    df = MlflowClientWrapper().get_all_metrics_for_experiment(
+        experiment_name="sczbp/text_5_year_lookahead"
+    )
 
     only_oof = (
         (
@@ -28,5 +30,7 @@ if __name__ == "__main__":
     table = (
         only_oof.select("Notes", "Model", "pretty_value")
         .pivot(index="Notes", columns="Model", values="pretty_value", aggregate_function=None)
-        .select("Notes", "tfidf_500", "tfidf_1000", "dfm_encoder_large", "dfm_finetuned")
+        .select(
+            "Notes", "tfidf_500", "tfidf_1000", "dfm_encoder_large", "dfm_finetuned", "pse_keywords"
+        )
     )
