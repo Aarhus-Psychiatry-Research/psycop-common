@@ -5,25 +5,25 @@ import pandas as pd
 from psycop.common.feature_generation.utils import write_df_to_file
 
 
-def process_df_from_disk():
+def process_df_from_disk() -> pd.DataFrame:
     raw_text_df = pd.read_parquet(
         "E:/shared_resources/clozapine/text_outcome/raw_text_outcome_clozapine_v2.parquet"
-    )
-
-    validated_text_outcome_clozapine = pd.read_parquet(
-        "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_clozapine_v17.parquet"
-    )
-
-    unsure_text_outcome_clozapine = pd.read_parquet(
-        "E:/shared_resources/clozapine/text_outcome/unsure_text_outcome_clozapine_v13.parquet"
     )
 
     rows_no_text_on_matched_word = pd.read_parquet(
         "E:/shared_resources/clozapine/text_outcome/rows_no_text_on_matched_word_v1.parquet"
     )
 
+    validated_text_outcome_clozapine = pd.read_parquet(
+        "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_clozapine_v33.parquet"
+    )
+
+    unsure_text_outcome_clozapine = pd.read_parquet(
+        "E:/shared_resources/clozapine/text_outcome/unsure_text_outcome_clozapine_v23.parquet"
+    )
+
     no_text_outcome_df = pd.read_parquet(
-        "E:/shared_resources/clozapine/text_outcome/no_text_outcome_clozapine_v15.parquet"
+        "E:/shared_resources/clozapine/text_outcome/no_text_outcome_clozapine_v27.parquet"
     )
 
     # remove rows from already checked cpr/rows -
@@ -78,7 +78,7 @@ def process_df_from_disk():
     )
 
 
-def get_next_version_file_path(file_path):
+def get_next_version_file_path(file_path: Path) -> Path:
     base_path = file_path.parent
     file_name = file_path.stem
     extension = file_path.suffix
@@ -91,8 +91,11 @@ def get_next_version_file_path(file_path):
 
 
 def read_and_validate_text_for_clozapine_outcome(
-    sorted_df, validated_text_outcome_clozapine, unsure_text_outcome_clozapine, no_text_outcome_df
-):
+    sorted_df: pd.DataFrame,
+    validated_text_outcome_clozapine: pd.DataFrame,
+    unsure_text_outcome_clozapine: pd.DataFrame,
+    no_text_outcome_df: pd.DataFrame,
+) -> pd.DataFrame:
     no_text_version_count = 0
     unsure_version_count = 0
     validated_version_count = 0
@@ -101,13 +104,13 @@ def read_and_validate_text_for_clozapine_outcome(
     for index, row in sorted_df.iterrows():
         if row["dw_ek_borger"] in validated_text_outcome_clozapine["dw_ek_borger"].values:
             print(
-                f"Skipping row {index + 1} as dw_ek_borger {row['dw_ek_borger']} is already in validated_text_outcome_df."
+                f"Skipping row {index + 1} as dw_ek_borger {row['dw_ek_borger']} is already in validated_text_outcome_df."  # type: ignore
             )
             continue
 
         # Display the current row information
         print(
-            f"\nRow {index + 1} - Fuzz Ratio: {row['fuzz_ratio']}, Matched Word: {row['matched_word']}, dw_ek_borger: {row['dw_ek_borger']}, timestamp: {row['timestamp']}, value: {row['value']}"
+            f"\nRow {index + 1} - Fuzz Ratio: {row['fuzz_ratio']}, Matched Word: {row['matched_word']}, dw_ek_borger: {row['dw_ek_borger']}, timestamp: {row['timestamp']}, value: {row['value']}"  # type: ignore
         )
 
         # Ask the user whether to add to validated_text_outcome_df, unsure, or move to the next row
@@ -119,7 +122,7 @@ def read_and_validate_text_for_clozapine_outcome(
             # Append the row to validated_text_outcome_df
             validated_text_outcome_clozapine = validated_text_outcome_clozapine.append(
                 row, ignore_index=True
-            )
+            )  # type: ignore
             print("Added to validated_text_outcome_df.")
 
             validated_version_count += 1
@@ -134,7 +137,7 @@ def read_and_validate_text_for_clozapine_outcome(
 
         elif choice == "n":
             # Add to no_text_outcome_df_unique
-            no_text_outcome_df = no_text_outcome_df.append(row, ignore_index=True)
+            no_text_outcome_df = no_text_outcome_df.append(row, ignore_index=True)  # type: ignore
             print("Added to no_text_outcome_df.")
 
             no_text_version_count += 1
@@ -150,7 +153,7 @@ def read_and_validate_text_for_clozapine_outcome(
             # Add to unsure_text_outcome_clozapine
             unsure_text_outcome_clozapine = unsure_text_outcome_clozapine.append(
                 row, ignore_index=True
-            )
+            )  # type: ignore
             print("Added to unsure_text_outcome_clozapine.")
 
             unsure_version_count += 1
@@ -194,7 +197,7 @@ if __name__ == "__main__":
         no_text_outcome_df,
     )
 
-    # if completly finished, save all dfs
+    # if completlely finished, save all dfs
 
     file_path = Path(
         "E:/shared_resources/clozapine/text_outcome/validated_text_outcome_clozapine.parquet"
