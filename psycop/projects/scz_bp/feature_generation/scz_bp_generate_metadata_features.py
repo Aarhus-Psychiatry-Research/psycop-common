@@ -1,5 +1,3 @@
-import time
-
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
@@ -16,16 +14,11 @@ def get_scz_bp_project_info() -> ProjectInfo:
 
 
 if __name__ == "__main__":
-    t0 = time.time()
     generate_feature_set(
         project_info=get_scz_bp_project_info(),
         eligible_prediction_times_frame=SczBpCohort.get_filtered_prediction_times_bundle().prediction_times,
-        feature_specs=SczBpFeatureSpecifier().get_feature_specs(
-            max_layer=4, lookbehind_days=[183, 365, 730]
-        ),
-        n_workers=10,
+        feature_specs=SczBpFeatureSpecifier()._get_metadata_specs(),  # type: ignore
+        n_workers=1,
         do_dataset_description=False,
-        feature_set_name="structured_predictors",
+        feature_set_name="metadata_only",
     )
-    t = time.time()
-    print(f"Time taken: {t - t0}")

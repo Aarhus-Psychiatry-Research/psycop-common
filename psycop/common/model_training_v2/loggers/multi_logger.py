@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Callable
 
 from confection import Config
+from polars import DataFrame
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.loggers.base_logger import BaselineLogger
@@ -40,3 +41,8 @@ class MultiLogger(BaselineLogger):
 
     def log_artifact(self, local_path: Path):
         self._run_on_loggers(lambda logger: logger.log_artifact(local_path=local_path))
+
+    def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
+        self._run_on_loggers(
+            lambda logger: logger.log_dataset(dataframe=dataframe, filename=filename)
+        )

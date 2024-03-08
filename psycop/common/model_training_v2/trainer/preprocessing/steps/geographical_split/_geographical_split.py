@@ -24,16 +24,16 @@ def non_adult_psychiatry_shak() -> list[str]:
 
 
 def get_first_visit_at_each_region_by_patient(df: pl.DataFrame) -> pl.DataFrame:
-    return df.groupby(["dw_ek_borger", "region"], maintain_order=True).first()
+    return df.group_by(["dw_ek_borger", "region"], maintain_order=True).first()
 
 
 def get_first_visit_by_patient(df: pl.DataFrame) -> pl.DataFrame:
-    return df.groupby("dw_ek_borger").first()
+    return df.group_by("dw_ek_borger").first()
 
 
 def get_first_visit_at_second_region_by_patient(df: pl.DataFrame) -> pl.DataFrame:
     return (
-        df.groupby("dw_ek_borger")
+        df.group_by("dw_ek_borger")
         .apply(lambda group: group[1])
         .rename({"timestamp": "first_regional_move_timestamp", "region": "second_region"})
     )

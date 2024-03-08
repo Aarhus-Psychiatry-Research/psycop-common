@@ -59,7 +59,7 @@ def flatten_dataset_to_disk(
 def create_flattened_dataset(
     feature_specs: Sequence[ValueSpecification],
     prediction_times_frame: PredictionTimeFrame,
-    n_workers: int,
+    n_workers: int | None,
     compute_lazily: bool,
 ) -> pl.DataFrame:
     flattener = Flattener(
