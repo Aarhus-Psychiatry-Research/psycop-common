@@ -88,18 +88,11 @@ class OptunaHyperParameterOptimization:
 
     @staticmethod
     def _optimize_study(
-        direction: Literal["maximize", "minimize"],
-        study_name: str,
+        study: Study,
         n_trials: int,
         catch: tuple[type[Exception]],
         cfg_with_resolved_suggesters: dict[str, Any],
     ) -> Study:
-        study = optuna.create_study(
-            direction=direction,
-            load_if_exists=True,
-            study_name=study_name,
-            storage=f"sqlite:///./{study_name}.db",
-        )
 
         study.optimize(
             lambda trial: OptunaHyperParameterOptimization()._optuna_objective(
@@ -129,12 +122,17 @@ class OptunaHyperParameterOptimization:
         OptunaHyperParameterOptimization._validate_suggester_in_configspace(
             cfg=cfg_with_resolved_suggesters
         )
+        study = optuna.create_study(
+            direction=direction,
+            load_if_exists=True,
+            study_name=study_name,
+            storage=f"sqlite:///./{study_name}.db",
+        )
 
         studies = joblib.Parallel(n_jobs)(
             joblib.delayed(OptunaHyperParameterOptimization._optimize_study)(
-                direction=direction,
+                study=study,
                 n_trials=n_trials // n_jobs,
-                study_name=study_name,
                 catch=catch,
                 cfg_with_resolved_suggesters=cfg_with_resolved_suggesters,
             )
