@@ -7,6 +7,9 @@ from wasabi import Printer
 
 from psycop.common.model_training.application_modules.train_model.main import train_model
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.projects.t2d.paper_outputs.model_description.performance.performance_by_ppr import (
+    t2d_output_performance_by_ppr,
+)
 from psycop.projects.t2d.utils.pipeline_objects import SplitNames, T2DPipelineRun
 
 msg = Printer(timestamp=True)
@@ -84,6 +87,10 @@ def evaluate_pipeline_with_modified_dataset(
     # Write AUROC
     with auroc_md_path.open("a") as f:
         f.write(str(auroc))
+
+    # Write performance table
+    table = t2d_output_performance_by_ppr(run=run)
+    table.to_excel(auroc_md_path.parent / "performance_by_ppr.xlsx")
 
     if plot_fns:
         for plot_fn in plot_fns:
