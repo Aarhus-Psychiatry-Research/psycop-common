@@ -5,7 +5,7 @@ import pandas as pd
 from psycop.common.feature_generation.utils import write_df_to_file
 
 
-def process_df_from_disk() -> pd.DataFrame:
+def process_df_from_disk():  # noqa: ANN201
     raw_text_df = pd.read_parquet(
         "E:/shared_resources/clozapine/text_outcome/raw_text_outcome_clozapine_v2.parquet"
     )
@@ -90,12 +90,12 @@ def get_next_version_file_path(file_path: Path) -> Path:
     return new_file_path
 
 
-def read_and_validate_text_for_clozapine_outcome(
+def read_and_validate_text_for_clozapine_outcome(  # noqa: ANN201
     sorted_df: pd.DataFrame,
     validated_text_outcome_clozapine: pd.DataFrame,
     unsure_text_outcome_clozapine: pd.DataFrame,
     no_text_outcome_df: pd.DataFrame,
-) -> pd.DataFrame:
+):
     no_text_version_count = 0
     unsure_version_count = 0
     validated_version_count = 0
