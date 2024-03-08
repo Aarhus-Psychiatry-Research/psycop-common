@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.199.1 (2024-03-08)
+
+### Fix
+
+* Study creation before parallelization ([`a4126af`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a4126af982cd32457173e049ce42874123ff39d3))
+
 ## v0.199.0 (2024-03-07)
 
 ### Feature
