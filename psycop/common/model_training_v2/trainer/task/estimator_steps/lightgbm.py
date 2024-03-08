@@ -34,7 +34,7 @@ def lightgbm_classifier_step(
             n_estimators=n_estimators,
             learning_rate=learning_rate,
             reg_lambda=reg_lambda,
-            reg_alpha=reg_alpha
+            reg_alpha=reg_alpha,
         ),  # type: ignore
     )
 
@@ -65,5 +65,5 @@ class LightGBMSuggester(Suggester):
             "learning_rate": self.learning_rate.suggest(trial, name="learning_rate"),
             "reg_alpha": self.reg_alpha.suggest(trial, name="reg_alpha"),
             "reg_lambda": self.reg_lambda.suggest(trial, name="reg_lambda"),
-            "device_type": "cpu",
+            "device_type": "gpu",
         }

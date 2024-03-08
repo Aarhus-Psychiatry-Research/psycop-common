@@ -5,17 +5,11 @@ from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robus
 from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_by_calendar_time import (
     scz_bp_auroc_by_quarter,
 )
-from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_by_cyclic_time import (
-    scz_bp_auroc_by_month_of_year,
-)
 from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_by_sex import (
     scz_bp_auroc_by_sex,
 )
 from psycop.projects.scz_bp.evaluation.model_performance.robustness.scz_bp_robustness_by_time_from_first_visit import (
     scz_bp_auroc_by_time_from_first_contact,
-)
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
-    scz_bp_get_eval_ds_from_best_run_in_experiment,
 )
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
@@ -31,8 +25,8 @@ if __name__ == "__main__":
         scz_bp_auroc_by_sex(eval_ds=best_eval_ds.model_copy()),
         scz_bp_auroc_by_age(eval_ds=best_eval_ds.model_copy()),
         scz_bp_auroc_by_time_from_first_contact(eval_ds=best_eval_ds.model_copy()),
-        #scz_bp_auroc_by_month_of_year(eval_ds=best_eval_ds.model_copy()),
-        scz_bp_auroc_by_quarter(eval_ds=best_eval_ds.model_copy())
+        # scz_bp_auroc_by_month_of_year(eval_ds=best_eval_ds.model_copy()),
+        scz_bp_auroc_by_quarter(eval_ds=best_eval_ds.model_copy()),
     ]
-    grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5,5), n_in_row=2)
+    grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5, 5), n_in_row=2)
     grid.savefig("scz_bp_fig_3.png")
