@@ -29,7 +29,8 @@ def scz_bp_first_pred_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
 
     p = (
         pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event"))  # type: ignore
-        + pn.geom_histogram(binwidth=1, fill="orange")
+        # + pn.geom_histogram(binwidth=1, fill="orange") # noqa: ERA001
+        + pn.geom_density()
         + pn.xlab("Years from first positive prediction\n to event")
         + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
         + pn.ylab("n")
@@ -73,11 +74,12 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
 
     p = (
         pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="outcome"))  # type: ignore
-        + pn.geom_histogram(binwidth=1, alpha=0.7)
+        # + pn.geom_histogram(binwidth=1, alpha=0.7) # noqa: ERA001
+        + pn.geom_density(alpha=0.8)
         + pn.xlab("Years from first positive prediction to event")
         + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
         + pn.scale_fill_manual(values=list(outcome2color.values()))
-        + pn.ylab("n")
+        + pn.ylab("Density")
         + pn.theme_minimal()
         + pn.theme(
             legend_position=(0.35, 0.80),
@@ -99,18 +101,9 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/structured_only"
+    best_experiment = "sczbp/text_only"
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
     # p = scz_bp_first_pred_to_event(eval_ds=eval_ds, ppr=best_pos_rate) # noqa: ERA001
     p = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=best_pos_rate)
-    p + pn.theme(
-        legend_position=(0.35, 0.85),
-        legend_direction="vertical",
-        legend_title=pn.element_blank(),
-        legend_text=pn.element_text(size=11),
-        axis_title=pn.element_text(size=14),
-        figure_size=(5, 5),
-        axis_text=pn.element_text(size=10),
-    )
