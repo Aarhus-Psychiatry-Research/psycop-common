@@ -25,7 +25,6 @@ if __name__ == "__main__":
         scz_bp_auroc_by_sex(eval_ds=best_eval_ds.model_copy()),
         scz_bp_auroc_by_age(eval_ds=best_eval_ds.model_copy()),
         scz_bp_auroc_by_time_from_first_contact(eval_ds=best_eval_ds.model_copy()),
-        # scz_bp_auroc_by_month_of_year(eval_ds=best_eval_ds.model_copy()),
         scz_bp_auroc_by_quarter(eval_ds=best_eval_ds.model_copy()),
     ]
     grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5, 5), n_in_row=2)

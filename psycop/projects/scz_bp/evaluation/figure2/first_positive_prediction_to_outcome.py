@@ -29,7 +29,7 @@ def scz_bp_first_pred_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
 
     p = (
         pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event"))  # type: ignore
-        # + pn.geom_histogram(binwidth=1, fill="orange")
+        # + pn.geom_histogram(binwidth=1, fill="orange") # noqa: ERA001
         + pn.geom_density()
         + pn.xlab("Years from first positive prediction\n to event")
         + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
@@ -74,7 +74,7 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
 
     p = (
         pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="outcome"))  # type: ignore
-        # + pn.geom_histogram(binwidth=1, alpha=0.7)
+        # + pn.geom_histogram(binwidth=1, alpha=0.7) # noqa: ERA001
         + pn.geom_density(alpha=0.8)
         + pn.xlab("Years from first positive prediction to event")
         + pn.scale_x_reverse(breaks=range(int(plot_df["years_from_pred_to_event"].max() + 1)))
