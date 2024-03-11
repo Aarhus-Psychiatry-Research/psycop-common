@@ -26,7 +26,7 @@ def lightgbm_classifier_step(
     reg_lambda: float = 0.0,
 ) -> ModelStep:
     return (
-        "lightgbm",
+        "classifier",
         LGBMClassifier(
             num_leaves=num_leaves,
             device_type=device_type,
