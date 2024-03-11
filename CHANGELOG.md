@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.200.0 (2024-03-11)
+
+### Feature
+
+* Unify naming classification model steps ([`31fc24a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/31fc24ad1d9291fad470c87a17016143733ac789))
+
 ## v0.199.1 (2024-03-08)
 
 ### Fix
