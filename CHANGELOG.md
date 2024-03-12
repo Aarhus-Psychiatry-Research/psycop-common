@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.202.0 (2024-03-12)
+
+### Feature
+
+* Add runpath suggester and remove run path from projectinfo ([`faf7d2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/faf7d2d54fb88bd17746abe01c2349fa6f13b0c5))
+
 ## v0.201.0 (2024-03-12)
 
 ### Feature
