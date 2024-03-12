@@ -6,7 +6,7 @@ from psycop.common.model_training_v2.loggers.disk_logger import DiskLogger
 
 
 def test_disklogger_text(tmpdir: str):
-    logger = DiskLogger(experiment_path=tmpdir)
+    logger = DiskLogger(run_path=tmpdir)
 
     message = "This is a test message"
     logger.info(message)
@@ -18,7 +18,7 @@ def test_disklogger_text(tmpdir: str):
 
 
 def test_disklogger_log_config(tmpdir: str):
-    logger = DiskLogger(experiment_path=tmpdir)
+    logger = DiskLogger(run_path=tmpdir)
 
     config = Config({"parameters": {"param1": 123, "param2": "abc"}})
     logger.log_config(config)
@@ -28,7 +28,7 @@ def test_disklogger_log_config(tmpdir: str):
 
 
 def test_disklogger_file(tmpdir: str):
-    logger = DiskLogger(experiment_path=f"{tmpdir}/logger_dir")
+    logger = DiskLogger(run_path=f"{tmpdir}/logger_dir")
 
     # Create the test file
     test_file = Path(tmpdir) / "test_file.txt"
@@ -39,4 +39,4 @@ def test_disklogger_file(tmpdir: str):
     logger.log_artifact(local_path=test_file)
 
     # Check that the test file exists at the artifact path
-    assert test_str in (logger.experiment_path / "test_file.txt").read_text()
+    assert test_str in (logger.run_path / "test_file.txt").read_text()

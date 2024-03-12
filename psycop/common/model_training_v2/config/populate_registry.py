@@ -47,6 +47,7 @@ def populate_baseline_registry() -> None:
     # Suggesters
     from ..hyperparameter_suggester.hyperparameter_suggester import SuggesterSpace
     from ..trainer.task.estimator_steps.logistic_regression import LogisticRegressionSuggester
+    from ..hyperparameter_suggester.suggesters.run_path_suggester import RunPathSuggester
 
     # Tasks
     from ..trainer.task.pipeline_constructor import pipeline_constructor
