@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.201.0 (2024-03-12)
+
+### Feature
+
+* Upload pred df to mlflow ([`af15191`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/af1519199705dcb98ad5e7f8e50e1fd7d6f37bfe))
+
 ## v0.200.0 (2024-03-11)
 
 ### Feature
