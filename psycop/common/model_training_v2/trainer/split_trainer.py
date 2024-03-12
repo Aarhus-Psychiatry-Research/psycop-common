@@ -12,7 +12,7 @@ from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMet
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
-@BaselineRegistry.trainers.register("split_trainer_split_Preprocessing")
+@BaselineRegistry.trainers.register("split_trainer_separate_preprocessing")
 @dataclass
 class SplitTrainerSplitPreprocessing(BaselineTrainer):
     uuid_col_name: str
