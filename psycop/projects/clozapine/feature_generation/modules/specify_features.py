@@ -6,15 +6,11 @@ import numpy as np
 from timeseriesflattener.v1.aggregation_fns import (
     AggregationFunType,
     boolean,
-    change_per_day,
     count,
     earliest,
-    latest,
     maximum,
     mean,
-    minimum,
     summed,
-    variance,
 )
 from timeseriesflattener.v1.feature_specs.group_specs import (
     NamedDataframe,
@@ -82,7 +78,6 @@ from psycop.common.feature_generation.loaders.raw.load_medications import (
     antipsychotics,
     anxiolytics,
     aripiprazole_depot,
-    clozapine,
     first_gen_antipsychotics,
     haloperidol_depot,
     hyperactive_disorders_medications,
@@ -109,6 +104,9 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
 )
 from psycop.projects.clozapine.feature_generation.cohort_definition.clozapine_cohort_definition import (
     ClozapineCohortDefiner,
+)
+from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.first_clozapine_prescription import (
+    get_first_clozapine_prescription,
 )
 
 log = logging.getLogger(__name__)
@@ -160,7 +158,7 @@ class FeatureSpecifier:
                     name="first_clozapine_prescription",
                 )
             ],
-            lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
+            lookahead_days=[year * 365 for year in (1, 2)],
             aggregation_fns=[maximum],
             fallback=[0],
             incident=[False],
@@ -174,11 +172,10 @@ class FeatureSpecifier:
         return OutcomeGroupSpec(
             named_dataframes=[
                 NamedDataframe(
-                    df=ClozapineCohortDefiner.get_outcome_timestamps().frame.to_pandas(),
-                    name="first_clozapine_prescription",
+                    df=get_first_clozapine_prescription(timestamp_as_value_col=True), name=""
                 )
             ],
-            lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
+            lookahead_days=[year * 365 for year in (1, 2)],
             aggregation_fns=[earliest],
             fallback=[np.NaN],
             incident=[False],
@@ -237,7 +234,6 @@ class FeatureSpecifier:
                 NamedDataframe(df=first_gen_antipsychotics(), name="first_gen_antipsychotics"),
                 NamedDataframe(df=second_gen_antipsychotics(), name="second_gen_antipsychotics"),
                 NamedDataframe(df=olanzapine(), name="olanzapine"),
-                NamedDataframe(df=clozapine(), name="clozapine"),
                 NamedDataframe(df=anxiolytics(), name="anxiolytics"),
                 NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
                 NamedDataframe(df=antidepressives(), name="antidepressives"),
@@ -409,38 +405,8 @@ class FeatureSpecifier:
 
         limited_feature_set = PredictorGroupSpec(
             named_dataframes=(
-                NamedDataframe(df=f0_disorders(), name="f0_disorders"),
-                NamedDataframe(df=f1_disorders(), name="f1_disorders"),
-                NamedDataframe(df=f2_disorders(), name="f2_disorders"),
                 NamedDataframe(df=f3_disorders(), name="f3_disorders"),
-                NamedDataframe(df=f4_disorders(), name="f4_disorders"),
-                NamedDataframe(df=f5_disorders(), name="f5_disorders"),
-                NamedDataframe(df=f6_disorders(), name="f6_disorders"),
-                NamedDataframe(df=f7_disorders(), name="f07_disorders"),
-                NamedDataframe(df=f8_disorders(), name="f8_disorders"),
-                NamedDataframe(df=f9_disorders(), name="f9_disorders"),
-                NamedDataframe(df=antipsychotics(), name="antipsychotics"),
-                NamedDataframe(df=first_gen_antipsychotics(), name="first_gen_antipsychotics"),
-                NamedDataframe(df=second_gen_antipsychotics(), name="second_gen_antipsychotics"),
                 NamedDataframe(df=olanzapine(), name="olanzapine"),
-                NamedDataframe(df=clozapine(), name="clozapine"),
-                NamedDataframe(df=anxiolytics(), name="anxiolytics"),
-                NamedDataframe(df=hypnotics(), name="hypnotics and sedatives"),
-                NamedDataframe(df=antidepressives(), name="antidepressives"),
-                NamedDataframe(df=lithium(), name="lithium"),
-                NamedDataframe(
-                    df=hyperactive_disorders_medications(), name="hyperactive disorders medications"
-                ),
-                NamedDataframe(df=alcohol_abstinence(), name="alcohol_abstinence"),
-                NamedDataframe(df=opioid_dependence(), name="opioid_dependence"),
-                NamedDataframe(df=analgesic(), name="analgesics"),
-                NamedDataframe(df=olanzapine_depot(), name="olanzapine_depot"),
-                NamedDataframe(df=aripiprazole_depot(), name="aripiprazole_depot"),
-                NamedDataframe(df=risperidone_depot(), name="risperidone_depot"),
-                NamedDataframe(df=paliperidone_depot(), name="paliperidone_depot"),
-                NamedDataframe(df=haloperidol_depot(), name="haloperidol_depot"),
-                NamedDataframe(df=perphenazine_depot(), name="perphenazine_depot"),
-                NamedDataframe(df=zuclopenthixol_depot(), name="zuclopenthixol_depot"),
             ),
             aggregation_fns=[boolean],
             lookbehind_days=[365],
@@ -539,30 +505,7 @@ class FeatureSpecifier:
             resolve_multiple=[count, summed, boolean], interval_days=interval_days
         )
 
-        structured_sfi = self._get_structured_sfi_specs(
-            resolve_multiple=[mean, maximum, minimum, change_per_day, variance],
-            interval_days=interval_days,
-        )
-
-        lab_results = self._get_lab_result_specs(
-            resolve_multiple=[maximum, minimum, mean, latest], interval_days=interval_days
-        )
-
-        cancelled_lab_results = self._get_cancelled_lab_result_specs(
-            resolve_multiple=[count, boolean], interval_days=interval_days
-        )
-
-        return (
-            visits
-            + admissions
-            + medications
-            + diagnoses
-            + beroligende_medicin
-            + coercion
-            + structured_sfi
-            + lab_results
-            + cancelled_lab_results
-        )
+        return visits + admissions + medications + diagnoses + beroligende_medicin + coercion
 
     def get_feature_specs(self) -> list[Union[StaticSpec, OutcomeSpec, PredictorSpec]]:
         """Get a spec set."""
