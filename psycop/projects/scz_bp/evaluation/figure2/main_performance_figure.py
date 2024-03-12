@@ -19,7 +19,7 @@ if __name__ == "__main__":
         "Structured only ": "sczbp/structured_only",
         "Text only": "sczbp/text_only",
     }
-    best_experiment = "sczbp/text_only"
+    best_experiment = "sczbp/structured_only"
     best_pos_rate = 0.04
 
     best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
@@ -38,4 +38,4 @@ if __name__ == "__main__":
     panels = [panel_a, panel_b, panel_c, panel_d]
 
     grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5, 5), n_in_row=2)
-    grid.savefig("scz_bp_fig_2.png")
+    grid.savefig(f"scz_bp_fig_2_{best_experiment.split('/')[1]}.png")
