@@ -12,10 +12,10 @@ from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedM
 
 @BaselineRegistry.loggers.register("disk_logger")
 class DiskLogger(BaselineLogger):
-    def __init__(self, experiment_path: str) -> None:
-        self.experiment_path = Path(experiment_path)
-        self.log_path = self.experiment_path / "logs.log"
-        self.cfg_log_path = self.experiment_path / "config.cfg"
+    def __init__(self, run_path: str) -> None:
+        self.run_path = Path(run_path)
+        self.log_path = self.run_path / "logs.log"
+        self.cfg_log_path = self.run_path / "config.cfg"
 
         self._l = self._setup_logging_module()
 
@@ -58,7 +58,7 @@ class DiskLogger(BaselineLogger):
         return logger
 
     def log_artifact(self, local_path: Path) -> None:
-        shutil.copy(local_path, (self.experiment_path / local_path.name))
+        shutil.copy(local_path, (self.run_path / local_path.name))
 
     def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
-        dataframe.write_parquet(self.experiment_path / filename)
+        dataframe.write_parquet(self.run_path / filename)
