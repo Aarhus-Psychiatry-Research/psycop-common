@@ -194,7 +194,7 @@ def cross_validation_performance_table(
     }
     df = pd.DataFrame(df_dict)
 
-    EVAL_ROOT = Path("E:/shared_resources/forced_admissions_inpatient/eval")
+    EVAL_ROOT = Path("E:/shared_resources/clozapine/eval")
     df.to_excel(EVAL_ROOT / f"{models_descriptions}cross_validation_table.xlsx", index=False)
 
     return df
@@ -203,46 +203,14 @@ def cross_validation_performance_table(
 if __name__ == "__main__":
     df = pd.DataFrame(
         {
-            "pretty_model_name": [
-                "Diagnoses",
-                "Patient descriptors",
-                "Sentence transformer embeddings",
-                "TF-IDF features",
-                "Full predictor set",
-                "Full predictor set 90 days lookahead",
-                "Full predictor set 365 days lookahead",
-            ],
-            "model_name": [
-                "limited_model_demographics_diagnoses",
-                "full_model_without_text_features",
-                "only_sent_trans_model",
-                "only_tfidf_750_model_added_konklusion",
-                "full_model_with_text_features_added_konklusion",
-                "full_model_with_text_features_lookahead_90_added_konklusion",
-                "full_model_with_text_features_lookahead_365_added_konklusion",
-            ],
-            "group_name": [
-                "elaborations-piecrust",
-                "frustums-liveable",
-                "overlogicality-gardenesque",
-                "hectical-jawboned",
-                "dittoed-tetrastylous",
-                "psychorhythmic-unmaneged",
-                "alopecias-peewees",
-            ],
+            "pretty_model_name": ["Preliminary model (no text) - coercion, diagnoses, medications"],
+            "model_name": ["clozapine_no_text_outcome_model_medication_diagnoses_coercion"],
+            "group_name": ["guardant-sheepdogs"],
             # 0 is logistic regression and 1 is Xgboost
-            "model_type": [0, 0, 0, 0, 0, 0, 0],
+            "model_type": [0],
             # change this for either XGboost or Logistic regression
-            "pretty_model_type": [
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-                "Logistic regression",
-            ],
+            "pretty_model_type": ["Logistic regression"],
         }
     )
 
-    cross_validation_performance_table(df, "primary_models_")
+    cross_validation_performance_table(df, "Preliminary model (no text) - Logistic regression")

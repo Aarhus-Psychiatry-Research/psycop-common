@@ -123,10 +123,10 @@ patient_df = (
         .agg(
             pred_sex_female=pl.col("pred_sex_female").first(),
             prediction_timestamp=pl.col("timestamp").min(),
-            outcome_timestamp=pl.col(
-                "timestamp_outcome_first_clozapine_prescription_within_365_days_earliest_fallback_nan_dichotomous"
-            ).min(),
-            first_contact=pl.col("first_contact").first(),
+            outcome_timestamp=pl.col("timestamp_outcome__within_365_days_earliest_fallback_nan")
+            .min()
+            .dt.date(),
+            first_contact=pl.col("first_contact").first().dt.date(),
             dataset=pl.col("dataset").first(),
         )
         .select(
@@ -140,7 +140,7 @@ patient_df = (
         )
         .with_columns(
             days_from_first_contact_to_outcome=(
-                pl.col("outcome_timestamp") - pl.col("first_contact")
+                (pl.col("outcome_timestamp") - pl.col("first_contact")).dt.days()
             )
         )
     )
