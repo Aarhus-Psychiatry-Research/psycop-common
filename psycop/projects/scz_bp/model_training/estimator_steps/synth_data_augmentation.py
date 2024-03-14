@@ -3,6 +3,7 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 from imblearn.base import BaseSampler
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import CategoricalSpaceT, FloatSpaceT
 from synthcity.plugins import Plugins
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
@@ -97,3 +98,16 @@ def synthetic_data_augmentation_step(
             prop_augmented=prop_augmented,
         ),
     )
+
+
+@BaselineRegistry.estimator_steps_suggesters.register("synthetic_data_augmentation_suggester")
+class SynthcityAugmentationSuggester(Suggester):
+    def __init__(
+            self,
+            model_name: CategoricalSpaceT = ("tabddpm"),
+            lr: FloatSpaceT = (1e-5, 1e-1, True),
+            batch_size: IntegerSpaceT 2929,
+            num_timesteps: 998,
+            n_iter: 1051,
+    )
+            "is_classification": True,

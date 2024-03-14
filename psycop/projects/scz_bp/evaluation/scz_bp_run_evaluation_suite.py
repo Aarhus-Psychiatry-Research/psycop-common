@@ -97,7 +97,7 @@ def scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name: str) -> Eval
 
     # min_eval_ds = minimal_eval_dataset_from_mlflow_run(run=best_run) # noqa: ERA001
     min_eval_ds = minimal_eval_dataset_from_path(
-        Path(best_run.get_config()["project_info"]["experiment_path"]) / "eval_df.parquet"
+        best_run.download_artifact("eval_df.parquet")
     )
     cohort_data = cohort_metadata_from_run(
         run=best_run,
