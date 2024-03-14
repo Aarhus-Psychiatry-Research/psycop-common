@@ -5,7 +5,7 @@ from sklearn.pipeline import Pipeline
 from psycop.common.model_training_v2.config.baseline_pipeline import (
     train_baseline_model_from_schema,
 )
-from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema, ProjectInfo
+from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
 from psycop.common.model_training_v2.config.config_utils import load_baseline_config
 from psycop.common.model_training_v2.loggers.terminal_logger import TerminalLogger
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
@@ -30,11 +30,8 @@ from .loggers.multi_logger import MultiLogger
 from .trainer.task.estimator_steps.logistic_regression import logistic_regression_step
 
 
-def test_v2_train_model_pipeline(tmpdir: Path):
+def test_v2_train_model_pipeline():
     schema = BaselineSchema(
-        project_info=ProjectInfo(
-            experiment_path=Path(tmpdir)
-        ),  # Must recast to Path, since the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
         logger=TerminalLogger(),
         trainer=SplitTrainer(
             uuid_col_name="pred_time_uuid",
@@ -57,19 +54,15 @@ def test_v2_train_model_pipeline(tmpdir: Path):
     assert train_baseline_model_from_schema(schema) == 1.0
 
 
-def test_v2_train_model_pipeline_from_cfg(tmpdir: Path):
+def test_v2_train_model_pipeline_from_cfg():
     config = load_baseline_config(Path(__file__).parent / "config" / "baseline_test_config.cfg")
-    config.project_info.model_config["frozen"] = False
-    config.project_info.experiment_path = Path(
-        tmpdir
-    )  # For some reason, the tmpdir fixture returns a local(), not a Path(). This means it does not implement the .seek() method, which is required when we write the dataset to .parquet.
+    config.model_config["frozen"] = False
 
     assert train_baseline_model_from_schema(config) == 1.0
 
 
 def test_v2_crossval_model_pipeline(tmp_path: Path):
     schema = BaselineSchema(
-        project_info=ProjectInfo(experiment_path=tmp_path),
         logger=MultiLogger(TerminalLogger(), DiskLogger(tmp_path.__str__())),
         trainer=CrossValidatorTrainer(
             uuid_col_name="pred_time_uuid",

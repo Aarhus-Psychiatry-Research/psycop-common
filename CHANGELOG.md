@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v0.202.0 (2024-03-12)
+
+### Feature
+
+* Add runpath suggester and remove run path from projectinfo ([`faf7d2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/faf7d2d54fb88bd17746abe01c2349fa6f13b0c5))
+
+## v0.201.0 (2024-03-12)
+
+### Feature
+
+* Upload pred df to mlflow ([`af15191`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/af1519199705dcb98ad5e7f8e50e1fd7d6f37bfe))
+
+## v0.200.0 (2024-03-11)
+
+### Feature
+
+* Unify naming classification model steps ([`31fc24a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/31fc24ad1d9291fad470c87a17016143733ac789))
+
 ## v0.199.1 (2024-03-08)
 
 ### Fix
