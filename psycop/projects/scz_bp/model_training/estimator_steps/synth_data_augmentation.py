@@ -3,11 +3,22 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 from imblearn.base import BaseSampler
-from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import CategoricalSpaceT, FloatSpaceT
+from optuna import Trial
 from synthcity.plugins import Plugins
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
+    Suggester,
+)
+from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggester_spaces import (
+    CategoricalSpace,
+    CategoricalSpaceT,
+    FloatSpace,
+    FloatSpaceT,
+    IntegerSpace,
+    IntegerspaceT,
+)
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 
 
@@ -58,7 +69,9 @@ class SyntheticDataAugmentation(BaseSampler):
         model = Plugins().get(self.model_name, **self.model_params)
         model.fit(data_loader)
 
-        n_samples_to_generate = int(self.prop_augmented * X.shape[0])
+        # ratio_augmented  is the proportion of data to augment
+        n_samples_to_generate = int(len(X_copy) * self.prop_augmented)
+
         match self.sampling_strategy:
             case "minority":
                 # assuming the minority class (the class to upsample) is the 1 class
@@ -103,11 +116,34 @@ def synthetic_data_augmentation_step(
 @BaselineRegistry.estimator_steps_suggesters.register("synthetic_data_augmentation_suggester")
 class SynthcityAugmentationSuggester(Suggester):
     def __init__(
-            self,
-            model_name: CategoricalSpaceT = ("tabddpm"),
-            lr: FloatSpaceT = (1e-5, 1e-1, True),
-            batch_size: IntegerSpaceT 2929,
-            num_timesteps: 998,
-            n_iter: 1051,
-    )
-            "is_classification": True,
+        self,
+        model_name: CategoricalSpaceT = ("tabddpm"),
+        lr: FloatSpaceT = (1e-5, 1e-1, True),
+        batch_size: IntegerspaceT = (2999, 3001, False),
+        num_timesteps: IntegerspaceT = (500, 1200, False),
+        n_iter: IntegerspaceT = (500, 10000, False),
+        sampling_strategy: CategoricalSpaceT = ("all", "minority"),
+        prop_augmented: CategoricalSpaceT = (0.1, 0.3, 0.5, 1.0),
+    ):
+        self.model_name = CategoricalSpace(choices=model_name)
+        self.lr = FloatSpace.from_list_or_mapping(lr)
+        self.batch_size = IntegerSpace.from_list_or_mapping(batch_size)
+        self.num_timesteps = IntegerSpace.from_list_or_mapping(num_timesteps)
+        self.n_iter = IntegerSpace.from_list_or_mapping(n_iter)
+        self.sampling_strategy = CategoricalSpace(choices=sampling_strategy)
+        self.prop_augmented = CategoricalSpace(choices=prop_augmented)
+
+    def suggest_hyperparameters(self, trial: Trial) -> dict[str, Any]:
+        return {
+            "@estimator_steps": "synthetic_data_augmentation",
+            "model_name": self.model_name.suggest(trial, name="model_name"),
+            "sampling_strategy": self.sampling_strategy.suggest(trial, name="sampling_strategy"),
+            "prop_augmented": self.prop_augmented.suggest(trial, name="prop_augmented"),
+            "model_params": {
+                "lr": self.lr.suggest(trial, name="lr_tabddpm"),
+                "batch_size": self.batch_size.suggest(trial, name="batch_size"),
+                "num_timesteps": self.num_timesteps.suggest(trial, name="num_timesteps"),
+                "n_iter": self.n_iter.suggest(trial, name="n_iter"),
+                "is_classification": True,
+            },
+        }

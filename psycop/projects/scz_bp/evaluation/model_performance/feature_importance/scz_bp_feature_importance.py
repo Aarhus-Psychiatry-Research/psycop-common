@@ -1,13 +1,13 @@
 # type: ignore
 import pickle as pkl
+import re
+from pathlib import Path
 
+import pandas as pd
 import polars as pl
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from pathlib import Path
-import re
-import pandas as pd
 
 
 def scz_bp_parse_static_feature(full_string: str) -> str:
@@ -33,7 +33,7 @@ def scz_bp_parse_temporal_feature(full_string: str) -> str:
     lookbehind = re.findall(r"within_(.*)?_days", full_string)[0]
     resolve_multiple = re.findall(r"days_(.*)?_fallback", full_string)[0]
 
-    remove = ["all_relevant_", "aktuelt_psykisk_", "_layer_\d_*"]
+    remove = ["all_relevant_", "aktuelt_psykisk_", r"_layer_\d_*"]
     remove = "(%s)" % "|".join(remove)
 
     feature_name = re.sub(remove, "", feature_name)
@@ -49,7 +49,9 @@ def scz_bp_feature_name_to_readable(full_string: str) -> str:
     return output_string
 
 
-def scz_bp_generate_feature_importance_table(pipeline: Pipeline, clf_model_name: str =  "classifier") -> pd.DataFrame:
+def scz_bp_generate_feature_importance_table(
+    pipeline: Pipeline, clf_model_name: str = "classifier"
+) -> pd.DataFrame:
     # Get feature importance scores
     feature_importances = pipeline.named_steps[clf_model_name].feature_importances_
 
@@ -69,7 +71,7 @@ def scz_bp_generate_feature_importance_table(pipeline: Pipeline, clf_model_name:
     feature_table = feature_table.sort("Feature Importance", descending=True)
     # Get the top 100 features by gain
     top_100_features = feature_table.head(100).with_columns(
-        #  pl.col("Feature Importance").round(3),
+        #  pl.col("Feature Importance").round(3),   # noqa: ERA001
         pl.col("Feature Name").apply(lambda x: scz_bp_feature_name_to_readable(x))
     )
 
@@ -88,11 +90,13 @@ if __name__ == "__main__":
         experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
     )
 
-    with open(best_run.download_artifact("sklearn_pipe.pkl"), "rb") as pipe_pkl:
+    with best_run.download_artifact("sklearn_pipe.pkl").open("rb") as pipe_pkl:
         pipe = pkl.load(pipe_pkl)
 
     feat_imp = scz_bp_generate_feature_importance_table(pipeline=pipe, clf_model_name="lightgbm")
     pl.Config.set_tbl_rows(100)
 
-    with (Path(__file__).parent / f"feat_imp_100_{best_experiment.split('/')[1]}.html").open("w") as html_file:
+    with (Path(__file__).parent / f"feat_imp_100_{best_experiment.split('/')[1]}.html").open(
+        "w"
+    ) as html_file:
         html_file.write(feat_imp.to_html())
