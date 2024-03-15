@@ -24,16 +24,16 @@ def non_adult_psychiatry_shak() -> list[str]:
 
 
 def get_first_visit_at_each_region_by_patient(df: pl.DataFrame) -> pl.DataFrame:
-    return df.groupby(["dw_ek_borger", "region"], maintain_order=True).first()
+    return df.group_by(["dw_ek_borger", "region"], maintain_order=True).first()
 
 
 def get_first_visit_by_patient(df: pl.DataFrame) -> pl.DataFrame:
-    return df.groupby("dw_ek_borger").first()
+    return df.group_by("dw_ek_borger").first()
 
 
 def get_first_visit_at_second_region_by_patient(df: pl.DataFrame) -> pl.DataFrame:
     return (
-        df.groupby("dw_ek_borger")
+        df.group_by("dw_ek_borger")
         .apply(lambda group: group[1])
         .rename({"timestamp": "first_regional_move_timestamp", "region": "second_region"})
     )
@@ -51,7 +51,9 @@ def add_migration_date_by_patient(
         ).drop("timestamp")
     ).with_columns(
         pl.when(pl.col("first_regional_move_timestamp").is_null())
-        .then("2100-01-01 00:00:00")  # set cutoff to 2100 if patient only has visits in one region
+        .then(
+            pl.lit("2100-01-01 00:00:00")
+        )  # set cutoff to 2100 if patient only has visits in one region
         .otherwise(pl.col("first_regional_move_timestamp"))
         .str.strptime(pl.Datetime)
         .alias("first_regional_move_timestamp")

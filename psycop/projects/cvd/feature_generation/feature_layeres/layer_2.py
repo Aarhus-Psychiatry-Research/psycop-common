@@ -1,9 +1,9 @@
 from collections.abc import Sequence
 
 import numpy as np
-from timeseriesflattener.aggregation_fns import AggregationFunType
-from timeseriesflattener.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
-from timeseriesflattener.feature_specs.single_specs import PredictorSpec
+from timeseriesflattener.v1.aggregation_fns import AggregationFunType
+from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe, PredictorGroupSpec
+from timeseriesflattener.v1.feature_specs.single_specs import PredictorSpec
 
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     acute_myocardial_infarction,

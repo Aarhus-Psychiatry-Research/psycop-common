@@ -13,7 +13,7 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
     save_flattened_dataset_description_to_disk,
 )
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    create_flattened_dataset,
+    create_flattened_dataset_tsflattener_v1,
 )
 from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
@@ -95,7 +95,7 @@ def main(
         )
 
     else:
-        flattened_df = create_flattened_dataset(
+        flattened_df = create_flattened_dataset_tsflattener_v1(
             feature_specs=feature_specs,  # type: ignore
             prediction_times_df=ForcedAdmissionsInpatientCohortDefiner.get_filtered_prediction_times_bundle(
                 washout_on_prior_forced_admissions=washout_on_prior_forced_admissions

@@ -29,7 +29,7 @@ def cabg() -> pd.DataFrame:
 def pad() -> pd.DataFrame:
     subset_df = (
         load_heart_procedure_codes()
-        .with_columns(pl.sum(pl.col("^lower_limb_.*$")).alias("any_lower_limb"))
+        .with_columns(pl.sum_horizontal(pl.col("^lower_limb_.*$")).alias("any_lower_limb"))
         .filter(pl.col("any_lower_limb") >= 1)
     )
     return finalize_feature_df(subset_df)

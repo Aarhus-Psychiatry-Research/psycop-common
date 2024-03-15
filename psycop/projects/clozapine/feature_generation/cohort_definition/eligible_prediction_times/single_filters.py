@@ -14,7 +14,7 @@ from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_pre
     MIN_DATE,
 )
 from psycop.projects.clozapine.feature_generation.cohort_definition.eligible_prediction_times.schizophrenia_diagnosis import (
-    add_only_patients_with_schizophrenia,
+    add_only_patients_with_schizo,
 )
 from psycop.projects.clozapine.feature_generation.cohort_definition.outcome_specification.first_clozapine_prescription import (
     get_first_clozapine_prescription,
@@ -37,7 +37,7 @@ class ClozapineMinAgeFilter(PredictionTimeFilter):
 class ClozapineSchizophrenia(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         schizophrenia_df = (
-            add_only_patients_with_schizophrenia()
+            add_only_patients_with_schizo()
             .lazy()
             .select(pl.col("timestamp").alias("timestamp_schizophrenia"), pl.col("dw_ek_borger"))
         )

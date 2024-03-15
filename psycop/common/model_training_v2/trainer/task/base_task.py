@@ -4,10 +4,11 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from ...loggers.supports_logger import SupportsLoggerMixin
-from .base_pipeline import BasePipeline
 
 if TYPE_CHECKING:
     import pandas as pd
+
+    from .base_pipeline import BasePipeline
 
 
 class BaselineTask(ABC, SupportsLoggerMixin):

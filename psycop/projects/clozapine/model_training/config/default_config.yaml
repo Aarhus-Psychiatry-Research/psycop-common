@@ -1,0 +1,8 @@
+# @package _global_
+defaults:
+  - project: default_project
+  - data: default_data
+  - preprocessing: default_preprocessing
+  - model: xgboost
+  - train: default_training
+  - sweeper: optuna_singlethread

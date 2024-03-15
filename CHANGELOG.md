@@ -2,6 +2,85 @@
 
 <!--next-version-placeholder-->
 
+## v0.202.0 (2024-03-12)
+
+### Feature
+
+* Add runpath suggester and remove run path from projectinfo ([`faf7d2d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/faf7d2d54fb88bd17746abe01c2349fa6f13b0c5))
+
+## v0.201.0 (2024-03-12)
+
+### Feature
+
+* Upload pred df to mlflow ([`af15191`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/af1519199705dcb98ad5e7f8e50e1fd7d6f37bfe))
+
+## v0.200.0 (2024-03-11)
+
+### Feature
+
+* Unify naming classification model steps ([`31fc24a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/31fc24ad1d9291fad470c87a17016143733ac789))
+
+## v0.199.1 (2024-03-08)
+
+### Fix
+
+* Study creation before parallelization ([`a4126af`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a4126af982cd32457173e049ce42874123ff39d3))
+
+## v0.199.0 (2024-03-07)
+
+### Feature
+
+* Update perf table ([`354021a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/354021ae724e8fdd76bdb4e8c5fe859044df86fe))
+
+### Fix
+
+* Subset tfidf columns ([`c28353a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c28353a61112113f57ee0c9152fbe0e8c2601981))
+
+## v0.198.0 (2024-02-29)
+
+### Feature
+
+* Add dataset logging ([`ae662d3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ae662d3fc6ce87a8cee3948f3ee064566acb689b))
+
+## v0.197.0 (2024-02-29)
+
+### Feature
+
+* Refactor mlflow client interface ([`d346aa9`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/d346aa9d0bf6c3d3fe686d52288e863a93f51307))
+* Mlflow artifact downloader ([`859e60d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/859e60d8e89a82c46bdb1e83f4bcaae5c272f4e2))
+
+## v0.196.0 (2024-02-27)
+
+### Feature
+
+* **#834:** T2d add MCC and F1 to results table ([`a306f8b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a306f8bf435debc1e3f399ba5a646d5c556a49f8))
+* Create descriptive_stats_by_outcome.py ([`fe9d23e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fe9d23ebf80097e754a46b789d9517a5d2d78ea0))
+
+## v0.195.0 (2024-02-27)
+
+### Feature
+
+* Generate features with tsflattener v2 ([`759fcc0`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/759fcc062071ccbf8bc106619ac77012ac0c53ab))
+
+## v0.194.0 (2024-02-26)
+
+### Feature
+
+* Migrate to v2 ([`c18450c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c18450c86125302a9406be1e0d1ffd0b5b9a60ee))
+
+## v0.193.0 (2024-02-15)
+
+### Feature
+
+* Add pse keyword count embedding ([`6cbdb42`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6cbdb42a707c0a7653a87039359b128d1cea49cf))
+
+## v0.192.0 (2024-02-07)
+
+### Feature
+
+* Get best run from experiment ([`8036058`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/80360585770f5cdf6bee695717382774a40ea99c))
+* Tool for extracting metrics from mlflow ([`ce51700`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ce5170046fb02fb0a06efc58319c1d56424663f8))
+
 ## v0.191.0 (2024-02-07)
 
 ### Feature

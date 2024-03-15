@@ -81,7 +81,7 @@ class Run:
     def cfg(self) -> FullConfigSchema:
         # Loading the json instead of the .pkl makes us independent
         # of whether the imports in psycop-common model-training have changed
-        return FullConfigSchema.model_validate(self.get_cfg_as_json())
+        return FullConfigSchema.model_validate(self.get_cfg_as_json())  # type: ignore
 
     @property
     def eval_dir(self) -> Path:

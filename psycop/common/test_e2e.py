@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import pandas as pd
-from timeseriesflattener.aggregation_fns import maximum, minimum
-from timeseriesflattener.feature_specs.single_specs import OutcomeSpec, PredictorSpec
+from timeseriesflattener.v1.aggregation_fns import maximum, minimum
+from timeseriesflattener.v1.feature_specs.single_specs import OutcomeSpec, PredictorSpec
 
 from psycop.common.feature_generation.application_modules.project_setup import (
     ColNames,

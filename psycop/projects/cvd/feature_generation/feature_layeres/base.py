@@ -1,8 +1,8 @@
 from collections.abc import Sequence
 from typing import Protocol
 
-from timeseriesflattener.aggregation_fns import AggregationFunType
-from timeseriesflattener.feature_specs.single_specs import (
+from timeseriesflattener.v1.aggregation_fns import AggregationFunType
+from timeseriesflattener.v1.feature_specs.single_specs import (
     AnySpec,
     OutcomeSpec,
     PredictorSpec,

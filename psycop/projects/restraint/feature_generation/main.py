@@ -10,15 +10,13 @@ from psycop.common.feature_generation.application_modules.describe_flattened_dat
     save_flattened_dataset_description_to_disk,
 )
 from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    create_flattened_dataset,
+    create_flattened_dataset_tsflattener_v1,
 )
 from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
-    load_coercion_prediction_times,
-)
+from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
@@ -35,10 +33,10 @@ def main():
         min_set_for_debug=False,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
-    flattened_df = create_flattened_dataset(
+    flattened_df = create_flattened_dataset_tsflattener_v1(
         feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=load_coercion_prediction_times(),
-        drop_pred_times_with_insufficient_look_distance=False,
+        prediction_times_df=RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore
+        drop_pred_times_with_insufficient_look_distance=True,
         project_info=project_info,
         add_birthdays=True,
     )
@@ -58,6 +56,8 @@ def main():
 
 if __name__ == "__main__":
     project_info = RESTRAINT_PROJECT_INFO
+
+    main()  # move back to bottom!
 
     init_root_logger(project_info=project_info)
 
@@ -79,5 +79,3 @@ if __name__ == "__main__":
         config={"feature_set_path": project_info.flattened_dataset_dir},
         mode="offline",
     )
-
-    main()

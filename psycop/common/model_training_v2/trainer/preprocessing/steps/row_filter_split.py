@@ -58,10 +58,10 @@ def _get_regional_split_df() -> pl.LazyFrame:
     # add indicator for which split each patient belongs to
     geographical_split_df = geographical_split_df.with_columns(
         pl.when(pl.col("region") == "øst")
-        .then("train")
+        .then(pl.lit("train"))
         .when(pl.col("region") == "vest")
-        .then("val")
-        .otherwise("test")
+        .then(pl.lit("val"))
+        .otherwise(pl.lit("test"))
         .alias("split")
     )
 
@@ -115,7 +115,7 @@ class RegionalFilter(PresplitStep):
         return (
             input_df.join(filtered_regional_move_df, on=self.id_col_name, how="inner")
             .filter(pl.col(self.timestamp_col_name) < pl.col(self.timestamp_cutoff_col_name))
-            .drop(columns=[self.region_col_name, self.timestamp_cutoff_col_name])
+            .drop([self.region_col_name, self.timestamp_cutoff_col_name])
         )
 
     def _filter_regional_move_df_by_regions(self, df: pl.LazyFrame) -> pl.LazyFrame:
