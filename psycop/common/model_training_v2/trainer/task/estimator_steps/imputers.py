@@ -21,14 +21,14 @@ class IdentityTransformer(BaseEstimator, TransformerMixin):
     def __init__(self):
         pass
 
-    def fit(self, input_array, y=None):  # type: ignore
+    def fit(self, input_array, y=None):  # type: ignore # noqa
         return self
 
-    def transform(self, input_array, y=None):  # type: ignore
+    def transform(self, input_array, y=None):  # type: ignore # noqa
         return input_array
 
 
-@BaselineRegistry.estimator_steps.register("noop_imputer")
+@BaselineRegistry.estimator_steps.register("noop_imputation")
 def noop_imputation_step() -> ModelStep:
     return ("imputer", IdentityTransformer())
 
@@ -54,7 +54,7 @@ STRATEGY2STEP = {
     "median": "simple_imputation",
     "most_frequent": "simple_imputation",
     "miss_forest": "miss_forest_imputation",
-    "noop": "noop",
+    "noop": "noop_imputation",
 }
 
 

@@ -87,8 +87,8 @@ class OptunaHyperParameterOptimization:
             run_result = concrete_config_schema.trainer.train()
         except ValueError as e:
             if "Input X contains NaN" in str(e):
-                raise optuna.TrialPruned()
-            raise 
+                raise optuna.TrialPruned from e
+            raise
         return run_result.metric.value
 
     @staticmethod
