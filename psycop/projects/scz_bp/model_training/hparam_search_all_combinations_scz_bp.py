@@ -13,7 +13,7 @@ if __name__ == "__main__":
     for cfg_path in (Path(__file__).parent / "config").iterdir():
         OptunaHyperParameterOptimization().from_file(
             cfg_path,
-            study_name=cfg_path.name,
+            study_name=cfg_path.stem,
             n_trials=n_trials,
             n_jobs=n_jobs,
             direction="maximize",
