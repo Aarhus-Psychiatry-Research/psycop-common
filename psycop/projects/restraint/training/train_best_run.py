@@ -1,4 +1,4 @@
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor
+from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.projects.restraint.training.populate_restraint_registry import (
@@ -9,7 +9,10 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_with_restraint_registry()
     train_baseline_model(
-        MlflowMetricExtractor().get_best_run_from_experiments(
-            experiment_names=["restraint_hyperparam_search"], metric="all_oof_BinaryAUROC"
+        MlflowClientWrapper()
+        .get_best_run_from_experiment(
+            experiment_name="restraint_hyperparam_search", metric="all_oof_BinaryAUROC"
         )
-    )  # type: ignore
+        .get_config()["project_info"]["experiment_path"]
+        / "eval_df.parquet"
+    )
