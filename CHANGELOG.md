@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.203.0 (2024-03-18)
+
+### Feature
+
+* Add new plot ([`0bd3acd`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/0bd3acd531a720fd22a52ede04942326488a82b0))
+* Add filter func ([`ff2b5f5`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ff2b5f5f195d17cd98a87e37036727fc1f2f2e6c))
+* Add file ([`4d3f2b3`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/4d3f2b317ab2e8e4a1379686ea7c8602b85edf56))
+
+### Fix
+
+* Restore czp yaml ([`81464e4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/81464e43b9f0df2bca2f8b109e6e65149aad0216))
+* Small typo ([`b57b998`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b57b9987612d68d744aa96af590b3a16adc0d6dc))
+*  fix ppr table ([`3e3a287`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3e3a287f78d9d964126fb10efbc36949ac8dd8c9))
+
 ## v0.202.0 (2024-03-12)
 
 ### Feature
