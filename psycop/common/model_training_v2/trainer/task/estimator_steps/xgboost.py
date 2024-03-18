@@ -30,7 +30,7 @@ def xgboost_classifier_step(
     The 'missing' hyperparameter specifies the value to be treated as missing and is set to np.nan by default.
     """
     return (
-        "xgboost",
+        "classifier",
         XGBClassifier(
             alpha=alpha,
             gamma=gamma,

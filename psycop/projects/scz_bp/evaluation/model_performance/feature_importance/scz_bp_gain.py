@@ -2,7 +2,6 @@
 import polars as pl
 from sklearn.pipeline import Pipeline
 
-from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.t2d.utils.feature_name_to_readable import feature_name_to_readable
 
 
@@ -10,17 +9,8 @@ def generate_feature_importance_table(pipeline: Pipeline) -> pl.DataFrame:
     # Get feature importance scores
     feature_importances = pipeline.named_steps["model"].feature_importances_
 
-    split_df = load_and_filter_split_from_cfg(
-        data_cfg=pipeline_run.inputs.cfg.data,  # noqa: F821
-        pre_split_cfg=pipeline_run.inputs.cfg.preprocessing.pre_split,  # noqa: F821
-        split="val",
-    )
-    feature_names = [c for c in split_df.columns if "pred_" in c]
-
     if hasattr(pipeline.named_steps["model"], "feature_names"):
         selected_feature_names = pipeline.named_steps["model"].feature_names
-    else:
-        selected_feature_names = feature_names
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
