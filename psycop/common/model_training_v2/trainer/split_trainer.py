@@ -102,7 +102,7 @@ class SplitTrainer(BaselineTrainer):
         return [self.uuid_col_name, *self.outcome_columns]
 
     def train(self) -> TrainingResult:
-        return SplitTrainerSplitPreprocessing(
+        trainer = SplitTrainerSplitPreprocessing(
             uuid_col_name=self.uuid_col_name,
             training_data=self.training_data,
             training_outcome_col_name=self.training_outcome_col_name,
@@ -112,4 +112,6 @@ class SplitTrainer(BaselineTrainer):
             validation_preprocessing_pipeline=self.preprocessing_pipeline,
             task=self.task,
             metric=self.metric,
-        ).train()
+        )
+        trainer.set_logger(self.logger)
+        return trainer.train()
