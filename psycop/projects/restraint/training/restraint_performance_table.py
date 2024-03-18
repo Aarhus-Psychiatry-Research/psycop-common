@@ -3,7 +3,9 @@ import polars as pl
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowMetricExtractor
 
 if __name__ == "__main__":
-    df = MlflowMetricExtractor().get_all_metrics_for_experiment(experiment_name="restraint_hyperparam_search")
+    df = MlflowMetricExtractor().get_all_metrics_for_experiment(
+        experiment_name="restraint_hyperparam_search"
+    )
 
     only_oof = (
         (
