@@ -125,9 +125,9 @@ if __name__ == "__main__":
 
     main(
         add_text_features=False,
-        min_set_for_debug=True,
+        min_set_for_debug=False,
         limited_feature_set=False,
         lookbehind_180d_mean=False,
-        feature_set_name="min_set_for_debug",
+        feature_set_name="clozapine_preliminary_diagnoses_medication_coercion_v2",
         generate_in_chunks=True,
     )

@@ -25,8 +25,8 @@ class BaselinePreprocessingPipeline(PreprocessingPipeline):
 
     def _get_column_stats_string(self, data: pl.LazyFrame) -> str:
         return f"""
-    n_cols: {len(data.columns)}
-    Columns: {data.columns}"""
+    Columns: {data.columns}
+    n_cols: {len(data.columns)}"""
 
     def apply(self, data: pl.LazyFrame) -> pd.DataFrame:
         self.logger.info(

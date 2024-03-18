@@ -4,6 +4,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import numpy as np
+import polars as pl
 from timeseriesflattener import OutcomeSpec, StaticFrame, StaticSpec, ValueFrame
 from timeseriesflattener.aggregators import MaxAggregator
 
@@ -67,7 +68,7 @@ class SczBpFeatureSpecifier:
             )
         ]
 
-    def _get_metadata_specs(self) -> list[ValueSpecification]:
+    def _get_metadata_specs(self) -> list[StaticSpec]:
         log.info("-------- Generating metadata specs --------")
 
         return [
@@ -93,6 +94,26 @@ class SczBpFeatureSpecifier:
             ),
             StaticSpec(
                 value_frame=StaticFrame(
+                    init_df=pl.from_pandas(get_first_scz_diagnosis())
+                    .rename({"timestamp": "time_of_scz_diagnosis"})
+                    .drop("value"),
+                    entity_id_col_name="dw_ek_borger",
+                ),
+                column_prefix="meta",
+                fallback=np.nan,
+            ),
+            StaticSpec(
+                value_frame=StaticFrame(
+                    init_df=pl.from_pandas(get_first_bp_diagnosis())
+                    .rename({"timestamp": "time_of_bp_diagnosis"})
+                    .drop("value"),
+                    entity_id_col_name="dw_ek_borger",
+                ),
+                column_prefix="meta",
+                fallback=np.nan,
+            ),
+            StaticSpec(
+                value_frame=StaticFrame(
                     init_df=get_time_of_first_visit_to_psychiatry().rename(
                         {"timestamp": "first_visit"}
                     ),
@@ -100,30 +121,6 @@ class SczBpFeatureSpecifier:
                 ),
                 column_prefix="meta",
                 fallback=np.nan,
-            ),
-            OutcomeSpec(
-                value_frame=ValueFrame(
-                    init_df=get_first_scz_diagnosis().rename(
-                        columns={"value": "scz_within_3_years"}
-                    ),
-                    entity_id_col_name="dw_ek_borger",
-                    value_timestamp_col_name="timestamp",
-                ),
-                lookahead_distances=make_timedeltas_from_zero(look_days=[1095]),
-                aggregators=[MaxAggregator()],
-                fallback=0,
-                column_prefix="meta",
-            ),
-            OutcomeSpec(
-                value_frame=ValueFrame(
-                    init_df=get_first_bp_diagnosis().rename(columns={"value": "bp_within_3_years"}),
-                    entity_id_col_name="dw_ek_borger",
-                    value_timestamp_col_name="timestamp",
-                ),
-                lookahead_distances=make_timedeltas_from_zero(look_days=[1095]),
-                aggregators=[MaxAggregator()],
-                fallback=0,
-                column_prefix="meta",
             ),
         ]
 

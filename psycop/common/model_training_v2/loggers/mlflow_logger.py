@@ -96,9 +96,7 @@ class MLFlowLogger(BaselineLogger):
 
     def log_dataset(self, dataframe: DataFrame, filename: str) -> None:
         self._init_run()
-        allowed_to_upload = False
-        if allowed_to_upload:
-            with tempfile.TemporaryDirectory() as tmp_dir:
-                tmp_file = Path(tmp_dir) / filename
-                dataframe.write_parquet(tmp_file)
-                mlflow.log_artifact(local_path=tmp_file.__str__())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_file = Path(tmp_dir) / filename
+            dataframe.write_parquet(tmp_file)
+            mlflow.log_artifact(local_path=tmp_file.__str__())
