@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.203.1 (2024-03-19)
+
+### Fix
+
+* Remove unused arg ([`db1f69f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/db1f69f7efb38a7e2f30debd13e77d0950440386))
+* Small aesthetics ([`ffdbd56`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ffdbd56f8599463ae62383883021a637ae7fba87))
+* Roc_auc plot diagonal ([`efe262c`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/efe262ccd5665aa872d5c3268a444b85af682fca))
+
 ## v0.203.0 (2024-03-18)
 
 ### Feature
