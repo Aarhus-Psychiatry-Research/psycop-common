@@ -1,7 +1,9 @@
 import plotnine as pn
 import polars as pl
 
-from psycop.common.model_evaluation.binary.time.timedelta_data import get_auroc_by_timedelta_df
+from psycop.common.model_evaluation.binary.time.timedelta_data import (
+    get_auroc_by_timedelta_df,
+)
 from psycop.projects.forced_admission_inpatient.model_eval.model_description.robustness.robustness_plot import (
     fa_inpatient_plot_robustness,
 )
@@ -52,7 +54,7 @@ def fa_inpatient_auroc_by_time_from_first_visit(
         plot_df,
         x_column="unit_from_event_binned",
         line_y_col_name="auroc",
-        xlab="Months since first visit",
+        xlab="Months since first visit to Psychiatric Services",
     )
 
 
