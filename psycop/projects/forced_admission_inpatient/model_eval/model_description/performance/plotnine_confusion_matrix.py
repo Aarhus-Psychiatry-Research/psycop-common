@@ -1,14 +1,12 @@
 import pandas as pd
 import plotnine as pn
 
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-)
+from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
 
 
-def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str, ppr: float) -> pn.ggplot:
+def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.ggplot:
     df = str_to_df(
         f"""true,pred,estimate
 +,+,"{f'{matrix.true_positives:,}'}",
