@@ -7,7 +7,7 @@ import pandas as pd
 
 from psycop.common.global_utils.sql.loader import sql_load
 from psycop.common.global_utils.sql.writer import write_df_to_sql
-from psycop.projects.forced_admission_inpatient.cohort.extract_admissions_and_visits.utils.utils import (
+from psycop.projects.forced_admission_outpatient.cohort.extract_admissions_and_visits.utils.utils import (
     concat_readmissions_for_all_patients,
     lpr2_lpr3_overlap,
 )
