@@ -1,5 +1,5 @@
 name: forced_admissions_inpatient
-project_path: E:\shared_resources\forced_admissions_inpatient\models\full_model_without_text_features
+project_path: E:\shared_resources\forced_admissions_outpatient\models\full_model_without_text_features
 seed: 42
 
 wandb:
