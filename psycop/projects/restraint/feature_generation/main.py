@@ -18,6 +18,7 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 )
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 from psycop.projects.restraint.feature_generation.modules.specify_features import FeatureSpecifier
+from psycop.projects.restraint.feature_generation.modules.specify_text_features import TextFeatureSpecifier
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
 log = logging.getLogger()
@@ -28,10 +29,12 @@ def main():
     dataset."""
     project_info = RESTRAINT_PROJECT_INFO
 
-    feature_specs = FeatureSpecifier(
-        project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
-    ).get_feature_specs()
+    # feature_specs = FeatureSpecifier(
+    #     project_info=project_info,
+    #     min_set_for_debug=False,  # Remember to set to False when generating full dataset
+    # ).get_feature_specs()
+
+    feature_specs = TextFeatureSpecifier(project_info=project_info, min_set_for_debug=True).get_text_feature_specs(note_types = ["aktuelt_psykisk", "all_relevant"], model_names = ["dfm-encoder-large", "dfm-encoder-large-v1-finetuned", "tfidf-500", "tfidf-1000"])
 
     flattened_df = create_flattened_dataset_tsflattener_v1(
         feature_specs=feature_specs,  # type: ignore
