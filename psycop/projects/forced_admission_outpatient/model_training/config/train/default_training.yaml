@@ -1,0 +1,3 @@
+n_trials_per_lookahead: 300
+n_jobs_per_trainer: 1
+n_active_trainers: 10
