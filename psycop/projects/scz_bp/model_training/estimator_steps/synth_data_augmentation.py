@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Any, Literal
 
 import numpy as np

@@ -7,4 +7,6 @@ def populate_scz_bp_registry():
         SyntheticDataAugmentation,
         synthetic_data_augmentation_step,
     )
-    from psycop.projects.scz_bp.model_training.binary_classification_pipeline.pipeline_constructor import imblearn_pipeline_constructor
+    from psycop.projects.scz_bp.model_training.binary_classification_pipeline.pipeline_constructor import (
+        imblearn_pipeline_constructor,
+    )

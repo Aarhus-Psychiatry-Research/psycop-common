@@ -1,8 +1,8 @@
 import copy
 import re
+import traceback
 from collections.abc import Sequence
 from pathlib import Path
-import traceback
 from typing import Any, Literal
 
 import joblib
@@ -88,7 +88,7 @@ class OptunaHyperParameterOptimization:
 
         try:
             run_result = concrete_config_schema.trainer.train()
-        except ValueError as e: 
+        except Exception as e:
             if "Input X contains NaN" in str(e):
                 raise optuna.TrialPruned from e
             concrete_config_schema.logger.fail(traceback.format_exc())
