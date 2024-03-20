@@ -19,6 +19,7 @@ from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe, Pre
 from timeseriesflattener.v1.feature_specs.single_specs import OutcomeSpec, PredictorSpec, StaticSpec
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.feature_generation.loaders.raw.load_coercion import (
     af_helbredsmaessige_grunde,
     af_legemlig_lidelse,
@@ -536,9 +537,10 @@ class FeatureSpecifier:
         log.info("-------- Generating outcome specs --------")
 
         mechanical_restraint_spec = OutcomeSpec(
-            timeseries_df=RestraintCohortDefiner.get_outcome_timestamps()
-            .frame.to_pandas()
-            .assign(value=1)
+            timeseries_df=sql_load("SELECT *, 1 as value FROM fct.psycop_coercion_outcome_timestamps_2")
+            # RestraintCohortDefiner.get_outcome_timestamps()
+            # .frame.to_pandas()
+            # .assign(value=1)
             .rename(columns={"first_mechanical_restraint": "timestamp"})
             .dropna(subset="timestamp"),
             lookahead_days=2,
