@@ -2,6 +2,7 @@ import copy
 import re
 from collections.abc import Sequence
 from pathlib import Path
+import traceback
 from typing import Any, Literal
 
 import joblib
@@ -18,6 +19,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_sug
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
+from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import populate_scz_bp_registry
 
 from ..config.populate_registry import populate_baseline_registry
 
@@ -79,15 +81,17 @@ class OptunaHyperParameterOptimization:
         )
 
         populate_baseline_registry()
+        populate_scz_bp_registry()
         concrete_config_schema = BaselineSchema(**BaselineRegistry.resolve(concrete_config))
 
         concrete_config_schema.logger.log_config(Config(concrete_config))
 
         try:
             run_result = concrete_config_schema.trainer.train()
-        except ValueError as e:
+        except ValueError as e: 
             if "Input X contains NaN" in str(e):
                 raise optuna.TrialPruned from e
+            concrete_config_schema.logger.fail(traceback.format_exc())
             raise
         return run_result.metric.value
 

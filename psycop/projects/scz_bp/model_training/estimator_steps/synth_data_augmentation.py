@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, Literal
 
 import numpy as np
@@ -18,6 +19,7 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     FloatSpaceT,
     IntegerSpace,
     IntegerspaceT,
+    SingleValue,
 )
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 
@@ -117,21 +119,49 @@ def synthetic_data_augmentation_step(
 class SynthcityAugmentationSuggester(Suggester):
     def __init__(
         self,
-        model_name: CategoricalSpaceT = ("tabddpm"),
-        lr: FloatSpaceT = (1e-5, 1e-1, True),
-        batch_size: IntegerspaceT = (2999, 3001, False),
-        num_timesteps: IntegerspaceT = (500, 1200, False),
-        n_iter: IntegerspaceT = (500, 10000, False),
-        sampling_strategy: CategoricalSpaceT = ("all", "minority"),
-        prop_augmented: CategoricalSpaceT = (0.1, 0.3, 0.5, 1.0),
+        model_name: CategoricalSpaceT | str = "ddpm",
+        lr: FloatSpaceT | float = (1e-5, 1e-1, True),
+        batch_size: IntegerspaceT | int = 10000,
+        num_timesteps: IntegerspaceT | int = 1000,
+        n_iter: IntegerspaceT | int = 1000,
+        sampling_strategy: CategoricalSpaceT | str = ("all", "minority"),
+        prop_augmented: CategoricalSpaceT | float = (0.05, 0.1, 0.5, 1.0),
     ):
-        self.model_name = CategoricalSpace(choices=model_name)
-        self.lr = FloatSpace.from_list_or_mapping(lr)
-        self.batch_size = IntegerSpace.from_list_or_mapping(batch_size)
-        self.num_timesteps = IntegerSpace.from_list_or_mapping(num_timesteps)
-        self.n_iter = IntegerSpace.from_list_or_mapping(n_iter)
-        self.sampling_strategy = CategoricalSpace(choices=sampling_strategy)
-        self.prop_augmented = CategoricalSpace(choices=prop_augmented)
+        self.model_name = (
+            CategoricalSpace(choices=model_name)
+            if not isinstance(model_name, str)
+            else SingleValue(model_name)
+        )
+        self.lr = (
+            FloatSpace.from_list_or_mapping(lr)
+            if not isinstance(lr, (float, int))
+            else SingleValue(lr)
+        )
+        self.batch_size = (
+            IntegerSpace.from_list_or_mapping(batch_size)
+            if not isinstance(batch_size, int)
+            else SingleValue(batch_size)
+        )
+        self.num_timesteps = (
+            IntegerSpace.from_list_or_mapping(num_timesteps)
+            if not isinstance(num_timesteps, int)
+            else SingleValue(num_timesteps)
+        )
+        self.n_iter = (
+            IntegerSpace.from_list_or_mapping(n_iter)
+            if not isinstance(n_iter, int)
+            else SingleValue(n_iter)
+        )
+        self.sampling_strategy = (
+            CategoricalSpace(choices=sampling_strategy)
+            if not isinstance(sampling_strategy, str)
+            else SingleValue(sampling_strategy)
+        )
+        self.prop_augmented = (
+            CategoricalSpace(choices=prop_augmented)
+            if not isinstance(prop_augmented, (float, int))
+            else SingleValue(prop_augmented)
+        )
 
     def suggest_hyperparameters(self, trial: Trial) -> dict[str, Any]:
         return {

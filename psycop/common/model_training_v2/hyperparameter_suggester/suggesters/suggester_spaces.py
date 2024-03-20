@@ -121,6 +121,15 @@ class CategoricalSpace:
         return trial.suggest_categorical(name=name, choices=self.choices)
 
 
+
+@dataclass
+class SingleValue:
+    """If you don't want to search across all possible hparams"""
+    val: str | float
+
+    def suggest(self, trial: optuna.Trial, name: str) -> Any:
+        return self.val
+
 @BaselineRegistry.suggesters.register("mock_suggester")
 class MockSuggester(Suggester):
     """Suggester used only for tests. Ensures tests only break if the interface breaks, not because of implementation details in e.g. LogisticRegression."""
