@@ -35,7 +35,6 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
 
     return filtered_df
 
-
 def plot_distribution_of_n_pred_times_per_outcome(
     run: ForcedAdmissionOutpatientPipelineRun, eval_dataset: EvalDataset, max_n: int
 ) -> pn.ggplot:
@@ -55,7 +54,7 @@ def plot_distribution_of_n_pred_times_per_outcome(
     n_pred_times_counts = df["n_pred_times"].value_counts()
     filtered_df = df[df["n_pred_times"].isin(n_pred_times_counts[n_pred_times_counts > 4].index)]
     filtered_df = filtered_df.reset_index(drop=True)
-    filtered_df["n_pred_times"] = filtered_df["n_pred_times"].astype(str)
+    #filtered_df["n_pred_times"] = filtered_df["n_pred_times"].astype(str)
 
     plot = (
         pn.ggplot(filtered_df)
@@ -63,7 +62,7 @@ def plot_distribution_of_n_pred_times_per_outcome(
         + pn.geom_bar(pn.aes(x="n_pred_times"), fill="#009E73")
         + pn.labs(x="No. prediction times per outcome", y="Count")
         + pn.annotate(
-            "text", x=3.5, y=70, label="Counts < 5 have been removed", size=10, color="red"
+            "text", x=7.5, y=60, label="Counts < 5 have been removed", size=10, color="red"
         )
     )
 
@@ -80,5 +79,5 @@ if __name__ == "__main__":
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    max_n = 20
+    max_n = 30
     plot_distribution_of_n_pred_times_per_outcome(run, eval_dataset, max_n)
