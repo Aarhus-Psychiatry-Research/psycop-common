@@ -3,9 +3,11 @@ import pandas as pd
 import plotnine as pn
 from wasabi import Printer
 
-from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -16,11 +18,17 @@ msg = Printer(timestamp=True)
 def _get_prediction_times_with_outcome_shared_by_n_other(
     eval_dataset: EvalDataset, n: int
 ) -> pd.DataFrame:
+    
+    # Generate df
+    positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
+        desired_positive_rate=BEST_POS_RATE,
+    )
+    
     df = pd.DataFrame(
         {
             "id": eval_dataset.ids,
             "y": eval_dataset.y,
-            "y_hat_probs": eval_dataset.y_hat_probs,
+            "y_pred": positives_series,
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
         }
@@ -39,29 +47,25 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
     return filtered_df
 
 
-def _get_auc_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
+def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
     run: ForcedAdmissionOutpatientPipelineRun, eval_dataset: EvalDataset, n: int
 ):
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
 
     df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
 
-    df["pred_time_order"] = df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first")
+    df["pred_time_order"] = df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
 
     for i in range(1, df["pred_time_order"].max() + 1):
         df_subset = df[df["pred_time_order"] == i]
 
-        # Initialize lists for bootstrapped TPRs and FPRs
-        tprs_bootstrapped, aucs_bootstrapped, base_fpr = bootstrap_roc(
-            n_bootstraps=100, y=df.y, y_hat_probs=df.y_hat_probs
-        )
 
-        auc_mean = np.mean(aucs_bootstrapped)
+        tpr = (df.y_pred / df.y) * 100
 
         plot = (
             pn.ggplot(df_subset)
             + FA_PN_THEME
-            + pn.geom_point(pn.aes(x="time_to_event", y=auc_mean), color="red")
+            + pn.geom_point(pn.aes(x="time_to_event", y=tpr), color="red")
             + pn.labs(x="Time to event (days)", y="Density")
             + pn.theme(legend_position="none")
         )
@@ -115,5 +119,5 @@ if __name__ == "__main__":
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
     max_n = 30
 
-    _get_auc_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(run, eval_dataset, 1)
+    _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(run, eval_dataset, 1)
     plot_distribution_of_n_pred_times_per_outcome(run, eval_dataset, max_n)
