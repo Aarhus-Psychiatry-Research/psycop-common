@@ -70,7 +70,7 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
             + pn.theme(legend_position="none")
         )
 
-        plot_path = run.paper_outputs.paths.figures / "test.png"
+        plot_path = run.paper_outputs.paths.figures / "test_plot.png"
         plot.save(plot_path)
 
 
