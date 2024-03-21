@@ -60,7 +60,7 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
         df_subset = df[df["pred_time_order"] == i]
 
 
-        tpr = (df.y_pred / df.y) * 100
+        tpr = (df.y_pred.sum() / df.y.sum()) * 100
 
         plot = (
             pn.ggplot(df_subset)
