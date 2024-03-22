@@ -6,5 +6,5 @@ from psycop.common.feature_generation.application_modules.project_setup import P
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 
 RESTRAINT_PROJECT_INFO = ProjectInfo(
-    project_name="coercion", project_path=OVARTACI_SHARED_DIR / "coercion"
+    project_name="coercion", project_path=OVARTACI_SHARED_DIR / "coercion" / "text"
 )
