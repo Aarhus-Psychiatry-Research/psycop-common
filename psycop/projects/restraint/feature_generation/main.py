@@ -5,13 +5,16 @@ import sys
 from pathlib import Path
 
 import wandb
+import polars as pl
 
+from psycop.common.cohort_definition import PredictionTimeFrame
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
-from psycop.common.feature_generation.application_modules.flatten_dataset import (
-    create_flattened_dataset_tsflattener_v1,
-)
+# from psycop.common.feature_generation.application_modules.flatten_dataset import (
+#     create_flattened_dataset_tsflattener_v1,
+# )
+from psycop.common.feature_generation.application_modules.flatten_dataset import create_flattened_dataset
 from psycop.common.feature_generation.application_modules.loggers import init_root_logger
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
@@ -37,13 +40,12 @@ def main():
 
     feature_specs = TextFeatureSpecifier(project_info=project_info, min_set_for_debug=True).get_text_feature_specs(note_types = ["aktuelt_psykisk", "all_relevant"], model_names = ["dfm-encoder-large", "dfm-encoder-large-v1-finetuned", "tfidf-500", "tfidf-1000"])
 
-    flattened_df = create_flattened_dataset_tsflattener_v1(
+    flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,  # type: ignore
-        prediction_times_df=load_coercion_prediction_times(),
-        # RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore
-        drop_pred_times_with_insufficient_look_distance=True,
-        project_info=project_info,
-        add_birthdays=True,
+        prediction_times_frame=PredictionTimeFrame(pl.DataFrame(load_coercion_prediction_times())),
+        # RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas(),  # type: ignore,
+        n_workers=1,
+        compute_lazily=True
     )
 
     split_and_save_dataset_to_disk(
