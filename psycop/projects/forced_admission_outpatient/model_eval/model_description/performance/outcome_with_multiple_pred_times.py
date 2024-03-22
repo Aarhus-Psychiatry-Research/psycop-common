@@ -1,13 +1,9 @@
-import numpy as np
 import pandas as pd
 import plotnine as pn
 from wasabi import Printer
 
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    BEST_POS_RATE,
-    FA_PN_THEME,
-)
+from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -18,12 +14,11 @@ msg = Printer(timestamp=True)
 def _get_prediction_times_with_outcome_shared_by_n_other(
     eval_dataset: EvalDataset, n: int
 ) -> pd.DataFrame:
-    
     # Generate df
     positives_series, _ = eval_dataset.get_predictions_for_positive_rate(
-        desired_positive_rate=BEST_POS_RATE,
+        desired_positive_rate=BEST_POS_RATE
     )
-    
+
     df = pd.DataFrame(
         {
             "id": eval_dataset.ids,
@@ -54,20 +49,22 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
 
     df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
 
-    df["pred_time_order"] = df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
+    df["pred_time_order"] = (
+        df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
+    )
 
     for i in range(1, df["pred_time_order"].max() + 1):
         df_subset = df[df["pred_time_order"] == i]
-
 
         tpr = (df.y_pred.sum() / df.y.sum()) * 100
 
         plot = (
             pn.ggplot(df_subset)
             + FA_PN_THEME
-            + pn.geom_point(pn.aes(x="time_to_event", y=tpr), color="red")
+            + pn.geom_point(pn.aes(x="time_to_event", y=tpr), color="gray", alpha=0.8)
             + pn.labs(x="Time to event (days)", y="Density")
             + pn.theme(legend_position="none")
+            + pn.geom_density(pn.aes(x="time_to_event"), fill="blue", alpha=0.3)
         )
 
         plot_path = run.paper_outputs.paths.figures / "test_plot.png"
