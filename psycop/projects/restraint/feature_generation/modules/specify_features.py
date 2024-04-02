@@ -103,7 +103,6 @@ from psycop.common.feature_generation.loaders.raw.load_visits import (
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
-from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 
 log = logging.getLogger(__name__)
 
@@ -537,7 +536,9 @@ class FeatureSpecifier:
         log.info("-------- Generating outcome specs --------")
 
         mechanical_restraint_spec = OutcomeSpec(
-            timeseries_df=sql_load("SELECT *, 1 as value FROM fct.psycop_coercion_outcome_timestamps_2")
+            timeseries_df=sql_load(
+                "SELECT *, 1 as value FROM fct.psycop_coercion_outcome_timestamps_2"
+            )
             # RestraintCohortDefiner.get_outcome_timestamps()
             # .frame.to_pandas()
             # .assign(value=1)
