@@ -59,6 +59,8 @@ def scz_bp_generate_feature_importance_table(
         selected_feature_names = pipeline.named_steps[clf_model_name].feature_names
     elif hasattr(pipeline.named_steps[clf_model_name], "feature_name_"):
         selected_feature_names = pipeline.named_steps[clf_model_name].feature_name_
+    elif hasattr(pipeline.named_steps[clf_model_name], "feature_names_in_"):
+        selected_feature_names = pipeline.named_steps[clf_model_name].feature_names_in_
     else:
         raise ValueError("The classifier does not implement .feature_names or .feature_name_")
 
@@ -84,7 +86,7 @@ def scz_bp_generate_feature_importance_table(
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/structured_only"
+    best_experiment = "sczbp/structured_text_xgboost"
 
     best_run = MlflowClientWrapper().get_best_run_from_experiment(
         experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
@@ -93,7 +95,7 @@ if __name__ == "__main__":
     with best_run.download_artifact("sklearn_pipe.pkl").open("rb") as pipe_pkl:
         pipe = pkl.load(pipe_pkl)
 
-    feat_imp = scz_bp_generate_feature_importance_table(pipeline=pipe, clf_model_name="lightgbm")
+    feat_imp = scz_bp_generate_feature_importance_table(pipeline=pipe, clf_model_name="classifier")
     pl.Config.set_tbl_rows(100)
 
     with (Path(__file__).parent / f"feat_imp_100_{best_experiment.split('/')[1]}.html").open(

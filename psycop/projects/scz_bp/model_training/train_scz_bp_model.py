@@ -7,4 +7,5 @@ from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import popul
 if __name__ == "__main__":
     populate_baseline_registry()
     populate_scz_bp_registry()  # noqa: ERA001
-    train_baseline_model(Path(__file__).parent / "config" / "augmentation" / "scz_bp_structured_text_Best_xgboost_synthcity.cfg")
+        
+    train_baseline_model(Path(__file__).parent / "config" / "ddpm_test.cfg")

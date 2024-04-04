@@ -46,7 +46,8 @@ class SyntheticDataAugmentation(BaseSampler):
     ):
         if model_params is None:
             model_params = {}
-        model_params["is_classification"] = True  # required for conditional sampling
+        if model_name == "ddpm":
+            model_params["is_classification"] = True  # required for conditional sampling
         self.model_name = model_name
         self.sampling_strategy = sampling_strategy
         self.prop_augmented = prop_augmented
@@ -174,6 +175,5 @@ class SynthcityAugmentationSuggester(Suggester):
                 "batch_size": self.batch_size.suggest(trial, name="batch_size"),
                 "num_timesteps": self.num_timesteps.suggest(trial, name="num_timesteps"),
                 "n_iter": self.n_iter.suggest(trial, name="n_iter"),
-                "is_classification": True,
             },
         }
