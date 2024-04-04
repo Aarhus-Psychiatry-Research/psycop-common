@@ -71,7 +71,8 @@ def create_flattened_dataset(
         compute_lazily=compute_lazily,
         n_workers=n_workers,
     )
-    return flattener.aggregate_timeseries(specs=feature_specs).df.collect()
+    df = flattener.aggregate_timeseries(specs=feature_specs).df
+    return df.collect()
 
 
 def create_flattened_dataset_tsflattener_v1(
