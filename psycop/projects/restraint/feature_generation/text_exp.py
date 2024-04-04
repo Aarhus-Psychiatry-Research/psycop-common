@@ -23,7 +23,7 @@ def main():
     project_info = RESTRAINT_PROJECT_INFO
 
     restraint_pred_times = (
-        RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()
+        RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()  # type: ignore
     )
     chunk1 = restraint_pred_times[: int(len(restraint_pred_times) / 3)]
     chunk2 = restraint_pred_times[
