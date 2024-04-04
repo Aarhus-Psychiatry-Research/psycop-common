@@ -121,14 +121,15 @@ class CategoricalSpace:
         return trial.suggest_categorical(name=name, choices=self.choices)
 
 
-
 @dataclass
 class SingleValue:
     """If you don't want to search across all possible hparams"""
+
     val: str | float
 
-    def suggest(self, trial: optuna.Trial, name: str) -> Any:
+    def suggest(self, trial: optuna.Trial, name: str) -> Any:  # noqa: ARG002
         return self.val
+
 
 @BaselineRegistry.suggesters.register("mock_suggester")
 class MockSuggester(Suggester):
