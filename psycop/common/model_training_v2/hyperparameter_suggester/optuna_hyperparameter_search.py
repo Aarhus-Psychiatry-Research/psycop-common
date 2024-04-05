@@ -129,12 +129,13 @@ class OptunaHyperParameterOptimization:
             cfg=cfg_with_resolved_suggesters
         )
 
+        # instantiate the study in case it does not already exist
         study_ = optuna.create_study(  # noqa
             direction=direction,
             load_if_exists=True,
             study_name=study_name,
             storage=f"sqlite:///./{study_name}.db",
-        )  # avoids errors when running a study for the first time
+        )
 
         studies = joblib.Parallel(n_jobs)(
             joblib.delayed(OptunaHyperParameterOptimization._optimize_study)(
