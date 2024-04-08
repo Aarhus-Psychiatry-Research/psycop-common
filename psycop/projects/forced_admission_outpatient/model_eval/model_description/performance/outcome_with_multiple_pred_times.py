@@ -3,7 +3,10 @@ import plotnine as pn
 from wasabi import Printer
 
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -42,7 +45,7 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
     return filtered_df
 
 
-def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
+def _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(
     run: ForcedAdmissionOutpatientPipelineRun, eval_dataset: EvalDataset, n: int
 ):
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
@@ -53,33 +56,48 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
         df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
     )
 
+    if df["outcome_uuid"].nunique() < 5:
+        
+        return pn.ggplot()
+    
+    # Add true positive rate for each group
+    df['tpr'] = ""
+
     for i in range(1, df["pred_time_order"].max() + 1):
-        df_subset = df[df["pred_time_order"] == i]
 
-        tpr = (df_subset.y_pred.sum() / df_subset.y.sum()) * 100
+        df.loc[df[df["pred_time_order"] == i].index, "tpr"] = (df[df["pred_time_order"] == i].y_pred.sum() / df[df["pred_time_order"] == i].y.sum()) * 100        
 
-        plot = (
-            pn.ggplot(df_subset)
-            + FA_PN_THEME
-            + pn.coord_flip()
-            + pn.geom_point(pn.aes(x=tpr, y="time_to_event"), color="gray", alpha=0.8)
-            + pn.labs(x="Accuracy (%)", y="Time to event (days)")
-            + pn.theme(legend_position="none")
-            + pn.geom_violin(
-                pn.aes(x=tpr * 0.95, y="time_to_event"), style="left", fill="dodgerblue", alpha=0.3
-            )
-            + pn.geom_boxplot(
-                pn.aes(x=tpr * 1.05, y="time_to_event"),
-                fill="dodgerblue",
-                show_legend=False,
-                width=2,
-                alpha=0.9,
-            )
-            + pn.scale_y_continuous(limits=(0, 100))
+    # Change column dtypes
+    df['tpr'] = pd.to_numeric(df['tpr'])
+    df['pred_time_order'] = df['pred_time_order'].astype("category")
+
+    # Create tpr for positining boxplot + violin plot away from each other:
+    df['tpr_boxplot'] = df['tpr'] + 1.2
+    df['tpr_violin'] = df['tpr'] - 0.6
+
+    plot = (
+        pn.ggplot(df)
+        + pn.scale_x_continuous(limits=((df['tpr'].max() + 5), max((df['tpr'].min() - 5),0)))
+        + pn.scale_y_reverse()
+        + FA_PN_THEME
+        + pn.coord_flip()
+        + pn.scale_fill_brewer(type="seq", palette="YlGn")  # type: ignore
+        + pn.geom_point(pn.aes(x="tpr", y="time_to_event", fill='pred_time_order'), alpha=0.9, size = 3)
+        + pn.labs(x="Accuracy (%)", y="Time to event (days)")
+        + pn.theme(legend_position="none")
+        + pn.geom_violin(
+            pn.aes(x="tpr_violin", y="time_to_event", fill='pred_time_order'), style="left", alpha=0.6, width=2, position = pn.position_dodge(),
         )
+        + pn.geom_boxplot(
+            pn.aes(x="tpr_boxplot", y="time_to_event", fill='pred_time_order'),
+            show_legend=False,
+            width=1,
+            alpha=0.3,
+            position = pn.position_dodge2()
+        )
+    )
 
-        plot_path = run.paper_outputs.paths.figures / "test_plot.png"
-        plot.save(plot_path)
+    return plot
 
 
 def plot_distribution_of_n_pred_times_per_outcome(
@@ -125,6 +143,11 @@ if __name__ == "__main__":
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    max_n = 30
+    max_n = 10
 
-    _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(run, eval_dataset, 1)
+    for n in range(1, max_n):
+
+        plot = _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(run, eval_dataset, n)
+
+        plot_path = run.paper_outputs.paths.figures / f"fa_outpatient_performance_and_distribution_for_outcomes_with_{n}_pred_times.png"
+        plot.save(plot_path)
