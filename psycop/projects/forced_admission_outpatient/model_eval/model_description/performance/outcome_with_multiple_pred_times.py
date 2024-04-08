@@ -52,21 +52,17 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
     df["pred_time_order"] = (
         df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
     )
-    plot = pn.ggplot(df) + pn.coord_flip()
 
     for i in range(1, df["pred_time_order"].max() + 1):
-        tpr = (
-            df[df["pred_time_order"] == i]["y_pred"].sum()
-            / df[df["pred_time_order"] == i]["y"].sum()
-        ) * 100
+        df_subset = df[df["pred_time_order"] == i]
 
-        plot += (
-            FA_PN_THEME
-            + pn.geom_point(
-                pn.aes(x=tpr, y=df[df["pred_time_order"] == i]["time_to_event"]),
-                color="gray",
-                alpha=0.8,
-            )  # type: ignore
+        tpr = (df_subset.y_pred.sum() / df_subset.y.sum()) * 100
+
+        plot = (
+            pn.ggplot(df_subset)
+            + FA_PN_THEME
+            + pn.coord_flip()
+            + pn.geom_point(pn.aes(x=tpr, y="time_to_event"), color="gray", alpha=0.8)
             + pn.labs(x="Accuracy (%)", y="Time to event (days)")
             + pn.theme(legend_position="none")
             + pn.geom_violin(
@@ -82,8 +78,8 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
             + pn.scale_y_continuous(limits=(0, 100))
         )
 
-    plot_path = run.paper_outputs.paths.figures / "test_plot.png"
-    plot.save(plot_path)
+        plot_path = run.paper_outputs.paths.figures / "test_plot.png"
+        plot.save(plot_path)
 
 
 def plot_distribution_of_n_pred_times_per_outcome(
