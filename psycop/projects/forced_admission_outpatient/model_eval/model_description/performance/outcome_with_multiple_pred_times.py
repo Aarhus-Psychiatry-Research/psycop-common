@@ -3,10 +3,7 @@ import plotnine as pn
 from wasabi import Printer
 
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    BEST_POS_RATE,
-    FA_PN_THEME,
-)
+from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -55,26 +52,38 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
     df["pred_time_order"] = (
         df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
     )
+    plot = pn.ggplot(df) + pn.coord_flip()
 
     for i in range(1, df["pred_time_order"].max() + 1):
-        df_subset = df[df["pred_time_order"] == i]
+        tpr = (
+            df[df["pred_time_order"] == i]["y_pred"].sum()
+            / df[df["pred_time_order"] == i]["y"].sum()
+        ) * 100
 
-        tpr = (df.y_pred.sum() / df.y.sum()) * 100
-
-        plot = (
-            pn.ggplot(df_subset)
-            + FA_PN_THEME
-            + pn.coord_flip()
-            + pn.geom_point(pn.aes(x=tpr, y="time_to_event"), color="gray", alpha=0.8)
+        plot += (
+            FA_PN_THEME
+            + pn.geom_point(
+                pn.aes(x=tpr, y=df[df["pred_time_order"] == i]["time_to_event"]),
+                color="gray",
+                alpha=0.8,
+            )  # type: ignore
             + pn.labs(x="Accuracy (%)", y="Time to event (days)")
             + pn.theme(legend_position="none")
-            + pn.geom_violin(pn.aes(x=tpr*0.95, y="time_to_event"), style="left", fill="dodgerblue", alpha=0.3)
-            + pn.geom_boxplot(pn.aes(x=tpr*1.05, y="time_to_event"), fill = 'dodgerblue', show_legend=False, width = 2, alpha = .9)
-
+            + pn.geom_violin(
+                pn.aes(x=tpr * 0.95, y="time_to_event"), style="left", fill="dodgerblue", alpha=0.3
+            )
+            + pn.geom_boxplot(
+                pn.aes(x=tpr * 1.05, y="time_to_event"),
+                fill="dodgerblue",
+                show_legend=False,
+                width=2,
+                alpha=0.9,
+            )
+            + pn.scale_y_continuous(limits=(0, 100))
         )
 
-        plot_path = run.paper_outputs.paths.figures / "test_plot.png"
-        plot.save(plot_path)
+    plot_path = run.paper_outputs.paths.figures / "test_plot.png"
+    plot.save(plot_path)
 
 
 def plot_distribution_of_n_pred_times_per_outcome(
@@ -123,4 +132,3 @@ if __name__ == "__main__":
     max_n = 30
 
     _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(run, eval_dataset, 1)
-    #plot_distribution_of_n_pred_times_per_outcome(run, eval_dataset, max_n)
