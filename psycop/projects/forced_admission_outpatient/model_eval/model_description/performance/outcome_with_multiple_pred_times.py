@@ -3,7 +3,10 @@ import plotnine as pn
 from wasabi import Printer
 
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -61,10 +64,13 @@ def _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(
         plot = (
             pn.ggplot(df_subset)
             + FA_PN_THEME
-            + pn.geom_point(pn.aes(x="time_to_event", y=tpr), color="gray", alpha=0.8)
-            + pn.labs(x="Time to event (days)", y="Density")
+            + pn.coord_flip()
+            + pn.geom_point(pn.aes(x=tpr, y="time_to_event"), color="gray", alpha=0.8)
+            + pn.labs(x="Accuracy (%)", y="Time to event (days)")
             + pn.theme(legend_position="none")
-            + pn.geom_density(pn.aes(x="time_to_event"), fill="blue", alpha=0.3)
+            + pn.geom_violin(pn.aes(x=tpr*0.95, y="time_to_event"), style="left", fill="dodgerblue", alpha=0.3)
+            + pn.geom_boxplot(pn.aes(x=tpr*1.05, y="time_to_event"), fill = 'dodgerblue', show_legend=False, width = 2, alpha = .9)
+
         )
 
         plot_path = run.paper_outputs.paths.figures / "test_plot.png"
@@ -117,4 +123,4 @@ if __name__ == "__main__":
     max_n = 30
 
     _get_tpr_and_time_to_event_for_cases_wtih_nn_pred_times_per_outcome(run, eval_dataset, 1)
-    plot_distribution_of_n_pred_times_per_outcome(run, eval_dataset, max_n)
+    #plot_distribution_of_n_pred_times_per_outcome(run, eval_dataset, max_n)
