@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 from imblearn.base import BaseSampler
 from optuna import Trial
+from sklearn.model_selection import cross_val_score
 from synthcity.plugins import Plugins
 from synthcity.plugins.core.dataloader import GenericDataLoader
+from xgboost import XGBClassifier
 
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
@@ -42,6 +44,7 @@ class SyntheticDataAugmentation(BaseSampler):
         model_params: dict[str, Any] | None = None,
         sampling_strategy: Literal["minority", "all"] = "all",
         prop_augmented: float = 0.5,
+        do_detection_performance: bool = False,
     ):
         if model_params is None:
             model_params = {}
@@ -52,6 +55,7 @@ class SyntheticDataAugmentation(BaseSampler):
         self.prop_augmented = prop_augmented
         self.model_params = model_params
         self._sampling_type = "ensemble"  # imblearn internal
+        self.do_detection_performance = do_detection_performance
 
     def _fit_resample(  # type: ignore
         self,
@@ -91,10 +95,32 @@ class SyntheticDataAugmentation(BaseSampler):
         X_gen = generated_data.drop(columns=outcome_col_name)
         X_gen.columns = X_copy.columns
 
+        if self.do_detection_performance:
+            self._calculate_detection_performance(X_copy, y_copy, X_gen)
+
         Xt = pd.concat([X_copy, X_gen], axis=0)
         yt = pd.concat([y_copy, generated_data[outcome_col_name]], axis=0)
 
         return Xt.to_numpy(), yt.to_numpy()
+
+    def _calculate_detection_performance(
+        self, X_real: pd.DataFrame, y_real: pd.Series, X_gen: pd.DataFrame # type: ignore
+    ):
+        """Calculate detection AUC, i.e. the ability of a classifier to discriminite
+        between real and synthetic data. Only for minority class."""
+        X_real_only_minority = X_real.loc[y_real == 1]
+
+        y_detection = np.concatenate(
+            [np.repeat([1], X_gen.shape[0]), np.repeat([0], X_real_only_minority.shape[0])]
+        )
+
+        score = cross_val_score(
+            XGBClassifier(),
+            X=pd.concat([X_gen, X_real_only_minority]),
+            y=y_detection,
+            scoring="roc_auc",
+        )
+        print(f"Detection AUC: {score}")
 
 
 @BaselineRegistry.estimator_steps.register("synthetic_data_augmentation")
@@ -103,6 +129,7 @@ def synthetic_data_augmentation_step(
     model_params: dict[str, Any] | None,
     sampling_strategy: Literal["minority", "all"],
     prop_augmented: float,
+    do_detection_performance: bool
 ) -> ModelStep:
     return (
         "synthetic_data_augmentation",
@@ -111,6 +138,7 @@ def synthetic_data_augmentation_step(
             model_params=model_params,
             sampling_strategy=sampling_strategy,
             prop_augmented=prop_augmented,
+            do_detection_performance=do_detection_performance
         ),
     )
 
