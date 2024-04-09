@@ -3,7 +3,10 @@ import plotnine as pn
 from wasabi import Printer
 
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -141,17 +144,19 @@ def plot_distribution_of_n_pred_times_per_outcome(
 
 
 if __name__ == "__main__":
-    from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+    from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+        create_patchwork_grid,
+    )
     from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    max_n = 10
+    max_n = 5
 
     plots = [
-        _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(run, eval_dataset, n)
+        _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(eval_dataset, n)
         for n in range(1, max_n)
     ]
 
