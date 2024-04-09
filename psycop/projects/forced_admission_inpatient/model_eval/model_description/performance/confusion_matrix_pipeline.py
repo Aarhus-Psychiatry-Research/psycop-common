@@ -28,10 +28,10 @@ def fa_inpatient_confusion_matrix_plot(run: ForcedAdmissionInpatientPipelineRun)
 
     p = plotnine_confusion_matrix(
         matrix=confusion_matrix,
-        outcome_text=f"FAs within {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days)} days",
+        outcome_text=f"IAs within {int(run.inputs.cfg.preprocessing.pre_split.min_lookahead_days)} days",
     )
 
-    p.save(run.paper_outputs.paths.figures / "fa_inpatient_confusion_matrix.png")
+    p.save(run.paper_outputs.paths.figures / "fa_inpatient_confusion_matrix_plot.png")
 
     return p
 

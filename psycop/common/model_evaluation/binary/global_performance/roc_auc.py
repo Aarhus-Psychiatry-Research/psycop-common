@@ -104,5 +104,6 @@ def plot_auc_roc(
         + pn.labs(title=title, x="1 - Specificity", y="Sensitivity")
         + pn.xlim(0, 1)
         + pn.ylim(0, 1)
+        + pn.geom_abline(intercept=0, slope=1, linetype="dotted")
         + auroc_label
     )
