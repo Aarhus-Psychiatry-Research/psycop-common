@@ -1,10 +1,7 @@
 import pandas as pd
 import plotnine as pn
 
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    COLORS,
-    FA_PN_THEME,
-)
+from psycop.projects.forced_admission_outpatient.model_eval.config import COLORS, FA_PN_THEME
 
 
 def fa_outpatient_plot_robustness(

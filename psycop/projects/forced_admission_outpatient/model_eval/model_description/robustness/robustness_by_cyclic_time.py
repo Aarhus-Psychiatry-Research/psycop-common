@@ -1,8 +1,6 @@
 import plotnine as pn
 
-from psycop.common.model_evaluation.binary.time.periodic_data import (
-    roc_auc_by_periodic_time_df,
-)
+from psycop.common.model_evaluation.binary.time.periodic_data import roc_auc_by_periodic_time_df
 from psycop.projects.forced_admission_outpatient.model_eval.model_description.robustness.robustness_plot import (
     fa_outpatient_plot_robustness,
 )

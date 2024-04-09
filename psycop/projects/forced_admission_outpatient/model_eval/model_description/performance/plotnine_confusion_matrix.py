@@ -1,9 +1,7 @@
 import pandas as pd
 import plotnine as pn
 
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-)
+from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.forced_admission_outpatient.model_eval.config import FA_PN_THEME
 

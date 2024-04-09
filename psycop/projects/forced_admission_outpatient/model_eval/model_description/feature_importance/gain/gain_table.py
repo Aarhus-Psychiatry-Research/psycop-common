@@ -2,9 +2,7 @@ import pandas as pd
 import polars as pl
 
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
     get_best_eval_pipeline,
 )

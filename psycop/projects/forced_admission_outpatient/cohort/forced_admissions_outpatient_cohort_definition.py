@@ -56,8 +56,10 @@ class ForcedAdmissionsOutpatientCohortDefiner(CohortDefiner):
 if __name__ == "__main__":
     bundle = ForcedAdmissionsOutpatientCohortDefiner.get_filtered_prediction_times_bundle()
 
-    bundle_no_washout = ForcedAdmissionsOutpatientCohortDefiner.get_filtered_prediction_times_bundle(
-        washout_on_prior_forced_admissions=False
+    bundle_no_washout = (
+        ForcedAdmissionsOutpatientCohortDefiner.get_filtered_prediction_times_bundle(
+            washout_on_prior_forced_admissions=False
+        )
     )
 
     df = bundle.prediction_times.frame.to_pandas()

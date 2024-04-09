@@ -10,9 +10,7 @@ import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
+from psycop.common.model_training.data_loader.utils import load_and_filter_split_from_cfg
 from psycop.projects.forced_admission_outpatient.model_eval.config import (
     DEV_GROUP_NAME,
     DEVELOPMENT_GROUP,

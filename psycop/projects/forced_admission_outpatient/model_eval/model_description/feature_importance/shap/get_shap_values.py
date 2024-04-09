@@ -3,9 +3,9 @@ from typing import Optional
 
 import pandas as pd
 import polars as pl
-import shap
 from sklearn.pipeline import Pipeline
 
+import shap
 from psycop.common.global_utils.cache import mem
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
@@ -78,7 +78,9 @@ def generate_shap_values_from_pipe(
 
 @mem.cache
 def get_shap_bundle_for_best_run(
-    run: ForcedAdmissionOutpatientPipelineRun, n_rows: Optional[int] = 10_000, cache_ver: float = 0.1
+    run: ForcedAdmissionOutpatientPipelineRun,
+    n_rows: Optional[int] = 10_000,
+    cache_ver: float = 0.1,
 ) -> ShapBundle:
     print(f"Generating shap values for {run.name}, with cache version {cache_ver}")
 

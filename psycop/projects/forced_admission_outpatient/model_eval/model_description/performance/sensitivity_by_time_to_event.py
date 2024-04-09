@@ -95,7 +95,8 @@ def sensitivity_by_time_to_event(
 
 
 def fa_outpatient_sensitivity_by_time_to_event(
-    pipeline_run: ForcedAdmissionOutpatientPipelineRun, positive_rates: Sequence[float] | None = None
+    pipeline_run: ForcedAdmissionOutpatientPipelineRun,
+    positive_rates: Sequence[float] | None = None,
 ) -> pn.ggplot:
     eval_ds = pipeline_run.pipeline_outputs.get_eval_dataset()
 

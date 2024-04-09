@@ -4,13 +4,8 @@ from pathlib import Path
 
 from wasabi import Printer
 
-from psycop.common.model_training.application_modules.train_model.main import (
-    train_model,
-)
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    BEST_POS_RATE,
-    MODEL_NAME,
-)
+from psycop.common.model_training.application_modules.train_model.main import train_model
+from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, MODEL_NAME
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
     RunGroup,
