@@ -1,9 +1,7 @@
 import pandas as pd
 import plotnine as pn
 
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-)
+from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
 from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
 
@@ -34,7 +32,7 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.
         + pn.theme(
             axis_line=pn.element_blank(),
             axis_ticks=pn.element_blank(),
-            axis_text=pn.element_text(size=10, weight='bold', color="black"),
+            axis_text=pn.element_text(size=10, weight="bold", color="black"),
             axis_title=pn.element_text(size=14, color="black"),
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),

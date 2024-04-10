@@ -106,7 +106,7 @@ def plot_auc_roc(
         + pn.ylim(0, 1)
         + pn.geom_abline(intercept=0, slope=1, linetype="dotted")
         + pn.theme(
-            axis_text=pn.element_text(size=10, weight='bold', color="black"),
+            axis_text=pn.element_text(size=10, weight="bold", color="black"),
             axis_title=pn.element_text(size=14, color="black"),
         )
         + auroc_label
