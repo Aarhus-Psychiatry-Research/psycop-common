@@ -2,6 +2,30 @@
 
 <!--next-version-placeholder-->
 
+## v0.204.0 (2024-04-10)
+
+### Feature
+
+* Add pathchwork ([`a5d4d3f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/a5d4d3f6790c71298842eeed449302d6a8e80cdd))
+* Boxplot added ([`b80ca1b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b80ca1b4154d9ee530b0e882fe1dfd6d746b0a68))
+* Add density plot ([`b5d810d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/b5d810d6fc083cba2c0cbe83a781bcea26963d41))
+* Update plot ([`c8653ea`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c8653ea1e99c91bf150711250535200c34e07579))
+* Update plot ([`74e787a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/74e787aa46619686c83be11d87701056bc210cba))
+* Add wip plot code ([`265947f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/265947f079f8fcd8cfc65f8c01cc61843161450d))
+* Add new  eval plpts ([`703d8e7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/703d8e7694d9d8bceba9a7d7c3d9dbd2a1f0ed88))
+* Add eval ([`de8dafa`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/de8dafadfa4d7b6ed6f7b6ef1ecd1019a6066598))
+* Add model training ([`3cb7517`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3cb75177b931e7685b482e4fe4ce94d1b7f1bdae))
+* Add feature generation ([`c199724`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/c199724667bac1859030660445c4048276654e4a))
+
+### Fix
+
+* Better parameters for plot axis/title texts ([#877](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/877)) ([`9e5c735`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/9e5c73505c938e081d881f0257b6debd09c033ce))
+* Rewind eval split args ([`963190f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/963190fe0a79bee458988678107a4e2c66d5f76a))
+* Better params for plot texts ([`1c4f2f4`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1c4f2f4747a6c4d21bfe7ec7f8676325c913d692))
+* Remove old test ([`87a5536`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/87a55368c4b72a6811fa78000470b64b43ab1c76))
+* Remvoe old files ([`5cd3072`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5cd307230317426b9416ff9f5f1a8c97e2a134cc))
+* Update feature gen args ([`33e30ed`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/33e30edefb30ca14bfedcf623a305c5e94c33b30))
+
 ## v0.203.1 (2024-03-19)
 
 ### Fix
