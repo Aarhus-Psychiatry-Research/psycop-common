@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    max_n = 5
+    max_n = 7
 
     plots = [
         _get_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(eval_dataset, n)
