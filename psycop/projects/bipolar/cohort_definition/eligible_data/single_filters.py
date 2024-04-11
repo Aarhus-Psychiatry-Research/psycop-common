@@ -1,3 +1,4 @@
+import pandas as pd
 import polars as pl
 
 from psycop.common.cohort_definition import PredictionTimeFilter
@@ -46,7 +47,14 @@ class BipolarWashoutMove(PredictionTimeFilter):
 
 class  BipolarPatientsWithF20F25Filter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        schizoaffective_df = schizoaffective()
-        schizophrenia_df = schizophrenia()
+        f20_df = schizophrenia()
+        f25_df = schizoaffective()
+        df = df.collect().to_pandas() # type: ignore
 
+        merged_df_f20 = pd.merge(df, f20_df, on='dw_ek_borger', how='left', suffixes=('_df', '_f20')) # type: ignore
+        bipolar_patients_with_later_f20 = merged_df_f20[merged_df_f20['timestamp_df'] <= merged_df_f20['timestamp_f20']].dw_ek_borger.unique()
+        
+        merged_df_f25 = pd.merge(df, f25_df, on='dw_ek_borger', how='left', suffixes=('_df', '_f25')) # type: ignore
+        bipolar_patients_with_later_f25 = merged_df_f25[merged_df_f25['timestamp_df'] <= merged_df_f25['timestamp_f25']].dw_ek_borger.unique()
+        
         return df

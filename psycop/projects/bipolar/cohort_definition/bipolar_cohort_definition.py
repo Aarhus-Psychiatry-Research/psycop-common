@@ -17,6 +17,7 @@ from psycop.projects.bipolar.cohort_definition.eligible_data.eligible_config imp
 from psycop.projects.bipolar.cohort_definition.eligible_data.single_filters import (
     BipolarMinAgeFilter,
     BipolarMinDateFilter,
+    BipolarPatientsWithF20F25Filter,
     BipolarWashoutMove,
 )
 
@@ -33,6 +34,7 @@ class BipolarCohortDefiner(CohortDefiner):
                 BipolarMinDateFilter(),
                 BipolarMinAgeFilter(),
                 BipolarWashoutMove(),
+                BipolarPatientsWithF20F25Filter(),
             ),
             entity_id_col_name="dw_ek_borger",
         )
