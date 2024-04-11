@@ -12,14 +12,10 @@ from xgboost import XGBClassifier
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.populate_registry import (
-    populate_baseline_registry,
-)
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.loggers.mlflow_logger import MLFlowLogger
 from psycop.common.model_training_v2.trainer.task.base_metric import CalculatedMetric
-from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import (
-    populate_scz_bp_registry,
-)
+from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import populate_scz_bp_registry
 from psycop.projects.scz_bp.synthetic_data_generation.DummyLogger import DummyLogger
 
 if __name__ == "__main__":
@@ -80,11 +76,13 @@ if __name__ == "__main__":
     logger = MLFlowLogger(experiment_name="sczbp/ddpm_lr")
 
     # for lr in [0.0001, 0.0005, 0.001]:
-    for lr in [0.0005]:  
+    for lr in [0.0005]:
         model_params["lr"] = lr
         model = Plugins().get("ddpm", **model_params)
         model.fit(data_loader)
-        logger.log_metric(CalculatedMetric(name=f"lr_{lr}_loss", value=model.loss_history["loss"].values[-1]))
+        logger.log_metric(
+            CalculatedMetric(name=f"lr_{lr}_loss", value=model.loss_history["loss"].values[-1])
+        )
 
         generated_data = model.generate(count=n_to_generate).dataframe()
 
@@ -117,10 +115,9 @@ if __name__ == "__main__":
 
         # add metadata columns
         unnormalised_generated_data[outcome_col_name] = 1
-        unnormalised_generated_data[uuid_col_name] = "synthetic_data_point"
-        unnormalised_generated_data["dw_ek_borger"] = [
-            f"synthetic_{i}" for i in range(unnormalised_generated_data.shape[0])
-        ]
+        synthetic_id = [f"synthetic_{i}" for i in range(unnormalised_generated_data.shape[0])]
+        unnormalised_generated_data[uuid_col_name] = synthetic_id
+        unnormalised_generated_data["dw_ek_borger"] = synthetic_id
 
         save_name = f"dppm_lr_{lr}_n_iter_{model_params['n_iter']}_n_timesteps_{model_params['num_timesteps']}_only_positive_{n_to_generate}.parquet"
         # save as parquet to disk

@@ -104,7 +104,10 @@ class SyntheticDataAugmentation(BaseSampler):
         return Xt.to_numpy(), yt.to_numpy()
 
     def _calculate_detection_performance(
-        self, X_real: pd.DataFrame, y_real: pd.Series, X_gen: pd.DataFrame # type: ignore
+        self,
+        X_real: pd.DataFrame,
+        y_real: pd.Series,
+        X_gen: pd.DataFrame,  # type: ignore
     ):
         """Calculate detection AUC, i.e. the ability of a classifier to discriminite
         between real and synthetic data. Only for minority class."""
@@ -129,7 +132,7 @@ def synthetic_data_augmentation_step(
     model_params: dict[str, Any] | None,
     sampling_strategy: Literal["minority", "all"],
     prop_augmented: float,
-    do_detection_performance: bool
+    do_detection_performance: bool,
 ) -> ModelStep:
     return (
         "synthetic_data_augmentation",
@@ -138,7 +141,7 @@ def synthetic_data_augmentation_step(
             model_params=model_params,
             sampling_strategy=sampling_strategy,
             prop_augmented=prop_augmented,
-            do_detection_performance=do_detection_performance
+            do_detection_performance=do_detection_performance,
         ),
     )
 

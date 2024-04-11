@@ -36,6 +36,12 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
         )
         self.logger.info(f"\tOutcome: {list(y.columns)}")
 
+        # find indices where self.synthetic_data_id_str is in group_col_ame
+        synthetic_data_idxs = training_data_preprocessed[self.group_col_name].str.contains(
+            self.synthetic_data_id_str
+        )
+        # get the indices
+
         folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
             X=X, y=y, groups=training_data_preprocessed[self.group_col_name]
         )
@@ -44,6 +50,12 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
             X_train, y_train = (X.loc[train_idxs], y.loc[train_idxs])
 
             X_train = X_train.drop(columns=self.group_col_name)
+
+            X_val, y_val = (X.loc[val_idxs], y.loc[val_idxs])
+            # drop synthetic data points from validation fold
+            X_val = X_val[~X_val[self.group_col_name].str.contains(self.synthetic_data_id_str)]
+            y_val = y_val[y_val.index.isin(X_val.index)]
+
             self.task.train(X_train, y_train, y_col_name=self.outcome_col_name)
 
             y_hat_prob = self.task.predict_proba(X_train)
@@ -55,9 +67,7 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
             )
             self.logger.log_metric(within_fold_metric)
 
-            oof_y_hat_prob = self.task.predict_proba(
-                X.loc[val_idxs].drop(columns=self.group_col_name)
-            )
+            oof_y_hat_prob = self.task.predict_proba(X.drop(columns=self.group_col_name))
 
             oof_metric = self.metric.calculate(
                 y=y.loc[val_idxs][self.outcome_col_name],
