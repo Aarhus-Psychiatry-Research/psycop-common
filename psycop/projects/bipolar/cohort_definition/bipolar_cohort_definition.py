@@ -1,3 +1,4 @@
+import pandas as pd
 import polars as pl
 
 from psycop.common.cohort_definition import (
@@ -39,8 +40,17 @@ class BipolarCohortDefiner(CohortDefiner):
             entity_id_col_name="dw_ek_borger",
         )
 
-        first_visits_to_psychiatry = get_time_of_first_visit_to_psychiatry()
-        
+        filtered_bipolar_diagnosis_timestamps_df = pd.DataFrame(filtered_bipolar_diagnosis_timestamps.prediction_times.frame.to_pandas())
+
+        first_visits_to_psychiatry = pd.DataFrame(get_time_of_first_visit_to_psychiatry().to_pandas())
+
+        filtered_bipolar_diagnosis_timestamps_df = filtered_bipolar_diagnosis_timestamps_df.merge(
+            first_visits_to_psychiatry,
+            on="dw_ek_borger",
+            how="left",
+            suffixes=(None, '_first_visit')
+        )
+
         return filtered_bipolar_diagnosis_timestamps
 
 

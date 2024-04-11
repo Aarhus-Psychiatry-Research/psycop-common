@@ -70,6 +70,7 @@ class BipolarPatientsWithF20F25Filter(PredictionTimeFilter):
         )
         filtered_df = pd_df[~pd_df["dw_ek_borger"].isin(bipolar_patients_with_f20_f25)]
 
+
         filtered_df = pl.DataFrame(filtered_df).lazy()
 
         return filtered_df
