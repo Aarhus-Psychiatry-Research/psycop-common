@@ -50,6 +50,13 @@ class BipolarCohortDefiner(CohortDefiner):
             how="left",
             suffixes=(None, '_first_visit')
         )
+        
+        filtered_bipolar_diagnosis_timestamps_df = filtered_bipolar_diagnosis_timestamps_df.dropna(subset=['timestamp_first_visit'])
+        
+        filtered_bipolar_diagnosis_timestamps_df = filtered_bipolar_diagnosis_timestamps_df[filtered_bipolar_diagnosis_timestamps_df['timestamp'] >= filtered_bipolar_diagnosis_timestamps_df['timestamp_first_visit']]
+
+        filtered_bipolar_diagnosis_timestamps_df['time_from_first_visit'] = filtered_bipolar_diagnosis_timestamps_df['timestamp'] - filtered_bipolar_diagnosis_timestamps_df['timestamp_first_visit']
+
 
         return filtered_bipolar_diagnosis_timestamps
 
