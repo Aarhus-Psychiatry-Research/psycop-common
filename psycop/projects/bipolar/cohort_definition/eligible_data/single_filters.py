@@ -6,9 +6,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     schizoaffective,
     schizophrenia,
 )
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    MoveIntoRMBaselineLoader,
-)
+from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
@@ -45,16 +43,31 @@ class BipolarWashoutMove(PredictionTimeFilter):
         return not_within_two_years_from_move
 
 
-class  BipolarPatientsWithF20F25Filter(PredictionTimeFilter):
+class BipolarPatientsWithF20F25Filter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         f20_df = schizophrenia()
         f25_df = schizoaffective()
-        df = df.collect().to_pandas() # type: ignore
+        pd_df = pd.DataFrame(df.collect())  # type: ignore
 
-        merged_df_f20 = pd.merge(df, f20_df, on='dw_ek_borger', how='left', suffixes=('_df', '_f20')) # type: ignore
-        bipolar_patients_with_later_f20 = merged_df_f20[merged_df_f20['timestamp_df'] <= merged_df_f20['timestamp_f20']].dw_ek_borger.unique()
-        
-        merged_df_f25 = pd.merge(df, f25_df, on='dw_ek_borger', how='left', suffixes=('_df', '_f25')) # type: ignore
-        bipolar_patients_with_later_f25 = merged_df_f25[merged_df_f25['timestamp_df'] <= merged_df_f25['timestamp_f25']].dw_ek_borger.unique()
-        
-        return df
+        merged_df_f20 = pd.merge(
+            pd_df, f20_df, on="dw_ek_borger", how="left", suffixes=("_df", "_f20")
+        )
+        bipolar_patients_with_later_f20 = merged_df_f20[
+            merged_df_f20["timestamp_df"] <= merged_df_f20["timestamp_f20"]
+        ].dw_ek_borger.unique()
+
+        merged_df_f25 = pd.merge(
+            pd_df, f25_df, on="dw_ek_borger", how="left", suffixes=("_df", "_f25")
+        )
+        bipolar_patients_with_later_f25 = merged_df_f25[
+            merged_df_f25["timestamp_df"] <= merged_df_f25["timestamp_f25"]
+        ].dw_ek_borger.unique()
+
+        bipolar_patients_with_f20_f25 = set(bipolar_patients_with_later_f20).union(
+            set(bipolar_patients_with_later_f25)
+        )
+        filtered_df = pd_df[~pd_df["dw_ek_borger"].isin(bipolar_patients_with_f20_f25)]
+
+        filtered_df = pl.DataFrame(filtered_df).lazy()
+
+        return filtered_df
