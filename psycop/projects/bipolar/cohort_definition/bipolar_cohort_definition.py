@@ -39,8 +39,8 @@ class BipolarCohortDefiner(CohortDefiner):
             entity_id_col_name="dw_ek_borger",
         )
 
-        first_visits_to_psychiatry = get_time_of_first_visit_to_psychiatry().filter(pl.col("timestamp") > MIN_DATE)
-
+        first_visits_to_psychiatry = get_time_of_first_visit_to_psychiatry()
+        
         return filtered_bipolar_diagnosis_timestamps
 
 

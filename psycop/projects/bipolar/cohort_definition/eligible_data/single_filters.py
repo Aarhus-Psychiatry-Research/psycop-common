@@ -6,7 +6,9 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     schizoaffective,
     schizophrenia,
 )
-from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
+from psycop.common.feature_generation.loaders.raw.load_moves import (
+    MoveIntoRMBaselineLoader,
+)
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
@@ -47,7 +49,7 @@ class BipolarPatientsWithF20F25Filter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         f20_df = schizophrenia()
         f25_df = schizoaffective()
-        pd_df = pd.DataFrame(df.collect())  # type: ignore
+        pd_df = pd.DataFrame(df.collect().to_pandas())
 
         merged_df_f20 = pd.merge(
             pd_df, f20_df, on="dw_ek_borger", how="left", suffixes=("_df", "_f20")
