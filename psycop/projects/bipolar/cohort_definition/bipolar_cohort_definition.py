@@ -1,5 +1,6 @@
 import pandas as pd
 import polars as pl
+from tqdm import tqdm
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
@@ -25,7 +26,7 @@ def generate_timestamps(
 ) -> list:  # type: ignore
     timestamps = [diagnosis_date]
     current_date = diagnosis_date
-    while current_date > first_visit_date + pd.Timedelta(days=interval_days):
+    while current_date > (first_visit_date + pd.to_timedelta(interval_days,'d')):
         current_date -= pd.Timedelta(days=interval_days)
         timestamps.append(current_date)
     return timestamps[::-1]
@@ -78,12 +79,12 @@ class BipolarCohortDefiner(CohortDefiner):
 
         timestamps_per_patient = []
 
-        for _, row in filtered_bipolar_diagnosis_timestamps_df.iterrows():
+        for _, row in tqdm(filtered_bipolar_diagnosis_timestamps_df.iterrows()):
             timestamps = generate_timestamps(
-                row["time_from_first_visit"], row["timestamp"], interval_days=interval_days
+                row["timestamp_first_visit"], row["timestamp"], interval_days=interval_days
             )
             timestamps_per_patient.extend(
-                [(row["patient_id"], timestamp) for timestamp in timestamps]
+                [(row["dw_ek_borger"], timestamp) for timestamp in timestamps]
             )
 
             result_df = pd.DataFrame(timestamps_per_patient, columns=["patient_id", "timestamp"])
