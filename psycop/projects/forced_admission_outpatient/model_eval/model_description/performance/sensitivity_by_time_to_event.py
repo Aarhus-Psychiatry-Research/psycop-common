@@ -7,9 +7,9 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_inpatient.model_eval.config import FA_PN_THEME
-from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
-    ForcedAdmissionInpatientPipelineRun,
+from psycop.projects.forced_admission_outpatient.model_eval.config import FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
+    ForcedAdmissionOutpatientPipelineRun,
 )
 
 
@@ -36,10 +36,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
-            legend_text=pn.element_text(size=10, color="black"),
             legend_position=(0.3, 0.88),
-            axis_text=pn.element_text(size=10, weight="bold", color="black"),
-            axis_title=pn.element_text(size=14, color="black"),
         )
     )
 
@@ -48,7 +45,7 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     return p
 
 
-def fa_inpatient_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
+def fa_outpatient_plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
     categories = df["unit_from_event_binned"].dtype.categories  # type: ignore
     df["unit_from_event_binned"] = df["unit_from_event_binned"].cat.set_categories(
         new_categories=categories,
@@ -92,13 +89,14 @@ def sensitivity_by_time_to_event(
 
     plot_df = pd.concat(dfs)
 
-    p = fa_inpatient_plot_sensitivity_by_time_to_event(plot_df)
+    p = fa_outpatient_plot_sensitivity_by_time_to_event(plot_df)
 
     return p
 
 
-def fa_inpatient_sensitivity_by_time_to_event(
-    pipeline_run: ForcedAdmissionInpatientPipelineRun, positive_rates: Sequence[float] | None = None
+def fa_outpatient_sensitivity_by_time_to_event(
+    pipeline_run: ForcedAdmissionOutpatientPipelineRun,
+    positive_rates: Sequence[float] | None = None,
 ) -> pn.ggplot:
     eval_ds = pipeline_run.pipeline_outputs.get_eval_dataset()
 
@@ -108,7 +106,7 @@ def fa_inpatient_sensitivity_by_time_to_event(
     p = sensitivity_by_time_to_event(eval_dataset=eval_ds, positive_rates=positive_rates)
 
     p.save(
-        pipeline_run.paper_outputs.paths.figures / "fa_inpatient_sensitivity_by_time_to_event.png",
+        pipeline_run.paper_outputs.paths.figures / "fa_outpatient_sens_by_time_to_event.png",
         width=7,
         height=7,
     )
@@ -117,8 +115,8 @@ def fa_inpatient_sensitivity_by_time_to_event(
 
 
 if __name__ == "__main__":
-    from psycop.projects.forced_admission_inpatient.model_eval.selected_runs import (
+    from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
 
-    fa_inpatient_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())
+    fa_outpatient_sensitivity_by_time_to_event(pipeline_run=get_best_eval_pipeline())
