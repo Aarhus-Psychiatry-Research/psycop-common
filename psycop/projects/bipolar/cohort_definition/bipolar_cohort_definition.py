@@ -26,7 +26,7 @@ def generate_timestamps(
 ) -> list:  # type: ignore
     timestamps = [diagnosis_date]
     current_date = diagnosis_date
-    while current_date > (first_visit_date + pd.to_timedelta(interval_days,'d')):
+    while current_date > (first_visit_date + pd.to_timedelta(interval_days, "d")):
         current_date -= pd.Timedelta(days=interval_days)
         timestamps.append(current_date)
     return timestamps[::-1]

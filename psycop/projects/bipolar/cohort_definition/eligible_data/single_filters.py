@@ -6,9 +6,7 @@ from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     schizoaffective,
     schizophrenia,
 )
-from psycop.common.feature_generation.loaders.raw.load_moves import (
-    MoveIntoRMBaselineLoader,
-)
+from psycop.common.feature_generation.loaders.raw.load_moves import MoveIntoRMBaselineLoader
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_other import (
     QuarantineFilter,
 )
@@ -69,7 +67,6 @@ class BipolarPatientsWithF20F25Filter(PredictionTimeFilter):
             set(bipolar_patients_with_later_f25)
         )
         filtered_df = pd_df[~pd_df["dw_ek_borger"].isin(bipolar_patients_with_f20_f25)]
-
 
         filtered_df = pl.DataFrame(filtered_df).lazy()
 

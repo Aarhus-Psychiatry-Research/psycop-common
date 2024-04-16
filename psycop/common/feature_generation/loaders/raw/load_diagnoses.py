@@ -8,9 +8,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Literal
 
-from psycop.common.feature_generation.loaders.filters.cvd_filters import (
-    only_SCORE2_CVD_diagnoses,
-)
+from psycop.common.feature_generation.loaders.filters.cvd_filters import only_SCORE2_CVD_diagnoses
 from psycop.common.feature_generation.loaders.filters.diabetes_filters import (
     keep_rows_where_diag_matches_t1d_diag,
     keep_rows_where_diag_matches_t2d_diag,
@@ -43,6 +41,7 @@ def from_contacts(
     Args:
         icd_code (str): Substring to match diagnoses for. Matches any diagnoses, whether a-diagnosis, b-diagnosis etc. # noqa: DAR102
         output_col_name (str, optional): Name of new column string. Defaults to "value".
+        code_col_name (str, optional): Name of column in loaded data frame from which to extract the diagnosis codes. Defaults to "diagnosegruppestrengs".
         n_rows: Number of rows to return. Defaults to None.
         wildcard_icd_code (bool, optional): Whether to match on icd_code*. Defaults to False.
         shak_location_col (str, optional): Name of column containing shak code. Defaults to None. For diagnosis loaders, this column is "shakkode_ansvarlig". Combine with shak_code and shak_sql_operator.
@@ -1367,7 +1366,7 @@ def bipolar_a_diagnosis(
 ) -> pd.DataFrame:
     return from_contacts(
         icd_code=["f31"],
-        code_col_name='adiagnose4kar',
+        code_col_name="adiagnose4kar",
         wildcard_icd_code=True,
         n_rows=n_rows,
         shak_location_col=shak_location_col,
