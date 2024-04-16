@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.205.0 (2024-04-16)
+
+### Feature
+
+* F20/f25 filter wokrs ([`5eaf0b7`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/5eaf0b703b9d69f0b61e6f9b3a07dd5e09bbe9b8))
+
+### Fix
+
+* Figure output formats ([`91f80ca`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/91f80ca90c4775c3983134adb6e867ca7cdf4f4d))
+
 ## v0.204.0 (2024-04-10)
 
 ### Feature
