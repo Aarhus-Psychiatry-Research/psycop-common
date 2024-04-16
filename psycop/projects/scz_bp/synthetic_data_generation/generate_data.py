@@ -66,11 +66,7 @@ if __name__ == "__main__":
     # fit DDPM
     data_loader = GenericDataLoader(training_data_normalized)
 
-    model_params = {
-        "n_iter": 4000,
-        "batch_size": 1000,
-        "num_timesteps": 500.0,
-    }
+    model_params = {"n_iter": 4000, "batch_size": 1000, "num_timesteps": 500.0}
 
     logger = MLFlowLogger(experiment_name="sczbp/ddpm_lr")
 
