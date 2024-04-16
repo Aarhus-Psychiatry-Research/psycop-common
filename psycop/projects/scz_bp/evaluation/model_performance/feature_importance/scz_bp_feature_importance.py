@@ -86,8 +86,7 @@ def scz_bp_generate_feature_importance_table(
 
 
 if __name__ == "__main__":
-    # best_experiment = "sczbp/structured_text_xgboost_ddpm_3x_positives"
-    best_experiment = "sczbp/structured_text_xgboost_ddpm"
+    best_experiment = "sczbp/structured_text_xgboost_ddpm_3x_positives"
     best_run = MlflowClientWrapper().get_best_run_from_experiment(
         experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
     )

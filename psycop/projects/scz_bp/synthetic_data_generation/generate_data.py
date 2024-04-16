@@ -70,7 +70,6 @@ if __name__ == "__main__":
         "n_iter": 4000,
         "batch_size": 1000,
         "num_timesteps": 500.0,
-        # "is_classification": True,
     }
 
     logger = MLFlowLogger(experiment_name="sczbp/ddpm_lr")
@@ -96,10 +95,6 @@ if __name__ == "__main__":
         unnormalised_generated_data[ordinals] = unnormalised_generated_data[ordinals].round(0)
 
         # calculate detection performance
-        # training_data_copy = training_data.copy()
-        # X_real_only_minority = training_data_copy.drop(columns=outcome_col_name).loc[
-        #     training_data_copy[outcome_col_name] == 1
-        # ]
         y_detection = np.concatenate([np.repeat([1], n_to_generate), np.repeat([0], n_positives)])
         score = cross_val_score(
             XGBClassifier(),

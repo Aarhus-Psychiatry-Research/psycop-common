@@ -15,15 +15,8 @@ class MissingPathError(Exception):
 @BaselineRegistry.data.register("synthetic_data_vertical_concatenator")
 class SyntheticVerticalConcatenator(BaselineDataLoader):
     def __init__(self, paths: Sequence[str], n_samples: int | None, validate_on_init: bool = True):
-        """Vertical concatenation of multiple parquet files.
-
-        Args:
-            paths: Paths to parquet files.
-            logger: Logger to use.
-            validate_on_init: Whether to validate the paths on init.
-                Helpful when testing the .cfg parses, where the absolute path will differ between devcontainer and Ovartaci.
-                Defaults to True.
-
+        """Vertical concatenation of multiple parquet files with option for
+        choosing only top n_samples
         """
         self.dataset_paths = [Path(arg) for arg in paths]
         self.n_samples = n_samples
@@ -46,9 +39,7 @@ class SyntheticVerticalConcatenator(BaselineDataLoader):
         return []
 
     def load(self) -> pl.LazyFrame:
-        df = pl.concat(
-            how="vertical", items=[pl.scan_parquet(path) for path in self.dataset_paths]
-        )
+        df = pl.concat(how="vertical", items=[pl.scan_parquet(path) for path in self.dataset_paths])
         if self.n_samples is not None:
             return df.head(n=self.n_samples)
         return df

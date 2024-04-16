@@ -8,5 +8,5 @@ from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 def smote_step(n_minority_samples: int) -> ModelStep:
     return (
         "synthetic_data_augmentation",
-        SMOTE(sampling_strategy={1: n_minority_samples}), # type: ignore
+        SMOTE(sampling_strategy={1: n_minority_samples}),  # type: ignore
     )

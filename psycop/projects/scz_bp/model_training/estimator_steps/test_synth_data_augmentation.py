@@ -1,5 +1,6 @@
-"""Test for the synthetic data augmentation estimator step. Disabled due to not 
+"""Test for the synthetic data augmentation estimator step. Disabled due to not
 being feasible."""
+# ruff: noqa
 # import sys
 
 # import pandas as pd
@@ -14,7 +15,6 @@ being feasible."""
 
 # # if sys.modules.get("synthcity") is None:
 # #     pytest.skip("requires the synthcity library", allow_module_level=True)
-
 
 
 # @pytest.fixture()

@@ -30,8 +30,12 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
             data=self.training_data.load()
         )
         synthetic_data = self.synthetic_data.load().collect().to_pandas()
-        training_data_preprocessed = pd.concat([training_data_preprocessed, synthetic_data], axis=0).reset_index(drop=True)
-        training_data_preprocessed["dw_ek_borger"] = training_data_preprocessed["dw_ek_borger"].astype(str)
+        training_data_preprocessed = pd.concat(
+            [training_data_preprocessed, synthetic_data], axis=0
+        ).reset_index(drop=True)
+        training_data_preprocessed["dw_ek_borger"] = training_data_preprocessed[
+            "dw_ek_borger"
+        ].astype(str)
         X = training_data_preprocessed.drop([self.outcome_col_name, self.uuid_col_name], axis=1)
         y = pd.DataFrame(
             training_data_preprocessed[self.outcome_col_name], columns=[self.outcome_col_name]
@@ -42,7 +46,9 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
             X=X, y=y, groups=training_data_preprocessed[self.group_col_name]
         )
 
-        training_data_no_synthetic = training_data_preprocessed[~training_data_preprocessed[self.group_col_name].str.contains("synthetic")].copy()
+        training_data_no_synthetic = training_data_preprocessed[
+            ~training_data_preprocessed[self.group_col_name].str.contains("synthetic")
+        ].copy()
         for i, (train_idxs, val_idxs) in enumerate(folds):
             X_train, y_train = (X.loc[train_idxs], y.loc[train_idxs])
 

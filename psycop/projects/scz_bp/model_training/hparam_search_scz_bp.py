@@ -10,12 +10,7 @@ if __name__ == "__main__":
     populate_baseline_registry()
     populate_scz_bp_registry()
     OptunaHyperParameterOptimization().from_file(
-        (
-            Path(__file__).parent
-            / "config"
-            / "main"
-            / "scz_bp_structured_text_xgboost.cfg"
-        ),
+        (Path(__file__).parent / "config" / "main" / "scz_bp_structured_text_xgboost.cfg"),
         study_name="test_feature_gen",
         n_trials=11,
         n_jobs=1,
