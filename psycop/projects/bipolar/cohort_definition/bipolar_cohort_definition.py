@@ -5,6 +5,7 @@ from tqdm import tqdm
 from psycop.common.cohort_definition import (
     CohortDefiner,
     FilteredPredictionTimeBundle,
+    PredictionTimeFrame,
     filter_prediction_times,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import (
@@ -89,7 +90,8 @@ class BipolarCohortDefiner(CohortDefiner):
 
             result_df = pd.DataFrame(timestamps_per_patient, columns=["patient_id", "timestamp"])
 
-        filtered_bipolar_diagnosis_timestamps.prediction_times.frame = result_df  # type: ignore
+        prediction_times = PredictionTimeFrame(frame=result_df)  # type: ignore
+        filtered_bipolar_diagnosis_timestamps.prediction_times.frame = prediction_times  # type: ignore
 
         return filtered_bipolar_diagnosis_timestamps
 
