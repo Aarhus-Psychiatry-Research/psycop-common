@@ -19,7 +19,6 @@ from psycop.common.model_training_v2.hyperparameter_suggester.hyperparameter_sug
 from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.base_suggester import (
     Suggester,
 )
-from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import populate_scz_bp_registry
 
 from ..config.populate_registry import populate_baseline_registry
 
