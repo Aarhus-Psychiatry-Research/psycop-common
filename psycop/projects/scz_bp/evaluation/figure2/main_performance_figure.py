@@ -12,14 +12,18 @@ from psycop.projects.scz_bp.evaluation.figure2.sensitivity_by_time_to_event impo
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
 )
+from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import populate_scz_bp_registry
+import pandas as pd
 
 if __name__ == "__main__":
+    populate_scz_bp_registry()
     modality2experiment_mapping = modality2experiment = {
+        "Structured + text + synthetic" : "sczbp/structured_text_xgboost_ddpm_3x_positives",
         "Structured + text": "sczbp/structured_text_xgboost",
         "Structured only ": "sczbp/structured_only-xgboost",
         "Text only": "sczbp/tfidf_1000-xgboost",
     }
-    best_experiment = "sczbp/structured_text_xgboost"
+    best_experiment = "sczbp/structured_text_xgboost_ddpm_3x_positives"
     best_pos_rate = 0.04
 
     best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
@@ -37,5 +41,6 @@ if __name__ == "__main__":
 
     panels = [panel_a, panel_b, panel_c, panel_d]
 
-    grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5, 5), n_in_row=2)
+    with pd.option_context('mode.chained_assignment', None):
+        grid = create_patchwork_grid(plots=panels, single_plot_dimensions=(5, 5), n_in_row=2)
     grid.savefig(f"scz_bp_fig_2_{best_experiment.split('/')[1]}.png")

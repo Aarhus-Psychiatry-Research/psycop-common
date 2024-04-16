@@ -13,12 +13,12 @@ if __name__ == "__main__":
         (
             Path(__file__).parent
             / "config"
-            / "augmentation"
-            / "scz_bp_structured_text_best_xgboost_synthcity.cfg"
+            / "main"
+            / "scz_bp_structured_text_xgboost.cfg"
         ),
-        study_name="ddpm_",
-        n_trials=15,
-        n_jobs=2,
+        study_name="test_feature_gen",
+        n_trials=11,
+        n_jobs=1,
         direction="maximize",
         catch=(Exception,),
     )

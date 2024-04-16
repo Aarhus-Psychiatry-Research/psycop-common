@@ -18,34 +18,31 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
     uuid_col_name: str
     outcome_col_name: str
     training_data: BaselineDataLoader
+    synthetic_data: BaselineDataLoader
     preprocessing_pipeline: PreprocessingPipeline
     task: BaselineTask
     metric: BaselineMetric
     n_splits: int = 5
     group_col_name: str = "dw_ek_borger"
-    synthetic_data_id_str: str = "synthetic"
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.preprocessing_pipeline.apply(
             data=self.training_data.load()
         )
-
+        synthetic_data = self.synthetic_data.load().collect().to_pandas()
+        training_data_preprocessed = pd.concat([training_data_preprocessed, synthetic_data], axis=0).reset_index(drop=True)
+        training_data_preprocessed["dw_ek_borger"] = training_data_preprocessed["dw_ek_borger"].astype(str)
         X = training_data_preprocessed.drop([self.outcome_col_name, self.uuid_col_name], axis=1)
         y = pd.DataFrame(
             training_data_preprocessed[self.outcome_col_name], columns=[self.outcome_col_name]
         )
         self.logger.info(f"\tOutcome: {list(y.columns)}")
 
-        # find indices where self.synthetic_data_id_str is in group_col_ame
-        synthetic_data_idxs = training_data_preprocessed[self.group_col_name].str.contains(
-            self.synthetic_data_id_str
-        )
-        # get the indices
-
         folds = StratifiedGroupKFold(n_splits=self.n_splits).split(
             X=X, y=y, groups=training_data_preprocessed[self.group_col_name]
         )
 
+        training_data_no_synthetic = training_data_preprocessed[~training_data_preprocessed[self.group_col_name].str.contains("synthetic")].copy()
         for i, (train_idxs, val_idxs) in enumerate(folds):
             X_train, y_train = (X.loc[train_idxs], y.loc[train_idxs])
 
@@ -53,7 +50,7 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
 
             X_val, y_val = (X.loc[val_idxs], y.loc[val_idxs])
             # drop synthetic data points from validation fold
-            X_val = X_val[~X_val[self.group_col_name].str.contains(self.synthetic_data_id_str)]
+            X_val = X_val[~X_val[self.group_col_name].str.contains("synthetic")]
             y_val = y_val[y_val.index.isin(X_val.index)]
 
             self.task.train(X_train, y_train, y_col_name=self.outcome_col_name)
@@ -67,20 +64,20 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
             )
             self.logger.log_metric(within_fold_metric)
 
-            oof_y_hat_prob = self.task.predict_proba(X.drop(columns=self.group_col_name))
+            oof_y_hat_prob = self.task.predict_proba(X_val.drop(columns=self.group_col_name))
 
             oof_metric = self.metric.calculate(
-                y=y.loc[val_idxs][self.outcome_col_name],
+                y=y_val[self.outcome_col_name],
                 y_hat_prob=oof_y_hat_prob,
                 name_prefix=f"out_of_fold_{i}",
             )
             self.logger.log_metric(oof_metric)
 
-            training_data_preprocessed.loc[val_idxs, "oof_y_hat_prob"] = oof_y_hat_prob.to_list()  # type: ignore
+            training_data_no_synthetic.loc[y_val.index, "oof_y_hat_prob"] = oof_y_hat_prob.to_list()  # type: ignore
 
         main_metric = self.metric.calculate(
-            y=training_data_preprocessed[self.outcome_col_name],
-            y_hat_prob=training_data_preprocessed["oof_y_hat_prob"],
+            y=training_data_no_synthetic[self.outcome_col_name],
+            y_hat_prob=training_data_no_synthetic["oof_y_hat_prob"],
             name_prefix="all_oof",
         )
         self._log_main_metric(main_metric)
@@ -88,9 +85,9 @@ class SyntheticCrossValidatorTrainer(BaselineTrainer):
 
         eval_df = pl.DataFrame(
             {
-                "y": training_data_preprocessed[self.outcome_col_name],
-                "y_hat_prob": training_data_preprocessed["oof_y_hat_prob"],
-                "pred_time_uuid": training_data_preprocessed[self.uuid_col_name],
+                "y": training_data_no_synthetic[self.outcome_col_name],
+                "y_hat_prob": training_data_no_synthetic["oof_y_hat_prob"],
+                "pred_time_uuid": training_data_no_synthetic[self.uuid_col_name],
             }
         )
         self.logger.log_dataset(dataframe=eval_df, filename="eval_df.parquet")

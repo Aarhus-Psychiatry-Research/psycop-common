@@ -30,6 +30,7 @@ from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
 from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
 from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
 from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import minimal_eval_dataset_from_path
+from psycop.projects.scz_bp.model_training.synthetic_cv_trainer.synthetic_cv_trainer import SyntheticCrossValidatorTrainer
 
 populate_baseline_registry()
 
@@ -55,7 +56,7 @@ def scz_bp_df_to_eval_df(df: pl.DataFrame) -> EvalDataset:
 
 def _load_validation_data_from_schema(schema: BaselineSchema) -> pl.DataFrame:
     match schema.trainer:
-        case CrossValidatorTrainer():
+        case CrossValidatorTrainer() | SyntheticCrossValidatorTrainer():
             return schema.trainer.training_data.load().collect()
         case SplitTrainer():
             return schema.trainer.validation_data.load().collect()

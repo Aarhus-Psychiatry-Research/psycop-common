@@ -17,7 +17,7 @@ def _plot_metric_by_time_to_event(
     df["subset"] = df["subset"].replace({"bp": "BP", "scz": "SCZ", "both": "Combined"})
     df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ", "Combined"])
     if not plot_combined:
-        df = df.query("subset != 'Combined'")
+        df = df.query("subset != 'Combined'").copy()
         df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ"])
 
     p = (

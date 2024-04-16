@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # count number of positive cases
     n_positives = sum(y)
     # generate 3 times as many
-    n_to_generate = n_positives * 3
+    n_to_generate = n_positives * 10
 
     # fit DDPM
     data_loader = GenericDataLoader(training_data_normalized)
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     model_params = {
         "n_iter": 4000,
         "batch_size": 1000,
-        "num_timesteps": 750.0,
+        "num_timesteps": 500.0,
         # "is_classification": True,
     }
 

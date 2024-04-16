@@ -10,6 +10,6 @@ if __name__ == "__main__":
     train_baseline_model(
         Path(__file__).parent
         / "config"
-        / "augmentation"
+        / "main"
         / "scz_bp_structured_text_Best_xgboost_synthcity.cfg"
     )
