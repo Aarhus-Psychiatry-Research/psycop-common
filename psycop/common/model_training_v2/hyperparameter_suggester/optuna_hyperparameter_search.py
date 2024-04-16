@@ -81,7 +81,6 @@ class OptunaHyperParameterOptimization:
         )
 
         populate_baseline_registry()
-        populate_scz_bp_registry()
         concrete_config_schema = BaselineSchema(**BaselineRegistry.resolve(concrete_config))
 
         concrete_config_schema.logger.log_config(Config(concrete_config))
