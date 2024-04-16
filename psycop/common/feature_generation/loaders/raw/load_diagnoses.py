@@ -25,6 +25,7 @@ log = logging.getLogger(__name__)
 def from_contacts(
     icd_code: list[str] | str,
     output_col_name: str = "value",
+    code_col_name: str = "diagnosegruppestreng",
     n_rows: int | None = None,
     wildcard_icd_code: bool = False,
     shak_location_col: str | None = None,
@@ -40,6 +41,7 @@ def from_contacts(
     Args:
         icd_code (str): Substring to match diagnoses for. Matches any diagnoses, whether a-diagnosis, b-diagnosis etc. # noqa: DAR102
         output_col_name (str, optional): Name of new column string. Defaults to "value".
+        code_col_name (str, optional): Name of column in loaded data frame from which to extract the diagnosis codes. Defaults to "diagnosegruppestrengs".
         n_rows: Number of rows to return. Defaults to None.
         wildcard_icd_code (bool, optional): Whether to match on icd_code*. Defaults to False.
         shak_location_col (str, optional): Name of column containing shak code. Defaults to None. For diagnosis loaders, this column is "shakkode_ansvarlig". Combine with shak_code and shak_sql_operator.
@@ -75,7 +77,7 @@ def from_contacts(
 
     df = load_from_codes(
         codes_to_match=icd_code,
-        code_col_name="diagnosegruppestreng",
+        code_col_name=code_col_name,
         source_timestamp_col_name=source_timestamp_col_name,
         view="FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022",
         output_col_name=output_col_name,
@@ -771,6 +773,25 @@ def manic_and_bipolar(
     )
 
 
+@data_loaders.register("bipolar")
+def bipolar(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code=["f31"],
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+
 @data_loaders.register("depressive_disorders")
 def depressive_disorders(
     n_rows: int | None = None,
@@ -1326,6 +1347,26 @@ def gerd(
     """Gastroesophageal reflux disease (GERD) diagnoses."""
     return from_contacts(
         icd_code="k21",
+        wildcard_icd_code=True,
+        n_rows=n_rows,
+        shak_location_col=shak_location_col,
+        shak_code=shak_code,
+        shak_sql_operator=shak_sql_operator,
+        timestamp_purpose=timestamp_purpose,
+    )
+
+
+@data_loaders.register("bipolar_a_diagnosis")
+def bipolar_a_diagnosis(
+    n_rows: int | None = None,
+    shak_location_col: str | None = None,
+    shak_code: int | None = None,
+    shak_sql_operator: str | None = None,
+    timestamp_purpose: Literal["predictor", "outcome"] | None = "predictor",
+) -> pd.DataFrame:
+    return from_contacts(
+        icd_code=["f31"],
+        code_col_name="adiagnose4kar",
         wildcard_icd_code=True,
         n_rows=n_rows,
         shak_location_col=shak_location_col,
