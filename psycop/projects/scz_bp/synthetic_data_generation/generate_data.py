@@ -5,8 +5,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from synthcity.plugins import Plugins
-from synthcity.plugins.core.dataloader import GenericDataLoader
+from synthcity.plugins import Plugins  # type: ignore
+from synthcity.plugins.core.dataloader import GenericDataLoader  # type: ignore
 from xgboost import XGBClassifier
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
