@@ -32,7 +32,11 @@ def fa_inpatient_plot_robustness(
         + pn.xlab(xlab)
         + pn.ylab("AUROC / Proportion of patients")
         + FA_PN_THEME
-        + pn.theme(axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1))
+        + pn.theme(
+            axis_text_x=pn.element_text(angle=rotate_x_axis_labels_degrees, hjust=1),
+            axis_text=pn.element_text(size=10, weight="bold", color="black"),
+            axis_title=pn.element_text(size=14, color="black"),
+        )
         + pn.ylim(0, 1)
     )
 

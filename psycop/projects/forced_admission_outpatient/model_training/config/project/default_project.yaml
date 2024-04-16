@@ -1,0 +1,11 @@
+name: forced_admissions_inpatient
+project_path: E:\shared_resources\forced_admissions_outpatient\models\full_model_without_text_features
+seed: 42
+
+wandb:
+  entity: psycop # Which entity to run WanDB in.
+  mode: offline # Which mode to run WanDB in. Takes "run", "dryrun", "offline" and "disabled"
+  group: forced_admissions # Which group to run WanDB in.
+  
+  
+gpu: true
