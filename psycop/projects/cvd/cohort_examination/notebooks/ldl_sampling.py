@@ -6,16 +6,16 @@ app = marimo.App(width="full")
 
 @app.cell
 def __():
-    from psycop.common.feature_generation.loaders.raw.load_lab_results import ldl
     import polars as pl
+
+    from psycop.common.feature_generation.loaders.raw.load_lab_results import ldl
+
     return ldl, pl
 
 
 @app.cell
 def __(pl):
-    from psycop.common.feature_generation.loaders.raw.load_visits import (
-        physical_visits,
-    )
+    from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits
 
     visits = pl.from_pandas(physical_visits())
     return physical_visits, visits
@@ -29,27 +29,19 @@ def __(ldl, pl):
         .with_columns(pl.col("timestamp").alias("latest_ldl_timestamp"))
     )
     ldl_timestamps
-    return ldl_timestamps,
+    return (ldl_timestamps,)
 
 
 @app.cell
 def __(ldl_timestamps, visits):
-    from timeseriesflattener import (
-        Flattener,
-        PredictionTimeFrame,
-        PredictorSpec,
-        ValueFrame,
-    )
-
-    from timeseriesflattener.aggregators import LatestAggregator
-
     import datetime as dt
+
+    from timeseriesflattener import Flattener, PredictionTimeFrame, PredictorSpec, ValueFrame
+    from timeseriesflattener.aggregators import LatestAggregator
 
     with_latest_ldl = Flattener(
         predictiontime_frame=PredictionTimeFrame(
-            init_df=visits,
-            entity_id_col_name="dw_ek_borger",
-            timestamp_col_name="timestamp",
+            init_df=visits, entity_id_col_name="dw_ek_borger", timestamp_col_name="timestamp"
         )
     ).aggregate_timeseries(
         specs=[
@@ -99,12 +91,7 @@ def __(plot_df):
         pn.ggplot(data=plot_df)
         + pn.stat_ecdf(mapping=pn.aes(x="days_after_ldl"))
         + pn.scale_color_brewer(type="qual", palette=2)
-        + pn.coord_cartesian(
-            xlim=(
-                0,
-                int(365 * 5),
-            )
-        )
+        + pn.coord_cartesian(xlim=(0, int(365 * 5)))
         + pn.ylab("Proportion with at least 1 LDL measurement")
         + pn.xlab("Days from visit to LDL measurement")
         + pn.scale_x_continuous(expand=(0, 0))
@@ -119,7 +106,7 @@ def __(plot_df):
 @app.cell
 def __(plot_df):
     n = len(plot_df)
-    return n,
+    return (n,)
 
 
 @app.cell
@@ -140,7 +127,7 @@ def __(max_ldl_age_days, mo, n, pl, plot_df):
     mo.md(
         f"Out of {n} visits, {n_needing_ldl_measurement} ({round(n_needing_ldl_measurement / n * 100, 0)}%) could use a new LDL measurement"
     )
-    return n_needing_ldl_measurement,
+    return (n_needing_ldl_measurement,)
 
 
 if __name__ == "__main__":
