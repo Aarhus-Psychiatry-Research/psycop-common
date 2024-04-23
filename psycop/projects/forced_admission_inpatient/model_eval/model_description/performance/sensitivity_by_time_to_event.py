@@ -36,7 +36,10 @@ def _plot_sensitivity_by_time_to_event(df: pd.DataFrame) -> pn.ggplot:
         + pn.theme(
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
+            legend_text=pn.element_text(size=10, color="black"),
             legend_position=(0.3, 0.88),
+            axis_text=pn.element_text(size=10, weight="bold", color="black"),
+            axis_title=pn.element_text(size=14, color="black"),
         )
     )
 

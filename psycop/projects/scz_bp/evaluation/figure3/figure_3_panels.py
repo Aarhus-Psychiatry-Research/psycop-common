@@ -16,7 +16,7 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
 )
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/text_only"
+    best_experiment = "sczbp/structured_text"
     best_pos_rate = 0.04
 
     best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)

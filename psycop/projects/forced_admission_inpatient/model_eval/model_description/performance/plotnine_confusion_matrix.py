@@ -32,7 +32,8 @@ def plotnine_confusion_matrix(matrix: ConfusionMatrix, outcome_text: str) -> pn.
         + pn.theme(
             axis_line=pn.element_blank(),
             axis_ticks=pn.element_blank(),
-            axis_text=pn.element_text(size=6, color="black"),
+            axis_text=pn.element_text(size=10, weight="bold", color="black"),
+            axis_title=pn.element_text(size=14, color="black"),
             panel_grid_major=pn.element_blank(),
             panel_grid_minor=pn.element_blank(),
             panel_background=pn.element_blank(),
