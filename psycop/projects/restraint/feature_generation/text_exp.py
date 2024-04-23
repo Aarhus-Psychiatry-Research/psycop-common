@@ -15,7 +15,6 @@ from psycop.projects.restraint.feature_generation.modules.specify_text_features 
 from psycop.projects.restraint.restraint_global_config import RESTRAINT_PROJECT_INFO
 
 log = logging.getLogger()
-from psycop.projects.restraint.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import load_coercion_prediction_times
 
 
 def main(note_type: str, model_name: str):
@@ -23,9 +22,9 @@ def main(note_type: str, model_name: str):
     dataset."""
     project_info = RESTRAINT_PROJECT_INFO
 
-    restraint_pred_times = load_coercion_prediction_times()
-    #     RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()  # type: ignore
-    # )
+    restraint_pred_times = (
+        RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()
+    )  # type: ignore
 
     feature_specs = TextFeatureSpecifier(
         project_info=project_info, min_set_for_debug=False
@@ -38,9 +37,7 @@ def main(note_type: str, model_name: str):
         compute_lazily=False,
     )
 
-    flattened_df.write_parquet(
-        project_info.project_path / f"{note_type}_{model_name}.parquet"
-    )
+    flattened_df.write_parquet(project_info.project_path / f"{note_type}_{model_name}.parquet")
 
 
 if __name__ == "__main__":
