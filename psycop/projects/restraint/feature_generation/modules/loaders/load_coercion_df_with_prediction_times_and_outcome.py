@@ -14,7 +14,7 @@ def load_coercion_prediction_times() -> pd.DataFrame:
         pd.DataFrame: A dataframe with ids, prediction times and potentially outcomes
     """
     df = sql_load(
-        "SELECT dw_ek_borger, datotid_start as timestamp_admission, datotid_slut as timestamp_discharge, pred_adm_day_count, pred_time as timestamp FROM fct.psycop_coercion_outcome_timestamps"
+        "SELECT  dw_ek_borger, datotid_start as timestamp_admission, datotid_slut as timestamp_discharge, pred_adm_day_count, pred_time as timestamp FROM fct.psycop_coercion_outcome_timestamps"
     )
 
     df = df.rename(columns={"outcome_timestamp": "timestamp_outcome"})  # type: ignore

@@ -36,8 +36,7 @@ class TextFeatureSpecifier:
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
         return [
             OutcomeSpec(
-                value_frame=ValueFrame(
-                    RestraintCohortDefiner.get_outcome_timestamps()
+                value_frame=ValueFrame(RestraintCohortDefiner.get_outcome_timestamps()
                     .frame.to_pandas()
                     .assign(value=1)
                     .rename(columns={"first_mechanical_restraint": "timestamp"})
