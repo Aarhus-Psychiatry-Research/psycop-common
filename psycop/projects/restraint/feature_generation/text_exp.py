@@ -23,8 +23,8 @@ def main(note_type: str, model_name: str):
     project_info = RESTRAINT_PROJECT_INFO
 
     restraint_pred_times = (
-        RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()
-    )  # type: ignore
+        RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()  # type: ignore
+    )
 
     feature_specs = TextFeatureSpecifier(
         project_info=project_info, min_set_for_debug=False
