@@ -2,32 +2,6 @@
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-PYTHON-IPYTHON-3318382:
-    - '*':
-        reason: >-
-          Required for deepchecks, which validates our data. The vulnerability
-          requires local access at the same time as code is being run. Since all
-          users with local access to Ovartaci are already admins, this does not
-          introduce any further vulnerability.
-        created: 2023-11-20T13:46:34.849Z
-  SNYK-PYTHON-JUPYTERSERVER-5862882:
-    - '*':
-        reason: >-
-          Required for deepchecks, which validates our data. The vulnerability
-          could redirect a login to jupyter server (which we do not use) to an
-          outside site (which would be blocked on Ovartaci). This does not
-          introduce any further vulnerability.
-        created: 2023-11-20T13:48:37.917Z
-  SNYK-PYTHON-JUPYTERSERVER-5862881:
-    - '*':
-        reason: >-
-          Required for deepchecks, which validates our data. The vulnerability
-          could expose data to other local users _on the same server_ when
-          opening untrusted files via the "Open image in new tab." function in
-          jupyter server, (which we do not use). Since all users with local
-          access to Ovartaci are already admins, this does not introduce any
-          further vulnerability.
-        created: 2023-11-20T13:49:35.929Z
   SNYK-PYTHON-JUPYTERSERVER-6099119:
     - '*':
         reason: >-
