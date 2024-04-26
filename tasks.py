@@ -36,7 +36,7 @@ def install_requirements(c: Context):
     if on_ovartaci():
         # Install pytorch with cuda from private repo
         c.run(
-            "conda install --force-reinstall pytorch=2.1.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
+            "conda install --force-reinstall pytorch=2.2.0 pytorch-cuda=12.1 -c https://exrhel0371.it.rm.dk/api/repo/pytorch -c https://exrhel0371.it.rm.dk/api/repo/nvidia -c https://exrhel0371.it.rm.dk/api/repo/anaconda --override-channels --insecure -y",
             pty=NOT_WINDOWS,
         )
         test_pytorch_cuda(c)
