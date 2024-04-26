@@ -1,23 +1,23 @@
-# default_stages: [commit]
+default_stages: [commit]
 
-# repos:
-#   - repo: https://github.com/charliermarsh/ruff-pre-commit
-#     rev: v0.1.14
-#     hooks:
-#       - id: ruff
-#         args:
-#           [
-#             "--extend-select",
-#             "F401",
-#             "--extend-select",
-#             "F841",
-#             "--extend-select",
-#             "B007",
-#             "--fix",
-#           ]
-#       - id: ruff-format
+repos:
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.1.14
+    hooks:
+      - id: ruff
+        args:
+          [
+            "--extend-select",
+            "F401",
+            "--extend-select",
+            "F841",
+            "--extend-select",
+            "B007",
+            "--fix",
+          ]
+      - id: ruff-format
 
-#   - repo: https://github.com/pre-commit/pre-commit-hooks
-#     rev: v4.5.0
-#     hooks:
-#       - id: check-yaml
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
