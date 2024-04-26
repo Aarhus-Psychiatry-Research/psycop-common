@@ -25,7 +25,7 @@ class SelectiveCrossValidatorTrainer(BaselineTrainer):
     n_splits: int = 5
     group_col_name: str = "dw_ek_borger"
     """A cross-validator trainer that trains on a combination of `training_data`
-    and `additional_data` and evaluates on the `training_data` only. This can be 
+    and `additional_data` and evaluates on the `training_data` only. This can be
     useful for training with synthetic data and only evluating on the real data
     or for training with prevalent cases and evaluating on incident cases only."""
 
