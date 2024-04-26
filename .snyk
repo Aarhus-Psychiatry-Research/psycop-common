@@ -38,5 +38,19 @@ ignore:
           server. Exception approved via zoom call between Andreas
           and Lasse on 2024-01-04.
         expires: 2024-03-01T08:00:00.000Z
-        created: 2024-01-04T08:00:00.000Z        
+        created: 2024-01-04T08:00:00.000Z    
+  SNYK-PYTHON-MLFLOW-6615820:
+    - '*':
+        reason: >-
+          Vulnerability in MLFlow server, which we do not use. Exception
+          approved via Slack conversation on 2024-04-26.
+        expires: 2024-10-26T11:12:00.000Z
+        created: 2024-04-26T11:12:00.000Z
+  SNYK-PYTHON-GUNICORN-6615672:
+    - '*':
+        reason: >-
+          Vulnerability in server, which we do not use. Exception
+          approved via Slack conversation on 2024-04-26.
+        expires: 2024-10-26T11:12:00.000Z
+        created: 2024-04-26T11:12:00.000Z
 patch: {}
