@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.206.0 (2024-04-26)
+
+### Feature
+
+* Examine LDL sampling ([`1ae827b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1ae827bee94bd387f8b813f92376249ee6597e3b))
+
 ## v0.205.0 (2024-04-16)
 
 ### Feature
