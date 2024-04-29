@@ -137,8 +137,8 @@ class PipelineOutputs:
 
 @dataclass
 class ForcedAdmissionInpatientArtifactNames:
-    main_performance_figure: str = "fa_inpatient_main_performance_figure.png"
-    main_robustness_figure: str = "fa_inpatient_main_robustness.png"
+    main_performance_figure: str = "fa_inpatient_main_performance_figure.pdf"
+    main_robustness_figure: str = "fa_inpatient_main_robustness.pdf"
     performance_by_ppr: str = "fa_inpatient_performance_by_ppr.xlsx"
 
 

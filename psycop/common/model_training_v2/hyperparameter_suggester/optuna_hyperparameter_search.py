@@ -1,5 +1,6 @@
 import copy
 import re
+import traceback
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Literal
@@ -83,16 +84,30 @@ class OptunaHyperParameterOptimization:
 
         concrete_config_schema.logger.log_config(Config(concrete_config))
 
-        run_result = concrete_config_schema.trainer.train()
+        try:
+            run_result = concrete_config_schema.trainer.train()
+        except Exception as e:
+            if "Input X contains NaN" in str(e):
+                raise optuna.TrialPruned from e
+            concrete_config_schema.logger.fail(traceback.format_exc())
+            raise
         return run_result.metric.value
 
     @staticmethod
     def _optimize_study(
-        study: Study,
+        direction: Literal["maximize", "minimize"],
+        study_name: str,
         n_trials: int,
         catch: tuple[type[Exception]],
         cfg_with_resolved_suggesters: dict[str, Any],
     ) -> Study:
+        study = optuna.create_study(
+            direction=direction,
+            load_if_exists=True,
+            study_name=study_name,
+            storage=f"sqlite:///./{study_name}.db",
+        )
+
         study.optimize(
             lambda trial: OptunaHyperParameterOptimization()._optuna_objective(
                 trial=trial, cfg_with_resolved_suggesters=cfg_with_resolved_suggesters
@@ -112,7 +127,6 @@ class OptunaHyperParameterOptimization:
         catch: tuple[type[Exception]],
     ) -> Sequence[Study]:
         cfg = Config().from_disk(cfg_file)
-
         cfg_with_resolved_suggesters = (
             OptunaHyperParameterOptimization()._resolve_only_registries_matching_regex(
                 cfg=cfg, regex_string="^@.*suggesters$"
@@ -121,7 +135,9 @@ class OptunaHyperParameterOptimization:
         OptunaHyperParameterOptimization._validate_suggester_in_configspace(
             cfg=cfg_with_resolved_suggesters
         )
-        study = optuna.create_study(
+
+        # instantiate the study in case it does not already exist
+        study_ = optuna.create_study(  # noqa
             direction=direction,
             load_if_exists=True,
             study_name=study_name,
@@ -130,8 +146,9 @@ class OptunaHyperParameterOptimization:
 
         studies = joblib.Parallel(n_jobs)(
             joblib.delayed(OptunaHyperParameterOptimization._optimize_study)(
-                study=study,
+                direction=direction,
                 n_trials=n_trials // n_jobs,
+                study_name=study_name,
                 catch=catch,
                 cfg_with_resolved_suggesters=cfg_with_resolved_suggesters,
             )

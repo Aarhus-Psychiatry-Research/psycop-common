@@ -11,9 +11,14 @@ from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
 )
 
 
-def _plot_metric_by_time_to_event(df: pd.DataFrame, metric: str) -> pn.ggplot:
+def _plot_metric_by_time_to_event(
+    df: pd.DataFrame, metric: str, plot_combined: bool = False
+) -> pn.ggplot:
     df["subset"] = df["subset"].replace({"bp": "BP", "scz": "SCZ", "both": "Combined"})
     df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ", "Combined"])
+    if not plot_combined:
+        df = df.query("subset != 'Combined'").copy()
+        df["subset"] = pd.Categorical(df["subset"], ["BP", "SCZ"])
 
     p = (
         pn.ggplot(
