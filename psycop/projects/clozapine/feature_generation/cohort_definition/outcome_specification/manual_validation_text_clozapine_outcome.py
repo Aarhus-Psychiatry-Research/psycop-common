@@ -31,33 +31,33 @@ def process_df_from_disk():  # noqa: ANN201
     # remove rows from already checked cpr/rows -
     #  Condition for 'rows_no_text_on_matched_word' - specific rows
     condition_no_text_matched_words = (
-        raw_text_df[["dw_ek_borger", "timestamp"]] # type: ignore
+        raw_text_df[["dw_ek_borger", "timestamp"]]  # type: ignore
         .isin(rows_no_text_on_matched_word[["dw_ek_borger", "timestamp"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     condition_no_text = (
-        raw_text_df[["dw_ek_borger", "timestamp"]] # type: ignore
+        raw_text_df[["dw_ek_borger", "timestamp"]]  # type: ignore
         .isin(no_text_outcome_df[["dw_ek_borger", "timestamp"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     # Condition for 'unsure_text_df' - specific rows
     condition_unsure = (
-        raw_text_df[["dw_ek_borger", "timestamp"]] # type: ignore
+        raw_text_df[["dw_ek_borger", "timestamp"]]  # type: ignore
         .isin(unsure_text_outcome_clozapine[["dw_ek_borger", "timestamp"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     # condition for "validated text outcome clozapine"- remove all rows for specific dw_ek_borger
     condition_validated_text = (
-        raw_text_df[["dw_ek_borger"]] # type: ignore
+        raw_text_df[["dw_ek_borger"]]  # type: ignore
         .isin(validated_text_outcome_clozapine[["dw_ek_borger"]].to_dict(orient="list"))
         .all(axis=1)
     )
 
     # Apply the conditions to filter rows in raw_text_df
-    raw_text_df = raw_text_df[ # type: ignore
+    raw_text_df = raw_text_df[  # type: ignore
         ~condition_no_text_matched_words
         & ~condition_no_text
         & ~condition_unsure
@@ -172,7 +172,7 @@ def read_and_validate_text_for_clozapine_outcome(  # noqa: ANN201
                 )
                 columns_to_save = ["dw_ek_borger", "timestamp"]
                 df_to_save_unsure = unsure_text_outcome_clozapine[columns_to_save]
-                write_df_to_file(df=df_to_save_unsure, file_path=new_file_path) # type: ignore
+                write_df_to_file(df=df_to_save_unsure, file_path=new_file_path)  # type: ignore
 
                 print("saved a new version of unsured_text_outcome_clozapine to disk.")
 
