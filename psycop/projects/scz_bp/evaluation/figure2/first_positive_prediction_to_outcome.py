@@ -101,7 +101,7 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/text_only"
+    best_experiment = "sczbp/structured_text"
     best_pos_rate = 0.04
     eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
 
