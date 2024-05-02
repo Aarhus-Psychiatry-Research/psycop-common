@@ -93,7 +93,7 @@ def plot_trajectories_with_fading_points(
 
     # Make the colors opaque
     trace_color_palette = [
-        color.replace("rgb", "rgba").replace(")", ", 0.25)")
+        color.replace("rgb", "rgba").replace(")", ", 0.25)")  # type: ignore
         for color in trace_color_palette  # type: ignore
     ]
 
