@@ -11,17 +11,12 @@ from timeseriesflattener import (
 from timeseriesflattener.v1.aggregation_fns import count, maximum
 from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
 
-from psycop.common.feature_generation.loaders.raw.load_demographic import (
-    birthdays,
-    sex_female,
-)
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_medications import (
     antidepressives,
     antipsychotics,
 )
-from psycop.common.feature_generation.loaders.raw.load_structured_sfi import (
-    systolic_blood_pressure,
-)
+from psycop.common.feature_generation.loaders.raw.load_structured_sfi import systolic_blood_pressure
 from psycop.projects.bipolar.feature_generation.feature_layers.bp_feature_layer import (
     BpFeatureLayer,
 )
@@ -47,16 +42,16 @@ class BpLayer1(BpFeatureLayer):
 
         systolic_blood_pressure_spec = list(
             PredictorGroupSpec(
-            named_dataframes=(
-                NamedDataframe(
-                    df=systolic_blood_pressure(), name=f"systolic_blood_pressure_layer_{layer}"
+                named_dataframes=(
+                    NamedDataframe(
+                        df=systolic_blood_pressure(), name=f"systolic_blood_pressure_layer_{layer}"
+                    ),
                 ),
-            ),
-            aggregation_fns=[maximum],
-            fallback=[0],
-            lookbehind_days=lookbehind_days,
-            entity_id_col_name_out = 'dw_ek_borger',
-        ).create_combinations()
+                aggregation_fns=[maximum],
+                fallback=[0],
+                lookbehind_days=lookbehind_days,
+                entity_id_col_name_out="dw_ek_borger",
+            ).create_combinations()
         )
 
         antipsychotics_spec = list(
@@ -67,10 +62,10 @@ class BpLayer1(BpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
-                entity_id_col_name_out = 'dw_ek_borger',
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
-        
+
         antidepressives_spec = list(
             PredictorGroupSpec(
                 named_dataframes=(
@@ -79,7 +74,7 @@ class BpLayer1(BpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
-                entity_id_col_name_out = 'dw_ek_borger',
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 
@@ -96,4 +91,10 @@ class BpLayer1(BpFeatureLayer):
             )
         ]
 
-        return sex_spec + systolic_blood_pressure_spec + antipsychotics_spec + antidepressives_spec + age_spec
+        return (
+            sex_spec
+            + systolic_blood_pressure_spec
+            + antipsychotics_spec
+            + antidepressives_spec
+            + age_spec
+        )

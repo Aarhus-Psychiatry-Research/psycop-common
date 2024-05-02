@@ -25,12 +25,8 @@ from psycop.common.feature_generation.application_modules.flatten_dataset import
     create_flattened_dataset,
     create_flattened_dataset_tsflattener_v1,
 )
-from psycop.common.feature_generation.application_modules.loggers import (
-    init_root_logger,
-)
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.loggers import init_root_logger
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )

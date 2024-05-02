@@ -4,7 +4,6 @@ from tqdm import tqdm
 
 from psycop.common.cohort_definition import (
     CohortDefiner,
-    FilteredPredictionTimeBundle,
     PredictionTimeFrame,
     filter_prediction_times,
 )

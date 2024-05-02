@@ -3,16 +3,10 @@ import time
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
-from psycop.projects.bipolar.cohort_definition.bipolar_cohort_definition import (
-    BipolarCohortDefiner,
-)
-from psycop.projects.bipolar.feature_generation.bp_specify_features import (
-    BpFeatureSpecifier,
-)
+from psycop.projects.bipolar.cohort_definition.bipolar_cohort_definition import BipolarCohortDefiner
+from psycop.projects.bipolar.feature_generation.bp_specify_features import BpFeatureSpecifier
 
 
 def get_bp_project_info() -> ProjectInfo:
@@ -25,7 +19,7 @@ if __name__ == "__main__":
         project_info=get_bp_project_info(),
         eligible_prediction_times_frame=BipolarCohortDefiner.get_bipolar_prediction_times(
             interval_days=300
-        ), 
+        ),
         feature_specs=BpFeatureSpecifier().get_feature_specs(
             max_layer=1, lookbehind_days=[100, 200]
         ),
