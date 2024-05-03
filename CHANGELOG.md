@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.207.1 (2024-05-03)
+
+### Fix
+
+* Preprocess additinoal data in selective cv ([`f50d22a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f50d22a3aa244ccf9dcaf945c56118ecc4d0d578))
+
 ## v0.207.0 (2024-05-03)
 
 ### Feature
