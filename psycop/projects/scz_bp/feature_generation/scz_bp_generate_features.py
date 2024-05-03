@@ -125,5 +125,5 @@ if __name__ == "__main__":
         eligible_prediction_times=pred_times,
         feature_specs=specs,
         step_size=dt.timedelta(days=365),
-        n_workers=None
+        n_workers=10
     )

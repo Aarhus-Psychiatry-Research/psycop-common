@@ -11,5 +11,5 @@ if __name__ == "__main__":
         Path(__file__).parent
         / "config"
         / "single_models"
-        / "structured_text_best_xgboost.cfg"
+        / "structured_only_xgboost_with_prevalent.cfg"
     )
