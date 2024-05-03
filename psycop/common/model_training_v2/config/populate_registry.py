@@ -68,6 +68,7 @@ def populate_baseline_registry() -> None:
     # Trainers
     from ..trainer.cross_validator_trainer import CrossValidatorTrainer
     from ..trainer.split_trainer import SplitTrainer
+    from ..trainer.selective_cross_validator_trainer import SelectiveCrossValidatorTrainer
 
     # Test data
     from ..trainer.preprocessing.steps.test_row_filter_split import mock_split_id_sequence
