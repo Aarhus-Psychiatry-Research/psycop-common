@@ -3,7 +3,7 @@ import re
 import traceback
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 import joblib
 import optuna
@@ -74,12 +74,18 @@ class OptunaHyperParameterOptimization:
         return cfg_copy
 
     @staticmethod
-    def _optuna_objective(trial: Trial, cfg_with_resolved_suggesters: dict[str, Any]) -> float:
+    def _optuna_objective(
+        trial: Trial,
+        cfg_with_resolved_suggesters: dict[str, Any],
+        custom_populate_registry_fn: None | Callable[[], None],
+    ) -> float:
         concrete_config = suggest_hyperparams_from_cfg(
             base_cfg=cfg_with_resolved_suggesters, trial=trial
         )
 
         populate_baseline_registry()
+        if custom_populate_registry_fn:
+            custom_populate_registry_fn()
         concrete_config_schema = BaselineSchema(**BaselineRegistry.resolve(concrete_config))
 
         concrete_config_schema.logger.log_config(Config(concrete_config))
@@ -100,6 +106,7 @@ class OptunaHyperParameterOptimization:
         n_trials: int,
         catch: tuple[type[Exception]],
         cfg_with_resolved_suggesters: dict[str, Any],
+        custom_populate_registry_fn: None | Callable[[], None],
     ) -> Study:
         study = optuna.create_study(
             direction=direction,
@@ -110,7 +117,9 @@ class OptunaHyperParameterOptimization:
 
         study.optimize(
             lambda trial: OptunaHyperParameterOptimization()._optuna_objective(
-                trial=trial, cfg_with_resolved_suggesters=cfg_with_resolved_suggesters
+                trial=trial,
+                cfg_with_resolved_suggesters=cfg_with_resolved_suggesters,
+                custom_populate_registry_fn=custom_populate_registry_fn,
             ),
             n_trials=n_trials,
             catch=catch,
@@ -125,6 +134,7 @@ class OptunaHyperParameterOptimization:
         study_name: str,
         direction: Literal["maximize", "minimize"],
         catch: tuple[type[Exception]],
+        custom_populate_registry_fn: None | Callable[[], None] = None,
     ) -> Sequence[Study]:
         cfg = Config().from_disk(cfg_file)
         cfg_with_resolved_suggesters = (
@@ -151,6 +161,7 @@ class OptunaHyperParameterOptimization:
                 study_name=study_name,
                 catch=catch,
                 cfg_with_resolved_suggesters=cfg_with_resolved_suggesters,
+                custom_populate_registry_fn=custom_populate_registry_fn,
             )
             for _ in range(n_jobs)
         )
