@@ -265,6 +265,3 @@ if __name__ == "__main__":
         do_dataset_description=False,
         feature_set_name="metadata_for_table1",
     )
-        do_dataset_description=False,
-        feature_set_name="metadata_for_table1",
-    )

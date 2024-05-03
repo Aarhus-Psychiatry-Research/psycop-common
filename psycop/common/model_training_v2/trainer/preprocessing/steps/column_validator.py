@@ -76,7 +76,7 @@ class ColumnPrefixExpectation(PresplitStep):
 
         errors = (
             Iter(self.column_expectations)
-            .map(lambda expectation: self._column_count_as_expected(expectation=expectation, df=df))
+            .map(lambda expectation: self._column_count_as_expected(expectation=expectation, df=input_df))
             .flatten()
             .to_list()
         )
