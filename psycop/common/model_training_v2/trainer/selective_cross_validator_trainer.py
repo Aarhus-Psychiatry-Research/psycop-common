@@ -8,7 +8,10 @@ from psycop.common.model_training_v2.config.baseline_registry import BaselineReg
 from psycop.common.model_training_v2.trainer.base_dataloader import BaselineDataLoader
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer, TrainingResult
 from psycop.common.model_training_v2.trainer.preprocessing.pipeline import PreprocessingPipeline
-from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
+from psycop.common.model_training_v2.trainer.task.base_metric import (
+    BaselineMetric,
+    CalculatedMetric,
+)
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
 
@@ -79,6 +82,7 @@ class SelectiveCrossValidatorTrainer(BaselineTrainer):
                 name_prefix=f"within_fold_{i}",
             )
             self.logger.log_metric(within_fold_metric)
+            self.logger.log_metric(CalculatedMetric(name=f"within_fold_{i}_n", value=len(y_train)))
 
             oof_y_hat_prob = self.task.predict_proba(X_val)
 
