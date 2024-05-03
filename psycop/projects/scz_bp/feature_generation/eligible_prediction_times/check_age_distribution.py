@@ -28,16 +28,18 @@ if __name__ == "__main__":
         pn.ggplot(first_eligible_outcome, pn.aes(x="age"))
         + pn.geom_histogram()
         + pn.labs(x="Age at diagnosis", y="Count")
-        + pn.geom_vline(pn.aes(xintercept=40))
+        #+ pn.geom_vline(pn.aes(xintercept=40))
         + pn.geom_vline(pn.aes(xintercept=18))
+        + pn.theme_minimal()
     ).save("age_dist.png")
 
     (
-        pn.ggplot(first_eligible_outcome, pn.aes(x="age_outcome"))
+        pn.ggplot(first_eligible_outcome, pn.aes(x="age"))
         + pn.stat_ecdf()
         + pn.labs(x="Age at diagnosis", y="Cumulative proportion")
-        + pn.geom_vline(pn.aes(xintercept=40))
+        # + pn.geom_vline(pn.aes(xintercept=40))
         + pn.geom_vline(pn.aes(xintercept=18))
+        + pn.theme_minimal()
     ).save("age_dist_cum.png")
 
     for max_age in [40, 50, 60]:

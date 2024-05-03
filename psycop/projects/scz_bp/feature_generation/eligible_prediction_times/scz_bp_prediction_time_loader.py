@@ -70,7 +70,6 @@ class SczBpCohort(CohortDefiner):
         return (
             SczBpMinDateFilter(),
             SczBpTimeFromFirstVisitFilter(),
-            SczBpPrevalentFilter(),
             SczBpWashoutMoveFilter(),
         )
 

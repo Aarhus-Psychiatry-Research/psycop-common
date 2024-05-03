@@ -6,6 +6,7 @@ from psycop.projects.scz_bp.evaluation.figure2.auroc_by_data_type import (
 )
 from psycop.projects.scz_bp.evaluation.figure2.confusion_matrix import scz_bp_confusion_matrix_plot
 from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outcome import (
+    plot_scz_bp_first_pred_to_event_stratified,
     scz_bp_first_pred_to_event_stratified,
 )
 from psycop.projects.scz_bp.evaluation.figure2.sensitivity_by_time_to_event import (
@@ -19,12 +20,12 @@ from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import popul
 if __name__ == "__main__":
     populate_scz_bp_registry()
     modality2experiment_mapping = modality2experiment = {
-        "Structured + text + synthetic": "sczbp/structured_text_xgboost_ddpm_3x_positives",
-        "Structured + text": "sczbp/structured_text_xgboost",
+        "Structured + text + synthetic": "sczbp/structured_text_xgboost_ddpm",
+        "Structured + text": "sczbp/structured_text_xgboost_best",
         "Structured only ": "sczbp/structured_only-xgboost",
         "Text only": "sczbp/tfidf_1000-xgboost",
     }
-    best_experiment = "sczbp/structured_text_xgboost_ddpm_3x_positives"
+    best_experiment = "sczbp/structured_text_xgboost_ddpm"
     best_pos_rate = 0.04
 
     best_eval_ds = scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=best_experiment)
@@ -36,7 +37,7 @@ if __name__ == "__main__":
     panel_c = scz_bp_plot_sensitivity_by_time_to_event(
         eval_ds=best_eval_ds.model_copy(), ppr=best_pos_rate
     )
-    panel_d = scz_bp_first_pred_to_event_stratified(
+    panel_d = plot_scz_bp_first_pred_to_event_stratified(
         eval_ds=best_eval_ds.model_copy(), ppr=best_pos_rate
     )
 

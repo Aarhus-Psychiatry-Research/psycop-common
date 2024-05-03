@@ -26,15 +26,6 @@ class SczBpMinDateFilter(PredictionTimeFilter):
         return df.filter(pl.col("timestamp") > MIN_DATE)
 
 
-class SczBpMinAgeFilter(PredictionTimeFilter):
-    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        return df.filter(pl.col(AGE_COL_NAME) >= MIN_AGE)
-
-
-class SczBpMaxAgeFilter(PredictionTimeFilter):
-    def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
-        return df.filter(pl.col(AGE_COL_NAME) <= MAX_AGE)
-
 
 class SczBpAddAge(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:

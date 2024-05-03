@@ -42,38 +42,16 @@ def get_first_scz_or_bp_diagnosis_with_time_from_first_contact() -> pl.DataFrame
     return first_scz_or_bp
 
 
-def get_prevalent_scz_bp_patients() -> pl.Series:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
-
-    return first_scz_or_bp.filter(
-        pl.col("time_from_first_contact") < pl.duration(days=N_DAYS_WASHIN)
-    ).get_column("dw_ek_borger")
+def get_diagnosis_type_of_first_scz_bp_diagnosis() -> pl.DataFrame:
+    return get_first_scz_or_bp_diagnosis().select("dw_ek_borger", "source")
 
 
-def get_first_scz_bp_diagnosis_after_washin() -> pl.DataFrame:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
+def get_time_of_first_scz_or_bp_diagnosis() -> pl.DataFrame:
+    return get_first_scz_or_bp_diagnosis().select("dw_ek_borger", "timestamp")
 
-    return first_scz_or_bp.filter(
-        pl.col("time_from_first_contact") >= pl.duration(days=N_DAYS_WASHIN)
-    ).select("dw_ek_borger", "timestamp", "value")
-
-
-def get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin() -> pl.DataFrame:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
-
-    return first_scz_or_bp.filter(
-        pl.col("time_from_first_contact") >= pl.duration(days=N_DAYS_WASHIN)
-    ).select("dw_ek_borger", "source")
-
-
-def get_time_of_first_scz_or_bp_diagnosis_after_washin() -> pl.DataFrame:
-    first_scz_or_bp = get_first_scz_or_bp_diagnosis_with_time_from_first_contact()
-
-    return first_scz_or_bp.filter(
-        pl.col("time_from_first_contact") >= pl.duration(days=N_DAYS_WASHIN)
-    ).select("dw_ek_borger", "timestamp")
 
 
 if __name__ == "__main__":
-    df = get_first_scz_bp_diagnosis_after_washin()
-    excluded = get_prevalent_scz_bp_patients()
+    df = get_first_scz_or_bp_diagnosis()
+    type_ = get_diagnosis_type_of_first_scz_bp_diagnosis()
+    time = get_time_of_first_scz_or_bp_diagnosis()

@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import polars as pl
-from timeseriesflattener import OutcomeSpec, StaticFrame, StaticSpec, ValueFrame
-from timeseriesflattener.aggregators import MaxAggregator
+from timeseriesflattener import OutcomeSpec, PredictorSpec, StaticFrame, StaticSpec, ValueFrame
+from timeseriesflattener.aggregators import HasValuesAggregator, MaxAggregator
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     get_time_of_first_visit_to_psychiatry,
@@ -25,8 +25,9 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.bp_diagnose
     get_first_bp_diagnosis,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_or_bp_diagnosis import (
-    get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin,
-    get_time_of_first_scz_or_bp_diagnosis_after_washin,
+    get_diagnosis_type_of_first_scz_bp_diagnosis,
+    get_first_scz_or_bp_diagnosis,
+    get_time_of_first_scz_or_bp_diagnosis,
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.scz_diagnoses import (
     get_first_scz_diagnosis,
@@ -68,13 +69,26 @@ class SczBpFeatureSpecifier:
             )
         ]
 
-    def _get_metadata_specs(self) -> list[StaticSpec]:
+    def _get_metadata_specs(self) -> list[StaticSpec | PredictorSpec]:
         log.info("-------- Generating metadata specs --------")
 
         return [
+            PredictorSpec(
+                value_frame=ValueFrame(
+                    init_df=get_first_scz_or_bp_diagnosis()
+                    .select("timestamp", "dw_ek_borger")
+                    .with_columns(pl.lit(1).alias("prevalent")),
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="timestamp",
+                ),
+                lookbehind_distances=[dt.timedelta(days=20 * 365)],
+                aggregators=[HasValuesAggregator()],
+                fallback=0,
+                column_prefix="meta",
+            ),
             StaticSpec(
                 value_frame=StaticFrame(
-                    init_df=get_diagnosis_type_of_first_scz_bp_diagnosis_after_washin().rename(
+                    init_df=get_diagnosis_type_of_first_scz_bp_diagnosis().rename(
                         {"source": "scz_or_bp_indicator"}
                     ),
                     entity_id_col_name="dw_ek_borger",
@@ -84,7 +98,7 @@ class SczBpFeatureSpecifier:
             ),
             StaticSpec(
                 value_frame=StaticFrame(
-                    init_df=get_time_of_first_scz_or_bp_diagnosis_after_washin().rename(
+                    init_df=get_time_of_first_scz_or_bp_diagnosis().rename(
                         {"timestamp": "time_of_diagnosis"}
                     ),
                     entity_id_col_name="dw_ek_borger",

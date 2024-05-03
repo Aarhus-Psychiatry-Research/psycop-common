@@ -12,6 +12,8 @@ from psycop.common.model_training_v2.hyperparameter_suggester.suggesters.suggest
     CategoricalSpace,
     FloatSpace,
     FloatSpaceT,
+    IntegerSpace,
+    IntegerspaceT,
 )
 from psycop.common.model_training_v2.trainer.task.model_step import ModelStep
 
@@ -25,6 +27,7 @@ def logistic_regression_step(
     solver: LogRegSolvers = "saga",
     C: float = 1.0,
     l1_ratio: float = 0.5,
+    max_iter: int = 100,
 ) -> ModelStep:
     """Initialize logistic regression model with hparams specified as kwargs.
     The 'missing' hyperparameter specifies the value to be treated as missing
@@ -33,7 +36,12 @@ def logistic_regression_step(
     return (
         "classifier",
         LogisticRegression(
-            penalty=penalty, solver=solver, C=C, l1_ratio=l1_ratio, random_state=41
+            penalty=penalty,
+            solver=solver,
+            C=C,
+            l1_ratio=l1_ratio,
+            random_state=41,
+            max_iter=max_iter,
         ),  # Random_state is required for reproducibility, e.g. getting the same result on every test
     )
 
@@ -50,11 +58,13 @@ class LogisticRegressionSuggester(Suggester):
         },
         solvers: Sequence[LogRegSolvers] = ("saga",),
         penalties: Sequence[LogRegPenalties] = ("l1", "l2", "elasticnet"),
+        max_iter: IntegerspaceT = {"low": 100, "high": 1000, "logarithmic": False},
     ):
         self.C = FloatSpace.from_list_or_mapping(C)
         self.l1_ratio = FloatSpace.from_list_or_mapping(l1_ratio)
         self.solver = CategoricalSpace(solvers)
         self.penalties = CategoricalSpace(penalties)
+        self.max_iter = IntegerSpace.from_list_or_mapping(max_iter)
 
     def suggest_hyperparameters(self, trial: optuna.Trial) -> dict[str, Any]:
         return {
@@ -63,4 +73,5 @@ class LogisticRegressionSuggester(Suggester):
             "l1_ratio": self.l1_ratio.suggest(trial, "l1_ratio"),
             "solver": self.solver.suggest(trial, "solver"),
             "penalty": self.penalties.suggest(trial, "penalty"),
+            "max_iter": self.max_iter.suggest(trial, "max_iter")
         }

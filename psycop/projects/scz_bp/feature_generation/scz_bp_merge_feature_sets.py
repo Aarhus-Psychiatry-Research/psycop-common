@@ -20,7 +20,7 @@ if __name__ == "__main__":
     structured_path = (
         OVARTACI_SHARED_DIR / "scz_bp" / "flattened_datasets" / "structured_predictors"
     )
-    all_relevant_dfm_encoder_path = (
+    best_text_path = (
         OVARTACI_SHARED_DIR
         / "scz_bp"
         / "text_exp"
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     combined = DataLoader(
         DataSchema(dir=structured_path), column_name_checker=None
     )._check_and_merge_feature_sets(  # type: ignore
-        datasets=[load_all_splits(structured_path), load_all_splits(all_relevant_dfm_encoder_path)]
+        datasets=[load_all_splits(structured_path), load_all_splits(best_text_path)]
     )  # type: ignore
     # remove duplicated columns
     combined = combined.loc[:, ~combined.columns.duplicated()]  # type: ignore
