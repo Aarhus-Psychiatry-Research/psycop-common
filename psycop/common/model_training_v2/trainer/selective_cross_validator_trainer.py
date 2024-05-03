@@ -37,10 +37,12 @@ class SelectiveCrossValidatorTrainer(BaselineTrainer):
         training_data_preprocessed = self.preprocessing_pipeline.apply(
             data=self.training_data.load()
         ).assign(_do_eval=1)
+        additional_data_preprocessed = self.preprocessing_pipeline.apply(
+            data=self.additional_data.load()
+        ).assign(_do_eval=0)
 
-        additional_data = self.additional_data.load().collect().to_pandas().assign(_do_eval=0)
         training_data_preprocessed = pd.concat(
-            [training_data_preprocessed, additional_data], axis=0
+            [training_data_preprocessed, additional_data_preprocessed], axis=0
         ).reset_index(drop=True)
 
         training_data_preprocessed["dw_ek_borger"] = training_data_preprocessed[
@@ -57,7 +59,7 @@ class SelectiveCrossValidatorTrainer(BaselineTrainer):
             X=X, y=y, groups=training_data_preprocessed[self.group_col_name]
         )
 
-        training_data_for_eval = training_data_preprocessed[
+        training_data_for_eval = training_data_preprocessed.loc[
             training_data_preprocessed["_do_eval"] == 1
         ].copy()
 
