@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.208.0 (2024-05-03)
+
+### Feature
+
+* Allow passing custom populate registry fn to hparam search ([`244231d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/244231dcd2d8c492ec16f29523a648f89210d224))
+
 ## v0.207.1 (2024-05-03)
 
 ### Fix
