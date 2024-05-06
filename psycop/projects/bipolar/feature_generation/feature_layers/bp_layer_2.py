@@ -32,6 +32,7 @@ class BpLayer2(BpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 
@@ -46,6 +47,7 @@ class BpLayer2(BpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 
@@ -60,6 +62,7 @@ class BpLayer2(BpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 

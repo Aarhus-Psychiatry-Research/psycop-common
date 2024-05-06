@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -7,7 +8,6 @@ import plotly.graph_objects as go
 import plotly.offline
 
 from psycop.projects.bipolar.patient_representations.pca import perform_pca
-from psycop.projects.bipolar.synthetic_data.bp_synthetic_data import bp_synthetic_eval_data
 
 
 def _prepare_df_for_trajectories(
@@ -18,6 +18,7 @@ def _prepare_df_for_trajectories(
     timestamp_col_name: str = "timestamp",
     label_col_name: str = "predicted_label",
     size_col_name: str = "y_pred",
+    patients_to_keep: list[int] | None = None,
 ) -> tuple[
     np.ndarray[Any, Any],
     np.ndarray[Any, Any],
@@ -26,6 +27,11 @@ def _prepare_df_for_trajectories(
     np.ndarray[Any, Any],
     int,
 ]:
+
+    if patients_to_keep:
+
+        df = df[df['dw_ek_borger'].isin(patients_to_keep)]
+
     # Sort DataFrame by ID
     df_sorted = df.sort_values(by=[id_col_name])
 
@@ -75,6 +81,7 @@ def plot_trajectories_with_fading_points(
     save: bool = False,
     point_color_legend: dict[int, str] | None = None,
     keep_points: bool = False,
+    patients_to_keep: list[int] | None = None,
 ):
     x_data, y_data, color_label_data, size_data, ids, max_timestamps = _prepare_df_for_trajectories(
         df=df,
@@ -84,18 +91,23 @@ def plot_trajectories_with_fading_points(
         timestamp_col_name=timestamp_col_name,
         label_col_name=label_col_name,
         size_col_name=size_col_name,
+        patients_to_keep=patients_to_keep,
     )
 
-    # Define a continuous color scale from light gray to black with whitee and sample colors from it according to number of unique ids (use hex codes for colors)
-    trace_color_palette = px.colors.sample_colorscale(
-        colorscale="viridis", high=0.9, low=0.1, samplepoints=len(ids)
-    )
+    # Define a continuous color scale from light gray to black with whitee and sample colors from it according to number of unique ids (use hex codes for colors)   
+    if len(ids) > 1:
+        trace_color_palette = px.colors.sample_colorscale(
+            colorscale="viridis", high=0.9, low=0.1, samplepoints=len(ids)
+        )
 
-    # Make the colors opaque
-    trace_color_palette = [
-        color.replace("rgb", "rgba").replace(")", ", 0.25)")  # type: ignore
-        for color in trace_color_palette  # type: ignore
-    ]
+        # Make the colors opaque
+        trace_color_palette = [
+            color.replace("rgb", "rgba").replace(")", ", 0.25)")  # type: ignore
+            for color in trace_color_palette  # type: ignore
+        ]
+
+    else:
+        trace_color_palette = ['rgba(33, 149, 139, 0.25)']
 
     point_color_palette = [
         "#FF0000",
@@ -124,7 +136,7 @@ def plot_trajectories_with_fading_points(
                 x=[],
                 y=[],
                 mode="markers",
-                marker=dict(color=point_colors[i][0], size=5 + (10 * size_data[i][0])),  # noqa: C408
+                marker=dict(color=point_colors[0][i], size=5 + (0.1 * size_data[0][i])),  # noqa: C408
                 showlegend=False,
                 name=f"Patient {point_id}",
             )
@@ -132,7 +144,7 @@ def plot_trajectories_with_fading_points(
         # Create lines for the trails
         traces.append(
             go.Scatter(
-                x=[],
+                x=[], 
                 y=[],
                 mode="lines",
                 line=dict(  # noqa: C408
@@ -158,7 +170,7 @@ def plot_trajectories_with_fading_points(
                     x=[x_data[frame, i]],
                     y=[y_data[frame, i]],
                     mode="markers",
-                    marker=dict(color=point_colors[frame][i], size=5 + (10 * size_data[frame, i])),  # noqa: C408
+                    marker=dict(color=point_colors[frame][i], size=5 + (0.1 * size_data[frame, i])),  # noqa: C408
                     showlegend=False,
                     name=f"Paitent {point_id}",
                     # Add the size data when hovering over a point
@@ -174,13 +186,13 @@ def plot_trajectories_with_fading_points(
                         mode="markers",
                         marker=dict(  # noqa: C408
                             color=[point_colors[f][i] for f in range(frame + 1)],
-                            size=[((size_data[f, i] * 10) + 5) for f in range(frame + 1)],
+                            size=[((size_data[f, i] * 0.1) + 5) for f in range(frame + 1)],
                         ),
                         showlegend=False,
                         name=f"Paitent {point_id}",
                         # Add the size data when hovering over a point
                         hovertemplate=[
-                            f"Patient {point_id}<br>Output probability: {round(size_data[f, i],2)}"
+                            f"Patient {point_id}<br>Age: {round(size_data[f, i],2)}"
                             for f in range(frame + 1)
                         ],
                     )
@@ -287,19 +299,27 @@ def plot_trajectories_with_fading_points(
 
 
 if __name__ == "__main__":
-    synth_df = bp_synthetic_eval_data(num_patients=5)
-    pca_df = perform_pca(synth_df)
+
+    file_path = Path("E:/shared_resources/bipolar/flattened_datasets/structured_predictors_4_layers_interval_days_100/structured_predictors_4_layers_interval_days_100.parquet")
+    df = pd.read_parquet(file_path)
+    pca_df = perform_pca(df)
 
     # Define point color legend dict specifcation for the plot (1st color represents 'False negative', 2nd color represents 'True positive')
-    point_color_legend = {0: "False negative", 1: "True positive"}
+    point_color_legend = {0: "No lithium", 1: "Lithium"}
+    
+
+    patients_to_keep = pca_df['dw_ek_borger'].unique()[:1]
+    pca_df = pca_df[pca_df['dw_ek_borger'].isin(patients_to_keep)]
 
     plot_trajectories_with_fading_points(
         pca_df,
         component_1_col_name="component_1",
         component_2_col_name="component_2",
-        id_col_name="patient_id",
+        id_col_name="dw_ek_borger",
         timestamp_col_name="timestamp",
+        label_col_name = "pred_lithium_layer_4_within_0_to_200_days_bool_fallback_0",
+        size_col_name = "pred_layer_1_age_years_fallback_nan",
         save=False,
         point_color_legend=point_color_legend,
-        keep_points=True,
+        keep_points=False,
     )

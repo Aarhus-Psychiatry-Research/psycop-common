@@ -5,6 +5,10 @@ from psycop.projects.bipolar.synthetic_data.bp_synthetic_data import bp_syntheti
 
 
 def perform_pca(df: pd.DataFrame, n_components: int = 2) -> pd.DataFrame:
+    
+    # Convert NAs to 0s
+    df = df.fillna(0)
+
     # Drop columns that don't start with 'pred_'
     pred_cols = [col for col in df.columns if col.startswith("pred_")]
     df_filtered = df[pred_cols]
@@ -16,9 +20,10 @@ def perform_pca(df: pd.DataFrame, n_components: int = 2) -> pd.DataFrame:
     pca_df = pd.DataFrame(components, columns=["component_1", "component_2"])
 
     # appende pca_df to df
-    pca_df = pd.concat([df, pca_df], axis=1)
+    df['component_1'] = pca_df['component_1'].to_numpy()
+    df['component_2'] = pca_df['component_2'].to_numpy()
 
-    return pca_df
+    return df
 
 
 if __name__ == "__main__":
