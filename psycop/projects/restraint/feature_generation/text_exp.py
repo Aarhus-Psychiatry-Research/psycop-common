@@ -1,5 +1,6 @@
 """Main feature generation."""
 
+import datetime as dt
 import logging
 
 import polars as pl
@@ -35,6 +36,7 @@ def main(note_type: str, model_name: str):
         prediction_times_frame=PredictionTimeFrame(pl.DataFrame(restraint_pred_times)),
         n_workers=None,
         compute_lazily=False,
+        step_size=dt.timedelta(days=365),
     )
 
     flattened_df.write_parquet(project_info.project_path / f"{note_type}_{model_name}.parquet")

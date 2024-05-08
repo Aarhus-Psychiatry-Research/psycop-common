@@ -5,11 +5,19 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from timeseriesflattener import OutcomeSpec, PredictorSpec, StaticFrame, StaticSpec, ValueFrame
+from timeseriesflattener import (
+    OutcomeSpec,
+    PredictorSpec,
+    StaticFrame,
+    StaticSpec,
+    TimeDeltaSpec,
+    TimestampValueFrame,
+    ValueFrame,
+)
 from timeseriesflattener.aggregators import HasValuesAggregator, MeanAggregator
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
-from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
 
@@ -23,14 +31,25 @@ class TextFeatureSpecifier:
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
 
-    def _get_static_predictor_specs(self) -> list[StaticSpec]:
+    def _get_static_predictor_specs(self) -> list[StaticSpec | TimeDeltaSpec]:
         """Get static predictor specs."""
         return [
             StaticSpec(
                 value_frame=StaticFrame(init_df=sex_female(), entity_id_col_name="dw_ek_borger"),
                 fallback=np.nan,
                 column_prefix=self.project_info.prefix.predictor,
-            )
+            ),
+            TimeDeltaSpec(
+                init_frame=TimestampValueFrame(
+                    init_df=birthdays(),
+                    entity_id_col_name="dw_ek_borger",
+                    value_timestamp_col_name="date_of_birth",
+                ),
+                fallback=np.nan,
+                output_name="age",
+                time_format="years",
+                column_prefix=self.project_info.prefix.predictor,
+            ),
         ]
 
     def _get_outcome_specs(self) -> list[OutcomeSpec]:
@@ -82,7 +101,7 @@ class TextFeatureSpecifier:
 
     def get_text_feature_specs(
         self, note_type: str, model_name: str
-    ) -> list[Union[OutcomeSpec, PredictorSpec, StaticSpec]]:
+    ) -> list[Union[OutcomeSpec, PredictorSpec, StaticSpec, TimeDeltaSpec]]:
         """Generate text predictor spec list."""
         log.info("-------- Generating text predictor specs --------")
 
