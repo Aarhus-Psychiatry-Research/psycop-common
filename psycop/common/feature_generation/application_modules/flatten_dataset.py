@@ -15,6 +15,7 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays
 
 if TYPE_CHECKING:
+    import datetime as dt
     from collections.abc import Sequence
     from pathlib import Path
 
@@ -61,7 +62,7 @@ def create_flattened_dataset(
     prediction_times_frame: PredictionTimeFrame,
     n_workers: int | None,
     compute_lazily: bool,
-    step_size: pd.Timedelta | None = None,
+    step_size: dt.timedelta | None = None,
 ) -> pl.DataFrame:
     flattener = Flattener(
         predictiontime_frame=FlattenerPredictionTimeFrame(
