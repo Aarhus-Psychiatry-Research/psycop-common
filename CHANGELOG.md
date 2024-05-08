@@ -2,6 +2,37 @@
 
 <!--next-version-placeholder-->
 
+## v0.208.0 (2024-05-03)
+
+### Feature
+
+* Allow passing custom populate registry fn to hparam search ([`244231d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/244231dcd2d8c492ec16f29523a648f89210d224))
+
+## v0.207.1 (2024-05-03)
+
+### Fix
+
+* Preprocess additinoal data in selective cv ([`f50d22a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f50d22a3aa244ccf9dcaf945c56118ecc4d0d578))
+
+## v0.207.0 (2024-05-03)
+
+### Feature
+
+* Add selective cross validator trainer ([`fd9b713`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fd9b713e688ac847d447982cc5eb972204761bc5))
+
+### Fix
+
+* Ignore error ([`adfd84e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/adfd84ea2e2be55f80a43baaa86152cde4194923))
+* Add plotly to env ([`afcb449`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/afcb449110d8ea3d4be84775f37773cedbc5a06a))
+* Add to registry ([`ef54b2f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ef54b2fac6ff73e338c60bfc81d48e7d667defd4))
+* Feature gen ([`1c6cdcf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1c6cdcff00df2e0e0e78795e9e12e3414fe4bfb9))
+
+## v0.206.0 (2024-04-26)
+
+### Feature
+
+* Examine LDL sampling ([`1ae827b`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1ae827bee94bd387f8b813f92376249ee6597e3b))
+
 ## v0.205.0 (2024-04-16)
 
 ### Feature
