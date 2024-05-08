@@ -4,6 +4,7 @@ from pathlib import Path
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 
 if __name__ == "__main__":
     save_dir = Path(__file__).parent
@@ -52,4 +53,4 @@ if __name__ == "__main__":
         method_dfs.append(df)
 
     method_df = pl.concat(method_dfs, how="vertical")
-    method_df.to_pandas().to_html(save_dir / "performance_by_augmentation_method_table.html")
+    method_df.to_pandas().to_html(SCZ_BP_EVAL_OUTPUT_DIR / "performance_by_augmentation_method_table.html")

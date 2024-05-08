@@ -83,6 +83,12 @@ class SczBpTableOne:
         """
         row_specifications = [
             RowSpecification(
+                source_col_name="outc_first_scz_or_bp_within_0_to_1825_days_max_fallback_0",
+                readable_name="Positive prediction time",
+                categorical=True,
+                values_to_display=[1],
+            ),
+            RowSpecification(
                 source_col_name="meta_sex_female_fallback_0",
                 readable_name="Female",
                 categorical=True,
@@ -114,7 +120,7 @@ class SczBpTableOne:
             *self.get_psychiatric_diagnosis_row_specs(col_names=pred_times.columns),
         ]
 
-        age_bins = [18, *list(range(19, 90, 10))]
+        age_bins: list[int] = [15, 18, *list(range(20, 61, 10))]
 
         pd_pred_times = (
             SczBpTableOne.add_split(pred_times)
@@ -166,6 +172,7 @@ class SczBpTableOne:
         return specs
 
     def make_section_B(self, pred_times: pl.DataFrame) -> pd.DataFrame:
+        """By patients"""
         df = pl.DataFrame(pred_times["dw_ek_borger"].unique())
 
         fns = [

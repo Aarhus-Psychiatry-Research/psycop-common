@@ -263,5 +263,5 @@ if __name__ == "__main__":
         feature_specs=SczBpMetaDataFeatureSpecifier().get_feature_specs(),
         n_workers=None,
         do_dataset_description=False,
-        feature_set_name="metadata_for_table1",
+        feature_set_name="metadata_for_table1_2",
     )

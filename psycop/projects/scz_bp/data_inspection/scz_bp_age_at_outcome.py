@@ -47,6 +47,8 @@ if __name__ == "__main__":
 
     age_df.with_columns(pl.col("age").cut(breaks=[0, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26,27,28,29,30,99], labels=["0", "15", "16", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25","26","27","28","29","30","99"]).cast(pl.Int16).alias("age_bin")).group_by("age_bin").count().sort(by="age_bin")
 
+    age_df.group_by(pl.col("age").round(0)).count().sort("count")
+
 
     (
         pn.ggplot(age_df, pn.aes(x="age"))
@@ -62,5 +64,13 @@ if __name__ == "__main__":
         + pn.labs(title="Cumulative density")
     )
 
+    (
+        pn.ggplot(age_df, pn.aes(x="age"))
+        + pn.geom_histogram()
+        + pn.geom_vline(xintercept=15, linetype="dashed")
+        + pn.geom_vline(xintercept=60, linetype="dashed")
+        + pn.theme_minimal()
+        + pn.labs(x="Age at diagnosis", y="Count")
+    )
     age_df.groupby("source").count()
     age_df.filter(pl.col("age") < 18).groupby("source").count()

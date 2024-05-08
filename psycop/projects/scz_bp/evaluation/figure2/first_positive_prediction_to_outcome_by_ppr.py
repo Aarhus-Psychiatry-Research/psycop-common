@@ -2,11 +2,13 @@
 positive predicted rates as columns, stratified by BP and SCZ"""
 
 
+from pathlib import Path
 from typing import Sequence
 
 import pandas as pd
 
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
+from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outcome import (
     scz_bp_first_pred_to_event_stratified,
 )
@@ -58,16 +60,19 @@ def scz_bp_time_from_first_positive_prediction_to_outcome_table(
 
 
 if __name__ == "__main__":
+    # add PPV 
+
     modality2experiment_mapping = modality2experiment = {
         "Structured + text + synthetic": "sczbp/structured_text_xgboost_ddpm",
-        "Structured + text": "sczbp/structured_text_xgboost_best",
+        "Structured + text": "sczbp/structured_text_xgboost",
         "Structured only ": "sczbp/structured_only-xgboost",
         "Text only": "sczbp/tfidf_1000-xgboost",
     }
-    pprs = [0.01, 0.02, 0.04, 0.6, 0.8]
+    pprs = [0.01, 0.02, 0.04, 0.06, 0.08]
 
     table = scz_bp_time_from_first_positive_prediction_to_outcome_table(
         modality2experiment=modality2experiment_mapping, pprs=pprs, group_by_outcome=False
     )
-    with open("ppr_table.html", "w") as f:
+
+    with open(SCZ_BP_EVAL_OUTPUT_DIR / "figure_2_a.html", "w") as f:
         f.write(table.to_html())
