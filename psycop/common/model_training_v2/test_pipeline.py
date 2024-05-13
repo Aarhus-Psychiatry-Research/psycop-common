@@ -35,6 +35,7 @@ def test_v2_train_model_pipeline():
         logger=TerminalLogger(),
         trainer=SplitTrainer(
             uuid_col_name="pred_time_uuid",
+            group_col_name="dw_ek_borger",
             training_data=MinimalTestData(),
             training_outcome_col_name="outcome",
             validation_data=MinimalTestData(),
