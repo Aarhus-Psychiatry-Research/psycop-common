@@ -51,7 +51,7 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
 
 
 def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
-    eval_dataset: EvalDataset, n: int, save: bool = False,
+    eval_dataset: EvalDataset, n: int, ppr: float, save: bool = False,
 ) -> pn.ggplot:
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
 
@@ -69,7 +69,7 @@ def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_
         + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"))
         + pn.labs(x="Time to event (days)", y="Model output")
         + pn.scale_color_manual(values=["#D55E00","#009E73"])
-        + pn.ggtitle(f"Outcomes with {n} prediction times")
+        + pn.ggtitle(f"Outcomes with {n} prediction times (PPR: {ppr*100}%)")
     )
 
     if save:
@@ -88,11 +88,12 @@ def plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
     run: ForcedAdmissionOutpatientPipelineRun,
     eval_dataset: EvalDataset,
     max_n: int,
+    ppr: float,
     save: bool = True,
 ) -> pw.Bricks:
     plots = [
         _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
-            eval_dataset, n
+            eval_dataset, n, ppr,
         )
         for n in range(1, max_n)
     ]
@@ -239,7 +240,7 @@ if __name__ == "__main__":
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
     max_n = 6
 
-    plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(run, eval_dataset, max_n)
+    plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(run, eval_dataset, max_n, ppr=BEST_POS_RATE)
 
 
     plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
