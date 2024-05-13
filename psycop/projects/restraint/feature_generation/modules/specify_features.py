@@ -539,7 +539,7 @@ class FeatureSpecifier:
             timeseries_df=RestraintCohortDefiner.get_outcome_timestamps()
             .frame.to_pandas()
             .assign(value=1)
-            .rename(columns={"first_mechanical_restraint": "timestamp"})
+            .rename(columns={"first_mechanical_restraint": "timestamp"})  # type: ignore
             .dropna(subset="timestamp"),
             lookahead_days=2,
             aggregation_fn=boolean,
