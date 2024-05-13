@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.208.1 (2024-05-13)
+
+### Fix
+
+* Remove group_col_name (dw_ek_borger) in training data in split trainer ([`3b3ee4a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3b3ee4ada4a6df6cf3c9e5d92d6beb7302f66b84))
+
 ## v0.208.0 (2024-05-03)
 
 ### Feature
