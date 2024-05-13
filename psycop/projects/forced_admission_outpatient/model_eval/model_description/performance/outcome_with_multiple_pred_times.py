@@ -3,9 +3,14 @@ import patchworklib as pw
 import plotnine as pn
 from wasabi import Printer
 
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -26,7 +31,7 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
             "id": eval_dataset.ids,
             "y": eval_dataset.y,
             "y_pred": positives_series,
-            "y_hat_probs": eval_dataset.y_hat_probs,
+            "y_hat_probs": eval_dataset.y_hat_probs.squeeze(),
             "pred_timestamps": eval_dataset.pred_timestamps,
             "outcome_timestamps": eval_dataset.outcome_timestamps,
         }
@@ -46,11 +51,13 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
 
 
 def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
-    eval_dataset: EvalDataset, n: int
+    eval_dataset: EvalDataset, n: int, save: bool = False,
 ) -> pn.ggplot:
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
 
     df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
+
+    df['y_pred'] = df['y_pred'].astype('category')
 
     # plot a point for each prediction time, with time to event on the x-axis and the model output (y_hat_probs)$ on the y-axis. Colour the point red if y_pred is 0 and green if y_pred is 1. Connect points with the same outcome_uuid with a line.
     plot = (
@@ -61,9 +68,18 @@ def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_
         )
         + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"))
         + pn.labs(x="Time to event (days)", y="Model output")
-        + pn.scale_color_manual(values=["#009E73", "#D55E00"])
+        + pn.scale_color_manual(values=["#D55E00","#009E73"])
         + pn.ggtitle(f"Outcomes with {n} prediction times")
     )
+
+    if save:
+        plot_output_path = (
+            run.paper_outputs.paths.figures
+            /  f"fa_outpatient_model_outputs_over_time_for_outcomes_with_{n}_pred_times.png"
+        )
+
+        plot.save(plot_output_path)
+
 
     return plot
 
@@ -221,10 +237,13 @@ if __name__ == "__main__":
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    max_n = 7
+    max_n = 6
 
     plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(run, eval_dataset, max_n)
+
 
     plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
         run, eval_dataset, max_n
     )
+    
+
