@@ -16,6 +16,7 @@ from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 @dataclass
 class SplitTrainerSeparatePreprocessing(BaselineTrainer):
     uuid_col_name: str
+    group_col_name: str
     training_data: BaselineDataLoader
     training_outcome_col_name: str
     validation_data: BaselineDataLoader
@@ -36,7 +37,7 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
 
     @property
     def non_predictor_columns(self) -> Sequence[str]:
-        return [self.uuid_col_name, *self.outcome_columns]
+        return [self.uuid_col_name, self.group_col_name, *self.outcome_columns]
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.training_preprocessing_pipeline.apply(
@@ -80,6 +81,7 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
 @dataclass
 class SplitTrainer(BaselineTrainer):
     uuid_col_name: str
+    group_col_name: str
     training_data: BaselineDataLoader
     training_outcome_col_name: str
     validation_data: BaselineDataLoader
@@ -104,6 +106,7 @@ class SplitTrainer(BaselineTrainer):
     def train(self) -> TrainingResult:
         trainer = SplitTrainerSeparatePreprocessing(
             uuid_col_name=self.uuid_col_name,
+            group_col_name=self.group_col_name,
             training_data=self.training_data,
             training_outcome_col_name=self.training_outcome_col_name,
             validation_data=self.validation_data,
