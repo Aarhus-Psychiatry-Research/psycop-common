@@ -25,14 +25,27 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
-from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.common.model_training_v2.config.populate_registry import (
+    populate_baseline_registry,
+)
 from psycop.common.model_training_v2.trainer.base_trainer import BaselineTrainer
-from psycop.common.model_training_v2.trainer.cross_validator_trainer import CrossValidatorTrainer
-from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer
+from psycop.common.model_training_v2.trainer.cross_validator_trainer import (
+    CrossValidatorTrainer,
+)
+from psycop.common.model_training_v2.trainer.split_trainer import SplitTrainer, SplitTrainerSeparatePreprocessing
+
 from psycop.projects.scz_bp.evaluation.minimal_eval_dataset import minimal_eval_dataset_from_path
-from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import populate_scz_bp_registry
-from psycop.projects.scz_bp.model_training.synthetic_cv_trainer.synthetic_cv_trainer import (
+from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_split_trainer import (
+    SyntheticSplitTrainerSeparatePreprocessing,
+)
+from psycop.projects.scz_bp.model_training.populate_scz_bp_registry import (
+    populate_scz_bp_registry,
+)
+from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_cv_trainer import (
     SyntheticCrossValidatorTrainer,
+)
+from psycop.projects.scz_bp.model_training.synthetic_trainer.synthetic_split_trainer import (
+    SyntheticSplitTrainerSeparatePreprocessing,
 )
 
 populate_baseline_registry()
@@ -61,7 +74,7 @@ def _load_validation_data_from_schema(schema: BaselineSchema) -> pl.DataFrame:
     match schema.trainer:
         case CrossValidatorTrainer() | SyntheticCrossValidatorTrainer():
             return schema.trainer.training_data.load().collect()
-        case SplitTrainer():
+        case SplitTrainer() | SplitTrainerSeparatePreprocessing() | SyntheticSplitTrainerSeparatePreprocessing():
             return schema.trainer.validation_data.load().collect()
         case BaselineTrainer():
             raise TypeError("That's an ABC, mate")

@@ -10,6 +10,6 @@ if __name__ == "__main__":
     train_baseline_model(
         Path(__file__).parent
         / "config"
-        / "single_models"
-        / "structured_only_xgboost_with_prevalent.cfg"
+        / "post_hoc"
+        / "text_only.cfg"
     )

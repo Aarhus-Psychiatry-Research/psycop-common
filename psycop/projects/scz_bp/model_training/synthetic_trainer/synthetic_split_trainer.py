@@ -1,4 +1,3 @@
-
 from collections.abc import Sequence
 from dataclasses import dataclass
 
@@ -12,10 +11,12 @@ from psycop.common.model_training_v2.trainer.preprocessing.pipeline import Prepr
 from psycop.common.model_training_v2.trainer.task.base_metric import BaselineMetric
 from psycop.common.model_training_v2.trainer.task.base_task import BaselineTask
 
+
 @BaselineRegistry.trainers.register("synthetic_split_trainer_separate_preprocessing")
 @dataclass
-class SplitTrainerSeparatePreprocessing(BaselineTrainer):
+class SyntheticSplitTrainerSeparatePreprocessing(BaselineTrainer):
     uuid_col_name: str
+    group_col_name: str
     training_data: BaselineDataLoader
     training_outcome_col_name: str
     synthetic_training_data: BaselineDataLoader
@@ -37,7 +38,7 @@ class SplitTrainerSeparatePreprocessing(BaselineTrainer):
 
     @property
     def non_predictor_columns(self) -> Sequence[str]:
-        return [self.uuid_col_name, *self.outcome_columns]
+        return [self.uuid_col_name, self.group_col_name, *self.outcome_columns]
 
     def train(self) -> TrainingResult:
         training_data_preprocessed = self.training_preprocessing_pipeline.apply(
