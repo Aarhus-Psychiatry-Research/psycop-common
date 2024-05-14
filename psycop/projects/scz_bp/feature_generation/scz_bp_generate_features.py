@@ -12,18 +12,13 @@ from timeseriesflattener import PredictionTimeFrame as FlattenerPredictionTimeFr
 from psycop.common.cohort_definition import PredictionTimeFrame
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     ValueSpecification,
-    generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
-from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import (
-    SczBpFeatureSpecifier,
-)
+from psycop.projects.scz_bp.feature_generation.scz_bp_specify_features import SczBpFeatureSpecifier
 
 
 @dataclass
@@ -54,9 +49,7 @@ def sczbp_generate_feature_set(
     return flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df.collect()
 
 
-def split_feature_set_by_prevalence(
-    feat_set: pl.DataFrame, prevalent_col_name: str
-) -> FeatureSets:
+def split_feature_set_by_prevalence(feat_set: pl.DataFrame, prevalent_col_name: str) -> FeatureSets:
     """Split feature set into one with only prevalent, and one without prevalent prediction times.
     Replace outcome column values with 1s for the prevalent df
     """
@@ -77,20 +70,20 @@ def generate_feature_set_split_by_prevalence(
     eligible_prediction_times: PredictionTimeFrame,
     feature_specs: Sequence[ValueSpecification],
     step_size: None | dt.timedelta,
-    n_workers: None | int
+    n_workers: None | int,
 ) -> None:
     t0 = time.time()
 
     # generate features with tsflattener
     flattener = Flattener(
-    predictiontime_frame=FlattenerPredictionTimeFrame(
-        init_df=eligible_prediction_times.frame,
-        entity_id_col_name=eligible_prediction_times.entity_id_col_name,
-        timestamp_col_name=eligible_prediction_times.timestamp_col_name,
-    ),
-    n_workers=n_workers,
-    compute_lazily=False,
-)
+        predictiontime_frame=FlattenerPredictionTimeFrame(
+            init_df=eligible_prediction_times.frame,
+            entity_id_col_name=eligible_prediction_times.entity_id_col_name,
+            timestamp_col_name=eligible_prediction_times.timestamp_col_name,
+        ),
+        n_workers=n_workers,
+        compute_lazily=False,
+    )
     feat_set = flattener.aggregate_timeseries(specs=feature_specs, step_size=step_size).df.collect()
 
     t = time.time()
@@ -113,10 +106,7 @@ if __name__ == "__main__":
     prevalent_prediction_time_col_name = "meta_prevalent_within_0_to_7300_days_bool_fallback_0"
 
     pred_times = SczBpCohort.get_filtered_prediction_times_bundle().prediction_times
-    specs = SczBpFeatureSpecifier().get_feature_specs(
-        max_layer=4,
-        lookbehind_days=[183, 365, 730]
-    )
+    specs = SczBpFeatureSpecifier().get_feature_specs(max_layer=4, lookbehind_days=[183, 365, 730])
 
     generate_feature_set_split_by_prevalence(
         project_path=project_info.project_path,
@@ -125,5 +115,5 @@ if __name__ == "__main__":
         eligible_prediction_times=pred_times,
         feature_specs=specs,
         step_size=dt.timedelta(days=365),
-        n_workers=10
+        n_workers=10,
     )

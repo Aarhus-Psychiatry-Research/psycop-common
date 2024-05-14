@@ -1,9 +1,6 @@
 import pandas as pd
 import polars as pl
 
-from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_eligible_config import (
-    N_DAYS_WASHIN,
-)
 from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import (
     add_time_from_first_contact_to_psychiatry,
 )
@@ -48,7 +45,6 @@ def get_diagnosis_type_of_first_scz_bp_diagnosis() -> pl.DataFrame:
 
 def get_time_of_first_scz_or_bp_diagnosis() -> pl.DataFrame:
     return get_first_scz_or_bp_diagnosis().select("dw_ek_borger", "timestamp")
-
 
 
 if __name__ == "__main__":

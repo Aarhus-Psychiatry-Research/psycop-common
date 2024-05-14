@@ -71,7 +71,7 @@ if __name__ == "__main__":
     logger = MLFlowLogger(experiment_name="sczbp/ddpm_lr")
 
     for lr in [0.0001, 0.0005, 0.001]:
-    #for lr in [0.0005]:
+        # for lr in [0.0005]:
         model_params["lr"] = lr
         model = Plugins().get("ddpm", **model_params)
         model.fit(data_loader)

@@ -36,14 +36,12 @@ from tableone import TableOne
 
 from psycop.common.feature_generation.loaders.raw.load_demographic import sex_female
 from psycop.common.feature_generation.loaders.raw.load_visits import admissions
-from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.common.model_evaluation.utils import bin_continuous_data
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.common.model_training_v2.loggers.dummy_logger import DummyLogger
 from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_split import (
-    RegionalFilter,
-    _get_regional_split_df,  # type: ignore
+    RegionalFilter,  # type: ignore
 )
 from psycop.projects.scz_bp.feature_generation.outcome_specification.add_time_from_first_visit import (
     time_of_first_contact_to_psychiatry,
@@ -146,9 +144,7 @@ class SczBpTableOne:
     @staticmethod
     def get_psychiatric_diagnosis_row_specs(col_names: list[str]) -> list[RowSpecification]:
         pattern = re.compile(r"pred_f\d_disorders")
-        columns = sorted(
-            [c for c in col_names if pattern.search(c) and "730" in c]
-        )
+        columns = sorted([c for c in col_names if pattern.search(c) and "730" in c])
 
         readable_col_names = []
 
@@ -191,7 +187,6 @@ class SczBpTableOne:
         split_by_id = SczBpTableOne.get_split_by_id(pred_times=pred_times)
         df = split_by_id.join(df, on="dw_ek_borger", how="left")
 
-
         df = df.select(pl.exclude("first_contact", "dw_ek_borger"))
         categorical = ["sex_female", "Incident BP", "Incident SCZ"]
         non_normal = [
@@ -219,9 +214,7 @@ class SczBpTableOne:
             {"pipe": self.cfg["trainer"]["preprocessing_pipeline"]}
         )["pipe"]
         preprocessing_pipeline._logger = DummyLogger()
-        preprocessed_all_splits: pl.DataFrame = pl.from_pandas(
-            preprocessing_pipeline.apply(data)
-        )
+        preprocessed_all_splits: pl.DataFrame = pl.from_pandas(preprocessing_pipeline.apply(data))
 
         return preprocessed_all_splits
 
@@ -300,14 +293,26 @@ class SczBpTableOne:
         train_filter = RegionalFilter(splits_to_keep=["train", "val"])
         test_filter = RegionalFilter(splits_to_keep=["test"])
 
-        train_data = train_filter.apply(pred_times.lazy()).with_columns(pl.lit("train").alias("split")).collect()
-        test_data = test_filter.apply(pred_times.lazy()).with_columns(pl.lit("test").alias("split")).collect()
+        train_data = (
+            train_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("train").alias("split"))
+            .collect()
+        )
+        test_data = (
+            test_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("test").alias("split"))
+            .collect()
+        )
 
         df = pl.concat([train_data, test_data], how="vertical")
-        any_id_in_multiple_splits =  df.group_by("dw_ek_borger").agg(pl.col("split").n_unique().alias("n_splits_per_id")).filter(pl.col("n_splits_per_id") > 1)
+        any_id_in_multiple_splits = (
+            df.group_by("dw_ek_borger")
+            .agg(pl.col("split").n_unique().alias("n_splits_per_id"))
+            .filter(pl.col("n_splits_per_id") > 1)
+        )
         if not any_id_in_multiple_splits.is_empty():
             raise ValueError("Some patients are in multiple splits.")
-        
+
         df = df.group_by("dw_ek_borger").agg(pl.col("split").first())
         return df
 
@@ -316,17 +321,25 @@ class SczBpTableOne:
         train_filter = RegionalFilter(splits_to_keep=["train", "val"])
         test_filter = RegionalFilter(splits_to_keep=["test"])
 
-        train_data = train_filter.apply(pred_times.lazy()).with_columns(pl.lit("train").alias("split")).collect()
-        test_data = test_filter.apply(pred_times.lazy()).with_columns(pl.lit("test").alias("split")).collect()
+        train_data = (
+            train_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("train").alias("split"))
+            .collect()
+        )
+        test_data = (
+            test_filter.apply(pred_times.lazy())
+            .with_columns(pl.lit("test").alias("split"))
+            .collect()
+        )
 
         return pl.concat([train_data, test_data], how="vertical")
+
 
 def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
     data = BaselineRegistry.resolve({"data": cfg["trainer"]["training_data"]})["data"].load()
 
     lookahead_distances = [365, 365 * 2, 365 * 3, 365 * 4, 365 * 5]
     cfg_copy = cfg.copy()
-
 
     dfs = []
     for lookahead_distance in lookahead_distances:
@@ -370,18 +383,18 @@ def descriptive_stats_by_lookahead(cfg: Config) -> pl.DataFrame:
 if __name__ == "__main__":
     populate_baseline_registry()
     cfg_path = Path(__file__).parent / "eval_config.cfg"
-    save_dir = Path(__file__).parent / "tables" 
+    save_dir = Path(__file__).parent / "tables"
     save_dir.mkdir(parents=True, exist_ok=True)
 
     cfg = Config().from_disk(cfg_path)
     resolved_cfg = BaselineRegistry().resolve(cfg)
 
-    # desc_stats = descriptive_stats_by_lookahead(cfg=cfg)
+    # desc_stats = descriptive_stats_by_lookahead(cfg=cfg) # noqa: ERA001
 
-    tables = SczBpTableOne(cfg=cfg).make_tables() # noqa: ERA001
+    tables = SczBpTableOne(cfg=cfg).make_tables()  # noqa: ERA001
     with (save_dir / "table_1_prediction_times.html").open("w") as f:
         f.write(tables[0].to_html())
     with (save_dir / "table_1_patients.html").open("w") as f:
-        f.write(tables[1].to_html())    
-    tables[0].to_csv(save_dir / "table_1_prediction_times.csv", sep=";") # noqa: ERA001
-    tables[1].to_csv(save_dir / "table_1_patients.csv", sep=";") # noqa: ERA001
+        f.write(tables[1].to_html())
+    tables[0].to_csv(save_dir / "table_1_prediction_times.csv", sep=";")  # noqa: ERA001
+    tables[1].to_csv(save_dir / "table_1_patients.csv", sep=";")  # noqa: ERA001

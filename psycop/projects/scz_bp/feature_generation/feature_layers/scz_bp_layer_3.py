@@ -50,7 +50,7 @@ class SczBpLayer3(SczBpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[boolean],
                 fallback=[0],
-                entity_id_col_name_out="dw_ek_borger"
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 
@@ -77,7 +77,7 @@ class SczBpLayer3(SczBpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[latest],
                 fallback=[np.nan],
-                entity_id_col_name_out="dw_ek_borger"
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 

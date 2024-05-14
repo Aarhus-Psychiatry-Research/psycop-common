@@ -82,4 +82,9 @@ class SczBpLayer2(SczBpFeatureLayer):
             ).create_combinations()
         )
 
-        return visits_to_psychiatry_spec + visits_to_somatic_spec + admissions_to_psychiatry_spec + ambulatory_visits_spec
+        return (
+            visits_to_psychiatry_spec
+            + visits_to_somatic_spec
+            + admissions_to_psychiatry_spec
+            + ambulatory_visits_spec
+        )

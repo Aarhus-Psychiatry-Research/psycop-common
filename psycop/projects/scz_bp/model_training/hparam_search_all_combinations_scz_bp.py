@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     n_trials = 150
     n_jobs = 15
-    for cfg_path in (Path(__file__).parent / "config" /"hparam_tuning").iterdir():
+    for cfg_path in (Path(__file__).parent / "config" / "hparam_tuning").iterdir():
         OptunaHyperParameterOptimization().from_file(
             cfg_path,
             study_name=cfg_path.stem,
@@ -19,5 +19,5 @@ if __name__ == "__main__":
             n_jobs=n_jobs,
             direction="maximize",
             catch=(Exception,),
-            custom_populate_registry_fn = populate_scz_bp_registry
+            custom_populate_registry_fn=populate_scz_bp_registry,
         )

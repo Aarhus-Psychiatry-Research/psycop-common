@@ -8,8 +8,6 @@ from psycop.common.model_training_v2.trainer.preprocessing.steps.row_filter_othe
 )
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_eligible_config import (
     AGE_COL_NAME,
-    MAX_AGE,
-    MIN_AGE,
     MIN_DATE,
     N_DAYS_WASHIN,
 )
@@ -24,7 +22,6 @@ from psycop.projects.scz_bp.feature_generation.outcome_specification.first_scz_o
 class SczBpMinDateFilter(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         return df.filter(pl.col("timestamp") > MIN_DATE)
-
 
 
 class SczBpAddAge(PredictionTimeFilter):

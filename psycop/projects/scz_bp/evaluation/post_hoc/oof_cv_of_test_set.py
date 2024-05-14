@@ -4,9 +4,6 @@ from sklearn.metrics import roc_auc_score
 from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
     scz_bp_get_eval_ds_from_best_run_in_experiment,
 )
-from psycop.projects.scz_bp.evaluation.scz_bp_run_evaluation_suite import (
-    scz_bp_get_eval_ds_from_best_run_in_experiment,
-)
 
 if __name__ == "__main__":
     test_set_experiment_name = "sczbp/test_tfidf_1000"

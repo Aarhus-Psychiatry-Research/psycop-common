@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 import pandas as pd
 import plotnine as pn
 
@@ -50,7 +51,10 @@ class PlotDfWithAnnotations:
     df: pd.DataFrame
     annotation_dict: dict[str, float]
 
-def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> PlotDfWithAnnotations:
+
+def scz_bp_first_pred_to_event_stratified(
+    eval_ds: EvalDataset, ppr: float
+) -> PlotDfWithAnnotations:
     outcome2timestamp = {
         "SCZ": eval_ds.custom_columns["time_of_scz_diagnosis"],  # type: ignore
         "BP": eval_ds.custom_columns["time_of_bp_diagnosis"],  # type: ignore
@@ -67,7 +71,7 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> P
                 "id": eval_ds.ids.copy(),
                 "pred_timestamps": eval_ds.pred_timestamps.copy(),
                 "outcome_timestamps": timestamps.copy(),  # type: ignore
-                "outcome" : outcome
+                "outcome": outcome,
             }
         )
         plot_df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
@@ -78,6 +82,7 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> P
 
     plot_df = pd.concat(dfs)
     return PlotDfWithAnnotations(df=plot_df, annotation_dict=annotation_dict)
+
 
 def plot_scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
     df_with_annotations = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=ppr)

@@ -24,13 +24,8 @@ from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
 from psycop.common.feature_generation.application_modules.generate_feature_set import (
     generate_feature_set,
 )
-from psycop.common.feature_generation.application_modules.project_setup import (
-    ProjectInfo,
-)
-from psycop.common.feature_generation.loaders.raw.load_demographic import (
-    birthdays,
-    sex_female,
-)
+from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.feature_generation.loaders.raw.load_diagnoses import (
     f0_disorders,
     f1_disorders,
@@ -51,18 +46,10 @@ from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 from psycop.projects.scz_bp.feature_generation.eligible_prediction_times.scz_bp_prediction_time_loader import (
     SczBpCohort,
 )
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_1 import (
-    SczBpLayer1,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_2 import (
-    SczBpLayer2,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_3 import (
-    SczBpLayer3,
-)
-from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_4 import (
-    SczBpLayer4,
-)
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_1 import SczBpLayer1
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_2 import SczBpLayer2
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_3 import SczBpLayer3
+from psycop.projects.scz_bp.feature_generation.feature_layers.scz_bp_layer_4 import SczBpLayer4
 from psycop.projects.scz_bp.feature_generation.outcome_specification.bp_diagnoses import (
     get_first_bp_diagnosis,
 )
@@ -114,21 +101,21 @@ class SczBpMetaDataFeatureSpecifier:
         psychiatric_diagnoses = list(
             PredictorGroupSpec(
                 named_dataframes=(
-                    NamedDataframe(df=f0_disorders(), name=f"f0_disorders"),
-                    NamedDataframe(df=f1_disorders(), name=f"f1_disorders"),
-                    NamedDataframe(df=f2_disorders(), name=f"f2_disorders"),
-                    NamedDataframe(df=f3_disorders(), name=f"f3_disorders"),
-                    NamedDataframe(df=f4_disorders(), name=f"f4_disorders"),
-                    NamedDataframe(df=f5_disorders(), name=f"f5_disorders"),
-                    NamedDataframe(df=f6_disorders(), name=f"f6_disorders"),
-                    NamedDataframe(df=f7_disorders(), name=f"f7_disorders"),
-                    NamedDataframe(df=f8_disorders(), name=f"f8_disorders"),
-                    NamedDataframe(df=f9_disorders(), name=f"f9_disorders"),
+                    NamedDataframe(df=f0_disorders(), name="f0_disorders"),
+                    NamedDataframe(df=f1_disorders(), name="f1_disorders"),
+                    NamedDataframe(df=f2_disorders(), name="f2_disorders"),
+                    NamedDataframe(df=f3_disorders(), name="f3_disorders"),
+                    NamedDataframe(df=f4_disorders(), name="f4_disorders"),
+                    NamedDataframe(df=f5_disorders(), name="f5_disorders"),
+                    NamedDataframe(df=f6_disorders(), name="f6_disorders"),
+                    NamedDataframe(df=f7_disorders(), name="f7_disorders"),
+                    NamedDataframe(df=f8_disorders(), name="f8_disorders"),
+                    NamedDataframe(df=f9_disorders(), name="f9_disorders"),
                 ),
                 lookbehind_days=[730],
                 aggregation_fns=[boolean],
                 fallback=[0],
-                entity_id_col_name_out="dw_ek_borger"
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
         return psychiatric_diagnoses
@@ -244,7 +231,7 @@ class SczBpMetaDataFeatureSpecifier:
         feature_specs: list[Sequence[ValueSpecification]] = [
             self._get_metadata_specs(),
             self._get_outcome_specs(),
-            self._get_diagnoses_specs()
+            self._get_diagnoses_specs(),
         ]
 
         # Flatten the Sequence of lists

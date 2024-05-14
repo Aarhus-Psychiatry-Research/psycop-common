@@ -73,5 +73,5 @@ class LogisticRegressionSuggester(Suggester):
             "l1_ratio": self.l1_ratio.suggest(trial, "l1_ratio"),
             "solver": self.solver.suggest(trial, "solver"),
             "penalty": self.penalties.suggest(trial, "penalty"),
-            "max_iter": self.max_iter.suggest(trial, "max_iter")
+            "max_iter": self.max_iter.suggest(trial, "max_iter"),
         }

@@ -4,15 +4,15 @@ from typing import Literal
 
 import polars as pl
 
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
-
 from psycop.common.feature_generation.loaders.raw.load_ids import (
     SplitName,
     load_stratified_by_outcome_split_ids,
 )
 from psycop.common.feature_generation.loaders.raw.load_visits import physical_visits
+from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
+from psycop.common.model_training_v2.trainer.preprocessing.step import PresplitStep
 from psycop.common.sequence_models.registry import SequenceRegistry
+
 from .geographical_split._geographical_split import (
     add_migration_date_by_patient,
     add_shak_to_region_mapping,

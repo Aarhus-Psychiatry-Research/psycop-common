@@ -8,7 +8,6 @@ from psycop.projects.scz_bp.evaluation.figure2.auroc_by_data_type import (
 from psycop.projects.scz_bp.evaluation.figure2.confusion_matrix import scz_bp_confusion_matrix_plot
 from psycop.projects.scz_bp.evaluation.figure2.first_positive_prediction_to_outcome import (
     plot_scz_bp_first_pred_to_event_stratified,
-    scz_bp_first_pred_to_event_stratified,
 )
 from psycop.projects.scz_bp.evaluation.figure2.sensitivity_by_time_to_event import (
     scz_bp_plot_sensitivity_by_time_to_event,

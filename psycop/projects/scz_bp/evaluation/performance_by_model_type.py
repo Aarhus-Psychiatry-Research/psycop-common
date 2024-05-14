@@ -1,12 +1,9 @@
-from pathlib import Path
-
 import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 
 if __name__ == "__main__":
-
     experiment_dicts = {
         "XGBoost": {
             "Structured only": "sczbp/structured_only-xgboost",
