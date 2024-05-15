@@ -46,7 +46,7 @@ class PsycopMlflowRun(Run):
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
 
-    def get_eval_df(self) -> pl.DataFrame:
+    def eval_df(self) -> pl.DataFrame:
         eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
         return pl.read_parquet(eval_df_path)
 
