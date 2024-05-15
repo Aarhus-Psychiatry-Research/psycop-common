@@ -1,5 +1,7 @@
 FROM python:3.10
 
+ENV UV_SYSTEM_PYTHON=1
+
 RUN apt-get update && apt-get install -y curl
 
 # NVM and NPM are required for snyk
@@ -28,17 +30,19 @@ RUN npm install -g @withgraphite/graphite-cli@stable
 # Install dev tools
 # The cache mount caches downloaded packages for Docker
 # The --no-compile options defers compilation to runtime, instead of install-time. This can dramatically save on build time, at the cost of slightly increased first-run times.
+RUN pip install uv
+
 COPY test-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r test-requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r test-requirements.txt --no-compile
 
 COPY dev-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r dev-requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r dev-requirements.txt --no-compile
 
 COPY gpu-requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r gpu-requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r gpu-requirements.txt --no-compile
 
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt --no-compile
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install -r requirements.txt --no-compile
 
 # Install lefthook (git hooks, e.g. pre-commit)
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash
