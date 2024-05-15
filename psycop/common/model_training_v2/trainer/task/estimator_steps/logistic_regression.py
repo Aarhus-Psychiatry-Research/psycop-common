@@ -58,7 +58,7 @@ class LogisticRegressionSuggester(Suggester):
         },
         solvers: Sequence[LogRegSolvers] = ("saga",),
         penalties: Sequence[LogRegPenalties] = ("l1", "l2", "elasticnet"),
-        max_iter: IntegerspaceT = {"low": 100, "high": 1000, "logarithmic": False}, # noqa: B006
+        max_iter: IntegerspaceT = {"low": 100, "high": 1000, "logarithmic": False},  # noqa: B006
     ):
         self.C = FloatSpace.from_list_or_mapping(C)
         self.l1_ratio = FloatSpace.from_list_or_mapping(l1_ratio)
