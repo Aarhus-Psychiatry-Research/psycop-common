@@ -46,6 +46,10 @@ class PsycopMlflowRun(Run):
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
 
+    def get_eval_df(self) -> pl.DataFrame:
+        eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
+        return pl.read_parquet(eval_df_path)
+
     def download_artifact(self, artifact_name: str, save_location: str | None = None) -> Path:
         """Download an artifact from a run. Returns the path to the downloaded artifact.
         If save_location is None, will save to temporary directory"""
@@ -67,6 +71,10 @@ class MlflowClientWrapper:
 
         self.client = MlflowClient(tracking_uri=tracking_uri)
         mlflow.set_tracking_uri(tracking_uri)
+
+    def get_run(self, experiment_name: str, run_name: str) -> PsycopMlflowRun:
+        runs = self._get_mlflow_runs_by_experiment(experiment_name=experiment_name)
+        return next(run for run in runs if run.info.run_name == run_name)
 
     def get_all_metrics_for_experiment(self, experiment_name: str) -> MlflowAllMetricsFrame:
         """Get the final value of all logged metrics for each run in an experiment.
@@ -104,15 +112,3 @@ class MlflowClientWrapper:
         )
         runs = self.client.search_runs(experiment_ids=[experiment_id])
         return [PsycopMlflowRun.from_mlflow_run(run=run, client=self.client) for run in runs]
-
-
-if __name__ == "__main__":
-    df = MlflowClientWrapper().get_all_metrics_for_experiment("text_exp")
-
-    best_config = (
-        MlflowClientWrapper()
-        .get_best_run_from_experiment(
-            experiment_name="scz-bp_3_year_lookahead", metric="all_oof_BinaryAUROC"
-        )
-        .get_config()
-    )
