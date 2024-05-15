@@ -6,7 +6,8 @@ app = marimo.App()
 
 @app.cell
 def __():
-    from auroc_by_run_data import data, RunSelector
+    from auroc_by_run_data import RunSelector, data
+
     return RunSelector, data
 
 
@@ -16,19 +17,17 @@ def __(RunSelector, data):
         runs=[
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 1"),
             RunSelector(
-                experiment_name="baseline_v2_cvd",
-                run_name="Layer 1 + agg (min, mean, max)",
+                experiment_name="baseline_v2_cvd", run_name="Layer 1 + agg (min, mean, max)"
             ),
             RunSelector(
-                experiment_name="baseline_v2_cvd",
-                run_name="Layer 1 + lookbehinds (90, 365, 730)",
+                experiment_name="baseline_v2_cvd", run_name="Layer 1 + lookbehinds (90, 365, 730)"
             ),
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 2"),
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 3"),
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 4"),
         ]
     )
-    return result,
+    return (result,)
 
 
 @app.cell
@@ -40,7 +39,8 @@ def __(result):
 @app.cell
 def __():
     import auroc_by_run_presentation
-    return auroc_by_run_presentation,
+
+    return (auroc_by_run_presentation,)
 
 
 @app.cell

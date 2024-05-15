@@ -72,4 +72,3 @@ if __name__ == "__main__":
             RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 4"),
         ]
     )
-    pass
