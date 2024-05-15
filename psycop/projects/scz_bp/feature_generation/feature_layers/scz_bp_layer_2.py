@@ -6,6 +6,7 @@ from timeseriesflattener.v1.feature_specs.group_specs import NamedDataframe
 
 from psycop.common.feature_generation.loaders.raw.load_visits import (
     admissions,
+    ambulatory_visits,
     physical_visits_to_psychiatry,
     physical_visits_to_somatic,
 )
@@ -32,6 +33,7 @@ class SczBpLayer2(SczBpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 
@@ -46,6 +48,7 @@ class SczBpLayer2(SczBpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 
@@ -60,7 +63,28 @@ class SczBpLayer2(SczBpFeatureLayer):
                 lookbehind_days=lookbehind_days,
                 aggregation_fns=[count],
                 fallback=[0],
+                entity_id_col_name_out="dw_ek_borger",
             ).create_combinations()
         )
 
-        return visits_to_psychiatry_spec + visits_to_somatic_spec + admissions_to_psychiatry_spec
+        ambulatory_visits_spec = list(
+            PredictorGroupSpec(
+                named_dataframes=(
+                    NamedDataframe(
+                        df=ambulatory_visits(shak_code=6600, shak_sql_operator="="),
+                        name=f"ambulatory_visits_layer_{layer}",
+                    ),
+                ),
+                lookbehind_days=lookbehind_days,
+                aggregation_fns=[count],
+                fallback=[0],
+                entity_id_col_name_out="dw_ek_borger",
+            ).create_combinations()
+        )
+
+        return (
+            visits_to_psychiatry_spec
+            + visits_to_somatic_spec
+            + admissions_to_psychiatry_spec
+            + ambulatory_visits_spec
+        )
