@@ -5,6 +5,7 @@ import confection
 
 from psycop.common.model_training_v2.config.baseline_pipeline import (
     train_baseline_model,
+    train_baseline_model_from_cfg,
     train_baseline_model_from_schema,
 )
 from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
@@ -25,6 +26,8 @@ if __name__ == "__main__":
     populate_with_cvd_registry()
 
     cfg = confection.Config().from_disk(Path(__file__).parent / "cvd_baseline.cfg")
-    # TODO: Change trainer.training_data paths to lookbehind_experiments
-    cfg_schema = BaselineSchema(**BaselineRegistry.resolve(cfg))
-    train_baseline_model_from_schema(cfg_schema)
+    cfg["trainer"]["training_data"]["paths"] = [
+        f"E:/shared_resources/cvd/feature_set/flattened_datasets/cvd_lookbehind_experiments/{split}.parquet"
+        for split in ["train", "test"]
+    ]
+    train_baseline_model_from_cfg(cfg)
