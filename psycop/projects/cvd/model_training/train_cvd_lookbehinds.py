@@ -1,15 +1,8 @@
-import logging
 from pathlib import Path
 
 import confection
 
-from psycop.common.model_training_v2.config.baseline_pipeline import (
-    train_baseline_model,
-    train_baseline_model_from_cfg,
-    train_baseline_model_from_schema,
-)
-from psycop.common.model_training_v2.config.baseline_registry import BaselineRegistry
-from psycop.common.model_training_v2.config.baseline_schema import BaselineSchema
+from psycop.common.model_training_v2.config.baseline_pipeline import train_baseline_model_from_cfg
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.projects.cvd.model_training.populate_cvd_registry import populate_with_cvd_registry
 
