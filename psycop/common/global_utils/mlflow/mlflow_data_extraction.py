@@ -46,6 +46,10 @@ class PsycopMlflowRun(Run):
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
 
+    def eval_df(self) -> pl.DataFrame:
+        eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
+        return pl.read_parquet(eval_df_path)
+
     def download_artifact(self, artifact_name: str, save_location: str | None = None) -> Path:
         """Download an artifact from a run. Returns the path to the downloaded artifact.
         If save_location is None, will save to temporary directory"""
@@ -77,6 +81,10 @@ class MlflowClientWrapper:
         )
 
         return MlflowAllMetricsFrame(frame=metrics_df, allow_extra_columns=False)
+
+    def get_run(self, experiment_name: str, run_name: str) -> PsycopMlflowRun:
+        runs = self._get_mlflow_runs_by_experiment(experiment_name=experiment_name)
+        return next(run for run in runs if run.info.run_name == run_name)
 
     def get_best_run_from_experiment(
         self, experiment_name: str, metric: str, larger_is_better: bool = True
