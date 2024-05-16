@@ -3,9 +3,14 @@ import patchworklib as pw
 import plotnine as pn
 from wasabi import Printer
 
-from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
+from psycop.common.model_evaluation.patchwork.patchwork_grid import (
+    create_patchwork_grid,
+)
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
+from psycop.projects.forced_admission_outpatient.model_eval.config import (
+    BEST_POS_RATE,
+    FA_PN_THEME,
+)
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -62,9 +67,9 @@ def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_
         pn.ggplot(df)
         + FA_PN_THEME
         + pn.geom_point(
-            pn.aes(x="time_to_event", y="y_hat_probs", color="y_pred"), size=2, alpha=0.3
+            pn.aes(x="time_to_event", y="y_hat_probs", color="y_pred"), size=3, alpha=0.8
         )
-        + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"), alpha=0.8)
+        + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"), alpha=0.4)
         + pn.labs(x="Time to event (days)", y="Model output")
         + pn.scale_color_manual(values=["#D55E00", "#009E73"], labels=["Negative", "Positive"])
         + pn.ggtitle(f"Outcomes with {n} prediction times (PPR: {ppr*100}%)")
