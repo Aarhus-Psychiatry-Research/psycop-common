@@ -48,12 +48,12 @@ def scz_bp_auroc_by_outcome(model2validation_mapping: list[tuple[str, str]]) -> 
 
 
 if __name__ == "__main__":
-    model2validation = [("sczbp/structured_text_xgboost_ddpm", "first_diagnosis"),
-                        ("sczbp/structured_text_xgboost_ddpm", "scz_diagnosis"),
-                        ("sczbp/structured_text_xgboost_ddpm", "bp_diagnosis"),
-                        ("sczbp/scz_only", "first_diagnosis"),
+    model2validation = [("sczbp/scz_only", "first_diagnosis"),
                         ("sczbp/scz_only", "scz_diagnosis"),
                         ("sczbp/scz_only", "bp_diagnosis"),
+                        ("sczbp/structured_text_xgboost_ddpm", "first_diagnosis"),
+                        ("sczbp/structured_text_xgboost_ddpm", "scz_diagnosis"),
+                        ("sczbp/structured_text_xgboost_ddpm", "bp_diagnosis"),
                         ("sczbp/bp_only", "first_diagnosis"),
                         ("sczbp/bp_only", "scz_diagnosis"),
                         ("sczbp/bp_only", "bp_diagnosis")]
