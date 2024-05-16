@@ -10,6 +10,7 @@ from psycop.common.feature_generation.application_modules.flatten_dataset import
     create_flattened_dataset,
 )
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
+from psycop.projects.restraint.cohort.utils.loaders import load_prediction_timestamps_deprecated
 from psycop.projects.restraint.feature_generation.modules.specify_text_features import (
     TextFeatureSpecifier,
 )
@@ -24,7 +25,8 @@ def main(note_type: str, model_name: str):
     project_info = RESTRAINT_PROJECT_INFO
 
     restraint_pred_times = (
-        RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()  # type: ignore
+        load_prediction_timestamps_deprecated()
+        # RestraintCohortDefiner.get_filtered_prediction_times_bundle().prediction_times.to_pandas()  # type: ignore
     )
 
     feature_specs = TextFeatureSpecifier(
@@ -36,7 +38,7 @@ def main(note_type: str, model_name: str):
         prediction_times_frame=PredictionTimeFrame(pl.DataFrame(restraint_pred_times)),
         n_workers=None,
         compute_lazily=False,
-        step_size=dt.timedelta(days=365),
+        step_size=dt.timedelta(days=200),
     )
 
     flattened_df.write_parquet(project_info.project_path / f"{note_type}_{model_name}.parquet")
@@ -45,4 +47,6 @@ def main(note_type: str, model_name: str):
 if __name__ == "__main__":
     project_info = RESTRAINT_PROJECT_INFO
 
+    main("all_relevant", "tfidf-1000")
+    main("all_relevant", "dfm-encoder-large")
     main("all_relevant", "dfm-encoder-large-v1-finetuned")

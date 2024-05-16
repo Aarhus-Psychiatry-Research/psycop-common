@@ -17,6 +17,7 @@ from timeseriesflattener import (
 from timeseriesflattener.aggregators import HasValuesAggregator, MeanAggregator
 
 from psycop.common.feature_generation.application_modules.project_setup import ProjectInfo
+from psycop.common.feature_generation.loaders.raw import sql_load
 from psycop.common.feature_generation.loaders.raw.load_demographic import birthdays, sex_female
 from psycop.common.global_utils.paths import TEXT_EMBEDDINGS_DIR
 from psycop.projects.restraint.cohort.restraint_cohort_definer import RestraintCohortDefiner
@@ -56,9 +57,12 @@ class TextFeatureSpecifier:
         return [
             OutcomeSpec(
                 value_frame=ValueFrame(
-                    RestraintCohortDefiner.get_outcome_timestamps()
-                    .frame.to_pandas()
-                    .assign(value=1)
+                    sql_load(
+                    "SELECT *, 1 as value FROM fct.psycop_coercion_outcome_timestamps_2"
+                    )
+                    # RestraintCohortDefiner.get_outcome_timestamps()
+                    # .frame.to_pandas()
+                    # .assign(value=1)
                     .rename(columns={"first_mechanical_restraint": "timestamp"})
                     .dropna(subset="timestamp"),
                     entity_id_col_name="dw_ek_borger",
