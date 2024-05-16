@@ -53,9 +53,9 @@ def scz_bp_auroc_by_outcome(model2validation_mapping: list[tuple[str, str]]) -> 
         )
         eval_df = eval_df.filter(pl.col(validation_outcome).is_not_null())
 
-        auroc_df.loc[model_name, validation_outcome] = roc_auc_score(
+        auroc_df.loc[model_name, validation_outcome] = roc_auc_score(  # type: ignore
             y_true=eval_df[validation_outcome], y_score=eval_df["y_hat_probs"]
-        )  # type: ignore
+        )
 
     return auroc_df
 
