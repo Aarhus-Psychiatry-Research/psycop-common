@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pandas as pd
 import plotnine as pn
 
@@ -44,13 +46,20 @@ def scz_bp_first_pred_to_event(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
     return p
 
 
-def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
+@dataclass
+class PlotDfWithAnnotations:
+    df: pd.DataFrame
+    annotation_dict: dict[str, float]
+
+
+def scz_bp_first_pred_to_event_stratified(
+    eval_ds: EvalDataset, ppr: float
+) -> PlotDfWithAnnotations:
     outcome2timestamp = {
         "SCZ": eval_ds.custom_columns["time_of_scz_diagnosis"],  # type: ignore
         "BP": eval_ds.custom_columns["time_of_bp_diagnosis"],  # type: ignore
         #   "both": eval_ds.outcome_timestamps, # noqa: ERA001# noqa: ERA001
     }
-    outcome2color = {"BP": "#669BBC", "SCZ": "#A8C686"}
 
     dfs: list[pd.DataFrame] = []
     annotation_dict: dict[str, float] = {}
@@ -62,18 +71,28 @@ def scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> p
                 "id": eval_ds.ids.copy(),
                 "pred_timestamps": eval_ds.pred_timestamps.copy(),
                 "outcome_timestamps": timestamps.copy(),  # type: ignore
+                "outcome": outcome,
             }
         )
         plot_df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
         median_years = plot_df["years_from_pred_to_event"].median()
         annotation_dict[outcome] = median_years
-        plot_df["outcome"] = outcome + f" median: {median_years:.1f}"
+        plot_df["outcome_annotated"] = outcome + f" median: {median_years:.1f}"
         dfs.append(plot_df)
 
     plot_df = pd.concat(dfs)
+    return PlotDfWithAnnotations(df=plot_df, annotation_dict=annotation_dict)
+
+
+def plot_scz_bp_first_pred_to_event_stratified(eval_ds: EvalDataset, ppr: float) -> pn.ggplot:
+    df_with_annotations = scz_bp_first_pred_to_event_stratified(eval_ds=eval_ds, ppr=ppr)
+    plot_df = df_with_annotations.df
+    annotation_dict = df_with_annotations.annotation_dict
+
+    outcome2color: dict[str, str] = {"BP": "#669BBC", "SCZ": "#A8C686"}
 
     p = (
-        pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="outcome"))  # type: ignore
+        pn.ggplot(plot_df, pn.aes(x="years_from_pred_to_event", fill="outcome_annotated"))  # type: ignore
         # + pn.geom_histogram(binwidth=1, alpha=0.7) # noqa: ERA001
         + pn.geom_density(alpha=0.8)
         + pn.xlab("Years from first positive prediction to event")

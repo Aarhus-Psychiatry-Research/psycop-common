@@ -2,6 +2,44 @@
 
 <!--next-version-placeholder-->
 
+## v0.209.0 (2024-05-15)
+
+### Feature
+
+* Mlflow query for run and get eval_df ([#911](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/911)) ([`6632b19`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/6632b1945fa49dd73d4f961f1062202e89846958))
+* Update cfg experiments ([#909](https://github.com/Aarhus-Psychiatry-Research/psycop-common/issues/909)) ([`e37e6f1`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/e37e6f1b47b570ad801a6735ce52a73fc797dff5))
+
+## v0.208.1 (2024-05-13)
+
+### Fix
+
+* Remove group_col_name (dw_ek_borger) in training data in split trainer ([`3b3ee4a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/3b3ee4ada4a6df6cf3c9e5d92d6beb7302f66b84))
+
+## v0.208.0 (2024-05-03)
+
+### Feature
+
+* Allow passing custom populate registry fn to hparam search ([`244231d`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/244231dcd2d8c492ec16f29523a648f89210d224))
+
+## v0.207.1 (2024-05-03)
+
+### Fix
+
+* Preprocess additinoal data in selective cv ([`f50d22a`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/f50d22a3aa244ccf9dcaf945c56118ecc4d0d578))
+
+## v0.207.0 (2024-05-03)
+
+### Feature
+
+* Add selective cross validator trainer ([`fd9b713`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/fd9b713e688ac847d447982cc5eb972204761bc5))
+
+### Fix
+
+* Ignore error ([`adfd84e`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/adfd84ea2e2be55f80a43baaa86152cde4194923))
+* Add plotly to env ([`afcb449`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/afcb449110d8ea3d4be84775f37773cedbc5a06a))
+* Add to registry ([`ef54b2f`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/ef54b2fac6ff73e338c60bfc81d48e7d667defd4))
+* Feature gen ([`1c6cdcf`](https://github.com/Aarhus-Psychiatry-Research/psycop-common/commit/1c6cdcff00df2e0e0e78795e9e12e3414fe4bfb9))
+
 ## v0.206.0 (2024-04-26)
 
 ### Feature

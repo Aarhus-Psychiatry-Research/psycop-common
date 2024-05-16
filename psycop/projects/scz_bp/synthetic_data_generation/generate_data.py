@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     # count number of positive cases
     n_positives = sum(y)
-    # generate 3 times as many
+    # generate 10 times as many
     n_to_generate = n_positives * 10
 
     # fit DDPM
@@ -70,8 +70,8 @@ if __name__ == "__main__":
 
     logger = MLFlowLogger(experiment_name="sczbp/ddpm_lr")
 
-    # for lr in [0.0001, 0.0005, 0.001]:
-    for lr in [0.0005]:
+    for lr in [0.0001, 0.0005, 0.001]:
+        # for lr in [0.0005]:
         model_params["lr"] = lr
         model = Plugins().get("ddpm", **model_params)
         model.fit(data_loader)
