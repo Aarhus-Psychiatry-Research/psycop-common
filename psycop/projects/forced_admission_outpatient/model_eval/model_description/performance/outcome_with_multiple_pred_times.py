@@ -3,14 +3,9 @@ import patchworklib as pw
 import plotnine as pn
 from wasabi import Printer
 
-from psycop.common.model_evaluation.patchwork.patchwork_grid import (
-    create_patchwork_grid,
-)
+from psycop.common.model_evaluation.patchwork.patchwork_grid import create_patchwork_grid
 from psycop.common.model_training.training_output.dataclasses import EvalDataset
-from psycop.projects.forced_admission_outpatient.model_eval.config import (
-    BEST_POS_RATE,
-    FA_PN_THEME,
-)
+from psycop.projects.forced_admission_outpatient.model_eval.config import BEST_POS_RATE, FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
     ForcedAdmissionOutpatientPipelineRun,
 )
@@ -51,39 +46,39 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
 
 
 def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
-    eval_dataset: EvalDataset, n: int, ppr: float, save: bool = False,
+    eval_dataset: EvalDataset, n: int, ppr: float, save: bool = False
 ) -> pn.ggplot | None:
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
 
     df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
 
-    df['y_pred'] = df['y_pred'].astype('category')
+    df["y_pred"] = df["y_pred"].astype("category")
 
     if df["outcome_uuid"].nunique() < 4:
         return None
-    
+
     # plot a point for each prediction time, with time to event on the x-axis and the model output (y_hat_probs)$ on the y-axis. Colour the point red if y_pred is 0 and green if y_pred is 1. Connect points with the same outcome_uuid with a line.
     plot = (
         pn.ggplot(df)
         + FA_PN_THEME
         + pn.geom_point(
-            pn.aes(x="time_to_event", y="y_hat_probs", color="y_pred"), size=2, alpha=0.5
+            pn.aes(x="time_to_event", y="y_hat_probs", color="y_pred"), size=2, alpha=0.3
         )
-        + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"))
+        + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"), alpha=0.8)
         + pn.labs(x="Time to event (days)", y="Model output")
-        + pn.scale_color_manual(values=["#D55E00","#009E73"], labels = ['Negative', 'Positive'])
+        + pn.scale_color_manual(values=["#D55E00", "#009E73"], labels=["Negative", "Positive"])
         + pn.ggtitle(f"Outcomes with {n} prediction times (PPR: {ppr*100}%)")
-        + pn.labs(color = 'Prediction')
+        + pn.labs(color="Prediction")
+        + pn.scale_x_reverse()
     )
 
     if save:
         plot_output_path = (
             run.paper_outputs.paths.figures
-            /  f"fa_outpatient_model_outputs_over_time_for_outcomes_with_{n}_pred_times.png"
+            / f"fa_outpatient_model_outputs_over_time_for_outcomes_with_{n}_pred_times.png"
         )
 
         plot.save(plot_output_path)
-
 
     return plot
 
@@ -95,10 +90,9 @@ def plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
     ppr: float,
     save: bool = True,
 ) -> pw.Bricks:
-    
     plots = [
         _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
-            eval_dataset, n, ppr,
+            eval_dataset, n, ppr
         )
         for n in range(1, max_n)
     ]
@@ -249,11 +243,10 @@ if __name__ == "__main__":
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
     max_n = 10
 
-    plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(run, eval_dataset, max_n, ppr=BEST_POS_RATE)
-
+    plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
+        run, eval_dataset, max_n, ppr=BEST_POS_RATE
+    )
 
     plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
         run, eval_dataset, max_n
     )
-    
-
