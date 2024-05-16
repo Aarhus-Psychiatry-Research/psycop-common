@@ -52,13 +52,16 @@ def _get_prediction_times_with_outcome_shared_by_n_other(
 
 def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
     eval_dataset: EvalDataset, n: int, ppr: float, save: bool = False,
-) -> pn.ggplot:
+) -> pn.ggplot | None:
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
 
     df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
 
     df['y_pred'] = df['y_pred'].astype('category')
 
+    if df["outcome_uuid"].nunique() < 4:
+        return None
+    
     # plot a point for each prediction time, with time to event on the x-axis and the model output (y_hat_probs)$ on the y-axis. Colour the point red if y_pred is 0 and green if y_pred is 1. Connect points with the same outcome_uuid with a line.
     plot = (
         pn.ggplot(df)
@@ -68,8 +71,9 @@ def _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_
         )
         + pn.geom_line(pn.aes(x="time_to_event", y="y_hat_probs", group="outcome_uuid"))
         + pn.labs(x="Time to event (days)", y="Model output")
-        + pn.scale_color_manual(values=["#D55E00","#009E73"])
+        + pn.scale_color_manual(values=["#D55E00","#009E73"], labels = ['Negative', 'Positive'])
         + pn.ggtitle(f"Outcomes with {n} prediction times (PPR: {ppr*100}%)")
+        + pn.labs(color = 'Prediction')
     )
 
     if save:
@@ -91,12 +95,15 @@ def plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
     ppr: float,
     save: bool = True,
 ) -> pw.Bricks:
+    
     plots = [
         _plot_model_outputs_over_time_for_prediction_times_with_outcome_shared_by_n_other(
             eval_dataset, n, ppr,
         )
         for n in range(1, max_n)
     ]
+
+    plots = [plot for plot in plots if plot is not None]
 
     grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
 
@@ -112,7 +119,7 @@ def plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(
 
 def _plot_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(
     eval_dataset: EvalDataset, n: int
-) -> pn.ggplot:
+) -> pn.ggplot | None:
     df = _get_prediction_times_with_outcome_shared_by_n_other(eval_dataset, n)
 
     df["time_to_event"] = (df["outcome_timestamps"] - df["pred_timestamps"]).dt.days
@@ -121,8 +128,8 @@ def _plot_tpr_and_time_to_event_for_cases_wtih_n_pred_times_per_outcome(
         df.groupby("outcome_uuid")["pred_timestamps"].rank(method="first").astype(int)
     )
 
-    if df["outcome_uuid"].nunique() < 5:
-        return pn.ggplot()
+    if df["outcome_uuid"].nunique() < 4:
+        return None
 
     # Add true positive rate for each group
     df["tpr"] = ""
@@ -219,6 +226,8 @@ def plot_tpr_and_time_to_event_for_cases_wtih_multiple_pred_times_per_outcome(
         for n in range(1, max_n)
     ]
 
+    plots = [plot for plot in plots if plot is not None]
+
     grid = create_patchwork_grid(plots=plots, single_plot_dimensions=(5, 5), n_in_row=2)
 
     if save:
@@ -238,7 +247,7 @@ if __name__ == "__main__":
 
     run = get_best_eval_pipeline()
     eval_dataset = run.pipeline_outputs.get_eval_dataset()
-    max_n = 6
+    max_n = 10
 
     plot_model_outputs_over_time_for_cases_multiple_pred_times_per_outcome(run, eval_dataset, max_n, ppr=BEST_POS_RATE)
 
