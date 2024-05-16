@@ -27,10 +27,8 @@ def _prepare_df_for_trajectories(
     np.ndarray[Any, Any],
     int,
 ]:
-
     if patients_to_keep:
-
-        df = df[df['dw_ek_borger'].isin(patients_to_keep)]
+        df = df[df["dw_ek_borger"].isin(patients_to_keep)]
 
     # Sort DataFrame by ID
     df_sorted = df.sort_values(by=[id_col_name])
@@ -94,7 +92,7 @@ def plot_trajectories_with_fading_points(
         patients_to_keep=patients_to_keep,
     )
 
-    # Define a continuous color scale from light gray to black with whitee and sample colors from it according to number of unique ids (use hex codes for colors)   
+    # Define a continuous color scale from light gray to black with whitee and sample colors from it according to number of unique ids (use hex codes for colors)
     if len(ids) > 1:
         trace_color_palette = px.colors.sample_colorscale(
             colorscale="viridis", high=0.9, low=0.1, samplepoints=len(ids)
@@ -107,7 +105,7 @@ def plot_trajectories_with_fading_points(
         ]
 
     else:
-        trace_color_palette = ['rgba(33, 149, 139, 0.25)']
+        trace_color_palette = ["rgba(33, 149, 139, 0.25)"]
 
     point_color_palette = [
         "#FF0000",
@@ -144,7 +142,7 @@ def plot_trajectories_with_fading_points(
         # Create lines for the trails
         traces.append(
             go.Scatter(
-                x=[], 
+                x=[],
                 y=[],
                 mode="lines",
                 line=dict(  # noqa: C408
@@ -299,17 +297,17 @@ def plot_trajectories_with_fading_points(
 
 
 if __name__ == "__main__":
-
-    file_path = Path("E:/shared_resources/bipolar/flattened_datasets/structured_predictors_4_layers_interval_days_100/structured_predictors_4_layers_interval_days_100.parquet")
+    file_path = Path(
+        "E:/shared_resources/bipolar/flattened_datasets/structured_predictors_4_layers_interval_days_100/structured_predictors_4_layers_interval_days_100.parquet"
+    )
     df = pd.read_parquet(file_path)
     pca_df = perform_pca(df)
 
     # Define point color legend dict specifcation for the plot (1st color represents 'False negative', 2nd color represents 'True positive')
     point_color_legend = {0: "No lithium", 1: "Lithium"}
-    
 
-    patients_to_keep = pca_df['dw_ek_borger'].unique()[:1]
-    pca_df = pca_df[pca_df['dw_ek_borger'].isin(patients_to_keep)]
+    patients_to_keep = pca_df["dw_ek_borger"].unique()[:1]
+    pca_df = pca_df[pca_df["dw_ek_borger"].isin(patients_to_keep)]
 
     plot_trajectories_with_fading_points(
         pca_df,
@@ -317,8 +315,8 @@ if __name__ == "__main__":
         component_2_col_name="component_2",
         id_col_name="dw_ek_borger",
         timestamp_col_name="timestamp",
-        label_col_name = "pred_lithium_layer_4_within_0_to_200_days_bool_fallback_0",
-        size_col_name = "pred_layer_1_age_years_fallback_nan",
+        label_col_name="pred_lithium_layer_4_within_0_to_200_days_bool_fallback_0",
+        size_col_name="pred_layer_1_age_years_fallback_nan",
         save=False,
         point_color_legend=point_color_legend,
         keep_points=False,

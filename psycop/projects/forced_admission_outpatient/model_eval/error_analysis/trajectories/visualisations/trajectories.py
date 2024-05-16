@@ -1,4 +1,3 @@
-import random
 from typing import Any
 
 import numpy as np
@@ -29,10 +28,8 @@ def _prepare_df_for_trajectories(
     np.ndarray[Any, Any],
     int,
 ]:
-
     if patients_to_keep:
-
-        df = df[df['dw_ek_borger'].isin(patients_to_keep)]
+        df = df[df["dw_ek_borger"].isin(patients_to_keep)]
 
     # Sort DataFrame by ID
     df_sorted = df.sort_values(by=[id_col_name])
@@ -96,7 +93,7 @@ def plot_trajectories_with_fading_points(
         patients_to_keep=patients_to_keep,
     )
 
-    # Define a continuous color scale from light gray to black with whitee and sample colors from it according to number of unique ids (use hex codes for colors)   
+    # Define a continuous color scale from light gray to black with whitee and sample colors from it according to number of unique ids (use hex codes for colors)
     if len(ids) > 1:
         trace_color_palette = px.colors.sample_colorscale(
             colorscale="viridis", high=0.9, low=0.1, samplepoints=len(ids)
@@ -109,7 +106,7 @@ def plot_trajectories_with_fading_points(
         ]
 
     else:
-        trace_color_palette = ['rgba(33, 149, 139, 0.25)']
+        trace_color_palette = ["rgba(33, 149, 139, 0.25)"]
 
     point_color_palette = [
         "#FF0000",
@@ -146,7 +143,7 @@ def plot_trajectories_with_fading_points(
         # Create lines for the trails
         traces.append(
             go.Scatter(
-                x=[], 
+                x=[],
                 y=[],
                 mode="lines",
                 line=dict(  # noqa: C408
@@ -301,27 +298,23 @@ def plot_trajectories_with_fading_points(
 
 
 if __name__ == "__main__":
-
     from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
         get_best_eval_pipeline,
     )
+
     pca_df = pca_on_eval_splits(run=get_best_eval_pipeline())
 
     # Define point color legend dict specifcation for the plot (1st color represents 'False negative', 2nd color represents 'True positive')
     point_color_legend = {0: "False negative", 1: "True positive"}
-    
-    # Select top 10 ids:
-    # patients_to_keep = pca_df['dw_ek_borger'].unique()[:10]
-    # pca_df = pca_df[pca_df['dw_ek_borger'].isin(patients_to_keep)]
-    
+
     plot_trajectories_with_fading_points(
         pca_df,
         component_1_col_name="component_1",
         component_2_col_name="component_2",
         id_col_name="dw_ek_borger",
         timestamp_col_name="timestamp",
-        label_col_name = "pred",
-        size_col_name = "prob",
+        label_col_name="pred",
+        size_col_name="prob",
         save=False,
         point_color_legend=point_color_legend,
         keep_points=True,

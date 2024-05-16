@@ -9,8 +9,6 @@ from psycop.common.model_evaluation.binary.performance_by_ppr.performance_by_ppr
 from psycop.projects.forced_admission_outpatient.model_eval.config import FA_PN_THEME
 from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_num_of_unique_outcome_events,  # type: ignore
-)
-from psycop.projects.forced_admission_outpatient.model_eval.model_description.performance.performance_by_ppr import (
     _get_number_of_outcome_events_with_at_least_one_true_positve,  # type: ignore
 )
 from psycop.projects.forced_admission_outpatient.utils.pipeline_objects import (
@@ -181,7 +179,7 @@ def fa_cost_benefit_by_savings_recources_ratio_and_ppr(
             width=7,
             height=7,
         )
-        
+
     return p
 
 
