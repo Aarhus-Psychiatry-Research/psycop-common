@@ -1,0 +1,33 @@
+from pathlib import Path
+
+import polars as pl
+import pandas as pd
+from confection import Config
+
+from psycop.common.model_evaluation.binary.performance_by_type.auroc_by_outcome import auroc_by_outcome
+from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
+from psycop.projects.scz_bp.dataset_description.scz_bp_table_one import SczBpTableOne
+
+
+def scz_bp_validation_outcomes() -> list[pl.DataFrame]:
+    cfg = Config().from_disk(Path(__file__).parent / "eval_config.cfg")
+    meta_df = SczBpTableOne(cfg).get_filtered_prediction_times()
+
+    meta_df = meta_df.rename(
+        {
+            "meta_scz_diagnosis_within_0_to_1825_days_max_fallback_0": "scz_diagnosis",
+            "meta_bp_diagnosis_within_0_to_1825_days_max_fallback_0": "bp_diagnosis",
+            "outc_first_scz_or_bp_within_0_to_1825_days_max_fallback_0": "first_diagnosis",
+        })
+
+
+    meta_df = meta_df.with_columns(pl.concat_str([pl.col("dw_ek_borger"), pl.col("timestamp").dt.strftime('%Y-%m-%d-%H-%M-%S')], separator="-").alias("pred_time_uuid"))
+
+    return [meta_df.select(["pred_time_uuid", "scz_diagnosis"]), meta_df.select(["pred_time_uuid", "first_diagnosis"]), meta_df.select(["pred_time_uuid", "bp_diagnosis"])]
+
+
+if __name__ == "__main__":
+    populate_baseline_registry()
+    m = auroc_by_outcome(model_names=["sczbp/scz_only", "sczbp/structured_text_xgboost_ddpm", "sczbp/bp_only"], validation_outcomes=scz_bp_validation_outcomes())
+
+    print(m)

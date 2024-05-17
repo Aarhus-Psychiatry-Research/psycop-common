@@ -17,7 +17,7 @@ def scz_bp_merge_eval_dfs(eval_ds: EvalDataset) -> pl.DataFrame:
     meta_df = SczBpTableOne(cfg).get_filtered_prediction_times()
     meta_df_filtered = meta_df.with_columns(
         pl.concat_str([pl.col("dw_ek_borger"), pl.col("timestamp")], separator="-").alias(
-            "pred_time_uuid"
+            "pred_time_uuids"
         )
     )
 
@@ -34,7 +34,7 @@ def scz_bp_merge_eval_dfs(eval_ds: EvalDataset) -> pl.DataFrame:
         )
     )
 
-    joined_df = eval_df.join(meta_df_filtered, on="pred_time_uuid", how="left", validate="1:1")
+    joined_df = eval_df.join(meta_df_filtered, on="pred_time_uuids", how="left", validate="1:1")
 
     return joined_df.rename(
         {
@@ -51,7 +51,7 @@ def scz_bp_auroc_by_outcome(model2validation_mapping: list[tuple[str, str]]) -> 
         eval_df = scz_bp_merge_eval_dfs(
             scz_bp_get_eval_ds_from_best_run_in_experiment(experiment_name=model_name)
         )
-        eval_df = eval_df.filter(pl.col(validation_outcome).is_not_null())
+        eval_df = eval_df.filter(pl.col(validation_outcome).is_not_null()) #lasse 
 
         auroc_df.loc[model_name, validation_outcome] = roc_auc_score(  # type: ignore
             y_true=eval_df[validation_outcome], y_score=eval_df["y_hat_probs"]
