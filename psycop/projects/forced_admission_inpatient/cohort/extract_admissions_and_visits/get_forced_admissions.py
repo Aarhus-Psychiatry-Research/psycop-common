@@ -4,7 +4,7 @@ the more finegrained MidtEPJ admission data
 
 import pandas as pd
 
-from psycop.common.global_utils.sql.loader import sql_load
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.global_utils.sql.writer import write_df_to_sql
 
 

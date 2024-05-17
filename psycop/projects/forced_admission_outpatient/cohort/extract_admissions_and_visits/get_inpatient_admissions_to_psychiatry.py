@@ -5,7 +5,7 @@ and short term readmissions
 """
 import pandas as pd
 
-from psycop.common.global_utils.sql.loader import sql_load
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.global_utils.sql.writer import write_df_to_sql
 from psycop.projects.forced_admission_outpatient.cohort.extract_admissions_and_visits.utils.utils import (
     concat_readmissions_for_all_patients,
