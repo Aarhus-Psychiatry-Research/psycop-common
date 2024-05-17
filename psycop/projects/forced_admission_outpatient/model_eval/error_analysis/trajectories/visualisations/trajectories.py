@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -7,7 +6,9 @@ import plotly.express as px  # Import Plotly Express
 import plotly.graph_objects as go
 import plotly.offline
 
-from psycop.projects.bipolar.patient_representations.pca import perform_pca
+from psycop.projects.forced_admission_outpatient.model_eval.error_analysis.trajectories.pca import (
+    pca_on_eval_splits,
+)
 
 
 def _prepare_df_for_trajectories(
@@ -134,7 +135,7 @@ def plot_trajectories_with_fading_points(
                 x=[],
                 y=[],
                 mode="markers",
-                marker=dict(color=point_colors[0][i], size=5 + (0.1 * size_data[0][i])),  # noqa: C408
+                marker=dict(color=point_colors[0][i], size=5 + (10 * size_data[0][i])),  # noqa: C408
                 showlegend=False,
                 name=f"Patient {point_id}",
             )
@@ -168,7 +169,7 @@ def plot_trajectories_with_fading_points(
                     x=[x_data[frame, i]],
                     y=[y_data[frame, i]],
                     mode="markers",
-                    marker=dict(color=point_colors[frame][i], size=5 + (0.1 * size_data[frame, i])),  # noqa: C408
+                    marker=dict(color=point_colors[frame][i], size=5 + (10 * size_data[frame, i])),  # noqa: C408
                     showlegend=False,
                     name=f"Paitent {point_id}",
                     # Add the size data when hovering over a point
@@ -184,13 +185,13 @@ def plot_trajectories_with_fading_points(
                         mode="markers",
                         marker=dict(  # noqa: C408
                             color=[point_colors[f][i] for f in range(frame + 1)],
-                            size=[((size_data[f, i] * 0.1) + 5) for f in range(frame + 1)],
+                            size=[((size_data[f, i] * 10) + 5) for f in range(frame + 1)],
                         ),
                         showlegend=False,
                         name=f"Paitent {point_id}",
                         # Add the size data when hovering over a point
                         hovertemplate=[
-                            f"Patient {point_id}<br>Age: {round(size_data[f, i],2)}"
+                            f"Patient {point_id}<br>Output probability: {round(size_data[f, i],2)}"
                             for f in range(frame + 1)
                         ],
                     )
@@ -297,17 +298,14 @@ def plot_trajectories_with_fading_points(
 
 
 if __name__ == "__main__":
-    file_path = Path(
-        "E:/shared_resources/bipolar/flattened_datasets/structured_predictors_4_layers_interval_days_100/structured_predictors_4_layers_interval_days_100.parquet"
+    from psycop.projects.forced_admission_outpatient.model_eval.selected_runs import (
+        get_best_eval_pipeline,
     )
-    df = pd.read_parquet(file_path)
-    pca_df = perform_pca(df)
+
+    pca_df = pca_on_eval_splits(run=get_best_eval_pipeline())
 
     # Define point color legend dict specifcation for the plot (1st color represents 'False negative', 2nd color represents 'True positive')
-    point_color_legend = {0: "No lithium", 1: "Lithium"}
-
-    patients_to_keep = pca_df["dw_ek_borger"].unique()[:1]
-    pca_df = pca_df[pca_df["dw_ek_borger"].isin(patients_to_keep)]
+    point_color_legend = {0: "False negative", 1: "True positive"}
 
     plot_trajectories_with_fading_points(
         pca_df,
@@ -315,9 +313,10 @@ if __name__ == "__main__":
         component_2_col_name="component_2",
         id_col_name="dw_ek_borger",
         timestamp_col_name="timestamp",
-        label_col_name="pred_lithium_layer_4_within_0_to_200_days_bool_fallback_0",
-        size_col_name="pred_layer_1_age_years_fallback_nan",
+        label_col_name="pred",
+        size_col_name="prob",
         save=False,
         point_color_legend=point_color_legend,
-        keep_points=False,
+        keep_points=True,
+        patients_to_keep=[5293],
     )
