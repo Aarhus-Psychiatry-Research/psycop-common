@@ -16,11 +16,11 @@ def fit_with_populated_registries(cfg_file: Path) -> float:
 
 if __name__ == "__main__":
     cfg_paths = list((Path(__file__).parent / "config" / "individual_outcomes").glob("*.cfg"))
-    Parallel(n_jobs=1)(
+    Parallel(n_jobs=8)(
         delayed(fit_with_populated_registries)(cfg_file=cfg_path) for cfg_path in cfg_paths
     )
 
-    # test_set_cfg_paths = list((Path(__file__).parent / "config" / "individual_outcomes" / "test_set").glob("*.cfg"))
-    # Parallel(n_jobs=8)(
-    #     delayed(fit_with_populated_registries)(cfg_file=cfg_path) for cfg_path in test_set_cfg_paths
-    # )
+    test_set_cfg_paths = list((Path(__file__).parent / "config" / "individual_outcomes" / "test_set").glob("*.cfg"))
+    Parallel(n_jobs=8)(
+        delayed(fit_with_populated_registries)(cfg_file=cfg_path) for cfg_path in test_set_cfg_paths
+    )

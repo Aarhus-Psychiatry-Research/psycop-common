@@ -6,7 +6,6 @@
 import polars as pl
 import polars.selectors as cs
 
-
 from psycop.common.global_utils.paths import OVARTACI_SHARED_DIR
 
 if __name__ == "__main__":
@@ -20,7 +19,6 @@ if __name__ == "__main__":
         / "l1_l4-lookbehind_183_365_730-all_relevant_tfidf_1000_lookbehind_730.parquet"
     ).sort("prediction_time_uuid")
 
-
     metadata_df = metadata_df.rename(
         {
             "meta_scz_diagnosis_within_0_to_1825_days_max_fallback_0": "outc_scz_within_1825_days_fallback_0",
@@ -29,8 +27,11 @@ if __name__ == "__main__":
     )
     # drop previous outcome cols - add for individual outcomes
     feature_df = feature_df.drop(cs.starts_with("outc_")).with_columns(
-        metadata_df["outc_scz_within_1825_days_fallback_0"], metadata_df["outc_bp_within_1825_days_fallback_0"]
+        metadata_df["outc_scz_within_1825_days_fallback_0"],
+        metadata_df["outc_bp_within_1825_days_fallback_0"],
     )
 
-    feature_df.write_parquet(flattened_datasets_dir / "l1_l4-lookbehind_183_365_730-all_relevant_tfidf_1000_lookbehind_730_individual_outcomes.parquet")
-
+    feature_df.write_parquet(
+        flattened_datasets_dir
+        / "l1_l4-lookbehind_183_365_730-all_relevant_tfidf_1000_lookbehind_730_individual_outcomes.parquet"
+    )

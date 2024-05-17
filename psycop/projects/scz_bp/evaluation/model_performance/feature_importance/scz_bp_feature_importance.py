@@ -1,7 +1,6 @@
 # type: ignore
 import pickle as pkl
 import re
-from pathlib import Path
 
 import pandas as pd
 import polars as pl

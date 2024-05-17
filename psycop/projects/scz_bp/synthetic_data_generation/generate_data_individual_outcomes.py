@@ -33,14 +33,16 @@ if __name__ == "__main__":
         best_experiment = f"sczbp/{individual_outcome}_only"
         base_config = (
             MlflowClientWrapper()
-            .get_best_run_from_experiment(experiment_name=best_experiment, metric="all_oof_BinaryAUROC")
+            .get_best_run_from_experiment(
+                experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
+            )
             .get_config()
         )
         outcome_col_name = base_config["trainer"]["outcome_col_name"]
         uuid_col_name = base_config["trainer"]["uuid_col_name"]
 
         # get training data
-        training_data_cfg = {"data": base_config["trainer"]["training_data"]} 
+        training_data_cfg = {"data": base_config["trainer"]["training_data"]}
         training_data = BaselineRegistry.resolve(training_data_cfg)["data"].load()
         # get preprocessing pipeline
         preprocessing_pipeline_cfg = {"preproc": base_config["trainer"]["preprocessing_pipeline"]}
@@ -61,7 +63,9 @@ if __name__ == "__main__":
         )
         training_data_cols = training_data.columns
         training_data_normalized = pipe.fit_transform(training_data)
-        training_data_normalized = pd.DataFrame(training_data_normalized, columns=training_data_cols)
+        training_data_normalized = pd.DataFrame(
+            training_data_normalized, columns=training_data_cols
+        )
 
         # count number of positive cases
         n_positives = sum(y)
@@ -71,7 +75,7 @@ if __name__ == "__main__":
         # fit DDPM
         data_loader = GenericDataLoader(training_data_normalized)
 
-        model_params = {"n_iter": 4000, "batch_size": 1000, "num_timesteps": 500.0, "lr" : 0.0005}
+        model_params = {"n_iter": 4000, "batch_size": 1000, "num_timesteps": 500.0, "lr": 0.0005}
 
         logger = MLFlowLogger(experiment_name="sczbp/ddpm_lr")
 
