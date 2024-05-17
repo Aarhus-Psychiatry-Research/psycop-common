@@ -8,6 +8,7 @@ import polars as pl
 from sklearn.pipeline import Pipeline
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from psycop.projects.scz_bp.evaluation.configs import SCZ_BP_EVAL_OUTPUT_DIR
 
 
 def scz_bp_parse_static_feature(full_string: str) -> str:
@@ -55,18 +56,11 @@ def scz_bp_generate_feature_importance_table(
     # Get feature importance scores
     feature_importances = pipeline.named_steps[clf_model_name].feature_importances_
 
-    if hasattr(pipeline.named_steps[clf_model_name], "feature_names"):
-        selected_feature_names = pipeline.named_steps[clf_model_name].feature_names
-    elif hasattr(pipeline.named_steps[clf_model_name], "feature_name_"):
-        selected_feature_names = pipeline.named_steps[clf_model_name].feature_name_
-    elif hasattr(pipeline.named_steps[clf_model_name], "feature_names_in_"):
-        selected_feature_names = pipeline.named_steps[clf_model_name].feature_names_in_
-    else:
-        raise ValueError("The classifier does not implement .feature_names or .feature_name_")
+    feature_names = pipeline.feature_names_in_
 
     # Create a DataFrame to store the feature names and their corresponding gain
     feature_table = pl.DataFrame(
-        {"Feature Name": selected_feature_names, "Feature Importance": feature_importances}
+        {"Feature Name": feature_names, "Feature Importance": feature_importances}
     )
 
     # Sort the table by gain in descending order
@@ -86,18 +80,26 @@ def scz_bp_generate_feature_importance_table(
 
 
 if __name__ == "__main__":
-    best_experiment = "sczbp/structured_text_xgboost_ddpm_3x_positives"
-    best_run = MlflowClientWrapper().get_best_run_from_experiment(
-        experiment_name=best_experiment, metric="all_oof_BinaryAUROC"
-    )
+    experiment_dict = {
+        "Joint": "sczbp/test_tfidf_1000",
+        "SCZ": "sczbp/test_scz",
+        "BP": "sczbp/test_bp",
+    }
 
-    with best_run.download_artifact("sklearn_pipe.pkl").open("rb") as pipe_pkl:
-        pipe = pkl.load(pipe_pkl)
+    for outcome, experiment_name in experiment_dict.items():
+        best_run = MlflowClientWrapper().get_best_run_from_experiment(
+            experiment_name=experiment_name, metric="all_oof_BinaryAUROC"
+        )
 
-    feat_imp = scz_bp_generate_feature_importance_table(pipeline=pipe, clf_model_name="classifier")
-    pl.Config.set_tbl_rows(100)
+        with best_run.download_artifact("sklearn_pipe.pkl").open("rb") as pipe_pkl:
+            pipe = pkl.load(pipe_pkl)
 
-    with (Path(__file__).parent / f"feat_imp_100_{best_experiment.split('/')[1]}.html").open(
-        "w"
-    ) as html_file:
-        html_file.write(feat_imp.to_html())
+        feat_imp = scz_bp_generate_feature_importance_table(
+            pipeline=pipe, clf_model_name="classifier"
+        )
+        pl.Config.set_tbl_rows(100)
+
+        with (
+            SCZ_BP_EVAL_OUTPUT_DIR / f"{outcome}_feat_imp_100_{experiment_name.split('/')[1]}.html"
+        ).open("w") as html_file:
+            html_file.write(feat_imp.to_html())
