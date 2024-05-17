@@ -27,7 +27,7 @@ class FirstPosPredToEventModel(SingleRunModel):
     outcome_timestamps: OutcomeTimestampFrame
     desired_positive_rate: float = 0.05
 
-    def data(self, run: RunSelector) -> FirstPosPredToEventDF:
+    def __call__(self, run: RunSelector) -> FirstPosPredToEventDF:
         eval_df = MlflowClientWrapper().get_run(run.experiment_name, run.run_name).eval_df()
 
         eval_df = (

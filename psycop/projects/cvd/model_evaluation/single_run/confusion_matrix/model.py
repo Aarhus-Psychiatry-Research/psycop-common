@@ -19,7 +19,7 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import 
 class ConfusionMatrixModel(SingleRunModel):
     desired_positive_rate: float = 0.05
 
-    def data(self, run: RunSelector) -> ConfusionMatrix:
+    def __call__(self, run: RunSelector) -> ConfusionMatrix:
         eval_ds = self._get_eval_df(run)
 
         df = eval_ds.rename({"y": "true", "y_hat_prob": "pred"}).to_pandas()

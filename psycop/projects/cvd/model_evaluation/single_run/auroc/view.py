@@ -12,7 +12,7 @@ class AUROCPlot(SingleRunPlot):
     title: str = "Receiver Operating Characteristic (ROC) Curve"
     n_bootstraps: int = 100
 
-    def plot(self) -> pn.ggplot:
+    def __call__(self) -> pn.ggplot:
         auroc_label = pn.annotate(
             "text",
             label=f"AUROC (95% CI): {self.data.mean:.3f} ({self.data.ci[0]:.3f}-{self.data.ci[1]:.3f})",
