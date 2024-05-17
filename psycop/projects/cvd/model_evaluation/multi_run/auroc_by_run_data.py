@@ -1,6 +1,5 @@
 import logging
 from collections.abc import Sequence
-from dataclasses import dataclass
 from typing import NewType
 
 import numpy as np
@@ -8,15 +7,9 @@ import polars as pl
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
+from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
 
 EvalDF = NewType("EvalDF", pl.DataFrame)
-# Must contain columns "y", "y_hat_prob", "run_name"
-
-
-@dataclass(frozen=True)
-class RunSelector:
-    experiment_name: str
-    run_name: str
 
 
 def _run_auroc_with_ci(df: EvalDF, n_bootstraps: int = 5) -> pl.DataFrame:
