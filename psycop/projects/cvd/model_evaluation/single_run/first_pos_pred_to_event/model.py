@@ -23,15 +23,6 @@ FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 
 @dataclass(frozen=True)
 class FirstPosPredToEventModel(SingleRunModel):
-    """
-    Model for sensitivity by time to event.
-
-    Args:
-        desired_positive_rate: The desired positive rate.
-        pred_timestamps: The prediction timestamps. Must be a dataframe with columns "timestamp" and "dw_ek_borger".
-        outcome_timestamps: The outcome timestamps. Must be a dataframe with columns "timestamp" and "dw_ek_borger".
-    """
-
     pred_timestamps: PredictionTimeFrame
     outcome_timestamps: OutcomeTimestampFrame
     desired_positive_rate: float = 0.05
