@@ -7,8 +7,6 @@ import urllib.parse
 import pandas as pd
 from sqlalchemy import create_engine, text
 
-from psycop.common.global_utils.cache import mem
-
 
 def sql_load(
     query: str,
