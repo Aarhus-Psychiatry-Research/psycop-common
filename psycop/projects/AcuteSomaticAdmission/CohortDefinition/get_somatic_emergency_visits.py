@@ -15,57 +15,34 @@ from psycop.projects.forced_admission_inpatient.cohort.extract_admissions_and_vi
 )
 
 
+#[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022]
+
 def get_contacts_to_somatic_emergency(write: bool = False) -> pd.DataFrame:
     # Load contact data
-    view = "[FOR_kohorte_indhold_pt_journal_psyk_somatik_inkl_2021_feb2022]"
-    cols_to_keep = "datotid_start, datotid_slut, dw_ek_borger, pt_type"
+    view = "[FOR_indlaeggelser_psyk_somatik_LPR2_inkl_2021_feb2022]"
+    cols_to_keep = "datotid_indlaeggelse, datotid_udskrivning, dw_ek_borger, pattypetekst, akutindlaeggelse, shakKode_kontaktansvarlig"
 
     sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
-
     #sql = "SELECT * FROM [fct]." + view
-    sql += "WHERE datotid_start > '2012-01-01' AND pt_type = 'Indlagt'"
-    sql += " AND datotid_start IS NOT NULL AND datotid_slut IS NOT NULL;"
+
+    sql += "WHERE datotid_indlaeggelse > '2012-01-01'"
+    sql += " AND pattypetekst = 'Indlagt' AND akutindlaeggelse = 'true' AND SUBSTRING(shakKode_kontaktansvarlig, 1, 4) != '6600'"
+    sql += " AND datotid_indlaeggelse IS NOT NULL AND datotid_udskrivning IS NOT NULL;"
 
     df = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
 
-    df["datotid_start"] = df["datotid_start"].apply(
+    df["datotid_indlaeggelse"] = df["datotid_indlaeggelse"].apply(
         pd.to_datetime
     )
 
-    df["datotid_slut"] = df["datotid_slut"].apply(
+    df["datotid_udskrivning"] = df["datotid_udskrivning"].apply(
         pd.to_datetime
     )
-
-
-    if write:
-        ROWS_PER_CHUNK = 5_000
-
-        write_df_to_sql(
-            df=df[["dw_ek_borger", "datotid_start"]],
-            table_name="all_psychiatric_outpatient_visits_processed_2012_2021_ANDDAN_SOMATIC_ADMISSION",
-            if_exists="replace",
-            rows_per_chunk=ROWS_PER_CHUNK,
-        )
 
     #Så sætter jeg det korrekte navn - de andre kalder nedenstående funktion der gør det samme. Måske for at spare tid når datasættet loades
-    df = df.rename(columns={"datotid_start": "timestamp"})
+    df = df.rename(columns={"datotid_indlaeggelse": "timestamp"})
 
     return df[["dw_ek_borger", "timestamp"]]  # type: ignore
-
-def admissions_onset_timestamps() -> pd.DataFrame:
-    # Load somatic_admissions data
-    view = "[all_psychiatric_outpatient_visits_processed_2012_2021_ANDDAN_SOMATIC_ADMISSION]"
-    cols_to_keep = "dw_ek_borger, datotid_start"
-
-    sql = "SELECT " + cols_to_keep + " FROM [fct]." + view
-
-    admissions_onset_timestamps = pd.DataFrame(sql_load(sql, chunksize=None))  # type: ignore
-
-    admissions_onset_timestamps = admissions_onset_timestamps.rename(
-        columns={"datotid_start": "timestamp"}
-    )
-
-    return admissions_onset_timestamps
 
 if __name__ == "__main__":
     get_contacts_to_somatic_emergency()

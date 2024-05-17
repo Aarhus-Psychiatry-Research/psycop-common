@@ -41,12 +41,11 @@ class SomaticAdmissionWashoutMove(PredictionTimeFilter):
 
         return not_within_a_year_from_move
 
-#Jeg kan være i tvivl om jeg skal bruge nedenstående
 class SomaticAdmissionTimestampsLoader(BaselineDataLoader):
     def load(self) -> pl.LazyFrame:
         return pl.from_pandas(get_contacts_to_somatic_emergency()).lazy()
 
-
+#Dette buger jeg
 class SomaticAdmissionWashoutPriorSomaticAdmission(PredictionTimeFilter):
     def apply(self, df: pl.LazyFrame) -> pl.LazyFrame:
         not_within_two_years_from_acute_somatic_contact = QuarantineFilter(
