@@ -1,17 +1,9 @@
 from dataclasses import dataclass
 
-import numpy as np
-import pandas as pd
 import plotnine as pn
 
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
-from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
-from psycop.projects.cvd.model_evaluation.multi_run.auroc_by_run_data import EvalDF
-from psycop.projects.cvd.model_evaluation.single_run.auroc.model import AUROC, AUROCModel
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
-    RunSelector,
-    SingleRunPlot,
-)
+from psycop.projects.cvd.model_evaluation.single_run.auroc.model import AUROC
+from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
 @dataclass(frozen=True)

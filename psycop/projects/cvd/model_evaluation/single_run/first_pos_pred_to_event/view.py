@@ -1,21 +1,11 @@
 from dataclasses import dataclass
 
-import pandas as pd
 import plotnine as pn
 
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
-from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.projects.cvd.model_evaluation.single_run.confusion_matrix.model import (
-    ConfusionMatrixModel,
-)
 from psycop.projects.cvd.model_evaluation.single_run.first_pos_pred_to_event.model import (
     FirstPosPredToEventDF,
 )
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
-    RunSelector,
-    SingleRunPlot,
-)
-from psycop.projects.restraint.model_evaluation.figures.roc_curve import plot_auc_roc
+from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
 @dataclass(frozen=True)

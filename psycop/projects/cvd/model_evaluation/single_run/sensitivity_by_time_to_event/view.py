@@ -1,17 +1,8 @@
 from dataclasses import dataclass
 
-import pandas as pd
 import plotnine as pn
-import polars as pl
 
-from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.projects.cvd.model_evaluation.single_run.confusion_matrix.model import (
-    ConfusionMatrixModel,
-)
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
-    RunSelector,
-    SingleRunPlot,
-)
+from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 from .model import SensitivityByTTEDF
 

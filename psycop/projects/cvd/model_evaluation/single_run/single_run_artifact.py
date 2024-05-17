@@ -1,4 +1,3 @@
-from abc import ABC
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -27,18 +26,15 @@ class SingleRunModel:
         return self._get_run(run).eval_df()
 
 
-class SingleRunView(Protocol):
-    ...
+class SingleRunView(Protocol): ...
 
 
 class SingleRunPlot(SingleRunView):
-    def __call__(self) -> plotnine.ggplot:
-        ...
+    def __call__(self) -> plotnine.ggplot: ...
 
 
 class SingleRunTable(SingleRunView):
-    def __call__(self) -> pl.DataFrame:
-        ...
+    def __call__(self) -> pl.DataFrame: ...
 
 
 SingleRunArtifact = SingleRunPlot | SingleRunTable

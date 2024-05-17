@@ -9,10 +9,6 @@ from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClien
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
 )
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-    get_confusion_matrix_cells_from_df,
-)
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )

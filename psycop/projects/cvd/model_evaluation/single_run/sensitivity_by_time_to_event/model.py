@@ -9,16 +9,8 @@ from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTim
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_sensitivity_by_timedelta_df,
 )
-from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
-    ConfusionMatrix,
-    get_confusion_matrix_cells_from_df,
-)
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
-)
-from psycop.projects.cvd.model_evaluation.single_run.df_types import (
-    OutcomeTimestampDF,
-    PredTimestampDF,
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
     RunSelector,

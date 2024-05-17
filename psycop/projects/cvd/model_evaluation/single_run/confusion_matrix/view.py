@@ -5,13 +5,7 @@ import plotnine as pn
 
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import ConfusionMatrix
 from psycop.common.test_utils.str_to_df import str_to_df
-from psycop.projects.cvd.model_evaluation.single_run.confusion_matrix.model import (
-    ConfusionMatrixModel,
-)
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
-    RunSelector,
-    SingleRunPlot,
-)
+from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
 
 @dataclass(frozen=True)
