@@ -66,5 +66,5 @@ def forced_admissions_end_timestamps() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    get_forced_admissions(write=False)
+    get_forced_admissions()
     forced_admissions_end_timestamps()
