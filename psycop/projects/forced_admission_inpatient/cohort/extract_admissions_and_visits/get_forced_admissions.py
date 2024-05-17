@@ -5,10 +5,9 @@ the more finegrained MidtEPJ admission data
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.global_utils.sql.writer import write_df_to_sql
 
 
-def get_forced_admissions(write: bool = True) -> pd.DataFrame:
+def get_forced_admissions() -> pd.DataFrame:
     # Load coercion data
     view = "[FOR_tvang_alt_hele_kohorten_inkl_2021_feb2022]"
     cols_to_keep = "datotid_start_sei, datotid_slut_sei, dw_ek_borger, typetekst_sei"
@@ -21,15 +20,6 @@ def get_forced_admissions(write: bool = True) -> pd.DataFrame:
         ["datotid_start_sei", "datotid_slut_sei"]
     ].apply(pd.to_datetime)
 
-    if write:
-        ROWS_PER_CHUNK = 5_000
-
-        write_df_to_sql(
-            df=forced_admissions,  # type: ignore
-            table_name="forced_admissions_processed_2012_2021",
-            if_exists="replace",
-            rows_per_chunk=ROWS_PER_CHUNK,
-        )
     return forced_admissions  # type: ignore
 
 

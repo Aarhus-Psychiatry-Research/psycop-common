@@ -6,14 +6,13 @@ and short term readmissions
 import pandas as pd
 
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop.common.global_utils.sql.writer import write_df_to_sql
 from psycop.projects.forced_admission_outpatient.cohort.extract_admissions_and_visits.utils.utils import (
     concat_readmissions_for_all_patients,
     lpr2_lpr3_overlap,
 )
 
 
-def get_admissions_to_psychiatry(write: bool = True) -> pd.DataFrame:
+def get_admissions_to_psychiatry() -> pd.DataFrame:
     # Load contact data
     view = "[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]"
     cols_to_keep = "datotid_start, datotid_slut, dw_ek_borger, pt_type"
@@ -33,16 +32,6 @@ def get_admissions_to_psychiatry(write: bool = True) -> pd.DataFrame:
 
     # Aggregate readmissions within 4 hours to one admission
     df = concat_readmissions_for_all_patients(df)
-
-    if write:
-        ROWS_PER_CHUNK = 5_000
-
-        write_df_to_sql(
-            df=df[["dw_ek_borger", "datotid_start", "datotid_slut"]],
-            table_name="all_admissions_processed_2012_2021",
-            if_exists="replace",
-            rows_per_chunk=ROWS_PER_CHUNK,
-        )
 
     return df[["dw_ek_borger", "datotid_start", "datotid_slut"]]
 
