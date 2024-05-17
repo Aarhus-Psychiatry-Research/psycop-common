@@ -10,7 +10,6 @@ from sqlalchemy import create_engine, text
 from psycop.common.global_utils.cache import mem
 
 
-@mem.cache  # type: ignore
 def sql_load(
     query: str,
     server: str = "BI-DPA-PROD",
