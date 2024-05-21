@@ -7,8 +7,6 @@ from psycop.projects.cvd.model_evaluation.single_run.first_pos_pred_to_event.mod
 )
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import SingleRunPlot
 
-# TD Test all the plots
-
 
 @dataclass(frozen=True)
 class FirstPosPredToEventPlot(SingleRunPlot):

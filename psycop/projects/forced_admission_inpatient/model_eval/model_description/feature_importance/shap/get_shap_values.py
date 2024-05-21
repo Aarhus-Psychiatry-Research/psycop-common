@@ -6,7 +6,7 @@ import polars as pl
 from sklearn.pipeline import Pipeline
 
 import shap
-from psycop.common.global_utils.cache import mem
+from psycop.common.global_utils.cache import shared_cache
 from psycop.projects.forced_admission_inpatient.utils.pipeline_objects import (
     ForcedAdmissionInpatientPipelineRun,
 )
@@ -29,7 +29,7 @@ def generate_shap_df_for_predictor_col(
     return df
 
 
-@mem.cache
+@shared_cache.cache
 def get_long_shap_df(X: pd.DataFrame, shap_values: list[float]) -> pd.DataFrame:
     predictor_cols = X.columns
     dfs = []
@@ -76,7 +76,7 @@ def generate_shap_values_from_pipe(
     return shap_values
 
 
-@mem.cache
+@shared_cache.cache
 def get_shap_bundle_for_best_run(
     run: ForcedAdmissionInpatientPipelineRun, n_rows: Optional[int] = 10_000, cache_ver: float = 0.1
 ) -> ShapBundle:

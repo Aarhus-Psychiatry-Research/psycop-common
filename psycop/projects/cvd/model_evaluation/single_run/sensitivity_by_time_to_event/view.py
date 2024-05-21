@@ -9,7 +9,9 @@ from .model import SensitivityByTTEDF
 
 @dataclass(frozen=True)
 class SensitivityByTTEPlot(SingleRunPlot):
+    outcome_label: str
     data: SensitivityByTTEDF
+    desired_positive_rate: float = 0.05
 
     def __call__(self) -> pn.ggplot:
         df = self.data.to_pandas()
