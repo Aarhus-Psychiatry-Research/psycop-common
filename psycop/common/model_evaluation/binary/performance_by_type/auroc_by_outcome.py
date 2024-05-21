@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from itertools import product
 
 import pandas as pd
@@ -6,6 +7,20 @@ import polars as pl
 from sklearn.metrics import roc_auc_score
 
 from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
+from dataclasses import dataclass, field
+
+@dataclass
+class EvaluationFrame():
+    """Dataclass used for evaluating AUROC by different combinations of models
+    and outcomes. Df should contain 2 columns: 1 for the prediction time uuid
+    and 1 with the outcome (0/1)"""
+    df: pl.DataFrame
+    outcome_col_name: str
+
+    def __post_init__(self):
+        cols = self.df.columns
+        if len(cols) > 2:
+            raise ValueError(f"Df should only contain 2 columns: a prediction time uuid, and an outcome column. Current columns: {self.df.columns}")
 
 
 def create_permutations(
@@ -14,15 +29,20 @@ def create_permutations(
     return list(product(model_names, validation_outcome_col_names))
 
 
+
+
 def auroc_by_outcome(
     model_names: list[str],
-    validation_outcomes: list[pl.DataFrame],
+    validation_outcomes: Sequence[EvaluationFrame],
     y_hat_col_name: str = "y_hat_prob",
+    prediction_time_uuid: str = "pred_time_uuid",
     best_run_metric: str = "all_oof_BinaryAUROC",
 ) -> pd.DataFrame:
+    
     validation_outcome_col_names = [
-        validation_outcome.columns[1] for validation_outcome in validation_outcomes
+        validation_outcome.outcome_col_name for validation_outcome in validation_outcomes
     ]
+
     performance_dfs = []
     models_by_outcomes = create_permutations(model_names, validation_outcome_col_names)  # type: ignore
 
@@ -35,11 +55,11 @@ def auroc_by_outcome(
         validation_outcome = next(
             validation_outcome
             for validation_outcome in validation_outcomes
-            if validation_outcome.columns[1] == validation_outcome_col_name
+            if validation_outcome.outcome_col_name == validation_outcome_col_name
         )
 
         joined_df = eval_df.join(
-            validation_outcome, on="pred_time_uuid", how="left", validate="1:1"
+            validation_outcome.df, on=prediction_time_uuid, how="left", validate="1:1"
         ).filter(pl.col(validation_outcome_col_name).is_not_null())
         performance_dfs.append(
             pd.DataFrame(

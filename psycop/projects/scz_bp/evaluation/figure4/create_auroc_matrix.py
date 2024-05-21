@@ -4,6 +4,7 @@ import polars as pl
 from confection import Config
 
 from psycop.common.model_evaluation.binary.performance_by_type.auroc_by_outcome import (
+    EvaluationFrame,
     auroc_by_outcome,
     plot_auroc_by_outcome,
 )
@@ -11,7 +12,7 @@ from psycop.common.model_training_v2.config.populate_registry import populate_ba
 from psycop.projects.scz_bp.dataset_description.scz_bp_table_one import SczBpTableOne
 
 
-def scz_bp_validation_outcomes() -> list[pl.DataFrame]:
+def scz_bp_validation_outcomes() -> list[EvaluationFrame]:
     cfg = Config().from_disk(Path(__file__).parent / "eval_config.cfg")
     meta_df = SczBpTableOne(cfg).get_filtered_prediction_times()
 
@@ -31,9 +32,9 @@ def scz_bp_validation_outcomes() -> list[pl.DataFrame]:
     )
 
     return [
-        meta_df.select(["pred_time_uuid", "scz_diagnosis"]),
-        meta_df.select(["pred_time_uuid", "first_diagnosis"]),
-        meta_df.select(["pred_time_uuid", "bp_diagnosis"]),
+        EvaluationFrame(df=meta_df.select(["pred_time_uuid", "scz_diagnosis"]), outcome_col_name="scz_diagnosis"),
+        EvaluationFrame(df=meta_df.select(["pred_time_uuid", "first_diagnosis"]), outcome_col_name="first_diagnosis"),
+        EvaluationFrame(df=meta_df.select(["pred_time_uuid", "bp_diagnosis"]), outcome_col_name="bp_diagnosis")
     ]
 
 
