@@ -7,7 +7,6 @@ from psycop.common.global_utils.cache import mem
 from psycop.common.model_evaluation.binary.global_performance.roc_auc import bootstrap_roc
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
     RunSelector,
-    SingleRunModel,
     get_eval_df,
 )
 
