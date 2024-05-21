@@ -4,7 +4,7 @@ import polars as pl
 import pandas as pd
 from confection import Config
 
-from psycop.common.model_evaluation.binary.performance_by_type.auroc_by_outcome import auroc_by_outcome
+from psycop.common.model_evaluation.binary.performance_by_type.auroc_by_outcome import auroc_by_outcome, plot_auroc_by_outcome
 from psycop.common.model_training_v2.config.populate_registry import populate_baseline_registry
 from psycop.projects.scz_bp.dataset_description.scz_bp_table_one import SczBpTableOne
 
@@ -30,4 +30,7 @@ if __name__ == "__main__":
     populate_baseline_registry()
     m = auroc_by_outcome(model_names=["sczbp/scz_only", "sczbp/structured_text_xgboost_ddpm", "sczbp/bp_only"], validation_outcomes=scz_bp_validation_outcomes())
 
+    m = m.replace({"sczbp/scz_only": "Schizophrenia", "sczbp/structured_text_xgboost_ddpm": "Any diagnosis", "sczbp/bp_only": "Bipolar disorder", "scz_diagnosis": "Schizophrenia", "first_diagnosis": "Any diagnosis", "bp_diagnosis": "Bipolar disorder"})
+
+    p = plot_auroc_by_outcome(m)
     print(m)
