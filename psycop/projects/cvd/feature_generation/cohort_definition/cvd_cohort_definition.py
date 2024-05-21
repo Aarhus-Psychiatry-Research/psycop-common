@@ -1,4 +1,3 @@
-
 import polars as pl
 
 from psycop.common.cohort_definition import (

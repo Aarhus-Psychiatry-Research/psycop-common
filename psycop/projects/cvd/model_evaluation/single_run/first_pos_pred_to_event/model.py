@@ -11,14 +11,9 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
-from psycop.projects.cvd.feature_generation.cohort_definition.cvd_cohort_definition import (
-    cvd_outcome_timestamps,
-    cvd_pred_times,
-)
 from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
-    add_dw_ek_borger,
+    parse_dw_ek_borger_from_uuid,
 )
-from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import RunSelector
 
 FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 # Contains columns "pred", "y", "id", "pred_timestamps", "outcome_timestamps"
@@ -32,7 +27,7 @@ def first_positive_prediction_to_event_model(
     desired_positive_rate: float = 0.05,
 ) -> FirstPosPredToEventDF:
     eval_dataset = (
-        add_dw_ek_borger(eval_df)
+        parse_dw_ek_borger_from_uuid(eval_df)
         .join(pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
         .join(outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
     ).to_pandas()
@@ -52,12 +47,3 @@ def first_positive_prediction_to_event_model(
     plot_df = get_time_from_first_positive_to_diagnosis_df(input_df=df)
 
     return FirstPosPredToEventDF(pl.from_pandas(plot_df))
-
-
-if __name__ == "__main__":
-    test = first_positive_prediction_to_event_model(
-        RunSelector(experiment_name="baseline_v2_cvd", run_name="Layer 1"),
-        pred_timestamps=cvd_pred_times(),
-        outcome_timestamps=cvd_outcome_timestamps(),
-        desired_positive_rate=0.05,
-    )

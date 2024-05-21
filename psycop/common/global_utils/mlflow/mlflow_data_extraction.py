@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import NewType
 
 import mlflow
 import polars as pl
@@ -25,6 +26,11 @@ class MlflowAllMetricsFrame(ValidatedFrame[pl.DataFrame]):
     allow_extra_columns = False
 
 
+EvalDF = NewType("EvalDF", pl.DataFrame)
+# Contains columns "pred_time_uuid", "y", and "y_hat_prob"
+# pred_time_uuid: a string of the form "{citizen id}-%Y-%m-%d-%H-%M-%S", e.g. "98573-2021-01-01-00-00-00"
+
+
 class PsycopMlflowRun(Run):
     def __init__(
         self,
@@ -46,9 +52,9 @@ class PsycopMlflowRun(Run):
         cfg_path = self.download_artifact(artifact_name="config.cfg", save_location=None)
         return Config().from_disk(cfg_path)
 
-    def eval_df(self) -> pl.DataFrame:
+    def eval_df(self) -> EvalDF:
         eval_df_path = self.download_artifact(artifact_name="eval_df.parquet", save_location=None)
-        return pl.read_parquet(eval_df_path)
+        return EvalDF(pl.read_parquet(eval_df_path))
 
     def download_artifact(self, artifact_name: str, save_location: str | None = None) -> Path:
         """Download an artifact from a run. Returns the path to the downloaded artifact.

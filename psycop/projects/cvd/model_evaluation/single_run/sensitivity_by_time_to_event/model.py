@@ -16,10 +16,31 @@ from psycop.common.model_training.training_output.dataclasses import (
 SensitivityByTTEDF = NewType("SensitivityByTTEDF", pl.DataFrame)
 
 
-def add_dw_ek_borger(df: pl.DataFrame) -> pl.DataFrame:
+def parse_timestamp_from_uuid(df: pl.DataFrame) -> pl.DataFrame:
+    return df.with_columns(
+        pl.col("pred_time_uuid")
+        .str.split("-")
+        .list.slice(1)
+        .list.join("-")
+        .dt.strftime("%Y-%m-%d-%H-%M-%S")
+        .alias("timestamp")
+    )
+
+
+def parse_dw_ek_borger_from_uuid(df: pl.DataFrame) -> pl.DataFrame:
     return df.with_columns(
         pl.col("pred_time_uuid").str.split("-").list.first().cast(pl.Int64).alias("dw_ek_borger")
     )
+
+
+def add_age(df: pl.DataFrame, birthday_df: pl.DataFrame, age_col_name: str = "age") -> pl.DataFrame:
+    df = df.join(birthday_df, on="dw_ek_borger", how="left")
+    df = df.with_columns(
+        ((pl.col("timestamp") - pl.col("date_of_birth")).dt.days()).alias(age_col_name)
+    )
+    df = df.with_columns((pl.col(age_col_name) / 365.25).alias(age_col_name))
+
+    return df
 
 
 @shared_cache.cache()
@@ -30,7 +51,7 @@ def sensitivity_by_time_to_event_model(
     pprs: Sequence[float] = (0.01, 0.03, 0.05),
 ) -> SensitivityByTTEDF:
     eval_dataset = (
-        add_dw_ek_borger(eval_df)
+        parse_dw_ek_borger_from_uuid(eval_df)
         .join(pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
         .join(outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
     ).to_pandas()
