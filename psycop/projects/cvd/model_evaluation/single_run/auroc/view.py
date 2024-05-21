@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 
 import plotnine as pn
@@ -10,9 +11,9 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import 
 class AUROCPlot(SingleRunPlot):
     data: AUROC
     title: str = "Receiver Operating Characteristic (ROC) Curve"
-    n_bootstraps: int = 100
 
     def __call__(self) -> pn.ggplot:
+        logging.info(f"Starting {self.__class__.__name__}")
         auroc_label = pn.annotate(
             "text",
             label=f"AUROC (95% CI): {self.data.mean:.3f} ({self.data.ci[0]:.3f}-{self.data.ci[1]:.3f})",

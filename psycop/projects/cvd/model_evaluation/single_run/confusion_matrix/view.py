@@ -12,20 +12,19 @@ from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import 
 class ConfusionMatrixPlot(SingleRunPlot):
     data: ConfusionMatrix
     outcome_label: str
-    desired_positive_rate: float = 0.05
 
     def __call__(self) -> pn.ggplot:
         df = str_to_df(
             f"""true,pred,estimate
-        +,+,"{f'{self.data.true_positives:,}'}",
-        +,-,"{f'{self.data.false_negatives:,}'}",
-        -,+,"{f'{self.data.false_positives:,}'}",
-        -,-,"{f'{self.data.true_negatives:,}'}",
-        " ",+,"PPV:\n{round(self.data.ppv*100, 1)}%",
-        " ",-,"NPV:\n{round(self.data.npv*100,1)}%",
-        -," ","Spec:\n{round(self.data.specificity*100, 1)}%",
-        +," ","Sens:\n{round(self.data.sensitivity*100, 1)}%",
-        """
++,+,"{f'{self.data.true_positives:,}'}",
++,-,"{f'{self.data.false_negatives:,}'}",
+-,+,"{f'{self.data.false_positives:,}'}",
+-,-,"{f'{self.data.true_negatives:,}'}",
+" ",+,"PPV:\n{round(self.data.ppv*100, 1)}%",
+" ",-,"NPV:\n{round(self.data.npv*100, 1)}%",
+-," ","Spec:\n{round(self.data.specificity*100, 1)}%",
++," ","Sens:\n{round(self.data.sensitivity*100, 1)}%",
+"""
         )
 
         df["true"] = pd.Categorical(df["true"], ["+", "-", " "])

@@ -12,6 +12,9 @@ from psycop.common.model_evaluation.binary.time.timedelta_data import (
 from psycop.common.model_training.training_output.dataclasses import (
     get_predictions_for_positive_rate,
 )
+from psycop.projects.cvd.model_evaluation.single_run.sensitivity_by_time_to_event.model import (
+    add_dw_ek_borger,
+)
 from psycop.projects.cvd.model_evaluation.single_run.single_run_artifact import (
     RunSelector,
     SingleRunModel,
@@ -31,9 +34,7 @@ class FirstPosPredToEventModel(SingleRunModel):
         eval_df = MlflowClientWrapper().get_run(run.experiment_name, run.run_name).eval_df()
 
         eval_df = (
-            eval_df.with_columns(
-                pl.col("pred_time_uuid").str.split("-").first().alias("dw_ek_borger")
-            )
+            add_dw_ek_borger(eval_df)
             .join(self.pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
             .join(self.outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
         ).to_pandas()
@@ -46,7 +47,7 @@ class FirstPosPredToEventModel(SingleRunModel):
                 )[0],
                 "y": eval_df["y"],
                 "id": eval_df["dw_ek_borger"],
-                "pred_timestamps": eval_df["timestamp_pred"],
+                "pred_timestamps": eval_df["timestamp"],
                 "outcome_timestamps": eval_df["timestamp_outcome"],
             }
         )

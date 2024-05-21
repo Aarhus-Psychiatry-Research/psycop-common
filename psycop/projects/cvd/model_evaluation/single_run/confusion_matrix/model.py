@@ -20,16 +20,16 @@ class ConfusionMatrixModel(SingleRunModel):
     desired_positive_rate: float = 0.05
 
     def __call__(self, run: RunSelector) -> ConfusionMatrix:
-        eval_ds = self._get_eval_df(run)
+        eval_ds = self.get_eval_df(run)
 
         df = eval_ds.rename({"y": "true", "y_hat_prob": "pred"}).to_pandas()
 
         df = pd.DataFrame(
             {
-                "true": eval_ds["y"],
+                "true": df["true"],
                 "pred": get_predictions_for_positive_rate(
                     desired_positive_rate=self.desired_positive_rate,
-                    y_hat_probs=eval_ds["y_hat_prob"],  # type: ignore
+                    y_hat_probs=df["pred"],  # type: ignore
                 )[0],
             }
         )
