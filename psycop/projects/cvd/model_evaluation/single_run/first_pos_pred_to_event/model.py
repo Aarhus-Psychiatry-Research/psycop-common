@@ -5,7 +5,6 @@ import polars as pl
 
 from psycop.common.cohort_definition import OutcomeTimestampFrame, PredictionTimeFrame
 from psycop.common.global_utils.cache import shared_cache
-from psycop.common.global_utils.mlflow.mlflow_data_extraction import MlflowClientWrapper
 from psycop.common.model_evaluation.binary.time.timedelta_data import (
     get_time_from_first_positive_to_diagnosis_df,
 )
@@ -27,14 +26,12 @@ FirstPosPredToEventDF = NewType("FirstPosPredToEventDF", pl.DataFrame)
 
 @shared_cache.cache()
 def first_positive_prediction_to_event_model(
-    run: RunSelector,
+    eval_df: pl.DataFrame,
     pred_timestamps: PredictionTimeFrame,
     outcome_timestamps: OutcomeTimestampFrame,
     desired_positive_rate: float = 0.05,
 ) -> FirstPosPredToEventDF:
-    eval_df = MlflowClientWrapper().get_run(run.experiment_name, run.run_name).eval_df()
-
-    eval_df = (
+    eval_dataset = (
         add_dw_ek_borger(eval_df)
         .join(pred_timestamps.stripped_df, on="dw_ek_borger", suffix="_pred")
         .join(outcome_timestamps.stripped_df, on="dw_ek_borger", suffix="_outcome")
@@ -43,12 +40,12 @@ def first_positive_prediction_to_event_model(
     df = pd.DataFrame(
         {
             "pred": get_predictions_for_positive_rate(
-                desired_positive_rate=desired_positive_rate, y_hat_probs=eval_df["y_hat_prob"]
+                desired_positive_rate=desired_positive_rate, y_hat_probs=eval_dataset["y_hat_prob"]
             )[0],
-            "y": eval_df["y"],
-            "id": eval_df["dw_ek_borger"],
-            "pred_timestamps": eval_df["timestamp"],
-            "outcome_timestamps": eval_df["timestamp_outcome"],
+            "y": eval_dataset["y"],
+            "id": eval_dataset["dw_ek_borger"],
+            "pred_timestamps": eval_dataset["timestamp"],
+            "outcome_timestamps": eval_dataset["timestamp_outcome"],
         }
     )
 
@@ -64,4 +61,3 @@ if __name__ == "__main__":
         outcome_timestamps=cvd_outcome_timestamps(),
         desired_positive_rate=0.05,
     )
-
